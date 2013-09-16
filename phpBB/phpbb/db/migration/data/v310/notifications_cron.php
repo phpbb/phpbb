@@ -7,11 +7,13 @@
 *
 */
 
-class phpbb_db_migration_data_310_notifications_cron extends phpbb_db_migration
+namespace phpbb\db\migration\data\v310;
+
+class notifications_cron extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_310_notifications');
+		return array('\phpbb\db\migration\data\v310\notifications');
 	}
 
 	public function update_data()

@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_auth_provider_oauth extends phpbb_db_migration
+namespace phpbb\db\migration\data\v310;
+
+class auth_provider_oauth extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{

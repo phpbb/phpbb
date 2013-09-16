@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_softdelete_mcp_modules extends phpbb_db_migration
+namespace phpbb\db\migration\data\v310;
+
+class softdelete_mcp_modules extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -26,8 +28,8 @@ class phpbb_db_migration_data_310_softdelete_mcp_modules extends phpbb_db_migrat
 	static public function depends_on()
 	{
 		return array(
-			'phpbb_db_migration_data_310_dev',
-			'phpbb_db_migration_data_310_softdelete_p2',
+			'phpbb\db\migration\data\v310\dev',
+			'phpbb\db\migration\data\v310\softdelete_p2',
 		);
 	}
 

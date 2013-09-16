@@ -104,7 +104,7 @@ services:
             - { name: notification.type }
 
     notification.type.group_request:
-        class: phpbb_notification_type_group_request
+        class: phpbb\notification\type\group_request
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
@@ -122,7 +122,7 @@ services:
             - { name: notification.type }
 
     notification.type.group_request_approved:
-        class: phpbb_notification_type_group_request_approved
+        class: phpbb\notification\type\group_request_approved
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader

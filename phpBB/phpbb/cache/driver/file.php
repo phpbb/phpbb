@@ -260,7 +260,7 @@ class file extends \phpbb\cache\driver\base
 	{
 		try
 		{
-			$iterator = new DirectoryIterator($dir);
+			$iterator = new \DirectoryIterator($dir);
 		}
 		catch (Exception $e)
 		{
