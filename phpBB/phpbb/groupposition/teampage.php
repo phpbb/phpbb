@@ -433,7 +433,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 			$sibling_count = 0;
 			$sibling_limit = $delta;
 
-			// Reset the delta, as we recalculate the new \real delta
+			// Reset the delta, as we recalculate the new real delta
 			$delta = 0;
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -521,7 +521,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 			$sibling_count = 0;
 			$sibling_limit = $delta;
 
-			// Reset the delta, as we recalculate the new \real delta
+			// Reset the delta, as we recalculate the new real delta
 			$delta = 0;
 			while ($row = $this->db->sql_fetchrow($result))
 			{

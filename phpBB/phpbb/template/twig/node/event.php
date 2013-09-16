@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 
 class event extends \Twig_Node
 {
-	/** 
+	/**
 	 * The subdirectory in which all template listener files must be placed
 	 * @var string
 	 */
@@ -56,7 +56,7 @@ class event extends \Twig_Node
 				// If debug mode is enabled, lets check for new/removed EVENT
 				//  templates on page load rather than at compile. This is
 				//  slower, but makes developing extensions easier (no need to
-				//  purge the cache when a new \event template file is added)
+				//  purge the cache when a new event template file is added)
 		        $compiler
 		            ->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
 		            ->indent()

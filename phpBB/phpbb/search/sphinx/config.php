@@ -65,7 +65,7 @@ class config
 	/**
 	* Appends a new \empty section to the end of the config
 	*
-	* @param	string								$name	The name for the new \section
+	* @param	string								$name	The name for the new section
 	* @return	\phpbb\search\sphinx\config_section			The newly created section object
 	*
 	* @access	public
@@ -143,7 +143,7 @@ class config
 						$section_name .= $line[$j];
 					}
 
-					// And then we create the new \section object
+					// And then we create the new section object
 					$section_name = trim($section_name);
 					$section = new \phpbb\search\sphinx\config_section($section_name, $section_name_comment);
 				}
@@ -163,7 +163,7 @@ class config
 						$section->add_variable(new \phpbb\search\sphinx\config_comment($config_file[$i]));
 						continue;
 					}
-	
+
 					// As long as we haven't yet actually found an opening bracket for this section
 					// we treat everything as comments so it's not deleted either
 					if (!$found_opening_bracket)
@@ -182,7 +182,7 @@ class config
 					}
 				}
 
-				// If we did not find a comment in this line or still add to the previous 
+				// If we did not find a comment in this line or still add to the previous
 				// line's value ...
 				if ($line || $in_value)
 				{
@@ -241,8 +241,8 @@ class config
 						}
 					}
 
-					// If a name and an equal sign were found then we have append a 
-					// new \variable object to the section
+					// If a name and an equal sign were found then we have append a
+					// new variable object to the section
 					if ($name && $found_assignment)
 					{
 						$section->add_variable(new \phpbb\search\sphinx\config_variable(trim($name), trim($value), ($end_section) ? '' : $comment));
@@ -250,7 +250,7 @@ class config
 					}
 
 					/* If we found a closing curly bracket this section has been completed
-					and we can append it to the section list and continue with looking for 
+					and we can append it to the section list and continue with looking for
 					the next section */
 					if ($end_section)
 					{

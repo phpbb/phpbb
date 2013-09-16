@@ -1271,7 +1271,7 @@ class fulltext_native extends \phpbb\search\base
 
 		// We now have unique arrays of all words to be added and removed and
 		// individual arrays of added and removed words for text and title. What
-		// we need to do now is add the new \words (if they don't already exist)
+		// we need to do now is add the new words (if they don't already exist)
 		// and then add (or remove) matches between the words and this post
 		if (sizeof($unique_add_words))
 		{
@@ -1308,7 +1308,7 @@ class fulltext_native extends \phpbb\search\base
 			$this->db->sql_transaction('begin');
 		}
 
-		// now update the search match table, remove links to removed words and add links to new \words
+		// now update the search match table, remove links to removed words and add links to new words
 		foreach ($words['del'] as $word_in => $word_ary)
 		{
 			$title_match = ($word_in == 'title') ? 1 : 0;
@@ -1468,7 +1468,7 @@ class fulltext_native extends \phpbb\search\base
 					WHERE ' . $this->db->sql_in_set('word_id', $sql_in);
 				$this->db->sql_query($sql);
 
-				// by setting search_last_gc to the new \time here we make sure that if a user reloads because the
+				// by setting search_last_gc to the new time here we make sure that if a user reloads because the
 				// following query takes too long, he won't run into it again
 				set_config('search_last_gc', time(), true);
 

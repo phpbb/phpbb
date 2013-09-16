@@ -379,7 +379,7 @@ class manager
 		// Never send notifications to the anonymous user!
 		unset($notify_users[ANONYMOUS]);
 
-		// Make sure not to send new \notifications to users who've already been notified about this item
+		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
 		$sql = 'SELECT n.user_id
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt

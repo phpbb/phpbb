@@ -160,7 +160,7 @@ class context
 			}
 
 			// Now we add the block that we're actually assigning to.
-			// We're adding a new \iteration to this block with the given
+			// We're adding a new iteration to this block with the given
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
 
@@ -192,7 +192,7 @@ class context
 				unset($this->tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
 			}
 
-			// Add a new \iteration to this block with the variable assignments we were given.
+			// Add a new iteration to this block with the variable assignments we were given.
 			$this->tpldata[$blockname][] = $vararray;
 
 			// Set S_NUM_ROWS

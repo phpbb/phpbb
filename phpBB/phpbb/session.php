@@ -499,13 +499,13 @@ class session
 	}
 
 	/**
-	* Create a new \session
+	* Create a new session
 	*
 	* If upon trying to start a session we discover there is nothing existing we
 	* jump here. Additionally this method is called directly during login to regenerate
 	* the session for the specific user. In this method we carry out a number of tasks;
 	* garbage collection, (search)bot checking, banned user comparison. Basically
-	* though this method will result in a new \session for a specific user.
+	* though this method will result in a new session for a specific user.
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
@@ -775,7 +775,7 @@ class session
 
 		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
 		{
-			// Limit new \sessions in 1 minute period (if required)
+			// Limit new sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
 //				$db->sql_return_on_error(false);

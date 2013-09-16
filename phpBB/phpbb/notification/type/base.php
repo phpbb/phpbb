@@ -145,7 +145,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function set_initial_data($data = array())
 	{
-		// The row from the database (unless this is a new \notification we're going to add)
+		// The row from the database (unless this is a new notification we're going to add)
 		$this->data = $data;
 		$this->data['notification_data'] = (isset($this->data['notification_data'])) ? unserialize($this->data['notification_data']) : array();
 	}

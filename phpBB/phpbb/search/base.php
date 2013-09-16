@@ -183,7 +183,7 @@ class base
 
 		$store_ids = array_slice($id_ary, 0, $length);
 
-		// create a new \resultset if there is none for this search_key yet
+		// create a new resultset if there is none for this search_key yet
 		// or add the ids to the existing resultset
 		if (!($store = $cache->get('_search_results_' . $search_key)))
 		{

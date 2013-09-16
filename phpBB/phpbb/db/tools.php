@@ -505,7 +505,7 @@ class tools
 				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
 			}
 
-			// here we add the definition of the new \column to the list of columns
+			// here we add the definition of the new column to the list of columns
 			switch ($this->sql_layer)
 			{
 				case 'mssql':
@@ -992,7 +992,7 @@ class tools
 					$column_list[] = $entities[0];
 				}
 
-				// note down the primary key notation because sqlite only supports adding it to the end for the new \table
+				// note down the primary key notation because sqlite only supports adding it to the end for the new table
 				$primary_key = false;
 				$_new_cols = array();
 
@@ -1080,7 +1080,7 @@ class tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new \table and fill it up. destroy the temp one
+				// create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $new_table_cols) . ');';
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -1812,7 +1812,7 @@ class tools
 
 					$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
 
-					// create a new \table and fill it up. destroy the temp one
+					// create a new table and fill it up. destroy the temp one
 					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
 					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -1927,7 +1927,7 @@ class tools
 
 					$new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
 
-					// create a new \table and fill it up. destroy the temp one
+					// create a new table and fill it up. destroy the temp one
 					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
 					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -2119,7 +2119,7 @@ class tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new \table and fill it up. destroy the temp one
+				// create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ', PRIMARY KEY (' . implode(', ', $column) . '));';
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
@@ -2485,7 +2485,7 @@ class tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new \table and fill it up. destroy the temp one
+				// create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $old_table_cols) . ');';
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
