@@ -82,7 +82,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		$db_config = $this->get_database_config();
 
 		// Firebird requires table and column names to be uppercase
-		if ($db_config['dbms'] == '\phpbb\db\driver\firebird')
+		if ($db_config['dbms'] == 'phpbb\db\driver\firebird')
 		{
 			$xml_data = file_get_contents($path);
 			$xml_data = preg_replace_callback('/(?:(<table name="))([a-z_]+)(?:(">))/', 'phpbb_database_test_case::to_upper', $xml_data);
