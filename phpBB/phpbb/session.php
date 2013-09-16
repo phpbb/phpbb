@@ -199,7 +199,7 @@ class session
 	* This is where all session activity begins. We gather various pieces of
 	* information from the client and server. We test to see if a session already
 	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a
-	* new \one ... pretty logical heh? We also examine the system load (if we're
+	* new one ... pretty logical heh? We also examine the system load (if we're
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
 	*
@@ -494,7 +494,7 @@ class session
 			}
 		}
 
-		// If we reach here then no (valid) session exists. So we'll create a new \one
+		// If we reach here then no (valid) session exists. So we'll create a new one
 		return $this->session_create();
 	}
 
@@ -801,7 +801,7 @@ class session
 
 		// Something quite important: session_page always holds the *last* page visited, except for the *first* visit.
 		// We are not able to simply have an empty session_page btw, therefore we need to tell phpBB how to detect this special case.
-		// If the session id is empty, we have a completely new \one and will set an "identifier" here. This identifier is able to be checked later.
+		// If the session id is empty, we have a completely new one and will set an "identifier" here. This identifier is able to be checked later.
 		if (empty($this->data['session_id']))
 		{
 			// This is a temporary variable, only set for the very first visit

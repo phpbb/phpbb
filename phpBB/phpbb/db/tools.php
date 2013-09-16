@@ -1072,7 +1072,7 @@ class tools
 				{
 					$new_table_cols[] = 'PRIMARY KEY (' . implode(', ', $sql_schema_changes['primary_key']) . ')';
 				}
-				// Add a new \one or the old primary key
+				// Add a new one or the old primary key
 				else if ($primary_key !== false)
 				{
 					$new_table_cols[] = $primary_key;

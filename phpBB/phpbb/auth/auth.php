@@ -1007,7 +1007,7 @@ class auth
 				// Successful session creation
 				if ($result === true)
 				{
-					// If admin re-authentication we remove the old session entry because a new \one has been created...
+					// If admin re-authentication we remove the old session entry because a new one has been created...
 					if ($admin)
 					{
 						// the login array is used because the user ids do not differ for re-authentication
