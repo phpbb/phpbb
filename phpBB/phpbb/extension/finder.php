@@ -52,7 +52,7 @@ class finder
 	protected $cached_queries;
 
 	/**
-	* Creates a new \finder instance with its dependencies
+	* Creates a new finder instance with its dependencies
 	*
 	* @param \phpbb\extension\manager $extension_manager An extension manager
 	*            instance that provides the finder with a list of active

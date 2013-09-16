@@ -63,7 +63,7 @@ class config
 	}
 
 	/**
-	* Appends a new \empty section to the end of the config
+	* Appends a new empty section to the end of the config
 	*
 	* @param	string								$name	The name for the new section
 	* @return	\phpbb\search\sphinx\config_section			The newly created section object

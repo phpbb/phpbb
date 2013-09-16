@@ -70,7 +70,7 @@ class timezone extends \phpbb\db\migration\migration
 	*
 	*	@param	$timezone	float	Users timezone in 3.0
 	*	@param	$dst		int		Users daylight saving time
-	*	@return		string		Users new \php Timezone which is used since 3.1
+	*	@return		string		Users new php Timezone which is used since 3.1
 	*/
 	public function convert_phpbb30_timezone($timezone, $dst)
 	{

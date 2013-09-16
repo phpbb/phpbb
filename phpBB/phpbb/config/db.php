@@ -178,7 +178,7 @@ class db extends \phpbb\config\config
 	/**
 	* Increments an integer config value directly in the database.
 	*
-	* Using this method instead of setting the new \value directly avoids race
+	* Using this method instead of setting the new value directly avoids race
 	* conditions and unlike set_atomic it cannot fail.
 	*
 	* @param string $key       The configuration option's name

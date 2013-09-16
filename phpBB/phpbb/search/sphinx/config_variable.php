@@ -28,7 +28,7 @@ class config_variable
 	private $comment;
 
 	/**
-	* Constructs a new \variable object
+	* Constructs a new variable object
 	*
 	* @param	string	$name		Name of the variable
 	* @param	string	$value		Value of the variable

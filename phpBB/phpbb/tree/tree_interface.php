@@ -69,7 +69,7 @@ interface tree_interface
 	/**
 	* Moves all children of one item to another item
 	*
-	* If the new parent already has children, the new \children are appended
+	* If the new parent already has children, the new children are appended
 	* to the list.
 	*
 	* @param int	$current_parent_id	The current parent item

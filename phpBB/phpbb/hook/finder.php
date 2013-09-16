@@ -29,7 +29,7 @@ class finder
 	protected $php_ext;
 
 	/**
-	* Creates a new \finder instance.
+	* Creates a new finder instance.
 	*
 	* @param string $phpbb_root_path Path to the phpbb root directory
 	* @param string $php_ext php file extension

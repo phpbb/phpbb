@@ -122,10 +122,10 @@ class config_section
 	}
 
 	/**
-	* Create a new \variable object and append it to the variable list of this section
+	* Create a new variable object and append it to the variable list of this section
 	*
-	* @param	string								$name	The name for the new \variable
-	* @param	string								$value	The value for the new \variable
+	* @param	string								$name	The name for the new variable
+	* @param	string								$value	The value for the new variable
 	* @return	\phpbb\search\sphinx\config_variable			Variable object that was created
 	*
 	* @access	public

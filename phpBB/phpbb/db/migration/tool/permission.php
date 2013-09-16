@@ -240,7 +240,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/**
 	* Add a new permission role
 	*
-	* @param string $role_name The new \role name
+	* @param string $role_name The new role name
 	* @param sting $role_type The type (u_, m_, a_)
 	* @return null
 	*/
@@ -279,7 +279,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* Update the name on a permission role
 	*
 	* @param string $old_role_name The old role name
-	* @param string $new_role_name The new \role name
+	* @param string $new_role_name The new role name
 	* @return null
 	*/
 	public function role_update($old_role_name, $new_role_name)

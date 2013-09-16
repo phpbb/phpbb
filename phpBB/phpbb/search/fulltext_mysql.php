@@ -41,13 +41,13 @@ class fulltext_mysql extends \phpbb\search\base
 	 * @var \phpbb\config\config
 	 */
 	protected $config;
-	
+
 	/**
 	 * Database connection
 	 * @var \phpbb\db\driver\driver
 	 */
 	protected $db;
-	
+
 	/**
 	 * User object
 	 * @var \phpbb\user
@@ -703,7 +703,7 @@ class fulltext_mysql extends \phpbb\search\base
 	}
 
 	/**
-	* Destroys cached search results, that contained one of the new \words in a post so the results won't be outdated
+	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated
 	*
 	* @param	string		$mode contains the post mode: edit, post, reply, quote ...
 	* @param	int			$post_id	contains the post id of the post to index

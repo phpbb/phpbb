@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Replacement for a superglobal (\like $_GET or $_POST) which calls
+* Replacement for a superglobal (like $_GET or $_POST) which calls
 * trigger_error on all operations but isset, overloads the [] operator with SPL.
 *
 * @package \phpbb\request\request
