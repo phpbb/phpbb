@@ -109,7 +109,7 @@ class phpbb_module_manager
 		$tree = $this->get_tree($class);
 
 		$left_id = 0;
-		$module_id = 142;
+		$module_id = 0;
 		$list = $this->_get_flat($tree, $class, $module_id, $left_id);
 		foreach ($list as $id => &$row)
 		{
@@ -167,7 +167,7 @@ class phpbb_module_manager
 					'module_auth'		=> '',
 				);
 
-				$list = array_merge($list, $child_rows);
+				$list += $child_rows;
 			}
 		}
 
