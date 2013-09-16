@@ -148,15 +148,20 @@ class phpbb_captcha_plugins_captcha_abstract
 		return $hidden_fields;
 	}
 
-	function garbage_collect($type)
+	function garbage_collect($type, $session_ids = false)
 	{
-		global $db, $config;
+		global $db;
 
-		$sql = 'SELECT DISTINCT c.session_id
-			FROM ' . CONFIRM_TABLE . ' c
-			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-			WHERE s.session_id IS NULL' .
-				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
+		// Don't know what to cleanup without ids
+		if ($session_ids === false)
+		{
+			return;
+		}
+		$sql = 'SELECT c.confirm_id,c.session_id
+				FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
+				WHERE ' . $db->sql_in_set('session_id', $session_ids) .
+			((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
+
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -180,7 +185,6 @@ class phpbb_captcha_plugins_captcha_abstract
 
 	function uninstall()
 	{
-		$this->garbage_collect(0);
 	}
 
 	function install()

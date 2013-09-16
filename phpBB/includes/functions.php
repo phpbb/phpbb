@@ -3458,29 +3458,6 @@ function login_forum_box($forum_data)
 
 	if ($password)
 	{
-		// Remove expired authorised sessions
-		$sql = 'SELECT f.session_id
-			FROM ' . FORUMS_ACCESS_TABLE . ' f
-			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (f.session_id = s.session_id)
-			WHERE s.session_id IS NULL';
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$sql_in = array();
-			do
-			{
-				$sql_in[] = (string) $row['session_id'];
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			// Remove expired sessions
-			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_id', $sql_in);
-			$db->sql_query($sql);
-		}
-		$db->sql_freeresult($result);
-
 		if (phpbb_check_hash($password, $forum_data['forum_password']))
 		{
 			$sql_ary = array(
@@ -4486,113 +4463,32 @@ function phpbb_filter_root_path($errfile)
 
 /**
 * Queries the session table to get information about online guests
+*
+* @deprecated (Use direct calls instead)
+*
 * @param int $item_id Limits the search to the item with this id
 * @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return int The number of active distinct guest sessions
 */
 function obtain_guest_count($item_id = 0, $item = 'forum')
 {
-	global $db, $config;
-
-	if ($item_id)
-	{
-		$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
-	}
-	else
-	{
-		$reading_sql = '';
-	}
-	$time = (time() - (intval($config['load_online_time']) * 60));
-
-	// Get number of online guests
-
-	if ($db->sql_layer === 'sqlite')
-	{
-		$sql = 'SELECT COUNT(session_ip) as num_guests
-			FROM (
-				SELECT DISTINCT s.session_ip
-				FROM ' . SESSIONS_TABLE . ' s
-				WHERE s.session_user_id = ' . ANONYMOUS . '
-					AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
-				$reading_sql .
-			')';
-	}
-	else
-	{
-		$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
-			FROM ' . SESSIONS_TABLE . ' s
-			WHERE s.session_user_id = ' . ANONYMOUS . '
-				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
-			$reading_sql;
-	}
-	$result = $db->sql_query($sql);
-	$guests_online = (int) $db->sql_fetchfield('num_guests');
-	$db->sql_freeresult($result);
-
-	return $guests_online;
+	$session = new phpbb_session();
+	return $session->obtain_guest_count($item_id, $item);
 }
 
 /**
 * Queries the session table to get information about online users
+*
+* @deprecated (Use direct calls instead)
+*
 * @param int $item_id Limits the search to the item with this id
 * @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
 */
 function obtain_users_online($item_id = 0, $item = 'forum')
 {
-	global $db, $config, $user;
-
-	$reading_sql = '';
-	if ($item_id !== 0)
-	{
-		$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
-	}
-
-	$online_users = array(
-		'online_users'			=> array(),
-		'hidden_users'			=> array(),
-		'total_online'			=> 0,
-		'visible_online'		=> 0,
-		'hidden_online'			=> 0,
-		'guests_online'			=> 0,
-	);
-
-	if ($config['load_online_guests'])
-	{
-		$online_users['guests_online'] = obtain_guest_count($item_id, $item);
-	}
-
-	// a little discrete magic to cache this for 30 seconds
-	$time = (time() - (intval($config['load_online_time']) * 60));
-
-	$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
-		FROM ' . SESSIONS_TABLE . ' s
-		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
-			$reading_sql .
-		' AND s.session_user_id <> ' . ANONYMOUS;
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		// Skip multiple sessions for one user
-		if (!isset($online_users['online_users'][$row['session_user_id']]))
-		{
-			$online_users['online_users'][$row['session_user_id']] = (int) $row['session_user_id'];
-			if ($row['session_viewonline'])
-			{
-				$online_users['visible_online']++;
-			}
-			else
-			{
-				$online_users['hidden_users'][$row['session_user_id']] = (int) $row['session_user_id'];
-				$online_users['hidden_online']++;
-			}
-		}
-	}
-	$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
-	$db->sql_freeresult($result);
-
-	return $online_users;
+	$session = new phpbb_session();
+	return $session->get_users_online_totals($item_id, $item);
 }
 
 /**

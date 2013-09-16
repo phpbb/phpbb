@@ -55,18 +55,12 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
 	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
-		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
-			AND	u.user_id = s.session_user_id";
-	$result = $db->sql_query($sql);
+	$user_ip = $user->get_user_ip_from_session($session_id);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($user_ip != null)
 	{
-		$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
+		$template->assign_var('WHOIS', user_ipwhois($user_ip));
 	}
-	$db->sql_freeresult($result);
-
 	// Output the page
 	page_header($user->lang['WHO_IS_ONLINE']);
 
@@ -96,60 +90,21 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	switch ($db->sql_layer)
-	{
-		case 'sqlite':
-			$sql = 'SELECT COUNT(session_ip) as num_guests
-				FROM (
-					SELECT DISTINCT session_ip
-						FROM ' . SESSIONS_TABLE . '
-						WHERE session_user_id = ' . ANONYMOUS . '
-							AND session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-				')';
-		break;
-
-		default:
-			$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_user_id = ' . ANONYMOUS . '
-					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
-		break;
-	}
-	$result = $db->sql_query($sql);
-	$guest_counter = (int) $db->sql_fetchfield('num_guests');
-	$db->sql_freeresult($result);
+	$guest_counter = $user->obtain_guest_count();
 }
 
 // Get user list
-$sql_ary = array(
-	'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline, s.session_forum_id',
-	'FROM'		=> array(
-		USERS_TABLE		=> 'u',
-		SESSIONS_TABLE	=> 's',
-	),
-	'WHERE'		=> 'u.user_id = s.session_user_id
-		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : ''),
-	'ORDER_BY'	=> $order_by,
+$users = $user->get_user_list(
+	$show_guests,
+	time() - ($config['load_online_time'] * 60),
+	$order_by,
+	$phpbb_dispatcher
 );
-
-/**
-* Modify the SQL query for getting the user data to display viewonline list
-*
-* @event core.viewonline_modify_sql
-* @var	array	sql_ary			The SQL array
-* @var	bool	show_guests		Do we display guests in the list
-* @since 3.1-A1
-*/
-$vars = array('sql_ary', 'show_guests');
-extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
-
-$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
 
-while ($row = $db->sql_fetchrow($result))
+foreach ($users as $row)
 {
 	if ($row['user_id'] != ANONYMOUS && !isset($prev_id[$row['user_id']]))
 	{
@@ -369,7 +324,6 @@ while ($row = $db->sql_fetchrow($result))
 		'S_USER_TYPE'		=> $row['user_type'],
 	));
 }
-$db->sql_freeresult($result);
 unset($prev_id, $prev_ip);
 
 $order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
