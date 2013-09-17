@@ -258,7 +258,7 @@ services:
         class: phpbb\request\request
 
     symfony_request:
-        class: phpbb_symfony_request
+        class: phpbb\symfony_request
         arguments:
             - @request
 

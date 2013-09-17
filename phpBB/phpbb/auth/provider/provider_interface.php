@@ -134,7 +134,7 @@ interface provider_interface
 	 *
 	 * @param 	array	$data			An array corresponding to
 	 *									\phpbb\session::data
-	 * @param 	boolean	$new_session	True for a new \session, false for no new
+	 * @param 	boolean	$new_session	True for a new session, false for no new
 	 *									session.
 	 */
 	public function logout($data, $new_session);

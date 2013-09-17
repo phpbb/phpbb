@@ -403,7 +403,7 @@ class session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
-                    $method = basename(trim($config['auth_method']));
+					$method = basename(trim($config['auth_method']));
 
 					$provider = $phpbb_container->get('auth.provider.' . $method);
 
