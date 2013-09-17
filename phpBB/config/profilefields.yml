@@ -1,0 +1,23 @@
+services:
+    profilefields:
+        class: \phpbb\profilefields\profilefields
+        arguments:
+            - @auth
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+
+    profilefields.admin:
+        class: \phpbb\profilefields\admin
+        arguments:
+            - @auth
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+
+    #migrator.tool.permission1:
+    #    class: \phpbb\profilefields\profilefields
+    #    tags:
+    #        - { name: ffoobar.tool }

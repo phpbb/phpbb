@@ -29,11 +29,10 @@ class acp_profile
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
-		global $request;
+		global $request, $phpbb_container;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$user->add_lang(array('ucp', 'acp/profile'));
 		$this->tpl_name = 'acp_profile';
@@ -60,7 +59,7 @@ class acp_profile
 			FIELD_DROPDOWN	=> array('field_length' => 0, 'field_minlen' => 0, 'field_maxlen' => 5, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
 		);
 
-		$cp = new custom_profile_admin();
+		$cp = $phpbb_container->get('profilefields.admin');
 
 		// Build Language array
 		// Based on this, we decide which elements need to be edited later and which language items are missing
