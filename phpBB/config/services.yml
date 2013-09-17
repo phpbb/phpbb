@@ -52,7 +52,7 @@ services:
     class_loader.ext:
         class: phpbb\class_loader
         arguments:
-            - phpbb\ext\
+            - \
             - %core.root_path%ext/
             - %core.php_ext%
         calls:

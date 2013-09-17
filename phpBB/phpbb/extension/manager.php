@@ -133,7 +133,7 @@ class manager
 	*/
 	public function get_extension($name)
 	{
-		$extension_class_name = 'phpbb_ext_' . str_replace('/', '_', $name) . '_ext';
+		$extension_class_name = str_replace('/', '\\', $name) . '\\ext';
 
 		$migrator = $this->container->get('migrator');
 

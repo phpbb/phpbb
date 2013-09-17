@@ -45,31 +45,31 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function test_enable()
 	{
-		phpbb_ext_bar_ext::$state = 0;
+		bar\ext::$state = 0;
 
 		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->enable('bar');
 		$this->assertEquals(array('bar', 'foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->assertEquals(array('bar', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
 
-		$this->assertEquals(4, phpbb_ext_bar_ext::$state);
+		$this->assertEquals(4, bar\ext::$state);
 	}
 
 	public function test_disable()
 	{
-		phpbb_ext_foo_ext::$disabled = false;
+		foo\ext::$disabled = false;
 
 		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->disable('foo');
 		$this->assertEquals(array(), array_keys($this->extension_manager->all_enabled()));
 		$this->assertEquals(array('foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
 
-		$this->assertTrue(phpbb_ext_foo_ext::$disabled);
+		$this->assertTrue(foo\ext::$disabled);
 	}
 
 	public function test_purge()
 	{
-		phpbb_ext_vendor_moo_ext::$purged = false;
+		vendor\moo\ext::$purged = false;
 
 		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->assertEquals(array('foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
@@ -77,7 +77,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_configured()));
 
-		$this->assertTrue(phpbb_ext_vendor_moo_ext::$purged);
+		$this->assertTrue(vendor\moo\ext::$purged);
 	}
 
 	public function test_enabled_no_cache()

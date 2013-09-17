@@ -1,5 +1,7 @@
 <?php
 
-class phpbb_ext_vendor_moo_feature_class
+namespace vendor\moo;
+
+class feature_class
 {
 }

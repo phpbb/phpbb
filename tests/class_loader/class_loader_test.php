@@ -60,13 +60,13 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 	{
 		$cache_map = array(
 			'class_loader_phpbb__' => array('phpbb\\a\\cached_name' => 'a/cached_name'),
-			'class_loader_phpbb__ext__' => array('phpbb\\ext\\foo' => 'foo'),
+			'class_loader___' => array('phpbb\\ext\\foo' => 'foo'),
 		);
 		$cache = new phpbb_mock_cache($cache_map);
 
 		$prefix = dirname(__FILE__) . '/';
 		$class_loader = new \phpbb\class_loader('phpbb\\', $prefix . 'phpbb/', 'php', $cache);
-		$class_loader_ext = new \phpbb\class_loader('phpbb\\ext\\', $prefix . 'phpbb/', 'php', $cache);
+		$class_loader_ext = new \phpbb\class_loader('\\', $prefix . 'phpbb/', 'php', $cache);
 
 		$prefix .= 'phpbb/';
 

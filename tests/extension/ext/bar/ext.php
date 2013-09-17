@@ -1,6 +1,8 @@
 <?php
 
-class phpbb_ext_bar_ext extends \phpbb\extension\base
+namespace bar;
+
+class ext extends \phpbb\extension\base
 {
 	static public $state;
 

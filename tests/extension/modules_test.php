@@ -45,7 +45,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 	{
 		global $phpbb_root_path;
 
-		$this->markTestIncomplete('Modules no speak namespace! Going to get rid of db modules altogether and fix this test after.');
+//		$this->markTestIncomplete('Modules no speak namespace! Going to get rid of db modules altogether and fix this test after.');
 
 		// Correctly set the root path for this test to this directory, so the classes can be found
 		$phpbb_root_path = dirname(__FILE__) . '/';
@@ -54,8 +54,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->acp_modules->module_class = 'acp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(
-				'phpbb_ext_foo_acp_a_module' => array(
-					'filename'	=> 'phpbb_ext_foo_acp_a_module',
+				'foo\\acp\\a_module' => array(
+					'filename'	=> 'foo\\acp\\a_module',
 					'title'		=> 'Foobar',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
@@ -76,8 +76,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->acp_modules->module_class = 'mcp';
 		$acp_modules = $this->acp_modules->get_module_infos();
 		$this->assertEquals(array(
-				'phpbb_ext_foo_mcp_a_module' => array(
-					'filename'	=> 'phpbb_ext_foo_mcp_a_module',
+				'foo\\mcp\\a_module' => array(
+					'filename'	=> 'foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
@@ -90,8 +90,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->acp_modules->module_class = 'mcp';
 		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_module');
 		$this->assertEquals(array(
-				'phpbb_ext_foo_mcp_a_module' => array(
-					'filename'	=> 'phpbb_ext_foo_mcp_a_module',
+				'foo\\mcp\\a_module' => array(
+					'filename'	=> 'foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
@@ -104,8 +104,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->acp_modules->module_class = '';
 		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_module', 'mcp');
 		$this->assertEquals(array(
-				'phpbb_ext_foo_mcp_a_module' => array(
-					'filename'	=> 'phpbb_ext_foo_mcp_a_module',
+				'foo\\mcp\\a_module' => array(
+					'filename'	=> 'foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
@@ -126,10 +126,10 @@ class phpbb_extension_modules_test extends phpbb_test_case
 
 		// Get module info of specified extension module
 		$this->acp_modules->module_class = 'acp';
-		$acp_modules = $this->acp_modules->get_module_infos('phpbb_ext_foo_acp_a_module');
+		$acp_modules = $this->acp_modules->get_module_infos('foo_acp_a_module');
 		$this->assertEquals(array(
-				'phpbb_ext_foo_acp_a_module' => array (
-					'filename' => 'phpbb_ext_foo_acp_a_module',
+				'foo\\acp\\a_module' => array (
+					'filename' => 'foo\\acp\\a_module',
 					'title' => 'Foobar',
 					'version' => '3.1.0-dev',
 					'modes' => array (
@@ -152,8 +152,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$this->acp_modules->module_class = 'acp';
 		$acp_modules = $this->acp_modules->get_module_infos('', false, true);
 		$this->assertEquals(array(
-				'phpbb_ext_foo_acp_a_module' => array(
-					'filename'	=> 'phpbb_ext_foo_acp_a_module',
+				'foo\\acp\\a_module' => array(
+					'filename'	=> 'foo\\acp\\a_module',
 					'title'		=> 'Foobar',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
@@ -168,8 +168,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 					),
 				),
-				'phpbb_ext_barfoo_acp_a_module' => array(
-					'filename'	=> 'phpbb_ext_barfoo_acp_a_module',
+				'barfoo\\acp\\a_module' => array(
+					'filename'	=> 'barfoo\\acp\\a_module',
 					'title'		=> 'Barfoo',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
@@ -179,10 +179,10 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 
 		// Specific module set to disabled extension
-		$acp_modules = $this->acp_modules->get_module_infos('phpbb_ext_barfoo_acp_a_module', 'acp', true);
+		$acp_modules = $this->acp_modules->get_module_infos('barfoo_acp_a_module', 'acp', true);
 		$this->assertEquals(array(
-				'phpbb_ext_barfoo_acp_a_module' => array(
-					'filename'	=> 'phpbb_ext_barfoo_acp_a_module',
+				'barfoo\\acp\\a_module' => array(
+					'filename'	=> 'barfoo\\acp\\a_module',
 					'title'		=> 'Barfoo',
 					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
