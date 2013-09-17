@@ -118,7 +118,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	*/
 	public function test_update_web_root_path($input, $expected, $getPathInfo, $getRequestUri = null, $getScriptName = null)
 	{
-		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
 			new phpbb_mock_request(),
 		));
 		$symfony_request->expects($this->any())
