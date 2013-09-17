@@ -131,7 +131,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			->method('getScriptName')
 			->will($this->returnValue($getScriptName));
 
-		$filesystem = new phpbb_filesystem(
+		$filesystem = new \phpbb\filesystem(
 			$symfony_request,
 			$this->phpbb_root_path,
 			'php'
