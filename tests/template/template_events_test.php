@@ -117,7 +117,7 @@ Zeta test event in all',
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
 		$phpbb_filesystem = new \phpbb\filesystem(
-			new \phpbb\symfony\request(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$phpbb_root_path,

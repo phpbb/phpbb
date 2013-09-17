@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 */
 class filesystem
 {
-	/** @var phpbb_symfony_request */
+	/** @var \phpbb\symfony_request */
 	protected $symfony_request;
 
 	/** @var string */
@@ -41,11 +41,11 @@ class filesystem
 	/**
 	* Constructor
 	*
-	* @param phpbb_symfony_request $symfony_request
+	* @param \phpbb\symfony_request $symfony_request
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP extension (php)
 	*/
-	public function __construct(phpbb_symfony_request $symfony_request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->phpbb_root_path = $phpbb_root_path;

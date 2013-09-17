@@ -21,7 +21,7 @@ class asset
 {
 	protected $components = array();
 
-	/** @var phpbb_filesystem **/
+	/** @var \phpbb\filesystem **/
 	protected $phpbb_filesystem;
 
 	/**
@@ -29,7 +29,7 @@ class asset
 	*
 	* @param string $url URL
 	*/
-	public function __construct($url, phpbb_filesystem $phpbb_filesystem)
+	public function __construct($url, \phpbb\filesystem $phpbb_filesystem)
 	{
 		$this->phpbb_filesystem = $phpbb_filesystem;
 

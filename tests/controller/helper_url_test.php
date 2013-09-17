@@ -50,7 +50,7 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->user = $this->getMock('\phpbb\user');
 		$phpbb_filesystem = new \phpbb\filesystem(
-			new \phpbb\symfony\request(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$phpbb_root_path,
@@ -102,7 +102,7 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->user = $this->getMock('\phpbb\user');
 		$phpbb_filesystem = new \phpbb\filesystem(
-			new \phpbb\symfony\request(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$phpbb_root_path,

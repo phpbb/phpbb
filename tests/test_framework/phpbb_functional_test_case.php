@@ -204,7 +204,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db,
 			$config,
 			new phpbb\filesystem(
-				new phpbb\symfony\request(
+				new phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				$phpbb_root_path,

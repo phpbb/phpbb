@@ -15,7 +15,7 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 		$this->php_ext = 'php';
 		$this->extensions = $extensions;
 		$this->filesystem = new \phpbb\filesystem(
-			new \phpbb\symfony\request(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$this->phpbb_root_path,

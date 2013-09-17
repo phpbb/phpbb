@@ -42,7 +42,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 		$this->template = new \phpbb\template\twig\twig(
 			new \phpbb\filesystem(
-				new \phpbb\symfony\request(
+				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				$this->phpbb_root_path,
@@ -71,7 +71,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			new \phpbb\filesystem(
-				new \phpbb\symfony\request(
+				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				$this->phpbb_root_path,

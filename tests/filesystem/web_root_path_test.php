@@ -18,8 +18,8 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		$this->filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$this->filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$this->phpbb_root_path,

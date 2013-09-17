@@ -48,7 +48,7 @@ if (!defined('PHPBB_INSTALLED'))
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
 	$phpbb_filesystem = new phpbb\filesystem(
-		new phpbb\symfony\request(
+		new phpbb\symfony_request(
 			new phpbb\request\request()
 		),
 		$phpbb_root_path,

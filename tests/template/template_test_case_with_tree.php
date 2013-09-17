@@ -18,8 +18,8 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
-		$this->phpbb_filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$this->phpbb_filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$phpbb_root_path,

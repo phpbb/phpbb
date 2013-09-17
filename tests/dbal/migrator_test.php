@@ -60,7 +60,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			new phpbb\filesystem(
-				new phpbb\symfony\request(
+				new phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				dirname(__FILE__) . '/../../phpBB/',

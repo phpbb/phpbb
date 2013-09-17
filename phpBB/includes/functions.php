@@ -1072,7 +1072,7 @@ function phpbb_clean_path($path)
 		}
 
 		$phpbb_filesystem = new phpbb\filesystem(
-			new phpbb\symfony\request(
+			new phpbb\symfony_request(
 				new phpbb\request\request()
 			),
 			$phpbb_root_path,
