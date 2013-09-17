@@ -25,7 +25,7 @@ class environment extends \Twig_Environment
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
-	/** @var phpbb_filesystem */
+	/** @var \phpbb\filesystem */
 	protected $phpbb_filesystem;
 
 	/** @var string */
@@ -104,7 +104,7 @@ class environment extends \Twig_Environment
 	/**
 	* Get the phpbb_filesystem object
 	*
-	* @return phpbb_filesystem
+	* @return \phpbb\filesystem
 	*/
 	public function get_filesystem()
 	{

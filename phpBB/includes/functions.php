@@ -2425,7 +2425,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	}
 
 	// Update the root path with the correct relative web path
-	if ($phpbb_filesystem instanceof phpbb_filesystem)
+	if ($phpbb_filesystem instanceof \phpbb\filesystem)
 	{
 		$url = $phpbb_filesystem->update_web_root_path($url);
 	}
