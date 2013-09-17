@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
 * @ignore
 */
@@ -1072,7 +1070,14 @@ function phpbb_clean_path($path)
 			global $phpbb_root_path, $phpEx;
 			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
 		}
-		$phpbb_filesystem = new \phpbb\filesystem();
+
+		$phpbb_filesystem = new phpbb\filesystem(
+			new phpbb\symfony\request(
+				new phpbb\request\request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
 	}
 
 	return $phpbb_filesystem->clean_path($path);
@@ -2410,9 +2415,8 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_filesystem;
 	global $phpbb_dispatcher;
-	global $symfony_request, $phpbb_root_path;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2420,10 +2424,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
-	if ($corrected_path)
+	// Update the root path with the correct relative web path
+	if ($phpbb_filesystem instanceof phpbb_filesystem)
 	{
-		$url = substr($corrected_path . $url, strlen($phpbb_root_path));
+		$url = $phpbb_filesystem->update_web_root_path($url);
 	}
 
 	$append_sid_overwrite = false;
@@ -2815,8 +2819,22 @@ function build_url($strip_vars = false)
 {
 	global $user, $phpbb_root_path;
 
+	$page = $user->page['page'];
+
+	// We need to be cautious here.
+	// On some situations, the redirect path is an absolute URL, sometimes a relative path
+	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+	// else we use the URL directly.
+	$url_parts = parse_url($page);
+
+	// URL
+	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		$page = $phpbb_root_path . $page;
+	}
+
 	// Append SID
-	$redirect = append_sid($user->page['page'], false, false);
+	$redirect = append_sid($page, false, false);
 
 	// Add delimiter if not there...
 	if (strpos($redirect, '?') === false)
@@ -2871,19 +2889,7 @@ function build_url($strip_vars = false)
 		$redirect .= ($query) ? '?' . $query : '';
 	}
 
-	// We need to be cautious here.
-	// On some situations, the redirect path is an absolute URL, sometimes a relative path
-	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
-	// else we use the URL directly.
-	$url_parts = @parse_url($redirect);
-
-	// URL
-	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
-	{
-		return str_replace('&', '&amp;', $redirect);
-	}
-
-	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
+	return str_replace('&', '&amp;', $redirect);
 }
 
 /**
@@ -5080,7 +5086,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $symfony_request;
+	global $phpbb_dispatcher, $request, $phpbb_container, $adm_relative_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5240,7 +5246,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
+	$phpbb_filesystem = $phpbb_container->get('filesystem');
+	$corrected_path = $phpbb_filesystem->get_web_root_path();
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
@@ -5322,7 +5329,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
-		'ROOT_PATH'			=> $phpbb_root_path,
+		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
@@ -5378,7 +5385,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_root_path}{$adm_relative_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
@@ -5704,84 +5711,4 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	}
 
 	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
-}
-
-/**
-* Create a Symfony Request object from \phpbb\request\request object
-*
-* @param \phpbb\request\request $request Request object
-* @return Request A Symfony Request object
-*/
-function phpbb_create_symfony_request(\phpbb\request\request $request)
-{
-	// If we have already gotten it, don't go back through all the trouble of
-	// creating it again; instead, just return it. This allows multiple calls
-	// of this method so we don't have to globalize $symfony_request in other
-	// functions.
-	static $symfony_request;
-	if (null !== $symfony_request)
-	{
-		return $symfony_request;
-	}
-
-	// This function is meant to sanitize the global input arrays
-	$sanitizer = function(&$value, $key) {
-		$type_cast_helper = new \phpbb\request\type_cast_helper();
-		$type_cast_helper->set_var($value, $value, gettype($value), true);
-	};
-
-	// We need to re-enable the super globals so we can access them here
-	$request->enable_super_globals();
-	$get_parameters = $_GET;
-	$post_parameters = $_POST;
-	$server_parameters = $_SERVER;
-	$files_parameters = $_FILES;
-	$cookie_parameters = $_COOKIE;
-	// And now disable them again for security
-	$request->disable_super_globals();
-
-	array_walk_recursive($get_parameters, $sanitizer);
-	array_walk_recursive($post_parameters, $sanitizer);
-
-	$symfony_request = new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
-	return $symfony_request;
-}
-
-/**
-* Get a relative root path from the current URL
-*
-* @param Request $symfony_request Symfony Request object
-*/
-function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
-{
-	global $phpbb_container;
-
-	static $path;
-	if (null !== $path)
-	{
-		return $path;
-	}
-
-	$path_info = $symfony_request->getPathInfo();
-	if ($path_info === '/')
-	{
-		$path = $phpbb_root_path;
-		return $path;
-	}
-
-	$filesystem = $phpbb_container->get('filesystem');
-	$path_info = $filesystem->clean_path($path_info);
-
-	// Do not count / at start of path
-	$corrections = substr_count(substr($path_info, 1), '/');
-
-	// When URL Rewriting is enabled, app.php is optional. We have to
-	// correct for it not being there
-	if (strpos($symfony_request->getRequestUri(), $symfony_request->getScriptName()) === false)
-	{
-		$corrections -= 1;
-	}
-
-	$path = $phpbb_root_path . str_repeat('../', $corrections);
-	return $path;
 }

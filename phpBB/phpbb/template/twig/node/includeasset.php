@@ -35,7 +35,7 @@ abstract class includeasset extends \Twig_Node
 			->write("\$asset_file = ")
 			->subcompile($this->getNode('expr'))
 			->raw(";\n")
-			->write("\$asset = new \phpbb\\template\asset(\$asset_file);\n")
+			->write("\$asset = new \phpbb\\template\\asset(\$asset_file, \$this->getEnvironment()->get_filesystem());\n")
 			->write("if (substr(\$asset_file, 0, 2) !== './' && \$asset->is_relative()) {\n")
 			->indent()
 				->write("\$asset_path = \$asset->get_path();")

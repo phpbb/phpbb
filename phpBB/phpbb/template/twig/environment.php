@@ -25,8 +25,14 @@ class environment extends \Twig_Environment
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
+	/** @var phpbb_filesystem */
+	protected $phpbb_filesystem;
+
 	/** @var string */
 	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $web_root_path;
 
 	/** @var array **/
 	protected $namespace_look_up_order = array('__main__');
@@ -36,15 +42,19 @@ class environment extends \Twig_Environment
 	*
 	* @param \phpbb\config\config $phpbb_config
 	* @param array $phpbb_extensions Array of enabled extensions (name => path)
+	* @param \phpbb\filesystem
 	* @param string $phpbb_root_path
 	* @param Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, $phpbb_extensions, $phpbb_root_path, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, $phpbb_extensions, \phpbb\filesystem $phpbb_filesystem, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 		$this->phpbb_extensions = $phpbb_extensions;
-		$this->phpbb_root_path = $phpbb_root_path;
+
+		$this->phpbb_filesystem = $phpbb_filesystem;
+		$this->phpbb_root_path = $this->phpbb_filesystem->get_phpbb_root_path();
+		$this->web_root_path = $this->phpbb_filesystem->get_web_root_path();
 
 		return parent::__construct($loader, $options);
 	}
@@ -79,6 +89,26 @@ class environment extends \Twig_Environment
 	public function get_phpbb_root_path()
 	{
 		return $this->phpbb_root_path;
+	}
+
+	/**
+	* Get the web root path
+	*
+	* @return string
+	*/
+	public function get_web_root_path()
+	{
+		return $this->web_root_path;
+	}
+
+	/**
+	* Get the phpbb_filesystem object
+	*
+	* @return phpbb_filesystem
+	*/
+	public function get_filesystem()
+	{
+		return $this->phpbb_filesystem;
 	}
 
 	/**

@@ -49,7 +49,14 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->user = $this->getMock('\phpbb\user');
-		$this->template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $this->user, new \phpbb\template\context());
+		$phpbb_filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony\request(
+				new phpbb_mock_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$this->template = new phpbb\template\twig\twig($phpbb_filesystem, $config, $this->user, new \phpbb\template\context());
 
 		// We don't use mod_rewrite in these tests
 		$config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
@@ -94,7 +101,14 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->user = $this->getMock('\phpbb\user');
-		$this->template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $this->user, new \phpbb\template\context());
+		$phpbb_filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony\request(
+				new phpbb_mock_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$this->template = new \phpbb\template\twig\twig($phpbb_filesystem, $config, $this->user, new \phpbb\template\context());
 
 		$config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$helper = new \phpbb\controller\helper($this->template, $this->user, $config, '', 'php');

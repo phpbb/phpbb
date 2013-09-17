@@ -47,7 +47,13 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$phpbb_filesystem = new \phpbb\filesystem();
+	$phpbb_filesystem = new phpbb\filesystem(
+		new phpbb\symfony\request(
+			new phpbb\request\request()
+		),
+		$phpbb_root_path,
+		$phpEx
+	);
 	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
@@ -110,7 +116,8 @@ $db			= $phpbb_container->get('dbal.conn');
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Create a Symfony Request object from our phpbb_request object
-$symfony_request = phpbb_create_symfony_request($request);
+$symfony_request = $phpbb_container->get('symfony_request');
+$phpbb_filesystem = $phpbb_container->get('filesystem');
 
 // Grab global variables, re-cache if necessary
 $config = $phpbb_container->get('config');

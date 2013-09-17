@@ -63,8 +63,16 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 		$this->user = new \phpbb\user;
 
+		$phpbb_filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_mock_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
+
 		$this->template_path = $this->test_path . '/templates';
-		$this->template = new \phpbb\template\twig\twig($phpbb_root_path, $phpEx, $config, $this->user, new \phpbb\template\context());
+		$this->template = new \phpbb\template\twig\twig($phpbb_filesystem, $config, $this->user, new \phpbb\template\context());
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 

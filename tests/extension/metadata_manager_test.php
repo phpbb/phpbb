@@ -41,8 +41,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->table_prefix = 'phpbb_';
 
 		$this->template = new \phpbb\template\twig\twig(
-			$this->phpbb_root_path,
-			$this->phpEx,
+			new \phpbb\filesystem(
+				new \phpbb\symfony\request(
+					new phpbb_mock_request()
+				),
+				$this->phpbb_root_path,
+				$this->phpEx
+			),
 			$this->config,
 			$this->user,
 			new \phpbb\template\context()
@@ -65,7 +70,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem(
+				new \phpbb\symfony\request(
+					new phpbb_mock_request()
+				),
+				$this->phpbb_root_path,
+				$this->phpEx
+			),
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,

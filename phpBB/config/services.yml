@@ -169,6 +169,11 @@ services:
 
     filesystem:
         class: phpbb\filesystem
+        arguments:
+            - @symfony_request
+            - %core.root_path%
+            - %core.php_ext%
+            - %core.adm_relative_path%
 
     groupposition.legend:
         class: phpbb\groupposition\legend
@@ -252,16 +257,19 @@ services:
     request:
         class: phpbb\request\request
 
+    symfony_request:
+        class: phpbb_symfony_request
+        arguments:
+            - @request
+
     template:
         class: phpbb\template\twig\twig
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
+            - @filesystem
             - @config
             - @user
             - @template_context
             - @ext.manager
-            - %core.adm_relative_path%
 
     template_context:
         class: phpbb\template\context

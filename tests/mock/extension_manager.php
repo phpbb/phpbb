@@ -14,6 +14,12 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = 'php';
 		$this->extensions = $extensions;
-		$this->filesystem = new \phpbb\filesystem();
+		$this->filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony\request(
+				new phpbb_mock_request()
+			),
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
 	}
 }
