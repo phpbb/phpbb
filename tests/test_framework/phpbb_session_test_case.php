@@ -19,6 +19,13 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 	function setUp()
 	{
 		parent::setUp();
+
+		global $symfony_request, $phpbb_filesystem, $request, $phpbb_root_path, $phpEx;
+		$symfony_request = new phpbb_symfony_request(
+			new phpbb_mock_request()
+		);
+		$phpbb_filesystem = new phpbb_filesystem($symfony_request, $phpbb_root_path, $phpEx);
+
 		$this->session_factory = new phpbb_session_testable_factory;
 		$this->db = $this->new_dbal();
 		$this->session_facade =

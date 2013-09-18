@@ -33,21 +33,6 @@ class phpbb_session_testable_facade
 		$this->session_factory = $session_factory;
 	}
 
-	function extract_current_page(
-		$root_path,
-		$php_self, 
-		$query_string,
-		$request_uri
-	) 
-	{
-		$this->session_factory->get_session($this->db);
-		global $request;
-		$request->overwrite('PHP_SELF', $php_self, phpbb_request_interface::SERVER);
-		$request->overwrite('QUERY_STRING', $query_string, phpbb_request_interface::SERVER);
-		$request->overwrite('REQUEST_URI', $request_uri, phpbb_request_interface::SERVER);
-		return phpbb_session::extract_current_page($root_path);
-	}
-
 	function extract_current_hostname(
 		$host,
 		$server_name_config,
@@ -139,4 +124,3 @@ class phpbb_session_testable_facade
 		return $session->validate_referer($check_script_path);
 	}
 }
-

@@ -87,6 +87,12 @@ class phpbb_session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name));
 
+		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		if ($symfony_request_path !== '/')
+		{
+			$page_name .= $symfony_request_path;
+		}
+
 		// current directory within the phpBB root (for example: adm)
 		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
 		$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
@@ -103,12 +109,7 @@ class phpbb_session
 		}
 
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
-		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
 		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name;
-		if ($symfony_request_path !== '/')
-		{
-			$page .= $symfony_request_path;
-		}
 		if ($query_string)
 		{
 			$page .= '?' . $query_string;
