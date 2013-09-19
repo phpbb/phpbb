@@ -1224,7 +1224,7 @@ class fulltext_native extends \phpbb\search\base
 			return;
 		}
 
-		// Split old and new \post/subject to obtain array of 'words'
+		// Split old and new post/subject to obtain array of 'words'
 		$split_text = $this->split_message($message);
 		$split_title = $this->split_message($subject);
 

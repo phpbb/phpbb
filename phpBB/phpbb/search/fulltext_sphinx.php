@@ -422,7 +422,7 @@ class fulltext_sphinx
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
 
-		// Keep quotes and new \lines
+		// Keep quotes and new lines
 		$keywords = str_replace(array('&quot;', "\n"), array('"', ' '), trim($keywords));
 
 		if (strlen($keywords) > 0)

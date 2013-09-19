@@ -149,7 +149,7 @@ class post extends \phpbb\notification\type\base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			// Do not create a new \notification
+			// Do not create a new notification
 			unset($notify_users[$row['user_id']]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);

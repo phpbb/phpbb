@@ -263,7 +263,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Adds a new \category
+	* Adds a new category
 	*
 	* @param	string	$category_name	Name of the category to be added
 	* @return	bool		True if the category was added successfully

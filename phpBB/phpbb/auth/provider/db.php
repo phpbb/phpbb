@@ -241,7 +241,7 @@ class db extends \phpbb\auth\provider\base
 			{
 				$hash = phpbb_hash($password);
 
-				// Update the password in the users table to the new \format
+				// Update the password in the users table to the new format
 				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_password = '" . $this->db->sql_escape($hash) . "',
 						user_pass_convert = 0

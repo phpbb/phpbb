@@ -204,8 +204,8 @@ class apache extends \phpbb\auth\provider\base
 	 * This function generates an array which can be passed to the user_add
 	 * function in order to create a user
 	 *
-	 * @param 	string	$username 	The username of the new \user.
-	 * @param 	string	$password 	The password of the new \user.
+	 * @param 	string	$username 	The username of the new user.
+	 * @param 	string	$password 	The password of the new user.
 	 * @return 	array 				Contains data that can be passed directly to
 	 *								the user_add function.
 	 */

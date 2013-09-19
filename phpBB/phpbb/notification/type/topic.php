@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Topic notifications class
-* This class handles notifications for new \topics
+* This class handles notifications for new topics
 *
 * @package notifications
 */

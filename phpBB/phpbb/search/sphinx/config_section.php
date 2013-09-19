@@ -29,7 +29,7 @@ class config_section
 	private $variables = array();
 
 	/**
-	* Construct a new \section
+	* Construct a new section
 	*
 	* @param	string	$name		Name of the section
 	* @param	string	$comment	Comment that should be appended after the name in the

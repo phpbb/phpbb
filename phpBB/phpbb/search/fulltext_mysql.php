@@ -714,7 +714,7 @@ class fulltext_mysql extends \phpbb\search\base
 	*/
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
-		// Split old and new \post/subject to obtain array of words
+		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
 		$split_title = ($subject) ? $this->split_message($subject) : array();
 

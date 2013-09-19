@@ -26,7 +26,7 @@ class config_comment
 	private $exact_string;
 
 	/**
-	* Create a new \comment
+	* Create a new comment
 	*
 	* @param	string	$exact_string	The content of the comment including newlines, leading whitespace, etc.
 	*
