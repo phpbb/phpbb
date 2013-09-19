@@ -222,7 +222,7 @@ class manager
 	*/
 	static public function clean_driver_name($name)
 	{
-		return str_replace('_', '.', $name);
+		return str_replace(array('\\', '_'), '.', $name);
 	}
 
 	/**
@@ -235,7 +235,7 @@ class manager
 	*/
 	static public function prepare_driver_name($name)
 	{
-		return str_replace(array('\\', '.'), '_', $name);
+		return str_replace('.', '_', $name);
 	}
 
 	/**
@@ -277,7 +277,7 @@ class manager
 	*/
 	public function get_driver_config_name($driver)
 	{
-		return preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($driver));
+		return preg_replace('#^phpbb\\avatar\\driver\\\\#', '', get_class($driver));
 	}
 
 	/**
