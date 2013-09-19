@@ -90,7 +90,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		$this->admin_login();
-		$crawler = self::request('GET', 'adm/index.php?i=foo\\bar\\acp\\main_module&mode=mode&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=foo%5cbar%5cacp%5cmain_module&mode=mode&sid=' . $this->sid);
 		$this->assertContains("Bertie rulez!", $crawler->filter('#main')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
