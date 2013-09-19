@@ -91,7 +91,7 @@ class helper
 
 		page_footer(true, false, false);
 
-		return new \Response($this->template->assign_display('body'), $status_code);
+		return new Response($this->template->assign_display('body'), $status_code);
 	}
 
 	/**

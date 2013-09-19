@@ -36,22 +36,22 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals(
 			$prefix . 'class_name.php',
-			$class_loader->resolve_path('phpbb\\class_name'),
+			$class_loader->resolve_path('\\phpbb\\class_name'),
 			'Top level class'
 		);
 		$this->assertEquals(
 			$prefix . 'dir/class_name.php',
-			$class_loader->resolve_path('phpbb\\dir\\class_name'),
+			$class_loader->resolve_path('\\phpbb\\dir\\class_name'),
 			'Class in a directory'
 		);
 		$this->assertEquals(
 			$prefix . 'dir/subdir/class_name.php',
-			$class_loader->resolve_path('phpbb\\dir\\subdir\\class_name'),
+			$class_loader->resolve_path('\\phpbb\\dir\\subdir\\class_name'),
 			'Class in a sub-directory'
 		);
 		$this->assertEquals(
 			$prefix . 'dir2/dir2.php',
-			$class_loader->resolve_path('phpbb\\dir2\\dir2'),
+			$class_loader->resolve_path('\\phpbb\\dir2\\dir2'),
 			'Class with name of dir within dir'
 		);
 	}
@@ -59,8 +59,8 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 	public function test_resolve_cached()
 	{
 		$cache_map = array(
-			'class_loader_phpbb__' => array('phpbb\\a\\cached_name' => 'a/cached_name'),
-			'class_loader___' => array('phpbb\\ext\\foo' => 'foo'),
+			'class_loader___phpbb__' => array('\\phpbb\\a\\cached_name' => 'a/cached_name'),
+			'class_loader___' => array('\\phpbb\\ext\\foo' => 'foo'),
 		);
 		$cache = new phpbb_mock_cache($cache_map);
 
@@ -72,26 +72,26 @@ class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 
 		$this->assertEquals(
 			$prefix . 'dir/class_name.php',
-			$class_loader->resolve_path('phpbb\\dir\\class_name'),
+			$class_loader->resolve_path('\\phpbb\\dir\\class_name'),
 			'Class in a directory'
 		);
 
-		$this->assertFalse($class_loader->resolve_path('phpbb\\ext\\foo'));
-		$this->assertFalse($class_loader_ext->resolve_path('phpbb\\a\\cached_name'));
+		$this->assertFalse($class_loader->resolve_path('\\phpbb\\ext\\foo'));
+		$this->assertFalse($class_loader_ext->resolve_path('\\phpbb\\a\\cached_name'));
 
 		$this->assertEquals(
 			$prefix . 'a/cached_name.php',
-			$class_loader->resolve_path('phpbb\\a\\cached_name'),
+			$class_loader->resolve_path('\\phpbb\\a\\cached_name'),
 			'Cached class found'
 		);
 
 		$this->assertEquals(
 			$prefix . 'foo.php',
-			$class_loader_ext->resolve_path('phpbb\\ext\\foo'),
+			$class_loader_ext->resolve_path('\\phpbb\\ext\\foo'),
 			'Cached class found in alternative loader'
 		);
 
-		$cache_map['class_loader_phpbb__']['phpbb\\dir\\class_name'] = 'dir/class_name';
+		$cache_map['class_loader___phpbb__']['\\phpbb\\dir\\class_name'] = 'dir/class_name';
 		$cache->check($this, $cache_map);
 	}
 }

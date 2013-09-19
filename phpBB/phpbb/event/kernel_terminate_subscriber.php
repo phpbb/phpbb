@@ -31,7 +31,7 @@ class kernel_terminate_subscriber implements EventSubscriberInterface
 	* @param PostResponseEvent $event
 	* @return null
 	*/
-	public function on_kernel_terminate(\PostResponseEvent $event)
+	public function on_kernel_terminate(PostResponseEvent $event)
 	{
 		exit_handler();
 	}

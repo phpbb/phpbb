@@ -95,12 +95,12 @@ class resolver implements ControllerResolverInterface
 		* the style paths for the extension (the ext author can change them
 		* if necessary).
 		*/
-		$controller_dir = explode('_', get_class($controller_object));
+		$controller_dir = explode('\\', get_class($controller_object));
 
-		// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
-		if (!is_null($this->template) && isset($controller_dir[3]) && $controller_dir[1] === 'ext')
+		// 0 vendor, 1 extension name, ...
+		if (!is_null($this->template) && isset($controller_dir[1]))
 		{
-			$controller_style_dir = 'ext/' . $controller_dir[2] . '/' . $controller_dir[3] . '/styles';
+			$controller_style_dir = 'ext/' . $controller_dir[0] . '/' . $controller_dir[1] . '/styles';
 
 			if (is_dir($controller_style_dir))
 			{

@@ -65,14 +65,14 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	* @param GetResponseEvent $event
 	* @return null
 	*/
-	public function on_kernel_request(\GetResponseEvent $event)
+	public function on_kernel_request(GetResponseEvent $event)
 	{
 		$request = $event->getRequest();
-		$context = new \RequestContext();
+		$context = new RequestContext();
 		$context->fromRequest($request);
 
 		$matcher = phpbb_get_url_matcher($this->finder, $context, $this->root_path, $this->php_ext);
-		$router_listener = new \RouterListener($matcher, $context);
+		$router_listener = new RouterListener($matcher, $context);
 		$router_listener->onKernelRequest($event);
 	}
 

@@ -1,6 +1,6 @@
 services:
     foo_bar.controller:
-        class: phpbb_ext_foo_bar_controller
+        class: foo\bar\controller\controller
         arguments:
             - @controller.helper
             - @template

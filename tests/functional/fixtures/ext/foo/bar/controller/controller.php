@@ -1,7 +1,10 @@
 <?php
+
+namespace foo\bar\controller;
+
 use Symfony\Component\HttpFoundation\Response;
 
-class phpbb_ext_foo_bar_controller
+class controller
 {
 	protected $template;
 

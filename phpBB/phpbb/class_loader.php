@@ -55,7 +55,12 @@ class class_loader
 	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
 	*/
 	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
-	{
+    {
+		if ($namespace[0] !== '\\')
+		{
+			$namespace = '\\' . $namespace;
+		}
+
 		$this->namespace = $namespace;
 		$this->path = $path;
 		$this->php_ext = $php_ext;
@@ -105,7 +110,8 @@ class class_loader
 	* Resolves a phpBB class name to a relative path which can be included.
 	*
 	* @param string       $class The class name to resolve, must be in the
-	*                            namespace the loader was constructed with
+	*                            namespace the loader was constructed with.
+	*                            Has to begin with \
 	* @return string|bool        A relative path to the file containing the
 	*                            class or false if looking it up failed.
 	*/
@@ -144,6 +150,7 @@ class class_loader
 	*/
 	public function load_class($class)
 	{
+		$class = '\\' . $class;
 		if (substr($class, 0, strlen($this->namespace)) === $this->namespace)
 		{
 			$path = $this->resolve_path($class);

@@ -55,7 +55,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	* @param GetResponseForExceptionEvent $event
 	* @return null
 	*/
-	public function on_kernel_exception(\GetResponseForExceptionEvent $event)
+	public function on_kernel_exception(GetResponseForExceptionEvent $event)
 	{
 		page_header($this->user->lang('INFORMATION'));
 
@@ -74,7 +74,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 
 		$status_code = $exception instanceof HttpException ? $exception->getStatusCode() : 500;
-		$response = new \Response($this->template->assign_display('body'), $status_code);
+		$response = new Response($this->template->assign_display('body'), $status_code);
 		$event->setResponse($response);
 	}
 

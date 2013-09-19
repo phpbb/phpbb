@@ -18,7 +18,7 @@ require_once $phpbb_root_path . 'phpbb/class_loader.' . $phpEx;
 
 $phpbb_class_loader_mock = new \phpbb\class_loader('phpbb_mock_', $phpbb_root_path . '../tests/mock/', "php");
 $phpbb_class_loader_mock->register();
-$phpbb_class_loader_ext = new \phpbb\class_loader('phpbb_ext_', $phpbb_root_path . 'ext/', "php");
+$phpbb_class_loader_ext = new \phpbb\class_loader('\\', $phpbb_root_path . 'ext/', "php");
 $phpbb_class_loader_ext->register();
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', $phpbb_root_path . 'phpbb/', "php");
 $phpbb_class_loader->register();

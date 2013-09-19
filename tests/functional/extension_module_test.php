@@ -69,7 +69,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		$modules->update_module_data($parent_data, true);
 
 		$module_data = array(
-			'module_basename'	=> 'phpbb_ext_foo_bar_acp_main_module',
+			'module_basename'	=> 'foo\\bar\\acp\\main_module',
 			'module_enabled'	=> 1,
 			'module_display'	=> 1,
 			'parent_id'			=> $parent_data['module_id'],
@@ -90,7 +90,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		$this->admin_login();
-		$crawler = self::request('GET', 'adm/index.php?i=phpbb_ext_foo_bar_acp_main_module&mode=mode&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=foo\\bar\\acp\\main_module&mode=mode&sid=' . $this->sid);
 		$this->assertContains("Bertie rulez!", $crawler->filter('#main')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
