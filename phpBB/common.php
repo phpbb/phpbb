@@ -47,6 +47,12 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/symfony_request.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/request/deactivated_super_global.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/request/type_cast_helper_interface.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/request/type_cast_helper.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/request/request_interface.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/request/request.' . $phpEx);
 	$phpbb_filesystem = new phpbb\filesystem(
 		new phpbb\symfony_request(
 			new phpbb\request\request()
