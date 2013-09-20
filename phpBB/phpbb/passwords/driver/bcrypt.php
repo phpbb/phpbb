@@ -33,14 +33,6 @@ class phpbb_passwords_driver_bcrypt extends phpbb_passwords_driver_base
 	/**
 	* @inheritdoc
 	*/
-	public function get_type()
-	{
-		return get_class($this);
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function hash($password, $salt = '')
 	{
 		// The 2x and 2y prefixes of bcrypt might not be supported

@@ -46,7 +46,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		}
 
 		// Set up avatar manager
-		$this->manager = new phpbb_passwords_manager($config, $this->phpbb_container, $this->passwords_drivers, 'passwords.driver.bcrypt_2y');
+		$this->manager = new phpbb_passwords_manager($config, $this->passwords_drivers, 'passwords.driver.bcrypt_2y');
 	}
 
 	public function hash_password_data()
@@ -58,6 +58,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 				array('passwords.driver.bcrypt_2y', '2a', 60),
 				array('passwords.driver.bcrypt', '2a', 60),
 				array('passwords.driver.salted_md5', 'H', 34),
+				array('passwords.driver.foobar', '', false),
 			);
 		}
 		else
@@ -67,6 +68,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 				array('passwords.driver.bcrypt_2y', '2y', 60),
 				array('passwords.driver.bcrypt', '2a', 60),
 				array('passwords.driver.salted_md5', 'H', 34),
+				array('passwords.driver.foobar', '', false),
 			);
 		}
 	}
@@ -77,6 +79,12 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 	public function test_hash_password($type, $prefix, $length)
 	{
 		$password = $this->default_pw;
+
+		if (!$length)
+		{
+			$this->assertEquals(false, $hash = $this->manager->hash_password($password, $type));
+			return;
+		}
 		$time = microtime(true);
 
 		// Limit each test to 1 second

@@ -33,14 +33,6 @@ class phpbb_passwords_driver_bcrypt_2y extends phpbb_passwords_driver_bcrypt
 	/**
 	* @inheritdoc
 	*/
-	public function get_type()
-	{
-		return get_class($this);
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function is_supported()
 	{
 		return (version_compare(PHP_VERSION, '5.3.7', '<')) ? false : true;

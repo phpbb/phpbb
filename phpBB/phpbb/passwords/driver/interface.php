@@ -34,13 +34,6 @@ interface phpbb_passwords_driver_interface
 	public function get_prefix();
 
 	/**
-	* Returns the name of the hash type
-	*
-	* @return string	Hash type of driver
-	*/
-	public function get_type();
-
-	/**
 	* Hash the password
 	*
 	* @return string	Password hash

@@ -26,20 +26,13 @@ class phpbb_passwords_helper
 	protected $manager;
 
 	/**
-	* @var phpbb_container
-	*/
-	protected $container;
-
-	/**
 	* Construct a phpbb_passwords_helper object
 	*
 	* @param phpbb_passwords_manager $manager Crypto manager object
-	* @param phpbb_container $container phpBB container object
 	*/
-	public function __construct($manager, $container)
+	public function __construct($manager)
 	{
 		$this->manager = $manager;
-		$this->container = $container;
 	}
 
 	/**
@@ -85,14 +78,22 @@ class phpbb_passwords_helper
 		$hash = $hash_settings[0];
 
 		// Put settings of current hash into data array
-		$stored_hash_type = $this->manager->get_hashing_algorithm($password_hash);
+		$stored_hash_type = $this->manager->detect_algorithm($password_hash);
 		$this->combine_hash_output($data, 'prefix', $stored_hash_type->get_prefix());
 		$this->combine_hash_output($data, 'settings', $stored_hash_type->get_settings_only($password_hash));
 
 		// Hash current hash with the defined types
 		foreach ($type as $cur_type)
 		{
-			$new_hash_type = $this->container->get($cur_type);
+			if (isset($this->manager->algorithms[$cur_type]))
+			{
+				$new_hash_type = $this->manager->algorithms[$cur_type];
+			}
+			else
+			{
+				return false;
+			}
+
 			$new_hash = $new_hash_type->hash(str_replace($stored_hash_type->get_settings_only($password_hash), '', $hash));
 			$this->combine_hash_output($data, 'prefix', $new_hash_type->get_prefix());
 			$this->combine_hash_output($data, 'settings', substr(str_replace('$', '\\', $new_hash_type->get_settings_only($new_hash, true)), 0));

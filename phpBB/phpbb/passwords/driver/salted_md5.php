@@ -33,14 +33,6 @@ class phpbb_passwords_driver_salted_md5 extends phpbb_passwords_driver_base
 	/**
 	* @inheritdoc
 	*/
-	public function get_type()
-	{
-		return get_class($this);
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function hash($password, $setting = '')
 	{
 		if ($setting != '')

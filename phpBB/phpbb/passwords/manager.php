@@ -26,12 +26,19 @@ class phpbb_passwords_manager
 	protected $type = false;
 
 	/**
-	* Hashing algorithm types
+	* Hashing algorithm type map
+	* Will be used to map hash prefix to type
 	*/
 	protected $type_map = false;
 
 	/**
-	* Password convert flag. Password should be converted
+	* Service collection of hashing algorithms
+	* Needs to be public for passwords helper
+	*/
+	public $algorithms = false;
+
+	/**
+	* Password convert flag. Signals that password should be converted
 	*/
 	public $convert_flag = false;
 
@@ -48,20 +55,16 @@ class phpbb_passwords_manager
 	protected $config;
 
 	/**
-	* phpBB compiled container
-	* @var service_container
-	*/
-	protected $container;
-
-	/**
 	* Construct a passwords object
 	*
 	* @param phpbb_config $config phpBB configuration
+	* @param phpbb_di_service_collection $hashing_algorithms Hashing driver
+	*			service collection
+	* @param string $default Default driver name
 	*/
-	public function __construct($config, $container, $hashing_algorithms, $default)
+	public function __construct($config, $hashing_algorithms, $default)
 	{
 		$this->config = $config;
-		$this->container = $container;
 		$this->type = $default;
 
 		$this->fill_type_map($hashing_algorithms);
@@ -77,9 +80,14 @@ class phpbb_passwords_manager
 	{
 		foreach ($hashing_algorithms as $algorithm)
 		{
+			if (!isset($this->algorithms[$algorithm->get_name()]))
+			{
+				$this->algorithms[$algorithm->get_name()] = $algorithm;
+			}
+
 			if (!isset($this->type_map[$algorithm->get_prefix()]))
 			{
-				$this->type_map[$algorithm->get_prefix()] = $algorithm;
+				$this->type_map[$algorithm->get_prefix()] = $algorithm->get_name();
 			}
 		}
 	}
@@ -91,18 +99,38 @@ class phpbb_passwords_manager
 	{
 		if ($this->helper === null)
 		{
-			$this->helper = new phpbb_passwords_helper($this, $this->container);
+			$this->helper = new phpbb_passwords_helper($this);
 		}
 	}
 
 	/**
-	* Get the hash type from the supplied hash
+	* Get the algorithm specified by a specific prefix
 	*
-	* @param string $hash Password hash that should be checked
+	* @param string $prefix Password hash prefix
 	*
 	* @return object The hash type object
 	*/
-	public function get_hashing_algorithm($hash)
+	protected function get_algorithm($prefix)
+	{
+		if (isset($this->type_map[$prefix]) && isset($this->algorithms[$this->type_map[$prefix]]))
+		{
+			return $this->algorithms[$this->type_map[$prefix]];
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	* Detect the hash type of the supplied hash
+	*
+	* @param string $hash Password hash that should be checked
+	*
+	* @return object|bool The hash type object or false if the specified
+	*			type is not supported
+	*/
+	public function detect_algorithm($hash)
 	{
 		/*
 		* preg_match() will also show hashing algos like $2a\H$, which
@@ -112,7 +140,7 @@ class phpbb_passwords_manager
 		*/
 		if (!preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match))
 		{
-			return $this->type_map['$H$'];
+			return $this->get_algorithm('$H$');
 		}
 
 		// Be on the lookout for multiple hashing algorithms
@@ -123,32 +151,27 @@ class phpbb_passwords_manager
 			$return_ary = array();
 			foreach ($hash_types as $type)
 			{
-				if (isset($this->type_map["\${$type}\$"]))
+				// we do not support the same hashing
+				// algorithm more than once
+				if (isset($return_ary[$type]))
 				{
-					// we do not support the same hashing
-					// algorithm more than once
-					if (isset($return_ary[$type]))
-					{
-						return false;
-					}
-					$return_ary[$type] = $this->type_map["\${$type}\$"];
+					return false;
 				}
-				else
+
+				$return_ary[$type] = $this->get_algorithm("\${$type}\$");
+
+				if (empty($return_ary[$type]))
 				{
+
 					return false;
 				}
 			}
 			return $return_ary;
 		}
 
-		if (isset($this->type_map[$match[0]]))
-		{
-			return $this->type_map[$match[0]];
-		}
-		else
-		{
-			return false;
-		}
+		// get_algorithm() will automatically return false if prefix
+		// is not supported
+		return $this->get_algorithm($match[0]);
 	}
 
 	/**
@@ -169,7 +192,14 @@ class phpbb_passwords_manager
 			return $this->helper->combined_hash_password($password, $type);
 		}
 
-		$hashing_algorithm = $this->container->get($type);
+		if (isset($this->algorithms[$type]))
+		{
+			$hashing_algorithm = $this->algorithms[$type];
+		}
+		else
+		{
+			return false;
+		}
 
 		// Do not support 8-bit characters with $2a$ bcrypt
 		// Also see http://www.php.net/security/crypt_blowfish.php
@@ -181,7 +211,7 @@ class phpbb_passwords_manager
 			}
 		}
 
-		return $this->container->get($type)->hash($password);
+		return $hashing_algorithm->hash($password);
 	}
 
 	/**
@@ -195,7 +225,7 @@ class phpbb_passwords_manager
 	public function check_hash($password, $hash)
 	{
 		// First find out what kind of hash we're dealing with
-		$stored_hash_type = $this->get_hashing_algorithm($hash);
+		$stored_hash_type = $this->detect_algorithm($hash);
 		if ($stored_hash_type == false)
 		{
 			return false;

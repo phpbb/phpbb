@@ -29,12 +29,4 @@ class phpbb_passwords_driver_phpass extends phpbb_passwords_driver_salted_md5
 	{
 		return self::PREFIX;
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_type()
-	{
-		return get_class($this);
-	}
 }
