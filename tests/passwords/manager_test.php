@@ -8,11 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../mock/container_builder.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/bcrypt.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/bcrypt_2y.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/salted_md5.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/phpass.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/passwords/driver/helper.php';
 
 class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 {
