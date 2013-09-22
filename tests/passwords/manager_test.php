@@ -26,12 +26,13 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 
 		// Prepare dependencies for manager and driver
 		$config = new phpbb_config(array());
+		$driver_helper = new phpbb_passwords_driver_helper;
 
 		$this->passwords_drivers = array(
-			'passwords.driver.bcrypt'		=> new phpbb_passwords_driver_bcrypt($config),
-			'passwords.driver.bcrypt_2y'	=> new phpbb_passwords_driver_bcrypt_2y($config),
-			'passwords.driver.salted_md5'	=> new phpbb_passwords_driver_salted_md5($config),
-			'passwords.driver.phpass'		=> new phpbb_passwords_driver_phpass($config),
+			'passwords.driver.bcrypt'		=> new phpbb_passwords_driver_bcrypt($config, $driver_helper),
+			'passwords.driver.bcrypt_2y'	=> new phpbb_passwords_driver_bcrypt_2y($config, $driver_helper),
+			'passwords.driver.salted_md5'	=> new phpbb_passwords_driver_salted_md5($config, $driver_helper),
+			'passwords.driver.phpass'		=> new phpbb_passwords_driver_phpass($config, $driver_helper),
 		);
 
 		foreach ($this->passwords_drivers as $key => $driver)

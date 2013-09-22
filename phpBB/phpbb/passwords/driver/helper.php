@@ -20,22 +20,11 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_passwords_driver_helper
 {
-	/** @var phpbb_config */
-	protected $driver;
-
 	/**
 	* base64 alphabet
 	* @var string
 	*/
 	public $itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-	/**
-	* Constructor of passwords driver helper object
-	*/
-	public function __construct($driver)
-	{
-		$this->driver = $driver;
-	}
 
 	/**
 	* Base64 encode hash

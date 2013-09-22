@@ -34,10 +34,10 @@ abstract class phpbb_passwords_driver_base implements phpbb_passwords_driver_int
 	*
 	* @return string	Hash prefix
 	*/
-	public function __construct(phpbb_config $config)
+	public function __construct(phpbb_config $config, phpbb_passwords_driver_helper $helper)
 	{
 		$this->config = $config;
-		$this->helper = new phpbb_passwords_driver_helper($this);
+		$this->helper = $helper;
 	}
 
 	/**
