@@ -60,15 +60,16 @@ class phpbb_passwords_manager
 	* @param phpbb_config $config phpBB configuration
 	* @param phpbb_di_service_collection $hashing_algorithms Hashing driver
 	*			service collection
+	* @param phpbb_passwords_helper $helper Passwords helper object
 	* @param string $default Default driver name
 	*/
-	public function __construct($config, $hashing_algorithms, $default)
+	public function __construct($config, $hashing_algorithms, $helper, $default)
 	{
 		$this->config = $config;
 		$this->type = $default;
 
 		$this->fill_type_map($hashing_algorithms);
-		$this->load_passwords_helper();
+		$this->load_passwords_helper($helper);
 	}
 
 	/**
@@ -94,12 +95,15 @@ class phpbb_passwords_manager
 
 	/**
 	* Load passwords helper class
+	*
+	* @param phpbb_passwords_helper $helper Passwords helper object
 	*/
-	protected function load_passwords_helper()
+	protected function load_passwords_helper($helper)
 	{
 		if ($this->helper === null)
 		{
-			$this->helper = new phpbb_passwords_helper($this);
+			$this->helper = $helper;
+			$this->helper->set_manager($this);
 		}
 	}
 

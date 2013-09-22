@@ -40,8 +40,9 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 			$this->phpbb_container->set($key, $driver);
 		}
 
-		// Set up avatar manager
-		$this->manager = new phpbb_passwords_manager($config, $this->passwords_drivers, 'passwords.driver.bcrypt_2y');
+		$this->helper = new phpbb_passwords_helper;
+		// Set up passwords manager
+		$this->manager = new phpbb_passwords_manager($config, $this->passwords_drivers, $this->helper, 'passwords.driver.bcrypt_2y');
 	}
 
 	public function hash_password_data()

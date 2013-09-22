@@ -26,13 +26,16 @@ class phpbb_passwords_helper
 	protected $manager;
 
 	/**
-	* Construct a phpbb_passwords_helper object
+	* Set the passwords manager instance
 	*
 	* @param phpbb_passwords_manager $manager Crypto manager object
 	*/
-	public function __construct($manager)
+	public function set_manager(phpbb_passwords_manager $manager)
 	{
-		$this->manager = $manager;
+		if ($this->manager === null)
+		{
+			$this->manager = $manager;
+		}
 	}
 
 	/**
