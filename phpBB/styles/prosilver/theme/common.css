@@ -134,6 +134,10 @@ p.right {
 	text-align: right;
 }
 
+p.jumpbox-return {
+	margin-top: 1em;
+}
+
 b, strong {
 	font-weight: bold;
 }
