@@ -36,6 +36,12 @@ class phpbb_controller_helper
 	protected $user;
 
 	/**
+	* config object
+	* @var phpbb_config
+	*/
+	protected $config;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -55,10 +61,11 @@ class phpbb_controller_helper
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template, phpbb_user $user, $phpbb_root_path, $php_ext)
+	public function __construct(phpbb_template $template, phpbb_user $user, phpbb_config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
+		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -102,22 +109,14 @@ class phpbb_controller_helper
 			$route = substr($route, 0, $route_delim);
 		}
 
-		if (is_array($params) && !empty($params))
+		// If enable_mod_rewrite is false, we need to include app.php
+		$route_prefix = $this->phpbb_root_path;
+		if (empty($this->config['enable_mod_rewrite']))
 		{
-			$params = array_merge(array(
-				'controller' => $route,
-			), $params);
-		}
-		else if (is_string($params) && $params)
-		{
-			$params = 'controller=' . $route . (($is_amp) ? '&amp;' : '&') . $params;
-		}
-		else
-		{
-			$params = array('controller' => $route);
+			$route_prefix .= 'app.' . $this->php_ext . '/';
 		}
 
-		return append_sid($this->phpbb_root_path . 'app.' . $this->php_ext . $route_params, $params, $is_amp, $session_id);
+		return append_sid($route_prefix . "$route" . $route_params, $params, $is_amp, $session_id);
 	}
 
 	/**

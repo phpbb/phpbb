@@ -11,11 +11,8 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_template_template_test_case extends phpbb_test_case
 {
-	protected $style;
 	protected $template;
 	protected $template_path;
-	protected $style_resource_locator;
-	protected $style_provider;
 	protected $user;
 
 	protected $test_path = 'tests/template';
@@ -66,12 +63,17 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$config = new phpbb_config(array_merge($defaults, $new_config));
 		$this->user = new phpbb_user;
 
+		$phpbb_filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_mock_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
+
 		$this->template_path = $this->test_path . '/templates';
-		$this->style_resource_locator = new phpbb_style_resource_locator();
-		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $this->user, new phpbb_template_context());
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $this->user, $this->style_resource_locator, $this->style_provider, $this->template);
-		$this->style->set_custom_style('tests', $this->template_path, array(), '');
+		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $this->user, new phpbb_template_context());
+		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
 	protected function setUp()

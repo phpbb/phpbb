@@ -7,9 +7,9 @@
 *
 */
 
-require_once dirname(__FILE__) . '/manager_helper.php';
+require_once dirname(__FILE__) . '/base.php';
 
-class phpbb_notification_test extends phpbb_database_test_case
+class phpbb_notification_test extends phpbb_tests_notification_base
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
@@ -18,98 +18,17 @@ class phpbb_notification_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/notification.xml');
 	}
 
-	protected function setUp()
-	{
-		parent::setUp();
-
-		global $phpbb_root_path, $phpEx;
-
-		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
-
-		$this->db = $this->new_dbal();
-		$this->config = new phpbb_config(array(
-			'allow_privmsg'			=> true,
-			'allow_bookmarks'		=> true,
-			'allow_topic_notify'	=> true,
-			'allow_forum_notify'	=> true,
-		));
-		$this->user = new phpbb_user();
-		$this->user_loader = new phpbb_user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
-		$this->auth = new phpbb_mock_notifications_auth();
-		$this->cache = new phpbb_cache_service(
-			new phpbb_cache_driver_null(),
-			$this->config,
-			$this->db,
-			$phpbb_root_path,
-			$phpEx
-		);
-
-		$this->container = new phpbb_mock_container_builder();
-
-		$this->notifications = new phpbb_notification_manager_helper(
-			array(),
-			array(),
-			$this->container,
-			$this->user_loader,
-			$this->db,
-			$this->cache,
-			$this->user,
-			$phpbb_root_path,
-			$phpEx,
-			'phpbb_notification_types',
-			'phpbb_notifications',
-			'phpbb_user_notifications'
-		);
-
-		$this->notifications->setDependencies($this->auth, $this->config);
-
-		$types = array();
-		foreach (array(
-			'test',
-			'approve_post',
-			'approve_topic',
-			'bookmark',
-			'disapprove_post',
-			'disapprove_topic',
-			'pm',
-			'post',
-			'post_in_queue',
-			'quote',
-			'report_pm',
-			'report_pm_closed',
-			'report_post',
-			'report_post_closed',
-			'topic',
-			'topic_in_queue',
-		) as $type)
-		{
-			$class = $this->build_type('phpbb_notification_type_' . $type);
-
-			$types[$type] = $class;
-			$this->container->set('notification.type.' . $type, $class);
-		}
-
-		$this->notifications->set_var('notification_types', $types);
-	}
-
-	protected function build_type($type)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
-	}
-
 	public function test_get_notification_type_id()
 	{
 		// They should be inserted the first time
-		$this->assertEquals(1, $this->notifications->get_notification_type_id('post'));
-		$this->assertEquals(2, $this->notifications->get_notification_type_id('quote'));
-		$this->assertEquals(3, $this->notifications->get_notification_type_id('test'));
+		$post_type_id = $this->notifications->get_notification_type_id('post');
+		$quote_type_id = $this->notifications->get_notification_type_id('quote');
+		$test_type_id = $this->notifications->get_notification_type_id('test');
 
 		$this->assertEquals(array(
-				'test'	=> 3,
-				'quote'	=> 2,
-				'post'	=> 1,
+				'test'	=> $test_type_id,
+				'quote'	=> $quote_type_id,
+				'post'	=> $post_type_id,
 			),
 			$this->notifications->get_notification_type_ids(array(
 				'test',
@@ -117,11 +36,11 @@ class phpbb_notification_test extends phpbb_database_test_case
 				'post',
 			)
 		));
-		$this->assertEquals(2, $this->notifications->get_notification_type_id('quote'));
+		$this->assertEquals($quote_type_id, $this->notifications->get_notification_type_id('quote'));
 
 		try
 		{
-			$this->assertEquals(3, $this->notifications->get_notification_type_id('fail'));
+			$this->assertEquals(false, $this->notifications->get_notification_type_id('fail'));
 
 			$this->fail('Non-existent type should throw an exception');
 		}
@@ -241,87 +160,64 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'post_time'		=> 1349413326,
 		));
 
-		$notifications = $this->notifications->load_notifications(array(
-			'count_unread'	=> true,
-		));
-
-		$expected = array(
-			1 => array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 1,
-				'item_parent_id'	=> 1,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413321,
-				'notification_data'			   	=> array(),
-			),
-			2 => array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 2,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413322,
-				'notification_data'				=> array(),
-			),
-			3 => array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 3,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413323,
-				'notification_data'			   	=> array(),
-			),
-			4 => array(
-				'notification_type_id'	=> 3,
-				'item_id'			=> 4,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413324,
-				'notification_data'			   	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title',
-					'post_subject'	=> 'Re: test-title',
-					'post_username'	=> '',
-					'forum_id'		=> 2,
-					'forum_name'	=> 'Your first forum',
+		$this->assert_notifications(
+			array(
+				array(
+					'item_id'			=> 1,
+					'item_parent_id'	=> 1,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413321,
+					'notification_data'			   	=> array(),
 				),
-			),
-			5 => array(
-				'notification_type_id'	=> 2,
-				'item_id'			=> 5,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'				=> 0,
-				'notification_time'	   			=> 1349413325,
-				'notification_data'			   	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title',
-					'post_subject'	=> 'Re: test-title',
-					'post_username'	=> '',
-					'forum_id'		=> 2,
-					'forum_name'	=> 'Your first forum',
+				array(
+					'item_id'			=> 2,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413322,
+					'notification_data'				=> array(),
 				),
-			),
+				array(
+					'item_id'			=> 3,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413323,
+					'notification_data'			   	=> array(),
+				),
+				array(
+					'item_id'			=> 4,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413324,
+					'notification_data'			   	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title',
+						'post_subject'	=> 'Re: test-title',
+						'post_username'	=> '',
+						'forum_id'		=> 2,
+						'forum_name'	=> 'Your first forum',
+					),
+				),
+				array(
+					'item_id'			=> 5,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'				=> 0,
+					'notification_time'	   			=> 1349413325,
+					'notification_data'			   	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title',
+						'post_subject'	=> 'Re: test-title',
+						'post_username'	=> '',
+						'forum_id'		=> 2,
+						'forum_name'	=> 'Your first forum',
+					),
+				),
+			)
 		);
-
-		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
-
-		$notifications = $notifications['notifications'];
-
-		foreach ($expected as $notification_id => $notification_data)
-		{
-			//echo $notifications[$notification_id];
-
-			$this->assertEquals($notification_id, $notifications[$notification_id]->notification_id, 'notification_id');
-
-			foreach ($notification_data as $key => $value)
-			{
-				$this->assertEquals($value, $notifications[$notification_id]->$key, $key . ' ' . $notification_id);
-			}
-		}
 
 		// Now test updating -------------------------------
 
@@ -347,86 +243,63 @@ class phpbb_notification_test extends phpbb_database_test_case
 			'forum_name'	=> 'Your second forum', // change forum_name
 		));
 
-		$notifications = $this->notifications->load_notifications(array(
-			'count_unread'	=> true,
-		));
-
-		$expected = array(
-			1 => array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 1,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413321,
-				'notification_data'	=> array(),
-			),
-			2 => array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 2,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413322,
-				'notification_data'	=> array(),
-			),
-			3 => array(
-				'notification_type_id'	=> 4,
-				'item_id'			=> 3,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1234,
-				'notification_data'	=> array(),
-			),
-			4 => array(
-				'notification_type_id'	=> 3,
-				'item_id'			=> 4,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413324,
-				'notification_data'	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title',
-					'post_subject'	=> 'Re: test-title',
-					'post_username'	=> '',
-					'forum_id'		=> 2,
-					'forum_name'	=> 'Your first forum',
+		$this->assert_notifications(
+			array(
+				array(
+					'item_id'			=> 3,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1234,
+					'notification_data'	=> array(),
 				),
-			),
-			5 => array(
-				'notification_type_id'	=> 2,
-				'item_id'			=> 5,
-				'item_parent_id'	=> 2,
-				'user_id'	   		=> 0,
-				'notification_read'	=> 0,
-				'notification_time'	=> 1349413325,
-				'notification_data'	=> array(
-					'poster_id'		=> 2,
-					'topic_title'	=> 'test-title2',
-					'post_subject'	=> 'Re: test-title2',
-					'post_username'	=> '',
-					'forum_id'		=> 3,
-					'forum_name'	=> 'Your second forum',
+				array(
+					'item_id'			=> 1,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413321,
+					'notification_data'	=> array(),
 				),
-			),
+				array(
+					'item_id'			=> 2,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413322,
+					'notification_data'	=> array(),
+				),
+				array(
+					'item_id'			=> 4,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413324,
+					'notification_data'	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title',
+						'post_subject'	=> 'Re: test-title',
+						'post_username'	=> '',
+						'forum_id'		=> 2,
+						'forum_name'	=> 'Your first forum',
+					),
+				),
+				array(
+					'item_id'			=> 5,
+					'item_parent_id'	=> 2,
+					'user_id'	   		=> 0,
+					'notification_read'	=> 0,
+					'notification_time'	=> 1349413325,
+					'notification_data'	=> array(
+						'poster_id'		=> 2,
+						'topic_title'	=> 'test-title2',
+						'post_subject'	=> 'Re: test-title2',
+						'post_username'	=> '',
+						'forum_id'		=> 3,
+						'forum_name'	=> 'Your second forum',
+					),
+				),
+			)
 		);
-
-		$this->assertEquals(sizeof($expected), $notifications['unread_count']);
-
-		$notifications = $notifications['notifications'];
-
-		foreach ($expected as $notification_id => $notification_data)
-		{
-			//echo $notifications[$notification_id];
-
-			$this->assertEquals($notification_id, $notifications[$notification_id]->notification_id, 'notification_id');
-
-			foreach ($notification_data as $key => $value)
-			{
-				$this->assertEquals($value, $notifications[$notification_id]->$key, $key . ' ' . $notification_id);
-			}
-		}
 	}
 }

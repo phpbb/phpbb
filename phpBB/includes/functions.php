@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
 * @ignore
 */
@@ -1072,7 +1070,14 @@ function phpbb_clean_path($path)
 			global $phpbb_root_path, $phpEx;
 			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
 		}
-		$phpbb_filesystem = new phpbb_filesystem();
+
+		$phpbb_filesystem = new phpbb_filesystem(
+			new phpbb_symfony_request(
+				new phpbb_request()
+			),
+			$phpbb_root_path,
+			$phpEx
+		);
 	}
 
 	return $phpbb_filesystem->clean_path($path);
@@ -2343,7 +2348,6 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	$template_array = array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
 		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
 		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
@@ -2383,7 +2387,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
 		'ON_PAGE'		=> $on_page,
-		'A_BASE_URL'	=> addslashes($base_url),
+		'BASE_URL'		=> $base_url,
 	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
@@ -2411,13 +2415,19 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_filesystem;
 	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
 		// Do not append the ? if the param-list is empty anyway.
 		$params = false;
+	}
+
+	// Update the root path with the correct relative web path
+	if ($phpbb_filesystem instanceof phpbb_filesystem)
+	{
+		$url = $phpbb_filesystem->update_web_root_path($url);
 	}
 
 	$append_sid_overwrite = false;
@@ -2809,8 +2819,22 @@ function build_url($strip_vars = false)
 {
 	global $user, $phpbb_root_path;
 
+	$page = $user->page['page'];
+
+	// We need to be cautious here.
+	// On some situations, the redirect path is an absolute URL, sometimes a relative path
+	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+	// else we use the URL directly.
+	$url_parts = parse_url($page);
+
+	// URL
+	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		$page = $phpbb_root_path . $page;
+	}
+
 	// Append SID
-	$redirect = append_sid($user->page['page'], false, false);
+	$redirect = append_sid($page, false, false);
 
 	// Add delimiter if not there...
 	if (strpos($redirect, '?') === false)
@@ -2865,19 +2889,7 @@ function build_url($strip_vars = false)
 		$redirect .= ($query) ? '?' . $query : '';
 	}
 
-	// We need to be cautious here.
-	// On some situations, the redirect path is an absolute URL, sometimes a relative path
-	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
-	// else we use the URL directly.
-	$url_parts = @parse_url($redirect);
-
-	// URL
-	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
-	{
-		return str_replace('&', '&amp;', $redirect);
-	}
-
-	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
+	return str_replace('&', '&amp;', $redirect);
 }
 
 /**
@@ -3199,7 +3211,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request;
+	global $request, $phpbb_container;
 
 	if (!class_exists('phpbb_captcha_factory', false))
 	{
@@ -3226,7 +3238,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if (isset($_POST['login']))
+	if ($request->is_set_post('login') || ($request->is_set('login') && $request->variable('login', '') == 'external'))
 	{
 		// Get credential
 		if ($admin)
@@ -3365,6 +3377,29 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if ($admin)
 	{
 		$s_hidden_fields['credential'] = $credential;
+	}
+
+	$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
+
+	$auth_provider_data = $auth_provider->get_login_data();
+	if ($auth_provider_data)
+	{
+		if (isset($auth_provider_data['VARS']))
+		{
+			$template->assign_vars($auth_provider_data['VARS']);
+		}
+
+		if (isset($auth_provider_data['BLOCK_VAR_NAME']))
+		{
+			foreach ($auth_provider_data['BLOCK_VARS'] as $block_vars)
+			{
+				$template->assign_block_vars($auth_provider_data['BLOCK_VAR_NAME'], $block_vars);
+			}
+		}
+
+		$template->assign_vars(array(
+			'PROVIDER_TEMPLATE_FILE' => $auth_provider_data['TEMPLATE_FILE'],
+		));
 	}
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
@@ -5051,7 +5086,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container;
+	global $phpbb_dispatcher, $request, $phpbb_container, $adm_relative_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5208,7 +5243,12 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+	// This path is sent with the base template paths in the assign_vars()
+	// call below. We need to correct it in case we are accessing from a
+	// controller because the web paths will be incorrect otherwise.
+	$phpbb_filesystem = $phpbb_container->get('filesystem');
+	$corrected_path = $phpbb_filesystem->get_web_root_path();
+	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
@@ -5289,7 +5329,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
-		'ROOT_PATH'			=> $phpbb_root_path,
+		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
@@ -5300,7 +5340,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
-		'UA_POPUP_PM'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup')),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
@@ -5346,7 +5385,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_root_path}{$adm_relative_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
@@ -5390,8 +5429,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_UPLOAD'				=> $config['upload_path'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
-
-		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
 	));
 
 	// application/xhtml+xml not used because of IE
@@ -5674,50 +5711,4 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	}
 
 	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
-}
-
-/**
-* Create a Symfony Request object from phpbb_request object
-*
-* @param phpbb_request $request Request object
-* @return Request A Symfony Request object
-*/
-function phpbb_create_symfony_request(phpbb_request $request)
-{
-	// This function is meant to sanitize the global input arrays
-	$sanitizer = function(&$value, $key) {
-		$type_cast_helper = new phpbb_request_type_cast_helper();
-		$type_cast_helper->set_var($value, $value, gettype($value), true);
-	};
-
-	// We need to re-enable the super globals so we can access them here
-	$request->enable_super_globals();
-	$get_parameters = $_GET;
-	$post_parameters = $_POST;
-	$server_parameters = $_SERVER;
-	$files_parameters = $_FILES;
-	$cookie_parameters = $_COOKIE;
-	// And now disable them again for security
-	$request->disable_super_globals();
-
-	array_walk_recursive($get_parameters, $sanitizer);
-	array_walk_recursive($post_parameters, $sanitizer);
-
-	// Until we fix the issue with relative paths, we have to fake path info
-	// to allow urls like app.php?controller=foo/bar
-	$controller = $request->variable('controller', '');
-	$path_info = '/' . $controller;
-	$request_uri = $server_parameters['REQUEST_URI'];
-
-	// Remove the query string from REQUEST_URI
-	if ($pos = strpos($request_uri, '?'))
-	{
-		$request_uri = substr($request_uri, 0, $pos);
-	}
-
-	// Add the path info (i.e. controller route) to the REQUEST_URI
-	$server_parameters['REQUEST_URI'] = $request_uri . $path_info;
-	$server_parameters['SCRIPT_NAME'] = '';
-
-	return new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 }

@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 class messenger
 {
-	var $vars, $msg, $extra_headers, $replyto, $from, $subject;
+	var $msg, $extra_headers, $replyto, $from, $subject;
 	var $addresses = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
@@ -53,7 +53,7 @@ class messenger
 	function reset()
 	{
 		$this->addresses = $this->extra_headers = array();
-		$this->vars = $this->msg = $this->replyto = $this->from = '';
+		$this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
@@ -258,8 +258,6 @@ class messenger
 			'body'		=> $template_file . '.txt',
 		));
 
-		$this->vars = $this->template->get_template_vars();
-
 		return true;
 	}
 
@@ -288,26 +286,11 @@ class messenger
 		global $config, $user;
 
 		// We add some standard variables we always use, no need to specify them always
-		if (!isset($this->vars['U_BOARD']))
-		{
-			$this->assign_vars(array(
-				'U_BOARD'	=> generate_board_url(),
-			));
-		}
-
-		if (!isset($this->vars['EMAIL_SIG']))
-		{
-			$this->assign_vars(array(
-				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])),
-			));
-		}
-
-		if (!isset($this->vars['SITENAME']))
-		{
-			$this->assign_vars(array(
-				'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
-			));
-		}
+		$this->assign_vars(array(
+			'U_BOARD'	=> generate_board_url(),
+			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])),
+			'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
+		));
 
 		// Parse message through template
 		$this->msg = trim($this->template->assign_display('body'));
@@ -643,14 +626,14 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $config, $phpbb_filesystem, $user, $phpbb_extension_manager;
 
 		if ($this->template instanceof phpbb_template)
 		{
 			return;
 		}
 
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
+		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
 	}
 
 	/**
@@ -660,7 +643,7 @@ class messenger
 	{
 		$this->setup_template();
 
-		$this->template->set_style_names(array($path_name), $paths);
+		$this->template->set_custom_style($path_name, $paths);
 	}
 }
 

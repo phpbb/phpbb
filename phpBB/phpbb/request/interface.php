@@ -136,4 +136,14 @@ interface phpbb_request_interface
 	*					Pay attention when using these, they are unsanitised!
 	*/
 	public function variable_names($super_global = phpbb_request_interface::REQUEST);
+
+	/**
+	* Returns the original array of the requested super global
+	*
+	* @param	phpbb_request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	*					The super global which will be returned
+	*
+	* @return	array	The original array of the requested super global.
+	*/
+	public function get_super_global($super_global = phpbb_request_interface::REQUEST);
 }

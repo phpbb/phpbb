@@ -57,6 +57,22 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function get_login_data()
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_auth_link_data()
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function logout($data, $new_session)
 	{
 		return;
@@ -66,6 +82,30 @@ abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
 	* {@inheritdoc}
 	*/
 	public function validate_session($user)
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function login_link_has_necessary_data($login_link_data)
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function link_account(array $link_data)
+	{
+		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function unlink_account(array $link_data)
 	{
 		return;
 	}

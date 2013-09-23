@@ -1,14 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript">
-// <![CDATA[
-	onload_functions.push(function () {
-		document.getElementById("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();
-	});
-// ]]>
-</script>
-
-<form action="{S_LOGIN_ACTION}" method="post" id="login">
+<form action="{S_LOGIN_ACTION}" method="post" id="login" data-focus="<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->">
 <div class="panel">
 	<div class="inner">
 
@@ -47,6 +39,10 @@
 		</dl>
 		</fieldset>
 	</div>
+
+	<!-- IF not S_ADMIN_AUTH and PROVIDER_TEMPLATE_FILE -->
+		<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
+	<!-- ENDIF -->
 	</div>
 </div>
 

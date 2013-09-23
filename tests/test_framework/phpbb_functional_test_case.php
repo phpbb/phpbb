@@ -203,7 +203,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb_filesystem(),
+			new phpbb_filesystem(
+				new phpbb_symfony_request(
+					new phpbb_mock_request()
+				),
+				$phpbb_root_path,
+				$php_ext
+			),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$php_ext,
@@ -533,12 +539,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new phpbb_cache_driver_null();
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-		$phpbb_container
-			->expects($this->any())
-			->method('get')
-			->with('cache.driver')
-			->will($this->returnValue($cache_driver));
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('cache.driver', $cache_driver);
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
 		if (!function_exists('utf_clean_string'))
 		{
@@ -928,7 +931,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$hidden_fields = array(
 			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
-				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
 			}),
 		);
 
@@ -957,7 +960,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 	}
 
-	/*
+	/**
 	* Returns the requested parameter from a URL
 	*
 	* @param	string	$url
