@@ -250,13 +250,11 @@ class phpbb_captcha_qa
 	*/
 	function garbage_collect($type = 0)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT c.confirm_id
-			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
-			LEFT JOIN ' . SESSIONS_TABLE . ' s
-				ON (c.session_id = s.session_id)
-			WHERE s.session_id IS NULL' .
+				FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
+				WHERE c.session_id IS NULL' .
 				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
 		$result = $db->sql_query($sql);
 

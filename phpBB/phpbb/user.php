@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/session.php';
+
 /**
 * @ignore
 */
@@ -30,6 +32,9 @@ class phpbb_user extends phpbb_session
 	var $style = array();
 	var $date_format;
 
+	const VIEWONLINE_HIDDEN = 0;
+	const VIEWONLINE_VISIBLE = 1;
+
 	/**
 	* DateTimeZone object holding the timezone of the user
 	*/
@@ -49,6 +54,7 @@ class phpbb_user extends phpbb_session
 	*/
 	function __construct()
 	{
+		parent::__construct();
 		global $phpbb_root_path;
 
 		$this->lang_path = $phpbb_root_path . 'language/';
@@ -320,11 +326,7 @@ class phpbb_user extends phpbb_session
 				// Reset online status if not allowed to hide the session...
 				if (!$auth->acl_get('u_hideonline'))
 				{
-					$sql = 'UPDATE ' . SESSIONS_TABLE . '
-						SET session_viewonline = 1
-						WHERE session_user_id = ' . $this->data['user_id'];
-					$db->sql_query($sql);
-					$this->data['session_viewonline'] = 1;
+					$this->set_viewonline(self::VIEWONLINE_VISIBLE);
 				}
 			}
 			else if (!$this->data['user_allow_viewonline'])
@@ -332,11 +334,7 @@ class phpbb_user extends phpbb_session
 				// the user wants to hide and is allowed to  -> cloaking device on.
 				if ($auth->acl_get('u_hideonline'))
 				{
-					$sql = 'UPDATE ' . SESSIONS_TABLE . '
-						SET session_viewonline = 0
-						WHERE session_user_id = ' . $this->data['user_id'];
-					$db->sql_query($sql);
-					$this->data['session_viewonline'] = 0;
+					$this->set_viewonline(self::VIEWONLINE_VISIBLE);
 				}
 			}
 		}

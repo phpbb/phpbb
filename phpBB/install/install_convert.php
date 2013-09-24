@@ -237,14 +237,14 @@ class install_convert extends module
 					case 'sqlite':
 					case 'firebird':
 						$db->sql_query('DELETE FROM ' . SESSIONS_KEYS_TABLE);
-						$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 					break;
 
 					default:
 						$db->sql_query('TRUNCATE TABLE ' . SESSIONS_KEYS_TABLE);
-						$db->sql_query('TRUNCATE TABLE ' . SESSIONS_TABLE);
 					break;
 				}
+				$session = new phpbb_session();
+				$session->delete_all_sessions();
 
 			break;
 		}
@@ -1544,7 +1544,8 @@ class install_convert extends module
 				OR config_name = 'convert_options'
 				OR config_name = 'convert_db_server'
 				OR config_name = 'convert_db_user'");
-		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
+		$session = new phpbb_session();
+		$session->delete_all_sessions();
 
 		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
 		phpbb_cache_moderators($db, $cache, $auth);

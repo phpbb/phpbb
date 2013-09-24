@@ -150,12 +150,11 @@ class phpbb_captcha_plugins_captcha_abstract
 
 	function garbage_collect($type)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT DISTINCT c.session_id
-			FROM ' . CONFIRM_TABLE . ' c
-			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-			WHERE s.session_id IS NULL' .
+				FROM ' . CONFIRM_TABLE . ' c
+				WHERE c.session_id IS NULL' .
 				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
 		$result = $db->sql_query($sql);
 
