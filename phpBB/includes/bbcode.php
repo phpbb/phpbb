@@ -132,7 +132,7 @@ class bbcode
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			$template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
+			$template = new phpbb\template\twig\twig($phpbb_filesystem, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
 			$template->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');

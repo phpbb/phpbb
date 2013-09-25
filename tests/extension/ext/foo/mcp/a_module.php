@@ -1,5 +1,7 @@
 <?php
 
-class phpbb_ext_foo_mcp_a_module
+namespace foo\mcp;
+
+class a_module
 {
 }

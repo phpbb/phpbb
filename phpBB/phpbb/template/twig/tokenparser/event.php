@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\tokenparser;
+
 /**
 * @ignore
 */
@@ -16,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_tokenparser_event extends Twig_TokenParser
+class event extends \Twig_TokenParser
 {
 	/**
 	 * Parses a token and returns a node.
@@ -25,14 +27,14 @@ class phpbb_template_twig_tokenparser_event extends Twig_TokenParser
 	 *
 	 * @return Twig_NodeInterface A Twig_NodeInterface instance
 	 */
-	public function parse(Twig_Token $token)
+	public function parse(\Twig_Token $token)
 	{
 		$expr = $this->parser->getExpressionParser()->parseExpression();
 
 		$stream = $this->parser->getStream();
-		$stream->expect(Twig_Token::BLOCK_END_TYPE);
+		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-		return new phpbb_template_twig_node_event($expr, $this->parser->getEnvironment(), $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\event($expr, $this->parser->getEnvironment(), $token->getLine(), $this->getTag());
 	}
 
 	/**

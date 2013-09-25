@@ -71,7 +71,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
 				);
-				$json_response = new phpbb_json_response();
+				$json_response = new \phpbb\json_response();
 				$json_response->send($data);
 			}
 
@@ -104,7 +104,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
-		$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+		$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 		$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 		if (!$user->data['is_registered'])
@@ -346,7 +346,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
 				);
-				$json_response = new phpbb_json_response();
+				$json_response = new \phpbb\json_response();
 				$json_response->send($data);
 			}
 
@@ -1164,7 +1164,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
-					if ($uid != $user_id || $request->variable('unwatch', '', false, phpbb_request_interface::GET) != $mode)
+					if ($uid != $user_id || $request->variable('unwatch', '', false, \phpbb\request\request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
@@ -1229,7 +1229,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
-					if ($uid != $user_id || $request->variable('watch', '', false, phpbb_request_interface::GET) != $mode)
+					if ($uid != $user_id || $request->variable('watch', '', false, \phpbb\request\request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
@@ -1272,8 +1272,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	}
 	else
 	{
-		if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, phpbb_request_interface::GET) == $mode) ||
-			(isset($_GET['watch']) && $request->variable('watch', '', false, phpbb_request_interface::GET) == $mode))
+		if ((isset($_GET['unwatch']) && $request->variable('unwatch', '', false, \phpbb\request\request_interface::GET) == $mode) ||
+			(isset($_GET['watch']) && $request->variable('watch', '', false, \phpbb\request\request_interface::GET) == $mode))
 		{
 			login_box();
 		}
@@ -1352,7 +1352,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 */
 function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	$row = phpbb_avatar_manager::clean_row($user_row);
+	$row = \phpbb\avatar\manager::clean_row($user_row);
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
@@ -1367,14 +1367,14 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 */
 function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
 {
-	$row = phpbb_avatar_manager::clean_row($user_row);
+	$row = \phpbb\avatar\manager::clean_row($user_row);
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
 /**
 * Get avatar
 *
-* @param array $row Row cleaned by phpbb_avatar_driver::clean_row
+* @param array $row Row cleaned by \phpbb\avatar\driver\driver::clean_row
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *

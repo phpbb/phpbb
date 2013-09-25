@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * Minimum Requirement is Firebird 2.1
 * @package dbal
 */
-class phpbb_db_driver_firebird extends phpbb_db_driver
+class firebird extends \phpbb\db\driver\driver
 {
 	var $last_query_text = '';
 	var $service_handle = false;

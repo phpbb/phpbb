@@ -34,7 +34,7 @@ class phpbb_search_mysql_test extends phpbb_search_common_test_case
 
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = self::get_search_wrapper('phpbb_search_fulltext_mysql');
+		$class = self::get_search_wrapper('\phpbb\search\fulltext_mysql');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 }

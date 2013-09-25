@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Twig Template class.
 * @package phpBB3
 */
-class phpbb_template_twig extends phpbb_template_base
+class twig extends \phpbb\template\base
 {
 	/**
 	* Path of the cache directory for the template
@@ -32,7 +34,7 @@ class phpbb_template_twig extends phpbb_template_base
 
 	/**
 	* phpBB filesystem
-	* @var phpbb_filesystem
+	* @var \phpbb\filesystem
 	*/
 	protected $phpbb_filesystem;
 
@@ -50,20 +52,20 @@ class phpbb_template_twig extends phpbb_template_base
 
 	/**
 	* phpBB config instance
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* Current user
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* Extension manager.
 	*
-	* @var phpbb_extension_manager
+	* @var \phpbb\extension\manager
 	*/
 	protected $extension_manager;
 
@@ -77,13 +79,13 @@ class phpbb_template_twig extends phpbb_template_base
 	/**
 	* Constructor.
 	*
-	* @param phpbb_filesystem $phpbb_filesystem
-	* @param phpbb_config $config
-	* @param phpbb_user $user
-	* @param phpbb_template_context $context template context
-	* @param phpbb_extension_manager $extension_manager extension manager, if null then template events will not be invoked
+	* @param \phpbb\filesystem $phpbb_filesystem
+	* @param \phpbb\config\config $config
+	* @param \phpbb\user $user
+	* @param \phpbb\template\context $context template context
+	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct(phpbb_filesystem $phpbb_filesystem, $config, $user, phpbb_template_context $context, phpbb_extension_manager $extension_manager = null)
+	public function __construct(\phpbb\filesystem $phpbb_filesystem, $config, $user, \phpbb\template\context $context, \phpbb\extension\manager $extension_manager = null)
 	{
 		$this->phpbb_filesystem = $phpbb_filesystem;
 		$this->phpbb_root_path = $phpbb_filesystem->get_phpbb_root_path();
@@ -96,9 +98,9 @@ class phpbb_template_twig extends phpbb_template_base
 		$this->cachepath = $this->phpbb_root_path . 'cache/twig/';
 
 		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
-		$loader = new phpbb_template_twig_loader('');
+		$loader = new \phpbb\template\twig\loader('');
 
-		$this->twig = new phpbb_template_twig_environment(
+		$this->twig = new \phpbb\template\twig\environment(
 			$this->config,
 			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
 			$this->phpbb_filesystem,
@@ -112,13 +114,13 @@ class phpbb_template_twig extends phpbb_template_base
 		);
 
 		$this->twig->addExtension(
-			new phpbb_template_twig_extension(
+			new \phpbb\template\twig\extension(
 				$this->context,
 				$this->user
 			)
 		);
 
-		$lexer = new phpbb_template_twig_lexer($this->twig);
+		$lexer = new \phpbb\template\twig\lexer($this->twig);
 
 		$this->twig->setLexer($lexer);
 
@@ -132,7 +134,7 @@ class phpbb_template_twig extends phpbb_template_base
 	/**
 	* Clear the cache
 	*
-	* @return phpbb_template
+	* @return \phpbb\template\template
 	*/
 	public function clear_cache()
 	{
@@ -169,7 +171,7 @@ class phpbb_template_twig extends phpbb_template_base
 	* @param array $style_directories The directories to add style paths for
 	* 	E.g. array('ext/foo/bar/styles', 'styles')
 	* 	Default: array('styles') (phpBB's style directory)
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_style($style_directories = array('styles'))
 	{
@@ -230,7 +232,7 @@ class phpbb_template_twig extends phpbb_template_base
 		$this->twig->getLoader()->setPaths($paths);
 
 		// Add all namespaces for all extensions
-		if ($this->extension_manager instanceof phpbb_extension_manager)
+		if ($this->extension_manager instanceof \phpbb\extension\manager)
 		{
 			$names[] = 'all';
 
@@ -269,7 +271,7 @@ class phpbb_template_twig extends phpbb_template_base
 	* This function calls hooks.
 	*
 	* @param string $handle Handle to display
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function display($handle)
 	{
@@ -291,7 +293,7 @@ class phpbb_template_twig extends phpbb_template_base
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @return phpbb_template|string if $return_content is true return string of the compiled handle, otherwise return $this
+	* @return \phpbb\template\template|string if $return_content is true return string of the compiled handle, otherwise return $this
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true)
 	{
@@ -317,7 +319,7 @@ class phpbb_template_twig extends phpbb_template_base
 		$vars = array_merge(
 			$context_vars['.'][0], // To get normal vars
 			array(
-				'definition'	=> new phpbb_template_twig_definition(),
+				'definition'	=> new \phpbb\template\twig\definition(),
 				'user'			=> $this->user,
 				'loops'			=> $context_vars, // To get loops
 			)

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -15,7 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_template_twig_lexer extends Twig_Lexer
+class lexer extends \Twig_Lexer
 {
 	public function tokenize($code, $filename = null)
 	{

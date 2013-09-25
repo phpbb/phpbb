@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package extension
 */
-class phpbb_extension_finder
+class finder
 {
 	protected $extension_manager;
 	protected $filesystem;
@@ -52,17 +54,17 @@ class phpbb_extension_finder
 	/**
 	* Creates a new finder instance with its dependencies
 	*
-	* @param phpbb_extension_manager $extension_manager An extension manager
+	* @param \phpbb\extension\manager $extension_manager An extension manager
 	*            instance that provides the finder with a list of active
 	*            extensions and their locations
-	* @param phpbb_filesystem $filesystem Filesystem instance
+	* @param \phpbb\filesystem $filesystem Filesystem instance
 	* @param string $phpbb_root_path Path to the phpbb root directory
-	* @param phpbb_cache_driver_interface $cache A cache instance or null
+	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager, phpbb_filesystem $filesystem, $phpbb_root_path = '', phpbb_cache_driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
+	public function __construct(\phpbb\extension\manager $extension_manager, \phpbb\filesystem $filesystem, $phpbb_root_path = '', \phpbb\cache\driver\driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
 		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;
@@ -88,7 +90,7 @@ class phpbb_extension_finder
 	* Sets a core path to be searched in addition to extensions
 	*
 	* @param string $core_path The path relative to phpbb_root_path
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function core_path($core_path)
 	{
@@ -104,7 +106,7 @@ class phpbb_extension_finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $suffix A filename suffix
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function suffix($suffix)
 	{
@@ -121,7 +123,7 @@ class phpbb_extension_finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $extension_suffix A filename suffix
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function extension_suffix($extension_suffix)
 	{
@@ -137,7 +139,7 @@ class phpbb_extension_finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $core_suffix A filename suffix
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function core_suffix($core_suffix)
 	{
@@ -149,7 +151,7 @@ class phpbb_extension_finder
 	* Sets the prefix all files found in extensions and core must match
 	*
 	* @param string $prefix A filename prefix
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function prefix($prefix)
 	{
@@ -162,7 +164,7 @@ class phpbb_extension_finder
 	* Sets a prefix all files found in extensions must match
 	*
 	* @param string $extension_prefix A filename prefix
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function extension_prefix($extension_prefix)
 	{
@@ -174,7 +176,7 @@ class phpbb_extension_finder
 	* Sets a prefix all files found in the core path must match
 	*
 	* @param string $core_prefix A filename prefix
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function core_prefix($core_prefix)
 	{
@@ -189,7 +191,7 @@ class phpbb_extension_finder
 	* the current directory.
 	*
 	* @param string $directory
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function directory($directory)
 	{
@@ -202,7 +204,7 @@ class phpbb_extension_finder
 	* Sets a directory all files found in extensions must be contained in
 	*
 	* @param string $extension_directory
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function extension_directory($extension_directory)
 	{
@@ -214,7 +216,7 @@ class phpbb_extension_finder
 	* Sets a directory all files found in the core path must be contained in
 	*
 	* @param string $core_directory
-	* @return phpbb_extension_finder This object for chaining calls
+	* @return \phpbb\extension\finder This object for chaining calls
 	*/
 	public function core_directory($core_directory)
 	{
@@ -275,9 +277,17 @@ class phpbb_extension_finder
 		$classes = array();
 		foreach ($files as $file => $ext_name)
 		{
-			$file = preg_replace('#^(phpbb|includes)/#', '', $file);
-
-			$classes[] = 'phpbb_' . str_replace('/', '_', substr($file, 0, -strlen('.' . $this->php_ext)));
+			$class = substr($file, 0, -strlen('.' . $this->php_ext));
+			if ($ext_name === '/' && preg_match('#^includes/#', $file))
+			{
+				$class = preg_replace('#^includes/#', '', $class);
+				$classes[] = 'phpbb_' . str_replace('/', '_', $class);
+			}
+			else
+            {
+                $class = preg_replace('#^ext/#', '', $class);
+				$classes[] = str_replace('/', '\\', $class);
+			}
 		}
 		return $classes;
 	}
@@ -473,7 +483,7 @@ class phpbb_extension_finder
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
-			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+			$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($iterator as $file_info)
 			{
 				$filename = $file_info->getFilename();

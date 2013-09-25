@@ -43,10 +43,10 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_default_implementation',
-				'phpbb_ext_bar_my_hidden_class',
-				'phpbb_ext_foo_a_class',
-				'phpbb_ext_foo_b_class',
+				'bar\my\hidden_class',
+				'foo\a_class',
+				'foo\b_class',
+				'phpbb\default\implementation',
 			),
 			$classes
 		);
@@ -88,8 +88,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_default_implementation',
-				'phpbb_ext_bar_my_hidden_class',
+				'bar\my\hidden_class',
+				'phpbb\default\implementation',
 			),
 			$classes
 		);
@@ -105,9 +105,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_default_implementation',
-				'phpbb_ext_foo_sub_type_alternative',
-				'phpbb_ext_foo_type_alternative',
+				'foo\sub\type\alternative',
+				'foo\type\alternative',
+				'phpbb\default\implementation',
 			),
 			$classes
 		);
@@ -122,7 +122,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_type_alternative',
+				'foo\type\alternative',
 			),
 			$classes
 		);
@@ -137,7 +137,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_sub_type_alternative',
+				'foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -152,7 +152,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_sub_type_alternative',
+				'foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -168,8 +168,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'phpbb_ext_foo_type_alternative',
-				'phpbb_ext_foo_type_dummy_empty',
+				'foo\type\alternative',
+				'foo\type\dummy\empty',
 			),
 			$classes
 		);
@@ -181,7 +181,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new phpbb_extension_finder($this->extension_manager, new phpbb_filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
+		$finder = new \phpbb\extension\finder($this->extension_manager, new \phpbb\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
 		$files = $finder->suffix('_class.php')->get_files();
 
 		$expected_files = array(
@@ -219,9 +219,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'is_dir' => false,
 		);
 
-		$finder = new phpbb_extension_finder(
+		$finder = new \phpbb\extension\finder(
 			$this->extension_manager,
-			new phpbb_filesystem(),
+			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache(array(
 				'_ext_finder' => array(

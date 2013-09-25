@@ -30,7 +30,7 @@ class phpbb_cache_apc_driver_test extends phpbb_cache_common_test_case
 			self::markTestSkipped('APC extension is not loaded');
 		}
 
-		$php_ini = new phpbb_php_ini;
+		$php_ini = new \phpbb\php\ini;
 
 		if (!$php_ini->get_bool('apc.enabled'))
 		{
@@ -47,7 +47,7 @@ class phpbb_cache_apc_driver_test extends phpbb_cache_common_test_case
 	{
 		parent::setUp();
 
-		$this->driver = new phpbb_cache_driver_apc;
+		$this->driver = new \phpbb\cache\driver\apc;
 		$this->driver->purge();
 	}
 }

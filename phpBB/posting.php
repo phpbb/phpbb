@@ -697,7 +697,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, phpbb_request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
+	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));

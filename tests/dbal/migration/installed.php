@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_dbal_migration_installed extends phpbb_db_migration
+class phpbb_dbal_migration_installed extends \phpbb\db\migration\migration
 {
 	function effectively_installed()
 	{

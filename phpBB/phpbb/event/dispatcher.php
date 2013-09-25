@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\event;
+
 /**
 * @ignore
 */
@@ -31,11 +33,11 @@ use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 *     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
-class phpbb_event_dispatcher extends ContainerAwareEventDispatcher
+class dispatcher extends ContainerAwareEventDispatcher
 {
 	public function trigger_event($eventName, $data = array())
 	{
-		$event = new phpbb_event_data($data);
+		$event = new \phpbb\event\data($data);
 		$this->dispatch($eventName, $event);
 		return $event->get_data_filtered(array_keys($data));
 	}

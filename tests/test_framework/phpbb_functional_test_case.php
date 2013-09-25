@@ -150,7 +150,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof phpbb_db_driver))
+		if (!($this->db instanceof \phpbb\db\driver\driver))
 		{
 			$dbms = self::$config['dbms'];
 			$this->db = new $dbms();
@@ -163,7 +163,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
-			$this->cache = new phpbb_cache_driver_file;
+			$this->cache = new \phpbb\cache\driver\file;
 		}
 
 		return $this->cache;
@@ -182,11 +182,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$config = new phpbb_config(array());
+		$config = new \phpbb\config\config(array());
 		$db = $this->get_db();
-		$db_tools = new phpbb_db_tools($db);
+		$db_tools = new \phpbb\db\tools($db);
 
-		$migrator = new phpbb_db_migrator(
+		$migrator = new \phpbb\db\migrator(
 			$config,
 			$db,
 			$db_tools,
@@ -199,12 +199,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
 
-		$extension_manager = new phpbb_extension_manager(
+		$extension_manager = new \phpbb\extension\manager(
 			$container,
 			$db,
 			$config,
-			new phpbb_filesystem(
-				new phpbb_symfony_request(
+			new phpbb\filesystem(
+				new phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				$phpbb_root_path,
@@ -271,7 +271,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			// Installer uses 3.0-style dbms name
-			'dbms'			=> str_replace('phpbb_db_driver_', '',  self::$config['dbms']),
+			'dbms'			=> str_replace('phpbb\db\driver\\', '',  self::$config['dbms']),
 			'dbhost'		=> self::$config['dbhost'],
 			'dbport'		=> self::$config['dbport'],
 			'dbname'		=> self::$config['dbname'],
@@ -477,7 +477,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Required by unique_id
 		global $config;
 
-		$config = new phpbb_config(array());
+		$config = new \phpbb\config\config(array());
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
@@ -490,7 +490,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new phpbb_cache_driver_null();
+		$cache_driver = new \phpbb\cache\driver\null();
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
@@ -527,18 +527,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
 
-		$config = new phpbb_config(array());
+		$config = new \phpbb\config\config(array());
 		$config['coppa_enable'] = 0;
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('phpbb_user');
-		$auth = $this->getMock('phpbb_auth');
+		$user = $this->getMock('\phpbb\user');
+		$auth = $this->getMock('\phpbb\auth\auth');
 
-		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new phpbb_cache_driver_null();
+		$cache_driver = new \phpbb\cache\driver\null();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
@@ -566,18 +566,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
 
-		$config = new phpbb_config(array());
+		$config = new \phpbb\config\config(array());
 		$config['coppa_enable'] = 0;
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('phpbb_user');
-		$auth = $this->getMock('phpbb_auth');
+		$user = $this->getMock('\phpbb\user');
+		$auth = $this->getMock('\phpbb\auth\auth');
 
-		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new phpbb_cache_driver_null();
+		$cache_driver = new \phpbb\cache\driver\null();
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())

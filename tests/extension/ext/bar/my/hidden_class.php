@@ -1,5 +1,7 @@
 <?php
 
-class phpbb_ext_bar_my_hidden_class
+namespace bar\my;
+
+class hidden_class
 {
 }

@@ -9,23 +9,23 @@ imports:
 
 services:
     acl.permissions:
-        class: phpbb_permissions
+        class: phpbb\permissions
         arguments:
             - @dispatcher
             - @user
 
     auth:
-        class: phpbb_auth
+        class: phpbb\auth\auth
 
     avatar.manager:
-        class: phpbb_avatar_manager
+        class: phpbb\avatar\manager
         arguments:
             - @config
             - @avatar.driver_collection
             - @service_container
 
     cache:
-        class: phpbb_cache_service
+        class: phpbb\cache\service
         arguments:
              - @cache.driver
              - @config
@@ -37,12 +37,12 @@ services:
         class: %cache.driver.class%
 
     cache.driver.install:
-        class: phpbb_cache_driver_file
+        class: phpbb\cache\driver\file
 
     class_loader:
-        class: phpbb_class_loader
+        class: phpbb\class_loader
         arguments:
-            - phpbb_
+            - phpbb\
             - %core.root_path%includes/
             - %core.php_ext%
         calls:
@@ -50,9 +50,9 @@ services:
             - [set_cache, [@cache.driver]]
 
     class_loader.ext:
-        class: phpbb_class_loader
+        class: phpbb\class_loader
         arguments:
-            - phpbb_ext_
+            - \
             - %core.root_path%ext/
             - %core.php_ext%
         calls:
@@ -60,20 +60,20 @@ services:
             - [set_cache, [@cache.driver]]
 
     config:
-        class: phpbb_config_db
+        class: phpbb\config\db
         arguments:
             - @dbal.conn
             - @cache.driver
             - %tables.config%
 
     config_text:
-        class: phpbb_config_db_text
+        class: phpbb\config\db_text
         arguments:
             - @dbal.conn
             - %tables.config_text%
 
     content.visibility:
-        class: phpbb_content_visibility
+        class: phpbb\content_visibility
         arguments:
             - @auth
             - @dbal.conn
@@ -86,7 +86,7 @@ services:
             - %tables.users%
 
     controller.helper:
-        class: phpbb_controller_helper
+        class: phpbb\controller\helper
         arguments:
             - @template
             - @user
@@ -95,35 +95,35 @@ services:
             - %core.php_ext%
 
     controller.resolver:
-        class: phpbb_controller_resolver
+        class: phpbb\controller\resolver
         arguments:
             - @user
             - @service_container
             - @template
 
     cron.task_collection:
-        class: phpbb_di_service_collection
+        class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: cron.task }
 
     cron.manager:
-        class: phpbb_cron_manager
+        class: phpbb\cron\manager
         arguments:
             - @cron.task_collection
             - %core.root_path%
             - %core.php_ext%
 
     cron.lock_db:
-        class: phpbb_lock_db
+        class: phpbb\lock\db
         arguments:
             - cron_lock
             - @config
             - @dbal.conn
 
     dispatcher:
-        class: phpbb_event_dispatcher
+        class: phpbb\event\dispatcher
         arguments:
             - @service_container
 
@@ -133,12 +133,12 @@ services:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
     dbal.tools:
-        class: phpbb_db_tools
+        class: phpbb\db\tools
         arguments:
             - @dbal.conn
 
     event.subscriber_loader:
-        class: phpbb_event_extension_subscriber_loader
+        class: phpbb\event\extension_subscriber_loader
         arguments:
             - @dispatcher
             - @ext.manager
@@ -146,7 +146,7 @@ services:
             - [load, []]
 
     ext.manager:
-        class: phpbb_extension_manager
+        class: phpbb\extension\manager
         arguments:
             - @service_container
             - @dbal.conn
@@ -158,7 +158,7 @@ services:
             - @cache.driver
 
     ext.finder:
-        class: phpbb_extension_finder
+        class: phpbb\extension\finder
         arguments:
             - @ext.manager
             - @filesystem
@@ -168,7 +168,7 @@ services:
             - _ext_finder
 
     filesystem:
-        class: phpbb_filesystem
+        class: phpbb\filesystem
         arguments:
             - @symfony_request
             - %core.root_path%
@@ -176,13 +176,13 @@ services:
             - %core.adm_relative_path%
 
     groupposition.legend:
-        class: phpbb_groupposition_legend
+        class: phpbb\groupposition\legend
         arguments:
             - @dbal.conn
             - @user
 
     groupposition.teampage:
-        class: phpbb_groupposition_teampage
+        class: phpbb\groupposition\teampage
         arguments:
             - @dbal.conn
             - @user
@@ -195,14 +195,14 @@ services:
             - @controller.resolver
 
     hook_finder:
-        class: phpbb_hook_finder
+        class: phpbb\hook\finder
         arguments:
             - %core.root_path%
             - %core.php_ext%
             - @cache.driver
 
     kernel_request_subscriber:
-        class: phpbb_event_kernel_request_subscriber
+        class: phpbb\event\kernel_request_subscriber
         arguments:
             - @ext.finder
             - %core.root_path%
@@ -211,7 +211,7 @@ services:
             - { name: kernel.event_subscriber }
 
     kernel_exception_subscriber:
-        class: phpbb_event_kernel_exception_subscriber
+        class: phpbb\event\kernel_exception_subscriber
         arguments:
             - @template
             - @user
@@ -219,12 +219,12 @@ services:
             - { name: kernel.event_subscriber }
 
     kernel_terminate_subscriber:
-        class: phpbb_event_kernel_terminate_subscriber
+        class: phpbb\event\kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
 
     log:
-        class: phpbb_log
+        class: phpbb\log\log
         arguments:
             - @dbal.conn
             - @user
@@ -236,7 +236,7 @@ services:
             - %tables.log%
 
     notification_manager:
-        class: phpbb_notification_manager
+        class: phpbb\notification\manager
         arguments:
             - @notification.type_collection
             - @notification.method_collection
@@ -252,18 +252,18 @@ services:
             - %tables.user_notifications%
 
     php_ini:
-        class: phpbb_php_ini
+        class: phpbb\php\ini
 
     request:
-        class: phpbb_request
+        class: phpbb\request\request
 
     symfony_request:
-        class: phpbb_symfony_request
+        class: phpbb\symfony_request
         arguments:
             - @request
 
     template:
-        class: phpbb_template_twig
+        class: phpbb\template\twig\twig
         arguments:
             - @filesystem
             - @config
@@ -272,13 +272,13 @@ services:
             - @ext.manager
 
     template_context:
-        class: phpbb_template_context
+        class: phpbb\template\context
 
     user:
-        class: phpbb_user
+        class: phpbb\user
 
     user_loader:
-        class: phpbb_user_loader
+        class: phpbb\user_loader
         arguments:
             - @dbal.conn
             - %core.root_path%

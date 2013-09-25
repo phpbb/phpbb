@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\php;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB
 */
-class phpbb_php_ini
+class ini
 {
 	/**
 	* Simple wrapper for ini_get()

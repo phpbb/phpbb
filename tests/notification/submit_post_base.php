@@ -53,7 +53,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		$db = $this->db;
 
 		// Auth
-		$auth = $this->getMock('phpbb_auth');
+		$auth = $this->getMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'),
@@ -65,12 +65,12 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 			)));
 
 		// Config
-		$config = new phpbb_config(array('num_topics' => 1,'num_posts' => 1,));
+		$config = new \phpbb\config\config(array('num_topics' => 1,'num_posts' => 1,));
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
-		$cache = new phpbb_cache_service(
-			new phpbb_cache_driver_null(),
+		$cache = new \phpbb\cache\service(
+			new \phpbb\cache\driver\null(),
 			$config,
 			$db,
 			$phpbb_root_path,
@@ -81,7 +81,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// User
-		$user = $this->getMock('phpbb_user');
+		$user = $this->getMock('\phpbb\user');
 		$user->ip = '';
 		$user->data = array(
 			'user_id'		=> 2,
@@ -91,21 +91,21 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		);
 
 		// Request
-		$type_cast_helper = $this->getMock('phpbb_request_type_cast_helper_interface');
-		$request = $this->getMock('phpbb_request');
+		$type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
+		$request = $this->getMock('\phpbb\request\request');
 
 		// Container
 		$phpbb_container = new phpbb_mock_container_builder();
-		$phpbb_container->set('content.visibility', new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 
-		$user_loader = new phpbb_user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Notification Types
 		$notification_types = array('quote', 'bookmark', 'post', 'post_in_queue', 'topic', 'approve_topic', 'approve_post');
 		$notification_types_array = array();
 		foreach ($notification_types as $type)
 		{
-			$class_name = 'phpbb_notification_type_' . $type;
+			$class_name = '\phpbb\notification\type\\' . $type;
 			$class = new $class_name(
 				$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
 				$phpbb_root_path, $phpEx,
@@ -117,7 +117,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 		}
 
 		// Notification Manager
-		$phpbb_notifications = new phpbb_notification_manager($notification_types_array, array(),
+		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, array(),
 			$phpbb_container, $user_loader, $db, $cache, $user,
 			$phpbb_root_path, $phpEx,
 			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);

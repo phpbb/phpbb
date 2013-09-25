@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search\sphinx;
+
 /**
 * @ignore
 */
@@ -16,10 +18,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* phpbb_search_sphinx_config_variable
+* \phpbb\search\sphinx\config_variable
 * Represents a single variable inside the sphinx configuration
 */
-class phpbb_search_sphinx_config_variable
+class config_variable
 {
 	private $name;
 	private $value;

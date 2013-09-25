@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\controller;
+
 /**
 * @ignore
 */
@@ -21,23 +23,23 @@ use Symfony\Component\HttpFoundation\Response;
 * Controller helper class, contains methods that do things for controllers
 * @package phpBB3
 */
-class phpbb_controller_helper
+class helper
 {
 	/**
 	* Template object
-	* @var phpbb_template
+	* @var \phpbb\template\template
 	*/
 	protected $template;
 
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* config object
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
@@ -56,12 +58,13 @@ class phpbb_controller_helper
 	/**
 	* Constructor
 	*
-	* @param phpbb_template $template Template object
-	* @param phpbb_user $user User object
+	* @param \phpbb\template\template $template Template object
+    * @param \phpbb\user $user User object
+    * @param \phpbb\config\config $config Config object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template, phpbb_user $user, phpbb_config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;

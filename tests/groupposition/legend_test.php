@@ -20,7 +20,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		return array(
 			array(1, 0, ''),
 			array(3, 2, ''),
-			array(4, 0, 'phpbb_groupposition_exception'),
+			array(4, 0, '\phpbb\groupposition\exception'),
 		);
 	}
 
@@ -33,7 +33,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
 		if ($throws_exception)
@@ -41,7 +41,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 			$this->setExpectedException($throws_exception);
 		}
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));
 	}
 
@@ -51,10 +51,10 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals(2, $test_class->get_group_count());
 	}
 
@@ -91,10 +91,10 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals($expected_added, $test_class->add_group($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -179,10 +179,10 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals($expected_deleted, $test_class->delete_group($group_id, $skip_group));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -234,10 +234,10 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals($excepted_moved, $test_class->move_up($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -289,10 +289,10 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals($excepted_moved, $test_class->move_down($group_id));
 
 		$result = $db->sql_query('SELECT group_id, group_legend
@@ -387,10 +387,10 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_legend($db, $user);
+		$test_class = new \phpbb\groupposition\legend($db, $user);
 		$this->assertEquals($excepted_moved, $test_class->move($group_id, $increment));
 
 		$result = $db->sql_query('SELECT group_id, group_legend

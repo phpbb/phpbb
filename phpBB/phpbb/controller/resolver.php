@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\controller;
+
 /**
 * @ignore
 */
@@ -23,11 +25,11 @@ use Symfony\Component\HttpFoundation\Request;
 * Controller manager class
 * @package phpBB3
 */
-class phpbb_controller_resolver implements ControllerResolverInterface
+class resolver implements ControllerResolverInterface
 {
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
@@ -38,19 +40,19 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	protected $container;
 
 	/**
-	* phpbb_template object
-	* @var phpbb_template
+	* phpbb\template\template object
+	* @var phpbb\template\template
 	*/
 	protected $template;
 
 	/**
 	* Construct method
 	*
-	* @param phpbb_user $user User Object
+	* @param \phpbb\user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
-	* @param phpbb_template $template
+	* @param \phpbb\template\template $template
 	*/
-	public function __construct(phpbb_user $user, ContainerInterface $container, phpbb_template $template = null)
+	public function __construct(\phpbb\user $user, ContainerInterface $container, \phpbb\template\template $template = null)
 	{
 		$this->user = $user;
 		$this->container = $container;
@@ -62,7 +64,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	*
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @return bool|Callable Callable or false
-	* @throws phpbb_controller_exception
+	* @throws \phpbb\controller\exception
 	*/
 	public function getController(Request $request)
 	{
@@ -70,20 +72,20 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 
 		if (!$controller)
 		{
-			throw new phpbb_controller_exception($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
+			throw new \phpbb\controller\exception($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
 		}
 
 		// Require a method name along with the service name
 		if (stripos($controller, ':') === false)
 		{
-			throw new phpbb_controller_exception($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
+			throw new \phpbb\controller\exception($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
 		}
 
 		list($service, $method) = explode(':', $controller);
 
 		if (!$this->container->has($service))
 		{
-			throw new phpbb_controller_exception($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
+			throw new \phpbb\controller\exception($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
 		}
 
 		$controller_object = $this->container->get($service);
@@ -93,12 +95,12 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 		* the style paths for the extension (the ext author can change them
 		* if necessary).
 		*/
-		$controller_dir = explode('_', get_class($controller_object));
+		$controller_dir = explode('\\', get_class($controller_object));
 
-		// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
-		if (!is_null($this->template) && isset($controller_dir[3]) && $controller_dir[1] === 'ext')
+		// 0 vendor, 1 extension name, ...
+		if (!is_null($this->template) && isset($controller_dir[1]))
 		{
-			$controller_style_dir = 'ext/' . $controller_dir[2] . '/' . $controller_dir[3] . '/styles';
+			$controller_style_dir = 'ext/' . $controller_dir[0] . '/' . $controller_dir[1] . '/styles';
 
 			if (is_dir($controller_style_dir))
 			{
@@ -118,13 +120,13 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param mixed $controller A callable (controller class, method)
 	* @return bool False
-	* @throws phpbb_controller_exception
+	* @throws \phpbb\controller\exception
 	*/
 	public function getArguments(Request $request, $controller)
 	{
 		// At this point, $controller contains the object and method name
 		list($object, $method) = $controller;
-		$mirror = new ReflectionMethod($object, $method);
+		$mirror = new \ReflectionMethod($object, $method);
 
 		$arguments = array();
 		$parameters = $mirror->getParameters();
@@ -145,7 +147,7 @@ class phpbb_controller_resolver implements ControllerResolverInterface
 			}
 			else
 			{
-				throw new phpbb_controller_exception($this->user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
+				throw new \phpbb\controller\exception($this->user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
 			}
 		}
 

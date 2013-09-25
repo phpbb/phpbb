@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_mock_sql_insert_buffer extends phpbb_db_sql_insert_buffer
+class phpbb_mock_sql_insert_buffer extends \phpbb\db\sql_insert_buffer
 {
 	public function flush()
 	{

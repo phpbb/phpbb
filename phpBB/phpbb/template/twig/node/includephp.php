@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\node;
+
 /**
 * @ignore
 */
@@ -16,12 +18,12 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_includephp extends Twig_Node
+class includephp extends \Twig_Node
 {
 	/** @var Twig_Environment */
 	protected $environment;
 
-	public function __construct(Twig_Node_Expression $expr, phpbb_template_twig_environment $environment, $ignoreMissing = false, $lineno, $tag = null)
+	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $ignoreMissing = false, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -33,7 +35,7 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 	 *
 	 * @param Twig_Compiler A Twig_Compiler instance
 	 */
-	public function compile(Twig_Compiler $compiler)
+	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 
@@ -80,7 +82,7 @@ class phpbb_template_twig_node_includephp extends Twig_Node
 		if ($this->getAttribute('ignore_missing')) {
 			$compiler
 				->outdent()
-				->write("} catch (Twig_Error_Loader \$e) {\n")
+				->write("} catch (\Twig_Error_Loader \$e) {\n")
 				->indent()
 				->write("// ignore missing template\n")
 				->outdent()
