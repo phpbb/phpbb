@@ -22,7 +22,7 @@ class namespaces extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('if', array(
-				(preg_match('#^phpbb_#', $this->config['search_type'])),
+				(preg_match('#^phpbb_search_#', $this->config['search_type'])),
 				array('config.update', array('search_type', str_replace('phpbb_search_', 'phpbb\\search\\', $this->config['search_type']))),
 			)),
 		);
