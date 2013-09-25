@@ -2205,6 +2205,32 @@ function tracking_unserialize($string, $max_depth = 3)
 }
 
 // Pagination functions
+/**
+* Generate a pagination link based on the url and the page information
+*
+* @param string $base_url is url prepended to all links generated within the function
+*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
+*							for the page. Also be sure to specify the pagination path information into the start_name argument
+* @param string $on_page is the page for which we want to generate the link
+* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
+*							If you use page numbers inside your controller route, start name should be the string
+*							that should be removed for the first page (example: /page/%d)
+* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
+* @return URL for the requested page
+*/
+function phpbb_generate_page_link($base_url, $on_page, $start_name, $per_page)
+{
+
+	if (strpos($start_name, '%d') !== false)
+	{
+		return ($on_page > 1) ? sprintf($base_url, (int) $on_page) : str_replace($start_name, '', $base_url);
+	}
+	else
+	{
+		$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
+		return ($on_page > 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 1) * $per_page) : $base_url;
+	}
+}
 
 /**
 * Generate template rendered pagination
@@ -2212,8 +2238,12 @@ function tracking_unserialize($string, $max_depth = 3)
 *
 * @param object $template the template object
 * @param string $base_url is url prepended to all links generated within the function
+*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
+*							for the page. Also be sure to specify the pagination path information into the start_name argument
 * @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
 * @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
+*							If you use page numbers inside your controller route, start name should be the string
+*							that should be removed for the first page (example: /page/%d)
 * @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
 * @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
 * @param int $start_item the item which should be considered currently active, used to determine the page we're on
@@ -2233,7 +2263,6 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
-	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
 
 	if ($reverse_count)
 	{
@@ -2261,11 +2290,14 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
+	$u_previous_page = $u_next_page = '';
 	if ($on_page != 1)
 	{
+		$u_previous_page = phpbb_generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
+
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+			'PAGE_URL'		=> $u_previous_page,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> true,
 			'S_IS_NEXT'		=> false,
@@ -2279,15 +2311,13 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	$at_page = 1;
 	do
 	{
-		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . $start_name . '=' . (($at_page - 1) * $per_page));
-
 		// We decide whether to display the ellipsis during the loop. The ellipsis is always
 		// displayed as either the second or penultimate item in the list. So are we at either
 		// of those points and of course do we even need to display it, i.e. is the list starting
 		// on at least page 3 and ending three pages before the final item.
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> $at_page,
-			'PAGE_URL'		=> $page_url,
+			'PAGE_URL'		=> phpbb_generate_page_link($base_url, $at_page, $start_name, $per_page),
 			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
 			'S_IS_NEXT'		=> false,
 			'S_IS_PREV'		=> false,
@@ -2317,9 +2347,11 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	if ($on_page != $total_pages)
 	{
+		$u_next_page = phpbb_generate_page_link($base_url, $on_page + 1, $start_name, $per_page);
+
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
+			'PAGE_URL'		=> $u_next_page,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> false,
 			'S_IS_NEXT'		=> true,
@@ -2344,13 +2376,11 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
 
-	$previous_page = ($on_page != 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page) : '';
-
 	$template_array = array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
-		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $u_previous_page : '',
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
