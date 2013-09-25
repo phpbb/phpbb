@@ -284,8 +284,8 @@ class finder
 				$classes[] = 'phpbb_' . str_replace('/', '_', $class);
 			}
 			else
-            {
-                $class = preg_replace('#^ext/#', '', $class);
+			{
+				$class = preg_replace('#^ext/#', '', $class);
 				$classes[] = '\\' . str_replace('/', '\\', $class);
 			}
 		}

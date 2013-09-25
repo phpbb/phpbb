@@ -43,10 +43,10 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'bar\my\hidden_class',
-				'foo\a_class',
-				'foo\b_class',
-				'phpbb\default\implementation',
+				'\bar\my\hidden_class',
+				'\foo\a_class',
+				'\foo\b_class',
+				'\phpbb\default\implementation',
 			),
 			$classes
 		);
@@ -67,7 +67,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_prefix_get_directories()
 	{
 		$dirs = $this->finder
-            ->prefix('ty')
+			->prefix('ty')
 			->get_directories();
 
 		sort($dirs);
@@ -88,8 +88,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'bar\my\hidden_class',
-				'phpbb\default\implementation',
+				'\bar\my\hidden_class',
+				'\phpbb\default\implementation',
 			),
 			$classes
 		);
@@ -105,9 +105,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'foo\sub\type\alternative',
-				'foo\type\alternative',
-				'phpbb\default\implementation',
+				'\foo\sub\type\alternative',
+				'\foo\type\alternative',
+				'\phpbb\default\implementation',
 			),
 			$classes
 		);
@@ -122,7 +122,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'foo\type\alternative',
+				'\foo\type\alternative',
 			),
 			$classes
 		);
@@ -137,7 +137,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'foo\sub\type\alternative',
+				'\foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -152,7 +152,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'foo\sub\type\alternative',
+				'\foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -168,8 +168,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'foo\type\alternative',
-				'foo\type\dummy\empty',
+				'\foo\type\alternative',
+				'\foo\type\dummy\empty',
 			),
 			$classes
 		);
