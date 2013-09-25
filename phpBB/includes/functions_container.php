@@ -152,12 +152,12 @@ function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
 	return phpbb_create_compiled_container(
 		$config_file,
 		array(
-			new phpbb_di_extension_config($config_file),
-			new phpbb_di_extension_core($config_path),
+			new phpbb\di\extension\config($config_file),
+			new phpbb\di\extension\core($config_path),
 		),
 		array(
-			new phpbb_di_pass_collection_pass(),
-			new phpbb_di_pass_kernel_pass(),
+			new phpbb\di\pass\collection_pass(),
+			new phpbb\di\pass\kernel_pass(),
 		),
 		$phpbb_root_path,
 		$php_ext

@@ -57,7 +57,7 @@ found below. More information on configuration options can be found on the
 wiki (see below).
 
     <?php
-    $dbms = 'phpbb_db_driver_mysqli';
+    $dbms = 'phpbb\db\driver\mysqli';
     $dbhost = 'localhost';
     $dbport = '';
     $dbname = 'database';

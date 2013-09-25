@@ -59,7 +59,7 @@ echo "USE $dbname;$newline$newline";
 require($phpbb_root_path . 'includes/db/schema_data.' . $phpEx);
 require($phpbb_root_path . 'phpbb/db/tools.' . $phpEx);
 
-$dbms_type_map = phpbb_db_tools::get_dbms_type_map();
+$dbms_type_map = phpbb\db\tools::get_dbms_type_map();
 
 foreach ($schema_data as $table_name => $table_data)
 {
