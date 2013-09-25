@@ -388,12 +388,13 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* Event before a user is deleted
 	*
 	* @event core.delete_user_before
-	* @var	string	mode			Mode of deletion (retain/delete posts)
-	* @var	int		user_id			ID of the deleted user
-	* @var	mixed	post_username	Guest username that is being used or false
+	* @var	string	mode		Mode of deletion (retain/delete posts)
+	* @var	array	user_ids	IDs of the deleted user
+	* @var	mixed	retain_username	True if username should be retained
+	*				or false if not
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'post_username');
+	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
 
 	// Before we begin, we will remove the reports the user issued.
@@ -616,12 +617,13 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* Event after a user is deleted
 	*
 	* @event core.delete_user_after
-	* @var	string	mode			Mode of deletion (retain/delete posts)
-	* @var	int		user_id			ID of the deleted user
-	* @var	mixed	post_username	Guest username that is being used or false
+	* @var	string	mode		Mode of deletion (retain/delete posts)
+	* @var	array	user_ids	IDs of the deleted user
+	* @var	mixed	retain_username	True if username should be retained
+	*				or false if not
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'post_username');
+	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
 
 	// Reset newest user info if appropriate
