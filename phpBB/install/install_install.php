@@ -102,7 +102,7 @@ class install_install extends module
 			break;
 
 			case 'final':
-				// Enable super globals to prevent issues with the new phpbb_request object
+				// Enable super globals to prevent issues with the new \phpbb\request\request object
 				$request->enable_super_globals();
 
 				// Create a normal container now
@@ -1179,7 +1179,7 @@ class install_install extends module
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
 
-		// Deal with any special comments
+		// Deal with any special comments and characters
 		switch ($data['dbms'])
 		{
 			case 'mssql':
@@ -1190,6 +1190,11 @@ class install_install extends module
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
+			break;
+
+			case 'mysql':
+			case 'mysqli':
+				$sql_query = str_replace('\\', '\\\\', $sql_query);
 			break;
 		}
 
@@ -1438,12 +1443,12 @@ class install_install extends module
 		include_once($phpbb_root_path . 'phpbb/search/fulltext_native.' . $phpEx);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		$error = false;
-		$search = new phpbb_search_fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
@@ -1753,7 +1758,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
@@ -1827,7 +1832,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new phpbb_config_db($db, new phpbb_cache_driver_null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
@@ -1892,8 +1897,8 @@ class install_install extends module
 	* "installs" means it adds all migrations to the migrations table, but does not
 	* perform any of the actions in the migrations.
 	*
-	* @param phpbb_extension_manager $extension_manager
-	* @param phpbb_db_migrator $migrator
+	* @param \phpbb\extension\manager $extension_manager
+	* @param \phpbb\db\migrator $migrator
 	*/
 	function populate_migrations($extension_manager, $migrator)
 	{

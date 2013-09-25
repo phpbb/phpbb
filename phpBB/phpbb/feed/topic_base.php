@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\feed;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-abstract class phpbb_feed_topic_base extends phpbb_feed_base
+abstract class topic_base extends \phpbb\feed\base
 {
 	var $num_items = 'feed_limit_topic';
 

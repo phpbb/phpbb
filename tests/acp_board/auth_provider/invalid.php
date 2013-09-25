@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_auth_provider_acp_board_invalid
+namespace phpbb\auth\provider\acp;
+
+class board_invalid
 {
 
 }

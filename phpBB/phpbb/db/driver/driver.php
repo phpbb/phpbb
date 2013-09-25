@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Database Abstraction Layer
 * @package dbal
 */
-class phpbb_db_driver
+class driver
 {
 	var $db_connect_id;
 	var $query_result;

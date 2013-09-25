@@ -112,7 +112,7 @@ class phpbb_captcha_qa
 	{
 		global $db;
 
-		$db_tool = new phpbb_db_tools($db);
+		$db_tool = new \phpbb\db\tools($db);
 
 		return $db_tool->sql_table_exists(CAPTCHA_QUESTIONS_TABLE);
 	}
@@ -295,7 +295,7 @@ class phpbb_captcha_qa
 	{
 		global $db;
 
-		$db_tool = new phpbb_db_tools($db);
+		$db_tool = new \phpbb\db\tools($db);
 
 		$tables = array(CAPTCHA_QUESTIONS_TABLE, CAPTCHA_ANSWERS_TABLE, CAPTCHA_QA_CONFIRM_TABLE);
 

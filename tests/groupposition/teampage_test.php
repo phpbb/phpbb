@@ -22,7 +22,7 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 		return array(
 			array(2, 3, ''),
 			array(6, 8, ''),
-			array(10, 0, 'phpbb_groupposition_exception'),
+			array(10, 0, '\phpbb\groupposition\exception'),
 		);
 	}
 
@@ -35,7 +35,7 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
 		if ($throws_exception)
@@ -43,7 +43,7 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 			$this->setExpectedException($throws_exception);
 		}
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($expected, $test_class->get_group_value($group_id));
 	}
 
@@ -53,10 +53,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals(8, $test_class->get_group_count());
 	}
 
@@ -137,10 +137,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($expected_added, $test_class->add_group_teampage($group_id, $parent_id));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
@@ -180,10 +180,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($expected_added, $test_class->add_category_teampage($group_name));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
@@ -247,10 +247,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($expected_deleted, $test_class->delete_group($group_id, false));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
@@ -299,10 +299,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($expected_deleted, $test_class->delete_teampage($teampage_id, false));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
@@ -462,10 +462,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($excepted_moved, $test_class->move($group_id, $move_delta));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name
@@ -625,10 +625,10 @@ class phpbb_groupposition_teampage_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new phpbb_user;
+		$user = new \phpbb\user;
 		$user->lang = array();
 
-		$test_class = new phpbb_groupposition_teampage($db, $user, $cache);
+		$test_class = new \phpbb\groupposition\teampage($db, $user, $cache);
 		$this->assertEquals($excepted_moved, $test_class->move_teampage($teampage_id, $move_delta));
 
 		$result = $db->sql_query('SELECT teampage_position, group_id, teampage_parent, teampage_name

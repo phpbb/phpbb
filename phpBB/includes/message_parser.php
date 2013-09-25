@@ -1545,7 +1545,7 @@ class parse_message extends bbcode_firstpass
 		global $request;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, phpbb_request_interface::POST);
+		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, \phpbb\request\request_interface::POST);
 		$this->attachment_data = array();
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;

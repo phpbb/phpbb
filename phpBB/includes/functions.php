@@ -24,13 +24,13 @@ if (!defined('IN_PHPBB'))
 function set_var(&$result, $var, $type, $multibyte = false)
 {
 	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new phpbb_request_type_cast_helper();
+	$type_cast_helper = new \phpbb\request\type_cast_helper();
 	$type_cast_helper->set_var($result, $var, $type, $multibyte);
 }
 
 /**
-* Wrapper function of phpbb_request::variable which exists for backwards compatability.
-* See {@link phpbb_request_interface::variable phpbb_request_interface::variable} for
+* Wrapper function of \phpbb\request\request::variable which exists for backwards compatability.
+* See {@link \phpbb\request\request_interface::variable \phpbb\request\request_interface::variable} for
 * documentation of this function's use.
 *
 * @deprecated
@@ -38,20 +38,20 @@ function set_var(&$result, $var, $type, $multibyte = false)
 * 										If the value is an array this may be an array of indizes which will give
 * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
 * 										then specifying array("var", 1) as the name will return "a".
-* 										If you pass an instance of {@link phpbb_request_interface phpbb_request_interface}
+* 										If you pass an instance of {@link \phpbb\request\request_interface phpbb_request_interface}
 * 										as this parameter it will overwrite the current request class instance. If you do
 * 										not do so, it will create its own instance (but leave superglobals enabled).
 * @param	mixed			$default	A default value that is returned if the variable was not set.
 * 										This function will always return a value of the same type as the default.
 * @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
 *										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-* @param	bool			$cookie		This param is mapped to phpbb_request_interface::COOKIE as the last param for
-* 										phpbb_request_interface::variable for backwards compatability reasons.
-* @param	phpbb_request_interface|null|false	If an instance of phpbb_request_interface is given the instance is stored in
+* @param	bool			$cookie		This param is mapped to \phpbb\request\request_interface::COOKIE as the last param for
+* 										\phpbb\request\request_interface::variable for backwards compatability reasons.
+* @param	\phpbb\request\request_interface|null|false	If an instance of \phpbb\request\request_interface is given the instance is stored in
 *										a static variable and used for all further calls where this parameters is null. Until
-*										the function is called with an instance it automatically creates a new phpbb_request
+*										the function is called with an instance it automatically creates a new \phpbb\request\request
 *										instance on every call. By passing false this per-call instantiation can be restored
-*										after having passed in a phpbb_request_interface instance.
+*										after having passed in a \phpbb\request\request_interface instance.
 *
 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 * 					the same as that of $default. If the variable is not set $default is returned.
@@ -62,7 +62,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 	// the only real code is the function call which maps this function to a method.
 	static $static_request = null;
 
-	if ($request instanceof phpbb_request_interface)
+	if ($request instanceof \phpbb\request\request_interface)
 	{
 		$static_request = $request;
 
@@ -88,10 +88,10 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 	{
 		// false param: enable super globals, so the created request class does not
 		// make super globals inaccessible everywhere outside this function.
-		$tmp_request = new phpbb_request(new phpbb_request_type_cast_helper(), false);
+		$tmp_request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
 	}
 
-	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_interface::COOKIE : phpbb_request_interface::REQUEST);
+	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? \phpbb\request\request_interface::COOKIE : \phpbb\request\request_interface::REQUEST);
 }
 
 /**
@@ -110,7 +110,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 *
 * @deprecated
 */
-function set_config($config_name, $config_value, $is_dynamic = false, phpbb_config $set_config = null)
+function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\config\config $set_config = null)
 {
 	static $config = null;
 
@@ -140,7 +140,7 @@ function set_config($config_name, $config_value, $is_dynamic = false, phpbb_conf
 *
 * @deprecated
 */
-function set_config_count($config_name, $increment, $is_dynamic = false, phpbb_config $set_config = null)
+function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\config\config $set_config = null)
 {
 	static $config = null;
 
@@ -1065,15 +1065,15 @@ function phpbb_clean_path($path)
 	else
 	{
 		// The container is not yet loaded, use a new instance
-		if (!class_exists('phpbb_filesystem'))
+		if (!class_exists('\phpbb\filesystem'))
 		{
 			global $phpbb_root_path, $phpEx;
 			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
 		}
 
-		$phpbb_filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
-				new phpbb_request()
+		$phpbb_filesystem = new phpbb\filesystem(
+			new phpbb\symfony_request(
+				new phpbb\request\request()
 			),
 			$phpbb_root_path,
 			$phpEx
@@ -1258,7 +1258,7 @@ function tz_select($default = '', $truncate = false)
 /**
 * Options to pick a timezone and date/time
 *
-* @param	phpbb_user	$user				Object of the current user
+* @param	\phpbb\user	$user				Object of the current user
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
 *
@@ -1277,7 +1277,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 		foreach ($unsorted_timezones as $timezone)
 		{
 			$tz = new DateTimeZone($timezone);
-			$dt = new phpbb_datetime($user, 'now', $tz);
+			$dt = new \phpbb\datetime($user, 'now', $tz);
 			$offset = $dt->getOffset();
 			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
 			$offset_string = phpbb_format_timezone_offset($offset);
@@ -1396,7 +1396,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
-				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
@@ -1405,7 +1405,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
 				$user->set_cookie('track', tracking_serialize($tracking_topics), $post_time + 31536000);
-				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_interface::COOKIE);
+				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), \phpbb\request\request_interface::COOKIE);
 
 				unset($tracking_topics);
 
@@ -1508,7 +1508,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
@@ -1539,7 +1539,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
-			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), \phpbb\request\request_interface::COOKIE);
 
 			unset($tracking);
 		}
@@ -1596,7 +1596,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
@@ -1610,7 +1610,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
 			// This can result in old topics being unread - but most of the time it should be accurate...
-			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE)) > 10000)
+			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE)) > 10000)
 			{
 				//echo 'Cookie grown too large' . print_r($tracking, true);
 
@@ -1655,7 +1655,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
-			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), \phpbb\request\request_interface::COOKIE);
 		}
 
 		return;
@@ -1793,7 +1793,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
-			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -1990,7 +1990,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
@@ -2425,7 +2425,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	}
 
 	// Update the root path with the correct relative web path
-	if ($phpbb_filesystem instanceof phpbb_filesystem)
+	if ($phpbb_filesystem instanceof \phpbb\filesystem)
 	{
 		$url = $phpbb_filesystem->update_web_root_path($url);
 	}
@@ -3106,7 +3106,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_interface::POST));
+	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
 
 	if ($check && $confirm)
 	{
@@ -3183,7 +3183,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	if ($request->is_ajax())
 	{
 		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
-		$json_response = new phpbb_json_response;
+		$json_response = new \phpbb\json_response;
 		$json_response->send(array(
 			'MESSAGE_BODY'		=> $template->assign_display('body'),
 			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
@@ -4425,7 +4425,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				global $refresh_data;
 
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'		=> $msg_title,
 					'MESSAGE_TEXT'		=> $msg_text,
@@ -4931,7 +4931,7 @@ function phpbb_http_login($param)
 	$username = null;
 	foreach ($username_keys as $k)
 	{
-		if ($request->is_set($k, phpbb_request_interface::SERVER))
+		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
 			$username = htmlspecialchars_decode($request->server($k));
 			break;
@@ -4941,7 +4941,7 @@ function phpbb_http_login($param)
 	$password = null;
 	foreach ($password_keys as $k)
 	{
-		if ($request->is_set($k, phpbb_request_interface::SERVER))
+		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
 			$password = htmlspecialchars_decode($request->server($k));
 			break;
@@ -5042,13 +5042,13 @@ function phpbb_quoteattr($data, $entities = null)
 *
 * sid is always omitted.
 *
-* @param phpbb_request $request Request object
+* @param \phpbb\request\request $request Request object
 * @param array $exclude A list of variable names that should not be forwarded
 * @return string HTML with hidden fields
 */
 function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 {
-	$names = $request->variable_names(phpbb_request_interface::GET);
+	$names = $request->variable_names(\phpbb\request\request_interface::GET);
 	$hidden = '';
 	foreach ($names as $name)
 	{
@@ -5070,7 +5070,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 		// here. To avoid exposing cookies, skip variables that are
 		// overwritten somewhere other than GET entirely.
 		$value = $request->variable($name, '', true);
-		$get_value = $request->variable($name, '', true, phpbb_request_interface::GET);
+		$get_value = $request->variable($name, '', true, \phpbb\request\request_interface::GET);
 		if ($value === $get_value)
 		{
 			$escaped_value = phpbb_quoteattr($value);
@@ -5272,7 +5272,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 	}
 
-	$dt = new phpbb_datetime($user, 'now', $user->timezone);
+	$dt = new \phpbb\datetime($user, 'now', $user->timezone);
 	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
@@ -5620,7 +5620,7 @@ function exit_handler()
 }
 
 /**
-* Handler for init calls in phpBB. This function is called in phpbb_user::setup();
+* Handler for init calls in phpBB. This function is called in \phpbb\user::setup();
 * This function supports hooks.
 */
 function phpbb_user_session_handler()
@@ -5684,24 +5684,24 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	// true for mysqli class.
 	// However, per the docblock any valid 3.1 driver name should be
 	// recognized by this function, and have priority over 3.0 dbms.
-	if (class_exists('phpbb_db_driver_' . $dbms))
+	if (class_exists('phpbb\db\driver\\' . $dbms))
 	{
-		return 'phpbb_db_driver_' . $dbms;
+		return 'phpbb\db\driver\\' . $dbms;
 	}
 
 	if (class_exists($dbms))
 	{
-		// Additionally we could check that $dbms extends phpbb_db_driver.
+		// Additionally we could check that $dbms extends phpbb\db\driver\driver.
 		// http://php.net/manual/en/class.reflectionclass.php
 		// Beware of possible performance issues:
 		// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
 		// We could check for interface implementation in all paths or
-		// only when we do not prepend phpbb_db_driver_.
+		// only when we do not prepend phpbb\db\driver\.
 
 		/*
 		$reflection = new \ReflectionClass($dbms);
 
-		if ($reflection->isSubclassOf('phpbb_db_driver'))
+		if ($reflection->isSubclassOf('phpbb\db\driver\driver'))
 		{
 			return $dbms;
 		}

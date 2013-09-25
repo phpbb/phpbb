@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_dbal_migration_unfulfillable extends phpbb_db_migration
+class phpbb_dbal_migration_unfulfillable extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{

@@ -32,7 +32,7 @@
 	</groups>
 
 	<php>
-		<server name="PHPBB_TEST_DBMS" value="phpbb_db_driver_mysqli" />
+		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\mysqli" />
 		<server name="PHPBB_TEST_DBHOST" value="0.0.0.0" />
 		<server name="PHPBB_TEST_DBPORT" value="3306" />
 		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />

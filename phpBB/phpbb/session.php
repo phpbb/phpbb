@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Session class
 * @package phpBB3
 */
-class phpbb_session
+class session
 {
 	var $cookie_data = array();
 	var $page = array();
@@ -243,7 +245,7 @@ class phpbb_session
 			$this->forwarded_for = '';
 		}
 
-		if ($request->is_set($config['cookie_name'] . '_sid', phpbb_request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', phpbb_request_interface::COOKIE))
+		if ($request->is_set($config['cookie_name'] . '_sid', \phpbb\request\request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', \phpbb\request\request_interface::COOKIE))
 		{
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
@@ -405,9 +407,9 @@ class phpbb_session
 
 					$provider = $phpbb_container->get('auth.provider.' . $method);
 
-					if (!($provider instanceof phpbb_auth_provider_interface))
+					if (!($provider instanceof \phpbb\auth\provider\provider_interface))
 					{
-						throw new \RuntimeException($provider . ' must implement phpbb_auth_provider_interface');
+						throw new \RuntimeException($provider . ' must implement \phpbb\auth\provider\provider_interface');
 					}
 
 					$ret = $provider->validate_session($this->data);
@@ -1022,7 +1024,7 @@ class phpbb_session
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
-			$captcha_factory = new phpbb_captcha_factory();
+			$captcha_factory = new \phpbb_captcha_factory();
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '

@@ -8,6 +8,8 @@
 *
 */
 
+namespace foo\bar\acp;
+
 /**
 * @ignore
 */
@@ -16,12 +18,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_ext_foo_bar_acp_main_info
+class main_info
 {
 	function module()
 	{
 		return array(
-			'filename'	=> 'phpbb_ext_foo_bar_acp_main_module',
+			'filename'	=> 'foo\bar\acp\main_module',
 			'title'		=> 'ACP_FOOBAR_TITLE',
 			'version'	=> '1.0.0',
 			'modes'		=> array(

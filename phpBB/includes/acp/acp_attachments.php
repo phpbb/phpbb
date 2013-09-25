@@ -1472,7 +1472,7 @@ class acp_attachments
 			$ip_list = array_unique(explode("\n", $ips));
 			$ip_list_log = implode(', ', $ip_list);
 
-			$ip_exclude = (int) $request->variable('ipexclude', false, false, phpbb_request_interface::POST);
+			$ip_exclude = (int) $request->variable('ipexclude', false, false, \phpbb\request\request_interface::POST);
 
 			$iplist = array();
 			$hostlist = array();

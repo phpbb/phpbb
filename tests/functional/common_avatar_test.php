@@ -32,7 +32,7 @@ abstract class phpbb_functional_common_avatar_test extends phpbb_functional_test
 		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=avatar&sid=' . $this->sid);
 		// Check the default entries we should have
 		$this->assertContainsLang('ALLOW_GRAVATAR', $crawler->text());
-		$this->assertContainsLang('ALLOW_REMOTE', $crawler->text());
+		$this->assertContainsLang('ALLOW_REMOTE_UPLOAD', $crawler->text());
 		$this->assertContainsLang('ALLOW_AVATARS', $crawler->text());
 		$this->assertContainsLang('ALLOW_LOCAL', $crawler->text());
 

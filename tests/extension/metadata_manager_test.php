@@ -30,19 +30,19 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->cache = new phpbb_mock_cache();
-		$this->config = new phpbb_config(array(
+		$this->config = new \phpbb\config\config(array(
 			'version'		=> '3.1.0',
 		));
 		$this->db = $this->new_dbal();
-		$this->db_tools = new phpbb_db_tools($this->db);
+		$this->db_tools = new \phpbb\db\tools($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = 'php';
-		$this->user = new phpbb_user();
+		$this->user = new \phpbb\user();
 		$this->table_prefix = 'phpbb_';
 
-		$this->template = new phpbb_template_twig(
-			new phpbb_filesystem(
-				new phpbb_symfony_request(
+		$this->template = new \phpbb\template\twig\twig(
+			new \phpbb\filesystem(
+				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				$this->phpbb_root_path,
@@ -50,10 +50,10 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			),
 			$this->config,
 			$this->user,
-			new phpbb_template_context()
+			new \phpbb\template\context()
 		);
 
-		$this->migrator = new phpbb_db_migrator(
+		$this->migrator = new \phpbb\db\migrator(
 			$this->config,
 			$this->db,
 			$this->db_tools,
@@ -66,12 +66,12 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
 
-		$this->extension_manager = new phpbb_extension_manager(
+		$this->extension_manager = new \phpbb\extension\manager(
 			$container,
 			$this->db,
 			$this->config,
-			new phpbb_filesystem(
-				new phpbb_symfony_request(
+			new \phpbb\filesystem(
+				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
 				$this->phpbb_root_path,
@@ -95,7 +95,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		{
 			$manager->get_metadata();
 		}
-		catch(phpbb_extension_exception $e){}
+		catch(\phpbb\extension\exception $e){}
 
 		$this->assertEquals((string) $e, 'The required file does not exist: ' . $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json');
 	}
@@ -111,7 +111,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		{
 			$metadata = $manager->get_metadata();
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -134,7 +134,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Required meta field \'name\' has not been set.');
 		}
@@ -145,7 +145,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Required meta field \'type\' has not been set.');
 		}
@@ -156,7 +156,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Required meta field \'licence\' has not been set.');
 		}
@@ -167,7 +167,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Required meta field \'version\' has not been set.');
 		}
@@ -178,7 +178,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Required meta field \'authors\' has not been set.');
 		}
@@ -195,7 +195,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Required meta field \'author name\' has not been set.');
 		}
@@ -222,7 +222,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Meta field \'name\' is invalid.');
 		}
@@ -233,7 +233,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Meta field \'type\' is invalid.');
 		}
@@ -244,7 +244,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Meta field \'licence\' is invalid.');
 		}
@@ -255,7 +255,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 			$this->fail('Exception not triggered');
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->assertEquals((string) $e, 'Meta field \'version\' is invalid.');
 		}
@@ -279,7 +279,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		{
 			$this->assertEquals(true, $manager->validate('enable'));
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -304,7 +304,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(false, $manager->validate_require_php());
 			$this->assertEquals(false, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -323,7 +323,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(true, $manager->validate_require_php());
 			$this->assertEquals(true, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -342,7 +342,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(false, $manager->validate_require_php());
 			$this->assertEquals(false, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -361,7 +361,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(false, $manager->validate_require_php());
 			$this->assertEquals(false, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -380,7 +380,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(true, $manager->validate_require_php());
 			$this->assertEquals(true, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -399,7 +399,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(true, $manager->validate_require_php());
 			$this->assertEquals(true, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}
@@ -418,7 +418,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->assertEquals(true, $manager->validate_require_php());
 			$this->assertEquals(true, $manager->validate_require_phpbb());
 		}
-		catch(phpbb_extension_exception $e)
+		catch(\phpbb\extension\exception $e)
 		{
 			$this->fail($e);
 		}

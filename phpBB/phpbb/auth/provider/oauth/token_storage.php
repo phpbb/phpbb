@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider\oauth;
+
 /**
 * @ignore
 */
@@ -27,19 +29,19 @@ use OAuth\Common\Storage\Exception\TokenNotFoundException;
 *
 * @package auth
 */
-class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
+class token_storage implements TokenStorageInterface
 {
 	/**
 	* Cache driver.
 	*
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
 	/**
 	* phpBB user
 	*
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
@@ -58,11 +60,11 @@ class phpbb_auth_provider_oauth_token_storage implements TokenStorageInterface
 	/**
 	* Creates token storage for phpBB.
 	*
-	* @param	phpbb_db_driver	$db
-	* @param	phpbb_user		$user
+	* @param	\phpbb\db\driver\driver	$db
+	* @param	\phpbb\user		$user
 	* @param	string			$auth_provider_oauth_table
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_user $user, $auth_provider_oauth_table)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\user $user, $auth_provider_oauth_table)
 	{
 		$this->db = $db;
 		$this->user = $user;

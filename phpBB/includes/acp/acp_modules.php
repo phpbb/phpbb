@@ -375,7 +375,7 @@ class acp_modules
 		{
 			if ($request->is_ajax())
 			{
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
 					'MESSAGE_TEXT'	=> implode('<br />', $errors),
@@ -565,7 +565,7 @@ class acp_modules
 		{
 			// Skip entries we do not need if we know the module we are
 			// looking for
-			if ($module && strpos($cur_module, $module) === false)
+			if ($module && strpos(str_replace('\\', '_', $cur_module), $module) === false)
 			{
 				continue;
 			}

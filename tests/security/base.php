@@ -39,13 +39,13 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$request = new phpbb_mock_request(array(), array(), array(), $server);
 
 		// Set no user and trick a bit to circumvent errors
-		$user = new phpbb_user();
+		$user = new \phpbb\user();
 		$user->lang = true;
 		$user->browser				= $server['HTTP_USER_AGENT'];
 		$user->referer				= '';
 		$user->forwarded_for		= '';
 		$user->host					= $server['HTTP_HOST'];
-		$user->page = phpbb_session::extract_current_page($phpbb_root_path);
+		$user->page = \phpbb\session::extract_current_page($phpbb_root_path);
 	}
 
 	protected function tearDown()

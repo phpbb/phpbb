@@ -21,14 +21,14 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$db = $this->new_dbal();
-		$config = new phpbb_config(array(
+		$config = new \phpbb\config\config(array(
 			'ip_login_limit_max'			=> 0,
 			'ip_login_limit_use_forwarded' 	=> 0,
 			'max_login_attempts' 			=> 0,
 			));
-		$request = $this->getMock('phpbb_request');
-		$user = $this->getMock('phpbb_user');
-		$provider = new phpbb_auth_provider_db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
+		$request = $this->getMock('\phpbb\request\request');
+		$user = $this->getMock('\phpbb\user');
+		$provider = new \phpbb\auth\provider\db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
 
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,

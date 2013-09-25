@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_template_twig_node_includecss extends phpbb_template_twig_node_includeasset
+namespace phpbb\template\twig\node;
+
+class includecss extends \phpbb\template\twig\node\includeasset
 {
 	/**
 	* {@inheritdoc}
@@ -20,7 +22,7 @@ class phpbb_template_twig_node_includecss extends phpbb_template_twig_node_inclu
 	/**
 	* {@inheritdoc}
 	*/
-	public function append_asset(Twig_Compiler $compiler)
+	public function append_asset(\Twig_Compiler $compiler)
 	{
 		$compiler
 			->raw("<link href=\"' . ")

@@ -110,20 +110,20 @@ Zeta test event in all',
 		global $phpbb_root_path, $phpEx, $user;
 
 		$defaults = $this->config_defaults();
-		$config = new phpbb_config(array_merge($defaults, $new_config));
+		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/styles/silver/template";
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
-		$phpbb_filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$phpbb_filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$phpbb_root_path,
 			$phpEx
 		);
-		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $user, new phpbb_template_context, $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($phpbb_filesystem, $config, $user, new \phpbb\template\context, $this->extension_manager);
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}
 }

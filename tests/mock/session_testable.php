@@ -16,7 +16,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 * test it without warnings about sent headers. This class only stores cookie
 * data for later verification.
 */
-class phpbb_mock_session_testable extends phpbb_session
+class phpbb_mock_session_testable extends \phpbb\session
 {
 	private $_cookies = array();
 

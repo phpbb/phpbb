@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 * ACP Permission/Auth class
 * @package phpBB3
 */
-class auth_admin extends phpbb_auth
+class auth_admin extends \phpbb\auth\auth
 {
 	/**
 	* Init auth settings
@@ -130,7 +130,7 @@ class auth_admin extends phpbb_auth
 			{
 				if ($user->data['user_id'] != $userdata['user_id'])
 				{
-					$auth2 = new phpbb_auth();
+					$auth2 = new \phpbb\auth\auth();
 					$auth2->acl($userdata);
 				}
 				else

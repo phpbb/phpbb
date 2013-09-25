@@ -29,7 +29,7 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 	public function test_manager_finds_shipped_task_by_name()
 	{
 		$task = $this->manager->find_task($this->task_name);
-		$this->assertInstanceOf('phpbb_cron_task_wrapper', $task);
+		$this->assertInstanceOf('\phpbb\cron\task\wrapper', $task);
 		$this->assertEquals($this->task_name, $task->get_name());
 	}
 
@@ -42,7 +42,7 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 	public function test_manager_finds_one_ready_task()
 	{
 		$task = $this->manager->find_one_ready_task();
-		$this->assertInstanceOf('phpbb_cron_task_wrapper', $task);
+		$this->assertInstanceOf('\phpbb\cron\task\wrapper', $task);
 	}
 
 	public function test_manager_finds_only_ready_tasks()
@@ -71,6 +71,6 @@ class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new phpbb_cron_manager($tasks, $phpbb_root_path, $phpEx);
+		return new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
 	}
 }

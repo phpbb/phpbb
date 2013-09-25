@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template;
+
 /**
 * @ignore
 */
@@ -15,11 +17,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_template_asset
+class asset
 {
 	protected $components = array();
 
-	/** @var phpbb_filesystem **/
+	/** @var \phpbb\filesystem **/
 	protected $phpbb_filesystem;
 
 	/**
@@ -27,7 +29,7 @@ class phpbb_template_asset
 	*
 	* @param string $url URL
 	*/
-	public function __construct($url, phpbb_filesystem $phpbb_filesystem)
+	public function __construct($url, \phpbb\filesystem $phpbb_filesystem)
 	{
 		$this->phpbb_filesystem = $phpbb_filesystem;
 

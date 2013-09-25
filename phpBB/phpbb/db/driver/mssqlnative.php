@@ -11,6 +11,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -56,7 +58,7 @@ class result_mssqlnative
 		{
 			if (is_array($value))
 			{
-				$obj->$key = new stdClass();
+				$obj->$key = new \stdClass();
 				array_to_obj($value, $obj->$key);
 			}
 			else
@@ -191,7 +193,7 @@ class result_mssqlnative
 /**
 * @package dbal
 */
-class phpbb_db_driver_mssqlnative extends phpbb_db_driver_mssql_base
+class mssqlnative extends \phpbb\db\driver\mssql_base
 {
 	var $m_insert_id = NULL;
 	var $last_query_text = '';

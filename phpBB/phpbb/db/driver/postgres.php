@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * Minimum Requirement is Version 7.3+
 * @package dbal
 */
-class phpbb_db_driver_postgres extends phpbb_db_driver
+class postgres extends \phpbb\db\driver\driver
 {
 	var $last_query_text = '';
 	var $connect_error = '';
@@ -84,7 +86,7 @@ class phpbb_db_driver_postgres extends phpbb_db_driver
 				$this->connect_error = 'pg_pconnect function does not exist, is pgsql extension installed?';
 				return $this->sql_error('');
 			}
-			$collector = new phpbb_error_collector;
+			$collector = new \phpbb\error_collector;
 			$collector->install();
 			$this->db_connect_id = (!$new_link) ? @pg_pconnect($connect_string) : @pg_pconnect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}
@@ -95,7 +97,7 @@ class phpbb_db_driver_postgres extends phpbb_db_driver
 				$this->connect_error = 'pg_connect function does not exist, is pgsql extension installed?';
 				return $this->sql_error('');
 			}
-			$collector = new phpbb_error_collector;
+			$collector = new \phpbb\error_collector;
 			$collector->install();
 			$this->db_connect_id = (!$new_link) ? @pg_connect($connect_string) : @pg_connect($connect_string, PGSQL_CONNECT_FORCE_NEW);
 		}

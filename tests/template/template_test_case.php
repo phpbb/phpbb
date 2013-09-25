@@ -60,11 +60,11 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$defaults = $this->config_defaults();
-		$config = new phpbb_config(array_merge($defaults, $new_config));
-		$this->user = new phpbb_user;
+		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
+		$this->user = new \phpbb\user;
 
-		$phpbb_filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$phpbb_filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$phpbb_root_path,
@@ -72,7 +72,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		);
 
 		$this->template_path = $this->test_path . '/templates';
-		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $this->user, new phpbb_template_context());
+		$this->template = new \phpbb\template\twig\twig($phpbb_filesystem, $config, $this->user, new \phpbb\template\context());
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 

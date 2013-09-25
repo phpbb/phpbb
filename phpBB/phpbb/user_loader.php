@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 */
 if (!defined('IN_PHPBB'))
@@ -22,9 +24,9 @@ if (!defined('IN_PHPBB'))
 * have to query the same user multiple times in
 * different services.
 */
-class phpbb_user_loader
+class user_loader
 {
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db = null;
 
 	/** @var string */
@@ -46,12 +48,12 @@ class phpbb_user_loader
 	/**
 	* User loader constructor
 	*
-	* @param phpbb_db_driver $db A database connection
+	* @param \phpbb\db\driver\driver $db A database connection
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	* @param string $users_table The name of the database table (phpbb_users)
 	*/
-	public function __construct(phpbb_db_driver $db, $phpbb_root_path, $php_ext, $users_table)
+	public function __construct(\phpbb\db\driver\driver $db, $phpbb_root_path, $php_ext, $users_table)
 	{
 		$this->db = $db;
 

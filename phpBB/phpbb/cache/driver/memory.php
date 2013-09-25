@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * ACM Abstract Memory Class
 * @package acm
 */
-abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
+abstract class memory extends \phpbb\cache\driver\base
 {
 	var $key_prefix;
 
@@ -285,7 +287,7 @@ abstract class phpbb_cache_driver_memory extends phpbb_cache_driver_base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(phpbb_db_driver $db, $query, $query_result, $ttl)
+	function sql_save(\phpbb\db\driver\driver $db, $query, $query_result, $ttl)
 	{
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);

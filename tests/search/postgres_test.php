@@ -34,7 +34,7 @@ class phpbb_search_postgres_test extends phpbb_search_common_test_case
 
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = self::get_search_wrapper('phpbb_search_fulltext_postgres');
+		$class = self::get_search_wrapper('\phpbb\search\fulltext_postgres');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 }

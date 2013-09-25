@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -15,15 +17,15 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_template_twig_environment extends Twig_Environment
+class environment extends \Twig_Environment
 {
 	/** @var array */
 	protected $phpbb_extensions;
 
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
-	/** @var phpbb_filesystem */
+	/** @var \phpbb\filesystem */
 	protected $phpbb_filesystem;
 
 	/** @var string */
@@ -38,13 +40,14 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/**
 	* Constructor
 	*
-	* @param phpbb_config $phpbb_config
+	* @param \phpbb\config\config $phpbb_config
 	* @param array $phpbb_extensions Array of enabled extensions (name => path)
+	* @param \phpbb\filesystem
 	* @param string $phpbb_root_path
 	* @param Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, $phpbb_extensions, phpbb_filesystem $phpbb_filesystem, Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, $phpbb_extensions, \phpbb\filesystem $phpbb_filesystem, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 		$this->phpbb_extensions = $phpbb_extensions;
@@ -71,7 +74,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/**
 	* Get phpBB config
 	*
-	* @return phpbb_config
+	* @return \phpbb\config\config
 	*/
 	public function get_phpbb_config()
 	{
@@ -101,7 +104,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/**
 	* Get the phpbb_filesystem object
 	*
-	* @return phpbb_filesystem
+	* @return \phpbb\filesystem
 	*/
 	public function get_filesystem()
 	{
@@ -153,7 +156,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 
 					return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
 				}
-				catch (Twig_Error_Loader $e)
+				catch (\Twig_Error_Loader $e)
 				{
 				}
 			}

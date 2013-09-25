@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\config;
+
 /**
 * @ignore
 */
@@ -17,16 +19,16 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Manages configuration options with an arbitrary length value stored in a TEXT
-* column. In constrast to class phpbb_config_db, values are never cached and
+* column. In constrast to class \phpbb\config\db, values are never cached and
 * prefetched, but every get operation sends a query to the database.
 *
 * @package phpBB3
 */
-class phpbb_config_db_text
+class db_text
 {
 	/**
 	* Database connection
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
@@ -37,10 +39,10 @@ class phpbb_config_db_text
 	protected $table;
 
 	/**
-	* @param phpbb_db_driver $db        Database connection
+	* @param \phpbb\db\driver\driver $db        Database connection
 	* @param string          $table     Table name
 	*/
-	public function __construct(phpbb_db_driver $db, $table)
+	public function __construct(\phpbb\db\driver\driver $db, $table)
 	{
 		$this->db = $db;
 		$this->table = $this->db->sql_escape($table);

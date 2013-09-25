@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\config;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Configuration container class
 * @package phpBB3
 */
-class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
+class config implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 	/**
 	* The configuration data
@@ -44,7 +46,7 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	*/
 	public function getIterator()
 	{
-		return new ArrayIterator($this->config);
+		return new \ArrayIterator($this->config);
 	}
 
 	/**
@@ -90,7 +92,7 @@ class phpbb_config implements ArrayAccess, IteratorAggregate, Countable
 	*/
 	public function offsetUnset($key)
 	{
-		trigger_error('Config values have to be deleted explicitly with the phpbb_config::delete($key) method.', E_USER_ERROR);
+		trigger_error('Config values have to be deleted explicitly with the \phpbb\config\config::delete($key) method.', E_USER_ERROR);
 	}
 
 	/**

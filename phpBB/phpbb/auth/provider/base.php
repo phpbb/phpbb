@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-abstract class phpbb_auth_provider_base implements phpbb_auth_provider_interface
+abstract class base implements \phpbb\auth\provider\provider_interface
 {
 	/**
 	* {@inheritdoc}

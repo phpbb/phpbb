@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\log;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpbb_log
 */
-class phpbb_log_null implements phpbb_log_interface
+class null implements log_interface
 {
 	/**
 	* {@inheritdoc}

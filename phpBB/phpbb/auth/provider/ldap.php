@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider;
+
 /**
 * @ignore
 */
@@ -22,16 +24,16 @@ if (!defined('IN_PHPBB'))
  *
  * @package auth
  */
-class phpbb_auth_provider_ldap extends phpbb_auth_provider_base
+class ldap extends \phpbb\auth\provider\base
 {
 	/**
 	 * LDAP Authentication Constructor
 	 *
-	 * @param 	phpbb_db_driver	$db
-	 * @param 	phpbb_config	$config
-	 * @param 	phpbb_user		$user
+	 * @param 	\phpbb\db\driver\driver	$db
+	 * @param 	\phpbb\config\config	$config
+	 * @param 	\phpbb\user		$user
 	 */
-	public function __construct(phpbb_db_driver $db, phpbb_config $config, phpbb_user $user)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
