@@ -286,7 +286,7 @@ class finder
 			else
             {
                 $class = preg_replace('#^ext/#', '', $class);
-				$classes[] = str_replace('/', '\\', $class);
+				$classes[] = '\\' . str_replace('/', '\\', $class);
 			}
 		}
 		return $classes;
