@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\event;
+
 /**
 * @ignore
 */
@@ -17,7 +19,7 @@ if (!defined('IN_PHPBB'))
 
 use Symfony\Component\EventDispatcher\Event;
 
-class phpbb_event_data extends Event implements ArrayAccess
+class data extends Event implements \ArrayAccess
 {
     private $data;
 

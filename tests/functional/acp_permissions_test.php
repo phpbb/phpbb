@@ -91,12 +91,12 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&${object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
-		// XXX globals for phpbb_auth, refactor it later
+		// XXX globals for \phpbb\auth\auth, refactor it later
 		global $db, $cache;
 		$db = $this->get_db();
 		$cache = new phpbb_mock_null_cache;
 
-		$auth = new phpbb_auth;
+		$auth = new \phpbb\auth\auth;
 		// XXX hardcoded id
 		$user_data = $auth->obtain_user_data(2);
 		$auth->acl($user_data);
@@ -114,7 +114,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('AUTH_UPDATED'), $crawler->text());
 
 		// check acl again
-		$auth = new phpbb_auth;
+		$auth = new \phpbb\auth\auth;
 		// XXX hardcoded id
 		$user_data = $auth->obtain_user_data(2);
 		$auth->acl($user_data);

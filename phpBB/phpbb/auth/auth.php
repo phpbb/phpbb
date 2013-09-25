@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Permission/Auth class
 * @package phpBB3
 */
-class phpbb_auth
+class auth
 {
 	var $acl = array();
 	var $cache = array();

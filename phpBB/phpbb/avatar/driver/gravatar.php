@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\avatar\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Handles avatars hosted at gravatar.com
 * @package phpBB3
 */
-class phpbb_avatar_driver_gravatar extends phpbb_avatar_driver
+class gravatar extends \phpbb\avatar\driver\driver
 {
 	/**
 	* The URL for the gravatar service

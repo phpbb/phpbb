@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -15,7 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_notification_type_group_request_approved extends phpbb_notification_type_base
+class group_request_approved extends \phpbb\notification\type\base
 {
 	/**
 	* {@inheritdoc}

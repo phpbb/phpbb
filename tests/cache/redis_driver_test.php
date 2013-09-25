@@ -43,7 +43,7 @@ class phpbb_cache_redis_driver_test extends phpbb_cache_common_test_case
 	{
 		parent::setUp();
 
-		$this->driver = new phpbb_cache_driver_redis(self::$config['host'], self::$config['port']);
+		$this->driver = new \phpbb\cache\driver\redis(self::$config['host'], self::$config['port']);
 		$this->driver->purge();
 	}
 }

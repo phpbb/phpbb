@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_type_report_post extends phpbb_notification_type_post_in_queue
+class report_post extends \phpbb\notification\type\post_in_queue
 {
 	/**
 	* Get notification type name

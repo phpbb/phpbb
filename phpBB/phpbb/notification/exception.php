@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_exception extends \Exception
+class exception extends \Exception
 {
 	public function __toString()
 	{

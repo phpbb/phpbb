@@ -22,7 +22,7 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->config_text = new phpbb_config_db_text($this->db, 'phpbb_config_text');
+		$this->config_text = new \phpbb\config\db_text($this->db, 'phpbb_config_text');
 	}
 
 	public function test_get()

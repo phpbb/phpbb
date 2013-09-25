@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_auth_provider_acp_board_valid extends phpbb_auth_provider_base
+namespace phpbb\auth\provider\acp;
+
+class board_valid extends \phpbb\auth\provider\base
 {
 	public function login($username, $password)
 	{

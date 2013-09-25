@@ -267,21 +267,21 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$config['search_type'] = 'phpbb_mock_search';
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		set_config_count(null, null, null, new phpbb_config(array('num_posts' => 3, 'num_topics' => 1)));
+		set_config_count(null, null, null, new \phpbb\config\config(array('num_posts' => 3, 'num_topics' => 1)));
 
 		// Create auth mock
-		$auth = $this->getMock('phpbb_auth');
+		$auth = $this->getMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap(array(
 				array('m_approve', 1, true),
 			)));
-		$user = $this->getMock('phpbb_user');
+		$user = $this->getMock('\phpbb\user');
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
-		$phpbb_container->set('content.visibility', new phpbb_content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 

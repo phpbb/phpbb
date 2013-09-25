@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search;
+
 /**
 * @ignore
 */
@@ -23,12 +25,12 @@ define('SEARCH_RESULT_IN_CACHE', 1);
 define('SEARCH_RESULT_INCOMPLETE', 2);
 
 /**
-* phpbb_search_base
+* \phpbb\search\base
 * optional base class for search plugins providing simple caching based on ACM
 * and functions to retrieve ignore_words and synonyms
 * @package search
 */
-class phpbb_search_base
+class base
 {
 	var $ignore_words = array();
 	var $match_synonym = array();

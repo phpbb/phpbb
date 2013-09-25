@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task\core;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
+class tidy_search extends \phpbb\cron\task\base
 {
 	protected $phpbb_root_path;
 	protected $php_ext;
@@ -36,12 +38,12 @@ class phpbb_cron_task_core_tidy_search extends phpbb_cron_task_base
 	*
 	* @param string $phpbb_root_path The root path
 	* @param string $php_ext The PHP extension
-	* @param phpbb_auth $auth The auth
-	* @param phpbb_config $config The config
-	* @param phpbb_db_driver $db The db connection
-	* @param phpbb_user $user The user
+	* @param \phpbb\auth\auth $auth The auth
+	* @param \phpbb\config\config $config The config
+	* @param \phpbb\db\driver\driver $db The db connection
+	* @param \phpbb\user $user The user
 	*/
-	public function __construct($phpbb_root_path, $php_ext, phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db, phpbb_user $user)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;

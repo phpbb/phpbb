@@ -26,7 +26,7 @@ if (!defined('IN_PHPBB'))
 * Used to bootstrap the container.
 *
 * @param string $config_file
-* @return phpbb_db_driver
+* @return \phpbb\db\driver\driver
 */
 function phpbb_bootstrap_db_connection($config_file)
 {
@@ -121,7 +121,7 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 	$other_config_path = $phpbb_root_path . 'install/update/new/config/';
 	$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path . 'config/';
 
-	$core = new phpbb_di_extension_core($config_path);
+	$core = new \phpbb\di\extension\core($config_path);
 	$container = phpbb_create_container(array($core), $phpbb_root_path, $php_ext);
 
 	$container->setParameter('core.root_path', $phpbb_root_path);
@@ -260,13 +260,13 @@ function phpbb_create_default_container($phpbb_root_path, $php_ext)
 	return phpbb_create_dumped_container_unless_debug(
 		$config_file,
 		array(
-			new phpbb_di_extension_config($config_file),
-			new phpbb_di_extension_core($phpbb_root_path . 'config'),
-			new phpbb_di_extension_ext($installed_exts),
+			new \phpbb\di\extension\config($config_file),
+			new \phpbb\di\extension\core($phpbb_root_path . 'config'),
+			new \phpbb\di\extension\ext($installed_exts),
 		),
 		array(
-			new phpbb_di_pass_collection_pass(),
-			new phpbb_di_pass_kernel_pass(),
+			new \phpbb\di\pass\collection_pass(),
+			new \phpbb\di\pass\kernel_pass(),
 		),
 		$phpbb_root_path,
 		$php_ext

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -17,26 +19,26 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_symfony_request extends Request
+class symfony_request extends Request
 {
 	/**
 	* Constructor
 	*
-	* @param phpbb_request_interface $phpbb_request
+	* @param phpbb\request\request_interface $phpbb_request
 	*/
-	public function __construct(phpbb_request_interface $phpbb_request)
+	public function __construct(\phpbb\request\request_interface $phpbb_request)
 	{
 		// This function is meant to sanitize the global input arrays
 		$sanitizer = function(&$value, $key) {
-			$type_cast_helper = new phpbb_request_type_cast_helper();
+			$type_cast_helper = new \phpbb\request\type_cast_helper();
 			$type_cast_helper->set_var($value, $value, gettype($value), true);
 		};
 
-		$get_parameters = $phpbb_request->get_super_global(phpbb_request_interface::GET);
-		$post_parameters = $phpbb_request->get_super_global(phpbb_request_interface::POST);
-		$server_parameters = $phpbb_request->get_super_global(phpbb_request_interface::SERVER);
-		$files_parameters = $phpbb_request->get_super_global(phpbb_request_interface::FILES);
-		$cookie_parameters = $phpbb_request->get_super_global(phpbb_request_interface::COOKIE);
+		$get_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::GET);
+		$post_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::POST);
+		$server_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::SERVER);
+		$files_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::FILES);
+		$cookie_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::COOKIE);
 
 		array_walk_recursive($get_parameters, $sanitizer);
 		array_walk_recursive($post_parameters, $sanitizer);

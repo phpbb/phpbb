@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search\sphinx;
+
 /**
 * @ignore
 */
@@ -16,10 +18,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* phpbb_search_sphinx_config_comment
+* \phpbb\search\sphinx\config_comment
 * Represents a comment inside the sphinx configuration
 */
-class phpbb_search_sphinx_config_comment
+class config_comment
 {
 	private $exact_string;
 

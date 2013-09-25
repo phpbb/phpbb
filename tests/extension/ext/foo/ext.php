@@ -1,6 +1,8 @@
 <?php
 
-class phpbb_ext_foo_ext extends phpbb_extension_base
+namespace foo;
+
+class ext extends \phpbb\extension\base
 {
 	static public $disabled;
 

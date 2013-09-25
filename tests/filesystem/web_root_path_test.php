@@ -18,8 +18,8 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		$this->filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$this->filesystem = new \phpbb\filesystem(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$this->phpbb_root_path,
@@ -118,7 +118,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	*/
 	public function test_update_web_root_path($input, $expected, $getPathInfo, $getRequestUri = null, $getScriptName = null)
 	{
-		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
 			new phpbb_mock_request(),
 		));
 		$symfony_request->expects($this->any())
@@ -131,7 +131,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			->method('getScriptName')
 			->will($this->returnValue($getScriptName));
 
-		$filesystem = new phpbb_filesystem(
+		$filesystem = new \phpbb\filesystem(
 			$symfony_request,
 			$this->phpbb_root_path,
 			'php'

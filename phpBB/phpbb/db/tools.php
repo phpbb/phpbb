@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package dbal
 */
-class phpbb_db_tools
+class tools
 {
 	/**
 	* Current sql layer
@@ -310,10 +312,10 @@ class phpbb_db_tools
 	/**
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
-	* @param phpbb_db_driver	$db					Database connection
+	* @param \phpbb\db\driver\driver	$db					Database connection
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	public function __construct(phpbb_db_driver $db, $return_statements = false)
+	public function __construct(\phpbb\db\driver\driver $db, $return_statements = false)
 	{
 		$this->db = $db;
 		$this->return_statements = $return_statements;

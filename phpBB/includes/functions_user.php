@@ -2150,8 +2150,8 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 	if (!sizeof($error))
 	{
-		$current_legend = phpbb_groupposition_legend::GROUP_DISABLED;
-		$current_teampage = phpbb_groupposition_teampage::GROUP_DISABLED;
+		$current_legend = \phpbb\groupposition\legend::GROUP_DISABLED;
+		$current_teampage = \phpbb\groupposition\teampage::GROUP_DISABLED;
 
 		$legend = $phpbb_container->get('groupposition.legend');
 		$teampage = $phpbb_container->get('groupposition.teampage');
@@ -2162,7 +2162,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$current_legend = $legend->get_group_value($group_id);
 				$current_teampage = $teampage->get_group_value($group_id);
 			}
-			catch (phpbb_groupposition_exception $exception)
+			catch (\phpbb\groupposition\exception $exception)
 			{
 				trigger_error($user->lang($exception->getMessage()));
 			}
@@ -2170,7 +2170,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		if (!empty($group_attributes['group_legend']))
 		{
-			if (($group_id && ($current_legend == phpbb_groupposition_legend::GROUP_DISABLED)) || !$group_id)
+			if (($group_id && ($current_legend == \phpbb\groupposition\legend::GROUP_DISABLED)) || !$group_id)
 			{
 				// Old group currently not in the legend or new group, add at the end.
 				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
@@ -2181,22 +2181,22 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$group_attributes['group_legend'] = $current_legend;
 			}
 		}
-		else if ($group_id && ($current_legend != phpbb_groupposition_legend::GROUP_DISABLED))
+		else if ($group_id && ($current_legend != \phpbb\groupposition\legend::GROUP_DISABLED))
 		{
 			// Group is removed from the legend
 			try
 			{
 				$legend->delete_group($group_id, true);
 			}
-			catch (phpbb_groupposition_exception $exception)
+			catch (\phpbb\groupposition\exception $exception)
 			{
 				trigger_error($user->lang($exception->getMessage()));
 			}
-			$group_attributes['group_legend'] = phpbb_groupposition_legend::GROUP_DISABLED;
+			$group_attributes['group_legend'] = \phpbb\groupposition\legend::GROUP_DISABLED;
 		}
 		else
 		{
-			$group_attributes['group_legend'] = phpbb_groupposition_legend::GROUP_DISABLED;
+			$group_attributes['group_legend'] = \phpbb\groupposition\legend::GROUP_DISABLED;
 		}
 
 		// Unset the objects, we don't need them anymore.
@@ -2296,13 +2296,13 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		// Remove the group from the teampage, only if unselected and we are editing a group,
 		// which is currently displayed.
-		if (!$group_teampage && $group_id && $current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED)
+		if (!$group_teampage && $group_id && $current_teampage != \phpbb\groupposition\teampage::GROUP_DISABLED)
 		{
 			try
 			{
 				$teampage->delete_group($group_id);
 			}
-			catch (phpbb_groupposition_exception $exception)
+			catch (\phpbb\groupposition\exception $exception)
 			{
 				trigger_error($user->lang($exception->getMessage()));
 			}
@@ -2320,24 +2320,24 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		try
 		{
-			if ($group_teampage && $current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+			if ($group_teampage && $current_teampage == \phpbb\groupposition\teampage::GROUP_DISABLED)
 			{
 				$teampage->add_group($group_id);
 			}
 
 			if ($group_teampage)
 			{
-				if ($current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+				if ($current_teampage == \phpbb\groupposition\teampage::GROUP_DISABLED)
 				{
 					$teampage->add_group($group_id);
 				}
 			}
-			else if ($group_id && ($current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED))
+			else if ($group_id && ($current_teampage != \phpbb\groupposition\teampage::GROUP_DISABLED))
 			{
 				$teampage->delete_group($group_id);
 			}
 		}
-		catch (phpbb_groupposition_exception $exception)
+		catch (\phpbb\groupposition\exception $exception)
 		{
 			trigger_error($user->lang($exception->getMessage()));
 		}
@@ -2472,7 +2472,7 @@ function group_delete($group_id, $group_name = false)
 		$legend->delete_group($group_id);
 		unset($legend);
 	}
-	catch (phpbb_groupposition_exception $exception)
+	catch (\phpbb\groupposition\exception $exception)
 	{
 		// The group we want to delete does not exist.
 		// No reason to worry, we just continue the deleting process.
@@ -2485,7 +2485,7 @@ function group_delete($group_id, $group_name = false)
 		$teampage->delete_group($group_id);
 		unset($teampage);
 	}
-	catch (phpbb_groupposition_exception $exception)
+	catch (\phpbb\groupposition\exception $exception)
 	{
 		// The group we want to delete does not exist.
 		// No reason to worry, we just continue the deleting process.

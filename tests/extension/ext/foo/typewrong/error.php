@@ -1,5 +1,7 @@
 <?php
 
-class phpbb_ext_foo_typewrong_error
+namespace foo\typewrong;
+
+class error
 {
 }

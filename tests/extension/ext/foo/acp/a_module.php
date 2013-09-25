@@ -1,5 +1,7 @@
 <?php
 
-class phpbb_ext_foo_acp_a_module
+namespace foo\acp;
+
+class a_module
 {
 }

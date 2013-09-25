@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * @ignore
 */
@@ -28,9 +30,9 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_class_loader
+class class_loader
 {
-	private $prefix;
+	private $namespace;
 	private $path;
 	private $php_ext;
 	private $cache;
@@ -44,17 +46,22 @@ class phpbb_class_loader
 	private $cached_paths = array();
 
 	/**
-	* Creates a new phpbb_class_loader, which loads files with the given
+	* Creates a new \phpbb\class_loader, which loads files with the given
 	* file extension from the given path.
 	*
-	* @param string $prefix  Required class name prefix for files to be loaded
+	* @param string $namespace Required namespace for files to be loaded
 	* @param string $path    Directory to load files from
 	* @param string $php_ext The file extension for PHP files
-	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
+	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($prefix, $path, $php_ext = 'php', phpbb_cache_driver_interface $cache = null)
-	{
-		$this->prefix = $prefix;
+	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
+    {
+		if ($namespace[0] !== '\\')
+		{
+			$namespace = '\\' . $namespace;
+		}
+
+		$this->namespace = $namespace;
 		$this->path = $path;
 		$this->php_ext = $php_ext;
 
@@ -66,13 +73,13 @@ class phpbb_class_loader
 	* the class loader will resolve paths by checking for the existance of every
 	* directory in the class name every time.
 	*
-	* @param phpbb_cache_driver_interface $cache An implementation of the phpBB cache interface.
+	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function set_cache(phpbb_cache_driver_interface $cache = null)
+	public function set_cache(\phpbb\cache\driver\driver_interface $cache = null)
 	{
 		if ($cache)
 		{
-			$this->cached_paths = $cache->get('class_loader_' . $this->prefix);
+			$this->cached_paths = $cache->get('class_loader_' . str_replace('\\', '__', $this->namespace));
 
 			if ($this->cached_paths === false)
 			{
@@ -102,8 +109,9 @@ class phpbb_class_loader
 	/**
 	* Resolves a phpBB class name to a relative path which can be included.
 	*
-	* @param string       $class The class name to resolve, must have a phpbb_
-	*                            prefix
+	* @param string       $class The class name to resolve, must be in the
+	*                            namespace the loader was constructed with.
+	*                            Has to begin with \
 	* @return string|bool        A relative path to the file containing the
 	*                            class or false if looking it up failed.
 	*/
@@ -114,27 +122,12 @@ class phpbb_class_loader
 			return $this->path . $this->cached_paths[$class] . '.' . $this->php_ext;
 		}
 
-		if (!preg_match('/^' . $this->prefix . '[a-zA-Z0-9_]+$/', $class))
+		if (!preg_match('/^' . preg_quote($this->namespace, '/') . '[a-zA-Z0-9_\\\\]+$/', $class))
 		{
 			return false;
 		}
 
-		$parts = explode('_', substr($class, strlen($this->prefix)));
-
-		$dirs = '';
-
-		for ($i = 0, $n = sizeof($parts); $i < $n && is_dir($this->path . $dirs . $parts[$i]); $i++)
-		{
-			$dirs .= $parts[$i] . '/';
-		}
-
-		// no file name left => use last dir name as file name
-		if ($i == sizeof($parts))
-		{
-			$parts[] = $parts[$i - 1];
-		}
-
-		$relative_path = $dirs . implode(array_slice($parts, $i, sizeof($parts) - $i), '_');
+		$relative_path = str_replace('\\', '/', substr($class, strlen($this->namespace)));
 
 		if (!file_exists($this->path . $relative_path . '.' . $this->php_ext))
 		{
@@ -144,7 +137,7 @@ class phpbb_class_loader
 		if ($this->cache)
 		{
 			$this->cached_paths[$class] = $relative_path;
-			$this->cache->put('class_loader_' . $this->prefix, $this->cached_paths);
+			$this->cache->put('class_loader_' . str_replace('\\', '__', $this->namespace), $this->cached_paths);
 		}
 
 		return $this->path . $relative_path . '.' . $this->php_ext;
@@ -157,7 +150,8 @@ class phpbb_class_loader
 	*/
 	public function load_class($class)
 	{
-		if (substr($class, 0, strlen($this->prefix)) === $this->prefix)
+		$class = '\\' . $class;
+		if (substr($class, 0, strlen($this->namespace)) === $this->namespace)
 		{
 			$path = $this->resolve_path($class);
 

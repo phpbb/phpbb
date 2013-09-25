@@ -17,7 +17,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->buffer = new phpbb_db_sql_insert_buffer($this->db, 'phpbb_config', 2);
+		$this->buffer = new \phpbb\db\sql_insert_buffer($this->db, 'phpbb_config', 2);
 		$this->assert_config_count(2);
 	}
 
