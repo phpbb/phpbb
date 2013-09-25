@@ -40,10 +40,14 @@ function jumpto(item) {
 		page = prompt(jump_page, on_page);
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
-		if (base_url.indexOf('?') === -1) {
-			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
+		if (base_url.indexOf('%d') === -1) {
+			if (base_url.indexOf('?') === -1) {
+				document.location.href = base_url + '?start=' + ((page - 1) * per_page);
+			} else {
+				document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
+			}
 		} else {
-			document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
+			document.location.href = base_url.replace('%d', page);
 		}
 	}
 }
