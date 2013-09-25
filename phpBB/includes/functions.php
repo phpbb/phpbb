@@ -5671,7 +5671,7 @@ function phpbb_to_numeric($input)
 * Convert either 3.0 dbms or 3.1 db driver class name to 3.1 db driver class name.
 *
 * If $dbms is a valid 3.1 db driver class name, returns it unchanged.
-* Otherwise prepends phpbb_db_driver_ to the dbms to convert a 3.0 dbms
+* Otherwise prepends phpbb\db\driver\ to the dbms to convert a 3.0 dbms
 * to 3.1 db driver class name.
 *
 * @param string $dbms dbms parameter

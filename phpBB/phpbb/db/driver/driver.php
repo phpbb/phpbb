@@ -84,7 +84,7 @@ class driver
 
 		// Fill default sql layer based on the class being called.
 		// This can be changed by the specified layer itself later if needed.
-		$this->sql_layer = substr(get_class($this), strlen('phpbb_db_driver_'));
+		$this->sql_layer = substr(get_class($this), strlen('phpbb\db\driver\\'));
 
 		// Do not change this please! This variable is used to easy the use of it - and is hardcoded.
 		$this->any_char = chr(0) . '%';
