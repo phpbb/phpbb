@@ -1179,7 +1179,7 @@ class install_install extends module
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
 
-		// Deal with any special comments
+		// Deal with any special comments and characters
 		switch ($data['dbms'])
 		{
 			case 'mssql':
@@ -1190,6 +1190,11 @@ class install_install extends module
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
+			break;
+
+			case 'mysql':
+			case 'mysqli':
+				$sql_query = str_replace('\\', '\\\\', $sql_query);
 			break;
 		}
 
