@@ -74,7 +74,7 @@ class phpbb_mock_request implements \phpbb\request\request_interface
 		return array_keys($this->data[$super_global]);
 	}
 
-	public function get_super_global($super_global = phpbb_request_interface::REQUEST)
+	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST)
 	{
 		return $this->data[$super_global];
 	}
