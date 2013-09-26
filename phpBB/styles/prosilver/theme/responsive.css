@@ -49,6 +49,8 @@ body {
 	float: none;
 	margin: 5px;
 	line-height: 1.2em;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #site-description p, #search-box {
