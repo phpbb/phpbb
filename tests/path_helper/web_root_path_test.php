@@ -7,9 +7,9 @@
 *
 */
 
-class phpbb_filesystem_web_root_path_test extends phpbb_test_case
+class phpbb_path_helper_web_root_path_test extends phpbb_test_case
 {
-	protected $filesystem;
+	protected $path_helper;
 	protected $phpbb_root_path = '';
 
 	public function setUp()
