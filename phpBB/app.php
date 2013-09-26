@@ -25,6 +25,7 @@ $auth->acl($user->data);
 $user->setup('app');
 
 $http_kernel = $phpbb_container->get('http_kernel');
+$symfony_request = $phpbb_container->get('symfony_request');
 $response = $http_kernel->handle($symfony_request);
 $response->send();
 $http_kernel->terminate($symfony_request, $response);

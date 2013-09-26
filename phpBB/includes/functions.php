@@ -1056,31 +1056,32 @@ else
 */
 function phpbb_clean_path($path)
 {
-	global $phpbb_container;
+	global $phpbb_path_helper, $phpbb_container;
 
-	if ($phpbb_container)
+	if (!$phpbb_path_helper && $phpbb_container)
 	{
-		$phpbb_filesystem = $phpbb_container->get('filesystem');
+		$phpbb_path_helper = $phpbb_container->get('path_helper');
 	}
-	else
+	else if (!$phpbb_path_helper)
 	{
 		// The container is not yet loaded, use a new instance
-		if (!class_exists('\phpbb\filesystem'))
+		if (!class_exists('\phpbb\path_helper'))
 		{
 			global $phpbb_root_path, $phpEx;
-			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
+			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
 		}
 
-		$phpbb_filesystem = new phpbb\filesystem(
+		$phpbb_path_helper = new phpbb\path_helper(
 			new phpbb\symfony_request(
 				new phpbb\request\request()
 			),
+			new phpbb\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
 	}
 
-	return $phpbb_filesystem->clean_path($path);
+	return $phpbb_path_helper->clean_path($path);
 }
 
 // functions used for building option fields
@@ -2445,7 +2446,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_filesystem;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_path_helper;
 	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
@@ -2455,9 +2456,9 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	}
 
 	// Update the root path with the correct relative web path
-	if ($phpbb_filesystem instanceof \phpbb\filesystem)
+	if ($phpbb_path_helper instanceof \phpbb\path_helper)
 	{
-		$url = $phpbb_filesystem->update_web_root_path($url);
+		$url = $phpbb_path_helper->update_web_root_path($url);
 	}
 
 	$append_sid_overwrite = false;
@@ -5276,8 +5277,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	$phpbb_filesystem = $phpbb_container->get('filesystem');
-	$corrected_path = $phpbb_filesystem->get_web_root_path();
+	$phpbb_path_helper = $phpbb_container->get('path_helper');
+	$corrected_path = $phpbb_path_helper->get_web_root_path();
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
