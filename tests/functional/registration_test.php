@@ -25,6 +25,9 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('#main .successbox')->text());
 	}
 
+	/**
+	* @depends test_disable_captcha_on_registration
+	*/
 	public function test_register_new_account()
 	{
 		$this->add_lang('ucp');
