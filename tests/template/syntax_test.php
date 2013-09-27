@@ -1,0 +1,48 @@
+<?php
+/**
+*
+* @package testing
+* @copyright (c) 2011 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
+
+require_once dirname(__FILE__) . '/template_test_case.php';
+require_once dirname(__FILE__) . '/../../phpBB/develop/template_validator.php';
+
+class phpbb_template_syntax_test extends phpbb_template_template_test_case
+{
+	public function test_templates()
+	{
+		global $phpbb_root_path;
+
+		$this->check_directory($phpbb_root_path, array('docs', 'vendor'));
+	}
+
+	protected function check_directory($dir, $skip = array())
+	{
+		foreach (new DirectoryIterator($dir) as $file)
+		{
+			$filename = $file->getFilename();
+			if ($file->isDot())
+			{
+				continue;
+			}
+			elseif ($file->isDir() && !in_array($file->getFilename(), $skip))
+			{
+				// Do not pass $skip, it applies to root directories only
+				$this->check_directory($file->getPathname());
+			}
+			elseif ($file->isFile() && preg_match('/\.html$/', $file->getFilename()))
+			{
+				$this->validate_template($file->getPathname());
+			}
+		}
+	}
+
+	protected function validate_template($filename)
+	{
+		$validator = new template_validator($filename);
+		$this->assertEquals(false, $validator->validate(), "Validating template $filename");
+	}
+}
