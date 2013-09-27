@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\passwords\driver;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package passwords
 */
-interface phpbb_passwords_driver_interface
+interface driver_interface
 {
 	/**
 	* Check if hash type is supported

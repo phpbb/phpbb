@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\passwords\driver;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package passwords
 */
-class phpbb_passwords_driver_phpass extends phpbb_passwords_driver_salted_md5
+class phpass extends \phpbb\passwords\driver\salted_md5
 {
 	const PREFIX = '$P$';
 

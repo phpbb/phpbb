@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\passwords;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package passwords
 */
-class phpbb_passwords_helper
+class helper
 {
 	/**
 	* @var phpbb_passwords_manager
@@ -30,7 +32,7 @@ class phpbb_passwords_helper
 	*
 	* @param phpbb_passwords_manager $manager Crypto manager object
 	*/
-	public function set_manager(phpbb_passwords_manager $manager)
+	public function set_manager(\phpbb\passwords\manager $manager)
 	{
 		if ($this->manager === null)
 		{

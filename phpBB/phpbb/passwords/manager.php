@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\passwords;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package passwords
 */
-class phpbb_passwords_manager
+class manager
 {
 	/**
 	* Default hashing method
@@ -57,10 +59,10 @@ class phpbb_passwords_manager
 	/**
 	* Construct a passwords object
 	*
-	* @param phpbb_config $config phpBB configuration
-	* @param phpbb_di_service_collection $hashing_algorithms Hashing driver
+	* @param phpbb\config\config $config phpBB configuration
+	* @param phpbb\di\service_collection $hashing_algorithms Hashing driver
 	*			service collection
-	* @param phpbb_passwords_helper $helper Passwords helper object
+	* @param phpbb\passwords\helper $helper Passwords helper object
 	* @param string $default Default driver name
 	*/
 	public function __construct($config, $hashing_algorithms, $helper, $default)
@@ -75,7 +77,7 @@ class phpbb_passwords_manager
 	/**
 	* Fill algorithm type map
 	*
-	* @param phpbb_di_service_collection $hashing_algorithms
+	* @param phpbb\di\service_collection $hashing_algorithms
 	*/
 	protected function fill_type_map($hashing_algorithms)
 	{
@@ -96,7 +98,7 @@ class phpbb_passwords_manager
 	/**
 	* Load passwords helper class
 	*
-	* @param phpbb_passwords_helper $helper Passwords helper object
+	* @param phpbb\passwords\helper $helper Passwords helper object
 	*/
 	protected function load_passwords_helper($helper)
 	{

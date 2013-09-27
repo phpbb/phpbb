@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\passwords\driver;
+
 /**
 * @ignore
 */
@@ -18,12 +20,12 @@ if (!defined('IN_PHPBB'))
 /**
 * @package passwords
 */
-abstract class phpbb_passwords_driver_base implements phpbb_passwords_driver_interface
+abstract class base implements \phpbb\passwords\driver\driver_interface
 {
-	/** @var phpbb_config */
+	/** @var phpbb\config\config */
 	protected $config;
 
-	/** @var phpbb_passwords_driver_helper */
+	/** @var phpbb\passwords\driver\helper */
 	protected $helper;
 
 	/** @var driver name */
@@ -34,7 +36,7 @@ abstract class phpbb_passwords_driver_base implements phpbb_passwords_driver_int
 	*
 	* @return string	Hash prefix
 	*/
-	public function __construct(phpbb_config $config, phpbb_passwords_driver_helper $helper)
+	public function __construct(\phpbb\config\config $config, \phpbb\passwords\driver\helper $helper)
 	{
 		$this->config = $config;
 		$this->helper = $helper;

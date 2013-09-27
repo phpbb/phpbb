@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\passwords\driver;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package passwords
 */
-class phpbb_passwords_driver_bcrypt extends phpbb_passwords_driver_base
+class bcrypt extends \phpbb\passwords\driver\base
 {
 	const PREFIX = '$2a$';
 
