@@ -389,7 +389,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	*
 	* @event core.delete_user_before
 	* @var	string	mode		Mode of deletion (retain/delete posts)
-	* @var	int	user_ids	IDs of the deleted user
+	* @var	array	user_ids	IDs of the deleted user
 	* @var	mixed	retain_username	True if username should be retained
 	*				or false if not
 	* @since 3.1-A1
@@ -618,7 +618,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	*
 	* @event core.delete_user_after
 	* @var	string	mode		Mode of deletion (retain/delete posts)
-	* @var	int	user_id		IDs of the deleted user
+	* @var	array	user_ids	IDs of the deleted user
 	* @var	mixed	retain_username	True if username should be retained
 	*				or false if not
 	* @since 3.1-A1
