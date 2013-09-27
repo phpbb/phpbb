@@ -182,9 +182,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		{
 			// The "automatic" way
 			$basename = (isset($data['module_basename'])) ? $data['module_basename'] : '';
-			$basename = str_replace(array('/', '\\'), '', $basename);
-			$class = str_replace(array('/', '\\'), '', $class);
-
 			$module = $this->get_module_info($class, $basename);
 
 			$result = '';
@@ -353,9 +350,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			}
 
 			// Automatic method
-			$basename = str_replace(array('/', '\\'), '', $module['module_basename']);
-			$class = str_replace(array('/', '\\'), '', $class);
-
+			$basename = $module['module_basename'];
 			$module_info = $this->get_module_info($class, $basename);
 
 			foreach ($module_info['modes'] as $mode => $info)
