@@ -587,6 +587,7 @@ function insert_single_user(formId, user)
 					}
 					menu.append(links.clone(true));
 					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
+					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 					copied = true;
 				}
 
@@ -691,6 +692,15 @@ function insert_single_user(formId, user)
 			if (items.length == 1)
 			{
 				$(this).addClass('responsive-hide');
+			}
+		});
+
+		// Hide empty responsive tables
+		$('table.responsive > tbody').each(function() {
+			var items = $(this).children('tr');
+			if (items.length == 0)
+			{
+				$(this).parent('table:first').addClass('responsive-hide');
 			}
 		});
 	});

@@ -240,17 +240,37 @@ table.responsive thead {
 	display: none;
 }
 
+table.responsive th {
+	display: none;
+	border-bottom-width: 0 !important;
+}
+
+table.mcp-warnings thead {
+	display: block;
+}
+
+table.mcp-warnings th:nth-child(1),
+table.mcp-warnings th:nth-child(3) {
+	display: inline;
+}
+
+table.mcp-warnings th:nth-child(1):after {
+	content: ',';
+}
+
 table.responsive tr {
 	overflow: hidden;
 	margin: 5px 0;
 }
 
-table.mcp-logs td:nth-child(2) {
+table.mcp-logs td:nth-child(2),
+table.mcp-warnings td:nth-child(2n + 1) {
 	width: 50%;
 	float: left;
 }
 
-table.mcp-logs td:nth-child(3) {
+table.mcp-logs td:nth-child(3),
+table.mcp-warnings td:nth-child(2n) {
 	margin-left: 50%;
 	text-align: right;
 }
@@ -290,6 +310,11 @@ p {
 
 p.rightside {
 	margin-bottom: 0;
+}
+
+.column1, .column2 {
+	width: auto;
+	float: none;
 }
 
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
