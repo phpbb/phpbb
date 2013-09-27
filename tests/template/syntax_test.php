@@ -12,14 +12,31 @@ require_once dirname(__FILE__) . '/../../phpBB/develop/template_validator.php';
 
 class phpbb_template_syntax_test extends phpbb_template_template_test_case
 {
-	public function test_templates()
+	public function template_data()
 	{
 		global $phpbb_root_path;
-
-		$this->check_directory($phpbb_root_path, array('docs', 'vendor'));
+		return array(
+			array(
+				$phpbb_root_path . 'adm/style',
+			),
+			array(
+				$phpbb_root_path . 'styles/prosilver/template',
+			),
+			array(
+				$phpbb_root_path . 'styles/subsilver2/template',
+			),
+		);
 	}
 
-	protected function check_directory($dir, $skip = array())
+	/**
+	* @dataProvider template_data
+	*/
+	public function test_templates($path)
+	{
+		$this->check_directory($path);
+	}
+
+	protected function check_directory($dir)
 	{
 		foreach (new DirectoryIterator($dir) as $file)
 		{
@@ -28,9 +45,8 @@ class phpbb_template_syntax_test extends phpbb_template_template_test_case
 			{
 				continue;
 			}
-			elseif ($file->isDir() && !in_array($file->getFilename(), $skip))
+			elseif ($file->isDir())
 			{
-				// Do not pass $skip, it applies to root directories only
 				$this->check_directory($file->getPathname());
 			}
 			elseif ($file->isFile() && preg_match('/\.html$/', $file->getFilename()))
@@ -43,6 +59,6 @@ class phpbb_template_syntax_test extends phpbb_template_template_test_case
 	protected function validate_template($filename)
 	{
 		$validator = new template_validator($filename);
-		$this->assertEquals(false, $validator->validate(), "Validating template $filename");
+		$this->assertFalse($validator->validate(), "Validating template $filename");
 	}
 }
