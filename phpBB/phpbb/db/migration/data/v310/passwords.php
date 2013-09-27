@@ -7,11 +7,13 @@
 *
 */
 
-class phpbb_db_migration_data_310_passwords extends phpbb_db_migration
+namespace phpbb\db\migration\data\v310;
+
+class passwords extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_30x_3_0_11');
+		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}
 
 	public function update_schema()
