@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_ext_testext_cron_dummy_task extends phpbb_cron_task_base
+class phpbb_ext_testext_cron_dummy_task extends \phpbb\cron\task\base
 {
 	static public $was_run = 0;
 

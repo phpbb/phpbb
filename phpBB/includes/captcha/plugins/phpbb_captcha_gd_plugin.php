@@ -140,7 +140,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 
 		$config_old = $config;
 
-		$config = new phpbb_config(array());
+		$config = new \phpbb\config\config(array());
 		foreach ($config_old as $key => $value)
 		{
 			$config->set($key, $value);

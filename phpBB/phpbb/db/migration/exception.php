@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\migration;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package db
 */
-class phpbb_db_migration_exception extends \Exception
+class exception extends \Exception
 {
 	/**
 	* Extra parameters sent to exception to aid in debugging
@@ -64,12 +66,12 @@ class phpbb_db_migration_exception extends \Exception
 	}
 
 	/**
-	* Get localised message (with $user->lang()) 
-	* 
-	* @param phpbb_user $user
+	* Get localised message (with $user->lang())
+	*
+	* @param \phpbb\user $user
 	* @return string
 	*/
-	public function getLocalisedMessage(phpbb_user $user)
+	public function getLocalisedMessage(\phpbb\user $user)
 	{
 		$parameters = $this->getParameters();
 		array_unshift($parameters, $this->getMessage());

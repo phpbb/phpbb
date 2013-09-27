@@ -1,8 +1,10 @@
 <?php
 
+namespace phpbb\controller;
+
 use Symfony\Component\HttpFoundation\Response;
 
-class phpbb_controller_foo
+class foo
 {
 	/**
 	* Bar method

@@ -64,6 +64,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 			),
 			array(
 				'if.html',
+				array('S_OTHER_OTHER_VALUE' => true),
+				array(),
+				array(),
+				'|S_OTHER_OTHER_VALUE|!false',
+			),
+			array(
+				'if.html',
 				array('S_VALUE' => false, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
@@ -151,7 +158,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc\n\$VALUE == 'abc'abc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?",
+				"xyz\nabc\n\$VALUE == 'abc'\n(\$VALUE == 'abc')\n((\$VALUE == 'abc'))\n!\$DOESNT_EXIST\n(!\$DOESNT_EXIST)\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?[]|foobar|",
 			),
 			array(
 				'define_advanced.html',
@@ -230,7 +237,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('VARIABLE' => 'variable.html'),
 				array(),
 				array(),
-				'variable.html',
+				"variable.html\nvariable.html\nvariable.html",
 			),
 			array(
 				'include_loop_define.html',
@@ -410,7 +417,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$this->style->set_custom_style('tests', $cache_dir, array(), '');
+		$this->template->set_custom_style('tests', $cache_dir);
 
 		$this->run_template('php.html', array(), array(), array(), 'test');
 	}

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -18,6 +20,6 @@ if (!defined('IN_PHPBB'))
 /**
 * @package acm
 */
-abstract class phpbb_cache_driver_base implements phpbb_cache_driver_interface
+abstract class base implements \phpbb\cache\driver\driver_interface
 {
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_oauth_tokens">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_token</column>
+	</table>
+</dataset>
+

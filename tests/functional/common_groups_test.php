@@ -43,7 +43,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 
 		$crawler = self::request('GET', 'adm/index.php?i=board&mode=avatar&sid=' . $this->sid);
 		// Check the default entries we should have
-		$this->assertContains($this->lang('ALLOW_REMOTE'), $crawler->text());
+		$this->assertContains($this->lang('ALLOW_REMOTE_UPLOAD'), $crawler->text());
 		$this->assertContains($this->lang('ALLOW_AVATARS'), $crawler->text());
 		$this->assertContains($this->lang('ALLOW_LOCAL'), $crawler->text());
 

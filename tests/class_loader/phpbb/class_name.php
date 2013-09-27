@@ -1,6 +1,8 @@
 <?php
 
-class phpbb_class_name
+namespace phpbb;
+
+class class_name
 {
 }
 

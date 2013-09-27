@@ -13,7 +13,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 	{
 		$path = __DIR__ . '/../tmp/precious';
 
-		$lock = new phpbb_lock_flock($path);
+		$lock = new \phpbb\lock\flock($path);
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
 		$lock->release();
@@ -23,7 +23,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 	{
 		$path = __DIR__ . '/../tmp/precious';
 
-		$lock = new phpbb_lock_flock($path);
+		$lock = new \phpbb\lock\flock($path);
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
 		$this->assertTrue($lock->owns_lock());
@@ -48,11 +48,11 @@ class phpbb_lock_flock_test extends phpbb_test_case
 	{
 		$path = __DIR__ . '/../tmp/precious';
 
-		$lock1 = new phpbb_lock_flock($path);
+		$lock1 = new \phpbb\lock\flock($path);
 		$ok = $lock1->acquire();
 		$this->assertTrue($ok);
 
-		$lock2 = new phpbb_lock_flock($path);
+		$lock2 = new \phpbb\lock\flock($path);
 		$ok = $lock2->acquire();
 		$this->assertFalse($ok);
 
@@ -78,7 +78,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			// wait 0.5 s, acquire the lock, note how long it took
 			sleep(1);
 
-			$lock = new phpbb_lock_flock($path);
+			$lock = new \phpbb\lock\flock($path);
 			$start = time();
 			$ok = $lock->acquire();
 			$delta = time() - $start;
@@ -105,7 +105,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 		{
 			// child
 			// immediately acquire the lock and sleep for 2 s
-			$lock = new phpbb_lock_flock($path);
+			$lock = new \phpbb\lock\flock($path);
 			$ok = $lock->acquire();
 			$this->assertTrue($ok);
 			$this->assertTrue($lock->owns_lock());

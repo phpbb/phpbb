@@ -13,7 +13,7 @@ class phpbb_error_collector_test extends phpbb_test_case
 {
 	public function test_collection()
 	{
-		$collector = new phpbb_error_collector;
+		$collector = new \phpbb\error_collector;
 		$collector->install();
 
 		// Cause a warning

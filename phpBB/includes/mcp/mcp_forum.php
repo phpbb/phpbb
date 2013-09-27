@@ -36,8 +36,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
 		$request->overwrite('sk', null);
 		$request->overwrite('sd', null);
-		$request->overwrite('sk', null, phpbb_request_interface::POST);
-		$request->overwrite('sd', null, phpbb_request_interface::POST);
+		$request->overwrite('sk', null, \phpbb\request\request_interface::POST);
+		$request->overwrite('sd', null, \phpbb\request\request_interface::POST);
 	}
 
 	$forum_id			= $forum_info['forum_id'];

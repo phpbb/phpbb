@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_type_quote extends phpbb_notification_type_post
+class quote extends \phpbb\notification\type\post
 {
 	/**
 	* Get notification type name

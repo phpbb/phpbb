@@ -25,9 +25,9 @@ class phpbb_lock_db_test extends phpbb_database_test_case
 		global $db, $config;
 
 		$db = $this->db = $this->new_dbal();
-		$config = $this->config = new phpbb_config(array('rand_seed' => '', 'rand_seed_last_update' => '0'));
+		$config = $this->config = new \phpbb\config\config(array('rand_seed' => '', 'rand_seed_last_update' => '0'));
 		set_config(null, null, null, $this->config);
-		$this->lock = new phpbb_lock_db('test_lock', $this->config, $this->db);
+		$this->lock = new \phpbb\lock\db('test_lock', $this->config, $this->db);
 	}
 
 	public function test_new_lock()
@@ -38,7 +38,7 @@ class phpbb_lock_db_test extends phpbb_database_test_case
 		$this->assertTrue($this->lock->owns_lock());
 		$this->assertTrue(isset($this->config['test_lock']), 'Lock was created');
 
-		$lock2 = new phpbb_lock_db('test_lock', $this->config, $this->db);
+		$lock2 = new \phpbb\lock\db('test_lock', $this->config, $this->db);
 		$this->assertFalse($lock2->acquire());
 		$this->assertFalse($lock2->owns_lock());
 
@@ -49,7 +49,7 @@ class phpbb_lock_db_test extends phpbb_database_test_case
 
 	public function test_expire_lock()
 	{
-		$lock = new phpbb_lock_db('foo_lock', $this->config, $this->db);
+		$lock = new \phpbb\lock\db('foo_lock', $this->config, $this->db);
 		$this->assertTrue($lock->acquire());
 	}
 
@@ -82,7 +82,7 @@ class phpbb_lock_db_test extends phpbb_database_test_case
 		$this->assertFalse($this->lock->owns_lock());
 		$this->assertEquals('0', $this->config['test_lock'], 'First lock is released');
 
-		$lock2 = new phpbb_lock_db('test_lock', $this->config, $this->db);
+		$lock2 = new \phpbb\lock\db('test_lock', $this->config, $this->db);
 		$this->assertTrue($lock2->acquire());
 		$this->assertTrue($lock2->owns_lock());
 		$this->assertFalse(empty($this->config['test_lock']), 'Second lock is acquired');

@@ -455,7 +455,7 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $phpbb_style;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template;
 
 		$module_path = $this->include_path . $this->p_class;
 		$icat = request_var('icat', '');
@@ -499,16 +499,16 @@ class p_master
 			* the style paths for the extension (the ext author can change them
 			* if necessary).
 			*/
-			$module_dir = explode('_', get_class($this->module));
+			$module_dir = explode('\\', get_class($this->module));
 
-			// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
-			if (isset($module_dir[3]) && $module_dir[1] === 'ext')
+			// 0 vendor, 1 extension name, ...
+			if (isset($module_dir[1]))
 			{
-				$module_style_dir = $phpbb_root_path . 'ext/' . $module_dir[2] . '/' . $module_dir[3] . '/adm/style';
+				$module_style_dir = $phpbb_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/adm/style';
 
 				if (is_dir($module_style_dir))
 				{
-					$phpbb_style->set_custom_style('admin', array($module_style_dir, $phpbb_admin_path . 'style'), array(), '');
+					$template->set_custom_style('adm', array($module_style_dir, $phpbb_admin_path . 'style'));
 				}
 			}
 
@@ -537,7 +537,7 @@ class p_master
 
 				if (is_dir($phpbb_root_path . $module_style_dir))
 				{
-					$phpbb_style->set_style(array($module_style_dir, 'styles'));
+					$template->set_style(array($module_style_dir, 'styles'));
 				}
 			}
 
@@ -973,7 +973,7 @@ class p_master
 	*/
 	protected function get_short_name($basename)
 	{
-		if (substr($basename, 0, 6) === 'phpbb_')
+		if (substr($basename, 0, 6) === 'phpbb\\' || strpos($basename, '\\') !== false)
 		{
 			return $basename;
 		}
@@ -990,6 +990,6 @@ class p_master
 	*/
 	protected function is_full_class($basename)
 	{
-		return (preg_match('/^(phpbb|ucp|mcp|acp)_/', $basename));
+		return (strpos($basename, '\\') !== false || preg_match('/^(ucp|mcp|acp)_/', $basename));
 	}
 }

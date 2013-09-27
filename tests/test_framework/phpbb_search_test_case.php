@@ -11,7 +11,7 @@ abstract class phpbb_search_test_case extends phpbb_database_test_case
 {
 	static protected function get_search_wrapper($class)
 	{
-		$wrapped = $class . '_wrapper';
+		$wrapped = str_replace('\\', '_', $class) . '_wrapper';
 		if (!class_exists($wrapped))
 		{
 			$code = "

@@ -8,6 +8,7 @@
 
 	<fieldset>
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- EVENT ucp_prefs_post_prepend -->
 	<dl>
 		<dt><label for="bbcode1">{L_DEFAULT_BBCODE}{L_COLON}</label></dt>
 		<dd>
@@ -36,6 +37,7 @@
 			<label for="notify0"><input type="radio" name="notify" id="notify0" value="0"<!-- IF not S_NOTIFY --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 		</dd>
 	</dl>
+	<!-- EVENT ucp_prefs_post_append -->
 	</fieldset>
 	
 	</div>

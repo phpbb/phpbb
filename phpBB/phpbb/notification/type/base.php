@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -19,30 +21,30 @@ if (!defined('IN_PHPBB'))
 * Base notifications class
 * @package notifications
 */
-abstract class phpbb_notification_type_base implements phpbb_notification_type_interface
+abstract class base implements \phpbb\notification\type\type_interface
 {
-	/** @var phpbb_notification_manager */
+	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
-	/** @var phpbb_user_loader */
+	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_cache_driver_interface */
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
 
-	/** @var phpbb_template */
+	/** @var \phpbb\template\template */
 	protected $template;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
 	/** @var string */
@@ -93,21 +95,21 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Notification Type Base Constructor
-	* 
-	* @param phpbb_user_loader $user_loader
-	* @param phpbb_db_driver $db
-	* @param phpbb_cache_driver_interface $cache
-	* @param phpbb_user $user
-	* @param phpbb_auth $auth
-	* @param phpbb_config $config
+	*
+	* @param \phpbb\user_loader $user_loader
+	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\cache\driver\driver_interface $cache
+	* @param \phpbb\user $user
+	* @param \phpbb\auth\auth $auth
+	* @param \phpbb\config\config $config
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
 	* @param string $notifications_table
 	* @param string $user_notifications_table
-	* @return phpbb_notification_type_base
+	* @return \phpbb\notification\type\base
 	*/
-	public function __construct(phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_driver_interface $cache, $user, phpbb_auth $auth, phpbb_config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -126,10 +128,10 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Set notification manager (required)
-	* 
-	* @param phpbb_notification_manager $notification_manager
+	*
+	* @param \phpbb\notification\manager $notification_manager
 	*/
-	public function set_notification_manager(phpbb_notification_manager $notification_manager)
+	public function set_notification_manager(\phpbb\notification\manager $notification_manager)
 	{
 		$this->notification_manager = $notification_manager;
 
@@ -150,7 +152,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Magic method to get data from this notification
-	* 
+	*
 	* @param mixed $name
 	* @return mixed
 	*/
@@ -162,7 +164,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Magic method to set data on this notification
-	* 
+	*
 	* @param mixed $name
 	* @return null
 	*/
@@ -174,9 +176,9 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Magic method to get a string of this notification
-	* 
+	*
 	* Primarily for testing
-	* 
+	*
 	* @param string $name
 	* @return mixed
 	*/
@@ -283,7 +285,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Prepare to output the notification to the template
-	* 
+	*
 	* @return array Template variables
 	*/
 	public function prepare_for_display()
@@ -331,7 +333,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Get the user's avatar (fall back)
-	* 
+	*
 	* @return string
 	*/
 	public function get_avatar()
@@ -341,7 +343,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Get the special items to load (fall back)
-	* 
+	*
 	* @return array
 	*/
 	public function get_load_special()
@@ -359,7 +361,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Is available (fall back)
-	* 
+	*
 	* @return bool
 	*/
 	public function is_available()
@@ -369,7 +371,7 @@ abstract class phpbb_notification_type_base implements phpbb_notification_type_i
 
 	/**
 	* Pre create insert array function (fall back)
-	* 
+	*
 	* @return array
 	*/
 	public function pre_create_insert_array($type_data, $notify_users)

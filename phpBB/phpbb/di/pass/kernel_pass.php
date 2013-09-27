@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\di\pass;
+
 /**
 * @ignore
 */
@@ -18,7 +20,7 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-class phpbb_di_pass_kernel_pass implements CompilerPassInterface
+class kernel_pass implements CompilerPassInterface
 {
 	/**
 	* Modify the container before it is passed to the rest of the code
@@ -38,12 +40,12 @@ class phpbb_di_pass_kernel_pass implements CompilerPassInterface
 
 				if (!isset($event['event']))
 				{
-					throw new InvalidArgumentException(sprintf('Service "%1$s" must define the "event" attribute on "kernel.event_listener" tags.', $id));
+					throw new \InvalidArgumentException(sprintf('Service "%1$s" must define the "event" attribute on "kernel.event_listener" tags.', $id));
 				}
 
 				if (!isset($event['method']))
 				{
-					throw new InvalidArgumentException(sprintf('Service "%1$s" must define the "method" attribute on "kernel.event_listener" tags.', $id));
+					throw new \InvalidArgumentException(sprintf('Service "%1$s" must define the "method" attribute on "kernel.event_listener" tags.', $id));
 				}
 
 				$definition->addMethodCall('addListenerService', array($event['event'], array($id, $event['method']), $priority));
@@ -55,11 +57,11 @@ class phpbb_di_pass_kernel_pass implements CompilerPassInterface
 			// We must assume that the class value has been correctly filled, even if the service is created by a factory
 			$class = $container->getDefinition($id)->getClass();
 
-			$refClass = new ReflectionClass($class);
+			$refClass = new \ReflectionClass($class);
 			$interface = 'Symfony\Component\EventDispatcher\EventSubscriberInterface';
 			if (!$refClass->implementsInterface($interface))
 			{
-				throw new InvalidArgumentException(sprintf('Service "%1$s" must implement interface "%2$s".', $id, $interface));
+				throw new \InvalidArgumentException(sprintf('Service "%1$s" must implement interface "%2$s".', $id, $interface));
 			}
 
 			$definition->addMethodCall('addSubscriberService', array($id, $class));

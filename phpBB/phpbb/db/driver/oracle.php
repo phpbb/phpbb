@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Oracle Database Abstraction Layer
 * @package dbal
 */
-class phpbb_db_driver_oracle extends phpbb_db_driver
+class oracle extends \phpbb\db\driver\driver
 {
 	var $last_query_text = '';
 	var $connect_error = '';

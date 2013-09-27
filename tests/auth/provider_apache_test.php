@@ -22,11 +22,11 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$db = $this->new_dbal();
-		$config = new phpbb_config(array());
-		$this->request = $this->getMock('phpbb_request');
-		$this->user = $this->getMock('phpbb_user');
+		$config = new \phpbb\config\config(array());
+		$this->request = $this->getMock('\phpbb\request\request');
+		$this->user = $this->getMock('\phpbb\user');
 
-		$this->provider = new phpbb_auth_provider_apache($db, $config, $this->request, $this->user, $phpbb_root_path, $phpEx);
+		$this->provider = new \phpbb\auth\provider\apache($db, $config, $this->request, $this->user, $phpbb_root_path, $phpEx);
 	}
 
 	public function getDataSet()
@@ -43,7 +43,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				\phpbb\request\request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->once())
 			->method('server')
@@ -61,7 +61,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				\phpbb\request\request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->at(1))
 			->method('server')
@@ -93,7 +93,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				\phpbb\request\request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->at(1))
 			->method('server')
@@ -194,7 +194,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->request->expects($this->once())
 			->method('is_set')
 			->with('PHP_AUTH_USER',
-				phpbb_request_interface::SERVER)
+				\phpbb\request\request_interface::SERVER)
 			->will($this->returnValue(true));
 		$this->request->expects($this->once())
 			->method('server')

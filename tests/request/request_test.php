@@ -33,8 +33,8 @@ class phpbb_request_test extends phpbb_test_case
 		$_SERVER['HTTP_ACCEPT'] = 'application/json';
 		$_SERVER['HTTP_SOMEVAR'] = '<value>';
 
-		$this->type_cast_helper = $this->getMock('phpbb_request_type_cast_helper_interface');
-		$this->request = new phpbb_request($this->type_cast_helper);
+		$this->type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
+		$this->request = new \phpbb\request\request($this->type_cast_helper);
 	}
 
 	public function test_toggle_super_globals()
@@ -135,7 +135,7 @@ class phpbb_request_test extends phpbb_test_case
 	{
 		$this->request->enable_super_globals();
 		$_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
-		$this->request = new phpbb_request($this->type_cast_helper);
+		$this->request = new \phpbb\request\request($this->type_cast_helper);
 
 		$this->assertTrue($this->request->is_ajax());
 	}
@@ -146,7 +146,7 @@ class phpbb_request_test extends phpbb_test_case
 
 		$this->request->enable_super_globals();
 		$_SERVER['HTTPS'] = 'on';
-		$this->request = new phpbb_request($this->type_cast_helper);
+		$this->request = new \phpbb\request\request($this->type_cast_helper);
 
 		$this->assertTrue($this->request->is_secure());
 	}

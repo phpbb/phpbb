@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_php_ini_fake extends phpbb_php_ini
+class phpbb_php_ini_fake extends \phpbb\php\ini
 {
 	function get($varname)
 	{

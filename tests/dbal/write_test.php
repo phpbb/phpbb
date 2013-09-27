@@ -64,7 +64,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 			FROM phpbb_config';
 		$result = $db->sql_query($sql);
 		$rows = $db->sql_fetchrowset($result);
-		
+
 		$this->assertEquals(1, sizeof($rows));
 		$this->assertEquals('config2', $rows[0]['config_name']);
 
