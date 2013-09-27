@@ -684,5 +684,14 @@ function insert_single_user(formId, user)
 				$('.responsive-tabs').hide();
 			}
 		});
+
+		// Hide *CP navigation if there is only 1 item
+		$('#navigation').each(function() {
+			var items = $(this).children('ol, ul').children('li');
+			if (items.length == 1)
+			{
+				$(this).addClass('responsive-hide');
+			}
+		});
 	});
 })(jQuery);

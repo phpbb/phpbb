@@ -96,7 +96,7 @@ ul.topiclist li.header dd {
 	display: none !important;
 }
 
-ul.topiclist dt, ul.topiclist dt .list-inner {
+ul.topiclist li.row dt, ul.topiclist li.row dt .list-inner {
 	margin-right: 0;
 }
 
@@ -218,11 +218,63 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 }
 
 #navigation li:first-child a {
-	border-radius: 5px 5px 0 0;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 }
 
 #navigation li:last-child a {
-	border-radius: 0 0 5px 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+/* Responsive tables
+----------------------------------------*/
+table.responsive, table.responsive thead, table.responsive tbody, table.responsive tr, table.responsive th, table.responsive td {
+	display: block;
+	width: auto;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+table.responsive thead {
+	display: none;
+}
+
+table.responsive tr {
+	overflow: hidden;
+	margin: 5px 0;
+}
+
+table.mcp-logs td:nth-child(2) {
+	width: 50%;
+	float: left;
+}
+
+table.mcp-logs td:nth-child(3) {
+	margin-left: 50%;
+	text-align: right;
+}
+
+table.mcp-logs td:nth-child(4), table.mcp-logs td:nth-child(5),
+table.mcp-logs-full td:nth-child(1), table.mcp-logs-full td:nth-child(2) {
+	width: 33%;
+	float: left;
+}
+
+table.mcp-logs td:nth-child(4), 
+table.mcp-logs-full td:nth-child(4) {
+	clear: left;
+}
+
+table.mcp-logs td:nth-child(5),
+table.mcp-logs-full td:nth-child(2) {
+	text-align: center;
+}
+
+table.mcp-logs td:nth-child(6),
+table.mcp-logs-full td:nth-child(3) {
+	margin-left: 66%;
+	text-align: right;
 }
 
 /* Misc stuff
