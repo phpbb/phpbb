@@ -23,14 +23,14 @@ if (!defined('IN_PHPBB'))
 class helper
 {
 	/**
-	* @var phpbb_passwords_manager
+	* @var phpbb\passwords\manager
 	*/
 	protected $manager;
 
 	/**
 	* Set the passwords manager instance
 	*
-	* @param phpbb_passwords_manager $manager Crypto manager object
+	* @param phpbb\passwords\manager $manager Crypto manager object
 	*/
 	public function set_manager(\phpbb\passwords\manager $manager)
 	{

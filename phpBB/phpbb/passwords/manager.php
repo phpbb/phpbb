@@ -46,13 +46,13 @@ class manager
 
 	/**
 	* Crypto helper
-	* @var phpbb_passwords_helper
+	* @var phpbb\passwords\helper
 	*/
 	protected $helper;
 
 	/**
 	* phpBB configuration
-	* @var phpbb_config
+	* @var phpbb\config\config
 	*/
 	protected $config;
 
@@ -60,12 +60,12 @@ class manager
 	* Construct a passwords object
 	*
 	* @param phpbb\config\config $config phpBB configuration
-	* @param phpbb\di\service_collection $hashing_algorithms Hashing driver
+	* @param array $hashing_algorithms Hashing driver
 	*			service collection
 	* @param phpbb\passwords\helper $helper Passwords helper object
 	* @param string $default Default driver name
 	*/
-	public function __construct($config, $hashing_algorithms, $helper, $default)
+	public function __construct(\phpbb\config\config $config, $hashing_algorithms, \phpbb\passwords\helper $helper, $default)
 	{
 		$this->config = $config;
 		$this->type = $default;
@@ -100,7 +100,7 @@ class manager
 	*
 	* @param phpbb\passwords\helper $helper Passwords helper object
 	*/
-	protected function load_passwords_helper($helper)
+	protected function load_passwords_helper(\phpbb\passwords\helper $helper)
 	{
 		if ($this->helper === null)
 		{
