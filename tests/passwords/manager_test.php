@@ -26,7 +26,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());
-		$driver_helper = new phpbb\passwords\driver\helper;
+		$driver_helper = new phpbb\passwords\driver\helper($config);
 
 		$this->passwords_drivers = array(
 			'passwords.driver.bcrypt'		=> new phpbb\passwords\driver\bcrypt($config, $driver_helper),
