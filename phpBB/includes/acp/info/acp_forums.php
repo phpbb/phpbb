@@ -19,7 +19,7 @@ class acp_forums_info
 			'title'		=> 'ACP_FORUM_MANAGEMENT',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'manage'	=> array('title' => 'ACP_MANAGE_FORUMS', 'auth' => 'acl_a_forum', 'cat' => array('ACP_MANAGE_FORUMS')),
+				'manage'	=> array('title' => 'ACP_MANAGE_FORUMS', 'auth' => 'acl_a_forum', 'cat' => array('ACP_MANAGE_FORUMS', 'ACP_QUICK_ACCESS')),
 			),
 		);
 	}
