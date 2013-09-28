@@ -271,19 +271,16 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			// Passworded forum?
 			if ($post['forum_id'])
 			{
-				$sql = 'SELECT forum_password
+				$sql = 'SELECT forum_id, forum_name, forum_password
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . (int) $post['forum_id'];
 				$result = $db->sql_query($sql);
-				$forum_password = (string) $db->sql_fetchfield('forum_password');
+				$forum_data = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				if ($forum_password)
+				if (!empty($forum_data['forum_password']))
 				{
-					login_forum_box(array(
-						'forum_id'			=> $post['forum_id'],
-						'forum_password'	=> $forum_password,
-					));
+					login_forum_box($forum_data);
 				}
 			}
 		}
@@ -359,7 +356,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$message_attachment = 0;
 		$message_text = $message_subject = '';
 
-		if ($to_user_id && $action == 'post')
+		if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
 		{
 			$address_list['u'][$to_user_id] = 'to';
 		}
@@ -755,7 +752,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$return_box_lang = ($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX';
 
 
-			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>');
+			$save_message = ($action === 'edit') ? $user->lang['MESSAGE_EDITED'] : $user->lang['MESSAGE_STORED'];
+			$message = $save_message . '<br /><br />' . $user->lang('VIEW_PRIVATE_MESSAGE', '<a href="' . $return_message_url . '">', '</a>');
 
 			$last_click_type = 'CLICK_RETURN_FOLDER';
 			if ($folder_url)

@@ -517,6 +517,49 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			WHERE post_id = {$post_id_list[0]}";
 		$db->sql_query($sql);
 
+		// Copy topic subscriptions to new topic
+		$sql = 'SELECT user_id, notify_status
+			FROM ' . TOPICS_WATCH_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+
+		$sql_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$sql_ary[] = array(
+				'topic_id'		=> (int) $to_topic_id,
+				'user_id'		=> (int) $row['user_id'],
+				'notify_status'	=> (int) $row['notify_status'],
+			);
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($sql_ary))
+		{
+			$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
+		}
+
+		// Copy bookmarks to new topic
+		$sql = 'SELECT user_id
+			FROM ' . BOOKMARKS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+
+		$sql_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$sql_ary[] = array(
+				'topic_id'		=> (int) $to_topic_id,
+				'user_id'		=> (int) $row['user_id'],
+			);
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($sql_ary))
+		{
+			$db->sql_multi_insert(BOOKMARKS_TABLE, $sql_ary);
+		}
+
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
 		// Update forum statistics
@@ -619,13 +662,16 @@ function merge_posts($topic_id, $to_topic_id)
 		}
 		else
 		{
-			// If the topic no longer exist, we will update the topic watch table.
-			// To not let it error out on users watching both topics, we just return on an error...
-			$db->sql_return_on_error(true);
-			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
-			$db->sql_return_on_error(false);
+			if (!function_exists('phpbb_update_rows_avoiding_duplicates_notify_status'))
+			{
+				include($phpbb_root_path . 'includes/functions_database_helper.' . $phpEx);
+			}
 
-			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
+			// If the topic no longer exist, we will update the topic watch table.
+			phpbb_update_rows_avoiding_duplicates_notify_status($db, TOPICS_WATCH_TABLE, 'topic_id', array($topic_id), $to_topic_id);
+
+			// If the topic no longer exist, we will update the bookmarks table.
+			phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', array($topic_id), $to_topic_id);
 		}
 
 		// Link to the new topic

@@ -34,6 +34,16 @@ class phpbb_mock_cache
 		$this->data[$var_name] = $var;
 	}
 
+	public function destroy($var_name, $table = '')
+	{
+		if ($table)
+		{
+			throw new Exception('Destroying tables is not implemented yet');
+		}
+
+		unset($this->data[$var_name]);
+	}
+
 	/**
 	* Obtain active bots
 	*/
@@ -41,7 +51,7 @@ class phpbb_mock_cache
 	{
 		return $this->data['_bots'];
 	}
-	
+
 	/**
 	 * Obtain list of word censors. We don't need to parse them here,
 	 * that is tested elsewhere.
@@ -62,6 +72,21 @@ class phpbb_mock_cache
 				'replacement4',
 			),
 		);
+	}
+
+	/**
+	* Obtain disallowed usernames. Input data via standard put method.
+	*/
+	public function obtain_disallowed_usernames()
+	{
+		if (($usernames = $this->get('_disallowed_usernames')) !== false)
+		{
+			return $usernames;
+		}
+		else
+		{
+			return array();
+		}
 	}
 
 	public function set_bots($bots)

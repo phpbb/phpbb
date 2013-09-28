@@ -6,19 +6,18 @@
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
-	
+
+	<!-- IF S_ERROR -->
+	<fieldset>
+		<p class="error">{ERROR_MSG}</p>
+	</fieldset>
+	<!-- ENDIF -->
+
 	<p>{L_GROUPS_EXPLAIN}</p>
 
 	<!-- IF S_EDIT -->
 		<h3>{L_GROUP_DETAILS}</h3>
-	
-		<!-- IF S_ERROR -->
-		<div class="errorbox">
-			<h3>{L_WARNING}</h3>
-			<p>{ERROR_MSG}</p>
-		</div>
-		<!-- ENDIF -->
-	
+
 		<fieldset>
 		<dl>
 			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
@@ -55,7 +54,7 @@
 	<fieldset>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="7" maxlength="7" class="inputbox narrow" /> <span style="background-color: {GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span> [ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</dd>
+		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" class="inputbox narrow" /> <span style="background-color: {GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span> [ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</dd>
 	</dl>
 	<dl>
 		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>

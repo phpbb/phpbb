@@ -1,6 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <h2><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --><!-- IF SEARCH_WORDS -->: <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
+<!-- IF SEARCHED_QUERY --> <p>{L_SEARCHED_QUERY}: <strong>{SEARCHED_QUERY}</strong></p><!-- ENDIF -->
 <!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS}: <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
 
 <!-- IF SEARCH_TOPIC -->

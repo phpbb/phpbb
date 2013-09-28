@@ -288,13 +288,15 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (sizeof($icons))
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+
 		foreach ($icons as $id => $data)
 		{
 			if ($data['display'])
 			{
 				$template->assign_block_vars('topic_icon', array(
 					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
+					'ICON_IMG'		=> $root_path . $config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
 
@@ -421,16 +423,6 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
 
-	// Make sure the image category only holds valid images...
-	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
-	{
-		$file->remove();
-
-		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
-		// Since the image category is displaying content inline we need to catch this.
-		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
-	}
-
 	// Do we have to create a thumbnail?
 	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
 
@@ -469,6 +461,16 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$filedata['post_attach'] = false;
 
 		return $filedata;
+	}
+
+	// Make sure the image category only holds valid images...
+	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
+	{
+		$file->remove();
+
+		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
+		// Since the image category is displaying content inline we need to catch this.
+		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
 	}
 
 	$filedata['filesize'] = $file->get('filesize');
@@ -1167,7 +1169,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 /**
 * User Notification
 */
-function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
+function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id, $author_name = '')
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
@@ -1338,6 +1340,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 					'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode($topic_title),
 					'FORUM_NAME'	=> htmlspecialchars_decode($forum_name),
+					'AUTHOR_NAME'	=> htmlspecialchars_decode($author_name),
 
 					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id",
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id",
@@ -1695,8 +1698,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// The variable name should be $post_approved, because it indicates if the post is approved or not
 	$post_approval = 1;
 
-	// Check the permissions for post approval. Moderators are not affected.
-	if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+	// Check the permissions for post approval.
+	// Moderators must go through post approval like ordinary users.
+	if (!$auth->acl_get('f_noapprove', $data['forum_id']))
 	{
 		// Post not approved, but in queue
 		$post_approval = 0;
@@ -2600,7 +2604,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Send Notifications
 	if (($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_approval)
 	{
-		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
+		// If a username was supplied or the poster is a guest, we will use the supplied username.
+		// Doing it this way we can use "...post by guest-username..." in notifications when
+		// "guest-username" is supplied or ommit the username if it is not.
+		$username = ($username !== '' || !$user->data['is_registered']) ? $username : $user->data['username'];
+		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id'], $username);
 	}
 
 	$params = $add_anchor = '';
@@ -2637,7 +2645,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 *				- 'topic_last_post_subject'
 *				- 'topic_last_poster_name'
 *				- 'topic_last_poster_colour'
-* @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time(). 
+* @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time().
 * @return string An URL to the bumped topic, example: ./viewtopic.php?forum_id=1&amptopic_id=2&ampp=3#p3
 */
 function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)

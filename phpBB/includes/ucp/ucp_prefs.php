@@ -134,6 +134,35 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
+				// check if there are any user-selectable languages
+				$sql = 'SELECT COUNT(lang_id) as languages_count
+								FROM ' . LANG_TABLE;
+				$result = $db->sql_query($sql);
+				if ($db->sql_fetchfield('languages_count') > 1)
+				{
+					$s_more_languages = true;
+				}
+				else
+				{
+					$s_more_languages = false;
+				}
+				$db->sql_freeresult($result);
+
+				// check if there are any user-selectable styles
+				$sql = 'SELECT COUNT(style_id) as styles_count
+								FROM ' . STYLES_TABLE . '
+								WHERE style_active = 1';
+				$result = $db->sql_query($sql);
+				if ($db->sql_fetchfield('styles_count') > 1)
+				{
+					$s_more_styles = true;
+				}
+				else
+				{
+					$s_more_styles = false;
+				}
+				$db->sql_freeresult($result);
+
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
@@ -154,6 +183,9 @@ class ucp_prefs
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
+
+					'S_MORE_LANGUAGES'	=> $s_more_languages,
+					'S_MORE_STYLES'			=> $s_more_styles,
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['style']),

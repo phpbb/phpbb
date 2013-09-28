@@ -11,7 +11,11 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 {
 	static private $already_connected;
 
+	private $db_connections;
+
 	protected $test_case_helpers;
+
+	protected $fixture_xml_data;
 
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
@@ -26,6 +30,75 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			'phpbb_database_test_case' => array('already_connected'),
 		);
+
+		$this->db_connections = array();
+	}
+
+	protected function tearDown()
+	{
+		parent::tearDown();
+
+		// Close all database connections from this test
+		if (!empty($this->db_connections))
+		{
+			foreach ($this->db_connections as $db)
+			{
+				$db->sql_close();
+			}
+		}
+	}
+
+	protected function setUp()
+	{
+		parent::setUp();
+
+		// Resynchronise tables if a fixture was loaded
+		if (isset($this->fixture_xml_data))
+		{
+			$config = $this->get_database_config();
+			$manager = $this->create_connection_manager($config);
+			$manager->connect();
+			$manager->post_setup_synchronisation($this->fixture_xml_data);
+		}
+	}
+
+	/**
+	* Performs synchronisations for a given table/column set on the database
+	*
+	* @param	array	$table_column_map		Information about the tables/columns to synchronise
+	*
+	* @return null
+	*/
+	protected function database_synchronisation($table_column_map)
+	{
+		$config = $this->get_database_config();
+		$manager = $this->create_connection_manager($config);
+		$manager->connect();
+		$manager->database_synchronisation($table_column_map);
+	}
+
+	public function createXMLDataSet($path)
+	{
+		$db_config = $this->get_database_config();
+
+		// Firebird requires table and column names to be uppercase
+		if ($db_config['dbms'] == 'firebird')
+		{
+			$xml_data = file_get_contents($path);
+			$xml_data = preg_replace_callback('/(?:(<table name="))([a-z_]+)(?:(">))/', 'phpbb_database_test_case::to_upper', $xml_data);
+			$xml_data = preg_replace_callback('/(?:(<column>))([a-z_]+)(?:(<\/column>))/', 'phpbb_database_test_case::to_upper', $xml_data);
+
+			$new_fixture = tmpfile();
+			fwrite($new_fixture, $xml_data);
+			fseek($new_fixture, 0);
+
+			$meta_data = stream_get_meta_data($new_fixture);
+			$path = $meta_data['uri'];
+		}
+
+		$this->fixture_xml_data = parent::createXMLDataSet($path);
+
+		return $this->fixture_xml_data;
 	}
 
 	public function get_test_case_helpers()
@@ -83,6 +156,8 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		$db = new $dbal();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
 
+		$this->db_connections[] = $db;
+
 		return $db;
 	}
 
@@ -105,5 +180,18 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	protected function create_connection_manager($config)
 	{
 		return new phpbb_database_test_connection_manager($config);
+	}
+
+	/**
+	* Converts a match in the middle of a string to uppercase.
+	* This is necessary for transforming the fixture information for Firebird tests
+	*
+	* @param $matches The array of matches from a regular expression
+	*
+	* @return string The string with the specified match converted to uppercase
+	*/
+	static public function to_upper($matches)
+	{
+		return $matches[1] . strtoupper($matches[2]) . $matches[3];
 	}
 }

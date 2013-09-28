@@ -30,6 +30,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_mysql extends dbal
 {
 	var $multi_insert = true;
+	var $connect_error = '';
 
 	/**
 	* Connect to server
@@ -44,7 +45,24 @@ class dbal_mysql extends dbal
 
 		$this->sql_layer = 'mysql4';
 
-		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword) : @mysql_connect($this->server, $this->user, $sqlpassword, $new_link);
+		if ($this->persistency)
+		{
+			if (!function_exists('mysql_pconnect'))
+			{
+				$this->connect_error = 'mysql_pconnect function does not exist, is mysql extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @mysql_pconnect($this->server, $this->user, $sqlpassword);
+		}
+		else
+		{
+			if (!function_exists('mysql_connect'))
+			{
+				$this->connect_error = 'mysql_connect function does not exist, is mysql extension installed?';
+				return $this->sql_error('');
+			}
+			$this->db_connect_id = @mysql_connect($this->server, $this->user, $sqlpassword, $new_link);
+		}
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
@@ -419,18 +437,29 @@ class dbal_mysql extends dbal
 	*/
 	function _sql_error()
 	{
-		if (!$this->db_connect_id)
+		if ($this->db_connect_id)
 		{
-			return array(
+			$error = array(
+				'message'	=> @mysql_error($this->db_connect_id),
+				'code'		=> @mysql_errno($this->db_connect_id),
+			);
+		}
+		else if (function_exists('mysql_error'))
+		{
+			$error = array(
 				'message'	=> @mysql_error(),
-				'code'		=> @mysql_errno()
+				'code'		=> @mysql_errno(),
+			);
+		}
+		else
+		{
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
 			);
 		}
 
-		return array(
-			'message'	=> @mysql_error($this->db_connect_id),
-			'code'		=> @mysql_errno($this->db_connect_id)
-		);
+		return $error;
 	}
 
 	/**

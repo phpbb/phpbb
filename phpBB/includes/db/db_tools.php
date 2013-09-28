@@ -1819,6 +1819,22 @@ class phpbb_db_tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				// remove default cosntraints first
+				// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+				$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
+					SET @drop_default_name =
+						(SELECT so.name FROM sysobjects so
+						JOIN sysconstraints sc ON so.id = sc.constid
+						WHERE object_name(so.parent_obj) = '{$table_name}'
+							AND so.xtype = 'D'
+							AND sc.colid = (SELECT colid FROM syscolumns
+								WHERE id = object_id('{$table_name}')
+									AND name = '{$column_name}'))
+					IF @drop_default_name <> ''
+					BEGIN
+						SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
+						EXEC(@cmd)
+					END";
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
 

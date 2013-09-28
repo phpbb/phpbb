@@ -63,11 +63,13 @@
 			<label for="popuppm0"><input type="radio" name="popuppm" id="popuppm0" value="0"<!-- IF not S_POPUP_PM --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 		</dd>
 	</dl>
-	<dl>
-		<dt><label for="lang">{L_BOARD_LANGUAGE}:</label></dt>
-		<dd><select name="lang" id="lang">{S_LANG_OPTIONS}</select></dd>
-	</dl>
-	<!-- IF S_STYLE_OPTIONS -->
+	<!-- IF S_MORE_LANGUAGES -->
+		<dl>
+			<dt><label for="lang">{L_BOARD_LANGUAGE}:</label></dt>
+			<dd><select name="lang" id="lang">{S_LANG_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_STYLE_OPTIONS and S_MORE_STYLES -->
 		<dl>
 			<dt><label for="style">{L_BOARD_STYLE}:</label></dt>
 			<dd><select name="style" id="style">{S_STYLE_OPTIONS}</select></dd>

@@ -73,7 +73,7 @@ class phpbb_request_request_var_test extends phpbb_test_case
 		unset($_GET[$var], $_POST[$var], $_REQUEST[$var], $_COOKIE[$var]);
 	}
 
-	public static function request_variables()
+	static public function request_variables()
 	{
 		return array(
 			// strings

@@ -199,16 +199,18 @@ class dbal_mssqlnative extends dbal
 	var $m_insert_id = NULL;
 	var $last_query_text = '';
 	var $query_options = array();
+	var $connect_error = '';
 
 	/**
 	* Connect to server
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
-		# Test for driver support, to avoid suppressed fatal error
+		// Test for driver support, to avoid suppressed fatal error
 		if (!function_exists('sqlsrv_connect'))
 		{
-			trigger_error('Native MS SQL Server driver for PHP is missing or needs to be updated. Version 1.1 or later is required to install phpBB3. You can download the driver from: http://www.microsoft.com/sqlserver/2005/en/us/PHP-Driver.aspx\n', E_USER_ERROR);
+			$this->connect_error = 'Native MS SQL Server driver for PHP is missing or needs to be updated. Version 1.1 or later is required to install phpBB3. You can download the driver from: http://www.microsoft.com/sqlserver/2005/en/us/PHP-Driver.aspx';
+			return $this->sql_error('');
 		}
 
 		//set up connection variables
@@ -219,7 +221,6 @@ class dbal_mssqlnative extends dbal
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		//connect to database
-		error_reporting(E_ALL);
 		$this->db_connect_id = sqlsrv_connect($this->server, array(
 			'Database' => $this->dbname,
 			'UID' => $this->user,
@@ -436,7 +437,7 @@ class dbal_mssqlnative extends dbal
 				unset($row['line2'], $row['line3']);
 			}
 		}
-		return $row;
+		return (sizeof($row)) ? $row : false;
 	}
 
 	/**
@@ -515,31 +516,43 @@ class dbal_mssqlnative extends dbal
 	*/
 	function _sql_error()
 	{
-		$errors = @sqlsrv_errors(SQLSRV_ERR_ERRORS);
-		$error_message = '';
-		$code = 0;
-
-		if ($errors != null)
+		if (function_exists('sqlsrv_errors'))
 		{
-			foreach ($errors as $error)
+			$errors = @sqlsrv_errors(SQLSRV_ERR_ERRORS);
+			$error_message = '';
+			$code = 0;
+
+			if ($errors != null)
 			{
-				$error_message .= "SQLSTATE: ".$error[ 'SQLSTATE']."\n";
-				$error_message .= "code: ".$error[ 'code']."\n";
-				$code = $error['code'];
-				$error_message .= "message: ".$error[ 'message']."\n";
+				foreach ($errors as $error)
+				{
+					$error_message .= "SQLSTATE: " . $error[ 'SQLSTATE'] . "\n";
+					$error_message .= "code: " . $error[ 'code'] . "\n";
+					$code = $error['code'];
+					$error_message .= "message: " . $error[ 'message'] . "\n";
+				}
+				$this->last_error_result = $error_message;
+				$error = $this->last_error_result;
 			}
-			$this->last_error_result = $error_message;
-			$error = $this->last_error_result;
+			else
+			{
+				$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
+			}
+
+			$error = array(
+				'message'	=> $error,
+				'code'		=> $code,
+			);
 		}
 		else
 		{
-			$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
 		}
 
-		return array(
-			'message'	=> $error,
-			'code'		=> $code,
-		);
+		return $error;
 	}
 
 	/**

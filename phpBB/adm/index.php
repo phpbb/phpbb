@@ -199,7 +199,7 @@ function adm_page_footer($copyright_html = true)
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
-		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
+		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 		'VERSION'			=> $config['version'])
 	);
 
@@ -446,6 +446,13 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 						// A minimum value exists and the maximum value is less than it
 						$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], (int) $cfg_array[$min_name]);
 					}
+				}
+			break;
+
+			case 'email':
+				if (!preg_match('/^' . get_preg_expression('email') . '$/i', $cfg_array[$config_name]))
+				{
+					$error[] = $user->lang['EMAIL_INVALID_EMAIL'];
 				}
 			break;
 

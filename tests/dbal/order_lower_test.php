@@ -14,9 +14,14 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/styles.xml');
 	}
 
-	public function test_cross_join()
+	public function test_order_lower()
 	{
 		$db = $this->new_dbal();
+
+		if (strpos($db->sql_layer, 'mysql') === 0 && version_compare($db->sql_server_info(true, false), '5.6', '>='))
+		{
+			$this->markTestSkipped('MySQL 5.6 fails to order things correctly. See also: http://tracker.phpbb.com/browse/PHPBB3-11571 http://bugs.mysql.com/bug.php?id=69005');
+		}
 
 		// http://tracker.phpbb.com/browse/PHPBB3-10507
 		// Test ORDER BY LOWER(style_name)
@@ -55,7 +60,7 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 					'theme_id'			=> 2,
 					'imageset_id'		=> 2
 				)
-			), 
+			),
 			$db->sql_fetchrowset($result)
 		);
 	}

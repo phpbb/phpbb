@@ -32,7 +32,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		}
 		catch (Exception $exception)
 		{
-			// reset the error level even when an error occured
+			// reset the error level even when an error occurred
 			// PHPUnit turns trigger_error into exceptions as well
 			error_reporting($error_level);
 			ob_end_clean();
@@ -69,9 +69,14 @@ class phpbb_template_template_test extends phpbb_test_case
 			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
 		}
 
-		foreach (glob($this->template->cachepath . '*') as $file)
+		$file_array = scandir($template_cache_dir);
+		$file_prefix = basename($this->template->cachepath);
+		foreach ($file_array as $file)
 		{
-			unlink($file);
+			if (strpos($file, $file_prefix) === 0)
+			{
+				unlink($template_cache_dir . '/' . $file);
+			}
 		}
 
 		$GLOBALS['config'] = array(
@@ -84,9 +89,15 @@ class phpbb_template_template_test extends phpbb_test_case
 	{
 		if (is_object($this->template))
 		{
-			foreach (glob($this->template->cachepath . '*') as $file)
+			$template_cache_dir = dirname($this->template->cachepath);
+			$file_array = scandir($template_cache_dir);
+			$file_prefix = basename($this->template->cachepath);
+			foreach ($file_array as $file)
 			{
-				unlink($file);
+				if (strpos($file, $file_prefix) === 0)
+				{
+					unlink($template_cache_dir . '/' . $file);
+				}
 			}
 		}
 	}
@@ -94,7 +105,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	public static function template_data()
+	static public function template_data()
 	{
 		return array(
 			/*
@@ -233,12 +244,34 @@ class phpbb_template_template_test extends phpbb_test_case
 				'value',
 			),
 			array(
+				'include_define.html',
+				array('VARIABLE' => 'value'),
+				array(),
+				array(),
+				'value',
+			),
+			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
 				array('loop'),
 				'',
-			),/* no top level nested loops
+			),
+			array(
+				'include_define_variable.html',
+				array('VARIABLE' => 'variable.html'),
+				array(),
+				array(),
+				'variable.html',
+			),
+			array(
+				'include_loop_define.html',
+				array('VARIABLE' => 'value'),
+				array('loop' => array(array('NESTED_FILE' => 'variable.html'))),
+				array(),
+				'value',
+			),
+			/* no top level nested loops
 			array(
 				'loop_vars.html',
 				array(),
@@ -419,7 +452,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
 
-	public static function alter_block_array_data()
+	static public function alter_block_array_data()
 	{
 		return array(
 			array(

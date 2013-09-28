@@ -146,7 +146,14 @@ if ($view && !$post_id)
 
 			if (!$row)
 			{
-				$user->setup('viewtopic');
+				$sql = 'SELECT forum_style
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$forum_style = (int) $db->sql_fetchfield('forum_style');
+				$db->sql_freeresult($result);
+
+				$user->setup('viewtopic', $forum_style);
 				trigger_error(($view == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS');
 			}
 			else

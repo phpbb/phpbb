@@ -25,11 +25,19 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_mssql extends dbal
 {
+	var $connect_error = '';
+
 	/**
 	* Connect to server
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
+		if (!function_exists('mssql_connect'))
+		{
+			$this->connect_error = 'mssql_connect function does not exist, is mssql extension installed?';
+			return $this->sql_error('');
+		}
+
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->dbname = $database;
@@ -355,34 +363,44 @@ class dbal_mssql extends dbal
 	*/
 	function _sql_error()
 	{
-		$error = array(
-			'message'	=> @mssql_get_last_message(),
-			'code'		=> ''
-		);
-
-		// Get error code number
-		$result_id = @mssql_query('SELECT @@ERROR as code', $this->db_connect_id);
-		if ($result_id)
+		if (function_exists('mssql_get_last_message'))
 		{
-			$row = @mssql_fetch_assoc($result_id);
-			$error['code'] = $row['code'];
-			@mssql_free_result($result_id);
-		}
+			$error = array(
+				'message'	=> @mssql_get_last_message(),
+				'code'		=> '',
+			);
 
-		// Get full error message if possible
-		$sql = 'SELECT CAST(description as varchar(255)) as message
-			FROM master.dbo.sysmessages
-			WHERE error = ' . $error['code'];
-		$result_id = @mssql_query($sql);
-		
-		if ($result_id)
-		{
-			$row = @mssql_fetch_assoc($result_id);
-			if (!empty($row['message']))
+			// Get error code number
+			$result_id = @mssql_query('SELECT @@ERROR as code', $this->db_connect_id);
+			if ($result_id)
 			{
-				$error['message'] .= '<br />' . $row['message'];
+				$row = @mssql_fetch_assoc($result_id);
+				$error['code'] = $row['code'];
+				@mssql_free_result($result_id);
 			}
-			@mssql_free_result($result_id);
+
+			// Get full error message if possible
+			$sql = 'SELECT CAST(description as varchar(255)) as message
+				FROM master.dbo.sysmessages
+				WHERE error = ' . $error['code'];
+			$result_id = @mssql_query($sql);
+
+			if ($result_id)
+			{
+				$row = @mssql_fetch_assoc($result_id);
+				if (!empty($row['message']))
+				{
+					$error['message'] .= '<br />' . $row['message'];
+				}
+				@mssql_free_result($result_id);
+			}
+		}
+		else
+		{
+			$error = array(
+				'message'	=> $this->connect_error,
+				'code'		=> '',
+			);
 		}
 
 		return $error;

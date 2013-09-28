@@ -80,6 +80,11 @@ class acp_groups
 			case 'approve':
 			case 'demote':
 			case 'promote':
+				if (!check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -120,48 +125,64 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
+				else if (empty($mark_ary))
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);	
+					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'mark'		=> $mark_ary,
+						'g'			=> $group_id,
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> $action))
+					);
+				}
+			break;
 
-					if (!sizeof($mark_ary))
+			case 'set_default_on_all':
+				if (confirm_box(true))
+				{
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+
+					$start = 0;
+
+					do
 					{
-						$start = 0;
+						$sql = 'SELECT user_id
+							FROM ' . USER_GROUP_TABLE . "
+							WHERE group_id = $group_id
+							ORDER BY user_id";
+						$result = $db->sql_query_limit($sql, 200, $start);
 
-						do
+						$mark_ary = array();
+						if ($row = $db->sql_fetchrow($result))
 						{
-							$sql = 'SELECT user_id
-								FROM ' . USER_GROUP_TABLE . "
-								WHERE group_id = $group_id
-								ORDER BY user_id";
-							$result = $db->sql_query_limit($sql, 200, $start);
-
-							$mark_ary = array();
-							if ($row = $db->sql_fetchrow($result))
+							do
 							{
-								do
-								{
-									$mark_ary[] = $row['user_id'];
-								}
-								while ($row = $db->sql_fetchrow($result));
-
-								group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
-
-								$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
+								$mark_ary[] = $row['user_id'];
 							}
-							else
-							{
-								$start = 0;
-							}
-							$db->sql_freeresult($result);
+							while ($row = $db->sql_fetchrow($result));
+
+							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
+
+							$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
 						}
-						while ($start);
+						else
+						{
+							$start = 0;
+						}
+						$db->sql_freeresult($result);
 					}
-					else
-					{
-						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
-					}
+					while ($start);
 
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
@@ -175,10 +196,13 @@ class acp_groups
 						'action'	=> $action))
 					);
 				}
-
 			break;
 
 			case 'deleteusers':
+				if (empty($mark_ary))
+				{
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
 			case 'delete':
 				if (!$group_id)
 				{
@@ -233,6 +257,11 @@ class acp_groups
 			break;
 
 			case 'addusers':
+				if (!check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -394,13 +423,21 @@ class acp_groups
 						}
 					}
 
-					// Validate the length of "Maximum number of allowed recipients per private message" setting.
-					// We use 16777215 as a maximum because it matches MySQL unsigned mediumint maximum value
-					// which is the lowest amongst DBMSes supported by phpBB3
-					if ($max_recipients_error = validate_data($submit_ary, array('max_recipients' => array('num', false, 0, 16777215))))
+					/*
+					* Validate the length of "Maximum number of allowed recipients per
+					* private message" setting. We use 16777215 as a maximum because it matches
+					* MySQL unsigned mediumint maximum value which is the lowest amongst DBMSes
+					* supported by phpBB3. Also validate the submitted colour value.
+					*/
+					$validation_checks = array(
+						'max_recipients' => array('num', false, 0, 16777215),
+						'colour'	=> array('hex_colour', true),
+					);
+
+					if ($validation_error = validate_data($submit_ary, $validation_checks))
 					{
 						// Replace "error" string with its real, localised form
-						$error = array_merge($error, array_map(array(&$user, 'lang'), $max_recipients_error));
+						$error = array_merge($error, $validation_error);
 					}
 
 					if (!sizeof($error))
@@ -493,6 +530,7 @@ class acp_groups
 
 					if (sizeof($error))
 					{
+						$error = array_map(array(&$user, 'lang'), $error);
 						$group_rank = $submit_ary['rank'];
 
 						$group_desc_data = array(
@@ -683,7 +721,7 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
-					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
+					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=set_default_on_all&amp;g=$group_id",
 				));
 
 				// Grab the members

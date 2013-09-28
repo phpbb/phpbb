@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.0.11');
+define('PHPBB_VERSION', '3.0.12');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -157,6 +157,7 @@ define('PHYSICAL_LINK', 2);
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
 define('CONFIRM_POST', 3);
+define('CONFIRM_REPORT', 4);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);

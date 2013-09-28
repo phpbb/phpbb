@@ -8,7 +8,7 @@
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.11');
+define('UPDATES_TO_VERSION', '3.0.12');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
@@ -59,8 +59,6 @@ phpbb_require_updated('includes/startup.' . $phpEx);
 $updates_to_version = UPDATES_TO_VERSION;
 $debug_from_version = DEBUG_FROM_VERSION;
 $oldest_from_version = OLDEST_FROM_VERSION;
-
-error_reporting(E_ALL);
 
 @set_time_limit(0);
 
@@ -527,7 +525,7 @@ function _print_footer()
 	</div>
 
 	<div id="page-footer">
-		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
+		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group
 	</div>
 </div>
 
@@ -951,7 +949,7 @@ function database_update_info()
 						// this column was removed from the database updater
 						// after 3.0.9-RC3 was released. It might still exist
 						// in 3.0.9-RCX installations and has to be dropped in
-						// 3.0.12 after the db_tools class is capable of properly
+						// 3.0.13 after the db_tools class is capable of properly
 						// removing a primary key.
 						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
@@ -1005,8 +1003,16 @@ function database_update_info()
 		),
 		// No changes from 3.0.11-RC2 to 3.0.11
 		'3.0.11-RC2'	=> array(),
+		// No changes from 3.0.11 to 3.0.12-RC1
+		'3.0.11'		=> array(),
+		// No changes from 3.0.12-RC1 to 3.0.12-RC2
+		'3.0.12-RC1'	=> array(),
+		// No changes from 3.0.12-RC2 to 3.0.12-RC3
+		'3.0.12-RC2'	=> array(),
+		// No changes from 3.0.12-RC3 to 3.0.12
+		'3.0.12-RC3'	=> array(),
 
-		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.12-RC1 */
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.13-RC1 */
 	);
 }
 
@@ -1017,7 +1023,7 @@ function database_update_info()
 *****************************************************************************/
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
+	global $db, $db_tools, $errored, $error_ary, $config, $table_prefix, $phpbb_root_path, $phpEx;
 
 	switch ($version)
 	{
@@ -1331,8 +1337,6 @@ function change_database_data(&$no_updates, $version)
 					ACL_OPTIONS_TABLE		=> array('auth_option'),
 				),
 			);
-
-			global $db_tools;
 
 			$statements = $db_tools->perform_schema_changes($changes);
 
@@ -1975,26 +1979,41 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
-			global $db_tools, $table_prefix;
-
-			// Recover from potentially broken Q&A CAPTCHA table on firebird
-			// Q&A CAPTCHA was uninstallable, so it's safe to remove these
-			// without data loss
+			/*
+			* Due to a bug, vanilla phpbb could not create captcha tables
+			* in 3.0.8 on firebird. It was possible for board administrators
+			* to adjust the code to work. If code was manually adjusted by
+			* board administrators, index names would not be the same as
+			* what 3.0.9 and newer expect. This code fragment drops captcha
+			* tables, destroying all entered Q&A captcha configuration, such
+			* that when Q&A is configured next the respective tables will be
+			* created with correct index names.
+			*
+			* If you wish to preserve your Q&A captcha configuration, you can
+			* manually rename indexes to the currently expected name:
+			* 	phpbb_captcha_questions_lang_iso	=> phpbb_captcha_questions_lang
+			* 	phpbb_captcha_answers_question_id	=> phpbb_captcha_answers_qid
+			*
+			* Again, this needs to be done only if a board was manually modified
+			* to fix broken captcha code.
+			*
 			if ($db_tools->sql_layer == 'firebird')
 			{
-				$tables = array(
-					$table_prefix . 'captcha_questions',
-					$table_prefix . 'captcha_answers',
-					$table_prefix . 'qa_confirm',
+				$changes = array(
+					'drop_tables'	=> array(
+						$table_prefix . 'captcha_questions',
+						$table_prefix . 'captcha_answers',
+						$table_prefix . 'qa_confirm',
+					),
 				);
-				foreach ($tables as $table)
+				$statements = $db_tools->perform_schema_changes($changes);
+
+				foreach ($statements as $sql)
 				{
-					if ($db_tools->sql_table_exists($table))
-					{
-						$db_tools->sql_table_drop($table);
-					}
+					_sql($sql, $errored, $error_ary);
 				}
 			}
+			*/
 
 			$no_updates = false;
 		break;
@@ -2107,6 +2126,133 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.11-RC2 to 3.0.11
 		case '3.0.11-RC2':
+		break;
+
+		// Changes from 3.0.11 to 3.0.12-RC1
+		case '3.0.11':
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'acl_u_sig\'
+				WHERE module_class = \'ucp\'
+					AND module_basename = \'profile\'
+					AND module_mode = \'signature\'';
+			_sql($sql, $errored, $error_ary);
+
+			// Update bots
+			if (!function_exists('user_delete'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			$bots_updates = array(
+				// Bot Deletions
+				'NG-Search [Bot]'		=> false,
+				'Nutch/CVS [Bot]'		=> false,
+				'OmniExplorer [Bot]'	=> false,
+				'Seekport [Bot]'		=> false,
+				'Synoo [Bot]'			=> false,
+				'WiseNut [Bot]'			=> false,
+
+				// Bot Updates
+				// Bot name to bot user agent map
+				'Baidu [Spider]'	=> 'Baiduspider',
+				'Exabot [Bot]'		=> 'Exabot',
+				'Voyager [Bot]'		=> 'voyager/',
+				'W3C [Validator]'	=> 'W3C_Validator',
+			);
+
+			foreach ($bots_updates as $bot_name => $bot_agent)
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE user_type = ' . USER_IGNORE . "
+						AND username_clean = '" . $db->sql_escape(utf8_clean_string($bot_name)) . "'";
+				$result = $db->sql_query($sql);
+				$bot_user_id = (int) $db->sql_fetchfield('user_id');
+				$db->sql_freeresult($result);
+
+				if ($bot_user_id)
+				{
+					if ($bot_agent === false)
+					{
+						$sql = 'DELETE FROM ' . BOTS_TABLE . "
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+
+						user_delete('remove', $bot_user_id);
+					}
+					else
+					{
+						$sql = 'UPDATE ' . BOTS_TABLE . "
+							SET bot_agent = '" .  $db->sql_escape($bot_agent) . "'
+							WHERE user_id = $bot_user_id";
+						_sql($sql, $errored, $error_ary);
+					}
+				}
+			}
+
+			// Disable receiving pms for bots
+			$sql = 'SELECT user_id
+				FROM ' . BOTS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$bot_user_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bot_user_ids[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (!empty($bot_user_ids))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_allow_pm = 0
+					WHERE ' . $db->sql_in_set('user_id', $bot_user_ids);
+				_sql($sql, $errored, $error_ary);
+			}
+
+			/**
+			* Update BBCodes that currently use the LOCAL_URL tag
+			*
+			* To fix http://tracker.phpbb.com/browse/PHPBB3-8319 we changed
+			* the second_pass_replace value, so that needs updating for existing ones
+			*/
+			$sql = 'SELECT *
+				FROM ' . BBCODES_TABLE . '
+				WHERE bbcode_match ' . $db->sql_like_expression($db->any_char . 'LOCAL_URL' . $db->any_char);
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!class_exists('acp_bbcodes'))
+				{
+					phpbb_require_updated('includes/acp/acp_bbcodes.' . $phpEx);
+				}
+				$bbcode_match = $row['bbcode_match'];
+				$bbcode_tpl = $row['bbcode_tpl'];
+
+				$acp_bbcodes = new acp_bbcodes();
+				$sql_ary = $acp_bbcodes->build_regexp($bbcode_match, $bbcode_tpl);
+
+				$sql = 'UPDATE ' . BBCODES_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE bbcode_id = ' . (int) $row['bbcode_id'];
+				$db->sql_query($sql);
+			}
+			$db->sql_freeresult($result);
+
+			$no_updates = false;
+		break;
+
+		// No changes from 3.0.12-RC1 to 3.0.12-RC2
+		case '3.0.12-RC1':
+		break;
+
+		// No changes from 3.0.12-RC2 to 3.0.12-RC3
+		case '3.0.12-RC2':
+		break;
+
+		// No changes from 3.0.12-RC3 to 3.0.12
+		case '3.0.12-RC3':
 		break;
 	}
 }

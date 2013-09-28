@@ -9,6 +9,7 @@
          stopOnFailure="false"
          syntaxCheck="true"
          strict="true"
+         verbose="true"
          bootstrap="../tests/bootstrap.php">
 	<testsuites>
 		<testsuite name="phpBB Test Suite">
@@ -16,7 +17,7 @@
 			<exclude>tests/functional</exclude>
 		</testsuite>
 		<testsuite name="phpBB Functional Tests">
-			<directory suffix="_test.php" phpVersion="5.3.0" phpVersionOperator=">=">../tests/functional</directory>
+			<directory suffix="_test.php" phpVersion="5.3.19" phpVersionOperator=">=">../tests/functional</directory>
 		</testsuite>
 	</testsuites>
 
@@ -34,5 +35,6 @@
 		<server name="PHPBB_TEST_DBUSER" value="root" />
 		<server name="PHPBB_TEST_DBPASSWD" value="" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
+		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
 	</php>
 </phpunit>

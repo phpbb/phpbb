@@ -77,6 +77,7 @@ $lang = array_merge($lang, array(
 
 	'SEARCHED_FOR'				=> 'Search term used',
 	'SEARCHED_TOPIC'			=> 'Searched topic',
+	'SEARCHED_QUERY'			=> 'Searched query',
 	'SEARCH_ALL_TERMS'			=> 'Search for all terms or use query as entered',
 	'SEARCH_ANY_TERMS'			=> 'Search for any terms',
 	'SEARCH_AUTHOR'				=> 'Search for author',

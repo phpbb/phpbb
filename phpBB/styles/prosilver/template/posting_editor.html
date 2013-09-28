@@ -17,7 +17,7 @@
 					<dd>
 						<!-- BEGIN to_recipient -->
 							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a>&nbsp;<!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END to_recipient -->
 					</dd>
@@ -29,7 +29,7 @@
 					<dd>
 						<!-- BEGIN bcc_recipient -->
 							<!-- IF not bcc_recipient.S_FIRST_ROW and bcc_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
-							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END bcc_recipient -->
 					</dd>
@@ -50,7 +50,7 @@
 					<dd>
 						<!-- BEGIN to_recipient -->
 							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END to_recipient -->
 					</dd>
@@ -165,7 +165,7 @@
 
 				<dt><label for="comment_list_{attach_row.ASSOC_INDEX}">{L_FILE_COMMENT}:</label></dt>
 				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list_{attach_row.ASSOC_INDEX}" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
-				<dd><a href="{attach_row.U_VIEW_ATTACHMENT}" class="{S_CONTENT_FLOW_END}">{attach_row.FILENAME}</a></dd>
+				<dd><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></dd>
 				<dd style="margin-top: 5px;">
 					<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" onclick="attach_inline({attach_row.ASSOC_INDEX}, '{attach_row.A_FILENAME}');" class="button2" />&nbsp; <!-- ENDIF -->
 					<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button2" />

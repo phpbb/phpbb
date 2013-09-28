@@ -33,9 +33,7 @@ else
 	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-error=0
 errors=""
-
 if ! which "$PHP_BIN" >/dev/null 2>&1
 then
 	echo "PHP Syntax check failed:"
@@ -73,63 +71,18 @@ do
 
 	# check the staged file content for syntax errors
 	# using php -l (lint)
-	# note: if display_errors=stderr in php.ini,
-	# parse errors are printed on stderr; otherwise
-	# they are printed on stdout.
-	# we filter everything other than parse errors
-	# with a grep below, therefore it should be safe
-	# to combine stdout and stderr in all circumstances
-	result=$(git cat-file -p $sha | "$PHP_BIN" -l 2>&1)
+	result=$(git cat-file -p $sha | "$PHP_BIN" -n -l -ddisplay_errors\=1 -derror_reporting\=E_ALL -dlog_errrors\=0 2>&1)
 	if [ $? -ne 0 ]
 	then
-		error=1
 		# Swap back in correct filenames
-		errors=$(echo "$errors"; echo "$result" |sed -e "s@in - on@in $filename on@g")
+		errors=$(echo "$errors"; echo "$result" | grep ':' | sed -e "s@in - on@in $filename on@g")
 	fi
 done
 unset IFS
 
-if [ $error -eq 1 ]
+if [ -n "$errors" ]
 then
-	echo "PHP Syntax check failed:"
-	# php "display errors" (display_errors php.ini value)
-	# and "log errors" (log_errors php.ini value).
-	# these are independent settings - see main/main.c in php source.
-	# the "log errors" setting produces output which
-	# starts with "PHP Parse error:"; the "display errors"
-	# setting produces output starting with "Parse error:".
-	# if both are turned on php dumps the parse error twice.
-	# therefore here we try to grep for one version and
-	# if that yields no results grep for the other version.
-	#
-	# other fun php facts:
-	#
-	# 1. in cli, display_errors and log_errors have different
-	#    destinations by default. display_errors prints to
-	#    standard output and log_errors prints to standard error.
-	#    whether these destinations make sense is left
-	#    as an exercise for the reader.
-	# 2. as mentioned above, with all output turned on
-	#    php will print parse errors twice, one time on stdout
-	#    and one time on stderr.
-	# 3. it is possible to set both display_errors and log_errors
-	#    to off. if this is done php will print the text
-	#    "Errors parsing <file>" but will not say what
-	#    the errors are. useful behavior, this.
-	# 4. on my system display_errors defaults to on and
-	#    log_errors defaults to off, therefore providing
-	#    by default one copy of messages. your mileage may vary.
-	# 5. by setting display_errors=stderr and log_errors=on,
-	#    both sets of messages will be printed on stderr.
-	# 6. php-cgi binary, given display_errors=stderr and
-	#    log_errors=on, still prints both sets of messages
-	#    on stderr, but formats one set as an html fragment.
-	# 7. your entry here? ;)
-	$echo_e "$errors" | grep "^Parse error:"
-	if [ $? -ne 0 ]
-	then
-		# match failed
-		$echo_e "$errors" | grep "^PHP Parse error:"
-	fi
+	echo "PHP Syntax check failed: "
+	$echo_e "$errors"
 	exit 1
 fi

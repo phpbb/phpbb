@@ -14,7 +14,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 
 class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 {
-	public static function security_variables()
+	static public function security_variables()
 	{
 		return array(
 			array('http://localhost/phpBB/index.php', 'mark=forums&x="><script>alert(/XSS/);</script>', 'mark=forums&x=%22%3E%3Cscript%3Ealert(/XSS/);%3C/script%3E'),

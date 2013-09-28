@@ -137,7 +137,18 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 }
 
 /**
-* Set config value. Creates missing config entry.
+* Sets a configuration option's value.
+*
+* Please note that this function does not update the is_dynamic value for
+* an already existing config option.
+*
+* @param string $config_name   The configuration option's name
+* @param string $config_value  New configuration value
+* @param bool   $is_dynamic    Whether this variable should be cached (false) or
+*                              if it changes too frequently (true) to be
+*                              efficiently cached.
+*
+* @return null
 */
 function set_config($config_name, $config_value, $is_dynamic = false)
 {
@@ -166,7 +177,15 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 }
 
 /**
-* Set dynamic config value with arithmetic operation.
+* Increments an integer config value directly in the database.
+*
+* @param string $config_name   The configuration option's name
+* @param int    $increment     Amount to increment by
+* @param bool   $is_dynamic    Whether this variable should be cached (false) or
+*                              if it changes too frequently (true) to be
+*                              efficiently cached.
+*
+* @return null
 */
 function set_config_count($config_name, $increment, $is_dynamic = false)
 {
@@ -289,7 +308,8 @@ function phpbb_gmgetdate($time = false)
 /**
 * Return formatted string for filesizes
 *
-* @param int	$value			filesize in bytes
+* @param mixed	$value			filesize in bytes
+*								(non-negative number; int, float or string)
 * @param bool	$string_only	true if language string should be returned
 * @param array	$allowed_units	only allow these units (data array indexes)
 *
@@ -301,6 +321,12 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 	global $user;
 
 	$available_units = array(
+		'tb' => array(
+			'min' 		=> 1099511627776, // pow(2, 40)
+			'index'		=> 4,
+			'si_unit'	=> 'TB',
+			'iec_unit'	=> 'TIB',
+		),
 		'gb' => array(
 			'min' 		=> 1073741824, // pow(2, 30)
 			'index'		=> 3,
@@ -476,6 +502,13 @@ function phpbb_hash($password)
 */
 function phpbb_check_hash($password, $hash)
 {
+	if (strlen($password) > 4096)
+	{
+		// If the password is too huge, we will simply reject it
+		// and not let the server try to hash it.
+		return false;
+	}
+
 	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 	if (strlen($hash) == 34)
 	{
@@ -979,7 +1012,7 @@ if (!function_exists('stripos'))
 */
 function is_absolute($path)
 {
-	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:[/\\\]#i', $path))) ? true : false;
+	return (isset($path[0]) && $path[0] == '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
 }
 
 /**
@@ -1174,6 +1207,36 @@ else
 
 		return $realpath;
 	}
+}
+
+/**
+* Eliminates useless . and .. components from specified path.
+*
+* @param string $path Path to clean
+* @return string Cleaned path
+*/
+function phpbb_clean_path($path)
+{
+	$exploded = explode('/', $path);
+	$filtered = array();
+	foreach ($exploded as $part)
+	{
+		if ($part === '.' && !empty($filtered))
+		{
+			continue;
+		}
+
+		if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '..')
+		{
+			array_pop($filtered);
+		}
+		else
+		{
+			$filtered[] = $part;
+		}
+	}
+	$path = implode('/', $filtered);
+	return $path;
 }
 
 if (!function_exists('htmlspecialchars_decode'))
@@ -2684,7 +2747,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 
 	// For XHTML compatibility we change back & to &amp;
 	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+		'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />')
 	);
 
 	return $url;
@@ -2708,7 +2771,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 *
 * @param int $code HTTP status code
 * @param string $message Message for the status code
-* @return void
+* @return null
 */
 function send_status_line($code, $message)
 {
@@ -2811,7 +2874,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$diff = time() - $creation_time;
 
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
-		if ($diff && ($diff <= $timespan || $timespan === -1))
+		if (defined('DEBUG_TEST') || $diff && ($diff <= $timespan || $timespan === -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
@@ -3216,6 +3279,7 @@ function login_forum_box($forum_data)
 	page_header($user->lang['LOGIN'], false);
 
 	$template->assign_vars(array(
+		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
 		'S_LOGIN_ACTION'		=> build_url(array('f')),
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
 	);
@@ -3921,7 +3985,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
-			echo '		Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
+			echo '		Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group';
 			echo '	</div>';
 			echo '</div>';
 			echo '</body>';
@@ -4295,7 +4359,7 @@ function phpbb_optionset($bit, $set, $data)
 *
 * @param array	$param		Parameter array, see $param_defaults array.
 *
-* @return void
+* @return null
 */
 function phpbb_http_login($param)
 {
@@ -4741,7 +4805,7 @@ function page_footer($run_cron = true)
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
-		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
+		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group'),
 
 		'U_ACP' => ($auth->acl_get('a_') && !empty($user->data['is_registered'])) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);

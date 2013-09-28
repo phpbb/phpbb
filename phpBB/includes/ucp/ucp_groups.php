@@ -595,6 +595,13 @@ class ucp_groups
 								$error[] = $user->lang['FORM_INVALID'];
 							}
 
+							// Validate submitted colour value
+							if ($colour_error = validate_data($submit_ary, array('colour'	=> array('hex_colour', true))))
+							{
+								// Replace "error" string with its real, localised form
+								$error = array_merge($error, $colour_error);
+							}
+
 							if (!sizeof($error))
 							{
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
@@ -635,6 +642,7 @@ class ucp_groups
 
 							if (sizeof($error))
 							{
+								$error = array_map(array(&$user, 'lang'), $error);
 								$group_rank = $submit_ary['rank'];
 
 								$group_desc_data = array(
