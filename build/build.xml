@@ -166,7 +166,7 @@
 	<target name="checksum-file">
 		<echo msg="Creating checksum file for ${absfilename}" />
 		<php function="dirname" returnProperty="dir"><param value="${absfilename}"/></php>
-		<exec dir="${dir}" command="md5sum ${filename} > ${filename}.md5" />
+		<exec dir="${dir}" command="sha256sum ${filename} > ${filename}.sha256" />
 	</target>
 
 	<target name="changelog" depends="prepare">
