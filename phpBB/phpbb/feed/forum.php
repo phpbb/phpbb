@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\feed;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_feed_forum extends phpbb_feed_post_base
+class forum extends \phpbb\feed\post_base
 {
 	var $forum_id		= 0;
 	var $forum_data		= array();
@@ -32,7 +34,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 	* Set the Forum ID
 	*
 	* @param int	$forum_id			Forum ID
-	* @return	phpbb_feed_forum
+	* @return	\phpbb\feed\forum
 	*/
 	public function set_forum_id($topic_id)
 	{

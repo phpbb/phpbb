@@ -355,7 +355,7 @@ class acp_bots
 		
 		if ($request->is_ajax() && ($action == 'activate' || $action == 'deactivate'))
 		{
-			$json_response = new phpbb_json_response;
+			$json_response = new \phpbb\json_response;
 			$json_response->send(array(
 				'text'	=> $user->lang['BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
 			));

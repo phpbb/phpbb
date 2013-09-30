@@ -72,8 +72,8 @@ class ucp_login_link
 		{
 			if ($request->is_set_post('login'))
 			{
-				$login_username = $request->variable('login_username', '', false, phpbb_request_interface::POST);
-				$login_password = $request->untrimmed_variable('login_password', '', true, phpbb_request_interface::POST);
+				$login_username = $request->variable('login_username', '', false, \phpbb\request\request_interface::POST);
+				$login_password = $request->untrimmed_variable('login_password', '', true, \phpbb\request\request_interface::POST);
 
 				$login_result = $auth_provider->login($login_username, $login_password);
 
@@ -153,7 +153,7 @@ class ucp_login_link
 	{
 		global $request;
 
-		$var_names = $request->variable_names(phpbb_request_interface::GET);
+		$var_names = $request->variable_names(\phpbb\request\request_interface::GET);
 		$login_link_data = array();
 		$string_start_length = strlen('login_link_');
 
@@ -162,7 +162,7 @@ class ucp_login_link
 			if (strpos($var_name, 'login_link_') === 0)
 			{
 				$key_name = substr($var_name, $string_start_length);
-				$login_link_data[$key_name] = $request->variable($var_name, '', false, phpbb_request_interface::GET);
+				$login_link_data[$key_name] = $request->variable($var_name, '', false, \phpbb\request\request_interface::GET);
 			}
 		}
 

@@ -90,7 +90,7 @@ class phpbb_request_var_test extends phpbb_test_case
 	{
 		$this->unset_variables('var');
 
-		// cannot set $_REQUEST directly because in phpbb_request implementation
+		// cannot set $_REQUEST directly because in \phpbb\request\request implementation
 		// $_REQUEST = $_POST + $_GET
 		$_POST['var'] = array(
 			0 => array(

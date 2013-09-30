@@ -1,6 +1,8 @@
 <?php
 
-class phpbb_dir2
+namespace phpbb;
+
+class dir2
 {
 }
 

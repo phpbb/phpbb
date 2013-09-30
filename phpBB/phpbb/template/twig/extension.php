@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -15,22 +17,22 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_template_twig_extension extends Twig_Extension
+class extension extends \Twig_Extension
 {
-	/** @var phpbb_template_context */
+	/** @var \phpbb\template\context */
 	protected $context;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/**
 	* Constructor
 	*
-	* @param phpbb_template_context $context
-	* @param phpbb_user $user
-	* @return phpbb_template_twig_extension
+	* @param \phpbb\template\context $context
+	* @param \phpbb\user $user
+	* @return \phpbb\template\twig\extension
 	*/
-	public function __construct(phpbb_template_context $context, $user)
+	public function __construct(\phpbb\template\context $context, $user)
 	{
 		$this->context = $context;
 		$this->user = $user;
@@ -54,13 +56,13 @@ class phpbb_template_twig_extension extends Twig_Extension
 	public function getTokenParsers()
 	{
 		return array(
-			new phpbb_template_twig_tokenparser_define,
-			new phpbb_template_twig_tokenparser_include,
-			new phpbb_template_twig_tokenparser_includejs,
-			new phpbb_template_twig_tokenparser_includecss,
-			new phpbb_template_twig_tokenparser_event,
-			new phpbb_template_twig_tokenparser_includephp,
-			new phpbb_template_twig_tokenparser_php,
+			new \phpbb\template\twig\tokenparser\defineparser,
+			new \phpbb\template\twig\tokenparser\includeparser,
+			new \phpbb\template\twig\tokenparser\includejs,
+			new \phpbb\template\twig\tokenparser\includecss,
+			new \phpbb\template\twig\tokenparser\event,
+			new \phpbb\template\twig\tokenparser\includephp,
+			new \phpbb\template\twig\tokenparser\php,
 		);
 	}
 
@@ -72,8 +74,8 @@ class phpbb_template_twig_extension extends Twig_Extension
     public function getFilters()
     {
 		return array(
-			new Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
-			new Twig_SimpleFilter('addslashes', 'addslashes'),
+			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
+			new \Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
     }
 
@@ -85,7 +87,7 @@ class phpbb_template_twig_extension extends Twig_Extension
     public function getFunctions()
     {
 		return array(
-			new Twig_SimpleFunction('lang', array($this, 'lang')),
+			new \Twig_SimpleFunction('lang', array($this, 'lang')),
 		);
 	}
 
@@ -102,26 +104,26 @@ class phpbb_template_twig_extension extends Twig_Extension
 			),
 			array(
 				// precedence settings are copied from similar operators in Twig core extension
-				'||' => array('precedence' => 10, 'class' => 'Twig_Node_Expression_Binary_Or', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'&&' => array('precedence' => 15, 'class' => 'Twig_Node_Expression_Binary_And', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+				'||' => array('precedence' => 10, 'class' => 'Twig_Node_Expression_Binary_Or', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'&&' => array('precedence' => 15, 'class' => 'Twig_Node_Expression_Binary_And', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 
-				'eq' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Equal', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+				'eq' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Equal', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 
-				'ne' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'neq' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'<>' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+				'ne' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'neq' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'<>' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_NotEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 
-				'===' => array('precedence' => 20, 'class' => 'phpbb_template_twig_node_expression_binary_equalequal', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'!==' => array('precedence' => 20, 'class' => 'phpbb_template_twig_node_expression_binary_notequalequal', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+				'===' => array('precedence' => 20, 'class' => '\phpbb\template\twig\node\expression\binary\equalequal', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'!==' => array('precedence' => 20, 'class' => '\phpbb\template\twig\node\expression\binary\notequalequal', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 
-				'gt' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Greater', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'gte' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_GreaterEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'ge' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_GreaterEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'lt' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Less', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'lte' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_LessEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
-				'le' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_LessEqual', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+				'gt' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Greater', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'gte' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_GreaterEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'ge' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_GreaterEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'lt' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_Less', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'lte' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_LessEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
+				'le' => array('precedence' => 20, 'class' => 'Twig_Node_Expression_Binary_LessEqual', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 
-				'mod' => array('precedence' => 60, 'class' => 'Twig_Node_Expression_Binary_Mod', 'associativity' => Twig_ExpressionParser::OPERATOR_LEFT),
+				'mod' => array('precedence' => 60, 'class' => 'Twig_Node_Expression_Binary_Mod', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 			),
 		);
     }
@@ -137,7 +139,7 @@ class phpbb_template_twig_extension extends Twig_Extension
 	 *
 	 * @return mixed The sliced variable
 	 */
-	function loop_subset(Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
+	function loop_subset(\Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
 	{
 		// We do almost the same thing as Twig's slice (array_slice), except when $end is positive
 		if ($end >= 1)

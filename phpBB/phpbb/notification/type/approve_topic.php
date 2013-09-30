@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\type;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_type_approve_topic extends phpbb_notification_type_topic
+class approve_topic extends \phpbb\notification\type\topic
 {
 	/**
 	* Get notification type name

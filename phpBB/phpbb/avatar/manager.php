@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\avatar;
+
 /**
 * @ignore
 */
@@ -18,11 +20,11 @@ if (!defined('IN_PHPBB'))
 /**
 * @package avatar
 */
-class phpbb_avatar_manager
+class manager
 {
 	/**
 	* phpBB configuration
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
@@ -59,11 +61,11 @@ class phpbb_avatar_manager
 	/**
 	* Construct an avatar manager object
 	*
-	* @param phpbb_config $config phpBB configuration
+	* @param \phpbb\config\config $config phpBB configuration
 	* @param array $avatar_drivers Avatar drivers passed via the service container
 	* @param object $container Container object
 	*/
-	public function __construct(phpbb_config $config, $avatar_drivers, $container)
+	public function __construct(\phpbb\config\config $config, $avatar_drivers, $container)
 	{
 		$this->config = $config;
 		$this->avatar_drivers = $avatar_drivers;
@@ -194,7 +196,7 @@ class phpbb_avatar_manager
 		$keys = array_keys($row);
 		$values = array_values($row);
 
-		$keys = array_map(array('phpbb_avatar_manager', 'strip_prefix'), $keys);
+		$keys = array_map(array('\phpbb\avatar\manager', 'strip_prefix'), $keys);
 
 		return array_combine($keys, $values);
 	}
@@ -220,7 +222,7 @@ class phpbb_avatar_manager
 	*/
 	static public function clean_driver_name($name)
 	{
-		return str_replace('_', '.', $name);
+		return str_replace(array('\\', '_'), '.', $name);
 	}
 
 	/**
@@ -262,7 +264,7 @@ class phpbb_avatar_manager
 		$config_name = $this->get_driver_config_name($driver);
 
 		return array(
-			'allow_avatar_' . $config_name	=> array('lang' => 'ALLOW_' . strtoupper($config_name),		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+			'allow_avatar_' . $config_name	=> array('lang' => 'ALLOW_' . strtoupper(str_replace('\\', '_', $config_name)),		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 		);
 	}
 
@@ -275,13 +277,13 @@ class phpbb_avatar_manager
 	*/
 	public function get_driver_config_name($driver)
 	{
-		return preg_replace('#^phpbb_avatar_driver_#', '', get_class($driver));
+		return preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($driver));
 	}
 
 	/**
 	* Replace "error" strings with their real, localized form
 	*
-	* @param phpbb_user phpBB User object
+	* @param \phpbb\user phpBB User object
 	* @param array	$error Array containing error strings
 	*        Key values can either be a string with a language key or an array
 	*        that will be passed to vsprintf() with the language key in the
@@ -289,7 +291,7 @@ class phpbb_avatar_manager
 	*
 	* @return array Array containing the localized error strings
 	*/
-	public function localize_errors(phpbb_user $user, $error)
+	public function localize_errors(\phpbb\user $user, $error)
 	{
 		foreach ($error as $key => $lang)
 		{

@@ -77,16 +77,16 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
 // Set up container (must be done here because extensions table may not exist)
 $container_extensions = array(
-	new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-	new phpbb_di_extension_core($phpbb_root_path . 'config/'),
+	new \phpbb\di\extension\config($phpbb_root_path . 'config.' . $phpEx),
+	new \phpbb\di\extension\core($phpbb_root_path . 'config/'),
 );
 $container_passes = array(
-	new phpbb_di_pass_collection_pass(),
+	new \phpbb\di\pass\collection_pass(),
 );
 $phpbb_container = phpbb_create_container($container_extensions, $phpbb_root_path, $phpEx);
 
@@ -211,7 +211,7 @@ while (!$migrator->finished())
 	{
 		$migrator->update();
 	}
-	catch (phpbb_db_migration_exception $e)
+	catch (\phpbb\db\migration\exception $e)
 	{
 		echo $e->getLocalisedMessage($user);
 

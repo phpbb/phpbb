@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\avatar\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Base class for avatar drivers
 * @package phpBB3
 */
-abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
+abstract class driver implements \phpbb\avatar\driver\driver_interface
 {
 	/**
 	* Avatar driver name
@@ -29,7 +31,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* Current board configuration
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
@@ -47,7 +49,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 
 	/**
 	* Cache driver
-	* @var phpbb_cache_driver_interface
+	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $cache;
 
@@ -69,13 +71,13 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	/**
 	* Construct a driver object
 	*
-	* @param phpbb_config $config phpBB configuration
-	* @param phpbb_request $request Request object
+	* @param \phpbb\config\config $config phpBB configuration
+	* @param \phpbb\request\request $request Request object
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param phpbb_cache_driver_interface $cache Cache driver
+	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(phpbb_config $config, $phpbb_root_path, $php_ext, phpbb_cache_driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -112,7 +114,7 @@ abstract class phpbb_avatar_driver implements phpbb_avatar_driver_interface
 	*/
 	public function get_template_name()
 	{
-		$driver = preg_replace('#^phpbb_avatar_driver_#', '', get_class($this));
+		$driver = preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this));
 		$template = "ucp_avatar_options_$driver.html";
 
 		return $template;

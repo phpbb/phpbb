@@ -55,7 +55,6 @@ class acp_forums
 				$total = request_var('total', 0);
 
 				$this->display_progress_bar($start, $total);
-				exit;
 			break;
 
 			case 'delete':
@@ -269,7 +268,7 @@ class acp_forums
 
 				if ($request->is_ajax())
 				{
-					$json_response = new phpbb_json_response;
+					$json_response = new \phpbb\json_response;
 					$json_response->send(array('success' => ($move_forum_name !== false)));
 				}
 

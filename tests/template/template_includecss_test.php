@@ -18,8 +18,8 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 
 		// Prepare correct result
 		$scripts = array(
-			'<link href="' . $this->phpbb_filesystem->get_web_root_path() . 'tests/template/templates/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
-			'<link href="' . $this->phpbb_filesystem->get_web_root_path() . 'tests/template/parent_templates/parent_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+			'<link href="' . $this->phpbb_path_helper->get_web_root_path() . 'tests/template/templates/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+			'<link href="' . $this->phpbb_path_helper->get_web_root_path() . 'tests/template/parent_templates/parent_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
 		);
 
 		// Run test

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db;
+
 /**
 * @ignore
 */
@@ -38,7 +40,7 @@ if (!defined('IN_PHPBB'))
 *
 * Usage:
 * <code>
-*	$buffer = new phpbb_db_sql_insert_buffer($db, 'test_table', 1234);
+*	$buffer = new \phpbb\db\sql_insert_buffer($db, 'test_table', 1234);
 *
 *	while (do_stuff())
 *	{
@@ -53,9 +55,9 @@ if (!defined('IN_PHPBB'))
 *
 * @package dbal
 */
-class phpbb_db_sql_insert_buffer
+class sql_insert_buffer
 {
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
 	/** @var string */
@@ -68,11 +70,11 @@ class phpbb_db_sql_insert_buffer
 	protected $buffer = array();
 
 	/**
-	* @param phpbb_db_driver $db
+	* @param \phpbb\db\driver\driver $db
 	* @param string          $table_name
 	* @param int             $max_buffered_rows
 	*/
-	public function __construct(phpbb_db_driver $db, $table_name, $max_buffered_rows = 500)
+	public function __construct(\phpbb\db\driver\driver $db, $table_name, $max_buffered_rows = 500)
 	{
 		$this->db = $db;
 		$this->table_name = $table_name;

@@ -48,19 +48,20 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = $this->getMock('phpbb_user');
-		$phpbb_filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$this->user = $this->getMock('\phpbb\user');
+		$phpbb_path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
+			new \phpbb\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
-		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $this->user, new phpbb_template_context());
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $this->user, new \phpbb\template\context());
 
 		// We don't use mod_rewrite in these tests
-		$config = new phpbb_config(array('enable_mod_rewrite' => '0'));
-		$helper = new phpbb_controller_helper($this->template, $this->user, $config, '', 'php');
+		$config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
+		$helper = new \phpbb\controller\helper($this->template, $this->user, $config, '', 'php');
 		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
 	}
 
@@ -100,18 +101,19 @@ class phpbb_controller_helper_url_test extends phpbb_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = $this->getMock('phpbb_user');
-				$phpbb_filesystem = new phpbb_filesystem(
-			new phpbb_symfony_request(
+		$this->user = $this->getMock('\phpbb\user');
+		$phpbb_path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
+			new \phpbb\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
-		$this->template = new phpbb_template_twig($phpbb_filesystem, $config, $this->user, new phpbb_template_context());
+		$this->template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $this->user, new \phpbb\template\context());
 
-		$config = new phpbb_config(array('enable_mod_rewrite' => '1'));
-		$helper = new phpbb_controller_helper($this->template, $this->user, $config, '', 'php');
+		$config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+		$helper = new \phpbb\controller\helper($this->template, $this->user, $config, '', 'php');
 		$this->assertEquals($helper->url($route, $params, $is_amp, $session_id), $expected);
 	}
 }

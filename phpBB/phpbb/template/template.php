@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template;
+
 /**
 * @ignore
 */
@@ -15,13 +17,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-interface phpbb_template
+interface template
 {
 
 	/**
 	* Clear the cache
 	*
-	* @return phpbb_template
+	* @return \phpbb\template\template
 	*/
 	public function clear_cache();
 
@@ -29,7 +31,7 @@ interface phpbb_template
 	* Sets the template filenames for handles.
 	*
 	* @param array $filename_array Should be a hash of handle => filename pairs.
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_filenames(array $filename_array);
 
@@ -46,7 +48,7 @@ interface phpbb_template
 	* @param array $style_directories The directories to add style paths for
 	* 	E.g. array('ext/foo/bar/styles', 'styles')
 	* 	Default: array('styles') (phpBB's style directory)
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_style($style_directories = array('styles'));
 
@@ -57,14 +59,14 @@ interface phpbb_template
 	*
 	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
 	* @param string|array or string $paths Array of style paths, relative to current root directory
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_custom_style($names, $paths);
 
 	/**
 	* Clears all variables and blocks assigned to this template.
 	*
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function destroy();
 
@@ -72,7 +74,7 @@ interface phpbb_template
 	* Reset/empty complete block
 	*
 	* @param string $blockname Name of block to destroy
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function destroy_block_vars($blockname);
 
@@ -84,7 +86,7 @@ interface phpbb_template
 	* This function calls hooks.
 	*
 	* @param string $handle Handle to display
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function display($handle);
 
@@ -95,7 +97,7 @@ interface phpbb_template
 	* @param string $handle Handle to operate on
 	* @param string $template_var Template variable to assign compiled handle to
 	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
-	* @return phpbb_template|string if $return_content is true return string of the compiled handle, otherwise return $this
+	* @return \phpbb\template\template|string if $return_content is true return string of the compiled handle, otherwise return $this
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true);
 
@@ -103,7 +105,7 @@ interface phpbb_template
 	* Assign key variable pairs from an array
 	*
 	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function assign_vars(array $vararray);
 
@@ -114,7 +116,7 @@ interface phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function assign_var($varname, $varval);
 
@@ -125,7 +127,7 @@ interface phpbb_template
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to append to variable
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function append_var($varname, $varval);
 
@@ -133,7 +135,7 @@ interface phpbb_template
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function assign_block_vars($blockname, array $vararray);
 
@@ -157,7 +159,7 @@ interface phpbb_template
 	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero).
-	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
+	*	If change, the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)

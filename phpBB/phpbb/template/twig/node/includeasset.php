@@ -7,12 +7,14 @@
 *
 */
 
-abstract class phpbb_template_twig_node_includeasset extends Twig_Node
+namespace phpbb\template\twig\node;
+
+abstract class includeasset extends \Twig_Node
 {
 	/** @var Twig_Environment */
 	protected $environment;
 
-	public function __construct(Twig_Node_Expression $expr, phpbb_template_twig_environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -23,7 +25,7 @@ abstract class phpbb_template_twig_node_includeasset extends Twig_Node
 	 *
 	 * @param Twig_Compiler A Twig_Compiler instance
 	 */
-	public function compile(Twig_Compiler $compiler)
+	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 
@@ -33,7 +35,7 @@ abstract class phpbb_template_twig_node_includeasset extends Twig_Node
 			->write("\$asset_file = ")
 			->subcompile($this->getNode('expr'))
 			->raw(";\n")
-			->write("\$asset = new phpbb_template_asset(\$asset_file, \$this->getEnvironment()->get_filesystem());\n")
+			->write("\$asset = new \phpbb\\template\\asset(\$asset_file, \$this->getEnvironment()->get_path_helper());\n")
 			->write("if (substr(\$asset_file, 0, 2) !== './' && \$asset->is_relative()) {\n")
 			->indent()
 				->write("\$asset_path = \$asset->get_path();")
@@ -71,5 +73,5 @@ abstract class phpbb_template_twig_node_includeasset extends Twig_Node
 	* @param Twig_Compiler A Twig_Compiler instance
 	* @return null
 	*/
-	abstract protected function append_asset(Twig_Compiler $compiler);
+	abstract protected function append_asset(\Twig_Compiler $compiler);
 }

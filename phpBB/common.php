@@ -47,13 +47,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$phpbb_filesystem = new phpbb_filesystem(
-		new phpbb_symfony_request(
-			new phpbb_request()
-		),
-		$phpbb_root_path,
-		$phpEx
-	);
+	$phpbb_filesystem = new phpbb\filesystem();
 	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
@@ -91,9 +85,9 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
+$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container
@@ -115,16 +109,13 @@ $db			= $phpbb_container->get('dbal.conn');
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
-// Create a Symfony Request object from our phpbb_request object
-$symfony_request = $phpbb_container->get('symfony_request');
-$phpbb_filesystem = $phpbb_container->get('filesystem');
-
 // Grab global variables, re-cache if necessary
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
 $phpbb_log = $phpbb_container->get('log');
+$phpbb_path_helper = $phpbb_container->get('path_helper');
 
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
@@ -134,7 +125,7 @@ $template = $phpbb_container->get('template');
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('phpbb_template', 'display')));
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('\phpbb\template\template', 'display')));
 $phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
 foreach ($phpbb_hook_finder->find() as $hook)

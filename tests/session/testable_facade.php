@@ -14,11 +14,11 @@ require_once dirname(__FILE__) . '/../../phpBB/phpbb/session.php';
  * This class exists to expose session.php's functions in a more testable way.
  *
  * Since many functions in session.php have global variables inside the function,
- * this exposes those functions through a testable facade that uses 
- * testable_factory's mock global variables to modify global variables used in 
+ * this exposes those functions through a testable facade that uses
+ * testable_factory's mock global variables to modify global variables used in
  * the functions.
  *
- * This is using the facade pattern to provide a testable "front" to the 
+ * This is using the facade pattern to provide a testable "front" to the
  * functions in sessions.php.
  *
  */
@@ -43,8 +43,8 @@ class phpbb_session_testable_facade
 		global $config, $request;
 		$config['server_name'] = $server_name_config;
 		$config['cookie_domain'] = $cookie_domain_config;
-		$request->overwrite('SERVER_NAME', $host, phpbb_request_interface::SERVER);
-		$request->overwrite('Host', $host, phpbb_request_interface::SERVER);
+		$request->overwrite('SERVER_NAME', $host, \phpbb\request\request_interface::SERVER);
+		$request->overwrite('Host', $host, \phpbb\request\request_interface::SERVER);
 		// Note: There is a php_uname function used as a fallthrough
 		//       that this function doesn't override
 		return $session->extract_current_hostname();
@@ -120,7 +120,7 @@ class phpbb_session_testable_facade
 		$session->host = $host;
 		$config['force_server_vars'] = $force_server_vars;
 		$config['server_name'] = $server_name;
-		$request->overwrite('SERVER_PORT', $server_port, phpbb_request_interface::SERVER);
+		$request->overwrite('SERVER_PORT', $server_port, \phpbb\request\request_interface::SERVER);
 		return $session->validate_referer($check_script_path);
 	}
 }

@@ -1,20 +1,20 @@
 services:
     feed.helper:
-        class: phpbb_feed_helper
+        class: phpbb\feed\helper
         arguments:
             - @config
             - @user
             - %core.root_path%
 
     feed.factory:
-        class: phpbb_feed_factory
+        class: phpbb\feed\factory
         arguments:
             - @service_container
             - @config
             - @dbal.conn
 
     feed.forum:
-        class: phpbb_feed_forum
+        class: phpbb\feed\forum
         scope: prototype
         arguments:
             - @feed.helper
@@ -27,7 +27,7 @@ services:
             - %core.php_ext%
 
     feed.forums:
-        class: phpbb_feed_forums
+        class: phpbb\feed\forums
         scope: prototype
         arguments:
             - @feed.helper
@@ -40,7 +40,7 @@ services:
             - %core.php_ext%
 
     feed.news:
-        class: phpbb_feed_news
+        class: phpbb\feed\news
         scope: prototype
         arguments:
             - @feed.helper
@@ -53,7 +53,7 @@ services:
             - %core.php_ext%
 
     feed.overall:
-        class: phpbb_feed_overall
+        class: phpbb\feed\overall
         scope: prototype
         arguments:
             - @feed.helper
@@ -66,7 +66,7 @@ services:
             - %core.php_ext%
 
     feed.topic:
-        class: phpbb_feed_topic
+        class: phpbb\feed\topic
         scope: prototype
         arguments:
             - @feed.helper
@@ -79,7 +79,7 @@ services:
             - %core.php_ext%
 
     feed.topics:
-        class: phpbb_feed_topics
+        class: phpbb\feed\topics
         scope: prototype
         arguments:
             - @feed.helper
@@ -92,7 +92,7 @@ services:
             - %core.php_ext%
 
     feed.topics_active:
-        class: phpbb_feed_topics_active
+        class: phpbb\feed\topics_active
         scope: prototype
         arguments:
             - @feed.helper

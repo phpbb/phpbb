@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * phpBB's own db driven fulltext search, version 2
 * @package search
 */
-class phpbb_search_fulltext_native extends phpbb_search_base
+class fulltext_native extends \phpbb\search\base
 {
 	/**
 	 * Associative array holding index stats
@@ -80,19 +82,19 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 
 	/**
 	 * Config object
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
 	/**
 	 * Database connection
-	 * @var phpbb_db_driver
+	 * @var \phpbb\db\driver\driver
 	 */
 	protected $db;
 
 	/**
 	 * User object
-	 * @var phpbb_user
+	 * @var \phpbb\user
 	 */
 	protected $user;
 
@@ -1556,7 +1558,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 	* @param	string	$encoding		Text encoding
 	* @return	string					Cleaned up text, only alphanumeric chars are left
 	*
-	* @todo normalizer::cleanup being able to be used?
+	* @todo \normalizer::cleanup being able to be used?
 	*/
 	protected function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
@@ -1588,7 +1590,7 @@ class phpbb_search_fulltext_native extends phpbb_search_base
 		* If we use it more widely, an instance of that class should be held in a
 		* a global variable instead
 		*/
-		utf_normalizer::nfc($text);
+		\utf_normalizer::nfc($text);
 
 		/**
 		* The first thing we do is:

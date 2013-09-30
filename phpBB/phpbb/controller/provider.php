@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\controller;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ use Symfony\Component\Config\FileLocator;
 * Controller interface
 * @package phpBB3
 */
-class phpbb_controller_provider
+class provider
 {
 	/**
 	* YAML file(s) containing route information
@@ -48,7 +50,7 @@ class phpbb_controller_provider
 	*
 	* @return The current instance of this object for method chaining
 	*/
-	public function import_paths_from_finder(phpbb_extension_finder $finder)
+	public function import_paths_from_finder(\phpbb\extension\finder $finder)
 	{
 		// We hardcode the path to the core config directory
 		// because the finder cannot find it

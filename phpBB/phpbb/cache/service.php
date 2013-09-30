@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache;
+
 /**
 * @ignore
 */
@@ -19,26 +21,26 @@ if (!defined('IN_PHPBB'))
 * Class for grabbing/handling cached entries
 * @package acm
 */
-class phpbb_cache_service
+class service
 {
 	/**
 	* Cache driver.
 	*
-	* @var phpbb_cache_driver_interface
+	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $driver;
 
 	/**
 	* The config.
 	*
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* Database connection.
 	*
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
@@ -59,13 +61,13 @@ class phpbb_cache_service
 	/**
 	* Creates a cache service around a cache driver
 	*
-	* @param phpbb_cache_driver_interface $driver The cache driver
-	* @param phpbb_config $config The config
-	* @param phpbb_db_driver $db Database connection
+	* @param \phpbb\cache\driver\driver_interface $driver The cache driver
+	* @param \phpbb\config\config $config The config
+	* @param \phpbb\db\driver\driver $db Database connection
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_cache_driver_interface $driver, phpbb_config $config, phpbb_db_driver $db, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\cache\driver\driver_interface $driver, \phpbb\config\config $config, \phpbb\db\driver\driver $db, $phpbb_root_path, $php_ext)
 	{
 		$this->set_driver($driver);
 		$this->config = $config;
@@ -77,7 +79,7 @@ class phpbb_cache_service
 	/**
 	* Returns the cache driver used by this cache service.
 	*
-	* @return phpbb_cache_driver_interface The cache driver
+	* @return \phpbb\cache\driver\driver_interface The cache driver
 	*/
 	public function get_driver()
 	{
@@ -87,9 +89,9 @@ class phpbb_cache_service
 	/**
 	* Replaces the cache driver used by this cache service.
 	*
-	* @param phpbb_cache_driver_interface $driver The cache driver
+	* @param \phpbb\cache\driver\driver_interface $driver The cache driver
 	*/
-	public function set_driver(phpbb_cache_driver_interface $driver)
+	public function set_driver(\phpbb\cache\driver\driver_interface $driver)
 	{
 		$this->driver = $driver;
 	}

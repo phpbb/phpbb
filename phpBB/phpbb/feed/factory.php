@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\feed;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Factory class to return correct object
 * @package phpBB3
 */
-class phpbb_feed_factory
+class factory
 {
 	/**
 	* Service container object
@@ -27,21 +29,21 @@ class phpbb_feed_factory
 	*/
 	protected $container;
 
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
 	/**
 	* Constructor
 	*
 	* @param objec				$container	Container object
-	* @param phpbb_config		$config		Config object
-	* @param phpbb_db_driver	$db			Database connection
+	* @param \phpbb\config\config		$config		Config object
+	* @param \phpbb\db\driver\driver	$db			Database connection
 	* @return	null
 	*/
-	public function __construct($container, phpbb_config $config, phpbb_db_driver $db)
+	public function __construct($container, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
 	{
 		$this->container = $container;
 		$this->config = $config;

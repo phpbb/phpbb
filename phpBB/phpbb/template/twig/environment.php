@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -15,16 +17,16 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_template_twig_environment extends Twig_Environment
+class environment extends \Twig_Environment
 {
 	/** @var array */
 	protected $phpbb_extensions;
 
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
-	/** @var phpbb_filesystem */
-	protected $phpbb_filesystem;
+	/** @var \phpbb\path_helper */
+	protected $phpbb_path_helper;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -38,20 +40,21 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/**
 	* Constructor
 	*
-	* @param phpbb_config $phpbb_config
+	* @param \phpbb\config\config $phpbb_config
 	* @param array $phpbb_extensions Array of enabled extensions (name => path)
+	* @param \phpbb\path_helper
 	* @param string $phpbb_root_path
 	* @param Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, $phpbb_extensions, phpbb_filesystem $phpbb_filesystem, Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, $phpbb_extensions, \phpbb\path_helper $path_helper, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 		$this->phpbb_extensions = $phpbb_extensions;
 
-		$this->phpbb_filesystem = $phpbb_filesystem;
-		$this->phpbb_root_path = $this->phpbb_filesystem->get_phpbb_root_path();
-		$this->web_root_path = $this->phpbb_filesystem->get_web_root_path();
+		$this->phpbb_path_helper = $path_helper;
+		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
+		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 
 		return parent::__construct($loader, $options);
 	}
@@ -71,7 +74,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 	/**
 	* Get phpBB config
 	*
-	* @return phpbb_config
+	* @return \phpbb\config\config
 	*/
 	public function get_phpbb_config()
 	{
@@ -99,13 +102,13 @@ class phpbb_template_twig_environment extends Twig_Environment
 	}
 
 	/**
-	* Get the phpbb_filesystem object
+	* Get the phpbb path helper object
 	*
-	* @return phpbb_filesystem
+	* @return \phpbb\path_helper
 	*/
-	public function get_filesystem()
+	public function get_path_helper()
 	{
-		return $this->phpbb_filesystem;
+		return $this->phpbb_path_helper;
 	}
 
 	/**
@@ -153,7 +156,7 @@ class phpbb_template_twig_environment extends Twig_Environment
 
 					return parent::loadTemplate('@' . $namespace . '/' . $name, $index);
 				}
-				catch (Twig_Error_Loader $e)
+				catch (\Twig_Error_Loader $e)
 				{
 				}
 			}

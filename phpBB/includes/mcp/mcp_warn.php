@@ -253,7 +253,7 @@ class mcp_warn
 		// Check if can send a notification
 		if ($config['allow_privmsg'])
 		{
-			$auth2 = new phpbb_auth();
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 			$s_can_notify = ($auth2->acl_get('u_readpm')) ? true : false;
 			unset($auth2);
@@ -365,7 +365,7 @@ class mcp_warn
 		// Check if can send a notification
 		if ($config['allow_privmsg'])
 		{
-			$auth2 = new phpbb_auth();
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 			$s_can_notify = ($auth2->acl_get('u_readpm')) ? true : false;
 			unset($auth2);

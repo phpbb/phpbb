@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\di\extension;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ use Symfony\Component\Config\FileLocator;
 /**
 * Container ext extension
 */
-class phpbb_di_extension_ext extends Extension
+class ext extends Extension
 {
 	protected $paths = array();
 

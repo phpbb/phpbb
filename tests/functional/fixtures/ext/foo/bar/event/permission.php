@@ -8,6 +8,8 @@
 *
 */
 
+namespace foo\bar\event;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class phpbb_ext_foo_bar_event_permission implements EventSubscriberInterface
+class permission implements EventSubscriberInterface
 {
 	static public function getSubscribedEvents()
 	{

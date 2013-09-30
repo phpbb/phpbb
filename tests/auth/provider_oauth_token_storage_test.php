@@ -25,7 +25,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		global $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
-		$this->user = $this->getMock('phpbb_user');
+		$this->user = $this->getMock('\phpbb\user');
 		$this->service_name = 'auth.provider.oauth.service.testing';
 		$this->token_storage_table = 'phpbb_oauth_tokens';
 
@@ -36,7 +36,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		// Set the user id to anonymous
 		$this->user->data['user_id'] = ANONYMOUS;
 
-		$this->token_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->token_storage_table);
+		$this->token_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table);
 	}
 
 	public function getDataSet()
@@ -74,7 +74,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user, $this->token_storage_table);
+		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table);
 		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
@@ -105,7 +105,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new phpbb_auth_provider_oauth_token_storage($this->db, $this->user,  $this->token_storage_table);
+		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user,  $this->token_storage_table);
 		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
@@ -196,7 +196,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	protected function get_token_row_by_session_id($session_id)
 	{
 		// Test that the token is stored in the database
-		$sql = 'SELECT * FROM phpbb_oauth_tokens 
+		$sql = 'SELECT * FROM phpbb_oauth_tokens
 			WHERE session_id = \'' . $this->db->sql_escape($session_id) . '\'';
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
