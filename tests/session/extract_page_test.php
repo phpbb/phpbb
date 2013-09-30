@@ -156,7 +156,7 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 			->method('getPathInfo')
 			->will($this->returnValue($getPathInfo));
 
-		$output = phpbb_session::extract_current_page($root_path);
+		$output = \phpbb\session::extract_current_page($root_path);
 
 		// This compares the result of the output.
 		// Any keys that are not in the expected array are overwritten by the output (aka not checked).

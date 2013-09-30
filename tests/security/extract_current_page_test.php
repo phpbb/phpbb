@@ -43,7 +43,7 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 		$symfony_request->expects($this->any())
 			->method('getPathInfo')
 			->will($this->returnValue('/'));
-		$result = phpbb_session::extract_current_page('./');
+		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with PHP_SELF filled.';
 		$this->assertEquals($expected, $result['query_string'], $label);
