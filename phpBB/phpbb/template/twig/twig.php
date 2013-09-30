@@ -33,10 +33,10 @@ class twig extends \phpbb\template\base
 	private $cachepath = '';
 
 	/**
-	* phpBB filesystem
-	* @var \phpbb\filesystem
+	* phpBB path helper
+	* @var \phpbb\path_helper
 	*/
-	protected $phpbb_filesystem;
+	protected $path_helper;
 
 	/**
 	* phpBB root path
@@ -79,17 +79,17 @@ class twig extends \phpbb\template\base
 	/**
 	* Constructor.
 	*
-	* @param \phpbb\filesystem $phpbb_filesystem
+	* @param \phpbb\path_helper $path_helper
 	* @param \phpbb\config\config $config
 	* @param \phpbb\user $user
 	* @param \phpbb\template\context $context template context
 	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct(\phpbb\filesystem $phpbb_filesystem, $config, $user, \phpbb\template\context $context, \phpbb\extension\manager $extension_manager = null)
+	public function __construct(\phpbb\path_helper $path_helper, $config, $user, \phpbb\template\context $context, \phpbb\extension\manager $extension_manager = null)
 	{
-		$this->phpbb_filesystem = $phpbb_filesystem;
-		$this->phpbb_root_path = $phpbb_filesystem->get_phpbb_root_path();
-		$this->php_ext = $phpbb_filesystem->get_php_ext();
+		$this->path_helper = $path_helper;
+		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
+		$this->php_ext = $path_helper->get_php_ext();
 		$this->config = $config;
 		$this->user = $user;
 		$this->context = $context;
@@ -103,7 +103,7 @@ class twig extends \phpbb\template\base
 		$this->twig = new \phpbb\template\twig\environment(
 			$this->config,
 			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
-			$this->phpbb_filesystem,
+			$this->path_helper,
 			$loader,
 			array(
 				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
@@ -125,9 +125,9 @@ class twig extends \phpbb\template\base
 		$this->twig->setLexer($lexer);
 
 		// Add admin namespace
-		if ($this->phpbb_filesystem->get_adm_relative_path() !== null && is_dir($this->phpbb_root_path . $this->phpbb_filesystem->get_adm_relative_path() . 'style/'))
+		if ($this->path_helper->get_adm_relative_path() !== null && is_dir($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/'))
 		{
-			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->phpbb_filesystem->get_adm_relative_path() . 'style/', 'admin');
+			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/', 'admin');
 		}
 	}
 

@@ -21,17 +21,17 @@ class asset
 {
 	protected $components = array();
 
-	/** @var \phpbb\filesystem **/
-	protected $phpbb_filesystem;
+	/** @var \phpbb\path_helper **/
+	protected $path_helper;
 
 	/**
 	* Constructor
 	*
 	* @param string $url URL
 	*/
-	public function __construct($url, \phpbb\filesystem $phpbb_filesystem)
+	public function __construct($url, \phpbb\path_helper $path_helper)
 	{
-		$this->phpbb_filesystem = $phpbb_filesystem;
+		$this->path_helper = $path_helper;
 
 		$this->set_url($url);
 	}
@@ -119,7 +119,7 @@ class asset
 	*/
 	public function get_url()
 	{
-		return $this->phpbb_filesystem->update_web_root_path($this->join_url($this->components));
+		return $this->path_helper->update_web_root_path($this->join_url($this->components));
 	}
 
 	/**

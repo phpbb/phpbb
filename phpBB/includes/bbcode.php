@@ -126,13 +126,13 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager, $phpbb_filesystem;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager, $phpbb_path_helper;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			$template = new phpbb\template\twig\twig($phpbb_filesystem, $config, $user, new phpbb\template\context(), $phpbb_extension_manager);
+			$template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new phpbb\template\context(), $phpbb_extension_manager);
 			$template->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');

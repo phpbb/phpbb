@@ -25,8 +25,8 @@ class environment extends \Twig_Environment
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
-	/** @var \phpbb\filesystem */
-	protected $phpbb_filesystem;
+	/** @var \phpbb\path_helper */
+	protected $phpbb_path_helper;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -42,19 +42,19 @@ class environment extends \Twig_Environment
 	*
 	* @param \phpbb\config\config $phpbb_config
 	* @param array $phpbb_extensions Array of enabled extensions (name => path)
-	* @param \phpbb\filesystem
+	* @param \phpbb\path_helper
 	* @param string $phpbb_root_path
 	* @param Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, $phpbb_extensions, \phpbb\filesystem $phpbb_filesystem, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, $phpbb_extensions, \phpbb\path_helper $path_helper, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 		$this->phpbb_extensions = $phpbb_extensions;
 
-		$this->phpbb_filesystem = $phpbb_filesystem;
-		$this->phpbb_root_path = $this->phpbb_filesystem->get_phpbb_root_path();
-		$this->web_root_path = $this->phpbb_filesystem->get_web_root_path();
+		$this->phpbb_path_helper = $path_helper;
+		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
+		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 
 		return parent::__construct($loader, $options);
 	}
@@ -102,13 +102,13 @@ class environment extends \Twig_Environment
 	}
 
 	/**
-	* Get the phpbb_filesystem object
+	* Get the phpbb path helper object
 	*
-	* @return \phpbb\filesystem
+	* @return \phpbb\path_helper
 	*/
-	public function get_filesystem()
+	public function get_path_helper()
 	{
-		return $this->phpbb_filesystem;
+		return $this->phpbb_path_helper;
 	}
 
 	/**
