@@ -83,9 +83,6 @@ if (!$echo_changes)
 
 		// Build Package
 		run_command("$compress_command ./../../new_version/release_files/{$code_changes_filename}.{$extension} *");
-
-		// Build MD5 Sum
-		run_command("md5sum ./../../new_version/release_files/{$code_changes_filename}.{$extension} > ./../../new_version/release_files/{$code_changes_filename}.{$extension}.md5");
 		flush();
 	}
 }

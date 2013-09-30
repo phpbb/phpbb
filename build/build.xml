@@ -149,6 +149,24 @@
 		<exec dir="build" escape="false"
 			command="git diff --stat release-${prevversion}...HEAD >
 				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_diffstat.txt" />
+
+		<phingcall target="checksum-dir">
+			<property name="dir" value="build/new_version/release_files" />
+		</phingcall>
+	</target>
+
+	<target name="checksum-dir">
+		<foreach param="filename" absparam="absfilename" target="checksum-file">
+			<fileset dir="${dir}">
+				<type type="file" />
+			</fileset>
+		</foreach>
+	</target>
+
+	<target name="checksum-file">
+		<echo msg="Creating checksum file for ${absfilename}" />
+		<php function="dirname" returnProperty="dir"><param value="${absfilename}"/></php>
+		<exec dir="${dir}" command="md5sum ${filename} > ${filename}.md5" />
 	</target>
 
 	<target name="changelog" depends="prepare">
