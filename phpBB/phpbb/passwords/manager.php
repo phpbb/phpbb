@@ -191,6 +191,13 @@ class manager
 	*/
 	public function hash_password($password, $type = '')
 	{
+		if (strlen($password) > 4096)
+		{
+			// If the password is too huge, we will simply reject it
+			// and not let the server try to hash it.
+			return false;
+		}
+
 		$type = ($type === '') ? $this->type : $type;
 
 		if (is_array($type))
@@ -230,6 +237,13 @@ class manager
 	*/
 	public function check_hash($password, $hash)
 	{
+		if (strlen($password) > 4096)
+		{
+			// If the password is too huge, we will simply reject it
+			// and not let the server try to hash it.
+			return false;
+		}
+
 		// First find out what kind of hash we're dealing with
 		$stored_hash_type = $this->detect_algorithm($hash);
 		if ($stored_hash_type == false)
