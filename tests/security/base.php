@@ -52,7 +52,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$symfony_request->expects($this->any())
 			->method('getPathInfo')
 			->will($this->returnValue('/'));
-		$phpbb_filesystem = new phpbb_filesystem($symfony_request, $phpbb_root_path, $phpEx);
+		$phpbb_filesystem = new \phpbb\filesystem($symfony_request, $phpbb_root_path, $phpEx);
 
 		// Set no user and trick a bit to circumvent errors
 		$user = new \phpbb\user();
