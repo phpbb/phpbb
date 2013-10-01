@@ -6,10 +6,10 @@
 	"time": "2012-02-15 01:01:01",
 	"licence": "GNU GPL v2",
 	"authors": [{
-			"name": "Nathan Guse",
-			"username": "EXreaction",
+			"name": "John Smith",
+			"username": "JohnSmith27",
 			"email": "email@phpbb.com",
-			"homepage": "http://lithiumstudios.org",
+			"homepage": "http://phpbb.com",
 			"role": "N/A"
 		}],
 	"require": {

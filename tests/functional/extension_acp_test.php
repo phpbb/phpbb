@@ -111,9 +111,9 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
         	'LICENCE'			=> 'GPL-2.0',
         	'PHPBB_VERSION'		=> '3.1.*@dev',
         	'PHP_VERSION'		=> '>=5.3',
-        	'AUTHOR_NAME'		=> 'Nathan Guse',
+        	'AUTHOR_NAME'		=> 'John Smith',
         	'AUTHOR_EMAIL'		=> 'email@phpbb.com',
-        	'AUTHOR_HOMEPAGE'	=> 'http://lithiumstudios.org',
+        	'AUTHOR_HOMEPAGE'	=> 'http://phpbb.com',
         	'AUTHOR_ROLE'		=> 'N/A',
         );
 
