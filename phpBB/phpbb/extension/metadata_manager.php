@@ -203,7 +203,7 @@ class metadata_manager
     	// Basic fields
     	$fields = array(
     		'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-    		'type'		=> 'phpbb-extension',
+    		'type'		=> '#^phpbb-extension$#',
     		'licence'	=> '#.+#',
     		'version'	=> '#.+#',
     	);
