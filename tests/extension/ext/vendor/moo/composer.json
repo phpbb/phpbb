@@ -1,6 +1,6 @@
 {
 	"name": "moo/example",
-	"type": "phpbb3-extension",
+	"type": "phpbb-extension",
 	"description": "An example/sample extension to be used for testing purposes in phpBB Development.",
 	"version": "1.0.0",
 	"time": "2012-02-15 01:01:01",
@@ -14,7 +14,7 @@
 		}],
 	"require": {
 		"php": ">=5.3",
-		"phpbb": "3.1.0-dev"
+		"phpbb/phpbb": "3.1.*@dev"
 	},
 	"extra": {
 		"display-name": "phpBB Moo Extension"
