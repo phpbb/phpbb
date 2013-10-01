@@ -37,7 +37,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 */
 
 		$request = new phpbb_mock_request(array(), array(), array(), $server);
-		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
 			$request,
 		));
 		$symfony_request->expects($this->any())

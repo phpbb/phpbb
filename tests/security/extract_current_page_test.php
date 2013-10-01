@@ -28,7 +28,7 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	{
 		global $symfony_request, $request;
 
-		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
 			$request,
 		));
 		$symfony_request->expects($this->any())
@@ -56,7 +56,7 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	{
 		global $symfony_request, $request;
 
-		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
 			$request,
 		));
 		$symfony_request->expects($this->any())

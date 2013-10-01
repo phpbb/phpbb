@@ -140,7 +140,7 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 	{
 		global $symfony_request;
 
-		$symfony_request = $this->getMock("phpbb_symfony_request", array(), array(
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
 			new phpbb_mock_request(),
 		));
 		$symfony_request->expects($this->any())
