@@ -519,7 +519,7 @@ class p_master
 			}
 
 			// Not being able to overwrite ;)
-			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=' . $this->get_module_identifier($this->p_name, $this->p_id)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 		}
 		else
 		{
@@ -551,7 +551,7 @@ class p_master
 				$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 			}
 
-			$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			$this->module->u_action = append_sid($this->module->u_action, 'i=' . $this->get_module_identifier($this->p_name, $this->p_id)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 		}
 
 		// Add url_extra parameter to u_action url
@@ -799,12 +799,12 @@ class p_master
 			// if the item has a name use it, else use its id
 			if (empty($item_ary['name']))
 			{
-				$u_title .=  $item_ary['id'];
+				$u_title .= $item_ary['id'];
 			}
 			else
 			{
 				// if the category has a name, then use it.
-				$u_title .=  $item_ary['name'];
+				$u_title .= $this->get_module_identifier($item_ary['name'], $item_ary['id']);
 			}
 			// If the item is not a category append the mode
 			if (!$item_ary['cat'])
@@ -980,6 +980,29 @@ class p_master
 
 		// strip xcp_ prefix from old classes
 		return substr($basename, strlen($this->p_class) + 1);
+	}
+
+	/**
+	* If the basename contains a \ we dont use that for the URL.
+	*
+	* Firefox is currently unable to correctly copy a urlencoded \
+	* so users will be unable to post links to modules.
+	* However we can still fallback to the id instead of the name,
+	* so we do that in this case.
+	*
+	* @param	string	$basename	Basename of the module
+	* @param	int		$id			Id of the module
+	* @return		mixed	Identifier that should be used for
+	*						module link creation
+	*/
+	protected function get_module_identifier($basename, $id)
+	{
+		if (strpos($basename, '\\') === false)
+		{
+			return $basename;
+		}
+
+		return $id;
 	}
 
 	/**
