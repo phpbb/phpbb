@@ -208,7 +208,7 @@ class migrator
 
 		if (!isset($this->migration_state[$name]))
 		{
-			if ($migration->effectively_installed())
+			if ($state['migration_start_time'] == 0 && $migration->effectively_installed())
 			{
 				$state = array(
 					'migration_depends_on'	=> $migration->depends_on(),
@@ -226,6 +226,8 @@ class migrator
 				$state['migration_start_time'] = time();
 			}
 		}
+
+		$this->set_migration_state($name, $state);
 
 		if (!$state['migration_schema_done'])
 		{
