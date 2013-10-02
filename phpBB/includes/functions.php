@@ -398,38 +398,10 @@ function still_on_time($extra_time = 15)
 */
 function phpbb_hash($password)
 {
-	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	global $phpbb_container;
 
-	$random_state = unique_id();
-	$random = '';
-	$count = 6;
-
-	if (($fh = @fopen('/dev/urandom', 'rb')))
-	{
-		$random = fread($fh, $count);
-		fclose($fh);
-	}
-
-	if (strlen($random) < $count)
-	{
-		$random = '';
-
-		for ($i = 0; $i < $count; $i += 16)
-		{
-			$random_state = md5(unique_id() . $random_state);
-			$random .= pack('H*', md5($random_state));
-		}
-		$random = substr($random, 0, $count);
-	}
-
-	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
-
-	if (strlen($hash) == 34)
-	{
-		return $hash;
-	}
-
-	return md5($password);
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->hash($password);
 }
 
 /**
@@ -442,13 +414,10 @@ function phpbb_hash($password)
 */
 function phpbb_check_hash($password, $hash)
 {
-	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-	if (strlen($hash) == 34)
-	{
-		return (_hash_crypt_private($password, $hash, $itoa64) === $hash) ? true : false;
-	}
+	global $phpbb_container;
 
-	return (md5($password) === $hash) ? true : false;
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->check($password, $hash);
 }
 
 /**
