@@ -26,13 +26,13 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());
-		$driver_helper = new phpbb\passwords\driver\helper($config);
+		$driver_helper = new \phpbb\passwords\driver\helper($config);
 
 		$this->passwords_drivers = array(
-			'passwords.driver.bcrypt'		=> new phpbb\passwords\driver\bcrypt($config, $driver_helper),
-			'passwords.driver.bcrypt_2y'	=> new phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
-			'passwords.driver.salted_md5'	=> new phpbb\passwords\driver\salted_md5($config, $driver_helper),
-			'passwords.driver.phpass'		=> new phpbb\passwords\driver\phpass($config, $driver_helper),
+			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
+			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
+			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $driver_helper),
+			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
 		);
 
 		foreach ($this->passwords_drivers as $key => $driver)
@@ -41,9 +41,9 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 			$this->phpbb_container->set($key, $driver);
 		}
 
-		$this->helper = new phpbb\passwords\helper;
+		$this->helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
-		$this->manager = new phpbb\passwords\manager($config, $this->passwords_drivers, $this->helper, 'passwords.driver.bcrypt_2y');
+		$this->manager = new \phpbb\passwords\manager($config, $this->passwords_drivers, $this->helper, 'passwords.driver.bcrypt_2y');
 	}
 
 	public function hash_password_data()

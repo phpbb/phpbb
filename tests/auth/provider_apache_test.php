@@ -25,12 +25,12 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config(array());
 		$this->request = $this->getMock('\phpbb\request\request');
 		$this->user = $this->getMock('\phpbb\user');
-		$driver_helper = new phpbb\passwords\driver\helper($config);
+		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
-			'passwords.driver.bcrypt'		=> new phpbb\passwords\driver\bcrypt($config, $driver_helper),
-			'passwords.driver.bcrypt_2y'	=> new phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
-			'passwords.driver.salted_md5'	=> new phpbb\passwords\driver\salted_md5($config, $driver_helper),
-			'passwords.driver.phpass'		=> new phpbb\passwords\driver\phpass($config, $driver_helper),
+			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
+			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
+			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $driver_helper),
+			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
 		);
 
 		foreach ($passwords_drivers as $key => $driver)
@@ -38,9 +38,9 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			$driver->set_name($key);
 		}
 
-		$passwords_helper = new phpbb\passwords\helper;
+		$passwords_helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
-		$passwords_manager = new phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, 'passwords.driver.bcrypt_2y');
+		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, 'passwords.driver.bcrypt_2y');
 
 		$this->provider = new \phpbb\auth\provider\apache($db, $config, $passwords_manager, $this->request, $this->user, $phpbb_root_path, $phpEx);
 	}
