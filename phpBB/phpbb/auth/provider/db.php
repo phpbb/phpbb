@@ -26,21 +26,29 @@ if (!defined('IN_PHPBB'))
  */
 class db extends \phpbb\auth\provider\base
 {
+	/**
+	* phpBB passwords manager
+	*
+	* @var \phpbb\passwords\manager
+	*/
+	protected $passwords_manager;
 
 	/**
 	 * Database Authentication Constructor
 	 *
-	 * @param	\phpbb\db\driver\driver	$db
-	 * @param	\phpbb\config\config 	$config
-	 * @param	\phpbb\request\request	$request
-	 * @param	\phpbb\user		$user
-	 * @param	string			$phpbb_root_path
-	 * @param	string			$php_ext
+	 * @param	\phpbb\db\driver\driver		$db
+	 * @param	\phpbb\config\config 		$config
+	 * @param	\phpbb\passwords\manager	$passwords_manager
+	 * @param	\phpbb\request\request		$request
+	 * @param	\phpbb\user			$user
+	 * @param	string				$phpbb_root_path
+	 * @param	string				$php_ext
 	 */
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
+		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -199,10 +207,10 @@ class db extends \phpbb\auth\provider\base
 
 				// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
 				// plain md5 support left in for conversions from other systems.
-				if ((strlen($row['user_password']) == 34 && (phpbb_check_hash(md5($password_old_format), $row['user_password']) || phpbb_check_hash(md5(utf8_to_cp1252($password_old_format)), $row['user_password'])))
+				if ((strlen($row['user_password']) == 34 && ($this->passwords_manager->check(md5($password_old_format), $row['user_password']) || $this->passwords_manager->check(md5(utf8_to_cp1252($password_old_format)), $row['user_password'])))
 					|| (strlen($row['user_password']) == 32  && (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])))
 				{
-					$hash = phpbb_hash($password_new_format);
+					$hash = $this->passwords_manager->hash($password_new_format);
 
 					// Update the password in the users table to the new format and remove user_pass_convert flag
 					$sql = 'UPDATE ' . USERS_TABLE . '
@@ -234,12 +242,12 @@ class db extends \phpbb\auth\provider\base
 		}
 
 		// Check password ...
-		if (!$row['user_pass_convert'] && phpbb_check_hash($password, $row['user_password']))
+		if (!$row['user_pass_convert'] && $this->passwords_manager->check($password, $row['user_password']))
 		{
 			// Check for old password hash...
 			if (strlen($row['user_password']) == 32)
 			{
-				$hash = phpbb_hash($password);
+				$hash = $this->passwords_manager->hash($password);
 
 				// Update the password in the users table to the new format
 				$sql = 'UPDATE ' . USERS_TABLE . "

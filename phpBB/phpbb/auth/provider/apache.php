@@ -25,19 +25,28 @@ if (!defined('IN_PHPBB'))
 class apache extends \phpbb\auth\provider\base
 {
 	/**
+	* phpBB passwords manager
+	*
+	* @var \phpbb\passwords\manager
+	*/
+	protected $passwords_manager;
+
+	/**
 	 * Apache Authentication Constructor
 	 *
 	 * @param 	\phpbb\db\driver\driver 	$db
 	 * @param 	\phpbb\config\config 		$config
+	  * @param	\phpbb\passwords\manager	$passwords_manager
 	 * @param 	\phpbb\request\request 		$request
 	 * @param 	\phpbb\user 			$user
 	 * @param 	string 				$phpbb_root_path
 	 * @param 	string 				$php_ext
 	 */
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
+		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -228,7 +237,7 @@ class apache extends \phpbb\auth\provider\base
 		// generate user account data
 		return array(
 			'username'		=> $username,
-			'user_password'	=> phpbb_hash($password),
+			'user_password'	=> $this->passwords_manager->hash($password),
 			'user_email'	=> '',
 			'group_id'		=> (int) $row['group_id'],
 			'user_type'		=> USER_NORMAL,

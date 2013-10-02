@@ -28,7 +28,24 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			));
 		$request = $this->getMock('\phpbb\request\request');
 		$user = $this->getMock('\phpbb\user');
-		$provider = new \phpbb\auth\provider\db($db, $config, $request, $user, $phpbb_root_path, $phpEx);
+		$driver_helper = new phpbb\passwords\driver\helper($config);
+		$passwords_drivers = array(
+			'passwords.driver.bcrypt'		=> new phpbb\passwords\driver\bcrypt($config, $driver_helper),
+			'passwords.driver.bcrypt_2y'	=> new phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
+			'passwords.driver.salted_md5'	=> new phpbb\passwords\driver\salted_md5($config, $driver_helper),
+			'passwords.driver.phpass'		=> new phpbb\passwords\driver\phpass($config, $driver_helper),
+		);
+
+		foreach ($passwords_drivers as $key => $driver)
+		{
+			$driver->set_name($key);
+		}
+
+		$passwords_helper = new phpbb\passwords\helper;
+		// Set up passwords manager
+		$passwords_manager = new phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, 'passwords.driver.bcrypt_2y');
+
+		$provider = new \phpbb\auth\provider\db($db, $config, $passwords_manager, $request, $user, $phpbb_root_path, $phpEx);
 
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,

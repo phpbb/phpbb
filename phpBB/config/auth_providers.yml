@@ -10,6 +10,7 @@ services:
         arguments:
             - @dbal.conn
             - @config
+            - @passwords.manager
             - @request
             - @user
             - %core.root_path%
@@ -21,6 +22,7 @@ services:
         arguments:
             - @dbal.conn
             - @config
+            - @passwords.manager
             - @request
             - @user
             - %core.root_path%
@@ -32,6 +34,7 @@ services:
         arguments:
             - @dbal.conn
             - @config
+            - @passwords.manager
             - @user
         tags:
             - { name: auth.provider }
