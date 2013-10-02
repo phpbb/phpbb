@@ -19,35 +19,44 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
+			array('custom', array(array($this, 'purge_notifications'))),
 			array('custom', array(array($this, 'convert_notifications'))),
 		);
 	}
 
-	public function convert_notifications()
+	public function purge_notifications()
 	{
-		$insert_table = $this->table_prefix . 'user_notifications';
-		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $insert_table);
+		$sql = 'DELETE FROM ' . $this->table_prefix . 'user_notifications';
+		$this->sql_query($sql);
+	}
 
-		$this->perform_conversion($insert_buffer, $insert_table);
+	public function convert_notifications($start)
+	{
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->table_prefix . 'user_notifications');
+
+		return $this->perform_conversion($insert_buffer, $start);
 	}
 
 	/**
 	* Perform the conversion (separate for testability)
 	*
-	* @param \phpbb\db\sql_insert_buffer $insert_buffer
-	* @param string $insert_table
+	* @param \phpbb\db\sql_insert_buffer		$insert_buffer
+	* @param int			$start		Start of staggering step
+	* @return		mixed		int start of the next step, null if the end was reached
 	*/
-	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $insert_table)
+	public function perform_conversion(\phpbb\db\sql_insert_buffer $insert_buffer, $start)
 	{
-		$sql = 'DELETE FROM ' . $insert_table;
-		$this->db->sql_query($sql);
+		$limit = 250;
+		$converted_users = 0;
 
 		$sql = 'SELECT user_id, user_notify_type, user_notify_pm
-			FROM ' . USERS_TABLE;
-		$result = $this->db->sql_query($sql);
+			FROM ' . $this->table_prefix . 'users
+			ORDER BY user_id';
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+			$converted_users++;
 			$notification_methods = array();
 
 			// In-board notification
@@ -91,6 +100,14 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 		$this->db->sql_freeresult($result);
 
 		$insert_buffer->flush();
+
+		if ($converted_users < $limit)
+		{
+			// No more users left, we are done...
+			return;
+		}
+
+		return $start + $limit;
 	}
 
 	/**
