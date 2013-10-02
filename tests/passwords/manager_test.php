@@ -79,7 +79,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 
 		if (!$length)
 		{
-			$this->assertEquals(false, $hash = $this->manager->hash_password($password, $type));
+			$this->assertEquals(false, $hash = $this->manager->hash($password, $type));
 			return;
 		}
 		$time = microtime(true);
@@ -87,7 +87,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		// Limit each test to 1 second
 		while ((microtime(true) - $time) < 1)
 		{
-			$hash = $this->manager->hash_password($password, $type);
+			$hash = $this->manager->hash($password, $type);
 			preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match);
 			$this->assertEquals($prefix, $match[1]);
 			$this->assertEquals($length, strlen($hash));
@@ -126,10 +126,10 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		// Limit each test to 1 second
 		while ((microtime(true) - $time) < 1)
 		{
-			$hash = $this->manager->hash_password($password, $hash_type);
-			$this->assertEquals(true, $this->manager->check_hash($password, $hash));
+			$hash = $this->manager->hash($password, $hash_type);
+			$this->assertEquals(true, $this->manager->check($password, $hash));
 			$password .= $this->pw_characters[mt_rand(0, 66)];
-			$this->assertEquals(false, $this->manager->check_hash($password, $hash));
+			$this->assertEquals(false, $this->manager->check($password, $hash));
 		}
 
 		// Check if convert_flag is correctly set
@@ -154,7 +154,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 	*/
 	public function test_check_hash_exceptions($password, $hash, $expected)
 	{
-		$this->assertEquals($expected, $this->manager->check_hash($password, $hash));
+		$this->assertEquals($expected, $this->manager->check($password, $hash));
 	}
 
 	public function test_hash_password_length()
@@ -167,7 +167,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 
 	public function test_hash_password_8bit_bcrypt()
 	{
-		$this->assertEquals(false, $this->manager->hash_password('foobar𝄞', 'passwords.driver.bcrypt'));
+		$this->assertEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt'));
 	}
 
 	public function test_combined_hash_data()
@@ -232,11 +232,11 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		// Limit each test to 1 second
 		while ((microtime(true) - $time) < 1)
 		{
-			$hash = $this->manager->hash_password($password, $first_type);
-			$combined_hash = $this->manager->hash_password($hash, $second_type);
-			$this->assertEquals($expected, $this->manager->check_hash($password, $combined_hash));
+			$hash = $this->manager->hash($password, $first_type);
+			$combined_hash = $this->manager->hash($hash, $second_type);
+			$this->assertEquals($expected, $this->manager->check($password, $combined_hash));
 			$password .= $this->pw_characters[mt_rand(0, 66)];
-			$this->assertEquals(false, $this->manager->check_hash($password, $combined_hash));
+			$this->assertEquals(false, $this->manager->check($password, $combined_hash));
 
 			// If we are expecting the check to fail then there is
 			// no need to run this more than once

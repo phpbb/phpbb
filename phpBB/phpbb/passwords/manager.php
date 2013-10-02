@@ -189,7 +189,7 @@ class manager
 	* @return string|bool Password hash of supplied password or false if
 	*			if something went wrong during hashing
 	*/
-	public function hash_password($password, $type = '')
+	public function hash($password, $type = '')
 	{
 		if (strlen($password) > 4096)
 		{
@@ -235,7 +235,7 @@ class manager
 	* @param string $hash Stored hash
 	* @return string|bool True if password is correct, false if not
 	*/
-	public function check_hash($password, $hash)
+	public function check($password, $hash)
 	{
 		if (strlen($password) > 4096)
 		{
