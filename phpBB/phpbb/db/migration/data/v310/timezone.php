@@ -39,16 +39,22 @@ class timezone extends \phpbb\db\migration\migration
 		);
 	}
 
-	public function update_timezones()
+	public function update_timezones($start)
 	{
+		$start = (int) $start;
+		$limit = 1;
+		$converted_timezones = 0;
+
 		// Update user timezones
 		$sql = 'SELECT user_dst, user_timezone
 			FROM ' . $this->table_prefix . 'users
 			GROUP BY user_timezone, user_dst';
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+			$converted_timezones++;
+
 			$sql = 'UPDATE ' . $this->table_prefix . "users
 				SET user_timezone = '" . $this->db->sql_escape($this->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
 				WHERE user_timezone = '" . $this->db->sql_escape($row['user_timezone']) . "'
@@ -56,6 +62,12 @@ class timezone extends \phpbb\db\migration\migration
 			$this->sql_query($sql);
 		}
 		$this->db->sql_freeresult($result);
+
+		if ($converted_timezones == $limit)
+		{
+			// There are still more to convert
+			return $start + $limit;
+		}
 
 		// Update board default timezone
 		$sql = 'UPDATE ' . $this->table_prefix . "config
