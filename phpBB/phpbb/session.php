@@ -42,13 +42,13 @@ class session
 	*/
 	static function extract_current_page($root_path)
 	{
-		global $request;
+		global $request, $symfony_request, $phpbb_filesystem;
 
 		$page_array = array();
 
 		// First of all, get the request uri...
-		$script_name = htmlspecialchars_decode($request->server('PHP_SELF'));
-		$args = explode('&', htmlspecialchars_decode($request->server('QUERY_STRING')));
+		$script_name = $symfony_request->getScriptName();
+		$args = explode('&', $symfony_request->getQueryString());
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)
@@ -89,6 +89,12 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name));
 
+		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		if ($symfony_request_path !== '/')
+		{
+			$page_name .= $symfony_request_path;
+		}
+
 		// current directory within the phpBB root (for example: adm)
 		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
 		$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
@@ -105,10 +111,14 @@ class session
 		}
 
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
-		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
+		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name;
+		if ($query_string)
+		{
+			$page .= '?' . $query_string;
+		}
 
 		// The script path from the webroot to the current directory (for example: /phpBB3/adm/) : always prefixed with / and ends in /
-		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
+		$script_path = $symfony_request->getBasePath();
 
 		// The script path from the webroot to the phpBB root (for example: /phpBB3/)
 		$script_dirs = explode('/', $script_path);
