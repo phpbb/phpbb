@@ -38,7 +38,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 	public function test_convert()
 	{
 		$buffer = new phpbb_mock_sql_insert_buffer($this->db, 'phpbb_user_notifications');
-		$this->migration->perform_conversion($buffer, 'phpbb_user_notifications');
+		$this->migration->perform_conversion($buffer, 0);
 
 		$expected = array_merge(
 			$this->create_expected('post', 1, 'email'),

@@ -7,9 +7,9 @@
 *
 */
 
-class phpbb_filesystem_web_root_path_test extends phpbb_test_case
+class phpbb_path_helper_web_root_path_test extends phpbb_test_case
 {
-	protected $filesystem;
+	protected $path_helper;
 	protected $phpbb_root_path = '';
 
 	public function setUp()
@@ -18,10 +18,11 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 
 		$this->set_phpbb_root_path();
 
-		$this->filesystem = new \phpbb\filesystem(
+		$this->path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
+			new \phpbb\filesystem(),
 			$this->phpbb_root_path,
 			'php'
 		);
@@ -43,7 +44,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	public function test_get_web_root_path()
 	{
 		// Symfony Request = null, so always should return phpbb_root_path
-		$this->assertEquals($this->phpbb_root_path, $this->filesystem->get_web_root_path());
+		$this->assertEquals($this->phpbb_root_path, $this->path_helper->get_web_root_path());
 	}
 
 	public function basic_update_web_root_path_data()
@@ -71,7 +72,7 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 	*/
 	public function test_basic_update_web_root_path($input, $expected)
 	{
-		$this->assertEquals($expected, $this->filesystem->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($expected, $this->path_helper->update_web_root_path($input, $symfony_request));
 	}
 
 	public function update_web_root_path_data()
@@ -131,12 +132,13 @@ class phpbb_filesystem_web_root_path_test extends phpbb_test_case
 			->method('getScriptName')
 			->will($this->returnValue($getScriptName));
 
-		$filesystem = new \phpbb\filesystem(
+		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
+			new \phpbb\filesystem(),
 			$this->phpbb_root_path,
 			'php'
 		);
 
-		$this->assertEquals($expected, $filesystem->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($expected, $path_helper->update_web_root_path($input, $symfony_request));
 	}
 }

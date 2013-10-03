@@ -47,19 +47,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	require($phpbb_root_path . 'phpbb/symfony_request.' . $phpEx);
-	require($phpbb_root_path . 'phpbb/request/deactivated_super_global.' . $phpEx);
-	require($phpbb_root_path . 'phpbb/request/type_cast_helper_interface.' . $phpEx);
-	require($phpbb_root_path . 'phpbb/request/type_cast_helper.' . $phpEx);
-	require($phpbb_root_path . 'phpbb/request/request_interface.' . $phpEx);
-	require($phpbb_root_path . 'phpbb/request/request.' . $phpEx);
-	$phpbb_filesystem = new phpbb\filesystem(
-		new phpbb\symfony_request(
-			new phpbb\request\request()
-		),
-		$phpbb_root_path,
-		$phpEx
-	);
+	$phpbb_filesystem = new phpbb\filesystem();
 	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
@@ -121,16 +109,13 @@ $db			= $phpbb_container->get('dbal.conn');
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
-// Create a Symfony Request object from our phpbb_request object
-$symfony_request = $phpbb_container->get('symfony_request');
-$phpbb_filesystem = $phpbb_container->get('filesystem');
-
 // Grab global variables, re-cache if necessary
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
 $phpbb_log = $phpbb_container->get('log');
+$phpbb_path_helper = $phpbb_container->get('path_helper');
 
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');

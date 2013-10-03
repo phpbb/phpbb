@@ -18,17 +18,18 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
-		$this->phpbb_filesystem = new \phpbb\filesystem(
+		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
+			new \phpbb\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
-		$this->template = new phpbb\template\twig\twig($this->phpbb_filesystem, $config, $user, new phpbb\template\context());
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $user, new phpbb\template\context());
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 }

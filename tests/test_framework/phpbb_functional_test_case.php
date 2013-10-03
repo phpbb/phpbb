@@ -203,13 +203,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem(
-				new phpbb\symfony_request(
-					new phpbb_mock_request()
-				),
-				$phpbb_root_path,
-				$php_ext
-			),
+			new phpbb\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$php_ext,
