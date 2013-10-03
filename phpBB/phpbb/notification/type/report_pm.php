@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Private message reproted notifications class
+* Private message reported notifications class
 * This class handles notifications for private messages when they are reported
 *
 * @package notifications

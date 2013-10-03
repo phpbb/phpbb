@@ -1115,8 +1115,8 @@ while ($row = $db->sql_fetchrow($result))
 			*
 			* @event core.viewtopic_cache_guest_data
 			* @var	array	user_cache_data	Array with the user's data
-			* @var	int		poster_id	Poster's user id
-			* @var	array	row			Array with original user and post data
+			* @var	int		poster_id		Poster's user id
+			* @var	array	row				Array with original user and post data
 			* @since 3.1-A1
 			*/
 			$vars = array('user_cache_data', 'poster_id', 'row');
@@ -1181,8 +1181,8 @@ while ($row = $db->sql_fetchrow($result))
 			*
 			* @event core.viewtopic_cache_user_data
 			* @var	array	user_cache_data	Array with the user's data
-			* @var	int		poster_id	Poster's user id
-			* @var	array	row			Array with original user and post data
+			* @var	int		poster_id		Poster's user id
+			* @var	array	row				Array with original user and post data
 			* @since 3.1-A1
 			*/
 			$vars = array('user_cache_data', 'poster_id', 'row');
@@ -1673,10 +1673,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* Modify the posts template block
 	*
 	* @event core.viewtopic_modify_post_row
-	* @var	array	row				Array with original post and user data
-	* @var	array	cp_row			Custom profile field data of the poster
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
 	* @var	array	user_poster_data	Poster's data from user cache
-	* @var	array	post_row		Template block array of the post
+	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
 	*/
 	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');
