@@ -115,6 +115,8 @@ set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
 $phpbb_log = $phpbb_container->get('log');
+$symfony_request = $phpbb_container->get('symfony_request');
+$phpbb_filesystem = $phpbb_container->get('filesystem');
 $phpbb_path_helper = $phpbb_container->get('path_helper');
 
 // load extensions
