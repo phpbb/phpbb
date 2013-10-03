@@ -7,7 +7,9 @@
 *
 */
 
-class phpbb_db_migration_data_310_acp_style_components_module extends phpbb_db_migration
+namespace phpbb\db\migration\data\v310;
+
+class acp_style_components_module extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -24,7 +26,7 @@ class phpbb_db_migration_data_310_acp_style_components_module extends phpbb_db_m
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_310_dev');
+		return array('\phpbb\db\migration\data\v310\dev');
 	}
 
 	public function update_data()
