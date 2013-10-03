@@ -192,6 +192,11 @@ class migrator
 
 		foreach ($state['migration_depends_on'] as $depend)
 		{
+			if ($this->unfulfillable($depend) !== false)
+			{
+				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $depend);
+			}
+
 			if (!isset($this->migration_state[$depend]) ||
 				!$this->migration_state[$depend]['migration_schema_done'] ||
 				!$this->migration_state[$depend]['migration_data_done'])
