@@ -42,7 +42,7 @@ class timezone extends \phpbb\db\migration\migration
 	public function update_timezones($start)
 	{
 		$start = (int) $start;
-		$limit = 5000;
+		$limit = 500;
 		$converted = 0;
 
 		$update_blocks = array();
