@@ -235,15 +235,15 @@ while (!$migrator->finished())
 	{
 		if ($migrator->last_run_migration['task'] == 'process_data_step' && $state['migration_data_done'])
 		{
-			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time), (time() - $update_start_time));
+			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 		else if ($migrator->last_run_migration['task'] == 'process_data_step')
 		{
-			echo $user->lang('MIGRATION_DATA_IN_PROGRESS', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time), (time() - $update_start_time));
+			echo $user->lang('MIGRATION_DATA_IN_PROGRESS', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 		else if ($state['migration_schema_done'])
 		{
-			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time), (time() - $update_start_time));
+			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 	}
 
