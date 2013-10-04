@@ -55,7 +55,12 @@ class timezone extends \phpbb\db\migration\migration
 		{
 			$converted++;
 
-			$update_blocks[$row['user_timezone'] . ':' . $row['user_dst']][] = (int) $row['user_id'];
+			// In case this is somehow run twice on a row.
+			// Otherwise it would just end up as UTC on the second run
+			if (is_numeric($row['user_timezone']))
+			{
+				$update_blocks[$row['user_timezone'] . ':' . $row['user_dst']][] = (int) $row['user_id'];
+			}
 		}
 		$this->db->sql_freeresult($result);
 
