@@ -203,7 +203,7 @@ class metadata_manager
     	// Basic fields
     	$fields = array(
     		'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-    		'type'		=> '#^phpbb3-extension$#',
+    		'type'		=> '#^phpbb-extension$#',
     		'licence'	=> '#.+#',
     		'version'	=> '#.+#',
     	);
@@ -291,12 +291,12 @@ class metadata_manager
 	 */
 	public function validate_require_phpbb()
 	{
-		if (!isset($this->metadata['require']['phpbb']))
+		if (!isset($this->metadata['require']['phpbb/phpbb']))
 		{
-			return true;
+			return false;
 		}
 
-		return $this->_validate_version($this->metadata['require']['phpbb'], $this->config['version']);
+		return true;
 	}
 
 	/**
@@ -308,10 +308,10 @@ class metadata_manager
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
-			return true;
+			return false;
 		}
 
-		return $this->_validate_version($this->metadata['require']['php'], phpversion());
+		return true;
 	}
 
 	/**
@@ -354,7 +354,7 @@ class metadata_manager
 			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
 			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
 
-			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb/phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb/phpbb']) : '',
 			'META_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
 
 			'META_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',
