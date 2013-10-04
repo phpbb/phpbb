@@ -2754,8 +2754,8 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	* Event before users are removed from a group
 	*
 	* @event core.group_delete_user_before
-	* @var	int		group_id	ID of the group from which users are deleted
-	* @var	string	group_name	Name of the group
+	* @var	int		group_id		ID of the group from which users are deleted
+	* @var	string	group_name		Name of the group
 	* @var	array	user_id_ary		IDs of the users which are removed
 	* @var	array	username_ary	names of the users which are removed
 	* @since 3.1-A1
