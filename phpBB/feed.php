@@ -724,7 +724,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 
 		if (isset($this->topic_id))
 		{
-			$sql_array['WHERE'] .= 'AND a.topic_id = ' . $this->topic_id;
+			$sql_array['WHERE'] .= 'AND a.topic_id = ' . (int) $this->topic_id;
 		}
 		else if (isset($this->forum_id))
 		{
@@ -734,7 +734,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 												'ON'    => 'a.topic_id = t.topic_id'
 											)
 										);
-			$sql_array['WHERE'] .= 'AND t.forum_id = ' . $this->forum_id;
+			$sql_array['WHERE'] .= 'AND t.forum_id = ' . (int) $this->forum_id;
 		}
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
