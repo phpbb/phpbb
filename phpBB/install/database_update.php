@@ -207,6 +207,8 @@ $safe_time_limit = (ini_get('max_execution_time') / 2);
 
 while (!$migrator->finished())
 {
+	$migration_start_time = microtime(true);
+
 	try
 	{
 		$migrator->update();
@@ -227,19 +229,25 @@ while (!$migrator->finished())
 
 	if (isset($migrator->last_run_migration['effectively_installed']) && $migrator->last_run_migration['effectively_installed'])
 	{
-		echo $user->lang('MIGRATION_EFFECTIVELY_INSTALLED', $migrator->last_run_migration['name']) . '<br />';
+		echo $user->lang('MIGRATION_EFFECTIVELY_INSTALLED', $migrator->last_run_migration['name']);
 	}
 	else
 	{
-		if ($state['migration_data_done'])
+		if ($migrator->last_run_migration['task'] == 'process_data_step' && $state['migration_data_done'])
 		{
-			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name']) . '<br />';
+			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
+		}
+		else if ($migrator->last_run_migration['task'] == 'process_data_step')
+		{
+			echo $user->lang('MIGRATION_DATA_IN_PROGRESS', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 		else if ($state['migration_schema_done'])
 		{
-			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name']) . '<br />';
+			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 	}
+
+	echo "<br />\n";
 
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)

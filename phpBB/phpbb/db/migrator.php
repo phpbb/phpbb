@@ -209,6 +209,7 @@ class migrator
 			'name'	=> $name,
 			'class'	=> $migration,
 			'state'	=> $state,
+			'task'	=> '',
 		);
 
 		if (!isset($this->migration_state[$name]))
@@ -236,6 +237,7 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
+			$this->last_run_migration['task'] = 'apply_schema_changes';
 			$this->apply_schema_changes($migration->update_schema());
 			$state['migration_schema_done'] = true;
 		}
@@ -243,6 +245,7 @@ class migrator
 		{
 			try
 			{
+				$this->last_run_migration['task'] = 'process_data_step';
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
 
 				$state['migration_data_state'] = ($result === true) ? '' : $result;
@@ -313,6 +316,7 @@ class migrator
 		$this->last_run_migration = array(
 			'name'	=> $name,
 			'class'	=> $migration,
+			'task'	=> '',
 		);
 
 		if ($state['migration_data_done'])
@@ -631,6 +635,7 @@ class migrator
 				{
 					continue;
 				}
+
 				return false;
 			}
 
