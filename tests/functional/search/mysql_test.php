@@ -14,5 +14,5 @@ require_once dirname(__FILE__) . '/base.php';
 */
 class phpbb_functional_search_mysql_test extends phpbb_functional_search_base
 {
-	protected $search_backend = 'phpbb_search_fulltext_mysql';
+	protected $search_backend = '\phpbb\search\fulltext_mysql';
 }
