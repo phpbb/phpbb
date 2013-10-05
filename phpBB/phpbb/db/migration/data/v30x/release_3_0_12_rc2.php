@@ -23,9 +23,11 @@ class release_3_0_12_rc2 extends \phpbb\db\migration\migration
 
 	public function update_data()
 	{
-		return array('if', array(
-			phpbb_version_compare($this->config['version'], '3.0.12-RC2', '<'),
-			array('config.update', array('version', '3.0.12-RC2')),
-		));
+		return array(
+			array('if', array(
+				phpbb_version_compare($this->config['version'], '3.0.12-RC2', '<'),
+				array('config.update', array('version', '3.0.12-RC2')),
+			)),
+		);
 	}
 }
