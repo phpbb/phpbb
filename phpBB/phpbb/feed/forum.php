@@ -117,7 +117,7 @@ class forum extends \phpbb\feed\post_base
 		}
 
 		$this->sql = array(
-			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',

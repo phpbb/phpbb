@@ -90,7 +90,7 @@ class helper
 	/**
 	* Generate text content
 	*/
-	public function generate_content($content, $uid, $bitfield, $options)
+	public function generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 	{
 		if (empty($content))
 		{
@@ -137,8 +137,15 @@ class helper
 		// Remove some specials html tag, because somewhere there are a mod to allow html tags ;)
 		$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
+		// Parse inline images to display with the feed
+		if (count($post_attachments) > 0)
+		{
+			$update_count = array();
+			parse_attachments($forum_id, $content, $post_attachments, $update_count);
+		}
+
 		// Remove Comments from inline attachments [ia]
-		$content	= preg_replace('#<div class="(inline-attachment|attachtitle)">(.*?)<!-- ia(.*?) -->(.*?)<!-- ia(.*?) -->(.*?)</div>#si','$4',$content);
+		$content = preg_replace('#<dd>(.*?)</dd>#','',$content);
 
 		// Replace some entities with their unicode counterpart
 		$entities = array(
@@ -155,6 +162,9 @@ class helper
 
 		// Other control characters
 		$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
+
+		// Convert attachments' relative path to absolute path
+		$content = str_replace($this->phpbb_root_path . 'download', $this->get_board_url() . '/download', $content);
 
 		return $content;
 	}

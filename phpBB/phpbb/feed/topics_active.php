@@ -82,7 +82,7 @@ class topics_active extends \phpbb\feed\topic_base
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_views,
 							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
