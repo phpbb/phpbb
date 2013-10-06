@@ -529,7 +529,7 @@ $lang = array_merge($lang, array(
 	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
 	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
-	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Edit "Remember Me" login keys',
+	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Manage “Remember Me” login keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',
