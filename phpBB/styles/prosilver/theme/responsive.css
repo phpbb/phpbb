@@ -96,7 +96,10 @@ ul.topiclist li.header dd {
 	display: none !important;
 }
 
-ul.topiclist li.row dt, ul.topiclist li.row dt .list-inner {
+ul.topiclist dt, ul.topiclist dt .list-inner,
+ul.topiclist.missing-column dt, ul.topiclist.missing-column dt .list-inner,
+ul.topiclist.two-long-columns dt, ul.topiclist.two-long-columns dt .list-inner,
+ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
 	margin-right: 0;
 }
 
