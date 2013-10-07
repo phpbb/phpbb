@@ -171,7 +171,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 
 		// Remove the View results link
 		if (!results_visible) {
-			poll.find('.poll_view_results').fadeOut(500);
+			poll.find('.poll_view_results').hide(500);
 		}
 
 		if (!res.can_vote) {
@@ -180,7 +180,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			});
 		} else {
 			// If the user can still vote, simply slide down the results
-			poll.find('.resultbar, .poll_option_percent, .poll_total_votes').slideDown(500);
+			poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show(500);
 		}
 
 		// Update the total votes count
@@ -229,8 +229,8 @@ $('.poll_view_results a').click(function(e) {
 
 	var poll = $(this).parents('.topic_poll');
 
-	poll.find('.resultbar, .poll_option_percent, .poll_total_votes').slideDown(500);
-	poll.find('.poll_view_results').fadeOut(500);
+	poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show(500);
+	poll.find('.poll_view_results').hide(500);
 });
 
 $('[data-ajax]').each(function() {
