@@ -157,7 +157,81 @@ phpbb.addAjaxCallback('zebra', function(res) {
 	}
 });
 
+/**
+ * This callback updates the poll results after voting.
+ */
+phpbb.addAjaxCallback('vote_poll', function(res) {
+	if (typeof res.success !== 'undefined') {
+		var poll = $('.topic_poll');
+		var panel = poll.find('.panel');
+		var results_visible = poll.find('dl:first-child .resultbar').is(':visible');
 
+		// Force the current height to prevent the page from jumping when the content changes
+		panel.height(panel.find('.inner').outerHeight());
+
+		// Remove the View results link
+		if (!results_visible) {
+			poll.find('.poll_view_results').fadeOut(500);
+		}
+
+		if (!res.can_vote) {
+			poll.find('.polls, .poll_max_votes, .poll_vote, .poll_option_select').fadeOut(500, function () {
+				poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show();
+			});
+		} else {
+			// If the user can still vote, simply slide down the results
+			poll.find('.resultbar, .poll_option_percent, .poll_total_votes').slideDown(500);
+		}
+
+		// Update the total votes count
+		poll.find('.poll_total_vote_cnt').html(res.total_votes);
+
+		// Update each option
+		poll.find('[data-poll-option-id]').each(function() {
+			var option = $(this);
+			var option_id = option.attr('data-poll-option-id');
+			var voted = (typeof res.user_votes[option_id] !== 'undefined') ? true : false;
+			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[option_id] / res.total_votes) * 100);
+
+			option.toggleClass('voted', voted);
+
+			// Update the bars
+			var bar = option.find('.resultbar div');
+			var bar_time_lapse = (res.can_vote) ? 500 : 1500;
+			var new_bar_class = (percent == 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
+
+			setTimeout(function () {
+				bar.animate({width: percent + '%'}, 500).removeClass('pollbar1 pollbar2 pollbar3 pollbar4 pollbar5').addClass(new_bar_class);
+				bar.html(res.vote_counts[option_id]);
+
+				var percent_txt = (!percent) ? res.NO_VOTES : percent + '%';
+				option.find('.poll_option_percent').html(percent_txt);
+			}, bar_time_lapse);
+		});
+
+		if (!res.can_vote) {
+			poll.find('.polls').delay(400).fadeIn(500);
+		}
+
+		// Remove the gap resulting from removing options
+		setTimeout(function() {
+			panel.animate({height: panel.find('.inner').height()}, 500);
+		}, 1500);
+	}
+});
+
+/**
+ * Show poll results when clicking View results link.
+ */
+$('.poll_view_results a').click(function(e) {
+	// Do not follow the link
+	e.preventDefault();
+
+	var poll = $(this).parents('.topic_poll');
+
+	poll.find('.resultbar, .poll_option_percent, .poll_total_votes').slideDown(500);
+	poll.find('.poll_view_results').fadeOut(500);
+});
 
 $('[data-ajax]').each(function() {
 	var $this = $(this),
