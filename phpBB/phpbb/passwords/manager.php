@@ -214,16 +214,6 @@ class manager
 			return false;
 		}
 
-		// Do not support 8-bit characters with $2a$ bcrypt
-		// Also see http://www.php.net/security/crypt_blowfish.php
-		if ($type === 'passwords.driver.bcrypt' || ($type === 'passwords.driver.bcrypt_2y' && !$hashing_algorithm->is_supported()))
-		{
-			if (ord($password[strlen($password)-1]) & 128)
-			{
-				return false;
-			}
-		}
-
 		return $hashing_algorithm->hash($password);
 	}
 

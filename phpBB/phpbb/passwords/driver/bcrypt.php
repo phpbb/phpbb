@@ -41,6 +41,16 @@ class bcrypt extends \phpbb\passwords\driver\base
 		// Revert to 2a if this is the case
 		$prefix = (!$this->is_supported()) ? '$2a$' : $this->get_prefix();
 
+		// Do not support 8-bit characters with $2a$ bcrypt
+		// Also see http://www.php.net/security/crypt_blowfish.php
+		if ($prefix === self::PREFIX)
+		{
+			if (ord($password[strlen($password)-1]) & 128)
+			{
+				return false;
+			}
+		}
+
 		if ($salt == '')
 		{
 			$salt = $prefix . '10$' . $this->get_random_salt();
