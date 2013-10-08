@@ -921,7 +921,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		// None of the topics is really deleted, so a redirect won't hurt much.
 		$deleted_topics = 0;
 
-		$success_msg = (sizeof($post_info) == 1) ? 'POST_DELETED_SUCCESS' : 'POSTS_DELETED_SUCCESS';
+		$success_msg = (sizeof($post_info) == 1) ? $user->lang['POST_DELETED_SUCCESS'] : $user->lang['POSTS_DELETED_SUCCESS'];
 
 		foreach ($approve_log as $row)
 		{
