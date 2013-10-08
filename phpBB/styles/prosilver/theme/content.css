@@ -662,6 +662,12 @@ fieldset.polls dd div {
 	border-right: 1px solid transparent;
 }
 
+.vote-submitted {
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
+
 /* Poster profile block
 ----------------------------------------*/
 .postprofile {

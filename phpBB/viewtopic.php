@@ -835,8 +835,6 @@ if (!empty($topic_data['poll_start']))
 			$valid_user_votes = array_intersect(array_keys($vote_counts), $voted_id);
 
 			$data = array(
-				'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-				'MESSAGE_TEXT'		=> $message,
 				'NO_VOTES'			=> $user->lang['NO_VOTES'],
 				'success'			=> true,
 				'user_votes'		=> array_flip($valid_user_votes),

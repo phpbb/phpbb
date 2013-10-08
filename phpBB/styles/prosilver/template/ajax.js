@@ -166,8 +166,12 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 		var panel = poll.find('.panel');
 		var results_visible = poll.find('dl:first-child .resultbar').is(':visible');
 
-		// Force the current height to prevent the page from jumping when the content changes
-		panel.height(panel.find('.inner').outerHeight());
+		// Set min-height to prevent the page from jumping when the content changes
+		var update_panel_height = function (height) {
+			var height = (typeof height === 'undefined') ? panel.find('.inner').outerHeight() : height;
+			panel.css('min-height', height);
+		};
+		update_panel_height();
 
 		// Remove the View results link
 		if (!results_visible) {
@@ -213,10 +217,33 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			poll.find('.polls').delay(400).fadeIn(500);
 		}
 
+		// Display "Your vote has been cast." message. Disappears after 5 seconds.
+		var confirmation_delay = (res.can_vote) ? 300 : 900;
+		poll.find('.vote-submitted').delay(confirmation_delay).slideDown(200, function() {
+			if (results_visible) {
+				update_panel_height();
+			}
+
+			$(this).delay(5000).fadeOut(500, function() {
+				resize_panel(300);
+			});
+		});
+
 		// Remove the gap resulting from removing options
 		setTimeout(function() {
-			panel.animate({height: panel.find('.inner').height()}, 500);
+			resize_panel(500);
 		}, 1500);
+
+		var resize_panel = function (time) {
+			var panel_height = panel.height();
+			var inner_height = panel.find('.inner').outerHeight();
+
+			if (panel_height != inner_height) {
+				panel.css({'min-height': '', 'height': panel_height}).animate({height: inner_height}, time, function () {
+					panel.css({'min-height': inner_height, 'height': ''});
+				});
+			}
+		};
 	}
 });
 
