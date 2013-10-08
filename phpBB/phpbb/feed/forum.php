@@ -36,7 +36,7 @@ class forum extends \phpbb\feed\post_base
 	* @param int	$forum_id			Forum ID
 	* @return	\phpbb\feed\forum
 	*/
-	public function set_forum_id($topic_id)
+	public function set_forum_id($forum_id)
 	{
 		$this->forum_id = (int) $forum_id;
 
