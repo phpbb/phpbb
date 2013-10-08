@@ -689,10 +689,12 @@ if (!empty($topic_data['poll_start']))
 		ORDER BY o.poll_option_id";
 	$result = $db->sql_query($sql);
 
-	$poll_info = array();
+	$poll_info = $vote_counts = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$poll_info[] = $row;
+		$option_id = (int) $row['poll_option_id'];
+		$vote_counts[$option_id] = (int) $row['poll_option_total'];
 	}
 	$db->sql_freeresult($result);
 
@@ -774,6 +776,8 @@ if (!empty($topic_data['poll_start']))
 					AND topic_id = ' . (int) $topic_id;
 			$db->sql_query($sql);
 
+			$vote_counts[$option]++;
+
 			if ($user->data['is_registered'])
 			{
 				$sql_ary = array(
@@ -798,6 +802,8 @@ if (!empty($topic_data['poll_start']))
 						AND topic_id = ' . (int) $topic_id;
 				$db->sql_query($sql);
 
+				$vote_counts[$option]--;
+
 				if ($user->data['is_registered'])
 				{
 					$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
@@ -821,9 +827,27 @@ if (!empty($topic_data['poll_start']))
 		$db->sql_query($sql);
 
 		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
+		$message = $user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+
+		if ($request->is_ajax())
+		{
+			// Filter out invalid options
+			$valid_user_votes = array_intersect(array_keys($vote_counts), $voted_id);
+
+			$data = array(
+				'NO_VOTES'			=> $user->lang['NO_VOTES'],
+				'success'			=> true,
+				'user_votes'		=> array_flip($valid_user_votes),
+				'vote_counts'		=> $vote_counts,
+				'total_votes'		=> array_sum($vote_counts),
+				'can_vote'			=> !sizeof($valid_user_votes) || ($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']),
+			);
+			$json_response = new \phpbb\json_response();
+			$json_response->send($data);
+		}
 
 		meta_refresh(5, $redirect_url);
-		trigger_error($user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>'));
+		trigger_error($message);
 	}
 
 	$poll_total = 0;
