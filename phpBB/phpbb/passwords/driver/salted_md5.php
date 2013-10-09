@@ -46,10 +46,7 @@ class salted_md5 extends \phpbb\passwords\driver\base
 		}
 		else
 		{
-			if (($settings = $this->get_hash_settings($this->generate_salt())) === false)
-			{
-				return false;
-			}
+			$settings = $this->get_hash_settings($this->generate_salt());
 		}
 
 		$hash = md5($settings['salt'] . $password, true);

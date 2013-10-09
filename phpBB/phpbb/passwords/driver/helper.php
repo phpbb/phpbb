@@ -120,12 +120,13 @@ class helper
 	* Get random salt with specified length
 	*
 	* @param int $length Salt length
+	* @param string $rand_seed Seed for random data (optional). For tests.
 	*/
-	public function get_random_salt($length)
+	public function get_random_salt($length, $rand_seed = '/dev/urandom')
 	{
 		$random = '';
 
-		if (($fh = @fopen('/dev/urandom', 'rb')))
+		if (($fh = @fopen($rand_seed, 'rb')))
 		{
 			$random = fread($fh, $length);
 			fclose($fh);

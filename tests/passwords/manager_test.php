@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/container_builder.php';
-
 class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 {
 	protected $passwords_drivers;
@@ -19,11 +17,6 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		global $phpbb_root_path, $phpEx;
-
-		// Mock phpbb_container
-		$this->phpbb_container = new phpbb_mock_container_builder;
-
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
@@ -38,7 +31,6 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		foreach ($this->passwords_drivers as $key => $driver)
 		{
 			$driver->set_name($key);
-			$this->phpbb_container->set($key, $driver);
 		}
 
 		$this->helper = new \phpbb\passwords\helper;
@@ -218,6 +210,11 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 					array('passwords.driver.salted_md5'),
 					false,
 				),
+				array(
+					'passwords.driver.bcrypt_2y',
+					array('passwords.driver.salted_md4'),
+					false,
+				),
 			);
 		}
 	}
@@ -256,5 +253,21 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		{
 			$this->assertNotEquals($first_id, $this->driver_helper->unique_id());
 		}
+	}
+
+	public function test_check_hash_with_large_input()
+	{
+		// 16 MB password, should be rejected quite fast
+		$start_time = time();
+		$this->assertFalse($this->manager->check(str_repeat('a', 1024 * 1024 * 16), '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
+		$this->assertLessThanOrEqual(5, time() - $start_time);
+	}
+
+	public function test_hash_password_with_large_input()
+	{
+		// 16 MB password, should be rejected quite fast
+		$start_time = time();
+		$this->assertFalse($this->manager->hash(str_repeat('a', 1024 * 1024 * 16)));
+		$this->assertLessThanOrEqual(5, time() - $start_time);
 	}
 }
