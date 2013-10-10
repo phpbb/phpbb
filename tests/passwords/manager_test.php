@@ -170,7 +170,14 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 	public function test_hash_password_8bit_bcrypt()
 	{
 		$this->assertEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt'));
-		$this->assertNotEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
+		if (version_compare(PHP_VERSION, '5.3.7', '<'))
+		{
+			$this->assertEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
+		}
+		else
+		{
+			$this->assertNotEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
+		}
 	}
 
 	public function test_combined_hash_data()
