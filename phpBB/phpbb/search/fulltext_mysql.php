@@ -792,7 +792,7 @@ class fulltext_mysql extends \phpbb\search\base
 				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
 			}
 
-			$alter[] = 'ADD FULLTEXT post_content (post_subject, post_text)';
+			$alter[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
 		}
 
 		if (sizeof($alter))
