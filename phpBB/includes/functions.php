@@ -2866,7 +2866,7 @@ function build_url($strip_vars = false)
 	$url_parts = parse_url($page);
 
 	// URL
-	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
+	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 	{
 		$page = $phpbb_root_path . $page;
 	}
