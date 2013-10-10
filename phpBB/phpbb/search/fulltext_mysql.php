@@ -855,7 +855,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
+		return isset($this->stats['post_subject']) && isset($this->stats['post_content']);
 	}
 
 	/**
