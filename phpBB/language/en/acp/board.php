@@ -354,6 +354,8 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
 
+	'ALLOW_CDN'						=> 'Allow usage of third party content delivery networks',
+	'ALLOW_CDN_EXPLAIN'				=> 'If this setting is enabled, some files will be served from external third party servers instead of your server. This reduces the network bandwidth required by your server, but may present a privacy issue for some board administrators.',
 	'CUSTOM_PROFILE_FIELDS'			=> 'Custom profile fields',
 	'LIMIT_LOAD'					=> 'Limit system load',
 	'LIMIT_LOAD_EXPLAIN'			=> 'If the system’s 1-minute load average exceeds this value the board will automatically go offline. A value of 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers and where this information is accessible. The value here resets itself to 0 if phpBB was unable to get the load limit.',
@@ -363,8 +365,6 @@ $lang = array_merge($lang, array(
 	'LOAD_CPF_PM'					=> 'Display custom profile fields in private messages',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
 	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
-	'LOAD_JQUERY_CDN'				=> 'Serve jQuery using Google’s CDN',
-	'LOAD_JQUERY_CDN_EXPLAIN'		=> 'If this setting is enabled, jQuery will be served from Google’s AJAX API CDN instead of the copy included with phpBB on your server. If the CDN fails, phpBB will attempt to fall back to the copy included with phpBB.',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
 	'READ_NOTIFICATION_EXPIRE_DAYS'	=> 'Read Notification Expiration',
