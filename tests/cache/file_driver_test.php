@@ -36,7 +36,7 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		}
 		$this->create_cache_dir();
 
-		$this->driver = new phpbb_cache_driver_file($this->cache_dir);
+		$this->driver = new \phpbb\cache\driver\file($this->cache_dir);
 	}
 
 	protected function tearDown()

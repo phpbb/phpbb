@@ -1,11 +1,13 @@
 <?php
 
-class phpbb_ext_barfoo_acp_a_info
+namespace barfoo\acp;
+
+class a_info
 {
 	public function module()
 	{
 		return array(
-			'filename'	=> 'phpbb_ext_barfoo_acp_a_module',
+			'filename'	=> 'barfoo\\acp\\a_module',
 			'title'		=> 'Barfoo',
 			'version'	=> '3.1.0-dev',
 			'modes'		=> array(

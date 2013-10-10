@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task\core;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
+class tidy_warnings extends \phpbb\cron\task\base
 {
 	protected $phpbb_root_path;
 	protected $php_ext;
@@ -33,9 +35,9 @@ class phpbb_cron_task_core_tidy_warnings extends phpbb_cron_task_base
 	*
 	* @param string $phpbb_root_path The root path
 	* @param string $php_ext The PHP extension
-	* @param phpbb_config $config The config
+	* @param \phpbb\config\config $config The config
 	*/
-	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;

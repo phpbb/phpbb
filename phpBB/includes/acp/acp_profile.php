@@ -245,7 +245,7 @@ class acp_profile
 
 				if ($request->is_ajax())
 				{
-					$json_response = new phpbb_json_response();
+					$json_response = new \phpbb\json_response();
 					$json_response->send(array(
 						'text'	=> $user->lang('DEACTIVATE'),
 					));
@@ -277,7 +277,7 @@ class acp_profile
 
 				if ($request->is_ajax())
 				{
-					$json_response = new phpbb_json_response();
+					$json_response = new \phpbb\json_response();
 					$json_response->send(array(
 						'text'	=> $user->lang('ACTIVATE'),
 					));
@@ -510,7 +510,7 @@ class acp_profile
 							$cp->vars['field_default_value_month'] = $now['mon'];
 							$cp->vars['field_default_value_year'] = $now['year'];
 							$var = 'now';
-							$request->overwrite('field_default_value', $var, phpbb_request_interface::POST);
+							$request->overwrite('field_default_value', $var, \phpbb\request\request_interface::POST);
 						}
 						else
 						{
@@ -520,7 +520,7 @@ class acp_profile
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
 								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
 								$var = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
-								$request->overwrite('field_default_value', $var, phpbb_request_interface::POST);
+								$request->overwrite('field_default_value', $var, \phpbb\request\request_interface::POST);
 							}
 							else
 							{

@@ -34,8 +34,8 @@ class ucp_groups
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= request_var('mark', array(0));
-		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
-		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
+		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
+		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
 
 		switch ($mode)
@@ -197,37 +197,6 @@ class ucp_groups
 								else
 								{
 									group_user_add($group_id, $user->data['user_id'], false, false, false, 0, 1);
-
-									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-									$messenger = new messenger();
-
-									$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
-										FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . " u
-										WHERE ug.user_id = u.user_id
-											AND ug.group_leader = 1
-											AND ug.group_id = $group_id";
-									$result = $db->sql_query($sql);
-
-									while ($row = $db->sql_fetchrow($result))
-									{
-										$messenger->template('group_request', $row['user_lang']);
-
-										$messenger->set_addresses($row);
-
-										$messenger->assign_vars(array(
-											'USERNAME'			=> htmlspecialchars_decode($row['username']),
-											'GROUP_NAME'		=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
-											'REQUEST_USERNAME'	=> $user->data['username'],
-
-											'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
-											'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
-										);
-
-										$messenger->send($row['user_notify_type']);
-									}
-									$db->sql_freeresult($result);
-
-									$messenger->save_queue();
 								}
 
 								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), $group_row[$group_id]['group_name']);
@@ -496,7 +465,7 @@ class ucp_groups
 							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 							// This is normalised data, without the group_ prefix
-							$avatar_data = phpbb_avatar_manager::clean_row($group_row);
+							$avatar_data = \phpbb\avatar\manager::clean_row($group_row);
 						}
 
 						// Did we submit?

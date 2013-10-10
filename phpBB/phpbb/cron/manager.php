@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron;
+
 /**
 * @ignore
 */
@@ -22,10 +24,10 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_manager
+class manager
 {
 	/**
-	* Set of phpbb_cron_task_wrapper objects.
+	* Set of \phpbb\cron\task\wrapper objects.
 	* Array holding all tasks that have been found.
 	*
 	* @var array
@@ -52,7 +54,7 @@ class phpbb_cron_manager
 	* Loads tasks given by name, wraps them
 	* and puts them into $this->tasks.
 	*
-	* @param array|Traversable $tasks		Array of instances of phpbb_cron_task
+	* @param array|Traversable $tasks		Array of instances of \phpbb\cron\task\task
 	*
 	* @return null
 	*/
@@ -71,7 +73,7 @@ class phpbb_cron_manager
 	*
 	* If no tasks are ready, null is returned.
 	*
-	* @return phpbb_cron_task_wrapper|null
+	* @return \phpbb\cron\task\wrapper|null
 	*/
 	public function find_one_ready_task()
 	{
@@ -88,7 +90,7 @@ class phpbb_cron_manager
 	/**
 	* Finds all tasks that are ready to run.
 	*
-	* @return array		List of tasks which are ready to run (wrapped in phpbb_cron_task_wrapper).
+	* @return array		List of tasks which are ready to run (wrapped in \phpbb\cron\task\wrapper).
 	*/
 	public function find_all_ready_tasks()
 	{
@@ -111,7 +113,7 @@ class phpbb_cron_manager
 	* Web runner uses this method to resolve names to tasks.
 	*
 	* @param string				$name Name of the task to look up.
-	* @return phpbb_cron_task	A task corresponding to the given name, or null.
+	* @return \phpbb\cron\task\task	A task corresponding to the given name, or null.
 	*/
 	public function find_task($name)
 	{
@@ -126,13 +128,13 @@ class phpbb_cron_manager
 	}
 
 	/**
-	* Wraps a task inside an instance of phpbb_cron_task_wrapper.
+	* Wraps a task inside an instance of \phpbb\cron\task\wrapper.
 	*
-	* @param  phpbb_cron_task 			$task The task.
-	* @return phpbb_cron_task_wrapper	The wrapped task.
+	* @param  \phpbb\cron\task\task 			$task The task.
+	* @return \phpbb\cron\task\wrapper	The wrapped task.
 	*/
-	public function wrap_task(phpbb_cron_task $task)
+	public function wrap_task(\phpbb\cron\task\task $task)
 	{
-		return new phpbb_cron_task_wrapper($task, $this->phpbb_root_path, $this->php_ext);
+		return new \phpbb\cron\task\wrapper($task, $this->phpbb_root_path, $this->php_ext);
 	}
 }

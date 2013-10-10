@@ -1,8 +1,10 @@
 <?php
 
+namespace foo;
+
 use Symfony\Component\HttpFoundation\Response;
 
-class phpbb_ext_foo_controller
+class controller
 {
 	/**
 	* Handle method

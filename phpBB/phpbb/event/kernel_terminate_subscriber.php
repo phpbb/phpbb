@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\event;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
-class phpbb_event_kernel_terminate_subscriber implements EventSubscriberInterface
+class kernel_terminate_subscriber implements EventSubscriberInterface
 {
 	/**
 	* This listener is run when the KernelEvents::TERMINATE event is triggered

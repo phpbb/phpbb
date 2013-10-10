@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -20,23 +22,23 @@ if (!defined('IN_PHPBB'))
 *
 * @package extension
 */
-class phpbb_extension_metadata_manager
+class metadata_manager
 {
 	/**
 	* phpBB Config instance
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* phpBB Extension Manager
-	* @var phpbb_extension_manager
+	* @var \phpbb\extension\manager
 	*/
 	protected $extension_manager;
 
 	/**
 	* phpBB Template instance
-	* @var phpbb_template
+	* @var \phpbb\template\template
 	*/
 	protected $template;
 
@@ -68,12 +70,12 @@ class phpbb_extension_metadata_manager
 	* Creates the metadata manager
 	*
 	* @param string				$ext_name			Name (including vendor) of the extension
-	* @param phpbb_config		$config				phpBB Config instance
-	* @param phpbb_extension_manager	$extension_manager An instance of the phpBBb extension manager
-	* @param phpbb_template		$template			phpBB Template instance
+	* @param \phpbb\config\config		$config				phpBB Config instance
+	* @param \phpbb\extension\manager	$extension_manager An instance of the phpBBb extension manager
+	* @param \phpbb\template\template		$template			phpBB Template instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, phpbb_config $config, phpbb_extension_manager $extension_manager, phpbb_template $template, $phpbb_root_path)
+	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->extension_manager = $extension_manager;
@@ -145,7 +147,7 @@ class phpbb_extension_metadata_manager
 
 		if (!file_exists($this->metadata_file))
 		{
-    		throw new phpbb_extension_exception('The required file does not exist: ' . $this->metadata_file);
+    		throw new \phpbb\extension\exception('The required file does not exist: ' . $this->metadata_file);
 		}
 	}
 
@@ -158,18 +160,18 @@ class phpbb_extension_metadata_manager
 	{
 		if (!file_exists($this->metadata_file))
 		{
-			throw new phpbb_extension_exception('The required file does not exist: ' . $this->metadata_file);
+			throw new \phpbb\extension\exception('The required file does not exist: ' . $this->metadata_file);
 		}
 		else
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-    			throw new phpbb_extension_exception('file_get_contents failed on ' . $this->metadata_file);
+    			throw new \phpbb\extension\exception('file_get_contents failed on ' . $this->metadata_file);
 			}
 
 			if (($metadata = json_decode($file_contents, true)) === NULL)
 			{
-    			throw new phpbb_extension_exception('json_decode failed on ' . $this->metadata_file);
+    			throw new \phpbb\extension\exception('json_decode failed on ' . $this->metadata_file);
 			}
 
 			$this->metadata = $metadata;
@@ -201,7 +203,7 @@ class phpbb_extension_metadata_manager
     	// Basic fields
     	$fields = array(
     		'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-    		'type'		=> '#^phpbb3-extension$#',
+    		'type'		=> '#^phpbb-extension$#',
     		'licence'	=> '#.+#',
     		'version'	=> '#.+#',
     	);
@@ -228,12 +230,12 @@ class phpbb_extension_metadata_manager
     			{
     				if (!isset($this->metadata[$name]))
     				{
-    					throw new phpbb_extension_exception("Required meta field '$name' has not been set.");
+    					throw new \phpbb\extension\exception("Required meta field '$name' has not been set.");
 					}
 
 					if (!preg_match($fields[$name], $this->metadata[$name]))
 					{
-    					throw new phpbb_extension_exception("Meta field '$name' is invalid.");
+    					throw new \phpbb\extension\exception("Meta field '$name' is invalid.");
 					}
 				}
 			break;
@@ -251,14 +253,14 @@ class phpbb_extension_metadata_manager
 	{
 		if (empty($this->metadata['authors']))
 		{
-    		throw new phpbb_extension_exception("Required meta field 'authors' has not been set.");
+    		throw new \phpbb\extension\exception("Required meta field 'authors' has not been set.");
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-    			throw new phpbb_extension_exception("Required meta field 'author name' has not been set.");
+    			throw new \phpbb\extension\exception("Required meta field 'author name' has not been set.");
 			}
 		}
 
@@ -289,12 +291,12 @@ class phpbb_extension_metadata_manager
 	 */
 	public function validate_require_phpbb()
 	{
-		if (!isset($this->metadata['require']['phpbb']))
+		if (!isset($this->metadata['require']['phpbb/phpbb']))
 		{
-			return true;
+			return false;
 		}
 
-		return $this->_validate_version($this->metadata['require']['phpbb'], $this->config['version']);
+		return true;
 	}
 
 	/**
@@ -306,10 +308,10 @@ class phpbb_extension_metadata_manager
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
-			return true;
+			return false;
 		}
 
-		return $this->_validate_version($this->metadata['require']['php'], phpversion());
+		return true;
 	}
 
 	/**
@@ -352,7 +354,7 @@ class phpbb_extension_metadata_manager
 			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
 			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
 
-			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb/phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb/phpbb']) : '',
 			'META_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
 
 			'META_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',

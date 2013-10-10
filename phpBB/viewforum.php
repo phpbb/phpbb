@@ -191,7 +191,7 @@ if ($mark_read == 'topics')
 			'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
 			'MESSAGE_TEXT'		=> $user->lang['TOPICS_MARKED']
 		);
-		$json_response = new phpbb_json_response();
+		$json_response = new \phpbb\json_response();
 		$json_response->send($data);
 	}
 

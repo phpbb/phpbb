@@ -25,10 +25,10 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 
 		$this->db = $this->new_dbal();
 
-		$this->migration = new phpbb_db_migration_data_310_notification_options_reconvert(
-			new phpbb_config(array()),
+		$this->migration = new \phpbb\db\migration\data\v310\notification_options_reconvert(
+			new \phpbb\config\config(array()),
 			$this->db,
-			new phpbb_db_tools($this->db),
+			new \phpbb\db\tools($this->db),
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_'
@@ -38,7 +38,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 	public function test_convert()
 	{
 		$buffer = new phpbb_mock_sql_insert_buffer($this->db, 'phpbb_user_notifications');
-		$this->migration->perform_conversion($buffer, 'phpbb_user_notifications');
+		$this->migration->perform_conversion($buffer, 0);
 
 		$expected = array_merge(
 			$this->create_expected('post', 1, 'email'),

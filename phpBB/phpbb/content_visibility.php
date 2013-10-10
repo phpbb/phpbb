@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * @ignore
 */
@@ -20,23 +22,23 @@ if (!defined('IN_PHPBB'))
 * Handle fetching and setting the visibility for topics and posts
 * @package phpbb
 */
-class phpbb_content_visibility
+class content_visibility
 {
 	/**
 	* Database object
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	protected $db;
 
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* Auth object
-	* @var phpbb_auth
+	* @var \phpbb\auth\auth
 	*/
 	protected $auth;
 
@@ -55,14 +57,14 @@ class phpbb_content_visibility
 	/**
 	* Constructor
 	*
-	* @param	phpbb_auth		$auth	Auth object
-	* @param	phpbb_db_driver	$db		Database object
-	* @param	phpbb_user		$user	User object
+	* @param	\phpbb\auth\auth		$auth	Auth object
+	* @param	\phpbb\db\driver\driver	$db		Database object
+	* @param	\phpbb\user		$user	User object
 	* @param	string		$phpbb_root_path	Root path
 	* @param	string		$php_ext			PHP Extension
 	* @return	null
 	*/
-	public function __construct(phpbb_auth $auth, phpbb_db_driver $db, phpbb_user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
@@ -554,7 +556,7 @@ class phpbb_content_visibility
 	*
 	* @param $data			array	Contains information from the topics table about given topic
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
-	* @return void
+	* @return null
 	*/
 	public function add_post_to_statistic($data, &$sql_data)
 	{
@@ -575,7 +577,7 @@ class phpbb_content_visibility
 	*
 	* @param $data			array	Contains information from the topics table about given topic
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
-	* @return void
+	* @return null
 	*/
 	public function remove_post_from_statistic($data, &$sql_data)
 	{
@@ -597,7 +599,7 @@ class phpbb_content_visibility
 	* @param $forum_id		int		Forum where the topic is found
 	* @param $topic_row		array	Contains information from the topic, may be empty at call time
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
-	* @return void
+	* @return null
 	*/
 	public function remove_topic_from_statistic($topic_id, $forum_id, &$topic_row, &$sql_data)
 	{

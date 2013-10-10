@@ -16,14 +16,20 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		global $phpbb_root_path, $phpEx, $user;
 
 		$defaults = $this->config_defaults();
-		$config = new phpbb_config(array_merge($defaults, $new_config));
+		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
+
+		$this->phpbb_path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			new \phpbb\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
-		$this->style_resource_locator = new phpbb_style_resource_locator();
-		$this->style_provider = new phpbb_style_path_provider();
-		$this->template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
-		$this->style->set_custom_style('tests', array($this->template_path, $this->parent_template_path), array(), '');
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $user, new phpbb\template\context());
+		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 }

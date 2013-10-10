@@ -108,11 +108,11 @@ phpbb_include_updated('includes/utf/utf_tools.' . $phpEx);
 phpbb_require_updated('includes/functions_install.' . $phpEx);
 
 // Setup class loader first
-$phpbb_class_loader_new = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
+$phpbb_class_loader_new = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}install/update/new/phpbb/", $phpEx);
 $phpbb_class_loader_new->register();
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
+$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container
@@ -219,8 +219,8 @@ $sub = $request->variable('sub', '');
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$user = new phpbb_user();
-$auth = new phpbb_auth();
+$user = new \phpbb\user();
+$auth = new \phpbb\auth\auth();
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
@@ -240,19 +240,17 @@ else
 }
 
 // Set some standard variables we want to force
-$config = new phpbb_config(array(
+$config = new \phpbb\config\config(array(
 	'load_tplcompile'	=> '1'
 ));
 
-$phpbb_style_resource_locator = new phpbb_style_resource_locator();
-$phpbb_style_path_provider = new phpbb_style_path_provider();
-$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context());
-$phpbb_style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $phpbb_style_resource_locator, $phpbb_style_path_provider, $template);
-$phpbb_style->set_ext_dir_prefix('adm/');
-
+$symfony_request = $phpbb_container->get('symfony_request');
+$phpbb_filesystem = $phpbb_container->get('filesystem');
+$phpbb_path_helper = $phpbb_container->get('path_helper');
+$template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context());
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
-$phpbb_style->set_custom_style('admin', $paths, array(), '');
+$template->set_custom_style('adm', $paths);
 
 $template->assign_var('T_ASSETS_PATH', '../assets');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');

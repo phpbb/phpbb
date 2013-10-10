@@ -24,42 +24,6 @@
 	Modified by:
 -->
 
-<script type="text/javascript">
-// <![CDATA[
-	var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
-	var on_page = '{ON_PAGE}';
-	var per_page = '{PER_PAGE}';
-	var base_url = '{A_BASE_URL}';
-	var onload_functions = new Array();
-	var onunload_functions = new Array();
-
-	<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
-		var url = '{UA_POPUP_PM}';
-		window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
-	<!-- ENDIF -->
-
-	/**
-	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
-	*/
-	window.onload = function()
-	{
-		for (var i = 0; i < onload_functions.length; i++)
-		{
-			onload_functions[i]();
-		}
-	};
-
-	window.onunload = function()
-	{
-		for (var i = 0; i < onunload_functions.length; i++)
-		{
-			onunload_functions[i]();
-		}
-	};
-
-// ]]>
-</script>
-
 <link href="{T_THEME_PATH}/print.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="print" title="printonly" />
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
 <link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -175,7 +139,6 @@
 				<!-- IF U_RESTORE_PERMISSIONS -->
 					<li class="icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li>
 				<!-- ENDIF -->
-				</li>
 			</ul>
 			<!-- ENDIF -->
 

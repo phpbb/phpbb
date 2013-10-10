@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -26,7 +28,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package dbal
 */
-class phpbb_db_driver_mssql_odbc extends phpbb_db_driver_mssql_base
+class mssql_odbc extends \phpbb\db\driver\mssql_base
 {
 	var $last_query_text = '';
 	var $connect_error = '';

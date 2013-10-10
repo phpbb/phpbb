@@ -60,46 +60,45 @@
 <div class="clear"></div>
 
 <!-- IF S_HAS_POLL -->
-	<form method="post" action="{S_POLL_ACTION}">
+	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" data-overlay="false" class="topic_poll">
 
 	<div class="panel">
 		<div class="inner">
 
 		<div class="content">
 			<h2>{POLL_QUESTION}</h2>
-			<p class="author">{L_POLL_LENGTH}<!-- IF S_CAN_VOTE and L_POLL_LENGTH --><br /><!-- ENDIF --><!-- IF S_CAN_VOTE -->{L_MAX_VOTES}<!-- ENDIF --></p>
+			<p class="author">{L_POLL_LENGTH}<!-- IF S_CAN_VOTE and L_POLL_LENGTH --><br /><!-- ENDIF --><!-- IF S_CAN_VOTE --><span class="poll_max_votes">{L_MAX_VOTES}</span><!-- ENDIF --></p>
 
 			<fieldset class="polls">
 			<!-- BEGIN poll_option -->
-				<dl class="<!-- IF poll_option.POLL_OPTION_VOTED -->voted<!-- ENDIF -->"<!-- IF poll_option.POLL_OPTION_VOTED --> title="{L_POLL_VOTED_OPTION}"<!-- ENDIF -->>
+				<dl class="<!-- IF poll_option.POLL_OPTION_VOTED -->voted<!-- ENDIF -->"<!-- IF poll_option.POLL_OPTION_VOTED --> title="{L_POLL_VOTED_OPTION}"<!-- ENDIF --> data-poll-option-id="{poll_option.POLL_OPTION_ID}">
 					<dt><!-- IF S_CAN_VOTE --><label for="vote_{poll_option.POLL_OPTION_ID}">{poll_option.POLL_OPTION_CAPTION}</label><!-- ELSE -->{poll_option.POLL_OPTION_CAPTION}<!-- ENDIF --></dt>
-					<!-- IF S_CAN_VOTE --><dd style="width: auto;"><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ELSE --><input type="radio" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></dd><!-- ENDIF -->
-					<!-- IF S_DISPLAY_RESULTS --><dd class="resultbar"><div class="<!-- IF poll_option.POLL_OPTION_PCT < 20 -->pollbar1<!-- ELSEIF poll_option.POLL_OPTION_PCT < 40 -->pollbar2<!-- ELSEIF poll_option.POLL_OPTION_PCT < 60 -->pollbar3<!-- ELSEIF poll_option.POLL_OPTION_PCT < 80 -->pollbar4<!-- ELSE -->pollbar5<!-- ENDIF -->" style="width:{poll_option.POLL_OPTION_PERCENT};">{poll_option.POLL_OPTION_RESULT}</div></dd>
-					<dd><!-- IF poll_option.POLL_OPTION_RESULT == 0 -->{L_NO_VOTES}<!-- ELSE -->{poll_option.POLL_OPTION_PERCENT}<!-- ENDIF --></dd><!-- ENDIF -->
+					<!-- IF S_CAN_VOTE --><dd style="width: auto;" class="poll_option_select"><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ELSE --><input type="radio" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></dd><!-- ENDIF -->
+					<dd class="resultbar<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->"><div class="<!-- IF poll_option.POLL_OPTION_PCT < 20 -->pollbar1<!-- ELSEIF poll_option.POLL_OPTION_PCT < 40 -->pollbar2<!-- ELSEIF poll_option.POLL_OPTION_PCT < 60 -->pollbar3<!-- ELSEIF poll_option.POLL_OPTION_PCT < 80 -->pollbar4<!-- ELSE -->pollbar5<!-- ENDIF -->" style="width:{poll_option.POLL_OPTION_PERCENT};">{poll_option.POLL_OPTION_RESULT}</div></dd>
+					<dd class="poll_option_percent<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->"><!-- IF poll_option.POLL_OPTION_RESULT == 0 -->{L_NO_VOTES}<!-- ELSE -->{poll_option.POLL_OPTION_PERCENT}<!-- ENDIF --></dd>
 				</dl>
 			<!-- END poll_option -->
 
-			<!-- IF S_DISPLAY_RESULTS -->
-				<dl>
+				<dl class="poll_total_votes<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->">
 					<dt>&nbsp;</dt>
-					<dd class="resultbar">{L_TOTAL_VOTES}{L_COLON} {TOTAL_VOTES}</dd>
+					<dd class="resultbar">{L_TOTAL_VOTES}{L_COLON} <span class="poll_total_vote_cnt">{TOTAL_VOTES}</span></dd>
 				</dl>
-			<!-- ENDIF -->
 
 			<!-- IF S_CAN_VOTE -->
-				<dl style="border-top: none;">
+				<dl style="border-top: none;" class="poll_vote">
 					<dt>&nbsp;</dt>
 					<dd class="resultbar"><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="button1" /></dd>
 				</dl>
 			<!-- ENDIF -->
 
 			<!-- IF not S_DISPLAY_RESULTS -->
-				<dl style="border-top: none;">
+				<dl style="border-top: none;" class="poll_view_results">
 					<dt>&nbsp;</dt>
 					<dd class="resultbar"><a href="{U_VIEW_RESULTS}">{L_VIEW_RESULTS}</a></dd>
 				</dl>
 			<!-- ENDIF -->
 			</fieldset>
+			<div class="vote-submitted hidden">{L_VOTE_SUBMITTED}</div>
 		</div>
 
 		</div>
@@ -151,29 +150,32 @@
 			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
 			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF -->{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; {postrow.POST_DATE} </p>
 
-			<!-- IF postrow.S_POST_UNAPPROVED or postrow.S_POST_DELETED or postrow.S_POST_REPORTED -->
+			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
-				<p class="rules">
-					<!-- IF postrow.S_POST_UNAPPROVED -->
-						{UNAPPROVED_IMG} <strong>{L_POST_UNAPPROVED}</strong>
-						<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
-						<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
-						<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
-						{S_FORM_TOKEN}
-						<br />
-					<!-- ELSEIF postrow.S_POST_DELETED -->
-						{DELETED_IMG} <strong>{L_POST_DELETED}</strong>
-						<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" />
-						<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
-						<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
-						{S_FORM_TOKEN}
-						<br />
-					<!-- ENDIF -->
-					<!-- IF postrow.S_POST_REPORTED -->
-						{REPORTED_IMG} <a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
-					<!-- ENDIF -->
+				<p class="post-notice unapproved">
+					<strong>{L_POST_UNAPPROVED}</strong>
+					<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
+					<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
+					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
+					{S_FORM_TOKEN}
 				</p>
 			</form>
+			<!-- ELSEIF postrow.S_POST_DELETED -->
+			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
+				<p class="post-notice deleted">
+					<strong>{L_POST_DELETED}</strong>
+					<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" />
+					<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
+					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
+					{S_FORM_TOKEN}
+				</p>
+			</form>
+			<!-- ENDIF -->
+
+			<!-- IF postrow.S_POST_REPORTED -->
+			<p class="post-notice reported">
+				<a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+			</p>
 			<!-- ENDIF -->
 
 			<div class="content">{postrow.MESSAGE}</div>

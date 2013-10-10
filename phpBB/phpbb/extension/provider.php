@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -28,7 +30,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package extension
 */
-abstract class phpbb_extension_provider implements IteratorAggregate
+abstract class provider implements \IteratorAggregate
 {
 	/**
 	* Array holding all found items
@@ -38,16 +40,16 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 
 	/**
 	* An extension manager to search for items in extensions
-	* @var phpbb_extension_manager
+	* @var \phpbb\extension\manager
 	*/
 	protected $extension_manager;
 
 	/**
 	* Constructor. Loads all available items.
 	*
-	* @param phpbb_extension_manager $extension_manager phpBB extension manager
+	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
 	*/
-	public function __construct(phpbb_extension_manager $extension_manager)
+	public function __construct(\phpbb\extension\manager $extension_manager)
 	{
 		$this->extension_manager = $extension_manager;
 	}
@@ -71,6 +73,6 @@ abstract class phpbb_extension_provider implements IteratorAggregate
 			$this->items = $this->find();
 		}
 
-		return new ArrayIterator($this->items);
+		return new \ArrayIterator($this->items);
 	}
 }

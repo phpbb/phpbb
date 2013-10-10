@@ -679,7 +679,7 @@ class acp_permissions
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
-		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request_interface::POST);
+		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
 		if (empty($settings) || empty($settings[$ug_id]) || empty($settings[$ug_id][$forum_id]))
 		{
 			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
@@ -688,7 +688,7 @@ class acp_permissions
 		$auth_settings = $settings[$ug_id][$forum_id];
 
 		// Do we have a role we want to set?
-		$roles = $request->variable('role', array(0 => array(0 => 0)), false, phpbb_request_interface::POST);
+		$roles = $request->variable('role', array(0 => array(0 => 0)), false, \phpbb\request\request_interface::POST);
 		$assigned_role = (isset($roles[$ug_id][$forum_id])) ? (int) $roles[$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
@@ -760,8 +760,8 @@ class acp_permissions
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$auth_settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request_interface::POST);
-		$auth_roles = $request->variable('role', array(0 => array(0 => 0)), false, phpbb_request_interface::POST);
+		$auth_settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
+		$auth_roles = $request->variable('role', array(0 => array(0 => 0)), false, \phpbb\request\request_interface::POST);
 		$ug_ids = $forum_ids = array();
 
 		// We need to go through the auth settings
@@ -1103,7 +1103,7 @@ class acp_permissions
 		{
 			if ($user_id != $user->data['user_id'])
 			{
-				$auth2 = new phpbb_auth();
+				$auth2 = new \phpbb\auth\auth();
 				$auth2->acl($userdata);
 				$auth_setting = $auth2->acl_get($permission);
 			}

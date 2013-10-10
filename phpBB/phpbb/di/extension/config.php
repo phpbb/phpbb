@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\di\extension;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ use Symfony\Component\Config\FileLocator;
 /**
 * Container config extension
 */
-class phpbb_di_extension_config extends Extension
+class config extends Extension
 {
 	public function __construct($config_file)
 	{
@@ -76,7 +78,7 @@ class phpbb_di_extension_config extends Extension
 	{
 		if (preg_match('#^[a-z]+$#', $acm_type))
 		{
-			return 'phpbb_cache_driver_'.$acm_type;
+			return '\\phpbb\cache\driver\\'.$acm_type;
 		}
 
 		return $acm_type;

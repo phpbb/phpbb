@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\node;
+
 /**
 * @ignore
 */
@@ -16,12 +18,12 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_php extends Twig_Node
+class php extends \Twig_Node
 {
 	/** @var Twig_Environment */
 	protected $environment;
 
-	public function __construct(Twig_Node_Text $text, phpbb_template_twig_environment $environment, $lineno, $tag = null)
+	public function __construct(\Twig_Node_Text $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
 	{
 		$this->environment = $environment;
 
@@ -33,7 +35,7 @@ class phpbb_template_twig_node_php extends Twig_Node
 	 *
 	 * @param Twig_Compiler A Twig_Compiler instance
 	 */
-	public function compile(Twig_Compiler $compiler)
+	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
 

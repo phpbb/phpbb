@@ -83,7 +83,7 @@
 									</div>
 								</dt>
 
-								<dd class="mark">&nbsp;<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /> <dfn>{L_MARK_READ}</dfn><!-- ENDIF -->&nbsp;</dd>
+								<dd class="mark">&nbsp;<input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}"<!-- IF not notification_list.UNREAD --> disabled="disabled"<!-- ENDIF --> /> <dfn>{L_MARK_READ}</dfn>&nbsp;</dd>
 							</dl>
 						</li>
 					<!-- END notification_list -->

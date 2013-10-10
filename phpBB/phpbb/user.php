@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * @ignore
 */
@@ -23,7 +25,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_user extends phpbb_session
+class user extends \phpbb\session
 {
 	var $lang = array();
 	var $help = array();
@@ -75,7 +77,7 @@ class phpbb_user extends phpbb_session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $phpbb_style, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 		global $phpbb_dispatcher;
 
 		if ($this->data['user_id'] != ANONYMOUS)
@@ -128,6 +130,7 @@ class phpbb_user extends phpbb_session
 		}
 
 		$user_data = $this->data;
+		$lang_set_ext = array();
 
 		/**
 		* Event to load language files and modify user data on every page
@@ -139,10 +142,18 @@ class phpbb_user extends phpbb_session
 		* @var	string	user_timezone		User's timezone, should be one of
 		*							http://www.php.net/manual/en/timezones.php
 		* @var	mixed	lang_set			String or array of language files
+		* @var	array	lang_set_ext		Array containing entries of format
+		* 					array(
+		* 						'ext_name' => (string) [extension name],
+		* 						'lang_set' => (string|array) [language files],
+		* 					)
+		* 					For performance reasons, only load translations
+		* 					that are absolutely needed globally using this
+		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
 		* @since 3.1-A1
 		*/
-		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'style_id');
+		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'lang_set_ext', 'style_id');
 		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
 
 		$this->data = $user_data;
@@ -151,12 +162,12 @@ class phpbb_user extends phpbb_session
 
 		try
 		{
-			$this->timezone = new DateTimeZone($user_timezone);
+			$this->timezone = new \DateTimeZone($user_timezone);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			// If the timezone the user has selected is invalid, we fall back to UTC.
-			$this->timezone = new DateTimeZone('UTC');
+			$this->timezone = new \DateTimeZone('UTC');
 		}
 
 		// We include common language file here to not load it every time a custom language file is included
@@ -172,6 +183,12 @@ class phpbb_user extends phpbb_session
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
+
+		foreach ($lang_set_ext as $ext_lang_pair)
+		{
+			$this->add_lang_ext($ext_lang_pair['ext_name'], $ext_lang_pair['lang_set']);
+		}
+		unset($lang_set_ext);
 
 		$style_request = request_var('style', 0);
 		if ($style_request && $auth->acl_get('a_styles') && !defined('ADMIN_START'))
@@ -236,7 +253,7 @@ class phpbb_user extends phpbb_session
 			}
 		}
 
-		$phpbb_style->set_style();
+		$template->set_style();
 
 		$this->img_lang = $this->lang_name;
 
@@ -656,27 +673,27 @@ class phpbb_user extends phpbb_session
 
 		if (!isset($utc))
 		{
-			$utc = new DateTimeZone('UTC');
+			$utc = new \DateTimeZone('UTC');
 		}
 
-		$time = new phpbb_datetime($this, "@$gmepoch", $utc);
+		$time = new \phpbb\datetime($this, "@$gmepoch", $utc);
 		$time->setTimezone($this->timezone);
 
 		return $time->format($format, $forcedate);
 	}
 
 	/**
-	* Create a phpbb_datetime object in the context of the current user
+	* Create a \phpbb\datetime object in the context of the current user
 	*
 	* @since 3.1
 	* @param string $time String in a format accepted by strtotime().
 	* @param DateTimeZone $timezone Time zone of the time.
-	* @return phpbb_datetime Date time object linked to the current users locale
+	* @return \phpbb\datetime Date time object linked to the current users locale
 	*/
-	public function create_datetime($time = 'now', DateTimeZone $timezone = null)
+	public function create_datetime($time = 'now', \DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->timezone;
-		return new phpbb_datetime($this, $time, $timezone);
+		return new \phpbb\datetime($this, $time, $timezone);
 	}
 
 	/**
@@ -687,10 +704,10 @@ class phpbb_user extends phpbb_session
 	* @param	DateTimeZone	$timezone	Timezone of the date/time, falls back to timezone of current user
 	* @return	int			Returns the unix timestamp
 	*/
-	public function get_timestamp_from_format($format, $time, DateTimeZone $timezone = null)
+	public function get_timestamp_from_format($format, $time, \DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->timezone;
-		$date = DateTime::createFromFormat($format, $time, $timezone);
+		$date = \DateTime::createFromFormat($format, $time, $timezone);
 		return ($date !== false) ? $date->format('U') : false;
 	}
 

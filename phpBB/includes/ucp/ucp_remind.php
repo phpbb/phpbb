@@ -71,7 +71,7 @@ class ucp_remind
 			}
 
 			// Check users permissions
-			$auth2 = new phpbb_auth();
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 
 			if (!$auth2->acl_get('u_chgpasswd'))
@@ -100,6 +100,8 @@ class ucp_remind
 			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
 			$messenger->set_addresses($user_row);
+
+			$messenger->anti_abuse_headers($config, $user);
 
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),

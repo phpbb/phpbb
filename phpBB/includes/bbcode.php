@@ -126,17 +126,14 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager, $phpbb_path_helper;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			$style_resource_locator = new phpbb_style_resource_locator();
-			$style_path_provider = new phpbb_style_extension_path_provider($phpbb_extension_manager, new phpbb_style_path_provider(), $phpbb_root_path);
-			$template = new phpbb_template_twig($phpbb_root_path, $phpEx, $config, $user, new phpbb_template_context(), $phpbb_extension_manager);
-			$style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $style_resource_locator, $style_path_provider, $template);
-			$style->set_style();
+			$template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new phpbb\template\context(), $phpbb_extension_manager);
+			$template->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');
 		}

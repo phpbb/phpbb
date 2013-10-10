@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_mock_notifications_auth extends phpbb_auth
+class phpbb_mock_notifications_auth extends \phpbb\auth\auth
 {
 	function acl_get_list($user_id = false, $opts = false, $forum_id = false)
 	{

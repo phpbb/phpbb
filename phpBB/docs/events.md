@@ -179,6 +179,66 @@ ucp_pm_viewmessage_print_head_append
 * Location: styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
+ucp_prefs_personal_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_personal.html
+    + styles/subsilver2/template/ucp_prefs_personal.html
+* Purpose: Add user options to the top of the Edit Global Settings block
+
+ucp_prefs_personal_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_personal.html
+    + styles/subsilver2/template/ucp_prefs_personal.html
+* Purpose: Add user options to the bottom of the Edit Global Settings block
+
+ucp_prefs_post_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_post.html
+    + styles/subsilver2/template/ucp_prefs_post.html
+* Purpose: Add user options to the top of the Edit Posting Defaults block
+
+ucp_prefs_post_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_post.html
+    + styles/subsilver2/template/ucp_prefs_post.html
+* Purpose: Add user options to the bottom of the Edit Posting Defaults block
+
+ucp_prefs_view_radio_buttons_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the top of the radio buttons block of the Edit 
+Display Options screen
+
+ucp_prefs_view_radio_buttons_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the bottom of the radio buttons block of the Edit 
+Display Options screen
+
+ucp_prefs_view_select_menu_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the top of the drop-down lists block of the Edit 
+Display Options screen
+
+ucp_prefs_view_select_menu_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_view.html
+    + styles/subsilver2/template/ucp_prefs_view.html
+* Purpose: Add options to the bottom of the drop-down lists block of the Edit 
+Display Options screen
+
 viewtopic_print_head_append
 ===
 * Location: styles/prosilver/template/viewtopic_print.html

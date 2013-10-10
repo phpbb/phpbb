@@ -1604,7 +1604,7 @@ class acp_users
 								|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
 							{
 								// We also need to check if the user has the permission to cloak.
-								$user_auth = new phpbb_auth();
+								$user_auth = new \phpbb\auth\auth();
 								$user_auth->acl($user_row);
 
 								$session_sql_ary = array(
@@ -1742,7 +1742,7 @@ class acp_users
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = phpbb_avatar_manager::clean_row($user_row);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user_row);
 
 					if ($submit)
 					{

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\di;
+
 /**
 * @ignore
 */
@@ -22,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 *
 * @package phpBB3
 */
-class phpbb_di_service_collection extends ArrayObject
+class service_collection extends \ArrayObject
 {
 	/**
 	* Constructor

@@ -31,8 +31,8 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 		$phpbb_container = new phpbb_mock_container_builder();
 
 		$phpbb_container->set('auth.provider_collection', array(
-				'auth.provider.acp_board_valid'		=> new phpbb_auth_provider_acp_board_valid,
-				'auth.provider.acp_board_invalid'	=> new phpbb_auth_provider_acp_board_invalid,
+				'auth.provider.acp_board_valid'		=> new phpbb\auth\provider\acp\board_valid,
+				'auth.provider.acp_board_invalid'	=> new phpbb\auth\provider\acp\board_invalid,
 		));
 
 		$this->acp_board = new acp_board();

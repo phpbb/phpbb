@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_dbal_migration_recall extends phpbb_db_migration
+class phpbb_dbal_migration_recall extends \phpbb\db\migration\migration
 {
 	function update_schema()
 	{

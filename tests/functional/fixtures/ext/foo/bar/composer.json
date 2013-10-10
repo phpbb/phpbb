@@ -1,6 +1,6 @@
 {
 	"name": "foo/bar",
-	"type": "phpbb3-extension",
+	"type": "phpbb-extension",
 	"description": "Testing extensions",
 	"homepage": "",
 	"version": "1.0.0",
@@ -8,14 +8,13 @@
 	"licence": "GPL-2.0",
 	"authors": [{
 		"name": "Joas Schilling",
-		"username": "nickvergessen",
 		"email": "nickvergessen@phpbb.com",
 		"homepage": "http://www.phpbb.com",
 		"role": "Developer"
 	}],
 	"require": {
 		"php": ">=5.3",
-		"phpbb": ">=3.1.0-dev"
+		"phpbb": "3.1.*@dev"
 	},
 	"extra": {
 		"display-name": "phpBB 3.1 Extension Testing"

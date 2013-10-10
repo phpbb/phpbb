@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\method;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-class phpbb_notification_method_email extends phpbb_notification_method_messenger_base
+class email extends \phpbb\notification\method\messenger_base
 {
 	/**
 	* Get notification method name

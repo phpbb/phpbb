@@ -24,7 +24,7 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->user_loader = new phpbb_user_loader($this->db, __DIR__ . '/../../phpBB/', 'php', 'phpbb_users');
+		$this->user_loader = new \phpbb\user_loader($this->db, __DIR__ . '/../../phpBB/', 'php', 'phpbb_users');
 	}
 
 	public function test_load_get()

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\extension;
+
 /**
 * @ignore
 */
@@ -22,15 +24,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 *
 * @package extension
 */
-class phpbb_extension_base implements phpbb_extension_interface
+class base implements \phpbb\extension\extension_interface
 {
 	/** @var ContainerInterface */
 	protected $container;
 
-	/** @var phpbb_extension_finder */
+	/** @var \phpbb\extension\finder */
 	protected $finder;
 
-	/** @var phpbb_db_migrator */
+	/** @var \phpbb\db\migrator */
 	protected $migrator;
 
 	/** @var string */
@@ -43,11 +45,11 @@ class phpbb_extension_base implements phpbb_extension_interface
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
-	* @param phpbb_extension_finder $extension_finder
+	* @param \phpbb\extension\finder $extension_finder
 	* @param string $extension_name Name of this extension (from ext.manager)
 	* @param string $extension_path Relative path to this extension
 	*/
-	public function __construct(ContainerInterface $container, phpbb_extension_finder $extension_finder, phpbb_db_migrator $migrator, $extension_name, $extension_path)
+	public function __construct(ContainerInterface $container, \phpbb\extension\finder $extension_finder, \phpbb\db\migrator $migrator, $extension_name, $extension_path)
 	{
 		$this->container = $container;
 		$this->extension_finder = $extension_finder;

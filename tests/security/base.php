@@ -14,7 +14,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 	*/
 	protected function setUp()
 	{
-		global $user, $phpbb_root_path, $request;
+		global $user, $phpbb_root_path, $phpEx, $request, $symfony_request, $phpbb_filesystem;
 
 		// Put this into a global function being run by every test to init a proper user session
 		$server['HTTP_HOST']		= 'localhost';
@@ -37,15 +37,31 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 */
 
 		$request = new phpbb_mock_request(array(), array(), array(), $server);
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
+			$request,
+		));
+		$symfony_request->expects($this->any())
+			->method('getScriptName')
+			->will($this->returnValue($server['SCRIPT_NAME']));
+		$symfony_request->expects($this->any())
+			->method('getQueryString')
+			->will($this->returnValue($server['QUERY_STRING']));
+		$symfony_request->expects($this->any())
+			->method('getBasePath')
+			->will($this->returnValue($server['REQUEST_URI']));
+		$symfony_request->expects($this->any())
+			->method('getPathInfo')
+			->will($this->returnValue('/'));
+		$phpbb_filesystem = new \phpbb\filesystem($symfony_request, $phpbb_root_path, $phpEx);
 
 		// Set no user and trick a bit to circumvent errors
-		$user = new phpbb_user();
+		$user = new \phpbb\user();
 		$user->lang = true;
 		$user->browser				= $server['HTTP_USER_AGENT'];
 		$user->referer				= '';
 		$user->forwarded_for		= '';
 		$user->host					= $server['HTTP_HOST'];
-		$user->page = phpbb_session::extract_current_page($phpbb_root_path);
+		$user->page = \phpbb\session::extract_current_page($phpbb_root_path);
 	}
 
 	protected function tearDown()

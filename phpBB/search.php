@@ -683,7 +683,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
 			{
-				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
@@ -964,14 +964,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 				else
 				{
-					// Second parse bbcode here
-					if ($row['bbcode_bitfield'])
-					{
-						$bbcode->bbcode_second_pass($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield']);
-					}
-
-					$row['post_text'] = bbcode_nl2br($row['post_text']);
-					$row['post_text'] = smiley_text($row['post_text']);
+					$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+					$row['post_text'] = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
 
 					if (!empty($attachments[$row['post_id']]))
 					{

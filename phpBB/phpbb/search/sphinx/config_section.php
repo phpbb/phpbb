@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search\sphinx;
+
 /**
 * @ignore
 */
@@ -16,10 +18,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* phpbb_search_sphinx_config_section
+* \phpbb\search\sphinx\config_section
 * Represents a single section inside the sphinx configuration
 */
-class phpbb_search_sphinx_config_section
+class config_section
 {
 	private $name;
 	private $comment;
@@ -45,7 +47,7 @@ class phpbb_search_sphinx_config_section
 	/**
 	* Add a variable object to the list of variables in this section
 	*
-	* @param	phpbb_search_sphinx_config_variable	$variable	The variable object
+	* @param	\phpbb\search\sphinx\config_variable	$variable	The variable object
 	*
 	* @access	public
 	*/
@@ -82,7 +84,7 @@ class phpbb_search_sphinx_config_section
 	* Get a variable object by its name
 	*
 	* @param	string 								$name	The name of the variable that shall be returned
-	* @return	phpbb_search_sphinx_config_section			The first variable object from this section with the
+	* @return	\phpbb\search\sphinx\config_section			The first variable object from this section with the
 	*														given name or null if none was found
 	*
 	* @access	public
@@ -92,7 +94,7 @@ class phpbb_search_sphinx_config_section
 		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
 			// Make sure this is a variable object and not a comment
-			if (($this->variables[$i] instanceof phpbb_search_sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
+			if (($this->variables[$i] instanceof \phpbb\search\sphinx\config_variable) && $this->variables[$i]->get_name() == $name)
 			{
 				return $this->variables[$i];
 			}
@@ -111,7 +113,7 @@ class phpbb_search_sphinx_config_section
 		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
 		{
 			// Make sure this is a variable object and not a comment
-			if (($this->variables[$i] instanceof phpbb_search_sphinx_config_variable) && $this->variables[$i]->get_name() == $name)
+			if (($this->variables[$i] instanceof \phpbb\search\sphinx\config_variable) && $this->variables[$i]->get_name() == $name)
 			{
 				array_splice($this->variables, $i, 1);
 				$i--;
@@ -124,13 +126,13 @@ class phpbb_search_sphinx_config_section
 	*
 	* @param	string								$name	The name for the new variable
 	* @param	string								$value	The value for the new variable
-	* @return	phpbb_search_sphinx_config_variable			Variable object that was created
+	* @return	\phpbb\search\sphinx\config_variable			Variable object that was created
 	*
 	* @access	public
 	*/
 	function create_variable($name, $value)
 	{
-		$this->variables[] = new phpbb_search_sphinx_config_variable($name, $value, '');
+		$this->variables[] = new \phpbb\search\sphinx\config_variable($name, $value, '');
 		return $this->variables[sizeof($this->variables) - 1];
 	}
 

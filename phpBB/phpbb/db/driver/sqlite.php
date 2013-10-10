@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * Minimum Requirement: 2.8.2+
 * @package dbal
 */
-class phpbb_db_driver_sqlite extends phpbb_db_driver
+class sqlite extends \phpbb\db\driver\driver
 {
 	var $connect_error = '';
 

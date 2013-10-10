@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task\core;
+
 /**
 * @ignore
 */
@@ -24,7 +26,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements phpbb_cron_task_parametrized
+class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\parametrized
 {
 	protected $phpbb_root_path;
 	protected $php_ext;
@@ -46,10 +48,10 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 	*
 	* @param string $phpbb_root_path The root path
 	* @param string $php_ext The PHP extension
-	* @param phpbb_config $config The config
-	* @param phpbb_db_driver $db The db connection
+	* @param \phpbb\config\config $config The config
+	* @param \phpbb\db\driver\driver $db The db connection
 	*/
-	public function __construct($phpbb_root_path, $php_ext, phpbb_config $config, phpbb_db_driver $db)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -132,15 +134,15 @@ class phpbb_cron_task_core_prune_forum extends phpbb_cron_task_base implements p
 
 	/**
 	* Parses parameters found in $request, which is an instance of
-	* phpbb_request_interface.
+	* \phpbb\request\request_interface.
 	*
 	* It is expected to have a key f whose value is id of the forum to be pruned.
 	*
-	* @param phpbb_request_interface $request Request object.
+	* @param \phpbb\request\request_interface $request Request object.
 	*
 	* @return null
 	*/
-	public function parse_parameters(phpbb_request_interface $request)
+	public function parse_parameters(\phpbb\request\request_interface $request)
 	{
 		$this->forum_data = null;
 		if ($request->is_set('f'))

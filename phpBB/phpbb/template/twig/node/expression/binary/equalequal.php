@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig\node\expression\binary;
+
 /**
 * @ignore
 */
@@ -16,9 +18,9 @@ if (!defined('IN_PHPBB'))
 }
 
 
-class phpbb_template_twig_node_expression_binary_equalequal extends Twig_Node_Expression_Binary
+class equalequal extends \Twig_Node_Expression_Binary
 {
-	public function operator(Twig_Compiler $compiler)
+	public function operator(\Twig_Compiler $compiler)
 	{
 		return $compiler->raw('===');
 	}

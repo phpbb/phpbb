@@ -36,8 +36,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
 		$request->overwrite('sk', null);
 		$request->overwrite('sd', null);
-		$request->overwrite('sk', null, phpbb_request_interface::POST);
-		$request->overwrite('sd', null, phpbb_request_interface::POST);
+		$request->overwrite('sk', null, \phpbb\request\request_interface::POST);
+		$request->overwrite('sd', null, \phpbb\request\request_interface::POST);
 	}
 
 	$forum_id			= $forum_info['forum_id'];
@@ -450,22 +450,14 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
+		$redirect = reapply_sid($redirect);
+
+		meta_refresh(3, $redirect);
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 	else
 	{
 		confirm_box(false, 'MERGE_TOPICS', $s_hidden_fields);
-	}
-
-	$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
-	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		return;
-	}
-	else
-	{
-		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }

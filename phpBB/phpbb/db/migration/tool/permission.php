@@ -7,17 +7,19 @@
 *
 */
 
+namespace phpbb\db\migration\tool;
+
 /**
 * Migration permission management tool
 *
 * @package db
 */
-class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_interface
+class permission implements \phpbb\db\migration\tool\tool_interface
 {
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var phpbb_cache_service */
+	/** @var \phpbb\cache\service */
 	protected $cache;
 
 	/** @var dbal */
@@ -32,13 +34,13 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 	/**
 	* Constructor
 	*
-	* @param phpbb_db_driver $db
+	* @param \phpbb\db\driver\driver $db
 	* @param mixed $cache
-	* @param phpbb_auth $auth
+	* @param \phpbb\auth\auth $auth
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_cache_service $cache, phpbb_auth $auth, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\cache\service $cache, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
@@ -117,7 +119,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 		{
 			include($this->phpbb_root_path . 'includes/acp/auth.' . $this->php_ext);
 		}
-		$auth_admin = new auth_admin();
+		$auth_admin = new \auth_admin();
 
 		// We have to add a check to see if the !$global (if global, local, and if local, global) permission already exists.  If it does, acl_add_option currently has a bug which would break the ACL system, so we are having a work-around here.
 		if ($this->exists($auth_option, !$global))
@@ -290,7 +292,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 		if (!$role_id)
 		{
-			throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $old_role_name);
+			throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST', $old_role_name);
 		}
 
 		$sql = 'UPDATE ' . ACL_ROLES_TABLE . "
@@ -380,7 +382,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 				if (!$role_id)
 				{
-					throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $name);
+					throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST', $name);
 				}
 
 				$sql = 'SELECT auth_option_id, auth_setting
@@ -403,7 +405,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 				if (!$group_id)
 				{
-					throw new phpbb_db_migration_exception('GROUP_NOT_EXIST', $name);
+					throw new \phpbb\db\migration\exception('GROUP_NOT_EXIST', $name);
 				}
 
 				// If the group has a role set for them we will add the requested permissions to that role.
@@ -523,7 +525,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 				if (!$role_id)
 				{
-					throw new phpbb_db_migration_exception('ROLE_NOT_EXIST', $name);
+					throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST', $name);
 				}
 
 				$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
@@ -540,7 +542,7 @@ class phpbb_db_migration_tool_permission implements phpbb_db_migration_tool_inte
 
 				if (!$group_id)
 				{
-					throw new phpbb_db_migration_exception('GROUP_NOT_EXIST', $name);
+					throw new \phpbb\db\migration\exception('GROUP_NOT_EXIST', $name);
 				}
 
 				// If the group has a role set for them we will remove the requested permissions from that role.

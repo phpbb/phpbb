@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * JSON class
 * @package phpBB3
 */
-class phpbb_json_response
+class json_response
 {
 	/**
 	 * Send the data to the client and exit the script.
