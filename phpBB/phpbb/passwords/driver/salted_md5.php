@@ -41,7 +41,13 @@ class salted_md5 extends \phpbb\passwords\driver\base
 		{
 			if (($settings = $this->get_hash_settings($setting)) === false)
 			{
-				return false;
+				// Return md5 of password if settings do not
+				// comply with our standards. This will only
+				// happen if pre-determined settings are
+				// directly passed to the driver. The manager
+				// will not do this. Same as the old hashing
+				// implementatio in phpBB 3.0
+				return md5($password);
 			}
 		}
 		else
@@ -59,13 +65,7 @@ class salted_md5 extends \phpbb\passwords\driver\base
 		$output = $settings['full'];
 		$output .= $this->helper->hash_encode64($hash, 16);
 
-		if (strlen($output) == 34)
-		{
-			return $output;
-		}
-
-		// Should we really just return the md5 of the password? O.o
-		return md5($password);
+		return $output;
 	}
 
 	/**

@@ -149,17 +149,28 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $this->manager->check($password, $hash));
 	}
 
-	public function test_hash_password_length()
+	public function data_hash_password_length()
 	{
-		foreach ($this->passwords_drivers as $driver)
-		{
-			$this->assertEquals(false, $driver->hash('foobar', 'foobar'));
-		}
+		return array(
+			array('passwords.driver.bcrypt', false),
+			array('passwords.driver.bcrypt_2y', false),
+			array('passwords.driver.salted_md5', '3858f62230ac3c915f300c664312c63f'),
+			array('passwords.driver.phpass', '3858f62230ac3c915f300c664312c63f'),
+		);
+	}
+
+	/**
+	* @dataProvider data_hash_password_length
+	*/
+	public function test_hash_password_length($driver, $expected)
+	{
+		$this->assertEquals($expected, $this->passwords_drivers[$driver]->hash('foobar', 'foobar'));
 	}
 
 	public function test_hash_password_8bit_bcrypt()
 	{
 		$this->assertEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt'));
+		$this->assertNotEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
 	}
 
 	public function test_combined_hash_data()
