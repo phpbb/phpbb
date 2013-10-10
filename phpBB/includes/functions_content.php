@@ -773,7 +773,8 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 		{
 			$text = preg_replace_callback($magic_args[0], function($matches) use ($magic_args)
 			{
-				return make_clickable_callback($magic_args[1], $matches[1], $matches[2], $matches[3], $magic_args[2]);
+				$relative_url = isset($matches[3]) ? $matches[3] : '';
+				return make_clickable_callback($magic_args[1], $matches[1], $matches[2], $relative_url, $magic_args[2]);
 			}, $text);
 		}
 	}
