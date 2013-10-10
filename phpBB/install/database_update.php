@@ -203,7 +203,14 @@ $migrations = $finder
 $migrator->set_migrations($migrations);
 
 // What is a safe limit of execution time? Half the max execution time should be safe.
-$safe_time_limit = (ini_get('max_execution_time') / 2);
+//  No more than 15 seconds so the user isn't sitting and waiting for a very long time
+$safe_time_limit = min(15, (ini_get('max_execution_time') / 2));
+
+// While we're going to try limit this to half the max execution time,
+//  we want to try and take additional measures to prevent hitting the
+//  max execution time (if, say, one migration step takes much longer
+//  than the max execution time)
+set_time_limit(0);
 
 while (!$migrator->finished())
 {
