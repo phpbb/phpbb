@@ -9,7 +9,7 @@
 
 namespace phpbb\db\migration\data\v310;
 
-class allow_cdn extends phpbb_db_migration
+class allow_cdn extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
