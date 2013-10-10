@@ -781,7 +781,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
 
-		if (!isset($this->stats['post_text']))
+		if (!isset($this->stats['post_content']))
 		{
 			if ($this->db->sql_layer == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
@@ -791,11 +791,7 @@ class fulltext_mysql extends \phpbb\search\base
 			{
 				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
 			}
-			$alter[] = 'ADD FULLTEXT (post_text)';
-		}
 
-		if (!isset($this->stats['post_content']))
-		{
 			$alter[] = 'ADD FULLTEXT post_content (post_subject, post_text)';
 		}
 
@@ -834,11 +830,6 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter[] = 'DROP INDEX post_subject';
 		}
 
-		if (isset($this->stats['post_text']))
-		{
-			$alter[] = 'DROP INDEX post_text';
-		}
-
 		if (isset($this->stats['post_content']))
 		{
 			$alter[] = 'DROP INDEX post_content';
@@ -864,7 +855,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_text']) && isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
+		return (isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
 	}
 
 	/**
@@ -904,11 +895,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 			if ($index_type == 'FULLTEXT')
 			{
-				if ($row['Key_name'] == 'post_text')
-				{
-					$this->stats['post_text'] = $row;
-				}
-				else if ($row['Key_name'] == 'post_subject')
+				if ($row['Key_name'] == 'post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
