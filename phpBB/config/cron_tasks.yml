@@ -23,6 +23,16 @@ services:
         tags:
             - { name: cron.task }
 
+    cron.task.core.prune_notifications:
+        class: phpbb\cron\task\core\prune_notifications
+        arguments:
+            - @config
+            - @notification_manager
+        calls:
+            - [set_name, [cron.task.core.prune_notifications]]
+        tags:
+            - { name: cron.task }
+
     cron.task.core.queue:
         class: phpbb\cron\task\core\queue
         arguments:
