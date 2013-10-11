@@ -222,6 +222,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_post_li
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_group_default', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('plupload_salt', 'phpbb_plupload');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');
@@ -284,6 +285,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_fi
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_posts', '1', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_topics', '1', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_users', '1', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('plupload_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_seed', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_seed_last_update', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
