@@ -11,6 +11,12 @@ namespace phpbb\db\migration\data\v310;
 
 class mysql_fulltext_drop extends \phpbb\db\migration\migration
 {
+	public function effectively_installed()
+	{
+		// This migration is irrelevant for all non-MySQL DBMSes.
+		return strpos($this->db->sql_layer, 'mysql') === false;
+	}
+
 	static public function depends_on()
 	{
 		return array(
@@ -20,11 +26,6 @@ class mysql_fulltext_drop extends \phpbb\db\migration\migration
 
 	public function update_schema()
 	{
-		if (strpos($this->db->sql_layer, 'mysql') === false)
-		{
-			return array();
-		}
-
 		return array(
 			'drop_keys' => array(
 				$this->table_prefix . 'posts' => array(
