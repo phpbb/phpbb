@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task\core;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_core_tidy_plupload extends phpbb_cron_task_base
+class tidy_plupload extends \phpbb\cron\task\base
 {
 	/**
 	* How old a file must be (in seconds) before it is deleted.
@@ -42,7 +44,7 @@ class phpbb_cron_task_core_tidy_plupload extends phpbb_cron_task_base
 
 	/**
 	* Config object
-	* @var phpbb_config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
@@ -56,9 +58,9 @@ class phpbb_cron_task_core_tidy_plupload extends phpbb_cron_task_base
 	* Constructor.
 	*
 	* @param string $phpbb_root_path The root path
-	* @param phpbb_config $config The config
+	* @param \phpbb\config\config $config The config
 	*/
-	public function __construct($phpbb_root_path, phpbb_config $config)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
@@ -75,7 +77,7 @@ class phpbb_cron_task_core_tidy_plupload extends phpbb_cron_task_base
 		$last_valid_timestamp = time() - $this->max_file_age;
 		try
 		{
-			$iterator = new DirectoryIterator($this->plupload_upload_path);
+			$iterator = new \DirectoryIterator($this->plupload_upload_path);
 			foreach ($iterator as $file)
 			{
 				if (strpos($file->getBasename(), $this->config['plupload_salt']) !== 0)
@@ -90,7 +92,7 @@ class phpbb_cron_task_core_tidy_plupload extends phpbb_cron_task_base
 				}
 			}
 		}
-		catch (UnexpectedValueException $e)
+		catch (\UnexpectedValueException $e)
 		{
 			add_log(
 				'critical',

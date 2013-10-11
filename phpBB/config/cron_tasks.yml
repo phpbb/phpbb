@@ -66,7 +66,7 @@ services:
             - { name: cron.task }
 
     cron.task.core.tidy_plupload:
-        class: phpbb_cron_task_core_tidy_plupload
+        class: phpbb\cron\task\core\tidy_plupload
         arguments:
             - %core.root_path%
             - @config
