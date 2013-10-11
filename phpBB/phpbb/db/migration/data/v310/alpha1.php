@@ -24,6 +24,7 @@ class alpha1 extends \phpbb\db\migration\migration
 			'\phpbb\db\migration\data\v310\config_db_text',
 			'\phpbb\db\migration\data\v310\forgot_password',
 			'\phpbb\db\migration\data\v310\mod_rewrite',
+			'\phpbb\db\migration\data\v310\mysql_fulltext_drop',
 			'\phpbb\db\migration\data\v310\namespaces',
 			'\phpbb\db\migration\data\v310\notifications_cron',
 			'\phpbb\db\migration\data\v310\notification_options_reconvert',
