@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task\core;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_core_prune_notifications extends phpbb_cron_task_base
+class prune_notifications extends \phpbb\cron\task\base
 {
 	protected $config;
 	protected $notification_manager;
@@ -28,10 +30,10 @@ class phpbb_cron_task_core_prune_notifications extends phpbb_cron_task_base
 	/**
 	* Constructor.
 	*
-	* @param phpbb_config $config The config
-	* @param phpbb_notification_manager $notification_manager Notification manager
+	* @param \phpbb\config\config $config The config
+	* @param \phpbb\notification\manager $notification_manager Notification manager
 	*/
-	public function __construct(phpbb_config $config, phpbb_notification_manager $notification_manager)
+	public function __construct(\phpbb\config\config $config, \phpbb\notification\manager $notification_manager)
 	{
 		$this->config = $config;
 		$this->notification_manager = $notification_manager;
