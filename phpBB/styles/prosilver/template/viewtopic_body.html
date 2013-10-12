@@ -33,7 +33,7 @@
 	<!-- ENDIF -->
 	</div>
 
-	{% block topic_tools %}
+	<!-- DEFINE $TOPIC_TOOLS_BLOCK -->
 		<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or S_HAS_ATTACHMENTS) -->
 			<div class="dropdown-container dropdown-button-control topic-tools">
 				<span title="{L_TOPIC_TOOLS}" class="dropdown-trigger dropdown-select dropdown-select-icon tools-icon"><span></span></span>
@@ -71,7 +71,8 @@
 				</div>
 			</div>
 		<!-- ENDIF -->
-	{% endblock %}
+	<!-- ENDDEFINE -->
+	{$TOPIC_TOOLS_BLOCK}
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
 		<div class="search-box">
@@ -339,7 +340,7 @@
 	<!-- ENDIF -->
 	</div>
 
-	{{ block('topic_tools') }}
+	{$TOPIC_TOOLS_BLOCK}
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
