@@ -312,17 +312,19 @@ phpbb.ajaxify({
 	refresh: true,
 	filter: function (data) {
 		var action = $('#quick-mod-select').val();
+		var ajax_actions = [
+			'lock',
+			'unlock',
+			'delete_topic',
+			'make_normal',
+			'make_sticky',
+			'make_announce',
+			'make_global',
+		];
 
-		if (action === 'make_normal') {
-			return $(this).find('select option[value="make_global"]').length > 0;
-		} else if (action === 'lock' || action === 'unlock') {
+		if (ajax_actions.indexOf(action) !== -1) {
 			return true;
 		}
-
-		if (action === 'delete_topic' || action === 'make_sticky' || action === 'make_announce' || action === 'make_global') {
-			return true;
-		}
-
 		return false;
 	}
 });
