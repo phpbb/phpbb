@@ -3310,9 +3310,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $config, $user, $template, $phpEx;
+	global $db, $phpbb_container, $request, $template, $user;
 
-	$password = request_var('password', '', true);
+	$password = $request->variable('password', '', true);
 
 	$sql = 'SELECT forum_id
 		FROM ' . FORUMS_ACCESS_TABLE . '
@@ -3353,7 +3353,9 @@ function login_forum_box($forum_data)
 		}
 		$db->sql_freeresult($result);
 
-		if (phpbb_check_hash($password, $forum_data['forum_password']))
+		$passwords_manager = $phpbb_container->get('passwords.manager');
+
+		if ($passwords_manager->check($password, $forum_data['forum_password']))
 		{
 			$sql_ary = array(
 				'forum_id'		=> (int) $forum_data['forum_id'],
