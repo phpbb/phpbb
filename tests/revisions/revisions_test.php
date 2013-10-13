@@ -50,17 +50,17 @@ class phpbb_revisions_test extends phpbb_database_test_case
 		$addition_data = array_merge($this->revision_defaults, array('revision_text' => 'I am a modified string of text.'));
 		$deletion_data = array_merge($this->revision_defaults, array('revision_text' => 'I am string of text.'));
 
-		$original = new phpbb_revisions_revision(0, $this->db, false);
+		$original = new \phpbb\revisions\revision(0, $this->db, false);
 		$original->set_data($original_data);
-		$addition = new phpbb_revisions_revision(0, $this->db, false);
+		$addition = new \phpbb\revisions\revision(0, $this->db, false);
 		$addition->set_data($addition_data);
-		$deletion = new phpbb_revisions_revision(0, $this->db, false);
+		$deletion = new \phpbb\revisions\revision(0, $this->db, false);
 		$deletion->set_data($deletion_data);
 
-		$addition_comparison = new phpbb_revisions_comparison($original, $addition);
+		$addition_comparison = new \phpbb\revisions\comparison($original, $addition);
 		$addition_diff = $addition_comparison->get_text_diff_rendered();
 		$this->assertEquals("I am a <ins>modified </ins>string of text.", $addition_diff);
-		$deletion_comparison = new phpbb_revisions_comparison($original, $deletion);
+		$deletion_comparison = new \phpbb\revisions\comparison($original, $deletion);
 		$deletion_diff = $deletion_comparison->get_text_diff_rendered();
 		$this->assertEquals("I am <del>a </del>string of text.", $deletion_diff);
 	}
