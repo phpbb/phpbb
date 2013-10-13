@@ -926,7 +926,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache, $phpbb_root_path, $phpbb_dispatcher;
+		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
 
 		$errors = array();
 
@@ -1030,7 +1030,10 @@ class acp_forums
 		}
 		else
 		{
-			$forum_data_sql['forum_password'] = phpbb_hash($forum_data_sql['forum_password']);
+			// Instantiate passwords manager
+			$passwords_manager = $phpbb_container->get('passwords.manager');
+
+			$forum_data_sql['forum_password'] = $passwords_manager->hash($forum_data_sql['forum_password']);
 		}
 		unset($forum_data_sql['forum_password_unset']);
 

@@ -821,9 +821,12 @@ class acp_users
 						$error[] = 'FORM_INVALID';
 					}
 
+					// Instantiate passwords manager
+					$passwords_manager = $phpbb_container->get('passwords.manager');
+
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['new_password'] && !phpbb_check_hash($data['new_password'], $user_row['user_password'])) ? true : false;
+					$update_password = ($data['new_password'] && !$passwords_manager->check($data['new_password'], $user_row['user_password'])) ? true : false;
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -907,7 +910,7 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password'		=> phpbb_hash($data['new_password']),
+								'user_password'		=> $passwords_manager->hash($data['new_password']),
 								'user_passchg'		=> time(),
 								'user_pass_convert'	=> 0,
 							);
