@@ -258,6 +258,15 @@ services:
     php_ini:
         class: phpbb\php\ini
 
+    plupload:
+        class: phpbb\plupload\plupload
+        arguments:
+            - %core.root_path%
+            - @config
+            - @request
+            - @user
+            - @php_ini
+
     request:
         class: phpbb\request\request
 

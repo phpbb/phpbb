@@ -1322,6 +1322,10 @@ class install_install extends module
 				SET config_value = '" . md5(mt_rand()) . "'
 				WHERE config_name = 'avatar_salt'",
 
+			'UPDATE ' . $data['table_prefix'] . "config
+				SET config_value = '" . md5(mt_rand()) . "'
+				WHERE config_name = 'plupload_salt'",
+
 			'UPDATE ' . $data['table_prefix'] . "users
 				SET username = '" . $db->sql_escape($data['admin_name']) . "', user_password='" . $db->sql_escape(md5($data['admin_pass1'])) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($data['default_lang']) . "', user_email='" . $db->sql_escape($data['board_email']) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . $db->sql_escape(phpbb_email_hash($data['board_email'])) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "'
 				WHERE username = 'Admin'",

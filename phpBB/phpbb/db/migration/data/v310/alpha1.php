@@ -28,6 +28,7 @@ class alpha1 extends \phpbb\db\migration\migration
 			'\phpbb\db\migration\data\v310\namespaces',
 			'\phpbb\db\migration\data\v310\notifications_cron',
 			'\phpbb\db\migration\data\v310\notification_options_reconvert',
+			'\phpbb\db\migration\data\v310\plupload',
 			'\phpbb\db\migration\data\v310\signature_module_auth',
 			'\phpbb\db\migration\data\v310\softdelete_mcp_modules',
 			'\phpbb\db\migration\data\v310\teampage',
