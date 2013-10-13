@@ -385,8 +385,18 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 /**
 * Upload Attachment - filedata is generated here
 * Uses upload class
+*
+* @param string			$form_name		The form name of the file upload input
+* @param int			$forum_id		The id of the forum
+* @param bool			$local			Whether the file is local or not
+* @param string			$local_storage	The path to the local file
+* @param bool			$is_message		Whether it is a PM or not
+* @param \filespec		$local_filedata	A filespec object created for the local file
+* @param \phpbb\plupload\plupload	$plupload		The plupload object if one is being used
+*
+* @return object filespec
 */
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
+function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\plupload\plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
 	global $phpbb_root_path, $phpEx;
@@ -414,7 +424,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
-	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name);
+	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name, $plupload);
 
 	if ($file->init_error)
 	{
@@ -468,6 +478,11 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	if ($is_image && !$file->is_image())
 	{
 		$file->remove();
+
+		if ($plupload && $plupload->is_active())
+		{
+			$plupload->emit_error(104, 'ATTACHED_IMAGE_NOT_IMAGE');
+		}
 
 		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
 		// Since the image category is displaying content inline we need to catch this.
