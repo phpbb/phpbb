@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\revisions;
 
 /**
 * @ignore
@@ -18,9 +20,9 @@ if (!defined('IN_PHPBB'))
 /**
 * A class representing a single post, containing the revisions made to that post
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 */
-class phpbb_revisions_post
+class post
 {
 	/**
 	* Error message constants
@@ -33,19 +35,19 @@ class phpbb_revisions_post
 
 	/**
 	* Database object
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	private $db;
 
 	/**
 	* Config array
-	* @var array
+	* @var \phpbb\config\config
 	*/
 	private $config;
 
 	/**
 	* Auth object
-	* @var phpbb_auth
+	* @var \phpbb\auth\auth
 	*/
 	private $auth;
 
@@ -89,9 +91,10 @@ class phpbb_revisions_post
 	* Constructor, initialize some class properties
 	*
 	* @param int $post_id Post ID
-	* @param phpbb_db_driver $db Database object
+	* @param \phpbb\db\driver\driver $db Database object
+	* @param \phpbb\config\config
 	*/
-	public function __construct($post_id, phpbb_db_driver $db, phpbb_config $config, phpbb_auth $auth)
+	public function __construct($post_id, \phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\auth\auth $auth)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -172,8 +175,10 @@ class phpbb_revisions_post
 	/**
 	* Return revision array
 	*
-	* @param bool $refresh If true, the data will be reloaded whether it has been loaded already or not
-	* @return array Array of phpbb_revisions_revision objects containing data about revisions to the specified post
+	* @param bool $refresh If true, the data will be reloaded whether it has
+	*						been loaded already or not
+	* @return array Array of \phpbb\revisions\revision objects containing data
+	*				about revisions to the specified post
 	*/
 	public function get_revisions($refresh = false)
 	{
@@ -183,7 +188,8 @@ class phpbb_revisions_post
 	/**
 	* Retrieve all revisions from a specified post from database
 	*
-	* @return array Array of phpbb_revisions_revision objects containing data about revisions to the specified post
+	* @return array Array of \phpbb\revisions\revision objects containing data
+	*				about revisions to the specified post
 	*/
 	private function load_revisions()
 	{
@@ -225,7 +231,7 @@ class phpbb_revisions_post
 			$row['enable_smilies'] = $this->post_data['enable_smilies'];
 			$row['enable_magic_url'] = $this->post_data['enable_magic_url'];
 
-			$rev = new phpbb_revisions_revision($row['revision_id'], $this->db, false);
+			$rev = new revision($row['revision_id'], $this->db, false);
 			$rev->set_data($row);
 			$this->revisions[$row['revision_id']] = $rev;
 		}
@@ -331,8 +337,8 @@ class phpbb_revisions_post
 		$delete_amount = $this->get_unprotected_revision_count(true) - $this->config['revisions_per_post_max'];
 
 		// When there are less revisions than the max, $delete amount is negative
-		// Because negative numbers evaluate to true, we have to specifically check
-		// to make sure the number is greater than 0.
+		// Because negative numbers evaluate to true, we have to specifically
+		// check to make sure the number is greater than 0.
 		if ($delete_amount > 0)
 		{
 			$ids = array();
@@ -399,7 +405,7 @@ class phpbb_revisions_post
 			$this->db->sql_freeresult($result);
 		}
 
-		$current = new phpbb_revisions_revision(0, $this->db, false);
+		$current = new revision(0, $this->db, false);
 		$current->set_data(array(
 			'revision_subject'		=> $this->post_data['post_subject'],
 			'revision_text'			=> $this->post_data['post_text'],

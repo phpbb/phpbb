@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\revisions;
 
 /**
 * @ignore
@@ -18,13 +20,13 @@ if (!defined('IN_PHPBB'))
 /**
 * A class representing a single post revision
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 */
-class phpbb_revisions_revision
+class revision
 {
 	/**
 	* Database object
-	* @var phpbb_db_driver
+	* @var \phpbb\db\driver\driver
 	*/
 	private $db;
 
@@ -152,12 +154,12 @@ class phpbb_revisions_revision
 	* Constructor method
 	*
 	* @param int $revision_id ID of the revision to instantiate
-	* @param phpbb_db_driver $db Database object
+	* @param \phpbb\db\driver\driver $db Database object
 	* @param bool $autoload Whether or not to automatically load data if constructor receives ID
 	*				This is helpful if we already have the data and don't want to load it but still
 	*				wish to set the data to this instance
 	*/
-	public function __construct($revision_id, phpbb_db_driver $db, $autoload = true)
+	public function __construct($revision_id, \phpbb\db\driver\driver $db, $autoload = true)
 	{
 		$this->db = $db;
 
@@ -171,7 +173,7 @@ class phpbb_revisions_revision
 	/**
 	* Load a revision from the database
 	*
-	* @return phpbb_revisions_revision Current revision object
+	* @return \phpbb\revisions\revision Current revision object
 	*/
 	public function load()
 	{

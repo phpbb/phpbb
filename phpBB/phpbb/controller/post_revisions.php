@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\controller;
+
 /**
 * @ignore
 */
@@ -16,25 +18,25 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Controller interface
+* Post revisions controller
 * @package phpBB3
 */
-class phpbb_controller_post_revisions
+class post_revisions
 {
 	/**
 	* Construct method
 	*
-	* @param phpbb_controller_helper $helper Controller helper object
-	* @param phpbb_user $user User object
-	* @param phpbb_db_driver $db Database object
-	* @param phpbb_config $config Config object
-	* @param phpbb_auth $auth Auth object
-	* @param phpbb_request $request Request object
-	* @param phpbb_template $template Template object
+	* @param \phpbb\controller\helper $helper Controller helper object
+	* @param \phpbb\user $user User object
+	* @param \phpbb\db\driver\driver $db Database object
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\auth\auth $auth Auth object
+	* @param \phpbb\request\request_interface $request Request object
+	* @param \phpbb\template\template $template Template object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_controller_helper $helper, phpbb_user $user, phpbb_db_driver $db, phpbb_config $config, phpbb_auth $auth, phpbb_request $request, phpbb_template $template, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\user $user, \phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\request\request_interface $request, \phpbb\template\template $template, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->user = $user;
@@ -87,7 +89,7 @@ class phpbb_controller_post_revisions
 		$from = $this->request->is_set_post('first') ? $this->request->variable('first', 0) : $from;
 		$to = $this->request->is_set_post('last') ? $this->request->variable('last', 0) : $to;
 
-		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
+		$post = new \phpbb\revisions\post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 
 		if (!sizeof($post_data))
@@ -162,7 +164,7 @@ class phpbb_controller_post_revisions
 		$from_revision = !$from ? $from_revision : $revisions[$from];
 		$to_revision = $to ? $revisions[$to] : $post->get_current_revision();
 
-		$comparison = new phpbb_revisions_comparison($from_revision, $to_revision);
+		$comparison = new \phpbb\revisions\comparison($from_revision, $to_revision);
 		$comparison->output_template_block($post, $this->template, $this->user, $this->auth, $this->request, $this->get_restore_permission($post_data), $this->phpbb_root_path, $this->php_ext);
 
 		$this->template->assign_vars(array(
@@ -211,9 +213,9 @@ class phpbb_controller_post_revisions
 	*/
 	public function view_revision_as_post($id, $revision_id)
 	{
-		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
+		$post = new \phpbb\revisions\post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
-		$revision = !$revision_id ? $post->get_current_revision() : new phpbb_revisions_revision($revision_id, $this->db);
+		$revision = !$revision_id ? $post->get_current_revision() : new \phpbb\revisions\revision($revision_id, $this->db);
 		if ($revision_id && !$revision->exists())
 		{
 			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>');
@@ -272,7 +274,7 @@ class phpbb_controller_post_revisions
 	{
 		// Ensure that $mode is one of 'protect' or 'unprotect' (default)
 		$mode = in_array($mode, array('protect', 'unprotect')) ? $mode : 'unprotect';
-		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
+		$post = new \phpbb\revisions\post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 
@@ -331,7 +333,7 @@ class phpbb_controller_post_revisions
 	*/
 	public function delete_revision($id, $revision_id)
 	{
-		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
+		$post = new \phpbb\revisions\post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 		if (!$this->auth->acl_get('m_delete_revisions', $post_data['forum_id']))
@@ -367,7 +369,7 @@ class phpbb_controller_post_revisions
 	* Helper method for deleting one or more post revisions
 	*
 	* This does NOT check authorization, so it should not be called without
-	* checking for m_revisions_delete
+	* checking for m_delete_revisions
 	*
 	* @param mixed $revision_id Revision ID or array of revision IDs
 	* @return bool
@@ -467,7 +469,7 @@ class phpbb_controller_post_revisions
 	*/
 	public function restore($id, $to)
 	{
-		$post = new phpbb_revisions_post($id, $this->db, $this->config, $this->auth);
+		$post = new \phpbb\revisions\post($id, $this->db, $this->config, $this->auth);
 		$post_data = $post->get_post_data();
 		$revisions = $post->get_revisions();
 
@@ -489,7 +491,11 @@ class phpbb_controller_post_revisions
 				$error = 'ERROR_REVISION_NOT_FOUND';
 				$code = 404;
 			}
-			else if ($post_data['post_edit_locked'] && !$this->auth->acl_get('m_revisions', $post_data['forum_id']))
+			// We check specifically for the moderator permission here instead
+			// of using $this->get_restore_permission($post_data) because if
+			// a moderator has locked the post to future edits, we don't want
+			// a non-moderator to change things
+			else if ($post_data['post_edit_locked'] && !$this->auth->acl_get('m_restore_revisions', $post_data['forum_id']))
 			{
 				$error = 'ERROR_POST_EDIT_LOCKED';
 				// 401 is unauthorized
@@ -508,20 +514,20 @@ class phpbb_controller_post_revisions
 
 			$restore_result = $post->restore($to);
 
-			if ($restore_result !== phpbb_revisions_post::REVISION_RESTORE_SUCCESS)
+			if ($restore_result !== \phpbb\revisions\post::REVISION_RESTORE_SUCCESS)
 			{
 				switch ($restore_result)
 				{
 					default:
-					case phpbb_revisions_post::REVISION_NOT_FOUND:
+					case \phpbb\revisions\post::REVISION_NOT_FOUND:
 						$error = 'ERROR_REVISION_NOT_FOUND';
 					break;
 
-					case phpbb_revisions_post::REVISION_INSERT_FAIL:
+					case \phpbb\revisions\post::REVISION_INSERT_FAIL:
 						$error = 'ERROR_REVISION_INSERT_FAIL';
 					break;
 
-					case phpbb_revisions_post::REVISION_POST_UPDATE_FAIL:
+					case \phpbb\revisions\post::REVISION_POST_UPDATE_FAIL:
 						$error = 'ERROR_REVISION_POST_UPDATE_FAIL';
 					break;
 				}
@@ -571,7 +577,7 @@ class phpbb_controller_post_revisions
 
 			// Compare current post to the revision to which we are going to
 			// restore it
-			$comparison = new phpbb_revisions_comparison($post->get_current_revision(), $revisions[$to]);
+			$comparison = new \phpbb\revisions\comparison($post->get_current_revision(), $revisions[$to]);
 			$this->template->assign_vars(array(
 				'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 				'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
@@ -635,7 +641,7 @@ class phpbb_controller_post_revisions
 		// permissions for managing revisions
 		return $can_restore_own ||
 			$can_restore_wiki ||
-			$this->auth->acl_get('m_revisions');
+			$this->auth->acl_get('m_restore_revisions');
 	}
 
 	/**
@@ -679,7 +685,7 @@ class phpbb_controller_post_revisions
 	{
 		if ($this->request->is_ajax())
 		{
-			$json_response = new phpbb_json_response();
+			$json_response = new \phpbb\json_response();
 			$json_response->send($data);
 		}
 	}

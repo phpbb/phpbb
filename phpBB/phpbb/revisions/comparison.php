@@ -1,11 +1,15 @@
 <?php
 /**
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\revisions;
+
+use \phpbb\revisions\diff\engine_finediff;
 
 /**
 * @ignore
@@ -18,31 +22,31 @@ if (!defined('IN_PHPBB'))
 /**
 * A class representing the comparison between two strings
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 */
-class phpbb_revisions_comparison
+class comparison
 {
 	/**
 	* First revision in comparison
-	* @var phpbb_revisions_revision
+	* @var revision
 	*/
 	private $first;
 
 	/**
 	* Last revision in comparison
-	* @var phpbb_revisions_revision
+	* @var revision
 	*/
 	private $last;
 
 	/**
 	* Post content diff object
-	* @var phpbb_revisions_diff_engine_base
+	* @var diff_engine_base
 	*/
 	private $text_diff;
 	
 	/**
 	* Post subject diff object
-	* @var phpbb_revisions_diff_engine_base
+	* @var diff_engine_base
 	*/
 	private $subject_diff;
 
@@ -61,17 +65,17 @@ class phpbb_revisions_comparison
 	/**
 	* Constructor, initialize some class properties
 	*
-	* @param phpbb_revisions_revision $first First revision in the comparison
-	* @param phpbb_revisions_revision $last Last revision in the comparison
+	* @param revision $first First revision in the comparison
+	* @param revision $last Last revision in the comparison
 	*/
-	public function __construct(phpbb_revisions_revision $first, phpbb_revisions_revision $last)
+	public function __construct(revision $first, revision $last)
 	{
 		$this->first = $first;
 		$this->last = $last;
 
-		$this->text_diff = new phpbb_revisions_diff_engine_finediff($first->get_text_decoded(),
+		$this->text_diff = new engine_finediff($first->get_text_decoded(),
 			$last->get_text_decoded(), 'character');
-		$this->subject_diff = new phpbb_revisions_diff_engine_finediff($first->get_subject(),
+		$this->subject_diff = new engine_finediff($first->get_subject(),
 			$last->get_subject(), 'character');
 
 		$this->text_diff_rendered = bbcode_nl2br($this->text_diff->render());
@@ -126,11 +130,11 @@ class phpbb_revisions_comparison
 	*	output multiple posts, catch the output from this function and output
 	*	it to the template.
 	*
-	* @var phpbb_revisions_post $post The post containing the compared revisions
-	* @var phpbb_template $template Template object
-	* @var phpbb_user $user User object
-	* @var phpbb_auth $auth Auth object
-	* @var phpbb_request $request Request object
+	* @var post $post The post containing the compared revisions
+	* @var \phpbb\template\template $template Template object
+	* @var \phpbb\user $user User object
+	* @var \phpbb\auth\auth $auth Auth object
+	* @var \phpbb\request\request $request Request object
 	* @var bool $can_restore Whether or not the user has permission to restore
 	*						this post to another revision
 	* @var string $phpbb_root_path Relative path to phpBB root
@@ -140,7 +144,7 @@ class phpbb_revisions_comparison
 	*						or management options
 	* @return string parsed template output
 	*/
-	public function output_template_block(phpbb_revisions_post $post, phpbb_template $template, phpbb_user $user, phpbb_auth $auth, phpbb_request $request, $can_restore, $phpbb_root_path, $phpEx, $full_mode = true)
+	public function output_template_block(post $post, \phpbb\template\template $template, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\request\request $request, $can_restore, $phpbb_root_path, $phpEx, $full_mode = true)
 	{
 		// Destroy existing loops
 		$template->destroy_block_vars('revision');
@@ -237,7 +241,7 @@ class phpbb_revisions_comparison
 
 		if ($request->is_ajax())
 		{
-			$json_response = new phpbb_json_response();
+			$json_response = new \phpbb\json_response();
 			$json_response->send(array(
 				'revisions_block'		=> $revisions_block,
 				'text_diff_rendered'	=> $this->get_text_diff_rendered(),

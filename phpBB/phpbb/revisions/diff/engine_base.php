@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\revisions\diff;
 
 /**
 * @ignore
@@ -18,9 +20,9 @@ if (!defined('IN_PHPBB'))
 /**
 * A base API class for interfacing between phpBB and diff engines
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 */
-abstract class phpbb_revisions_diff_engine_base
+abstract class engine_base
 {
 	/**
 	* Ending point for comparison

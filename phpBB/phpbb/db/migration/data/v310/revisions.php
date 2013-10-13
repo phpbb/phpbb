@@ -78,6 +78,7 @@ class revisions extends \phpbb\db\migration\migration
 			array('permission.add', array('f_wiki_create', false)),
 			array('permission.add', array('f_wiki_edit', false)),
 			array('permission.add', array('m_revisions', 'm_edit')),
+			array('permission.add', array('m_restore_revisions', 'm_edit')),
 			array('permission.add', array('m_delete_revisions', 'm_edit')),
 			array('permission.add', array('m_protect_revisions', 'm_edit')),
 

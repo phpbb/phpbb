@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 * @copyright (c) 2012 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\revisions\diff;
 
 /**
 * @ignore
@@ -18,9 +20,9 @@ if (!defined('IN_PHPBB'))
 /**
 * An API class to interface between the FineDiff diff engine and phpBB
 *
-* @package phpbb_revisions
+* @package \phpbb\revisions
 */
-class phpbb_revisions_diff_engine_finediff extends phpbb_revisions_diff_engine_base
+class engine_finediff extends engine_base
 {
 	/**
 	* Set the diff granularity
