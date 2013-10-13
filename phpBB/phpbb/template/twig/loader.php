@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Twig Template loader
 * @package phpBB3
 */
-class phpbb_template_twig_loader extends Twig_Loader_Filesystem
+class loader extends \Twig_Loader_Filesystem
 {
 	protected $safe_directories = array();
 

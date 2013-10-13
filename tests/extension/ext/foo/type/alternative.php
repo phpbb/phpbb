@@ -1,5 +1,7 @@
 <?php
 
-class phpbb_ext_foo_type_alternative
+namespace foo\type;
+
+class alternative
 {
 }

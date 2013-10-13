@@ -39,11 +39,12 @@ $lang = array_merge($lang, array(
 
 	'GROUP_NOT_EXIST'					=> 'The group "%s" unexpectedly does not exist.',
 
-	'MIGRATION_DATA_DONE'				=> 'Installed Data: %s',
+	'MIGRATION_DATA_DONE'				=> 'Installed Data: %1$s; Time: %2$.2f seconds',
+	'MIGRATION_DATA_IN_PROGRESS'		=> 'Installing Data: %1$s; Time: %2$.2f seconds',
 	'MIGRATION_EFFECTIVELY_INSTALLED'	=> 'Migration already effectively installed (skipped): %s',
 	'MIGRATION_EXCEPTION_ERROR'			=> 'Something went wrong during the request and an exception was thrown. The changes made before the error occurred were reversed to the best of our abilities, but you should check the board for errors.',
 	'MIGRATION_NOT_FULFILLABLE'			=> 'The migration "%1$s" is not fulfillable, missing migration "%2$s".',
-	'MIGRATION_SCHEMA_DONE'				=> 'Installed Schema: %s',
+	'MIGRATION_SCHEMA_DONE'				=> 'Installed Schema: %1$s; Time: %2$.2f seconds',
 
 	'MODULE_ERROR'						=> 'An error occurred while creating a module: %s',
 	'MODULE_INFO_FILE_NOT_EXIST'		=> 'A required module info file is missing: %2$s',

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cron\task;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_cron_task_wrapper
+class wrapper
 {
 	protected $task;
 	protected $phpbb_root_path;
@@ -32,9 +34,9 @@ class phpbb_cron_task_wrapper
 	*
 	* Wraps a task $task, which must implement cron_task interface.
 	*
-	* @param phpbb_cron_task $task The cron task to wrap.
+	* @param \phpbb\cron\task\task $task The cron task to wrap.
 	*/
-	public function __construct(phpbb_cron_task $task, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\cron\task\task $task, $phpbb_root_path, $php_ext)
 	{
 		$this->task = $task;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -51,7 +53,7 @@ class phpbb_cron_task_wrapper
 	*/
 	public function is_parametrized()
 	{
-		return $this->task instanceof phpbb_cron_task_parametrized;
+		return $this->task instanceof \phpbb\cron\task\parametrized;
 	}
 
 	/**

@@ -107,7 +107,7 @@ class phpbb_test_case_helpers
 		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> 'phpbb_db_driver_sqlite',
+				'dbms'		=> 'phpbb\db\driver\sqlite',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
@@ -157,6 +157,11 @@ class phpbb_test_case_helpers
 			if (isset($phpbb_redis_port))
 			{
 				$config['redis_port'] = $phpbb_redis_port;
+			}
+
+			if (isset($fulltext_sphinx_id))
+			{
+				$config['fulltext_sphinx_id'] = $fulltext_sphinx_id;
 			}
 		}
 

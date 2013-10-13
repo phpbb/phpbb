@@ -595,7 +595,7 @@ switch ($mode)
 		* Modify user data before we display the profile
 		*
 		* @event core.memberlist_view_profile
-		* @var	array	member					Title of the index page
+		* @var	array	member					Array with user's data
 		* @var	bool	user_notes_enabled		Is the mcp user notes module
 		*										enabled?
 		* @var	bool	warn_user_enabled		Is the mcp warnings module
@@ -1049,7 +1049,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));

@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\HttpFoundation\Request;
-
 /**
 * @ignore
 */
@@ -26,13 +24,13 @@ if (!defined('IN_PHPBB'))
 function set_var(&$result, $var, $type, $multibyte = false)
 {
 	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new phpbb_request_type_cast_helper();
+	$type_cast_helper = new \phpbb\request\type_cast_helper();
 	$type_cast_helper->set_var($result, $var, $type, $multibyte);
 }
 
 /**
-* Wrapper function of phpbb_request::variable which exists for backwards compatability.
-* See {@link phpbb_request_interface::variable phpbb_request_interface::variable} for
+* Wrapper function of \phpbb\request\request::variable which exists for backwards compatability.
+* See {@link \phpbb\request\request_interface::variable \phpbb\request\request_interface::variable} for
 * documentation of this function's use.
 *
 * @deprecated
@@ -40,20 +38,20 @@ function set_var(&$result, $var, $type, $multibyte = false)
 * 										If the value is an array this may be an array of indizes which will give
 * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
 * 										then specifying array("var", 1) as the name will return "a".
-* 										If you pass an instance of {@link phpbb_request_interface phpbb_request_interface}
+* 										If you pass an instance of {@link \phpbb\request\request_interface phpbb_request_interface}
 * 										as this parameter it will overwrite the current request class instance. If you do
 * 										not do so, it will create its own instance (but leave superglobals enabled).
 * @param	mixed			$default	A default value that is returned if the variable was not set.
 * 										This function will always return a value of the same type as the default.
 * @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
 *										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-* @param	bool			$cookie		This param is mapped to phpbb_request_interface::COOKIE as the last param for
-* 										phpbb_request_interface::variable for backwards compatability reasons.
-* @param	phpbb_request_interface|null|false	If an instance of phpbb_request_interface is given the instance is stored in
+* @param	bool			$cookie		This param is mapped to \phpbb\request\request_interface::COOKIE as the last param for
+* 										\phpbb\request\request_interface::variable for backwards compatability reasons.
+* @param	\phpbb\request\request_interface|null|false	If an instance of \phpbb\request\request_interface is given the instance is stored in
 *										a static variable and used for all further calls where this parameters is null. Until
-*										the function is called with an instance it automatically creates a new phpbb_request
+*										the function is called with an instance it automatically creates a new \phpbb\request\request
 *										instance on every call. By passing false this per-call instantiation can be restored
-*										after having passed in a phpbb_request_interface instance.
+*										after having passed in a \phpbb\request\request_interface instance.
 *
 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 * 					the same as that of $default. If the variable is not set $default is returned.
@@ -64,7 +62,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 	// the only real code is the function call which maps this function to a method.
 	static $static_request = null;
 
-	if ($request instanceof phpbb_request_interface)
+	if ($request instanceof \phpbb\request\request_interface)
 	{
 		$static_request = $request;
 
@@ -90,10 +88,10 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 	{
 		// false param: enable super globals, so the created request class does not
 		// make super globals inaccessible everywhere outside this function.
-		$tmp_request = new phpbb_request(new phpbb_request_type_cast_helper(), false);
+		$tmp_request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
 	}
 
-	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? phpbb_request_interface::COOKIE : phpbb_request_interface::REQUEST);
+	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? \phpbb\request\request_interface::COOKIE : \phpbb\request\request_interface::REQUEST);
 }
 
 /**
@@ -112,7 +110,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 *
 * @deprecated
 */
-function set_config($config_name, $config_value, $is_dynamic = false, phpbb_config $set_config = null)
+function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\config\config $set_config = null)
 {
 	static $config = null;
 
@@ -142,7 +140,7 @@ function set_config($config_name, $config_value, $is_dynamic = false, phpbb_conf
 *
 * @deprecated
 */
-function set_config_count($config_name, $increment, $is_dynamic = false, phpbb_config $set_config = null)
+function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\config\config $set_config = null)
 {
 	static $config = null;
 
@@ -444,6 +442,13 @@ function phpbb_hash($password)
 */
 function phpbb_check_hash($password, $hash)
 {
+	if (strlen($password) > 4096)
+	{
+		// If the password is too huge, we will simply reject it
+		// and not let the server try to hash it.
+		return false;
+	}
+
 	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 	if (strlen($hash) == 34)
 	{
@@ -1058,24 +1063,32 @@ else
 */
 function phpbb_clean_path($path)
 {
-	global $phpbb_container;
+	global $phpbb_path_helper, $phpbb_container;
 
-	if ($phpbb_container)
+	if (!$phpbb_path_helper && $phpbb_container)
 	{
-		$phpbb_filesystem = $phpbb_container->get('filesystem');
+		$phpbb_path_helper = $phpbb_container->get('path_helper');
 	}
-	else
+	else if (!$phpbb_path_helper)
 	{
 		// The container is not yet loaded, use a new instance
-		if (!class_exists('phpbb_filesystem'))
+		if (!class_exists('\phpbb\path_helper'))
 		{
 			global $phpbb_root_path, $phpEx;
-			require($phpbb_root_path . 'includes/filesystem.' . $phpEx);
+			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
 		}
-		$phpbb_filesystem = new phpbb_filesystem();
+
+		$phpbb_path_helper = new phpbb\path_helper(
+			new phpbb\symfony_request(
+				new phpbb\request\request()
+			),
+			new phpbb\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
 	}
 
-	return $phpbb_filesystem->clean_path($path);
+	return $phpbb_path_helper->clean_path($path);
 }
 
 // functions used for building option fields
@@ -1253,7 +1266,7 @@ function tz_select($default = '', $truncate = false)
 /**
 * Options to pick a timezone and date/time
 *
-* @param	phpbb_user	$user				Object of the current user
+* @param	\phpbb\user	$user				Object of the current user
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
 *
@@ -1272,7 +1285,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 		foreach ($unsorted_timezones as $timezone)
 		{
 			$tz = new DateTimeZone($timezone);
-			$dt = new phpbb_datetime($user, 'now', $tz);
+			$dt = new \phpbb\datetime($user, 'now', $tz);
 			$offset = $dt->getOffset();
 			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
 			$offset_string = phpbb_format_timezone_offset($offset);
@@ -1391,7 +1404,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
-				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+				$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
@@ -1400,7 +1413,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
 				$user->set_cookie('track', tracking_serialize($tracking_topics), $post_time + 31536000);
-				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request_interface::COOKIE);
+				$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), \phpbb\request\request_interface::COOKIE);
 
 				unset($tracking_topics);
 
@@ -1503,7 +1516,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
@@ -1534,7 +1547,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
-			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), \phpbb\request\request_interface::COOKIE);
 
 			unset($tracking);
 		}
@@ -1591,7 +1604,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
@@ -1605,7 +1618,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
 			// This can result in old topics being unread - but most of the time it should be accurate...
-			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE)) > 10000)
+			if (strlen($request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE)) > 10000)
 			{
 				//echo 'Cookie grown too large' . print_r($tracking, true);
 
@@ -1650,7 +1663,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), $post_time + 31536000);
-			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request_interface::COOKIE);
+			$request->overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), \phpbb\request\request_interface::COOKIE);
 		}
 
 		return;
@@ -1788,7 +1801,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
-			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -1985,7 +1998,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
@@ -2200,6 +2213,32 @@ function tracking_unserialize($string, $max_depth = 3)
 }
 
 // Pagination functions
+/**
+* Generate a pagination link based on the url and the page information
+*
+* @param string $base_url is url prepended to all links generated within the function
+*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
+*							for the page. Also be sure to specify the pagination path information into the start_name argument
+* @param string $on_page is the page for which we want to generate the link
+* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
+*							If you use page numbers inside your controller route, start name should be the string
+*							that should be removed for the first page (example: /page/%d)
+* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
+* @return URL for the requested page
+*/
+function phpbb_generate_page_link($base_url, $on_page, $start_name, $per_page)
+{
+
+	if (strpos($start_name, '%d') !== false)
+	{
+		return ($on_page > 1) ? sprintf($base_url, (int) $on_page) : str_replace($start_name, '', $base_url);
+	}
+	else
+	{
+		$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
+		return ($on_page > 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 1) * $per_page) : $base_url;
+	}
+}
 
 /**
 * Generate template rendered pagination
@@ -2207,8 +2246,12 @@ function tracking_unserialize($string, $max_depth = 3)
 *
 * @param object $template the template object
 * @param string $base_url is url prepended to all links generated within the function
+*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
+*							for the page. Also be sure to specify the pagination path information into the start_name argument
 * @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
 * @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
+*							If you use page numbers inside your controller route, start name should be the string
+*							that should be removed for the first page (example: /page/%d)
 * @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
 * @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
 * @param int $start_item the item which should be considered currently active, used to determine the page we're on
@@ -2228,7 +2271,6 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
-	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
 
 	if ($reverse_count)
 	{
@@ -2256,11 +2298,14 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 	}
 
+	$u_previous_page = $u_next_page = '';
 	if ($on_page != 1)
 	{
+		$u_previous_page = phpbb_generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
+
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page),
+			'PAGE_URL'		=> $u_previous_page,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> true,
 			'S_IS_NEXT'		=> false,
@@ -2274,15 +2319,13 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	$at_page = 1;
 	do
 	{
-		$page_url = $base_url . (($at_page == 1) ? '' : $url_delim . $start_name . '=' . (($at_page - 1) * $per_page));
-
 		// We decide whether to display the ellipsis during the loop. The ellipsis is always
 		// displayed as either the second or penultimate item in the list. So are we at either
 		// of those points and of course do we even need to display it, i.e. is the list starting
 		// on at least page 3 and ending three pages before the final item.
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> $at_page,
-			'PAGE_URL'		=> $page_url,
+			'PAGE_URL'		=> phpbb_generate_page_link($base_url, $at_page, $start_name, $per_page),
 			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
 			'S_IS_NEXT'		=> false,
 			'S_IS_PREV'		=> false,
@@ -2312,9 +2355,11 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 
 	if ($on_page != $total_pages)
 	{
+		$u_next_page = phpbb_generate_page_link($base_url, $on_page + 1, $start_name, $per_page);
+
 		$template->assign_block_vars($block_var_name, array(
 			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page),
+			'PAGE_URL'		=> $u_next_page,
 			'S_IS_CURRENT'	=> false,
 			'S_IS_PREV'		=> false,
 			'S_IS_NEXT'		=> true,
@@ -2339,14 +2384,11 @@ function phpbb_generate_template_pagination($template, $base_url, $block_var_nam
 	}
 	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
 
-	$previous_page = ($on_page != 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 2) * $per_page) : '';
-
 	$template_array = array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		'A_' . $tpl_prefix . 'BASE_URL'		=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> $previous_page,
-		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $base_url . $url_delim . $start_name . '=' . ($on_page * $per_page) : '',
+		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $u_previous_page : '',
+		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
 	);
@@ -2383,7 +2425,7 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 	$template->assign_vars(array(
 		'PER_PAGE'		=> $per_page,
 		'ON_PAGE'		=> $on_page,
-		'A_BASE_URL'	=> addslashes($base_url),
+		'BASE_URL'		=> $base_url,
 	));
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
@@ -2411,9 +2453,8 @@ function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $star
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_path_helper;
 	global $phpbb_dispatcher;
-	global $symfony_request, $phpbb_root_path;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -2421,10 +2462,10 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		$params = false;
 	}
 
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
-	if ($corrected_path)
+	// Update the root path with the correct relative web path
+	if ($phpbb_path_helper instanceof \phpbb\path_helper)
 	{
-		$url = substr($corrected_path . $url, strlen($phpbb_root_path));
+		$url = $phpbb_path_helper->update_web_root_path($url);
 	}
 
 	$append_sid_overwrite = false;
@@ -2816,8 +2857,22 @@ function build_url($strip_vars = false)
 {
 	global $user, $phpbb_root_path;
 
+	$page = $user->page['page'];
+
+	// We need to be cautious here.
+	// On some situations, the redirect path is an absolute URL, sometimes a relative path
+	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+	// else we use the URL directly.
+	$url_parts = parse_url($page);
+
+	// URL
+	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
+	{
+		$page = $phpbb_root_path . $page;
+	}
+
 	// Append SID
-	$redirect = append_sid($user->page['page'], false, false);
+	$redirect = append_sid($page, false, false);
 
 	// Add delimiter if not there...
 	if (strpos($redirect, '?') === false)
@@ -2872,19 +2927,7 @@ function build_url($strip_vars = false)
 		$redirect .= ($query) ? '?' . $query : '';
 	}
 
-	// We need to be cautious here.
-	// On some situations, the redirect path is an absolute URL, sometimes a relative path
-	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
-	// else we use the URL directly.
-	$url_parts = @parse_url($redirect);
-
-	// URL
-	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
-	{
-		return str_replace('&', '&amp;', $redirect);
-	}
-
-	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
+	return str_replace('&', '&amp;', $redirect);
 }
 
 /**
@@ -3101,7 +3144,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, phpbb_request_interface::POST));
+	$confirm = ($user->lang['YES'] === $request->variable('confirm', '', true, \phpbb\request\request_interface::POST));
 
 	if ($check && $confirm)
 	{
@@ -3178,7 +3221,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	if ($request->is_ajax())
 	{
 		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;
-		$json_response = new phpbb_json_response;
+		$json_response = new \phpbb\json_response;
 		$json_response->send(array(
 			'MESSAGE_BODY'		=> $template->assign_display('body'),
 			'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
@@ -4420,7 +4463,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				global $refresh_data;
 
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'		=> $msg_title,
 					'MESSAGE_TEXT'		=> $msg_text,
@@ -4926,7 +4969,7 @@ function phpbb_http_login($param)
 	$username = null;
 	foreach ($username_keys as $k)
 	{
-		if ($request->is_set($k, phpbb_request_interface::SERVER))
+		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
 			$username = htmlspecialchars_decode($request->server($k));
 			break;
@@ -4936,7 +4979,7 @@ function phpbb_http_login($param)
 	$password = null;
 	foreach ($password_keys as $k)
 	{
-		if ($request->is_set($k, phpbb_request_interface::SERVER))
+		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
 			$password = htmlspecialchars_decode($request->server($k));
 			break;
@@ -5037,13 +5080,13 @@ function phpbb_quoteattr($data, $entities = null)
 *
 * sid is always omitted.
 *
-* @param phpbb_request $request Request object
+* @param \phpbb\request\request $request Request object
 * @param array $exclude A list of variable names that should not be forwarded
 * @return string HTML with hidden fields
 */
 function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 {
-	$names = $request->variable_names(phpbb_request_interface::GET);
+	$names = $request->variable_names(\phpbb\request\request_interface::GET);
 	$hidden = '';
 	foreach ($names as $name)
 	{
@@ -5065,7 +5108,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 		// here. To avoid exposing cookies, skip variables that are
 		// overwritten somewhere other than GET entirely.
 		$value = $request->variable($name, '', true);
-		$get_value = $request->variable($name, '', true, phpbb_request_interface::GET);
+		$get_value = $request->variable($name, '', true, \phpbb\request\request_interface::GET);
 		if ($value === $get_value)
 		{
 			$escaped_value = phpbb_quoteattr($value);
@@ -5081,7 +5124,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $symfony_request;
+	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5241,7 +5284,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
-	$corrected_path = $symfony_request !== null ? phpbb_get_web_root_path($symfony_request, $phpbb_root_path) : '';
+	$phpbb_path_helper = $phpbb_container->get('path_helper');
+	$corrected_path = $phpbb_path_helper->get_web_root_path();
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
 
 	// Send a proper content-language to the output
@@ -5266,7 +5310,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 	}
 
-	$dt = new phpbb_datetime($user, 'now', $user->timezone);
+	$dt = new \phpbb\datetime($user, 'now', $user->timezone);
 	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
@@ -5323,7 +5367,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
-		'ROOT_PATH'			=> $phpbb_root_path,
+		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
@@ -5334,7 +5378,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
-		'UA_POPUP_PM'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup')),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
@@ -5380,7 +5423,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
@@ -5408,8 +5451,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
-		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
+		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
+		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -5615,7 +5658,7 @@ function exit_handler()
 }
 
 /**
-* Handler for init calls in phpBB. This function is called in phpbb_user::setup();
+* Handler for init calls in phpBB. This function is called in \phpbb\user::setup();
 * This function supports hooks.
 */
 function phpbb_user_session_handler()
@@ -5666,7 +5709,7 @@ function phpbb_to_numeric($input)
 * Convert either 3.0 dbms or 3.1 db driver class name to 3.1 db driver class name.
 *
 * If $dbms is a valid 3.1 db driver class name, returns it unchanged.
-* Otherwise prepends phpbb_db_driver_ to the dbms to convert a 3.0 dbms
+* Otherwise prepends phpbb\db\driver\ to the dbms to convert a 3.0 dbms
 * to 3.1 db driver class name.
 *
 * @param string $dbms dbms parameter
@@ -5679,24 +5722,24 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	// true for mysqli class.
 	// However, per the docblock any valid 3.1 driver name should be
 	// recognized by this function, and have priority over 3.0 dbms.
-	if (class_exists('phpbb_db_driver_' . $dbms))
+	if (class_exists('phpbb\db\driver\\' . $dbms))
 	{
-		return 'phpbb_db_driver_' . $dbms;
+		return 'phpbb\db\driver\\' . $dbms;
 	}
 
 	if (class_exists($dbms))
 	{
-		// Additionally we could check that $dbms extends phpbb_db_driver.
+		// Additionally we could check that $dbms extends phpbb\db\driver\driver.
 		// http://php.net/manual/en/class.reflectionclass.php
 		// Beware of possible performance issues:
 		// http://stackoverflow.com/questions/294582/php-5-reflection-api-performance
 		// We could check for interface implementation in all paths or
-		// only when we do not prepend phpbb_db_driver_.
+		// only when we do not prepend phpbb\db\driver\.
 
 		/*
 		$reflection = new \ReflectionClass($dbms);
 
-		if ($reflection->isSubclassOf('phpbb_db_driver'))
+		if ($reflection->isSubclassOf('phpbb\db\driver\driver'))
 		{
 			return $dbms;
 		}
@@ -5706,113 +5749,4 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	}
 
 	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
-}
-
-/**
-* Create a Symfony Request object from phpbb_request object
-*
-* @param phpbb_request $request Request object
-* @return Request A Symfony Request object
-*/
-function phpbb_create_symfony_request(phpbb_request $request)
-{
-	// If we have already gotten it, don't go back through all the trouble of
-	// creating it again; instead, just return it. This allows multiple calls
-	// of this method so we don't have to globalize $symfony_request in other
-	// functions.
-	static $symfony_request;
-	if (null !== $symfony_request)
-	{
-		return $symfony_request;
-	}
-
-	// This function is meant to sanitize the global input arrays
-	$sanitizer = function(&$value, $key) {
-		$type_cast_helper = new phpbb_request_type_cast_helper();
-		$type_cast_helper->set_var($value, $value, gettype($value), true);
-	};
-
-	// We need to re-enable the super globals so we can access them here
-	$request->enable_super_globals();
-	$get_parameters = $_GET;
-	$post_parameters = $_POST;
-	$server_parameters = $_SERVER;
-	$files_parameters = $_FILES;
-	$cookie_parameters = $_COOKIE;
-	// And now disable them again for security
-	$request->disable_super_globals();
-
-	array_walk_recursive($get_parameters, $sanitizer);
-	array_walk_recursive($post_parameters, $sanitizer);
-
-	$symfony_request = new Request($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
-	return $symfony_request;
-}
-
-/**
-* Get a relative root path from the current URL
-*
-* @param Request $symfony_request Symfony Request object
-*/
-function phpbb_get_web_root_path(Request $symfony_request, $phpbb_root_path = '')
-{
-	global $phpbb_container;
-
-	static $path;
-	if (null !== $path)
-	{
-		return $path;
-	}
-
-	$path_info = $symfony_request->getPathInfo();
-	if ($path_info === '/')
-	{
-		$path = $phpbb_root_path;
-		return $path;
-	}
-
-	$filesystem = $phpbb_container->get('filesystem');
-	$path_info = $filesystem->clean_path($path_info);
-
-	// Do not count / at start of path
-	$corrections = substr_count(substr($path_info, 1), '/');
-
-	// When URL Rewriting is enabled, app.php is optional. We have to
-	// correct for it not being there
-	if (strpos($symfony_request->getRequestUri(), $symfony_request->getScriptName()) === false)
-	{
-		$corrections -= 1;
-	}
-
-	$path = $phpbb_root_path . str_repeat('../', $corrections);
-	return $path;
-}
-
-/**
-* Get the post ID given a revision ID
-* If supplied an array, it checks each one until it finds a post ID
-*
-* @param mixed Array of revision IDs to look up
-* @return int|bool ID of the post that contains the given revision or false
-*/
-function phpbb_get_revision_post_id($revision_ids, dbal $db)
-{
-	if (!$revision_ids)
-	{
-		return false;
-	}
-	else if (!is_array($revision_ids))
-	{
-		$revision_ids = array($revision_ids);
-	}
-
-	$sql = 'SELECT post_id
-		FROM ' . POST_REVISIONS_TABLE . '
-		WHERE revision_id IN (' . implode(',', $revision_ids) . ')
-			AND post_id <> 0';
-	$result = $db->sql_query_limit($sql, 1);
-	$post_id = $db->sql_fetchfield('post_id') ?: 0;
-	$db->sql_freeresult($result);
-
-	return $post_id ?: false;
 }

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\search;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * Fulltext search for MySQL
 * @package search
 */
-class phpbb_search_fulltext_mysql extends phpbb_search_base
+class fulltext_mysql extends \phpbb\search\base
 {
 	/**
 	 * Associative array holding index stats
@@ -36,19 +38,19 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 	/**
 	 * Config object
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
 	/**
 	 * Database connection
-	 * @var phpbb_db_driver
+	 * @var \phpbb\db\driver\driver
 	 */
 	protected $db;
 
 	/**
 	 * User object
-	 * @var phpbb_user
+	 * @var \phpbb\user
 	 */
 	protected $user;
 
@@ -74,7 +76,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 	/**
 	 * Constructor
-	 * Creates a new phpbb_search_fulltext_mysql, which is used as a search backend
+	 * Creates a new \phpbb\search\fulltext_mysql, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
 	 */
@@ -787,7 +789,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
 
-		if (!isset($this->stats['post_text']))
+		if (!isset($this->stats['post_content']))
 		{
 			if ($this->db->sql_layer == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
@@ -797,12 +799,8 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			{
 				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
 			}
-			$alter[] = 'ADD FULLTEXT (post_text)';
-		}
 
-		if (!isset($this->stats['post_content']))
-		{
-			$alter[] = 'ADD FULLTEXT post_content (post_subject, post_text)';
+			$alter[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
 		}
 
 		if (sizeof($alter))
@@ -840,11 +838,6 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$alter[] = 'DROP INDEX post_subject';
 		}
 
-		if (isset($this->stats['post_text']))
-		{
-			$alter[] = 'DROP INDEX post_text';
-		}
-
 		if (isset($this->stats['post_content']))
 		{
 			$alter[] = 'DROP INDEX post_content';
@@ -870,7 +863,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_text']) && isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
+		return isset($this->stats['post_subject']) && isset($this->stats['post_content']);
 	}
 
 	/**
@@ -910,11 +903,7 @@ class phpbb_search_fulltext_mysql extends phpbb_search_base
 
 			if ($index_type == 'FULLTEXT')
 			{
-				if ($row['Key_name'] == 'post_text')
-				{
-					$this->stats['post_text'] = $row;
-				}
-				else if ($row['Key_name'] == 'post_subject')
+				if ($row['Key_name'] == 'post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}

@@ -1,11 +1,13 @@
 <?php
 /**
 *
-* @package phpbb_request
+* @package \phpbb\request\request
 * @copyright (c) 2010 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\request;
 
 /**
 * @ignore
@@ -18,9 +20,9 @@ if (!defined('IN_PHPBB'))
 /**
 * A helper class that provides convenience methods for type casting.
 *
-* @package phpbb_request
+* @package \phpbb\request\request
 */
-class phpbb_request_type_cast_helper implements phpbb_request_type_cast_helper_interface
+class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 {
 
 	/**

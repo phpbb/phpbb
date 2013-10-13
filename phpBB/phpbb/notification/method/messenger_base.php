@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification\method;
+
 /**
 * @ignore
 */
@@ -21,7 +23,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package notifications
 */
-abstract class phpbb_notification_method_messenger_base extends phpbb_notification_method_base
+abstract class messenger_base extends \phpbb\notification\method\base
 {
 	/**
 	* Notify using phpBB messenger
@@ -60,7 +62,7 @@ abstract class phpbb_notification_method_messenger_base extends phpbb_notificati
 		{
 			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 		}
-		$messenger = new messenger();
+		$messenger = new \messenger();
 		$board_url = generate_board_url();
 
 		// Time to go through the queue and send emails

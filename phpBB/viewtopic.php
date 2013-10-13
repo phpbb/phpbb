@@ -689,10 +689,12 @@ if (!empty($topic_data['poll_start']))
 		ORDER BY o.poll_option_id";
 	$result = $db->sql_query($sql);
 
-	$poll_info = array();
+	$poll_info = $vote_counts = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$poll_info[] = $row;
+		$option_id = (int) $row['poll_option_id'];
+		$vote_counts[$option_id] = (int) $row['poll_option_total'];
 	}
 	$db->sql_freeresult($result);
 
@@ -716,9 +718,9 @@ if (!empty($topic_data['poll_start']))
 		// Cookie based guest tracking ... I don't like this but hum ho
 		// it's oft requested. This relies on "nice" users who don't feel
 		// the need to delete cookies to mess with results.
-		if ($request->is_set($config['cookie_name'] . '_poll_' . $topic_id, phpbb_request_interface::COOKIE))
+		if ($request->is_set($config['cookie_name'] . '_poll_' . $topic_id, \phpbb\request\request_interface::COOKIE))
 		{
-			$cur_voted_id = explode(',', $request->variable($config['cookie_name'] . '_poll_' . $topic_id, '', true, phpbb_request_interface::COOKIE));
+			$cur_voted_id = explode(',', $request->variable($config['cookie_name'] . '_poll_' . $topic_id, '', true, \phpbb\request\request_interface::COOKIE));
 			$cur_voted_id = array_map('intval', $cur_voted_id);
 		}
 	}
@@ -774,6 +776,8 @@ if (!empty($topic_data['poll_start']))
 					AND topic_id = ' . (int) $topic_id;
 			$db->sql_query($sql);
 
+			$vote_counts[$option]++;
+
 			if ($user->data['is_registered'])
 			{
 				$sql_ary = array(
@@ -798,6 +802,8 @@ if (!empty($topic_data['poll_start']))
 						AND topic_id = ' . (int) $topic_id;
 				$db->sql_query($sql);
 
+				$vote_counts[$option]--;
+
 				if ($user->data['is_registered'])
 				{
 					$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
@@ -821,9 +827,27 @@ if (!empty($topic_data['poll_start']))
 		$db->sql_query($sql);
 
 		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
+		$message = $user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+
+		if ($request->is_ajax())
+		{
+			// Filter out invalid options
+			$valid_user_votes = array_intersect(array_keys($vote_counts), $voted_id);
+
+			$data = array(
+				'NO_VOTES'			=> $user->lang['NO_VOTES'],
+				'success'			=> true,
+				'user_votes'		=> array_flip($valid_user_votes),
+				'vote_counts'		=> $vote_counts,
+				'total_votes'		=> array_sum($vote_counts),
+				'can_vote'			=> !sizeof($valid_user_votes) || ($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']),
+			);
+			$json_response = new \phpbb\json_response();
+			$json_response->send($data);
+		}
 
 		meta_refresh(5, $redirect_url);
-		trigger_error($user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>'));
+		trigger_error($message);
 	}
 
 	$poll_total = 0;
@@ -1117,8 +1141,8 @@ while ($row = $db->sql_fetchrow($result))
 			*
 			* @event core.viewtopic_cache_guest_data
 			* @var	array	user_cache_data	Array with the user's data
-			* @var	int		poster_id	Poster's user id
-			* @var	array	row			Array with original user and post data
+			* @var	int		poster_id		Poster's user id
+			* @var	array	row				Array with original user and post data
 			* @since 3.1-A1
 			*/
 			$vars = array('user_cache_data', 'poster_id', 'row');
@@ -1183,8 +1207,8 @@ while ($row = $db->sql_fetchrow($result))
 			*
 			* @event core.viewtopic_cache_user_data
 			* @var	array	user_cache_data	Array with the user's data
-			* @var	int		poster_id	Poster's user id
-			* @var	array	row			Array with original user and post data
+			* @var	int		poster_id		Poster's user id
+			* @var	array	row				Array with original user and post data
 			* @since 3.1-A1
 			*/
 			$vars = array('user_cache_data', 'poster_id', 'row');
@@ -1713,10 +1737,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* Modify the posts template block
 	*
 	* @event core.viewtopic_modify_post_row
-	* @var	array	row				Array with original post and user data
-	* @var	array	cp_row			Custom profile field data of the poster
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
 	* @var	array	user_poster_data	Poster's data from user cache
-	* @var	array	post_row		Template block array of the post
+	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
 	*/
 	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');

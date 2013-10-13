@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\controller;
+
 /**
 * @ignore
 */
@@ -21,25 +23,25 @@ use Symfony\Component\HttpFoundation\Response;
 * Controller helper class, contains methods that do things for controllers
 * @package phpBB3
 */
-class phpbb_controller_helper
+class helper
 {
 	/**
 	* Template object
-	* @var phpbb_template
+	* @var \phpbb\template\template
 	*/
 	protected $template;
 
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
-	* Request object
-	* @var phpbb_request
+	* config object
+	* @var \phpbb\config\config
 	*/
-	protected $request;
+	protected $config;
 
 	/**
 	* phpBB root path
@@ -56,16 +58,17 @@ class phpbb_controller_helper
 	/**
 	* Constructor
 	*
-	* @param phpbb_template $template Template object
-	* @param phpbb_user $user User object
+	* @param \phpbb\template\template $template Template object
+    * @param \phpbb\user $user User object
+    * @param \phpbb\config\config $config Config object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(phpbb_template $template, phpbb_user $user, phpbb_request_interface $request, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
-		$this->request = $request;
+		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -109,14 +112,12 @@ class phpbb_controller_helper
 			$route = substr($route, 0, $route_delim);
 		}
 
-		$request_uri = $this->request->variable('REQUEST_URI', '', false, phpbb_request::SERVER);
-		$script_name = $this->request->variable('SCRIPT_NAME', '', false, phpbb_request::SERVER);
-
-		// If the app.php file is being used (no rewrite) keep it in the URL.
-		// Otherwise, don't include it.
+		// If enable_mod_rewrite is false, we need to include app.php
 		$route_prefix = $this->phpbb_root_path;
-		$parts = explode('/', $script_name);
-		$route_prefix .= strpos($request_uri, $script_name) === 0 ? array_pop($parts) . '/' : '';
+		if (empty($this->config['enable_mod_rewrite']))
+		{
+			$route_prefix .= 'app.' . $this->php_ext . '/';
+		}
 
 		return append_sid($route_prefix . "$route" . $route_params, $params, $is_amp, $session_id);
 	}

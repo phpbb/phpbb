@@ -46,7 +46,7 @@ class ucp_auth_link
 		$s_hidden_fields = array();
 		add_form_key('ucp_auth_link');
 
-		$submit	= $request->variable('submit', false, false, phpbb_request_interface::POST);
+		$submit	= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
 
 		// This path is only for primary actions
 		if (!sizeof($error) && $submit)
@@ -59,7 +59,7 @@ class ucp_auth_link
 			if (!sizeof($error))
 			{
 				// Any post data could be necessary for auth (un)linking
-				$link_data = $request->get_super_global(phpbb_request_interface::POST);
+				$link_data = $request->get_super_global(\phpbb\request\request_interface::POST);
 
 				// The current user_id is also necessary
 				$link_data['user_id'] = $user->data['user_id'];
@@ -67,7 +67,7 @@ class ucp_auth_link
 				// Tell the provider that the method is auth_link not login_link
 				$link_data['link_method'] = 'auth_link';
 
-				if ($request->variable('link', 0, false, phpbb_request_interface::POST))
+				if ($request->variable('link', 0, false, \phpbb\request\request_interface::POST))
 				{
 					$error[] = $auth_provider->link_account($link_data);
 				}

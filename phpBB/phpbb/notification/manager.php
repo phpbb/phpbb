@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\notification;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Notifications service class
 * @package notifications
 */
-class phpbb_notification_manager
+class manager
 {
 	/** @var array */
 	protected $notification_types;
@@ -30,16 +32,16 @@ class phpbb_notification_manager
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
 
-	/** @var phpbb_user_loader */
+	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_cache_service */
+	/** @var \phpbb\cache\service */
 	protected $cache;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/** @var string */
@@ -63,17 +65,17 @@ class phpbb_notification_manager
 	* @param array $notification_types
 	* @param array $notification_methods
 	* @param ContainerBuilder $phpbb_container
-	* @param phpbb_user_loader $user_loader
-	* @param phpbb_db_driver $db
-	* @param phpbb_user $user
+	* @param \phpbb\user_loader $user_loader
+	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\user $user
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
 	* @param string $notifications_table
 	* @param string $user_notifications_table
-	* @return phpbb_notification_manager
+	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, $phpbb_container, phpbb_user_loader $user_loader, phpbb_db_driver $db, phpbb_cache_service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\db\driver\driver $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
@@ -402,7 +404,7 @@ class phpbb_notification_manager
 		$pre_create_data = $notification->pre_create_insert_array($data, $notify_users);
 		unset($notification);
 
-		$insert_buffer = new phpbb_db_sql_insert_buffer($this->db, $this->notifications_table);
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->notifications_table);
 
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
@@ -526,7 +528,7 @@ class phpbb_notification_manager
 		{
 			$type = $this->get_item_type_class($type_name);
 
-			if ($type instanceof phpbb_notification_type_interface && $type->is_available())
+			if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
 			{
 				$options = array_merge(array(
 					'id'		=> $type->get_type(),
@@ -562,7 +564,7 @@ class phpbb_notification_manager
 		{
 			$method = $this->get_method_class($method_name);
 
-			if ($method instanceof phpbb_notification_method_interface && $method->is_available())
+			if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
 			{
 				$subscription_methods[$method_name] = array(
 					'id'		=> $method->get_type(),
@@ -797,11 +799,13 @@ class phpbb_notification_manager
 	* Delete all notifications older than a certain time
 	*
 	* @param int $timestamp Unix timestamp to delete all notifications that were created before
+	* @param bool $only_unread True (default) to only prune read notifications
 	*/
-	public function prune_notifications($timestamp)
+	public function prune_notifications($timestamp, $only_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_time < ' . (int) $timestamp;
+			WHERE notification_time < ' . (int) $timestamp .
+				(($only_read) ? ' AND notification_read = 1' : '');
 		$this->db->sql_query($sql);
 	}
 
@@ -874,7 +878,7 @@ class phpbb_notification_manager
 		{
 			if (!isset($this->notification_types[$notification_type_name]) && !isset($this->notification_types['notification.type.' . $notification_type_name]))
 			{
-				throw new phpbb_notification_exception($this->user->lang('NOTIFICATION_TYPE_NOT_EXIST', $notification_type_name));
+				throw new \phpbb\notification\exception($this->user->lang('NOTIFICATION_TYPE_NOT_EXIST', $notification_type_name));
 			}
 
 			$sql = 'INSERT INTO ' . $this->notification_types_table . ' ' . $this->db->sql_build_array('INSERT', array(

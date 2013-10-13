@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\tree;
+
 /**
 * @ignore
 */
@@ -15,16 +17,16 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_tree_nestedset_forum extends phpbb_tree_nestedset
+class nestedset_forum extends \phpbb\tree\nestedset
 {
 	/**
 	* Construct
 	*
-	* @param phpbb_db_driver	$db		Database connection
-	* @param phpbb_lock_db		$lock	Lock class used to lock the table when moving forums around
+	* @param \phpbb\db\driver\driver	$db		Database connection
+	* @param \phpbb\lock\db		$lock	Lock class used to lock the table when moving forums around
 	* @param string				$table_name		Table name
 	*/
-	public function __construct(phpbb_db_driver $db, phpbb_lock_db $lock, $table_name)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\lock\db $lock, $table_name)
 	{
 		parent::__construct(
 			$db,

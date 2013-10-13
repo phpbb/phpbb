@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Abstract MySQL Database Base Abstraction Layer
 * @package dbal
 */
-abstract class phpbb_db_driver_mysql_base extends phpbb_db_driver
+abstract class mysql_base extends \phpbb\db\driver\driver
 {
 	/**
 	* {@inheritDoc}

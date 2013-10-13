@@ -157,6 +157,97 @@ phpbb.addAjaxCallback('zebra', function(res) {
 	}
 });
 
+/**
+ * This callback updates the poll results after voting.
+ */
+phpbb.addAjaxCallback('vote_poll', function(res) {
+	if (typeof res.success !== 'undefined') {
+		var poll = $('.topic_poll');
+		var panel = poll.find('.panel');
+		var results_visible = poll.find('dl:first-child .resultbar').is(':visible');
+
+		// Set min-height to prevent the page from jumping when the content changes
+		var update_panel_height = function (height) {
+			var height = (typeof height === 'undefined') ? panel.find('.inner').outerHeight() : height;
+			panel.css('min-height', height);
+		};
+		update_panel_height();
+
+		// Remove the View results link
+		if (!results_visible) {
+			poll.find('.poll_view_results').hide(500);
+		}
+
+		if (!res.can_vote) {
+			poll.find('.polls, .poll_max_votes, .poll_vote, .poll_option_select').fadeOut(500, function () {
+				poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show();
+			});
+		} else {
+			// If the user can still vote, simply slide down the results
+			poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show(500);
+		}
+
+		// Update the total votes count
+		poll.find('.poll_total_vote_cnt').html(res.total_votes);
+
+		// Update each option
+		poll.find('[data-poll-option-id]').each(function() {
+			var option = $(this);
+			var option_id = option.attr('data-poll-option-id');
+			var voted = (typeof res.user_votes[option_id] !== 'undefined') ? true : false;
+			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[option_id] / res.total_votes) * 100);
+
+			option.toggleClass('voted', voted);
+
+			// Update the bars
+			var bar = option.find('.resultbar div');
+			var bar_time_lapse = (res.can_vote) ? 500 : 1500;
+			var new_bar_class = (percent == 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
+
+			setTimeout(function () {
+				bar.animate({width: percent + '%'}, 500).removeClass('pollbar1 pollbar2 pollbar3 pollbar4 pollbar5').addClass(new_bar_class);
+				bar.html(res.vote_counts[option_id]);
+
+				var percent_txt = (!percent) ? res.NO_VOTES : percent + '%';
+				option.find('.poll_option_percent').html(percent_txt);
+			}, bar_time_lapse);
+		});
+
+		if (!res.can_vote) {
+			poll.find('.polls').delay(400).fadeIn(500);
+		}
+
+		// Display "Your vote has been cast." message. Disappears after 5 seconds.
+		var confirmation_delay = (res.can_vote) ? 300 : 900;
+		poll.find('.vote-submitted').delay(confirmation_delay).slideDown(200, function() {
+			if (results_visible) {
+				update_panel_height();
+			}
+
+			$(this).delay(5000).fadeOut(500, function() {
+				resize_panel(300);
+			});
+		});
+
+		// Remove the gap resulting from removing options
+		setTimeout(function() {
+			resize_panel(500);
+		}, 1500);
+
+		var resize_panel = function (time) {
+			var panel_height = panel.height();
+			var inner_height = panel.find('.inner').outerHeight();
+
+			if (panel_height != inner_height) {
+				panel.css({'min-height': '', 'height': panel_height}).animate({height: inner_height}, time, function () {
+					panel.css({'min-height': inner_height, 'height': ''});
+				});
+			}
+		};
+	}
+});
+
+// This callback updates the comparison of revisions
 phpbb.addAjaxCallback('revisions.compare', function(res) {
 	var i;
 
@@ -170,6 +261,7 @@ phpbb.addAjaxCallback('revisions.compare', function(res) {
 	$('#revision_lines_changed').html(res.lines_changed);
 });
 
+// This callback updates information about the protected status of revisions
 phpbb.addAjaxCallback('revisions.protect', function(res) {
 	if (res.success) {
 		$('#r' + res.revision_id + ' #link_protect').hide();
@@ -178,6 +270,7 @@ phpbb.addAjaxCallback('revisions.protect', function(res) {
 	}
 });
 
+// This callback updates information about the unprotected status of revisions
 phpbb.addAjaxCallback('revisions.unprotect', function(res) {
 	if (res.success) {
 		$('#r' + res.revision_id + ' #link_unprotect').hide();
@@ -186,6 +279,7 @@ phpbb.addAjaxCallback('revisions.unprotect', function(res) {
 	}
 });
 
+// This callback removes a deleted revision from view
 phpbb.addAjaxCallback('revisions.delete', function(res) {
 	if (res.success) {
 		var revisionCount;
@@ -196,6 +290,7 @@ phpbb.addAjaxCallback('revisions.delete', function(res) {
 	}
 });
 
+// This toggles display of a revision list on viewtopic
 $('.revision_toggle').click(function(event) {
 	event.preventDefault();	// Don't follow the link
 	var id;
@@ -203,7 +298,18 @@ $('.revision_toggle').click(function(event) {
 	$('#' + id + '_revisions').slideToggle();
 });
 
+/**
+ * Show poll results when clicking View results link.
+ */
+$('.poll_view_results a').click(function(e) {
+	// Do not follow the link
+	e.preventDefault();
 
+	var poll = $(this).parents('.topic_poll');
+
+	poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show(500);
+	poll.find('.poll_view_results').hide(500);
+});
 
 $('[data-ajax]').each(function() {
 	var $this = $(this),

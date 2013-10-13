@@ -102,7 +102,7 @@
 						</span>
 					</td>
 					<td align="center">
-						<!-- IF notification_list.UNREAD --><input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}" /><!-- ENDIF -->
+						<input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}"<!-- IF not notification_list.UNREAD --> disabled="disabled"<!-- ENDIF --> />
 					</td>
 				</tr>
 			<!-- END notification_list -->

@@ -7,13 +7,13 @@
 *
 */
 
-class phpbb_mock_extension_manager extends phpbb_extension_manager
+class phpbb_mock_extension_manager extends \phpbb\extension\manager
 {
 	public function __construct($phpbb_root_path, $extensions = array())
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = 'php';
 		$this->extensions = $extensions;
-		$this->filesystem = new phpbb_filesystem();
+		$this->filesystem = new \phpbb\filesystem();
 	}
 }

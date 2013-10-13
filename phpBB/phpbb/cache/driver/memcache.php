@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -40,7 +42,7 @@ if (!defined('PHPBB_ACM_MEMCACHE'))
 * ACM for Memcached
 * @package acm
 */
-class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
+class memcache extends \phpbb\cache\driver\memory
 {
 	var $extension = 'memcache';
 
@@ -52,7 +54,7 @@ class phpbb_cache_driver_memcache extends phpbb_cache_driver_memory
 		// Call the parent constructor
 		parent::__construct();
 
-		$this->memcache = new Memcache;
+		$this->memcache = new \Memcache;
 		foreach(explode(',', PHPBB_ACM_MEMCACHE) as $u)
 		{
 			$parts = explode('/', $u);

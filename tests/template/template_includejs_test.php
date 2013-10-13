@@ -13,6 +13,8 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 {
 	public function template_data()
 	{
+		$this->setup_engine();
+
 		return array(
 			/*
 			array(
@@ -22,51 +24,51 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			*/
 			array(
 				array('TEST' => 1),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/templates/parent_and_child.js?assets_version=1"></script>',
 			),
 			array(
 				array('TEST' => 2),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?assets_version=0"></script>',
+				'<script type="text/javascript" src="tests/template/templates/parent_and_child.js?assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 3),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&assets_version=0"></script>',
+				'<script type="text/javascript" src="tests/template/templates/parent_and_child.js?test=1&assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 4),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&amp;assets_version=0"></script>',
+				'<script type="text/javascript" src="tests/template/templates/parent_and_child.js?test=1&amp;assets_version=0"></script>',
 			),
 			array(
 				array('TEST' => 6),
-				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/parent_templates/parent_only.js?assets_version=1"></script>',
 			),
 			array(
 				array('TEST' => 7),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/child_only.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/templates/child_only.js?assets_version=1"></script>',
 			),
 			array(
 				array('TEST' => 8),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/subdir/parent_only.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/templates/subdir/parent_only.js?assets_version=1"></script>',
 			),
 			array(
 				array('TEST' => 9),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/subdir/subsubdir/parent_only.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/templates/subdir/subsubdir/parent_only.js?assets_version=1"></script>',
 			),
 			array(
 				array('TEST' => 10),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/subdir/parent_only.js?assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/templates/subdir/parent_only.js?assets_version=1"></script>',
 			),
 			array(
 				array('TEST' => 11),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/child_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="tests/template/templates/child_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 12),
-				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="tests/template/parent_templates/parent_only.js?test1=1&amp;test2=2&amp;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 14),
-				'<script type="text/javascript" src="' . $this->test_path . '/parent_templates/parent_only.js?test1=&quot;&amp;assets_version=1#test3"></script>',
+				'<script type="text/javascript" src="tests/template/parent_templates/parent_only.js?test1=&quot;&amp;assets_version=1#test3"></script>',
 			),
 			array(
 				array('TEST' => 15),
@@ -82,7 +84,7 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 			),
 			array(
 				array('TEST' => 18),
-				'<script type="text/javascript" src="' . $this->test_path . '/templates/parent_and_child.js?test=1&test2=0&amp;assets_version=1"></script>',
+				'<script type="text/javascript" src="tests/template/templates/parent_and_child.js?test=1&test2=0&amp;assets_version=1"></script>',
 			),
 		);
 	}

@@ -52,11 +52,11 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 
 		global $config;
 
-		$config = $this->config = new phpbb_config(array('nestedset_forum_lock' => 0));
+		$config = $this->config = new \phpbb\config\config(array('nestedset_forum_lock' => 0));
 		set_config(null, null, null, $this->config);
 
-		$this->lock = new phpbb_lock_db('nestedset_forum_lock', $this->config, $this->db);
-		$this->set = new phpbb_tree_nestedset_forum($this->db, $this->lock, 'phpbb_forums');
+		$this->lock = new \phpbb\lock\db('nestedset_forum_lock', $this->config, $this->db);
+		$this->set = new \phpbb\tree\nestedset_forum($this->db, $this->lock, 'phpbb_forums');
 
 		$this->set_up_forums();
 	}
@@ -97,7 +97,7 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		}
 		else
 		{
-			$buffer = new phpbb_db_sql_insert_buffer($this->db, 'phpbb_forums');
+			$buffer = new \phpbb\db\sql_insert_buffer($this->db, 'phpbb_forums');
 			$buffer->insert_all($forums);
 			$buffer->flush();
 

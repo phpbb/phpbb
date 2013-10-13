@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\migration;
+
 /**
 * @ignore
 */
@@ -24,15 +26,15 @@ if (!defined('IN_PHPBB'))
 *
 * @package db
 */
-abstract class phpbb_db_migration
+abstract class migration
 {
-	/** @var phpbb_config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_db_tools */
+	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
 	/** @var string */
@@ -53,14 +55,14 @@ abstract class phpbb_db_migration
 	/**
 	* Constructor
 	*
-	* @param phpbb_config $config
-	* @param phpbb_db_driver $db
-	* @param phpbb_db_tools $db_tools
+	* @param \phpbb\config\config $config
+	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\db\tools $db_tools
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $table_prefix
 	*/
-	public function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_db_tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;

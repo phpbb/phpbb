@@ -36,8 +36,6 @@
             <directory suffix=".php">./phpBB/includes/</directory>
             <directory suffix=".php">./phpBB/phpbb/</directory>
             <exclude>
-                <file>./phpBB/phpbb/search/fulltext_native.php</file>
-                <file>./phpBB/phpbb/search/fulltext_mysql.php</file>
                 <directory suffix=".php">./phpBB/includes/captcha/</directory>
             </exclude>
         </whitelist>

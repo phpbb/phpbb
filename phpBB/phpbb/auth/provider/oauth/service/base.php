@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider\oauth\service;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-abstract class phpbb_auth_provider_oauth_service_base implements phpbb_auth_provider_oauth_service_interface
+abstract class base implements \phpbb\auth\provider\oauth\service\service_interface
 {
 	/**
 	* External OAuth service provider

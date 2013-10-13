@@ -6,11 +6,13 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 */
 
+namespace phpbb;
+
 /**
 * phpBB custom extensions to the PHP DateTime class
 * This handles the relative formats phpBB employs
 */
-class phpbb_datetime extends DateTime
+class datetime extends \DateTime
 {
 	/**
 	* String used to wrap the date segment which should be replaced by today/tomorrow/yesterday
@@ -28,14 +30,14 @@ class phpbb_datetime extends DateTime
 	static protected $format_cache = array();
 
 	/**
-	* Constructs a new instance of phpbb_datetime, expanded to include an argument to inject
+	* Constructs a new instance of \phpbb\datetime, expanded to include an argument to inject
 	* the user context and modify the timezone to the users selected timezone if one is not set.
 	*
 	* @param string $time String in a format accepted by strtotime().
 	* @param DateTimeZone $timezone Time zone of the time.
 	* @param user User object for context.
 	*/
-	public function __construct($user, $time = 'now', DateTimeZone $timezone = null)
+	public function __construct($user, $time = 'now', \DateTimeZone $timezone = null)
 	{
 		$this->user	= $user;
 		$timezone	= $timezone ?: $this->user->timezone;

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 /**
 * DO NOT CHANGE
 */
@@ -15,28 +17,28 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_permissions
+class permissions
 {
 	/**
 	* Event dispatcher object
-	* @var phpbb_event_dispatcher
+	* @var \phpbb\event\dispatcher
 	*/
 	protected $dispatcher;
 
 	/**
 	* User object
-	* @var phpbb_user
+	* @var \phpbb\user
 	*/
 	protected $user;
 
 	/**
 	* Constructor
 	*
-	* @param	phpbb_event_dispatcher	$phpbb_dispatcher	Event dispatcher
-	* @param	phpbb_user				$user				User Object
+	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher
+	* @param	\phpbb\user				$user				User Object
 	* @return	null
 	*/
-	public function __construct(phpbb_event_dispatcher $phpbb_dispatcher, phpbb_user $user)
+	public function __construct(\phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\user $user)
 	{
 		$this->dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
@@ -241,14 +243,14 @@ class phpbb_permissions
 
 		// Forum Permissions
 		'f_list'		=> array('lang' => 'ACL_F_LIST', 'cat' => 'actions'),
-		'f_read'		=> array('lang' => 'ACL_F_READ', 'cat' => 'actions'),	
+		'f_read'		=> array('lang' => 'ACL_F_READ', 'cat' => 'actions'),
 		'f_search'		=> array('lang' => 'ACL_F_SEARCH', 'cat' => 'actions'),
 		'f_subscribe'	=> array('lang' => 'ACL_F_SUBSCRIBE', 'cat' => 'actions'),
-		'f_print'		=> array('lang' => 'ACL_F_PRINT', 'cat' => 'actions'),	
-		'f_email'		=> array('lang' => 'ACL_F_EMAIL', 'cat' => 'actions'),	
+		'f_print'		=> array('lang' => 'ACL_F_PRINT', 'cat' => 'actions'),
+		'f_email'		=> array('lang' => 'ACL_F_EMAIL', 'cat' => 'actions'),
 		'f_bump'		=> array('lang' => 'ACL_F_BUMP', 'cat' => 'actions'),
 		'f_user_lock'	=> array('lang' => 'ACL_F_USER_LOCK', 'cat' => 'actions'),
-		'f_download'	=> array('lang' => 'ACL_F_DOWNLOAD', 'cat' => 'actions'),	
+		'f_download'	=> array('lang' => 'ACL_F_DOWNLOAD', 'cat' => 'actions'),
 		'f_report'		=> array('lang' => 'ACL_F_REPORT', 'cat' => 'actions'),
 
 		'f_post'		=> array('lang' => 'ACL_F_POST', 'cat' => 'post'),
@@ -259,11 +261,11 @@ class phpbb_permissions
 		'f_delete'		=> array('lang' => 'ACL_F_DELETE', 'cat' => 'post'),
 		'f_ignoreflood' => array('lang' => 'ACL_F_IGNOREFLOOD', 'cat' => 'post'),
 		'f_postcount'	=> array('lang' => 'ACL_F_POSTCOUNT', 'cat' => 'post'),
-		'f_noapprove'	=> array('lang' => 'ACL_F_NOAPPROVE', 'cat' => 'post'),	
+		'f_noapprove'	=> array('lang' => 'ACL_F_NOAPPROVE', 'cat' => 'post'),
 
-		'f_attach'		=> array('lang' => 'ACL_F_ATTACH', 'cat' => 'content'),	
+		'f_attach'		=> array('lang' => 'ACL_F_ATTACH', 'cat' => 'content'),
 		'f_icons'		=> array('lang' => 'ACL_F_ICONS', 'cat' => 'content'),
-		'f_bbcode'		=> array('lang' => 'ACL_F_BBCODE', 'cat' => 'content'),	
+		'f_bbcode'		=> array('lang' => 'ACL_F_BBCODE', 'cat' => 'content'),
 		'f_flash'		=> array('lang' => 'ACL_F_FLASH', 'cat' => 'content'),
 		'f_img'			=> array('lang' => 'ACL_F_IMG', 'cat' => 'content'),
 		'f_sigs'		=> array('lang' => 'ACL_F_SIGS', 'cat' => 'content'),

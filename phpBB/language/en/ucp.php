@@ -485,6 +485,7 @@ $lang = array_merge($lang, array(
 	'UCP_AUTH_LINK_ID'			=> 'Unique identifier',
 	'UCP_AUTH_LINK_LINK'		=> 'Link',
 	'UCP_AUTH_LINK_MANAGE'		=> 'Manage external account associations',
+	'UCP_AUTH_LINK_NOT_SUPPORTED'	=> 'Linking board accounts to external services is not supported by this board’s current authentication method.',
 	'UCP_AUTH_LINK_TITLE'		=> 'Manage your external account associations',
 	'UCP_AUTH_LINK_UNLINK'		=> 'Unlink',
 	'UCP_COPPA_BEFORE'			=> 'Before %s',
@@ -528,7 +529,7 @@ $lang = array_merge($lang, array(
 	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
 	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
-	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Edit "Remember Me" login keys',
+	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Manage “Remember Me” login keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',

@@ -17,6 +17,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remot
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bookmarks', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_cdn', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_password_reset', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify', '1');
@@ -102,6 +103,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_nam
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_mod_rewrite', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
@@ -176,7 +178,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_cdn', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
@@ -232,6 +233,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('post_revisions_max
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '60');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_expire_days', '30');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_last_gc', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_gc', '86400');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('revision_cron_age_frequency', '0');
@@ -244,7 +248,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_anonymous_interval', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'phpbb_search_fulltext_native');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', '\phpbb\search\fulltext_native');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_results', '1800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');

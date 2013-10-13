@@ -46,17 +46,17 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		global $db, $config, $user, $auth, $cache, $phpbb_container;
 
 		$db = $this->db = $this->new_dbal();
-		$config = $this->config = new phpbb_config(array(
+		$config = $this->config = new \phpbb\config\config(array(
 			'allow_privmsg'			=> true,
 			'allow_bookmarks'		=> true,
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 		));
-		$user = $this->user = new phpbb_user();
-		$this->user_loader = new phpbb_user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
+		$user = $this->user = new \phpbb\user();
+		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
-		$cache = $this->cache = new phpbb_cache_service(
-			new phpbb_cache_driver_null(),
+		$cache = $this->cache = new \phpbb\cache\service(
+			new \phpbb\cache\driver\null(),
 			$this->config,
 			$this->db,
 			$phpbb_root_path,
@@ -87,7 +87,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$types = array();
 		foreach ($this->get_notification_types() as $type)
 		{
-			$class = $this->build_type('phpbb_notification_type_' . $type);
+			$class = $this->build_type('phpbb\notification\type\\' . $type);
 
 			$types[$type] = $class;
 			$this->container->set('notification.type.' . $type, $class);

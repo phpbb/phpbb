@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template\twig;
+
 /**
 * @ignore
 */
@@ -15,7 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_template_twig_lexer extends Twig_Lexer
+class lexer extends \Twig_Lexer
 {
 	public function tokenize($code, $filename = null)
 	{
@@ -75,7 +77,7 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
 		$code = $this->fix_inline_variable_tokens(array(
-			'DEFINE \$[a-zA-Z0-9]+ =',
+			'DEFINE \$[a-zA-Z0-9_]+ =',
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
@@ -229,18 +231,18 @@ class phpbb_template_twig_lexer extends Twig_Lexer
 		{
 			$inner = $matches[2];
 			// Replace $TEST with definition.TEST
-			$inner = preg_replace('#(\s\(?!?)\$([a-zA-Z_0-9]+)#', '$1definition.$2', $inner);
+			$inner = preg_replace('#(\s\(*!?)\$([a-zA-Z_0-9]+)#', '$1definition.$2', $inner);
 
 			// Replace .foo with loops.foo|length
-			$inner = preg_replace('#(\s\(?!?)\.([a-zA-Z_0-9]+)([^a-zA-Z_0-9\.])#', '$1loops.$2|length$3', $inner);
+			$inner = preg_replace('#(\s\(*!?)\.([a-zA-Z_0-9]+)([^a-zA-Z_0-9\.])#', '$1loops.$2|length$3', $inner);
 
 			// Replace .foo.bar with foo.bar|length
-			$inner = preg_replace('#(\s\(?!?)\.([a-zA-Z_0-9\.]+)([^a-zA-Z_0-9\.])#', '$1$2|length$3', $inner);
+			$inner = preg_replace('#(\s\(*!?)\.([a-zA-Z_0-9\.]+)([^a-zA-Z_0-9\.])#', '$1$2|length$3', $inner);
 
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
 
-		return preg_replace_callback('#<!-- (ELSE)?IF((.*?) \(?!?[\$|\.]([^\s]+)(.*?))-->#', $callback, $code);
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*?) \(*!?[\$|\.]([^\s]+)(.*?))-->#', $callback, $code);
 	}
 
 	/**

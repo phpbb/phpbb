@@ -8,6 +8,8 @@
 *
 */
 
+namespace foo\bar\acp;
+
 /**
 * @ignore
 */
@@ -16,7 +18,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_ext_foo_bar_acp_main_module
+class main_module
 {
 	var $u_action;
 

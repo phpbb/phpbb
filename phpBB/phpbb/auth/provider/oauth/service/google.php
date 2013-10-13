@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\auth\provider\oauth\service;
+
 /**
 * @ignore
 */
@@ -20,29 +22,29 @@ if (!defined('IN_PHPBB'))
 *
 * @package auth
 */
-class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth_service_base
+class google extends base
 {
 	/**
 	* phpBB config
 	*
-	* @var phpbb_config
+	* @var phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* phpBB request
 	*
-	* @var phpbb_request
+	* @var phpbb\request\request_interface
 	*/
 	protected $request;
 
 	/**
 	* Constructor
 	*
-	* @param	phpbb_config 	$config
-	* @param	phpbb_request 	$request
+	* @param	phpbb\config\config					$config
+	* @param	phpbb\request\request_interface 	$request
 	*/
-	public function __construct(phpbb_config $config, phpbb_request $request)
+	public function __construct(\phpbb\config\config $config, \phpbb\request\request_interface $request)
 	{
 		$this->config = $config;
 		$this->request = $request;
@@ -77,7 +79,7 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
 		{
-			throw new phpbb_auth_provider_oauth_service_exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// This was a callback request, get the token
@@ -97,7 +99,7 @@ class phpbb_auth_provider_oauth_service_google extends phpbb_auth_provider_oauth
 	{
 		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Google))
 		{
-			throw new phpbb_auth_provider_oauth_service_exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
 		}
 
 		// Send a request with it

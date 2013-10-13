@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\db\driver;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 * Minimum Requirement is MSSQL 2000+
 * @package dbal
 */
-class phpbb_db_driver_mssql extends phpbb_db_driver
+class mssql extends \phpbb\db\driver\driver
 {
 	var $connect_error = '';
 

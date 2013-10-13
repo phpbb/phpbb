@@ -26,14 +26,24 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	*/
 	public function test_query_string_php_self($url, $query_string, $expected)
 	{
-		global $request;
+		global $symfony_request, $request;
 
-		$request->merge(phpbb_request_interface::SERVER, array(
-			'PHP_SELF'	=> $url,
-			'QUERY_STRING'	=> $query_string,
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
+			$request,
 		));
-
-		$result = phpbb_session::extract_current_page('./');
+		$symfony_request->expects($this->any())
+			->method('getScriptName')
+			->will($this->returnValue($url));
+		$symfony_request->expects($this->any())
+			->method('getQueryString')
+			->will($this->returnValue($query_string));
+		$symfony_request->expects($this->any())
+			->method('getBasePath')
+			->will($this->returnValue($server['REQUEST_URI']));
+		$symfony_request->expects($this->any())
+			->method('getPathInfo')
+			->will($this->returnValue('/'));
+		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with PHP_SELF filled.';
 		$this->assertEquals($expected, $result['query_string'], $label);
@@ -44,17 +54,27 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	*/
 	public function test_query_string_request_uri($url, $query_string, $expected)
 	{
-		global $request;
+		global $symfony_request, $request;
 
-		$request->merge(phpbb_request_interface::SERVER, array(
-			'PHP_SELF'	=> $url,
-			'QUERY_STRING'	=> $query_string,
+		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
+			$request,
 		));
+		$symfony_request->expects($this->any())
+			->method('getScriptName')
+			->will($this->returnValue($url));
+		$symfony_request->expects($this->any())
+			->method('getQueryString')
+			->will($this->returnValue($query_string));
+		$symfony_request->expects($this->any())
+			->method('getBasePath')
+			->will($this->returnValue($server['REQUEST_URI']));
+		$symfony_request->expects($this->any())
+			->method('getPathInfo')
+			->will($this->returnValue('/'));
 
-		$result = phpbb_session::extract_current_page('./');
+		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with REQUEST_URI filled.';
 		$this->assertEquals($expected, $result['query_string'], $label);
 	}
 }
-

@@ -30,7 +30,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 
 		$this->db = $this->new_dbal();
 		$error = null;
-		$class = self::get_search_wrapper('phpbb_search_fulltext_native');
+		$class = self::get_search_wrapper('\phpbb\search\fulltext_native');
 		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
 	}
 

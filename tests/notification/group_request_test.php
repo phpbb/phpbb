@@ -37,17 +37,17 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 
 		set_config(false, false, false, $this->config);
 
-		$this->container->set('groupposition.legend', new phpbb_groupposition_legend(
+		$this->container->set('groupposition.legend', new \phpbb\groupposition\legend(
 			$this->db,
 			$this->user
 		));
-		$this->container->set('groupposition.teampage', new phpbb_groupposition_teampage(
+		$this->container->set('groupposition.teampage', new \phpbb\groupposition\teampage(
 			$this->db,
 			$this->user,
 			$this->cache->get_driver()
 		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$phpbb_log = new phpbb_log_null();
+		$phpbb_log = new \phpbb\log\null();
 
 		// Now on to the actual test
 

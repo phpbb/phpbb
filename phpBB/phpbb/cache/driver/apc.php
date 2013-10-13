@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * ACM for APC
 * @package acm
 */
-class phpbb_cache_driver_apc extends phpbb_cache_driver_memory
+class apc extends \phpbb\cache\driver\memory
 {
 	var $extension = 'apc';
 

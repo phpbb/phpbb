@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\template;
+
 /**
 * @ignore
 */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
 *
 * @package phpBB3
 */
-class phpbb_template_context
+class context
 {
 	/**
 	* variable that holds all the data we'll be substituting into
@@ -86,7 +88,7 @@ class phpbb_template_context
 	* Returns a reference to template data array.
 	*
 	* This function is public so that template renderer may invoke it.
-	* Users should alter template variables via functions in phpbb_template.
+	* Users should alter template variables via functions in \phpbb\template\template.
 	*
 	* Note: modifying returned array will affect data stored in the context.
 	*
@@ -223,7 +225,7 @@ class phpbb_template_context
 	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero).
-	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
+	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new \value).
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)

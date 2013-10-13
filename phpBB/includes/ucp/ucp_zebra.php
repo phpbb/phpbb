@@ -229,7 +229,7 @@ class ucp_zebra
 					{
 						$message = ($updated) ? $user->lang[$l_mode . '_UPDATED'] : implode('<br />', $error);
 						
-						$json_response = new phpbb_json_response;
+						$json_response = new \phpbb\json_response;
 						$json_response->send(array(
 							'success' => $updated,
 							

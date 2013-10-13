@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\avatar\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Handles avatars hosted remotely
 * @package phpBB3
 */
-class phpbb_avatar_driver_remote extends phpbb_avatar_driver
+class remote extends \phpbb\avatar\driver\driver
 {
 	/**
 	* @inheritdoc
@@ -120,8 +122,8 @@ class phpbb_avatar_driver_remote extends phpbb_avatar_driver
 			include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
 		}
 
-		$types = fileupload::image_types();
-		$extension = strtolower(filespec::get_extension($url));
+		$types = \fileupload::image_types();
+		$extension = strtolower(\filespec::get_extension($url));
 
 		if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
 		{

@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_dbal_migration_revert_with_dependency extends phpbb_db_migration
+class phpbb_dbal_migration_revert_with_dependency extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{

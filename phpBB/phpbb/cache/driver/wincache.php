@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb\cache\driver;
+
 /**
 * @ignore
 */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * ACM for WinCache
 * @package acm
 */
-class phpbb_cache_driver_wincache extends phpbb_cache_driver_memory
+class wincache extends \phpbb\cache\driver\memory
 {
 	var $extension = 'wincache';
 

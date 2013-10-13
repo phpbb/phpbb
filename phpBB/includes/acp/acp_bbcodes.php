@@ -275,7 +275,7 @@ class acp_bbcodes
 						
 						if ($request->is_ajax())
 						{
-							$json_response = new phpbb_json_response;
+							$json_response = new \phpbb\json_response;
 							$json_response->send(array(
 								'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
 								'MESSAGE_TEXT'	=> $user->lang['BBCODE_DELETED'],
