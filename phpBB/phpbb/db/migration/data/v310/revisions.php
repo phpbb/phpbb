@@ -7,16 +7,18 @@
 *
 */
 
-class phpbb_db_migration_data_310_revisions extends phpbb_db_migration
+namespace phpbb\db\migration\data\v310;
+
+class revisions extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return $this->db_tools->sql_table_exists($this->table_prefix . 'post_revisions');
+		return (bool) $this->db_tools->sql_table_exists($this->table_prefix . 'post_revisions');
 	}
 
 	static public function depends_on()
 	{
-		return array('phpbb_db_migration_data_30x_3_0_11');
+		return array('phpbb\db\migration\data\v310\alpha1');
 	}
 
 	public function update_schema()
