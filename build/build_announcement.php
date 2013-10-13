@@ -22,16 +22,20 @@ $checksum_algorithm = $_SERVER['argv'][4];
 $series_version = substr($version, 0, 3);
 $base_url = "https://download.phpbb.com/pub/release/$series_version";
 
-if (strpos($version, 'RC') === false)
+if (version_compare($version, "$series_version.0", '<'))
 {
-	// Final release
-	$install_url	= "$base_url/$version";
-	$update_url		= "$base_url/update/to_$version";
+	// Everything before 3.x.0, i.e. unstable (e.g. alpha, beta, rc)
+	$url = "$base_url/unstable/$version";
+}
+else if (strpos($version, 'RC') !== false)
+{
+	// Release candidate of stable release
+	$url = "$base_url/qa/$version";
 }
 else
 {
-	$install_url	= "$base_url/release_candidates/$version";
-	$update_url		= "$base_url/release_candidates/update/other_to_$version";
+	// Stable release (e.g. 3.x.0, 3.x.1, 3.x.2, 3.x.3-PL1)
+	$url = "$base_url/$version";
 }
 
 if ($mode === 'bbcode')
@@ -58,41 +62,19 @@ function phpbb_string_ends_with($haystack, $needle)
 	return substr($haystack, -strlen($needle)) === $needle;
 }
 
-function phpbb_is_update_file($filename)
-{
-	return strpos($filename, '_to_') !== false;
-}
-
 function phpbb_get_checksum($checksum_file)
 {
 	return array_shift(explode(' ', file_get_contents($checksum_file)));
 }
 
-$install_files = $update_files = array();
 foreach (phpbb_rnatsort(array_diff(scandir($root), array('.', '..'))) as $filename)
 {
 	if (phpbb_string_ends_with($filename, $checksum_algorithm))
 	{
 		continue;
 	}
-	else if (phpbb_is_update_file($filename))
-	{
-		$update_files[] = $filename;
-	}
 	else
 	{
-		$install_files[] = $filename;
+		printf($template, $url, $filename, phpbb_get_checksum("$root/$filename.$checksum_algorithm"));
 	}
-}
-
-foreach ($install_files as $filename)
-{
-	printf($template, $install_url, $filename, phpbb_get_checksum("$root/$filename.$checksum_algorithm"));
-}
-
-echo "\n";
-
-foreach ($update_files as $filename)
-{
-	printf($template, $update_url, $filename, phpbb_get_checksum("$root/$filename.$checksum_algorithm"));
 }
