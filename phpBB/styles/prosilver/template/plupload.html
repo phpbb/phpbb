@@ -1,0 +1,48 @@
+<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.js"></script>
+<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.html5.js"></script>
+<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+phpbb.plupload = {
+	i18n: {
+		'Select files': '{LA_PLUPLOAD_SELECT_FILES}',
+		'Add files to the upload queue and click the start button.': '{LA_PLUPLOAD_ADD_FILES_TO_QUEUE}',
+		'Filename': '{LA_PLUPLOAD_FILENAME}',
+		'Status': '{LA_PLUPLOAD_STATUS}',
+		'Size': '{LA_PLUPLOAD_SIZE}',
+		'Add files': '{LA_PLUPLOAD_ADD_FILES}',
+		'Stop current upload': '{LA_PLUPLOAD_STOP_CURRENT_UPLOAD}',
+		'Start uploading queue': '{LA_PLUPLOAD_START_CURRENT_UPLOAD}',
+		'Uploaded %d/%d files': '{LA_PLUPLOAD_UPLOADED}',
+		'N/A': '{LA_PLUPLOAD_NOT_APPLICABLE}',
+		'Drag files here.': '{LA_PLUPLOAD_DRAG}',
+		'File extension error.': '{LA_PLUPLOAD_EXTENSION_ERROR}',
+		'File size error.': '{LA_PLUPLOAD_SIZE_ERROR}',
+		'Init error.': '{LA_PLUPLOAD_INIT_ERROR}',
+		'HTTP Error.': '{LA_PLUPLOAD_HTTP_ERROR}',
+		'Security error.': '{LA_PLUPLOAD_SECURITY_ERROR}',
+		'Generic error.': '{LA_PLUPLOAD_GENERIC_ERROR}',
+		'IO error.': '{LA_PLUPLOAD_IO_ERROR}',
+		'Stop Upload': '{LA_PLUPLOAD_STOP_UPLOAD}',
+		'Start upload': '{LA_PLUPLOAD_START_UPLOAD}',
+		'%d files queued': '{LA_PLUPLOAD_FILES_QUEUED}'
+	},
+	config: {
+		runtimes: 'html5',
+		url: '{S_PLUPLOAD_URL}',
+		max_file_size: '{FILESIZE}b',
+		chunk_size: '{CHUNK_SIZE}b',
+		unique_names: true,
+		filters: [{FILTERS}],
+		{S_RESIZE}
+		headers: {'X-PHPBB-USING-PLUPLOAD': '1'},
+		file_data_name: 'fileupload',
+		multipart_params: {'add_file': '{LA_ADD_FILE}'},
+		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',
+		element_hook: '#attach-panel .inner',
+		form_hook: '#postform'
+	}
+};
+//]]>
+</script>
+<script type="text/javascript" src="{T_ASSETS_PATH}/javascript/plupload.js"></script>
