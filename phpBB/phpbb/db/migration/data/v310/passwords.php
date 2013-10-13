@@ -20,8 +20,11 @@ class passwords extends \phpbb\db\migration\migration
 	{
 		return array(
 			'change_columns'	=> array(
-				$this->table_prefix . 'users'			=> array(
-					'user_password'			=> array('VCHAR:255', ''),
+				$this->table_prefix . 'users'	=> array(
+					'user_password'		=> array('VCHAR:255', ''),
+				),
+				$this->table_prefix . 'forums'	=> array(
+					'forum_password'	=> array('VCHAR:255', ''),
 				),
 			),
 		);
@@ -31,8 +34,11 @@ class passwords extends \phpbb\db\migration\migration
 	{
 		return array(
 			'change_columns'	=> array(
-				$this->table_prefix . 'users'			=> array(
-					'user_password'			=> array('VCHAR:40', ''),
+				$this->table_prefix . 'users'	=> array(
+					'user_password'		=> array('VCHAR:40', ''),
+				),
+				$this->table_prefix . 'forums'	=> array(
+					'forum_password'	=> array('VCHAR:40', ''),
 				),
 			),
 		);

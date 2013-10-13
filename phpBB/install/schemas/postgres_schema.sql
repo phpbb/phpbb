@@ -408,7 +408,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options INT4 DEFAULT '7' NOT NULL CHECK (forum_desc_options >= 0),
 	forum_desc_uid varchar(8) DEFAULT '' NOT NULL,
 	forum_link varchar(255) DEFAULT '' NOT NULL,
-	forum_password varchar(40) DEFAULT '' NOT NULL,
+	forum_password varchar(255) DEFAULT '' NOT NULL,
 	forum_style INT4 DEFAULT '0' NOT NULL CHECK (forum_style >= 0),
 	forum_image varchar(255) DEFAULT '' NOT NULL,
 	forum_rules varchar(4000) DEFAULT '' NOT NULL,

@@ -537,7 +537,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options number(11) DEFAULT '7' NOT NULL,
 	forum_desc_uid varchar2(8) DEFAULT '' ,
 	forum_link varchar2(765) DEFAULT '' ,
-	forum_password varchar2(120) DEFAULT '' ,
+	forum_password varchar2(255) DEFAULT '' ,
 	forum_style number(8) DEFAULT '0' NOT NULL,
 	forum_image varchar2(255) DEFAULT '' ,
 	forum_rules clob DEFAULT '' ,

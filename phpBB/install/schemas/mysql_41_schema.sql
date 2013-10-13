@@ -266,7 +266,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options int(11) UNSIGNED DEFAULT '7' NOT NULL,
 	forum_desc_uid varchar(8) DEFAULT '' NOT NULL,
 	forum_link varchar(255) DEFAULT '' NOT NULL,
-	forum_password varchar(40) DEFAULT '' NOT NULL,
+	forum_password varchar(255) DEFAULT '' NOT NULL,
 	forum_style mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_image varchar(255) DEFAULT '' NOT NULL,
 	forum_rules text NOT NULL,

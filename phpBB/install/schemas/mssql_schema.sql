@@ -485,7 +485,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_desc_options] [int] DEFAULT (7) NOT NULL ,
 	[forum_desc_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[forum_link] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[forum_password] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[forum_password] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_style] [int] DEFAULT (0) NOT NULL ,
 	[forum_image] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_rules] [varchar] (4000) DEFAULT ('') NOT NULL ,
