@@ -40,15 +40,15 @@ class engine_finediff extends engine_base
 		{
 			default:
 			case 'word':
-				$this->granularity = FineDiff::$wordGranularity;
+				$this->granularity = \FineDiff::$wordGranularity;
 			break;
 
 			case 'character':
-				$this->granularity = FineDiff::$characterGranularity;
+				$this->granularity = \FineDiff::$characterGranularity;
 			break;
 
 			case 'line':
-				$this->granularity = FineDiff::$paragraphGranularity;
+				$this->granularity = \FineDiff::$paragraphGranularity;
 			break;
 		}
 	}
@@ -135,6 +135,6 @@ class engine_finediff extends engine_base
 		{
 			require($this->phpbb_root_path . 'phpbb/revisions/finediff.' . $this->phpEx);
 		}
-		$this->diff = new FineDiff($this->from, $this->to, $this->granularity);
+		$this->diff = new \FineDiff($this->from, $this->to, $this->granularity);
 	}
 }

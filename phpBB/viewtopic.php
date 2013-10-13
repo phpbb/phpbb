@@ -1632,11 +1632,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		$user->add_lang('revisions');
 
-		$revisions_post = new phpbb_revisions_post($row['post_id'], $db, $config, $auth);
+		$revisions_post = new \phpbb\revisions\post($row['post_id'], $db, $config, $auth);
 		$revisions = $revisions_post->get_revisions();
 		if (sizeof($revisions))
 		{
-			$comparison = new phpbb_revisions_comparison(current($revisions), $revisions_post->get_current_revision());
+			$comparison = new \phpbb\revisions\comparison(current($revisions), $revisions_post->get_current_revision());
 			$post_revision_comparison_output = $comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
 		}
 	}
