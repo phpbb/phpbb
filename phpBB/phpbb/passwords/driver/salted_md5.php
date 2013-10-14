@@ -105,7 +105,6 @@ class salted_md5 extends \phpbb\passwords\driver\base
 		{
 			return (md5($password) === $hash) ? true : false;
 		}
-		// No need to check prefix, already did that in manage
 
 		if ($hash === $this->hash($password, $hash))
 		{
@@ -121,8 +120,6 @@ class salted_md5 extends \phpbb\passwords\driver\base
 	*/
 	protected function generate_salt()
 	{
-		$salt = '';
-		$random = '';
 		$count = 6;
 
 		$random = $this->helper->get_random_salt($count);

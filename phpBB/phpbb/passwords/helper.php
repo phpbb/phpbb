@@ -119,7 +119,6 @@ class helper
 	*/
 	public function check_combined_hash($password, $stored_hash_type, $hash)
 	{
-		$cur_hash = '';
 		$i = 0;
 		$data = array(
 			'prefix' => '$',

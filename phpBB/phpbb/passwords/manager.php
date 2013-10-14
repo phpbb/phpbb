@@ -164,11 +164,10 @@ class manager
 					return false;
 				}
 
-				$return_ary[$type] = $this->get_algorithm("\${$type}\$");
+				$return_ary[$type] = $this->get_algorithm('$' . $type . '$');
 
 				if (empty($return_ary[$type]))
 				{
-
 					return false;
 				}
 			}
