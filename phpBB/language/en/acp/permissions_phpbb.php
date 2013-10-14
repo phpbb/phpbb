@@ -149,7 +149,7 @@ $lang = array_merge($lang, array(
 	'ACL_M_REPORT'		=> 'Can close and delete reports',
 	'ACL_M_CHGPOSTER'	=> 'Can change post author',
 	'ACL_M_REVISIONS'	=> 'Can view post revisions',
-	'ACL_M_RESTORE_REVISIONS'	=> 'Can restore a post to a selected revision'
+	'ACL_M_RESTORE_REVISIONS'	=> 'Can restore a post to a selected revision',
 	'ACL_M_DELETE_REVISIONS'	=> 'Can delete post revisions',
 	'ACL_M_PROTECT_REVISIONS'	=> 'Can protect post revisions',
 
