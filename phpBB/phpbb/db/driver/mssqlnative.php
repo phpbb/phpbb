@@ -471,7 +471,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 			$query_id = $this->query_result;
 		}
 
-		if ($cache->sql_exists($query_id))
+		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
@@ -481,6 +481,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 			unset($this->open_queries[(int) $query_id]);
 			return @sqlsrv_free_stmt($query_id);
 		}
+
 		return false;
 	}
 
