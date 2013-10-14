@@ -231,7 +231,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertEquals($expected, $filespec->is_image());
 	}
 
-	public function is_image_variables_with_file_path()
+	public function is_image_get_mimetype()
 	{
 		return array(
 			array('gif', 'image/gif', true),
@@ -246,12 +246,43 @@ class phpbb_filespec_test extends phpbb_test_case
 	}
 
 	/**
-	 * @dataProvider is_image_variables_with_file_path
+	 * @dataProvider is_image_get_mimetype
 	 */
-	public function test_is_image_with_file_path($filename, $mimetype, $expected)
+	public function test_is_image_get_mimetype($filename, $mimetype, $expected)
 	{
 		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
-		$this->assertEquals($expected, $filespec->is_image($this->path . $filename));
+		$filespec->mimetype = $filespec->get_mimetype($this->path . $filename);
+		$this->assertEquals($expected, $filespec->is_image());
+	}
+
+	/**
+	* @expectedException Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
+	*/
+	public function test_get_mimetype_wrong_path()
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . 'jpg', 'type' => 'application/octet-stream'));
+		$this->assertEquals(true, $filespec->get_mimetype($this->path . 'jpgg'));
+	}
+
+	public function data_get_mimetype()
+	{
+		return array(
+			array('gif', 'image/gif'),
+			array('jpg', 'image/jpeg'),
+			array('png', 'image/png'),
+			array('tif', 'image/tiff'),
+		);
+	}
+
+	/**
+	* @dataProvider data_get_mimetype
+	*/
+	public function test_get_mimetype($filename, $expected)
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => 'application/octet-stream'));
+		$this->assertEquals($expected, $filespec->get_mimetype($this->path . $filename));
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => ''));
+		$this->assertEquals($expected, $filespec->get_mimetype($this->path . $filename));
 	}
 
 	public function move_file_variables()

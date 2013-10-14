@@ -159,12 +159,8 @@ class filespec
 	*
 	* @return true if it is an image, false if not
 	*/
-	function is_image($file_path = '')
+	function is_image()
 	{
-		if (!empty($file_path))
-		{
-			$this->mimetype = $this->guesser->guess($file_path);
-		}
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
 
@@ -217,8 +213,11 @@ class filespec
 	}
 
 	/**
-	* Get mimetype. Utilize mime_content_type if the function exist.
-	* Not used at the moment...
+	* Get mimetype using the  MimeTypeGuesser
+	*
+	* @param string $filename	Filename of the file that should be
+	*				checked by the MimeTypeGuesser
+	* @return string Mimetype of the specified file
 	*/
 	function get_mimetype($filename)
 	{
@@ -358,7 +357,10 @@ class filespec
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
 
-		if ($this->is_image($this->destination_file) && !$skip_image_check)
+		// Get mimetype of supplied file
+		$this->mimetype = $this->get_mimetype($this->destination_file);
+
+		if ($this->is_image() && !$skip_image_check)
 		{
 			$this->width = $this->height = 0;
 

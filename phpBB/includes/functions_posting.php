@@ -465,7 +465,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	// Make sure the image category only holds valid images...
-	if ($is_image && !$file->is_image($file->get('filename')))
+	if ($is_image && !$file->is_image())
 	{
 		$file->remove();
 
