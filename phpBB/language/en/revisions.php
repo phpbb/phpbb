@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 	'ERROR_REVISION_NOT_FOUND'			=> 'The specified revision could not be found.',
 	'ERROR_REVISION_POST_UPDATE_FAIL'	=> 'An error occurred when attempting to update the post to the specified revision.',
 
-	'LAST_REVISION_TIME'		=> 'Last revision %1$s',
+	'LAST_REVISION_TIME'		=> 'Last revision &raquo; %1$s',
 	'LAST_FIVE_REVISIONS'		=> 'Last 5 Revisions',
 	'LOGIN_REVISION'			=> 'You must login in order to view the revisions for this post.',
 

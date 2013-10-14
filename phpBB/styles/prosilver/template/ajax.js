@@ -257,15 +257,15 @@ phpbb.addAjaxCallback('revisions.compare', function(res) {
 
 	$('.first').html(res.subject_diff_rendered);
 	$('.content').html(res.text_diff_rendered);
-	$('.right-box').html(res.comparing_to);
+	$('#comparing_to').html(res.comparing_to);
 	$('#revision_lines_changed').html(res.lines_changed);
 });
 
 // This callback updates information about the protected status of revisions
 phpbb.addAjaxCallback('revisions.protect', function(res) {
 	if (res.success) {
-		$('#r' + res.revision_id + ' #link_protect').hide();
-		$('#r' + res.revision_id + ' #link_unprotect').show();
+		$('#r' + res.revision_id + ' .revision_protect').hide();
+		$('#r' + res.revision_id + ' .revision_unprotect').show();
 		$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
 	}
 });
@@ -273,8 +273,8 @@ phpbb.addAjaxCallback('revisions.protect', function(res) {
 // This callback updates information about the unprotected status of revisions
 phpbb.addAjaxCallback('revisions.unprotect', function(res) {
 	if (res.success) {
-		$('#r' + res.revision_id + ' #link_unprotect').hide();
-		$('#r' + res.revision_id + ' #link_protect').show();
+		$('#r' + res.revision_id + ' .revision_unprotect').hide();
+		$('#r' + res.revision_id + ' .revision_protect').show();
 		$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
 	}
 });
@@ -284,7 +284,7 @@ phpbb.addAjaxCallback('revisions.delete', function(res) {
 	if (res.success) {
 		var revisionCount;
 
-		$(this).parents('ul').remove();
+		$(this).parents('li.row').remove();
 		revisionCount = parseInt($('#compare_summary').html());
 		$('#compare_summary').html(revisionCount - 1);
 	}

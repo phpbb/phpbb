@@ -520,7 +520,7 @@ dl.details dd {
 	text-overflow: ellipsis;
 }
 
-.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, ul.revisionlist dl, dl.polls {
+.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
 	height: 1%;
 	overflow: hidden;
 }
