@@ -21,7 +21,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		// Global $config required by unique_id
 		// Global $user required by several functions dealing with translations
 		// Global $request required by form_upload, local_upload and is_valid
-		global $config, $user, $request;
+		global $config, $user, $request, $phpbb_container;
 
 		if (!is_array($config))
 		{
@@ -35,6 +35,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$user->lang = new phpbb_mock_lang();
 
 		$request = new phpbb_mock_request();
+
+		$mimetype_guesser = new \phpbb\mimetype_guesser;
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container->expects($this->any())
+			->method('get')
+			->with('mimetype_guesser')
+			->will($this->returnValue($mimetype_guesser));
 
 		$this->path = __DIR__ . '/fixture/';
 	}

@@ -7,6 +7,8 @@
 *
 */
 
+namespace phpbb;
+
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class phpbb_mimetype_guesser implements MimeTypeGuesserInterface
+class mimetype_guesser implements MimeTypeGuesserInterface
 {
 	/**
 	* Guesses the mime type of the file with the given path.

@@ -16,10 +16,19 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function setUp()
 	{
+		global $phpbb_container;
+
 		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 		$this->login();
+
+		$mimetype_guesser = new \phpbb\mimetype_guesser;
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container->expects($this->any())
+			->method('get')
+			->with('mimetype_guesser')
+			->will($this->returnValue($mimetype_guesser));
 	}
 
 	public function tearDown()

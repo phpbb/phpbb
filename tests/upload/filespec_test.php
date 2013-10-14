@@ -26,7 +26,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		// Global $config required by unique_id
 		// Global $user required by filespec::additional_checks and
 		// filespec::move_file
-		global $config, $user;
+		global $config, $user, $phpbb_container;
 
 		if (!is_array($config))
 		{
@@ -42,6 +42,13 @@ class phpbb_filespec_test extends phpbb_test_case
 
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
+
+		$mimetype_guesser = new \phpbb\mimetype_guesser;
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container->expects($this->any())
+			->method('get')
+			->with('mimetype_guesser')
+			->will($this->returnValue($mimetype_guesser));
 
 		$this->config = &$config;
 		$this->path = __DIR__ . '/fixture/';

@@ -459,16 +459,10 @@ class filespec
 	{
 		if ($this->guesser === false)
 		{
-			if (!class_exists('phpbb_mimetype_guesser'))
-			{
-				global $phpbb_root_path, $phpEx;
-
-				include($phpbb_root_path . '/includes/mimetype_guesser.' . $phpEx);
-			}
-
+			global $phpbb_container;
 
 			$this->guesser = MimeTypeGuesser::getInstance();
-			$this->guesser->register(new phpbb_mimetype_guesser());
+			$this->guesser->register($phpbb_container->get('mimetype_guesser'));
 		}
 	}
 }
