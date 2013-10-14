@@ -34,9 +34,9 @@ class ucp_profile
 
 		$user->add_lang('posting');
 
-		$preview	= $request->variable('preview', false, false, phpbb_request_interface::POST);
-		$submit		= $request->variable('submit', false, false, phpbb_request_interface::POST);
-		$delete		= $request->variable('delete', false, false, phpbb_request_interface::POST);
+		$preview	= $request->variable('preview', false, false, \phpbb\request\request_interface::POST);
+		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
+		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 
@@ -546,6 +546,9 @@ class ucp_profile
 				// Build custom bbcodes array
 				display_custom_bbcodes();
 
+				// Generate smiley listing
+				generate_smilies('inline', 0);
+
 			break;
 
 			case 'avatar':
@@ -564,7 +567,7 @@ class ucp_profile
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = phpbb_avatar_manager::clean_row($user->data);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user->data);
 
 					if ($submit)
 					{

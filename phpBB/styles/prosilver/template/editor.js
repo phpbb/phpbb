@@ -301,7 +301,7 @@ function colorPalette(dir, width, height) {
 	var r = 0, 
 		g = 0, 
 		b = 0,
-		numberList = new Array(6);
+		numberList = new Array(6),
 		color = '',
 		html = '';
 
@@ -401,7 +401,7 @@ function getCaretPosition(txtarea) {
 */
 (function($) {
 	$(document).ready(function() {
-		var doc, textarea, startTags, endTags;
+		var doc, textarea;
 
 		// find textarea, make sure browser supports necessary functions
 		if (document.forms[form_name]) {
@@ -415,81 +415,8 @@ function getCaretPosition(txtarea) {
 		}
 
 		textarea = doc.forms[form_name].elements[text_name];
-		if (!textarea || typeof textarea.selectionStart !== 'number') {
-			return;
-		}
 
-		// list of allowed start and end bbcode code tags, in lower case
-		startTags = ['[code]', '[code='];
-		endTags = ['[/code]'];
-
-		function inTag() {
-			var start = textarea.selectionStart,
-				lastEnd = -1,
-				lastStart = -1,
-				i, index, value;
-
-			value = textarea.value.toLowerCase();
-
-			for (i = 0; i < startTags.length; i++) {
-				var tagLength = startTags[i].length;
-				if (start >= tagLength) {
-					index = value.lastIndexOf(startTags[i], start - tagLength);
-					lastStart = Math.max(lastStart, index);
-				}
-			}
-			if (lastStart == -1) return false;
-
-			if (start > 0) {
-				for (i = 0; i < endTags.length; i++) {
-					index = value.lastIndexOf(endTags[i], start - 1);
-					lastEnd = Math.max(lastEnd, index);
-				}
-			}
-
-			return (lastEnd < lastStart);
-		}
-
-		function getLastLine() {
-			var start = textarea.selectionStart,
-				value = textarea.value,
-				index = value.lastIndexOf("\n", start - 1);
-			return value.substring(index + 1, start);
-		}
-
-		function appendCode(code) {
-			var start = textarea.selectionStart,
-				end = textarea.selectionEnd,
-				value = textarea.value;
-			textarea.value = value.substr(0, start) + code + value.substr(end);
-			textarea.selectionStart = textarea.selectionEnd = start + code.length;
-		}
-
-		$(textarea).on('keydown', function(event) {
-			var key = event.keyCode || event.which;
-
-			// intercept tabs
-			if (key == 9) {
-				if (inTag()) {
-					appendCode("\t");
-					event.preventDefault();
-					return;
-				}
-			}
-
-			// intercept new line characters
-			if (key == 13) {
-				if (inTag()) {
-					var lastLine = getLastLine(),
-						code = '' + /^\s*/g.exec(lastLine);
-					if (code.length > 0) {
-						appendCode("\n" + code);
-						event.preventDefault();
-						return;
-					}
-				}
-			}
-		});
+		phpbb.applyCodeEditor(textarea);
 	});
 })(jQuery);
 

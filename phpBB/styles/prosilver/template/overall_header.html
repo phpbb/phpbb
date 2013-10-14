@@ -24,45 +24,8 @@
 	Modified by:
 -->
 
-<script type="text/javascript">
-// <![CDATA[
-	var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
-	var on_page = '{ON_PAGE}';
-	var per_page = '{PER_PAGE}';
-	var base_url = '{A_BASE_URL}';
-	var style_cookie = 'phpBBstyle';
-	var style_cookie_settings = '{A_COOKIE_SETTINGS}';
-	var onload_functions = new Array();
-	var onunload_functions = new Array();
-
-	<!-- IF S_USER_PM_POPUP and S_NEW_PM -->
-		var url = '{UA_POPUP_PM}';
-		window.open(url.replace(/&amp;/g, '&'), '_phpbbprivmsg', 'height=225,resizable=yes,scrollbars=yes, width=400');
-	<!-- ENDIF -->
-
-	/**
-	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
-	*/
-	window.onload = function()
-	{
-		for (var i = 0; i < onload_functions.length; i++)
-		{
-			onload_functions[i]();
-		}
-	};
-
-	window.onunload = function()
-	{
-		for (var i = 0; i < onunload_functions.length; i++)
-		{
-			onunload_functions[i]();
-		}
-	};
-
-// ]]>
-</script>
-
 <link href="{T_THEME_PATH}/print.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="print" title="printonly" />
+<!-- IF S_ALLOW_CDN --><link href="//fonts.googleapis.com/css?family=Open+Sans:600&amp;subset=latin,cyrillic-ext,latin-ext,cyrillic,greek-ext,greek,vietnamese" rel="stylesheet" type="text/css" media="screen, projection" /><!-- ENDIF -->
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
 <link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
 
@@ -70,11 +33,18 @@
 	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 <!-- ENDIF -->
 
+<!-- IF S_PLUPLOAD -->
+	<link href="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
+	<link href="{T_THEME_PATH}/plupload.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
+<!-- ENDIF -->
+
 <!--[if lte IE 8]>
 	<link href="{T_THEME_PATH}/tweaks.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 <![endif]-->
 
 <!-- EVENT overall_header_head_append -->
+
+{$STYLESHEETS}
 
 </head>
 <body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}">
@@ -125,7 +95,7 @@
 			</ul>
 
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
-			<ul class="linklist leftside">
+			<ul class="linklist leftside bulletin">
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
 				<li class="icon-notification">
 					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a>
@@ -168,13 +138,13 @@
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
-					<!-- IF S_DISPLAY_SEARCH --> &bull;
-					<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
-					<!-- ENDIF -->
-					<!-- IF U_RESTORE_PERMISSIONS --> &bull;
-					<a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a>
-					<!-- ENDIF -->
 				</li>
+				<!-- IF S_DISPLAY_SEARCH -->
+					<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
+				<!-- ENDIF -->
+				<!-- IF U_RESTORE_PERMISSIONS -->
+					<li class="icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li>
+				<!-- ENDIF -->
 			</ul>
 			<!-- ENDIF -->
 

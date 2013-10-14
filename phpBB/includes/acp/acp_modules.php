@@ -375,10 +375,11 @@ class acp_modules
 		{
 			if ($request->is_ajax())
 			{
-				$json_response = new phpbb_json_response;
+				$json_response = new \phpbb\json_response;
 				$json_response->send(array(
 					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
 					'MESSAGE_TEXT'	=> implode('<br />', $errors),
+					'SUCCESS'	=> false,
 				));
 			}
 
@@ -564,7 +565,7 @@ class acp_modules
 		{
 			// Skip entries we do not need if we know the module we are
 			// looking for
-			if ($module && strpos($cur_module, $module) === false)
+			if ($module && strpos(str_replace('\\', '_', $cur_module), $module) === false && $module !== $cur_module)
 			{
 				continue;
 			}
@@ -575,13 +576,20 @@ class acp_modules
 			// format. phpbb_acp_info_acp_foo needs to be turned into
 			// acp_foo_info and the respective file has to be included
 			// manually because it does not support auto loading
-			if (!class_exists($info_class))
+			$old_info_class_file = str_replace("phpbb_{$module_class}_info_", '', $cur_module);
+			$old_info_class = $old_info_class_file . '_info';
+
+			if (class_exists($old_info_class))
 			{
-				$info_class_file = str_replace("phpbb_{$module_class}_info_", '', $cur_module);
-				$info_class = $info_class_file . '_info';
-				if (!class_exists($info_class) && file_exists($directory . $info_class_file . '.' . $phpEx))
+				$info_class = $old_info_class;
+			}
+			else if (!class_exists($info_class))
+			{
+				$info_class = $old_info_class;
+				// need to check class exists again because previous checks triggered autoloading
+				if (!class_exists($info_class) && file_exists($directory . $old_info_class_file . '.' . $phpEx))
 				{
-					include($directory . $info_class_file . '.' . $phpEx);
+					include($directory . $old_info_class_file . '.' . $phpEx);
 				}
 			}
 

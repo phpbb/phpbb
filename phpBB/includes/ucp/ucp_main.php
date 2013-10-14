@@ -296,7 +296,7 @@ class ucp_main
 					}
 					else
 					{
-						$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, phpbb_request_interface::COOKIE);
+						$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 						$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 					}
 
@@ -642,7 +642,7 @@ class ucp_main
 	*/
 	function assign_topiclist($mode = 'subscribed', $forbidden_forum_ary = array())
 	{
-		global $user, $db, $template, $config, $cache, $auth, $phpbb_root_path, $phpEx;
+		global $user, $db, $template, $config, $cache, $auth, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
 		$start = request_var('start', 0);
@@ -768,6 +768,8 @@ class ucp_main
 			}
 		}
 
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 		foreach ($topic_list as $topic_id)
 		{
 			$row = &$rowset[$topic_id];
@@ -778,7 +780,7 @@ class ucp_main
 			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
 			// Replies
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+			$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
 
 			if ($row['topic_status'] == ITEM_MOVED && !empty($row['topic_moved_id']))
 			{

@@ -3,8 +3,8 @@
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
 	<property name="newversion" value="3.1.0-dev" />
-	<property name="prevversion" value="3.0.11" />
-	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.9, 3.0.10" />
+	<property name="prevversion" value="3.0.12" />
+	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.9, 3.0.10, 3.0.11" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
@@ -149,6 +149,36 @@
 		<exec dir="build" escape="false"
 			command="git diff --stat release-${prevversion}...HEAD >
 				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_diffstat.txt" />
+
+		<phingcall target="checksum-dir">
+			<property name="dir" value="build/new_version/release_files" />
+		</phingcall>
+	</target>
+
+	<target name="checksum-dir">
+		<foreach param="filename" absparam="absfilename" target="checksum-file">
+			<fileset dir="${dir}">
+				<type type="file" />
+			</fileset>
+		</foreach>
+	</target>
+
+	<target name="checksum-file">
+		<echo msg="Creating checksum file for ${absfilename}" />
+		<php function="dirname" returnProperty="dir"><param value="${absfilename}"/></php>
+		<exec dir="${dir}" command="sha256sum ${filename} > ${filename}.sha256" />
+	</target>
+
+	<target name="announcement" depends="prepare">
+		<echo msg="Writing download links and checksums for email announcement to save/announcement_email_${newversion}.txt" />
+		<exec dir="build" escape="false"
+			command="php -f build_announcement.php email '${newversion}' 'new_version/release_files' sha256 >
+				save/announcement_email_${newversion}.txt"  />
+
+		<echo msg="Writing download links and checksums for bbcode announcement to save/announcement_bbcode_${newversion}.txt" />
+		<exec dir="build" escape="false"
+			command="php -f build_announcement.php bbcode '${newversion}' 'new_version/release_files' sha256 >
+				save/announcement_bbcode_${newversion}.txt"  />
 	</target>
 
 	<target name="changelog" depends="prepare">
@@ -169,26 +199,42 @@
 			command="git archive ${revision} | tar -xf - -C ../${dir}"
 			checkreturn="true" />
 
-		<!--
-			If composer.phar exists in this version of the tree, also export
-			it into ${dir}, install dependencies, then delete it again.
-		-->
-		<exec dir="."
-			command="git ls-tree ${revision} composer.phar"
+		<!-- Install composer dependencies, if there are any. -->
+		<exec dir="${dir}"
+			command='php -r "\$j = json_decode(file_get_contents(\"composer.json\")); echo isset(\$j->require);"'
 			checkreturn="true"
-			outputProperty='composer-ls-tree-output' />
+			outputProperty='composer-has-dependencies' />
 		<if>
-			<not><equals arg1="${composer-ls-tree-output}" arg2="" trim="true" /></not>
+			<equals arg1="${composer-has-dependencies}" arg2="1" trim="true" />
 			<then>
+				<!-- We have non-dev composer dependencies -->
 				<exec dir="."
-					command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
-					checkreturn="true" />
-				<exec dir="${dir}"
-					command="php composer.phar install"
+					command="git ls-tree ${revision} composer.phar"
 					checkreturn="true"
-					passthru="true" />
-				<delete file="${dir}/composer.phar" />
+					outputProperty='composer-ls-tree-output' />
+				<if>
+					<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+					<then>
+						<fail message="There are composer dependencies, but composer.phar is missing." />
+					</then>
+					<else>
+						<!-- Export the phar, install dependencies, delete phar. -->
+						<exec dir="."
+							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
+							checkreturn="true" />
+						<exec dir="${dir}"
+							command="php composer.phar install"
+							checkreturn="true"
+							passthru="true" />
+						<delete file="${dir}/composer.phar" />
+					</else>
+				</if>
 			</then>
+			<else>
+				<!-- We do not have composer dependencies, do not ship composer files -->
+				<delete file="${dir}/composer.json" />
+				<delete file="${dir}/composer.lock" />
+			</else>
 		</if>
 
 		<delete file="${dir}/config.php" />

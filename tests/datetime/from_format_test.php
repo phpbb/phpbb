@@ -7,9 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/user.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/datetime.php';
 require_once dirname(__FILE__) . '/../mock/lang.php';
 
 class phpbb_datetime_from_format_test extends phpbb_test_case
@@ -38,7 +35,7 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user = new phpbb_user();
+		$user = new \phpbb\user();
 		$user->timezone = new DateTimeZone($timezone);
 		$user->lang['datetime'] = array(
 			'TODAY'		=> 'Today',

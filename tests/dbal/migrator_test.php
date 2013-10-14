@@ -8,10 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migrator.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/migration.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
-
 require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
 require_once dirname(__FILE__) . '/migration/if.php';
@@ -37,15 +33,15 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->db_tools = new phpbb_db_tools($this->db);
+		$this->db_tools = new \phpbb\db\tools($this->db);
 
-		$this->config = new phpbb_config_db($this->db, new phpbb_mock_cache, 'phpbb_config');
+		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 
 		$tools = array(
-			new phpbb_db_migration_tool_config($this->config),
+			new \phpbb\db\migration\tool\config($this->config),
 		);
 
-		$this->migrator = new phpbb_db_migrator(
+		$this->migrator = new \phpbb\db\migrator(
 			$this->config,
 			$this->db,
 			$this->db_tools,
@@ -59,11 +55,11 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
 
-		$this->extension_manager = new phpbb_extension_manager(
+		$this->extension_manager = new \phpbb\extension\manager(
 			$container,
 			$this->db,
 			$this->config,
-			new phpbb_filesystem(),
+			new phpbb\filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
@@ -236,7 +232,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				$this->migrator->update();
 			}
 		}
-		catch (phpbb_db_migration_exception $e) {}
+		catch (\phpbb\db\migration\exception $e) {}
 
 		// Failure should have caused an automatic roll-back, so this should not exist.
 		$this->assertFalse(isset($this->config['foobar3']));

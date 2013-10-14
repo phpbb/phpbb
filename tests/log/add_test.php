@@ -23,10 +23,10 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('phpbb_user');
-		$auth = $this->getMock('phpbb_auth');
+		$user = $this->getMock('\phpbb\user');
+		$auth = $this->getMock('\phpbb\auth\auth');
 
-		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$this->assertTrue($log->is_enabled(), 'Initialise failed');
 
@@ -52,10 +52,10 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('phpbb_user');
-		$auth = $this->getMock('phpbb_auth');
+		$user = $this->getMock('\phpbb\user');
+		$auth = $this->getMock('\phpbb\auth\auth');
 
-		$log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$mode = 'critical';
 		$user_id = ANONYMOUS;

@@ -16,7 +16,7 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-		$this->type_cast_helper = new phpbb_request_type_cast_helper();
+		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
 	}
 
 	public function test_addslashes_recursively()

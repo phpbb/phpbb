@@ -1,6 +1,6 @@
 <?php
 
-class phpbb_cron_task_core_simple_not_runnable extends phpbb_cron_task_base
+class phpbb_cron_task_core_simple_not_runnable extends \phpbb\cron\task\base
 {
 	public function get_name()
 	{

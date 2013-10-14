@@ -38,7 +38,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'TERMS_OF_USE_CONTENT'	=> 'By accessing “%1$s” (hereinafter “we”, “us”, “our”, “%1$s”, “%2$s”), you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use “%1$s”. We may change these at any time and we’ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of “%1$s” after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br />
 	<br />
-	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://opensource.org/licenses/gpl-2.0.php">GNU General Public License v2</a>” (hereinafter “GPL”) and can be downloaded from <a href="http://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates internet based discussions, the phpBB Group are not responsible for what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="http://www.phpbb.com/">http://www.phpbb.com/</a>.<br />
+	Our forums are powered by phpBB (hereinafter “they”, “them”, “their”, “phpBB software”, “www.phpbb.com”, “phpBB Group”, “phpBB Teams”) which is a bulletin board solution released under the “<a href="http://opensource.org/licenses/gpl-2.0.php">GNU General Public License v2</a>” (hereinafter “GPL”) and can be downloaded from <a href="https://www.phpbb.com/">www.phpbb.com</a>. The phpBB software only facilitates internet based discussions, the phpBB Group are not responsible for what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: <a href="https://www.phpbb.com/">https://www.phpbb.com/</a>.<br />
 	<br />
 	You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where “%1$s” is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address of all posts are recorded to aid in enforcing these conditions. You agree that “%1$s” have the right to remove, edit, move or close any topic at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither “%1$s” nor phpBB shall be held responsible for any hacking attempt that may lead to the data being compromised.
 	',
@@ -270,6 +270,10 @@ $lang = array_merge($lang, array(
 	'LINK_REMOTE_SIZE'			=> 'Avatar dimensions',
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
+	'LOGIN_LINK'					=> 'Link or register your account on an external service with your board account',
+	'LOGIN_LINK_EXPLAIN'			=> 'You have attempted to login with an external service that is not yet connected to an account on this board. You must now either link this account to an existing account or create a new account.',
+	'LOGIN_LINK_MISSING_DATA'		=> 'Data that is necessary to link your account with an external service is not available. Please restart the login process.',
+	'LOGIN_LINK_NO_DATA_PROVIDED'	=> 'No data has been provided to this page to link an external account to a forum account. Please contact the board administrator if you continue to experience problems.',
 	'LOGIN_KEY'					=> 'Login Key',
 	'LOGIN_TIME'				=> 'Login Time',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
@@ -313,6 +317,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_METHOD_JABBER'						=> 'Jabber',
 	'NOTIFICATION_TYPE'									=> 'Notification type',
 	'NOTIFICATION_TYPE_BOOKMARK'						=> 'Someone replies to a topic you have bookmarked',
+	'NOTIFICATION_TYPE_GROUP_REQUEST'					=> 'Someone requests to join a group you lead',
 	'NOTIFICATION_TYPE_IN_MODERATION_QUEUE'				=> 'A post or topic needs approval',
 	'NOTIFICATION_TYPE_MODERATION_QUEUE'   				=> 'Your topics/posts are approved or disapproved by a moderator',
 	'NOTIFICATION_TYPE_PM'								=> 'Someone sends you a private message',
@@ -475,11 +480,20 @@ $lang = array_merge($lang, array(
 	'UCP_ADMIN_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. The administrator will review your account and if approved you will receive an email at the address you specified.',
 	'UCP_AIM'					=> 'AOL Instant Messenger',
 	'UCP_ATTACHMENTS'			=> 'Attachments',
+	'UCP_AUTH_LINK'				=> 'External accounts',
+	'UCP_AUTH_LINK_ASK'			=> 'You currently have no account associated with this external service. Click the button below to link your board account to an account with this external service.',
+	'UCP_AUTH_LINK_ID'			=> 'Unique identifier',
+	'UCP_AUTH_LINK_LINK'		=> 'Link',
+	'UCP_AUTH_LINK_MANAGE'		=> 'Manage external account associations',
+	'UCP_AUTH_LINK_NOT_SUPPORTED'	=> 'Linking board accounts to external services is not supported by this board’s current authentication method.',
+	'UCP_AUTH_LINK_TITLE'		=> 'Manage your external account associations',
+	'UCP_AUTH_LINK_UNLINK'		=> 'Unlink',
 	'UCP_COPPA_BEFORE'			=> 'Before %s',
 	'UCP_COPPA_ON_AFTER'		=> 'On or after %s',
 	'UCP_EMAIL_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. You will receive an email at the address you provide that contains an account activation link.',
 	'UCP_ICQ'					=> 'ICQ number',
 	'UCP_JABBER'				=> 'Jabber address',
+	'UCP_LOGIN_LINK'			=> 'Set up an external account association',
 
 	'UCP_MAIN'					=> 'Overview',
 	'UCP_MAIN_ATTACHMENTS'		=> 'Manage attachments',
@@ -515,7 +529,7 @@ $lang = array_merge($lang, array(
 	'UCP_PROFILE_PROFILE_INFO'	=> 'Edit profile',
 	'UCP_PROFILE_REG_DETAILS'	=> 'Edit account settings',
 	'UCP_PROFILE_SIGNATURE'		=> 'Edit signature',
-	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Edit "Remember Me" login keys',
+	'UCP_PROFILE_AUTOLOGIN_KEYS'=> 'Manage “Remember Me” login keys',
 
 	'UCP_USERGROUPS'			=> 'Usergroups',
 	'UCP_USERGROUPS_MEMBER'		=> 'Edit memberships',

@@ -253,7 +253,7 @@ class mcp_warn
 		// Check if can send a notification
 		if ($config['allow_privmsg'])
 		{
-			$auth2 = new phpbb_auth();
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 			$s_can_notify = ($auth2->acl_get('u_readpm')) ? true : false;
 			unset($auth2);
@@ -289,19 +289,8 @@ class mcp_warn
 
 		// We want to make the message available here as a reminder
 		// Parse the message and subject
-		$message = censor_text($user_row['post_text']);
-
-		// Second parse bbcode here
-		if ($user_row['bbcode_bitfield'])
-		{
-			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-
-			$bbcode = new bbcode($user_row['bbcode_bitfield']);
-			$bbcode->bbcode_second_pass($message, $user_row['bbcode_uid'], $user_row['bbcode_bitfield']);
-		}
-
-		$message = bbcode_nl2br($message);
-		$message = smiley_text($message);
+		$parse_flags = OPTION_FLAG_SMILIES | ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
+		$message = generate_text_for_display($user_row['post_text'], $user_row['bbcode_uid'], $user_row['bbcode_bitfield'], $parse_flags, true);
 
 		// Generate the appropriate user information for the user we are looking at
 		if (!function_exists('phpbb_get_user_avatar'))
@@ -376,7 +365,7 @@ class mcp_warn
 		// Check if can send a notification
 		if ($config['allow_privmsg'])
 		{
-			$auth2 = new phpbb_auth();
+			$auth2 = new \phpbb\auth\auth();
 			$auth2->acl($user_row);
 			$s_can_notify = ($auth2->acl_get('u_readpm')) ? true : false;
 			unset($auth2);

@@ -413,7 +413,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	static $bbcode;
 	global $phpbb_dispatcher;
 
-	if (!$text)
+	if ($text === '')
 	{
 		return '';
 	}
@@ -505,7 +505,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 
-	if (!$text)
+	if ($text === '')
 	{
 		return;
 	}
@@ -727,37 +727,59 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 		$server_url = generate_board_url();
 	}
 
-	static $magic_url_match;
-	static $magic_url_replace;
 	static $static_class;
+	static $magic_url_match_args;
 
-	if (!is_array($magic_url_match) || $static_class != $class)
+	if (!is_array($magic_url_match_args) || $static_class != $class)
 	{
 		$static_class = $class;
 		$class = ($static_class) ? ' class="' . $static_class . '"' : '';
 		$local_class = ($static_class) ? ' class="' . $static_class . '-local"' : '';
 
-		$magic_url_match = $magic_url_replace = array();
-		// Be sure to not let the matches cross over. ;)
+		$magic_url_match_args = array();
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (>.])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
-		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_LOCAL, '\$1', '\$2', '\$3', '$local_class')";
+		$magic_url_match_args[] = array(
+			'#(^|[\n\t (>.])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#i',
+			MAGIC_URL_LOCAL,
+			$local_class,
+		);
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (>.])(' . get_preg_expression('url_inline') . ')#ie';
-		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_FULL, '\$1', '\$2', '', '$class')";
+		$magic_url_match_args[] = array(
+			'#(^|[\n\t (>.])(' . get_preg_expression('url_inline') . ')#i',
+			MAGIC_URL_FULL,
+			$class,
+		);
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#ie';
-		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_WWW, '\$1', '\$2', '', '$class')";
+		$magic_url_match_args[] = array(
+			'#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#i',
+			MAGIC_URL_WWW,
+			$class,
+		);
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n\t (>])(' . get_preg_expression('email') . ')/ie';
-		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_EMAIL, '\$1', '\$2', '', '')";
+		$magic_url_match_args[] = array(
+			'/(^|[\n\t (>])(' . get_preg_expression('email') . ')/i',
+			MAGIC_URL_EMAIL,
+			'',
+		);
 	}
 
-	return preg_replace($magic_url_match, $magic_url_replace, $text);
+	foreach ($magic_url_match_args as $magic_args)
+	{
+		if (preg_match($magic_args[0], $text, $matches))
+		{
+			$text = preg_replace_callback($magic_args[0], function($matches) use ($magic_args)
+			{
+				$relative_url = isset($matches[3]) ? $matches[3] : '';
+				return make_clickable_callback($magic_args[1], $matches[1], $matches[2], $relative_url, $magic_args[2]);
+			}, $text);
+		}
+	}
+
+	return $text;
 }
 
 /**
@@ -813,7 +835,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user, $phpbb_root_path;
+	global $config, $user, $phpbb_path_helper;
 
 	if ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
@@ -821,7 +843,7 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }

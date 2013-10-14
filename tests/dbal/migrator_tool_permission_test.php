@@ -8,8 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/tool/permission.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/exception.php';
 
 class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 {
@@ -26,10 +24,10 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		parent::setup();
 
 		$db = $this->db = $this->new_dbal();
-		$cache = $this->cache = new phpbb_cache_service(new phpbb_cache_driver_null(), new phpbb_config(array()), $this->db, $phpbb_root_path, $phpEx);
-		$this->auth = new phpbb_auth();
+		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\null(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
+		$this->auth = new \phpbb\auth\auth();
 
-		$this->tool = new phpbb_db_migration_tool_permission($this->db, $this->cache, $this->auth, $phpbb_root_path, $phpEx);
+		$this->tool = new \phpbb\db\migration\tool\permission($this->db, $this->cache, $this->auth, $phpbb_root_path, $phpEx);
 	}
 
 	public function exists_data()

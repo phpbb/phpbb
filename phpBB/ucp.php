@@ -21,7 +21,7 @@ require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 $id 	= request_var('i', '');
 $mode	= request_var('mode', '');
 
-if (in_array($mode, array('login', 'logout', 'confirm', 'sendpassword', 'activate')))
+if (in_array($mode, array('login', 'login_link', 'logout', 'confirm', 'sendpassword', 'activate')))
 {
 	define('IN_LOGIN', true);
 }
@@ -80,22 +80,31 @@ switch ($mode)
 		login_box(request_var('redirect', "index.$phpEx"));
 	break;
 
+	case 'login_link':
+		if ($user->data['is_registered'])
+		{
+			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		}
+
+		$module->load('ucp', 'login_link');
+		$module->display($user->lang['UCP_LOGIN_LINK']);
+	break;
+
 	case 'logout':
 		if ($user->data['user_id'] != ANONYMOUS && $request->is_set('sid') && $request->variable('sid', '') === $user->session_id)
 		{
 			$user->session_kill();
 			$user->session_begin();
-			$message = $user->lang['LOGOUT_REDIRECT'];
 		}
-		else
+		else if ($user->data['user_id'] != ANONYMOUS)
 		{
-			$message = ($user->data['user_id'] == ANONYMOUS) ? $user->lang['LOGOUT_REDIRECT'] : $user->lang['LOGOUT_FAILED'];
+			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+
+			$message = $user->lang['LOGOUT_FAILED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
+			trigger_error($message);
 		}
-		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-		$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
-		trigger_error($message);
-
+		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 	break;
 
 	case 'terms':
@@ -140,9 +149,9 @@ switch ($mode)
 		{
 			$set_time = time() - 31536000;
 
-			foreach ($request->variable_names(phpbb_request_interface::COOKIE) as $cookie_name)
+			foreach ($request->variable_names(\phpbb\request\request_interface::COOKIE) as $cookie_name)
 			{
-				$cookie_data = $request->variable($cookie_name, '', true, phpbb_request_interface::COOKIE);
+				$cookie_data = $request->variable($cookie_name, '', true, \phpbb\request\request_interface::COOKIE);
 
 				// Only delete board cookies, no other ones...
 				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)

@@ -832,7 +832,7 @@ $sql = 'SELECT *
 $sql_ary = array(
 	'somedata'		=&gt; $my_string,
 	'otherdata'		=&gt; $an_int,
-	'moredata'		=&gt; $another_int
+	'moredata'		=&gt; $another_int,
 );
 
 $db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('INSERT', $sql_ary));
@@ -844,7 +844,7 @@ $db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('I
 $sql_ary = array(
 	'somedata'		=&gt; $my_string,
 	'otherdata'		=&gt; $an_int,
-	'moredata'		=&gt; $another_int
+	'moredata'		=&gt; $another_int,
 );
 
 $sql = 'UPDATE ' . SOME_TABLE . '
@@ -937,20 +937,20 @@ $sql_array = array(
 
 	'FROM'		=&gt; array(
 		FORUMS_WATCH_TABLE	=&gt; 'fw',
-		FORUMS_TABLE		=&gt; 'f'
+		FORUMS_TABLE		=&gt; 'f',
 	),
 
 	'LEFT_JOIN'	=&gt; array(
 		array(
 			'FROM'	=&gt; array(FORUMS_TRACK_TABLE =&gt; 'ft'),
-			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id'
-		)
+			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id',
+		),
 	),
 
 	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . '
 		AND f.forum_id = fw.forum_id',
 
-	'ORDER_BY'	=&gt; 'left_id'
+	'ORDER_BY'	=&gt; 'left_id',
 );
 
 $sql = $db-&gt;sql_build_query('SELECT', $sql_array);
@@ -964,13 +964,13 @@ $sql_array = array(
 
 	'FROM'		=&gt; array(
 		FORUMS_WATCH_TABLE	=&gt; 'fw',
-		FORUMS_TABLE		=&gt; 'f'
+		FORUMS_TABLE		=&gt; 'f',
 	),
 
 	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . '
 		AND f.forum_id = fw.forum_id',
 
-	'ORDER_BY'	=&gt; 'left_id'
+	'ORDER_BY'	=&gt; 'left_id',
 );
 
 if ($config['load_db_lastread'])
@@ -978,8 +978,8 @@ if ($config['load_db_lastread'])
 	$sql_array['LEFT_JOIN'] = array(
 		array(
 			'FROM'	=&gt; array(FORUMS_TRACK_TABLE =&gt; 'ft'),
-			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id'
-		)
+			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id',
+		),
 	);
 
 	$sql_array['SELECT'] .= ', ft.mark_time ';
@@ -1315,7 +1315,7 @@ parent = prosilver
 <span class="comment">&lt;!-- INCLUDEPHP somefile&#46;php --&gt;</span>
 </pre></div>
 
-<p>it will be included and executed inline.<br /><br />A note, it is very much encouraged that template designers do not include PHP. The ability to include raw PHP was introduced primarily to allow end users to include banner code, etc. without modifying multiple files (as with 2.0.x). It was not intended for general use ... hence <!-- w --><a href="http://www.phpbb.com">www.phpbb.com</a><!-- w --> will <strong>not</strong> make available template sets which include PHP. And by default templates will have PHP disabled (the admin will need to specifically activate PHP for a template).</p>
+<p>it will be included and executed inline.<br /><br />A note, it is very much encouraged that template designers do not include PHP. The ability to include raw PHP was introduced primarily to allow end users to include banner code, etc. without modifying multiple files (as with 2.0.x). It was not intended for general use ... hence <!-- w --><a href="https://www.phpbb.com">www.phpbb.com</a><!-- w --> will <strong>not</strong> make available template sets which include PHP. And by default templates will have PHP disabled (the admin will need to specifically activate PHP for a template).</p>
 
 <h4>Conditionals/Control structures</h4>
 <p>The most significant addition to 3.x are conditions or control structures, &quot;if something then do this else do that&quot;. The system deployed is very similar to Smarty. This may confuse some people at first but it offers great potential and great flexibility with a little imagination. In their most simple form these constructs take the form:</p>
@@ -2499,7 +2499,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="content">
 
-	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-2.0.php">GNU General Public License v2</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-2.0.php">GNU General Public License v2</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) <a href="https://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 		</div>
 

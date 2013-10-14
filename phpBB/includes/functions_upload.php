@@ -47,10 +47,16 @@ class filespec
 	var $guesser = false;
 
 	/**
+	 * The plupload object
+	 * @var \phpbb\plupload\plupload
+	 */
+	protected $plupload;
+
+	/**
 	* File Class
 	* @access private
 	*/
-	function filespec($upload_ary, $upload_namespace)
+	function filespec($upload_ary, $upload_namespace, \phpbb\plupload\plupload $plupload = null)
 	{
 		if (!isset($upload_ary))
 		{
@@ -84,6 +90,7 @@ class filespec
 
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
 		$this->upload = $upload_namespace;
+		$this->plupload = $plupload;
 	}
 
 	/**
@@ -171,12 +178,14 @@ class filespec
 	*/
 	function is_uploaded()
 	{
-		if (!$this->local && !is_uploaded_file($this->filename))
+		$is_plupload = $this->plupload && $this->plupload->is_active();
+
+		if (!$this->local && !$is_plupload && !is_uploaded_file($this->filename))
 		{
 			return false;
 		}
 
-		if ($this->local && !file_exists($this->filename))
+		if (($this->local || $is_plupload) && !file_exists($this->filename))
 		{
 			return false;
 		}
@@ -584,16 +593,28 @@ class fileupload
 	* Upload file from users harddisk
 	*
 	* @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
+	* @param \phpbb\plupload\plupload $plupload The plupload object
+	*
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function form_upload($form_name)
+	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
 	{
 		global $user, $request;
 
 		$upload = $request->file($form_name);
 		unset($upload['local_mode']);
-		$file = new filespec($upload, $this);
+
+		if ($plupload)
+		{
+			$result = $plupload->handle_upload($form_name);
+			if (is_array($result))
+			{
+				$upload = array_merge($upload, $result);
+			}
+		}
+
+		$file = new filespec($upload, $this, $plupload);
 
 		if ($file->init_error)
 		{
@@ -720,7 +741,7 @@ class fileupload
 		}
 
 		$this->common_checks($file);
-		$request->overwrite('local', $upload, phpbb_request_interface::FILES);
+		$request->overwrite('local', $upload, \phpbb\request\request_interface::FILES);
 
 		return $file;
 	}

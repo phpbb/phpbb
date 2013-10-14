@@ -1,6 +1,8 @@
 <?php
 
-class phpbb_avatar_driver_foobar extends phpbb_avatar_driver
+namespace phpbb\avatar\driver;
+
+class foobar extends \phpbb\avatar\driver\driver
 {
 	public function get_data($row)
 	{

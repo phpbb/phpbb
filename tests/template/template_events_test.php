@@ -54,11 +54,9 @@ class phpbb_template_template_events_test extends phpbb_template_template_test_c
 				array(),
 				array(),
 				array(),
-'Kappa test event in all
-Omega test event in all
-Zeta test event in all
-Kappa test event in silver
-Omega test event in silver',
+'Kappa test event in silver
+Omega test event in silver
+Zeta test event in all',
 			),
 			array(
 				'Template event with inheritance - child',
@@ -68,10 +66,9 @@ Omega test event in silver',
 				array(),
 				array(),
 				array(),
-'Kappa test event in all
-Omega test event in all
-Zeta test event in all
-Kappa test event in silver_inherit',
+'Kappa test event in silver_inherit
+Omega test event in silver
+Zeta test event in all',
 			),
 			array(
 				'Definition in parent style',
@@ -82,6 +79,16 @@ Kappa test event in silver_inherit',
 				array(),
 				array(),
 'two in silver in omega',
+			),
+			array(
+				'EVENT in loop',
+				'ext_trivial',
+				array('silver'),
+				'event_loop.html',
+				array(),
+				array('event_loop' => array(array(), array(), array())),
+				array(),
+				'event_loop0|event_loop1|event_loop2',
 			),
 		);
 	}
@@ -95,8 +102,7 @@ Kappa test event in silver_inherit',
 		$this->setup_engine_for_events($dataset, $style_names);
 
 		// Run test
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected);
 	}
 
 	protected function setup_engine_for_events($dataset, $style_names, array $new_config = array())
@@ -104,16 +110,21 @@ Kappa test event in silver_inherit',
 		global $phpbb_root_path, $phpEx, $user;
 
 		$defaults = $this->config_defaults();
-		$config = new phpbb_config(array_merge($defaults, $new_config));
+		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
 		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/styles/silver/template";
-		$this->style_resource_locator = new phpbb_style_resource_locator();
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
-		$this->template = new phpbb_template($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, new phpbb_template_context, $this->extension_manager);
-		$this->style_provider = new phpbb_style_path_provider();
-		$this->style = new phpbb_style($phpbb_root_path, $phpEx, $config, $user, $this->style_resource_locator, $this->style_provider, $this->template);
-		$this->style->set_custom_style('silver', array($this->template_path), $style_names, '');
+		$path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			new \phpbb\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $user, new \phpbb\template\context, $this->extension_manager);
+		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}
 }

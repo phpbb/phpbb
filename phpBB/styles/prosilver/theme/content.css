@@ -159,7 +159,7 @@ dl.icon dt .list-inner {
 }
 
 dl.icon dt, dl.icon dd {
-	min-height: 40px;
+	min-height: 35px;
 }
 
 dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
@@ -472,13 +472,13 @@ blockquote.uncited {
 }
 
 /* Code block */
-dl.codebox {
+.codebox {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
 }
 
-dl.codebox dt {
+.codebox p {
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
 	margin-bottom: 3px;
@@ -487,11 +487,11 @@ dl.codebox dt {
 	display: block;
 }
 
-blockquote dl.codebox {
+blockquote .codebox {
 	margin-left: 0;
 }
 
-dl.codebox code {
+.codebox code {
 	/* Also see tweaks.css */
 	overflow: auto;
 	display: block;
@@ -660,6 +660,12 @@ fieldset.polls dd div {
 .pollbar1, .pollbar2, .pollbar3, .pollbar4, .pollbar5 {
 	border-bottom: 1px solid transparent;
 	border-right: 1px solid transparent;
+}
+
+.vote-submitted {
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: center;
 }
 
 /* Poster profile block

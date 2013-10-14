@@ -33,6 +33,9 @@
 			<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 				<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
+			<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED -->
+				<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.DELETED_IMG}</a>&nbsp;
+			<!-- ENDIF -->
 			<!-- IF topicrow.S_TOPIC_REPORTED and topicrow.U_MCP_REPORT -->
 				<a href="{topicrow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
@@ -58,6 +61,7 @@
 		<select name="action">
 			<option value="" selected="selected">{L_SELECT_ACTION}</option>
 			<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
+			<!-- IF S_CAN_RESTORE --><option value="restore_topic">{L_RESTORE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_MERGE --><option value="merge_topics">{L_MERGE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->

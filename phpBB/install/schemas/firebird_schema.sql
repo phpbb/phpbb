@@ -372,9 +372,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page INTEGER DEFAULT 0 NOT NULL,
 	forum_type INTEGER DEFAULT 0 NOT NULL,
 	forum_status INTEGER DEFAULT 0 NOT NULL,
-	forum_posts INTEGER DEFAULT 0 NOT NULL,
-	forum_topics INTEGER DEFAULT 0 NOT NULL,
-	forum_topics_real INTEGER DEFAULT 0 NOT NULL,
+	forum_posts_approved INTEGER DEFAULT 0 NOT NULL,
+	forum_posts_unapproved INTEGER DEFAULT 0 NOT NULL,
+	forum_posts_softdeleted INTEGER DEFAULT 0 NOT NULL,
+	forum_topics_approved INTEGER DEFAULT 0 NOT NULL,
+	forum_topics_unapproved INTEGER DEFAULT 0 NOT NULL,
+	forum_topics_softdeleted INTEGER DEFAULT 0 NOT NULL,
 	forum_last_post_id INTEGER DEFAULT 0 NOT NULL,
 	forum_last_poster_id INTEGER DEFAULT 0 NOT NULL,
 	forum_last_post_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
@@ -690,6 +693,27 @@ BEGIN
 END;;
 
 
+# Table: 'phpbb_oauth_accounts'
+CREATE TABLE phpbb_oauth_accounts (
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	provider VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	oauth_provider_id BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_oauth_accounts ADD PRIMARY KEY (user_id, provider);;
+
+
+# Table: 'phpbb_oauth_tokens'
+CREATE TABLE phpbb_oauth_tokens (
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	session_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	provider VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	oauth_token BLOB SUB_TYPE TEXT CHARACTER SET NONE DEFAULT '' NOT NULL
+);;
+
+CREATE INDEX phpbb_oauth_tokens_user_id ON phpbb_oauth_tokens(user_id);;
+CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens(provider);;
+
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
 	poll_option_id INTEGER DEFAULT 0 NOT NULL,
@@ -722,7 +746,7 @@ CREATE TABLE phpbb_posts (
 	icon_id INTEGER DEFAULT 0 NOT NULL,
 	poster_ip VARCHAR(40) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	post_time INTEGER DEFAULT 0 NOT NULL,
-	post_approved INTEGER DEFAULT 1 NOT NULL,
+	post_visibility INTEGER DEFAULT 0 NOT NULL,
 	post_reported INTEGER DEFAULT 0 NOT NULL,
 	enable_bbcode INTEGER DEFAULT 1 NOT NULL,
 	enable_smilies INTEGER DEFAULT 1 NOT NULL,
@@ -740,7 +764,10 @@ CREATE TABLE phpbb_posts (
 	post_edit_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	post_edit_user INTEGER DEFAULT 0 NOT NULL,
 	post_edit_count INTEGER DEFAULT 0 NOT NULL,
-	post_edit_locked INTEGER DEFAULT 0 NOT NULL
+	post_edit_locked INTEGER DEFAULT 0 NOT NULL,
+	post_delete_time INTEGER DEFAULT 0 NOT NULL,
+	post_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	post_delete_user INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_posts ADD PRIMARY KEY (post_id);;
@@ -749,7 +776,7 @@ CREATE INDEX phpbb_posts_forum_id ON phpbb_posts(forum_id);;
 CREATE INDEX phpbb_posts_topic_id ON phpbb_posts(topic_id);;
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts(poster_ip);;
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts(poster_id);;
-CREATE INDEX phpbb_posts_post_approved ON phpbb_posts(post_approved);;
+CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts(post_visibility);;
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts(post_username);;
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts(topic_id, post_time);;
 
@@ -1215,15 +1242,16 @@ CREATE TABLE phpbb_topics (
 	forum_id INTEGER DEFAULT 0 NOT NULL,
 	icon_id INTEGER DEFAULT 0 NOT NULL,
 	topic_attachment INTEGER DEFAULT 0 NOT NULL,
-	topic_approved INTEGER DEFAULT 1 NOT NULL,
+	topic_visibility INTEGER DEFAULT 0 NOT NULL,
 	topic_reported INTEGER DEFAULT 0 NOT NULL,
 	topic_title VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	topic_poster INTEGER DEFAULT 0 NOT NULL,
 	topic_time INTEGER DEFAULT 0 NOT NULL,
 	topic_time_limit INTEGER DEFAULT 0 NOT NULL,
 	topic_views INTEGER DEFAULT 0 NOT NULL,
-	topic_replies INTEGER DEFAULT 0 NOT NULL,
-	topic_replies_real INTEGER DEFAULT 0 NOT NULL,
+	topic_posts_approved INTEGER DEFAULT 0 NOT NULL,
+	topic_posts_unapproved INTEGER DEFAULT 0 NOT NULL,
+	topic_posts_softdeleted INTEGER DEFAULT 0 NOT NULL,
 	topic_status INTEGER DEFAULT 0 NOT NULL,
 	topic_type INTEGER DEFAULT 0 NOT NULL,
 	topic_first_post_id INTEGER DEFAULT 0 NOT NULL,
@@ -1244,7 +1272,10 @@ CREATE TABLE phpbb_topics (
 	poll_length INTEGER DEFAULT 0 NOT NULL,
 	poll_max_options INTEGER DEFAULT 1 NOT NULL,
 	poll_last_vote INTEGER DEFAULT 0 NOT NULL,
-	poll_vote_change INTEGER DEFAULT 0 NOT NULL
+	poll_vote_change INTEGER DEFAULT 0 NOT NULL,
+	topic_delete_time INTEGER DEFAULT 0 NOT NULL,
+	topic_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	topic_delete_user INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
@@ -1252,8 +1283,8 @@ ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics(topic_last_post_time);;
-CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics(topic_approved);;
-CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_approved, topic_last_post_id);;
+CREATE INDEX phpbb_topics_topic_visibility ON phpbb_topics(topic_visibility);;
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_visibility, topic_last_post_id);;
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics(forum_id, topic_last_post_time, topic_moved_id);;
 
 CREATE GENERATOR phpbb_topics_gen;;

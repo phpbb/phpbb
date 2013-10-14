@@ -110,13 +110,9 @@ class phpbb_captcha_qa
 	*/
 	static public function is_installed()
 	{
-		global $db, $phpbb_root_path, $phpEx;
+		global $db;
 
-		if (!class_exists('phpbb_db_tools', false))
-		{
-			include("$phpbb_root_path/includes/db/db_tools.$phpEx");
-		}
-		$db_tool = new phpbb_db_tools($db);
+		$db_tool = new \phpbb\db\tools($db);
 
 		return $db_tool->sql_table_exists(CAPTCHA_QUESTIONS_TABLE);
 	}
@@ -297,13 +293,9 @@ class phpbb_captcha_qa
 	*/
 	function install()
 	{
-		global $db, $phpbb_root_path, $phpEx;
+		global $db;
 
-		if (!class_exists('phpbb_db_tools'))
-		{
-			include("$phpbb_root_path/includes/db/db_tools.$phpEx");
-		}
-		$db_tool = new phpbb_db_tools($db);
+		$db_tool = new \phpbb\db\tools($db);
 
 		$tables = array(CAPTCHA_QUESTIONS_TABLE, CAPTCHA_ANSWERS_TABLE, CAPTCHA_QA_CONFIRM_TABLE);
 

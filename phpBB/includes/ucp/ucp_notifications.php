@@ -163,11 +163,11 @@ class ucp_notifications
 	* Output all the notification types to the template
 	*
 	* @param string $block
-	* @param phpbb_notification_manager $phpbb_notifications
-	* @param phpbb_template $template
-	* @param phpbb_user $user
+	* @param \phpbb\notification\manager $phpbb_notifications
+	* @param \phpbb\template\template $template
+	* @param \phpbb\user $user
 	*/
-	public function output_notification_types($subscriptions, $block = 'notification_types', phpbb_notification_manager $phpbb_notifications, phpbb_template $template, phpbb_user $user)
+	public function output_notification_types($subscriptions, $block = 'notification_types', \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
@@ -210,11 +210,11 @@ class ucp_notifications
 	* Output all the notification methods to the template
 	*
 	* @param string $block
-	* @param phpbb_notification_manager $phpbb_notifications
-	* @param phpbb_template $template
-	* @param phpbb_user $user
+	* @param \phpbb\notification\manager $phpbb_notifications
+	* @param \phpbb\template\template $template
+	* @param \phpbb\user $user
 	*/
-	public function output_notification_methods($block = 'notification_methods', phpbb_notification_manager $phpbb_notifications, phpbb_template $template, phpbb_user $user)
+	public function output_notification_methods($block = 'notification_methods', \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 

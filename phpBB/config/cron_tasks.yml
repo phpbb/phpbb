@@ -1,6 +1,6 @@
 services:
     cron.task.core.prune_all_forums:
-        class: phpbb_cron_task_core_prune_all_forums
+        class: phpbb\cron\task\core\prune_all_forums
         arguments:
             - %core.root_path%
             - %core.php_ext%
@@ -12,7 +12,7 @@ services:
             - { name: cron.task }
 
     cron.task.core.prune_forum:
-        class: phpbb_cron_task_core_prune_forum
+        class: phpbb\cron\task\core\prune_forum
         arguments:
             - %core.root_path%
             - %core.php_ext%
@@ -23,8 +23,18 @@ services:
         tags:
             - { name: cron.task }
 
+    cron.task.core.prune_notifications:
+        class: phpbb\cron\task\core\prune_notifications
+        arguments:
+            - @config
+            - @notification_manager
+        calls:
+            - [set_name, [cron.task.core.prune_notifications]]
+        tags:
+            - { name: cron.task }
+
     cron.task.core.queue:
-        class: phpbb_cron_task_core_queue
+        class: phpbb\cron\task\core\queue
         arguments:
             - %core.root_path%
             - %core.php_ext%
@@ -35,7 +45,7 @@ services:
             - { name: cron.task }
 
     cron.task.core.tidy_cache:
-        class: phpbb_cron_task_core_tidy_cache
+        class: phpbb\cron\task\core\tidy_cache
         arguments:
             - @config
             - @cache.driver
@@ -45,7 +55,7 @@ services:
             - { name: cron.task }
 
     cron.task.core.tidy_database:
-        class: phpbb_cron_task_core_tidy_database
+        class: phpbb\cron\task\core\tidy_database
         arguments:
             - %core.root_path%
             - %core.php_ext%
@@ -55,8 +65,18 @@ services:
         tags:
             - { name: cron.task }
 
+    cron.task.core.tidy_plupload:
+        class: phpbb\cron\task\core\tidy_plupload
+        arguments:
+            - %core.root_path%
+            - @config
+        calls:
+            - [set_name, [cron.task.core.tidy_plupload]]
+        tags:
+            - { name: cron.task }
+
     cron.task.core.tidy_search:
-        class: phpbb_cron_task_core_tidy_search
+        class: phpbb\cron\task\core\tidy_search
         arguments:
             - %core.root_path%
             - %core.php_ext%
@@ -70,7 +90,7 @@ services:
             - { name: cron.task }
 
     cron.task.core.tidy_sessions:
-        class: phpbb_cron_task_core_tidy_sessions
+        class: phpbb\cron\task\core\tidy_sessions
         arguments:
             - @config
             - @user
@@ -80,7 +100,7 @@ services:
             - { name: cron.task }
 
     cron.task.core.tidy_warnings:
-        class: phpbb_cron_task_core_tidy_warnings
+        class: phpbb\cron\task\core\tidy_warnings
         arguments:
             - %core.root_path%
             - %core.php_ext%

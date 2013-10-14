@@ -561,17 +561,8 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text($member['user_sig']);
-
-			if ($member['user_sig_bbcode_bitfield'])
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode();
-				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-			}
-
-			$member['user_sig'] = bbcode_nl2br($member['user_sig']);
-			$member['user_sig'] = smiley_text($member['user_sig']);
+			$parse_flags = ($member['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
 		$poster_avatar = phpbb_get_user_avatar($member);
@@ -604,7 +595,7 @@ switch ($mode)
 		* Modify user data before we display the profile
 		*
 		* @event core.memberlist_view_profile
-		* @var	array	member					Title of the index page
+		* @var	array	member					Array with user's data
 		* @var	bool	user_notes_enabled		Is the mcp user notes module
 		*										enabled?
 		* @var	bool	warn_user_enabled		Is the mcp warnings module
@@ -638,7 +629,7 @@ switch ($mode)
 			$sql = 'SELECT COUNT(post_id) as posts_in_queue
 				FROM ' . POSTS_TABLE . '
 				WHERE poster_id = ' . $user_id . '
-					AND post_approved = 0';
+					AND post_visibility = ' . ITEM_UNAPPROVED;
 			$result = $db->sql_query($sql);
 			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 			$db->sql_freeresult($result);
@@ -1058,7 +1049,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(phpbb_request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));

@@ -121,6 +121,7 @@ if (sizeof($package->old_packages))
 
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $dest_filename_dir);
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $dest_filename_dir);
+		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $dest_filename_dir);
 
 		$package->run_command('mkdir ' . $dest_filename_dir . '/install/update');
 		$package->run_command('mkdir ' . $dest_filename_dir . '/install/update/old');
@@ -256,6 +257,7 @@ $update_info = array(
 	// Copy the install files to their respective locations
 	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $package->get('patch_directory'));
 	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $package->get('patch_directory'));
+	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $package->get('patch_directory'));
 
 	// Remove some files
 	chdir($package->get('patch_directory') . '/install');
@@ -285,9 +287,6 @@ if (sizeof($package->old_packages))
 
 		// Build Package
 		$package->run_command($compress_command . ' ../release_files/' . $package->get('release_filename') . '-patch.' . $extension . ' *');
-
-		// Build MD5 Sum
-		$package->run_command('md5sum ../release_files/' . $package->get('release_filename') . '-patch.' . $extension . ' > ../release_files/' . $package->get('release_filename') . '-patch.' . $extension . '.md5');
 	}
 
 	// Build Files Package
@@ -319,8 +318,6 @@ if (sizeof($package->old_packages))
 
 		chdir('./release');
 		$package->run_command("$compress_command ../../release_files/" . $package->get('release_filename') . '-files.' . $extension . ' *');
-		// Build MD5 Sum
-		$package->run_command('md5sum ../../release_files/' . $package->get('release_filename') . '-files.' . $extension . ' > ../../release_files/' . $package->get('release_filename') . '-files.' . $extension . '.md5');
 		chdir('..');
 
 		$package->run_command('rm -Rv ' . $package->get('files_directory') . '/release');
@@ -363,9 +360,6 @@ if (sizeof($package->old_packages))
 			// Copy last package over...
 			$package->run_command('rm -v ../release_files/phpBB-' . $last_version . ".$extension");
 			$package->run_command("$compress_command ../../release_files/phpBB-$last_version.$extension *");
-
-			// Build MD5 Sum
-			$package->run_command("md5sum ../../release_files/phpBB-$last_version.$extension > ../../release_files/phpBB-$last_version.$extension.md5");
 			chdir('..');
 		}
 
@@ -388,9 +382,6 @@ foreach ($compress_programs as $extension => $compress_command)
 
 	// Build Package
 	$package->run_command("$compress_command ./release_files/" . $package->get('release_filename') . '.' . $extension . ' ' . $package->get('package_name'));
-
-	// Build MD5 Sum
-	$package->run_command('md5sum ./release_files/' . $package->get('release_filename') . '.' . $extension . ' > ./release_files/' . $package->get('release_filename') . '.' . $extension . '.md5');
 }
 
 // Microsoft Web PI packaging
@@ -398,7 +389,6 @@ $package->begin_status('Packaging phpBB for Microsoft WebPI');
 $file = './release_files/' . $package->get('release_filename') . '.webpi.zip';
 $package->run_command('cp -p ./release_files/' . $package->get('release_filename') . ".zip $file");
 $package->run_command('cd ./../webpi && ' . $compress_programs['zip'] . " ./../new_version/$file *");
-$package->run_command("md5sum $file  > $file.md5");
 
 // verify results
 chdir($package->locations['root']);

@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_mock_cache implements phpbb_cache_driver_interface
+class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 {
 	protected $data;
 
@@ -51,6 +51,21 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 				'replacement4',
 			),
 		);
+	}
+
+	/**
+	* Obtain disallowed usernames. Input data via standard put method.
+	*/
+	public function obtain_disallowed_usernames()
+	{
+		if (($usernames = $this->get('_disallowed_usernames')) !== false)
+		{
+			return $usernames;
+		}
+		else
+		{
+			return array();
+		}
 	}
 
 	public function checkVar(PHPUnit_Framework_Assert $test, $var_name, $data)
@@ -125,7 +140,7 @@ class phpbb_mock_cache implements phpbb_cache_driver_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function sql_save(phpbb_db_driver $db, $query, $query_result, $ttl)
+	public function sql_save(\phpbb\db\driver\driver $db, $query, $query_result, $ttl)
 	{
 		return $query_result;
 	}

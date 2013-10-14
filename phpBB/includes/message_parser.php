@@ -1050,6 +1050,12 @@ class parse_message extends bbcode_firstpass
 	var $mode;
 
 	/**
+	* The plupload object used for dealing with attachments
+	* @var \phpbb\plupload\plupload
+	*/
+	protected $plupload;
+
+	/**
 	* Init - give message here or manually
 	*/
 	function parse_message($message = '')
@@ -1440,6 +1446,11 @@ class parse_message extends bbcode_firstpass
 
 		if ($preview || $refresh || sizeof($error))
 		{
+			if (isset($this->plupload) && $this->plupload->is_active())
+			{
+				$json_response = new \phpbb\json_response();
+			}
+
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
@@ -1484,13 +1495,17 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
+					if (isset($this->plupload) && $this->plupload->is_active())
+					{
+						$json_response->send($this->attachment_data);
+					}
 				}
 			}
 			else if (($add_file || $preview) && $upload_file)
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
+					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->plupload);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
@@ -1521,11 +1536,31 @@ class parse_message extends bbcode_firstpass
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
 						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 						$this->filename_data['filecomment'] = '';
+
+						if (isset($this->plupload) && $this->plupload->is_active())
+						{
+							// Send the client the attachment data to maintain state
+							$json_response->send($this->attachment_data);
+						}
 					}
 				}
 				else
 				{
 					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
+				}
+
+				if (!empty($error) && isset($this->plupload) && $this->plupload->is_active())
+				{
+					// If this is a plupload (and thus ajax) request, give the
+					// client the first error we have
+					$json_response->send(array(
+						'jsonrpc' => '2.0',
+						'id' => 'id',
+						'error' => array(
+							'code' => 105,
+							'message' => current($error),
+						),
+					));
 				}
 			}
 		}
@@ -1545,7 +1580,7 @@ class parse_message extends bbcode_firstpass
 		global $request;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, phpbb_request_interface::POST);
+		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, \phpbb\request\request_interface::POST);
 		$this->attachment_data = array();
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;
@@ -1686,5 +1721,17 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
+	}
+
+	/**
+	* Setter function for passing the plupload object
+	*
+	* @param \phpbb\plupload\plupload $plupload The plupload object
+	*
+	* @return null
+	*/
+	public function set_plupload(\phpbb\plupload\plupload $plupload)
+	{
+		$this->plupload = $plupload;
 	}
 }

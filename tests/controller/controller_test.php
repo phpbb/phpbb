@@ -31,7 +31,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 	public function test_provider()
 	{
-		$provider = new phpbb_controller_provider;
+		$provider = new \phpbb\controller\provider;
 		$routes = $provider
 			->import_paths_from_finder($this->extension_manager->get_finder())
 			->find('./tests/controller/');
@@ -53,24 +53,24 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		// Autoloading classes within the tests folder does not work
 		// so I'll include them manually.
-		if (!class_exists('phpbb_ext_foo_controller'))
+		if (!class_exists('foo\\controller'))
 		{
 			include(__DIR__.'/ext/foo/controller.php');
 		}
-		if (!class_exists('phpbb_controller_foo'))
+		if (!class_exists('phpbb\\controller\\foo'))
 		{
-			include(__DIR__.'/includes/controller/foo.php');
+			include(__DIR__.'/phpbb/controller/foo.php');
 		}
 
-		$resolver = new phpbb_controller_resolver(new phpbb_user, $container);
+		$resolver = new \phpbb\controller\resolver(new \phpbb\user, $container);
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 
-		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb_ext_foo_controller, 'handle'));
+		$this->assertEquals($resolver->getController($symfony_request), array(new foo\controller, 'handle'));
 
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'core_foo.controller:bar');
 
-		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb_controller_foo, 'bar'));
+		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb\controller\foo, 'bar'));
 	}
 }

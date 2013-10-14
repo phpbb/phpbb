@@ -371,6 +371,13 @@
 	float: right;
 }
 
+.rtl p.post-notice:before {
+	left: auto;
+	right: 0;
+	padding-left: 5px;
+	padding-right: 26px;
+}
+
 /* Topic review panel
 ----------------------------------------*/
 .rtl #topicreview {
@@ -422,7 +429,7 @@
 	margin-left: 0;
 }
 
-.rtl blockquote dl.codebox {
+.rtl blockquote .codebox {
 	margin-right: 0;
 }
 

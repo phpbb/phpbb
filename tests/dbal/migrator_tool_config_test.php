@@ -7,16 +7,13 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/tool/config.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/migration/exception.php';
-
 class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 {
 	public function setup()
 	{
-		$this->config = new phpbb_config(array());
+		$this->config = new \phpbb\config\config(array());
 
-		$this->tool = new phpbb_db_migration_tool_config($this->config);
+		$this->tool = new \phpbb\db\migration\tool\config($this->config);
 
 		parent::setup();
 	}

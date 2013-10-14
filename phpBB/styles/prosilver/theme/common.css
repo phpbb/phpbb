@@ -134,6 +134,10 @@ p.right {
 	text-align: right;
 }
 
+p.jumpbox-return {
+	margin-top: 1em;
+}
+
 b, strong {
 	font-weight: bold;
 }
@@ -306,8 +310,12 @@ a#logo:hover {
 ul.linklist {
 	display: block;
 	margin: 0;
-	height: 4%;
-	overflow: hidden;
+}
+
+ul.linklist:after {
+	content: '';
+	display: block;
+	clear: both;
 }
 
 #cp-main .panel {
@@ -350,6 +358,38 @@ ul.rightside {
 	margin-left: 5px;
 	margin-right: -5px;
 	text-align: right;
+}
+
+/* Bulletin icons for list items
+----------------------------------------*/
+ul.linklist.bulletin li:before {
+	display: inline-block;
+	content: "\2022";
+	font-size: inherit;
+	line-height: inherit;
+	padding-right: 4px;
+}
+
+ul.linklist.bulletin li:first-child:before, ul.linklist.bulletin li.rightside:last-child:before {
+	display: none;
+}
+
+ul.linklist.bulletin li.no-bulletin:before {
+	display: none;
+}
+
+.icon-notification:before, ul.linklist.bulletin li.icon-notification:before, .icon-notification:after {
+	display: inline;
+	font: inherit;
+}
+
+.icon-notification:before, ul.linklist.bulletin li.icon-notification:before {
+	content: '[';
+	padding-right: 0;
+}
+
+.icon-notification:after {
+	content: ']';
 }
 
 /* Table styles
@@ -649,23 +689,28 @@ div.rules ul, div.rules ol {
 	margin-left: 20px;
 }
 
-p.rules {
-	background-image: none;
+p.post-notice {
+	position: relative;
 	padding: 5px;
+	padding-left: 26px;
+	min-height: 14px;
+	margin-bottom: 1em;
 }
 
-p.rules img {
-	vertical-align: middle;
+p.post-notice:before {
+	content: '';
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 28px;
+	background: transparent none 50% 50% no-repeat;
+	pointer-events: none;
 }
 
-p.rules strong {
-	vertical-align: middle;
-	padding-top: 5px;
-}
-
-p.rules a {
-	vertical-align: middle;
-	clear: both;
+form > p.post-notice strong {
+	line-height: 20px;
 }
 
 #top {
@@ -689,32 +734,41 @@ p.rules a {
 	vertical-align: text-bottom;
 }
 
+.icon-notification {
+	position: relative;
+}
+
 #notification_list {
 	display: none;
 	position: absolute;
+	left: 0;
 	width: 330px;
 	z-index: 1;
 	border: 1px solid;
 	box-shadow: 3px 3px 5px darkgray;
 	border-radius: 5px;
-	margin-top: 8px;
+	top: 32px;
 }
 
 #notification_list ul {
 	max-height: 350px;
 	overflow-y: auto;
 	overflow-x: hidden;
+	clear: both;
 }
 
 #notification_list ul li {
-	width: 310px;
 	padding: 10px;
 	margin: 0;
-	float: left;
+	float: none;
 	border-bottom: 1px solid;
 	list-style-type: none;
 	font-size: 0.95em;
 	clear: both;
+}
+
+#notification_list ul li:before, #notification_list ul li:after {
+	display: none;
 }
 
 #notification_list > .header {

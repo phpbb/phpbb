@@ -328,6 +328,7 @@ class acp_board
 						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int:60:9999999999',	'type' => 'number:60:9999999999', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
 						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'read_notification_expire_days'	=> array('lang' => 'READ_NOTIFICATION_EXPIRE_DAYS',	'validate' => 'int:0',	'type' => 'number:0', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'load_notifications'	=> array('lang' => 'LOAD_NOTIFICATIONS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -343,7 +344,7 @@ class acp_board
 						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_user_activity'	=> array('lang' => 'LOAD_USER_ACTIVITY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'load_tplcompile'		=> array('lang' => 'RECOMPILE_STYLES',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'load_jquery_cdn'		=> array('lang' => 'LOAD_JQUERY_CDN',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'allow_cdn'				=> array('lang' => 'ALLOW_CDN',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'				=> 'CUSTOM_PROFILE_FIELDS',
 						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -375,6 +376,7 @@ class acp_board
 						'use_system_cron'		=> array('lang' => 'USE_SYSTEM_CRON',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'PATH_SETTINGS',
+						'enable_mod_rewrite'	=> array('lang' => 'MOD_REWRITE_ENABLE',	'validate' => 'bool',	'type' => 'custom', 'method' => 'enable_mod_rewrite', 'explain' => true),
 						'smilies_path'			=> array('lang' => 'SMILIES_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 						'icons_path'			=> array('lang' => 'ICONS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
@@ -522,84 +524,54 @@ class acp_board
 		if ($mode == 'auth')
 		{
 			// Retrieve a list of auth plugins and check their config values
-			$auth_plugins = array();
-
-			$dp = @opendir($phpbb_root_path . 'includes/auth');
-
-			if ($dp)
-			{
-				while (($file = readdir($dp)) !== false)
-				{
-					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-					{
-						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file));
-					}
-				}
-				closedir($dp);
-
-				sort($auth_plugins);
-			}
+			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
 			$updated_auth_settings = false;
 			$old_auth_config = array();
-			foreach ($auth_plugins as $method)
+			foreach ($auth_providers as $provider)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				if ($fields = $provider->acp())
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'acp_' . $method;
-					if (function_exists($method))
+					// Check if we need to create config fields for this plugin and save config when submit was pressed
+					foreach ($fields as $field)
 					{
-						if ($fields = $method($this->new_config))
+						if (!isset($config[$field]))
 						{
-							// Check if we need to create config fields for this plugin and save config when submit was pressed
-							foreach ($fields['config'] as $field)
-							{
-								if (!isset($config[$field]))
-								{
-									set_config($field, '');
-								}
-
-								if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
-								{
-									continue;
-								}
-
-								$old_auth_config[$field] = $this->new_config[$field];
-								$config_value = $cfg_array[$field];
-								$this->new_config[$field] = $config_value;
-
-								if ($submit)
-								{
-									$updated_auth_settings = true;
-									set_config($field, $config_value);
-								}
-							}
+							set_config($field, '');
 						}
-						unset($fields);
+
+						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
+						{
+							continue;
+						}
+
+						$old_auth_config[$field] = $this->new_config[$field];
+						$config_value = $cfg_array[$field];
+						$this->new_config[$field] = $config_value;
+
+						if ($submit)
+						{
+							$updated_auth_settings = true;
+							set_config($field, $config_value);
+						}
 					}
 				}
+				unset($fields);
 			}
 
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
 				$method = basename($cfg_array['auth_method']);
-				if ($method && in_array($method, $auth_plugins))
+				if (array_key_exists('auth.provider.' . $method, $auth_providers))
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-					$method = 'init_' . $method;
-					if (function_exists($method))
+					$provider = $auth_providers['auth.provider.' . $method];
+					if ($error = $provider->init())
 					{
-						if ($error = $method())
+						foreach ($old_auth_config as $config_name => $config_value)
 						{
-							foreach ($old_auth_config as $config_name => $config_value)
-							{
-								set_config($config_name, $config_value);
-							}
-							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+							set_config($config_name, $config_value);
 						}
+						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					set_config('auth_method', basename($cfg_array['auth_method']));
 				}
@@ -683,23 +655,22 @@ class acp_board
 		{
 			$template->assign_var('S_AUTH', true);
 
-			foreach ($auth_plugins as $method)
+			foreach ($auth_providers as $provider)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				$auth_tpl = $provider->get_acp_template($this->new_config);
+				if ($auth_tpl)
 				{
-					$method = 'acp_' . $method;
-					if (function_exists($method))
+					if (array_key_exists('BLOCK_VAR_NAME', $auth_tpl))
 					{
-						$fields = $method($this->new_config);
-
-						if ($fields['tpl'])
+						foreach ($auth_tpl['BLOCK_VARS'] as $block_vars)
 						{
-							$template->assign_block_vars('auth_tpl', array(
-								'TPL'	=> $fields['tpl'])
-							);
+							$template->assign_block_vars($auth_tpl['BLOCK_VAR_NAME'], $block_vars);
 						}
-						unset($fields);
 					}
+					$template->assign_vars($auth_tpl['TEMPLATE_VARS']);
+					$template->assign_block_vars('auth_tpl', array(
+						'TEMPLATE_FILE'	=> $auth_tpl['TEMPLATE_FILE'],
+					));
 				}
 			}
 		}
@@ -710,25 +681,19 @@ class acp_board
 	*/
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$auth_plugins = array();
+		$auth_providers = $phpbb_container->get('auth.provider_collection');
 
-		$dp = @opendir($phpbb_root_path . 'includes/auth');
-
-		if (!$dp)
+		foreach ($auth_providers as $key => $value)
 		{
-			return '';
-		}
-
-		while (($file = readdir($dp)) !== false)
-		{
-			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+			if (!($value instanceof \phpbb\auth\provider\provider_interface))
 			{
-				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+				continue;
 			}
+			$auth_plugins[] = str_replace('auth.provider.', '', $key);
 		}
-		closedir($dp);
 
 		sort($auth_plugins);
 
@@ -1038,4 +1003,51 @@ class acp_board
 		$cache->destroy('sql', FORUMS_TABLE);
 	}
 
+	/**
+	* Option to enable/disable removal of 'app.php' from URLs
+	*
+	* Note that if mod_rewrite is on, URLs without app.php will still work,
+	* but any paths generated by the controller helper url() method will not
+	* contain app.php.
+	*
+	* @param int $value The current config value
+	* @param string $key The config key
+	* @return string The HTML for the form field
+	*/
+	function enable_mod_rewrite($value, $key)
+	{
+		global $user, $config;
+
+		// Determine whether mod_rewrite is enabled on the server
+		// NOTE: This only works on Apache servers on which PHP is NOT
+		// installed as CGI. In that case, there is no way for PHP to
+		// determine whether or not the Apache module is enabled.
+		//
+		// To be clear on the value of $mod_rewite:
+		// null = Cannot determine whether or not the server has mod_rewrite
+		//        enabled
+		// false = Can determine that the server does NOT have mod_rewrite
+		//         enabled
+		// true = Can determine that the server DOES have mod_rewrite_enabled
+		$mod_rewrite = null;
+		if (function_exists('apache_get_modules'))
+		{
+			$mod_rewrite = (bool) in_array('mod_rewrite', apache_get_modules());
+		}
+
+		// If $message is false, mod_rewrite is enabled.
+		// Otherwise, it is not and we need to:
+		// 1) disable the form field
+		// 2) make sure the config value is set to 0
+		// 3) append the message to the return
+		$value = ($mod_rewrite === false) ? 0 : $value;
+		$message = $mod_rewrite === null ? 'MOD_REWRITE_INFORMATION_UNAVAILABLE' : ($mod_rewrite === false ? 'MOD_REWRITE_DISABLED' : false);
+
+		// Let's do some friendly HTML injection if we want to disable the
+		// form field because h_radio() has no pretty way of doing so
+		$field_name = 'config[enable_mod_rewrite]' . ($message === 'MOD_REWRITE_DISABLED' ? '" disabled="disabled' : '');
+
+		return h_radio($field_name, array(1 => 'YES', 0 => 'NO'), $value) .
+			($message !== false ? '<br /><span>' . $user->lang($message) . '</span>' : '');
+	}
 }

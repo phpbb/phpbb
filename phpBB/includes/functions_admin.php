@@ -644,7 +644,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		'posts' => ($call_delete_posts) ? delete_posts($where_type, $where_ids, false, true, $post_count_sync, false) : 0,
 	);
 
-	$sql = 'SELECT topic_id, forum_id, topic_approved, topic_moved_id
+	$sql = 'SELECT topic_id, forum_id, topic_visibility, topic_moved_id
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
@@ -654,7 +654,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$forum_ids[] = $row['forum_id'];
 		$topic_ids[] = $row['topic_id'];
 
-		if ($row['topic_approved'] && !$row['topic_moved_id'])
+		if ($row['topic_visibility'] == ITEM_APPROVED && !$row['topic_moved_id'])
 		{
 			$approved_topics++;
 		}
@@ -775,7 +775,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	$approved_posts = 0;
 	$post_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
 
-	$sql = 'SELECT post_id, poster_id, post_approved, post_postcount, topic_id, forum_id
+	$sql = 'SELECT post_id, poster_id, post_visibility, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
 		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
@@ -787,12 +787,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$topic_ids[] = (int) $row['topic_id'];
 		$forum_ids[] = (int) $row['forum_id'];
 
-		if ($row['post_postcount'] && $post_count_sync && $row['post_approved'])
+		if ($row['post_postcount'] && $post_count_sync && $row['post_visibility'] == ITEM_APPROVED)
 		{
 			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
 		}
 
-		if ($row['post_approved'])
+		if ($row['post_visibility'] == ITEM_APPROVED)
 		{
 			$approved_posts++;
 		}
@@ -889,7 +889,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		sync('forum', 'forum_id', $forum_ids, true, true);
 	}
 
-	if ($approved_posts)
+	if ($approved_posts && $post_count_sync)
 	{
 		set_config_count('num_posts', $approved_posts * (-1), true);
 	}
@@ -1292,7 +1292,7 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 * - forum				Resync complete forum
 * - topic				Resync topics
 * - topic_moved			Removes topic shadows that would be in the same forum as the topic they link to
-* - topic_approved		Resyncs the topic_approved flag according to the status of the first post
+* - topic_visibility	Resyncs the topic_visibility flag according to the status of the first post
 * - post_reported		Resyncs the post_reported flag, relying on actual reports
 * - topic_reported		Resyncs the topic_reported flag, relying on post_reported flags
 * - post_attachement	Same as post_reported, but with attachment flags
@@ -1312,7 +1312,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		$where_ids = ($where_ids) ? array((int) $where_ids) : array();
 	}
 
-	if ($mode == 'forum' || $mode == 'topic' || $mode == 'topic_approved' || $mode == 'topic_reported' || $mode == 'post_reported')
+	if ($mode == 'forum' || $mode == 'topic' || $mode == 'topic_visibility' || $mode == 'topic_reported' || $mode == 'post_reported')
 	{
 		if (!$where_type)
 		{
@@ -1398,43 +1398,55 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_transaction('commit');
 			break;
 
-		case 'topic_approved':
+		case 'topic_visibility':
 
 			$db->sql_transaction('begin');
-			switch ($db->sql_layer)
+
+			$sql = 'SELECT t.topic_id, p.post_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and p.topic_id = t.topic_id
+					AND p.post_visibility = " . ITEM_APPROVED;
+			$result = $db->sql_query($sql);
+
+			$topics_approved = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				case 'mysql4':
-				case 'mysqli':
-					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						SET t.topic_approved = p.post_approved
-						$where_sql_and t.topic_first_post_id = p.post_id";
-					$db->sql_query($sql);
-				break;
+				$topics_approved[] = (int) $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
 
-				default:
-					$sql = 'SELECT t.topic_id, p.post_approved
-						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						$where_sql_and p.post_id = t.topic_first_post_id
-							AND p.post_approved <> t.topic_approved";
-					$result = $db->sql_query($sql);
+			$sql = 'SELECT t.topic_id, p.post_visibility
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				$where_sql_and " . $db->sql_in_set('t.topic_id', $topics_approved, true, true) . '
+					AND p.topic_id = t.topic_id
+					AND p.post_visibility = ' . ITEM_DELETED;
+			$result = $db->sql_query($sql);
 
-					$topic_ids = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$topic_ids[] = $row['topic_id'];
-					}
-					$db->sql_freeresult($result);
+			$topics_softdeleted = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topics_softdeleted[] = (int) $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
 
-					if (!sizeof($topic_ids))
-					{
-						return;
-					}
+			$topics_softdeleted = array_diff($topics_softdeleted, $topics_approved);
+			$topics_not_unapproved = array_merge($topics_softdeleted, $topics_approved);
 
+			$update_ary = array(
+				ITEM_UNAPPROVED	=> (!empty($topics_not_unapproved)) ? $where_sql_and . ' ' . $db->sql_in_set('topic_id', $topics_not_unapproved, true) : '',
+				ITEM_APPROVED	=> (!empty($topics_approved)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_approved) : '',
+				ITEM_DELETED	=> (!empty($topics_softdeleted)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_softdeleted) : '',
+			);
+
+			foreach ($topic_visiblities as $visibility => $sql_where)
+			{
+				if ($sql_where)
+				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_approved = 1 - topic_approved
-						WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+						SET topic_visibility = ' . $visibility . '
+						' . $sql_where;
 					$db->sql_query($sql);
-				break;
+				}
 			}
 
 			$db->sql_transaction('commit');
@@ -1675,9 +1687,12 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$forum_data[$forum_id] = $row;
 				if ($sync_extra)
 				{
-					$forum_data[$forum_id]['posts'] = 0;
-					$forum_data[$forum_id]['topics'] = 0;
-					$forum_data[$forum_id]['topics_real'] = 0;
+					$forum_data[$forum_id]['posts_approved'] = 0;
+					$forum_data[$forum_id]['posts_unapproved'] = 0;
+					$forum_data[$forum_id]['posts_softdeleted'] = 0;
+					$forum_data[$forum_id]['topics_approved'] = 0;
+					$forum_data[$forum_id]['topics_unapproved'] = 0;
+					$forum_data[$forum_id]['topics_softdeleted'] = 0;
 				}
 				$forum_data[$forum_id]['last_post_id'] = 0;
 				$forum_data[$forum_id]['last_post_subject'] = '';
@@ -1698,20 +1713,27 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 2: Get topic counts for each forum (optional)
 			if ($sync_extra)
 			{
-				$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
+				$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS total_topics
 					FROM ' . TOPICS_TABLE . '
 					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-					GROUP BY forum_id, topic_approved';
+					GROUP BY forum_id, topic_visibility';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$forum_id = (int) $row['forum_id'];
-					$forum_data[$forum_id]['topics_real'] += $row['forum_topics'];
 
-					if ($row['topic_approved'])
+					if ($row['topic_visibility'] == ITEM_APPROVED)
 					{
-						$forum_data[$forum_id]['topics'] = $row['forum_topics'];
+						$forum_data[$forum_id]['topics_approved'] = $row['total_topics'];
+					}
+					else if ($row['topic_visibility'] == ITEM_UNAPPROVED)
+					{
+						$forum_data[$forum_id]['topics_unapproved'] = $row['total_topics'];
+					}
+					else if ($row['topic_visibility'] == ITEM_DELETED)
+					{
+						$forum_data[$forum_id]['topics_softdeleted'] = $row['total_topics'];
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1722,18 +1744,16 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				if (sizeof($forum_ids) == 1)
 				{
-					$sql = 'SELECT SUM(t.topic_replies + 1) AS forum_posts
+					$sql = 'SELECT SUM(t.topic_posts_approved) AS forum_posts_approved, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_approved = 1
 							AND t.topic_status <> ' . ITEM_MOVED;
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, SUM(t.topic_replies + 1) AS forum_posts
+					$sql = 'SELECT t.forum_id, SUM(t.topic_posts_approved) AS forum_posts_approved, SUM(t.topic_posts_unapproved) AS forum_posts_unapproved, SUM(t.topic_posts_softdeleted) AS forum_posts_softdeleted
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_approved = 1
 							AND t.topic_status <> ' . ITEM_MOVED . '
 						GROUP BY t.forum_id';
 				}
@@ -1744,7 +1764,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
-					$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
+					$forum_data[$forum_id]['posts_approved'] = (int) $row['forum_posts_approved'];
+					$forum_data[$forum_id]['posts_unapproved'] = (int) $row['forum_posts_unapproved'];
+					$forum_data[$forum_id]['posts_softdeleted'] = (int) $row['forum_posts_softdeleted'];
 				}
 				$db->sql_freeresult($result);
 			}
@@ -1755,14 +1777,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$sql = 'SELECT MAX(t.topic_last_post_id) as last_post_id
 					FROM ' . TOPICS_TABLE . ' t
 					WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-						AND t.topic_approved = 1';
+						AND t.topic_visibility = ' . ITEM_APPROVED;
 			}
 			else
 			{
 				$sql = 'SELECT t.forum_id, MAX(t.topic_last_post_id) as last_post_id
 					FROM ' . TOPICS_TABLE . ' t
 					WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-						AND t.topic_approved = 1
+						AND t.topic_visibility = ' . ITEM_APPROVED . '
 					GROUP BY t.forum_id';
 			}
 
@@ -1825,7 +1847,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			if ($sync_extra)
 			{
-				array_push($fieldnames, 'posts', 'topics', 'topics_real');
+				array_push($fieldnames, 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'topics_approved', 'topics_unapproved', 'topics_softdeleted');
 			}
 
 			foreach ($forum_data as $forum_id => $row)
@@ -1860,11 +1882,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			break;
 
 		case 'topic':
-			$topic_data = $post_ids = $approved_unapproved_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
+			$topic_data = $post_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
 
 			$db->sql_transaction('begin');
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);
@@ -1879,8 +1901,10 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
-				$topic_data[$topic_id]['replies_real'] = -1;
-				$topic_data[$topic_id]['replies'] = 0;
+				$topic_data[$topic_id]['visibility'] = ITEM_UNAPPROVED;
+				$topic_data[$topic_id]['posts_approved'] = 0;
+				$topic_data[$topic_id]['posts_unapproved'] = 0;
+				$topic_data[$topic_id]['posts_softdeleted'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
 				$topic_data[$topic_id]['last_post_id'] = 0;
 				unset($topic_data[$topic_id]['topic_id']);
@@ -1897,11 +1921,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_freeresult($result);
 
 			// Use "t" as table alias because of the $where_sql clause
-			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
-			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
+			// NOTE: 't.post_visibility' in the GROUP BY is causing a major slowdown.
+			$sql = 'SELECT t.topic_id, t.post_visibility, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
 				$where_sql
-				GROUP BY t.topic_id, t.post_approved";
+				GROUP BY t.topic_id, t.post_visibility";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1922,13 +1946,37 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					// When we'll be done, only topics with no posts will remain
 					unset($delete_topics[$topic_id]);
 
-					$topic_data[$topic_id]['replies_real'] += $row['total_posts'];
-					$topic_data[$topic_id]['first_post_id'] = (!$topic_data[$topic_id]['first_post_id']) ? $row['first_post_id'] : min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']);
-
-					if ($row['post_approved'] || !$topic_data[$topic_id]['last_post_id'])
+					if ($row['post_visibility'] == ITEM_APPROVED)
 					{
-						$topic_data[$topic_id]['replies'] = $row['total_posts'] - 1;
+						$topic_data[$topic_id]['posts_approved'] = $row['total_posts'];
+					}
+					else if ($row['post_visibility'] == ITEM_UNAPPROVED)
+					{
+						$topic_data[$topic_id]['posts_unapproved'] = $row['total_posts'];
+					}
+					else if ($row['post_visibility'] == ITEM_DELETED)
+					{
+						$topic_data[$topic_id]['posts_softdeleted'] = $row['total_posts'];
+					}
+
+					if ($row['post_visibility'] == ITEM_APPROVED)
+					{
+						$topic_data[$topic_id]['visibility'] = ITEM_APPROVED;
+						$topic_data[$topic_id]['first_post_id'] = $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = $row['last_post_id'];
+					}
+					else if ($topic_data[$topic_id]['visibility'] != ITEM_APPROVED)
+					{
+						// If there is no approved post, we take the min/max of the other visibilities
+						// for the last and first post info, because it is only visible to moderators anyway
+						$topic_data[$topic_id]['first_post_id'] = (!empty($topic_data[$topic_id]['first_post_id'])) ? min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']) : $row['first_post_id'];
+						$topic_data[$topic_id]['last_post_id'] = max($topic_data[$topic_id]['last_post_id'], $row['last_post_id']);
+
+						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED)
+						{
+							// Soft delete status is stronger than unapproved.
+							$topic_data[$topic_id]['visibility'] = $row['post_visibility'];
+						}
 					}
 				}
 			}
@@ -1970,7 +2018,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics, $delete_topic_ids);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 					AND u.user_id = p.poster_id';
@@ -1983,10 +2031,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				if ($row['post_id'] == $topic_data[$topic_id]['first_post_id'])
 				{
-					if ($topic_data[$topic_id]['topic_approved'] != $row['post_approved'])
-					{
-						$approved_unapproved_ids[] = $topic_id;
-					}
 					$topic_data[$topic_id]['time'] = $row['post_time'];
 					$topic_data[$topic_id]['poster'] = $row['poster_id'];
 					$topic_data[$topic_id]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
@@ -2047,7 +2091,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$sync_shadow_topics = array();
 				if (sizeof($post_ids))
 				{
-					$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+					$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 						FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 						WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 							AND u.user_id = p.poster_id';
@@ -2114,18 +2158,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($sync_shadow_topics, $shadow_topic_data);
 			}
 
-			// approved becomes unapproved, and vice-versa
-			if (sizeof($approved_unapproved_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_approved = 1 - topic_approved
-					WHERE ' . $db->sql_in_set('topic_id', $approved_unapproved_ids);
-				$db->sql_query($sql);
-			}
-			unset($approved_unapproved_ids);
-
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{
@@ -2314,9 +2348,9 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * via admin_permissions. Changes of usernames and group names
 * must be carried through for the moderators table.
 *
-* @param phpbb_db_driver $db Database connection
-* @param phpbb_cache_driver_interface Cache driver
-* @param phpbb_auth $auth Authentication object
+* @param \phpbb\db\driver\driver $db Database connection
+* @param \phpbb\cache\driver\driver_interface Cache driver
+* @param \phpbb\auth\auth $auth Authentication object
 * @return null
 */
 function phpbb_cache_moderators($db, $cache, $auth)
@@ -2537,8 +2571,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 /**
 * Removes moderators and administrators from foe lists.
 *
-* @param phpbb_db_driver $db Database connection
-* @param phpbb_auth $auth Authentication object
+* @param \phpbb\db\driver\driver $db Database connection
+* @param \phpbb\auth\auth $auth Authentication object
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
 * @return null
@@ -2899,7 +2933,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 
 	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
 	{
-		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
+		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
 

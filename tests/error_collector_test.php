@@ -8,13 +8,12 @@
 */
 
 require_once dirname(__FILE__) . '/../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../phpBB/includes/error_collector.php';
 
 class phpbb_error_collector_test extends phpbb_test_case
 {
 	public function test_collection()
 	{
-		$collector = new phpbb_error_collector;
+		$collector = new \phpbb\error_collector;
 		$collector->install();
 
 		// Cause a warning

@@ -192,13 +192,13 @@ function get_topic_count($forum_id)
 {
 	global $db;
 	
-	$sql = "SELECT forum_topics
+	$sql = "SELECT forum_topics_approved
 		FROM " . FORUMS_TABLE . "
 		WHERE (forum_id = $forum_id)";
 	if($result = $db->sql_query($sql))
 	{
 		$row = $db->sql_fetchrow($result);
-		$topic_count = $row['forum_topics'];
+		$topic_count = $row['forum_topics_approved'];
 
 		unset($result);
 		unset($row);
@@ -263,7 +263,7 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 	
 	$post_message = prepare_message($text, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);	
 	
-	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_approved, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
+	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_visibility, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
 		VALUES ($new_topic_id, $forum_id, $user_id, 0, 0, '$post_username', $current_time, '$user_ip', 1, '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig, '$post_subject', '$post_message')";
 	$result = $db->sql_query($sql);
 	
@@ -282,10 +282,10 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 		if($db->sql_query($sql))
 		{
 			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
+				SET forum_last_post_id = $new_post_id, forum_posts_approved = forum_posts_approved + 1";
 			if($mode == "newtopic")
 			{
-				$sql .= ", forum_topics = forum_topics + 1";
+				$sql .= ", forum_topics_approved = forum_topics_approved + 1";
 			}
 			$sql .= " WHERE forum_id = $forum_id";
 	

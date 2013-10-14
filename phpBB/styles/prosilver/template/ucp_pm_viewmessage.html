@@ -62,7 +62,7 @@
 		<!-- ENDIF -->
 
 		<!-- IF S_DISPLAY_NOTICE -->
-			<div class="rules">{L_DOWNLOAD_NOTICE}</div>
+			<div class="post-notice error">{L_DOWNLOAD_NOTICE}</div>
 		<!-- ENDIF -->
 
 		<!-- IF EDITED_MESSAGE or EDIT_REASON -->
@@ -85,9 +85,11 @@
 		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}{L_COLON}</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
 
+		<!-- EVENT ucp_pm_viewmessage_custom_fields_before -->
 		<!-- BEGIN custom_fields -->
 			<dd><strong>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
 		<!-- END custom_fields -->
+		<!-- EVENT ucp_pm_viewmessage_custom_fields_after -->
 
 
 		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->

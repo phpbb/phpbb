@@ -11,7 +11,6 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/session.php';
 require_once dirname(__FILE__) . '/../mock/user.php';
 require_once dirname(__FILE__) . '/../mock/cache.php';
 
@@ -307,7 +306,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Create auth mock
-		$auth = $this->getMock('phpbb_auth');
+		$auth = $this->getMock('\phpbb\auth\auth');
 		$acl_get_map = array(
 			array('f_read', 23, true),
 			array('m_', 23, true),
@@ -334,7 +333,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 			'LOG_INSTALL_INSTALLED'		=> 'installed: %s',
 		);
 
-		$phpbb_log = new phpbb_log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		$log = array();
 		$this->assertEquals($expected_returned, view_log($mode, $log, $log_count, $limit, $offset, $forum_id, $topic_id, $user_id, $limit_days, $sort_by, $keywords));

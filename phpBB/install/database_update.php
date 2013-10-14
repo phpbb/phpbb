@@ -21,26 +21,6 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (!function_exists('phpbb_require_updated'))
-{
-	function phpbb_require_updated($path, $optional = false)
-	{
-		global $phpbb_root_path;
-
-		$new_path = $phpbb_root_path . 'install/update/new/' . $path;
-		$old_path = $phpbb_root_path . $path;
-
-		if (file_exists($new_path))
-		{
-			require($new_path);
-		}
-		else if (!$optional || file_exists($old_path))
-		{
-			require($old_path);
-		}
-	}
-}
-
 function phpbb_end_update($cache, $config)
 {
 	$cache->purge();
@@ -69,7 +49,7 @@ function phpbb_end_update($cache, $config)
 	exit_handler();
 }
 
-phpbb_require_updated('includes/startup.' . $phpEx);
+require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
 include($phpbb_root_path . 'config.' . $phpEx);
 if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
@@ -82,30 +62,31 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
-require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
+require($phpbb_root_path . 'config.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
+include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
 // Set up container (must be done here because extensions table may not exist)
 $container_extensions = array(
-	new phpbb_di_extension_config($phpbb_root_path . 'config.' . $phpEx),
-	new phpbb_di_extension_core($phpbb_root_path),
+	new \phpbb\di\extension\config($phpbb_root_path . 'config.' . $phpEx),
+	new \phpbb\di\extension\core($phpbb_root_path . 'config/'),
 );
 $container_passes = array(
-	new phpbb_di_pass_collection_pass(),
-	//new phpbb_di_pass_kernel_pass(),
+	new \phpbb\di\pass\collection_pass(),
 );
 $phpbb_container = phpbb_create_container($container_extensions, $phpbb_root_path, $phpEx);
 
@@ -217,7 +198,7 @@ $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 $finder = $phpbb_extension_manager->get_finder();
 
 $migrations = $finder
-	->core_path('includes/db/migration/data/')
+	->core_path('phpbb/db/migration/data/')
 	->get_classes();
 $migrator->set_migrations($migrations);
 
@@ -226,11 +207,13 @@ $safe_time_limit = (ini_get('max_execution_time') / 2);
 
 while (!$migrator->finished())
 {
+	$migration_start_time = microtime(true);
+
 	try
 	{
 		$migrator->update();
 	}
-	catch (phpbb_db_migration_exception $e)
+	catch (\phpbb\db\migration\exception $e)
 	{
 		echo $e->getLocalisedMessage($user);
 
@@ -246,25 +229,31 @@ while (!$migrator->finished())
 
 	if (isset($migrator->last_run_migration['effectively_installed']) && $migrator->last_run_migration['effectively_installed'])
 	{
-		echo $user->lang('MIGRATION_EFFECTIVELY_INSTALLED', $migrator->last_run_migration['name']) . '<br />';
+		echo $user->lang('MIGRATION_EFFECTIVELY_INSTALLED', $migrator->last_run_migration['name']);
 	}
 	else
 	{
-		if ($state['migration_data_done'])
+		if ($migrator->last_run_migration['task'] == 'process_data_step' && $state['migration_data_done'])
 		{
-			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name']) . '<br />';
+			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
+		}
+		else if ($migrator->last_run_migration['task'] == 'process_data_step')
+		{
+			echo $user->lang('MIGRATION_DATA_IN_PROGRESS', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 		else if ($state['migration_schema_done'])
 		{
-			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name']) . '<br />';
+			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
 		}
 	}
+
+	echo "<br />\n";
 
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{
-		echo $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br />';
-		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $user->lang['USER_LANG']) . '">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
+		echo '<br />' . $user->lang['DATABASE_UPDATE_NOT_COMPLETED'] . '<br /><br />';
+		echo '<a href="' . append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=' . $request->variable('type', 0) . '&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['DATABASE_UPDATE_CONTINUE'] . '</a>';
 
 		phpbb_end_update($cache, $config);
 	}
@@ -280,7 +269,7 @@ echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';
 if ($request->variable('type', 0))
 {
 	echo $user->lang['INLINE_UPDATE_SUCCESSFUL'] . '<br /><br />';
-	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=file_check&amp;language=' . $user->lang['USER_LANG']) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
+	echo '<a href="' . append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update&amp;sub=update_db&amp;language=' . $request->variable('language', 'en')) . '" class="button1">' . $user->lang['CONTINUE_UPDATE_NOW'] . '</a>';
 }
 else
 {

@@ -108,7 +108,7 @@ class phpbb_database_test_connection_manager
 
 		// These require different connection strings on the phpBB side than they do in PDO
 		// so you must provide a DSN string for ODBC separately
-		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'phpbb_db_driver_mssql' || $this->config['dbms'] == 'phpbb_db_driver_firebird'))
+		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'phpbb\db\driver\mssql' || $this->config['dbms'] == 'phpbb\db\driver\firebird'))
 		{
 			$dsn = 'odbc:' . $this->config['custom_dsn'];
 		}
@@ -117,12 +117,12 @@ class phpbb_database_test_connection_manager
 		{
 			switch ($this->config['dbms'])
 			{
-				case 'phpbb_db_driver_mssql':
-				case 'phpbb_db_driver_mssql_odbc':
+				case 'phpbb\db\driver\mssql':
+				case 'phpbb\db\driver\mssql_odbc':
 					$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('mssql', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
 				break;
 
-				case 'phpbb_db_driver_firebird':
+				case 'phpbb\db\driver\firebird':
 					if (!empty($this->config['custom_dsn']))
 					{
 						$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
@@ -138,15 +138,15 @@ class phpbb_database_test_connection_manager
 		catch (PDOException $e)
 		{
 			$cleaned_dsn = str_replace($this->config['dbpasswd'], '*password*', $dsn);
-			throw new Exception("Unable do connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
+			throw new Exception("Unable to connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
 		}
 
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb_db_driver_mysql':
-			case 'phpbb_db_driver_mysqli':
+			case 'phpbb\db\driver\mysql':
+			case 'phpbb\db\driver\mysqli':
 				$this->pdo->exec('SET NAMES utf8');
 
 				/*
@@ -187,8 +187,8 @@ class phpbb_database_test_connection_manager
 	{
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb_db_driver_sqlite':
-			case 'phpbb_db_driver_firebird':
+			case 'phpbb\db\driver\sqlite':
+			case 'phpbb\db\driver\firebird':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -198,7 +198,7 @@ class phpbb_database_test_connection_manager
 				$this->purge_extras();
 			break;
 
-			case 'phpbb_db_driver_oracle':
+			case 'phpbb\db\driver\oracle':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -208,7 +208,7 @@ class phpbb_database_test_connection_manager
 				$this->purge_extras();
 			break;
 
-			case 'phpbb_db_driver_postgres':
+			case 'phpbb\db\driver\postgres':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -258,38 +258,38 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb_db_driver_mysql':
-			case 'phpbb_db_driver_mysqli':
+			case 'phpbb\db\driver\mysql':
+			case 'phpbb\db\driver\mysqli':
 				$sql = 'SHOW TABLES';
 			break;
 
-			case 'phpbb_db_driver_sqlite':
+			case 'phpbb\db\driver\sqlite':
 				$sql = 'SELECT name
 					FROM sqlite_master
 					WHERE type = "table"';
 			break;
 
-			case 'phpbb_db_driver_mssql':
-			case 'phpbb_db_driver_mssql_odbc':
-			case 'phpbb_db_driver_mssqlnative':
+			case 'phpbb\db\driver\mssql':
+			case 'phpbb\db\driver\mssql_odbc':
+			case 'phpbb\db\driver\mssqlnative':
 				$sql = "SELECT name
 					FROM sysobjects
 					WHERE type='U'";
 			break;
 
-			case 'phpbb_db_driver_postgres':
+			case 'phpbb\db\driver\postgres':
 				$sql = 'SELECT relname
 					FROM pg_stat_user_tables';
 			break;
 
-			case 'phpbb_db_driver_firebird':
+			case 'phpbb\db\driver\firebird':
 				$sql = 'SELECT rdb$relation_name
 					FROM rdb$relations
 					WHERE rdb$view_source is null
 						AND rdb$system_flag = 0';
 			break;
 
-			case 'phpbb_db_driver_oracle':
+			case 'phpbb\db\driver\oracle':
 				$sql = 'SELECT table_name
 					FROM USER_TABLES';
 			break;
@@ -325,7 +325,7 @@ class phpbb_database_test_connection_manager
 	{
 		$schema = $this->dbms['SCHEMA'];
 
-		if ($this->config['dbms'] == 'phpbb_db_driver_mysql')
+		if ($this->config['dbms'] == 'phpbb\db\driver\mysql')
 		{
 			$sth = $this->pdo->query('SELECT VERSION() AS version');
 			$row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -359,47 +359,47 @@ class phpbb_database_test_connection_manager
 	protected function get_dbms_data($dbms)
 	{
 		$available_dbms = array(
-			'phpbb_db_driver_firebird'	=> array(
+			'phpbb\db\driver\firebird'	=> array(
 				'SCHEMA'		=> 'firebird',
 				'DELIM'			=> ';;',
 				'PDO'			=> 'firebird',
 			),
-			'phpbb_db_driver_mysqli'	=> array(
+			'phpbb\db\driver\mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
-			'phpbb_db_driver_mysql'		=> array(
+			'phpbb\db\driver\mysql'		=> array(
 				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
-			'phpbb_db_driver_mssql'		=> array(
+			'phpbb\db\driver\mssql'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
 			),
-			'phpbb_db_driver_mssql_odbc'=>	array(
+			'phpbb\db\driver\mssql_odbc'=>	array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
 			),
-			'phpbb_db_driver_mssqlnative'		=> array(
+			'phpbb\db\driver\mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'sqlsrv',
 			),
-			'phpbb_db_driver_oracle'	=>	array(
+			'phpbb\db\driver\oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
 				'PDO'			=> 'oci',
 			),
-			'phpbb_db_driver_postgres' => array(
+			'phpbb\db\driver\postgres' => array(
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
 				'PDO'			=> 'pgsql',
 			),
-			'phpbb_db_driver_sqlite'		=> array(
+			'phpbb\db\driver\sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
@@ -428,7 +428,7 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb_db_driver_firebird':
+			case 'phpbb\db\driver\firebird':
 				$sql = 'SELECT RDB$GENERATOR_NAME
 					FROM RDB$GENERATORS
 					WHERE RDB$SYSTEM_FLAG = 0';
@@ -440,7 +440,7 @@ class phpbb_database_test_connection_manager
 				}
 			break;
 
-			case 'phpbb_db_driver_oracle':
+			case 'phpbb\db\driver\oracle':
 				$sql = 'SELECT sequence_name
 					FROM USER_SEQUENCES';
 				$result = $this->pdo->query($sql);
@@ -451,7 +451,7 @@ class phpbb_database_test_connection_manager
 				}
 			break;
 
-			case 'phpbb_db_driver_postgres':
+			case 'phpbb\db\driver\postgres':
 				$sql = 'SELECT sequence_name
 					FROM information_schema.sequences';
 				$result = $this->pdo->query($sql);
@@ -480,15 +480,36 @@ class phpbb_database_test_connection_manager
 	*/
 	public function post_setup_synchronisation($xml_data_set)
 	{
+		$table_names = $xml_data_set->getTableNames();
+
+		$tables = array();
+		foreach ($table_names as $table)
+		{
+			$tables[$table] = $xml_data_set->getTableMetaData($table)->getColumns();
+		}
+
+		$this->database_synchronisation($tables);
+	}
+
+	/**
+	* Performs synchronisations on the database after a fixture has been loaded
+	*
+	* @param	array	$table_column_map		Array of tables/columns to synchronise
+	*											array(table1 => array(column1, column2))
+	*
+	* @return null
+	*/
+	public function database_synchronisation($table_column_map)
+	{
 		$this->ensure_connected(__METHOD__);
 		$queries = array();
 
-		// Get escaped versions of the table names used in the fixture
-		$table_names = array_map(array($this->pdo, 'PDO::quote'), $xml_data_set->getTableNames());
+		// Get escaped versions of the table names to synchronise
+		$table_names = array_map(array($this->pdo, 'PDO::quote'), array_keys($table_column_map));
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb_db_driver_oracle':
+			case 'phpbb\db\driver\oracle':
 				// Get all of the information about the sequences
 				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name, s.increment_by, s.min_value
 					FROM USER_TRIGGERS t
@@ -523,14 +544,14 @@ class phpbb_database_test_connection_manager
 					* Since we have no objects attached to our sequencers (triggers aren't attached), this works fine.
 					*/
 					$queries[] = 'DROP SEQUENCE ' . $row['SEQUENCE_NAME'];
-					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']} 
-									MINVALUE {$row['MIN_VALUE']} 
-									INCREMENT BY {$row['INCREMENT_BY']} 
+					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']}
+									MINVALUE {$row['MIN_VALUE']}
+									INCREMENT BY {$row['INCREMENT_BY']}
 									START WITH $max_val";
 				}
 			break;
 
-			case 'phpbb_db_driver_postgres':
+			case 'phpbb\db\driver\postgres':
 				// Get the sequences attached to the tables
 				$sql = 'SELECT column_name, table_name FROM information_schema.columns
 					WHERE table_name IN (' . implode(', ', $table_names) . ")
@@ -541,7 +562,7 @@ class phpbb_database_test_connection_manager
 				while ($row = $result->fetch(PDO::FETCH_ASSOC))
 				{
 					// Get the columns used in the fixture for this table
-					$column_names = $xml_data_set->getTableMetaData($row['table_name'])->getColumns();
+					$column_names = $table_column_map[$row['table_name']];
 
 					// Skip sequences that weren't specified in the fixture
 					if (!in_array($row['column_name'], $column_names))

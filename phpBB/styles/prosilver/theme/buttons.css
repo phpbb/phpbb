@@ -27,7 +27,8 @@
 	border-radius: 4px;
 	background: transparent none 0 0 repeat-x;
 	padding: 2px 22px 2px 8px;
-	font-family: Verdana, Arial, Helvetica;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	font-weight: 600;
 	position: relative;
 	text-decoration: none !important;
 	outline-style: none !important;
@@ -97,17 +98,9 @@ a.sendemail {
 	padding: 1px 0 0 17px;
 }
 
-.icon-notification:before, .icon-notification:after {
-	display: inline;
-	font: inherit;
-}
-
-.icon-notification:before {
-	content: '[';
-}
-
-.icon-notification:after {
-	content: ']';
+ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before,
+ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:before, ul.linklist.bulletin li.icon-subscribe:before, ul.linklist.bulletin li.icon-unsubscribe:before {
+	display: none;
 }
 
 /* Poster profile icons

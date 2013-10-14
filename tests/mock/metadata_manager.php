@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_mock_metadata_manager extends phpbb_extension_metadata_manager
+class phpbb_mock_metadata_manager extends \phpbb\extension\metadata_manager
 {
 	public function set_metadata($metadata)
 	{

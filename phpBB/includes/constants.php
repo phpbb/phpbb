@@ -61,6 +61,7 @@ define('LOGIN_CONTINUE', 1);
 define('LOGIN_BREAK', 2);
 define('LOGIN_SUCCESS', 3);
 define('LOGIN_SUCCESS_CREATE_PROFILE', 20);
+define('LOGIN_SUCCESS_LINK_PROFILE', 21);
 define('LOGIN_ERROR_USERNAME', 10);
 define('LOGIN_ERROR_PASSWORD', 11);
 define('LOGIN_ERROR_ACTIVE', 12);
@@ -86,6 +87,10 @@ define('FORUM_LINK', 2);
 define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
+
+define('ITEM_UNAPPROVED', 0); // => has not yet been approved
+define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
+define('ITEM_DELETED', 2); // => has been soft deleted
 
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);
@@ -156,6 +161,7 @@ define('PHYSICAL_LINK', 2);
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
 define('CONFIRM_POST', 3);
+define('CONFIRM_REPORT', 4);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);

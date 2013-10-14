@@ -311,7 +311,7 @@ $lang = array_merge($lang, array(
 
 // PHP info
 $lang = array_merge($lang, array(
-	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by <a href="http://www.phpbb.com/about/team/">official team members</a> on the support forums.',
+	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by <a href="https://www.phpbb.com/about/team/">official team members</a> on the support forums.',
 
 	'NO_PHPINFO_AVAILABLE'	=> 'Information about your PHP configuration is unable to be determined. Phpinfo() has been disabled for security reasons.',
 ));
@@ -559,12 +559,17 @@ $lang = array_merge($lang, array(
 	'LOG_POST_APPROVED'			=> '<strong>Approved post</strong><br />» %s',
 	'LOG_POST_DISAPPROVED'		=> '<strong>Disapproved post “%1$s” with the following reason</strong><br />» %2$s',
 	'LOG_POST_EDITED'			=> '<strong>Edited post “%1$s” written by</strong><br />» %2$s',
+	'LOG_POST_RESTORED'			=> '<strong>Restored post</strong><br />» %s',
 	'LOG_REPORT_CLOSED'			=> '<strong>Closed report</strong><br />» %s',
 	'LOG_REPORT_DELETED'		=> '<strong>Deleted report</strong><br />» %s',
+	'LOG_RESTORE_TOPIC'			=> '<strong>Restored topic “%1$s” written by</strong><br />» %2$s',
+	'LOG_SOFTDELETE_POST'		=> '<strong>Soft deleted post “%1$s” written by</strong><br />» %2$s',
+	'LOG_SOFTDELETE_TOPIC'		=> '<strong>Soft deleted topic “%1$s” written by</strong><br />» %2$s',
 	'LOG_SPLIT_DESTINATION'		=> '<strong>Moved split posts</strong><br />» to %s',
 	'LOG_SPLIT_SOURCE'			=> '<strong>Split posts</strong><br />» from %s',
 
 	'LOG_TOPIC_APPROVED'		=> '<strong>Approved topic</strong><br />» %s',
+	'LOG_TOPIC_RESTORED'		=> '<strong>Restored topic</strong><br />» %s',
 	'LOG_TOPIC_DISAPPROVED'		=> '<strong>Disapproved topic “%1$s” with the following reason</strong><br />%2$s',
 	'LOG_TOPIC_RESYNC'			=> '<strong>Resynchronised topic counters</strong><br />» %s',
 	'LOG_TOPIC_TYPE_CHANGED'	=> '<strong>Changed topic type</strong><br />» %s',
@@ -601,7 +606,7 @@ $lang = array_merge($lang, array(
 	'LOG_FORUM_MOVE_UP'						=> '<strong>Moved forum</strong> %1$s <strong>above</strong> %2$s',
 	'LOG_FORUM_SYNC'						=> '<strong>Re-synchronised forum</strong><br />» %s',
 
-	'LOG_GENERAL_ERROR'	=> '<strong>A general error occured</strong>: %1$s <br />» %2$s',
+	'LOG_GENERAL_ERROR'	=> '<strong>A general error occurred</strong>: %1$s <br />» %2$s',
 
 	'LOG_GROUP_CREATED'		=> '<strong>New usergroup created</strong><br />» %s',
 	'LOG_GROUP_DEFAULTS'	=> '<strong>Group “%1$s” made default for members</strong><br />» %2$s',
@@ -660,6 +665,8 @@ $lang = array_merge($lang, array(
 	'LOG_U_ROLE_ADD'		=> '<strong>User role added</strong><br />» %s',
 	'LOG_U_ROLE_EDIT'		=> '<strong>User role edited</strong><br />» %s',
 	'LOG_U_ROLE_REMOVED'	=> '<strong>User role removed</strong><br />» %s',
+
+	'LOG_PLUPLOAD_TIDY_FAILED'		=> '<strong>Unable to open %1$s for tidying, check permissions.</strong><br />Exception: %2$s<br />Trace: %3$s',
 
 	'LOG_PROFILE_FIELD_ACTIVATE'	=> '<strong>Profile field activated</strong><br />» %s',
 	'LOG_PROFILE_FIELD_CREATE'		=> '<strong>Profile field added</strong><br />» %s',

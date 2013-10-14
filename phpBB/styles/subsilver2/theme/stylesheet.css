@@ -292,7 +292,11 @@ p.topicdetails {
 	text-decoration: none;
 }
 
-.error {
+.online {
+	color: green;
+}
+
+.offline, .error, .inactive {
 	color: red;
 }
 
@@ -358,6 +362,10 @@ td.profile {
 
 .spacer {
 	background-color: #D1D7DC;
+}
+
+.current {
+	background-color: lightblue;
 }
 
 hr {
@@ -544,6 +552,9 @@ input.radio {
 	border-style: none;
 }
 
+input:focus, select:focus, textarea:focus {
+	outline-style: none;
+}
 
 /* BBCode
  ------------ */
@@ -984,6 +995,11 @@ a.imageset {
 	background-image: url("./images/icon_topic_unapproved.gif");
 	padding-left: 19px;
 	padding-top: 18px;
+}
+.imageset.icon_topic_deleted {
+	background-image: url("./images/icon_topic_deleted.png");
+	padding-left: 14px;
+	padding-top: 14px;
 }
 
 

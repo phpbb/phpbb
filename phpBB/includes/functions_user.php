@@ -388,12 +388,13 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* Event before a user is deleted
 	*
 	* @event core.delete_user_before
-	* @var	string	mode			Mode of deletion (retain/delete posts)
-	* @var	int		user_id			ID of the deleted user
-	* @var	mixed	post_username	Guest username that is being used or false
+	* @var	string	mode		Mode of deletion (retain/delete posts)
+	* @var	array	user_ids	IDs of the deleted user
+	* @var	mixed	retain_username	True if username should be retained
+	*				or false if not
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'post_username');
+	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
 
 	// Before we begin, we will remove the reports the user issued.
@@ -616,12 +617,13 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* Event after a user is deleted
 	*
 	* @event core.delete_user_after
-	* @var	string	mode			Mode of deletion (retain/delete posts)
-	* @var	int		user_id			ID of the deleted user
-	* @var	mixed	post_username	Guest username that is being used or false
+	* @var	string	mode		Mode of deletion (retain/delete posts)
+	* @var	array	user_ids	IDs of the deleted user
+	* @var	mixed	retain_username	True if username should be retained
+	*				or false if not
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'post_username');
+	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
 
 	// Reset newest user info if appropriate
@@ -1653,7 +1655,7 @@ function validate_username($username, $allowed_username = false)
 */
 function validate_password($password)
 {
-	global $config, $db, $user;
+	global $config;
 
 	if ($password === '' || $config['pass_complex'] === 'PASS_TYPE_ANY')
 	{
@@ -2150,8 +2152,8 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 	if (!sizeof($error))
 	{
-		$current_legend = phpbb_groupposition_legend::GROUP_DISABLED;
-		$current_teampage = phpbb_groupposition_teampage::GROUP_DISABLED;
+		$current_legend = \phpbb\groupposition\legend::GROUP_DISABLED;
+		$current_teampage = \phpbb\groupposition\teampage::GROUP_DISABLED;
 
 		$legend = $phpbb_container->get('groupposition.legend');
 		$teampage = $phpbb_container->get('groupposition.teampage');
@@ -2162,7 +2164,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$current_legend = $legend->get_group_value($group_id);
 				$current_teampage = $teampage->get_group_value($group_id);
 			}
-			catch (phpbb_groupposition_exception $exception)
+			catch (\phpbb\groupposition\exception $exception)
 			{
 				trigger_error($user->lang($exception->getMessage()));
 			}
@@ -2170,7 +2172,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		if (!empty($group_attributes['group_legend']))
 		{
-			if (($group_id && ($current_legend == phpbb_groupposition_legend::GROUP_DISABLED)) || !$group_id)
+			if (($group_id && ($current_legend == \phpbb\groupposition\legend::GROUP_DISABLED)) || !$group_id)
 			{
 				// Old group currently not in the legend or new group, add at the end.
 				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
@@ -2181,22 +2183,22 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				$group_attributes['group_legend'] = $current_legend;
 			}
 		}
-		else if ($group_id && ($current_legend != phpbb_groupposition_legend::GROUP_DISABLED))
+		else if ($group_id && ($current_legend != \phpbb\groupposition\legend::GROUP_DISABLED))
 		{
 			// Group is removed from the legend
 			try
 			{
 				$legend->delete_group($group_id, true);
 			}
-			catch (phpbb_groupposition_exception $exception)
+			catch (\phpbb\groupposition\exception $exception)
 			{
 				trigger_error($user->lang($exception->getMessage()));
 			}
-			$group_attributes['group_legend'] = phpbb_groupposition_legend::GROUP_DISABLED;
+			$group_attributes['group_legend'] = \phpbb\groupposition\legend::GROUP_DISABLED;
 		}
 		else
 		{
-			$group_attributes['group_legend'] = phpbb_groupposition_legend::GROUP_DISABLED;
+			$group_attributes['group_legend'] = \phpbb\groupposition\legend::GROUP_DISABLED;
 		}
 
 		// Unset the objects, we don't need them anymore.
@@ -2296,13 +2298,13 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		// Remove the group from the teampage, only if unselected and we are editing a group,
 		// which is currently displayed.
-		if (!$group_teampage && $group_id && $current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED)
+		if (!$group_teampage && $group_id && $current_teampage != \phpbb\groupposition\teampage::GROUP_DISABLED)
 		{
 			try
 			{
 				$teampage->delete_group($group_id);
 			}
-			catch (phpbb_groupposition_exception $exception)
+			catch (\phpbb\groupposition\exception $exception)
 			{
 				trigger_error($user->lang($exception->getMessage()));
 			}
@@ -2320,24 +2322,24 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		try
 		{
-			if ($group_teampage && $current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+			if ($group_teampage && $current_teampage == \phpbb\groupposition\teampage::GROUP_DISABLED)
 			{
 				$teampage->add_group($group_id);
 			}
 
 			if ($group_teampage)
 			{
-				if ($current_teampage == phpbb_groupposition_teampage::GROUP_DISABLED)
+				if ($current_teampage == \phpbb\groupposition\teampage::GROUP_DISABLED)
 				{
 					$teampage->add_group($group_id);
 				}
 			}
-			else if ($group_id && ($current_teampage != phpbb_groupposition_teampage::GROUP_DISABLED))
+			else if ($group_id && ($current_teampage != \phpbb\groupposition\teampage::GROUP_DISABLED))
 			{
 				$teampage->delete_group($group_id);
 			}
 		}
-		catch (phpbb_groupposition_exception $exception)
+		catch (\phpbb\groupposition\exception $exception)
 		{
 			trigger_error($user->lang($exception->getMessage()));
 		}
@@ -2472,7 +2474,7 @@ function group_delete($group_id, $group_name = false)
 		$legend->delete_group($group_id);
 		unset($legend);
 	}
-	catch (phpbb_groupposition_exception $exception)
+	catch (\phpbb\groupposition\exception $exception)
 	{
 		// The group we want to delete does not exist.
 		// No reason to worry, we just continue the deleting process.
@@ -2485,7 +2487,7 @@ function group_delete($group_id, $group_name = false)
 		$teampage->delete_group($group_id);
 		unset($teampage);
 	}
-	catch (phpbb_groupposition_exception $exception)
+	catch (\phpbb\groupposition\exception $exception)
 	{
 		// The group we want to delete does not exist.
 		// No reason to worry, we just continue the deleting process.
@@ -2534,7 +2536,7 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $db, $auth;
+	global $db, $auth, $phpbb_container;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2622,6 +2624,20 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	group_update_listings($group_id);
 
+	if ($pending)
+	{
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		foreach ($add_id_ary as $user_id)
+		{
+			$phpbb_notifications->add_notifications('group_request', array(
+				'group_id'		=> $group_id,
+				'user_id'		=> $user_id,
+				'group_name'	=> $group_name,
+			));
+		}
+	}
+
 	// Return false - no error
 	return false;
 }
@@ -2635,7 +2651,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config, $phpbb_dispatcher;
+	global $db, $auth, $config, $phpbb_dispatcher, $phpbb_container;
 
 	if ($config['coppa_enable'])
 	{
@@ -2738,8 +2754,8 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	* Event before users are removed from a group
 	*
 	* @event core.group_delete_user_before
-	* @var	int		group_id	ID of the group from which users are deleted
-	* @var	string	group_name	Name of the group
+	* @var	int		group_id		ID of the group from which users are deleted
+	* @var	string	group_name		Name of the group
 	* @var	array	user_id_ary		IDs of the users which are removed
 	* @var	array	username_ary	names of the users which are removed
 	* @since 3.1-A1
@@ -2768,6 +2784,10 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	}
 
 	group_update_listings($group_id);
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
 
 	// Return false - no error
 	return false;
@@ -2858,7 +2878,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_root_path, $phpEx, $config;
+	global $db, $auth, $phpbb_root_path, $phpEx, $config, $phpbb_container;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2911,11 +2931,10 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND ' . $db->sql_in_set('ug.user_id', $user_id_ary);
 			$result = $db->sql_query($sql);
 
-			$user_id_ary = $email_users = array();
+			$user_id_ary = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$user_id_ary[] = $row['user_id'];
-				$email_users[] = $row;
 			}
 			$db->sql_freeresult($result);
 
@@ -2930,26 +2949,14 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 
-			// Send approved email to users...
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-			$messenger = new messenger();
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-			foreach ($email_users as $row)
-			{
-				$messenger->template('group_approved', $row['user_lang']);
-
-				$messenger->set_addresses($row);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($row['username']),
-					'GROUP_NAME'	=> htmlspecialchars_decode($group_name),
-					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
-				);
-
-				$messenger->send($row['user_notify_type']);
-			}
-
-			$messenger->save_queue();
+			$phpbb_notifications->add_notifications('group_request_approved', array(
+				'user_ids'		=> $user_id_ary,
+				'group_id'		=> $group_id,
+				'group_name'	=> $group_name,
+			));
+			$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
 
 			$log = 'LOG_USERS_APPROVED';
 		break;

@@ -41,7 +41,7 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 
-	require($phpbb_root_path . 'includes/class_loader.' . $phpEx);
+	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
@@ -50,9 +50,9 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 	// Setup class loader first
-	$phpbb_class_loader = new phpbb_class_loader('phpbb_', "{$phpbb_root_path}includes/", $phpEx);
+	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 	$phpbb_class_loader->register();
-	$phpbb_class_loader_ext = new phpbb_class_loader('phpbb_ext_', "{$phpbb_root_path}ext/", $phpEx);
+	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
 
 	// Set up container
@@ -279,7 +279,7 @@ else if ($download_id)
 		phpbb_increment_downloads($db, $attachment['attach_id']);
 	}
 
-	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && ((strpos(strtolower($user->browser), 'msie') !== false) && (strpos(strtolower($user->browser), 'msie 8.0') === false)))
+	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && (strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7))
 	{
 		wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 		file_gc();
