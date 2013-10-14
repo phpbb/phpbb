@@ -5,7 +5,7 @@
 services:
     # Post Revisions controller
     post_revisions.controller:
-        class: \phpbb\controller\post_revisions
+        class: phpbb\controller\post_revisions
         arguments:
             - @controller.helper
             - @user
