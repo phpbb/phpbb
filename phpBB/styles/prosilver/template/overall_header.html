@@ -135,9 +135,13 @@
 					</div>
 				</li>
 				<!-- ENDIF -->
+				<!-- IF S_DISPLAY_PM -->
+					<li class="icon-pm">
+						<a href="{U_PRIVATEMSGS}">{L_PRIVATE_MESSAGES} (<strong>{PRIVATE_MESSAGE_COUNT}</strong>)</a>
+					</li>
+				<!-- ENDIF -->
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
-						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
 				</li>
 				<!-- IF S_DISPLAY_SEARCH -->
 					<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>

@@ -91,14 +91,14 @@ a.sendemail {
 /* Icon images
 ---------------------------------------- */
 .sitehome, .icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout,
-.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .icon-notification {
+.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .icon-notification, .icon-pm {
 	background-position: 0 50%;
 	background-repeat: no-repeat;
 	background-image: none;
 	padding: 1px 0 0 17px;
 }
 
-ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before, ul.linklist.bulletin li.icon-notification:before,
+ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before, ul.linklist.bulletin li.icon-notification:before, ul.linklist.bulletin li.icon-pm:before,
 ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:before, ul.linklist.bulletin li.icon-subscribe:before, ul.linklist.bulletin li.icon-unsubscribe:before {
 	display: none;
 }

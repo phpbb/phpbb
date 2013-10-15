@@ -401,10 +401,6 @@ $lang = array_merge($lang, array(
 	'NEWEST_USER'				=> 'Our newest member <strong>%s</strong>',
 	'NEW_MESSAGE'				=> 'New message',
 	'NEW_MESSAGES'				=> 'New messages',
-	'NEW_PMS'					=> array(
-		1	=> '<strong>%d</strong> new message',
-		2	=> '<strong>%d</strong> new messages',
-	),
 	'NEW_POST'					=> 'New post',	// Not used anymore
 	'NEW_POSTS'					=> 'New posts',	// Not used anymore
 	'NEXT'						=> 'Next',		// Used in pagination
@@ -753,10 +749,6 @@ $lang = array_merge($lang, array(
 	'UNKNOWN_BROWSER'		=> 'Unknown browser',
 	'UNMARK_ALL'			=> 'Unmark all',
 	'UNREAD_MESSAGES'		=> 'Unread messages',
-	'UNREAD_PMS'			=> array(
-		1	=> '<strong>%d</strong> unread message',
-		2	=> '<strong>%d</strong> unread messages',
-	),
 	'UNREAD_POST'			=> 'Unread post',
 	'UNREAD_POSTS'			=> 'Unread posts',
 	'UNWATCH_FORUM_CONFIRM'		=> 'Are you sure you wish to unsubscribe from this forum?',

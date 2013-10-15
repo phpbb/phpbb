@@ -193,7 +193,7 @@ function marklist(id, name, state)
 				<!-- ENDIF -->
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_USER_LOGGED_IN -->
-						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a><!-- ENDIF -->
+						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {L_PRIVATE_MESSAGES} (<strong>{PRIVATE_MESSAGE_COUNT}</strong>)</a><!-- ENDIF -->
 					<!-- ELSEIF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
 					<!-- ENDIF -->
 				<!-- ENDIF -->
