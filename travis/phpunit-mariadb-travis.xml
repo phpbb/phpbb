@@ -34,7 +34,7 @@
 		<server name="PHPBB_TEST_DBPORT" value="3306" />
 		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />
 		<server name="PHPBB_TEST_DBUSER" value="root" />
-		<server name="PHPBB_TEST_DBPASSWD" value="rootpasswd" />
+		<server name="PHPBB_TEST_DBPASSWD" value="" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
 		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
 	</php>

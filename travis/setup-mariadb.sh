@@ -24,3 +24,10 @@ sudo apt-get update -qq
 sudo debconf-set-selections <<< "mariadb-server-$VERSION mysql-server/root_password password rootpasswd"
 sudo debconf-set-selections <<< "mariadb-server-$VERSION mysql-server/root_password_again password rootpasswd"
 sudo apt-get install -qq mariadb-server
+
+# Set root password to empty string.
+echo "
+USE mysql;
+UPDATE user SET Password = PASSWORD('') where User = 'root';
+FLUSH PRIVILEGES;
+" | mysql -u root -prootpasswd
