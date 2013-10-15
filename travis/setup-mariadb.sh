@@ -34,3 +34,5 @@ USE mysql;
 UPDATE user SET Password = PASSWORD('') where User = 'root';
 FLUSH PRIVILEGES;
 " | mysql -u root -prootpasswd
+
+mysql --version
