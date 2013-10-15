@@ -11,6 +11,9 @@ VERSION='5.5'
 # Operating system codename, e.g. "precise"
 OS_CODENAME=$(lsb_release --codename --short)
 
+# Manually purge MySQL to remove conflicting files (e.g. /etc/mysql/my.cnf)
+sudo apt-get purge -qq mysql-common
+
 if ! which add-apt-repository > /dev/null
 then
 	sudo apt-get update -qq
