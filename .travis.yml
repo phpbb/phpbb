@@ -14,6 +14,7 @@ env:
 before_script:
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database phpbb_tests;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'mariadb' ]; then travis/setup-mariadb.sh; fi"
   - sh -c "if [ '$DB' = 'mysql' -o '$DB' = 'mariadb' ]; then mysql -e 'create database IF NOT EXISTS phpbb_tests;'; fi"
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then pear install --force phpunit/DbUnit; phpenv rehash; fi"
   - cd phpBB
