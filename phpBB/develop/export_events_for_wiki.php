@@ -41,7 +41,8 @@ function export_from_eventsmd($filter)
 		if ($filter == 'acp' && strpos($event_name, 'acp_') !== 0) continue;
 		if ($filter == 'styles' && strpos($event_name, 'acp_') === 0) continue;
 
-		list($file_details, $explanition) = explode("\n* Purpose: ", $details);
+		list($file_details, $details) = explode("\n* Since: ", $details);
+		list($version, $explanition) = explode("\n* Purpose: ", $details);
 
 		echo "|- id=\"{$event_name}\"\n";
 		echo "| [[#{$event_name}|{$event_name}]] || ";
@@ -68,7 +69,7 @@ function export_from_eventsmd($filter)
 		{
 			echo substr($file_details, strlen("* Location: adm/style/"));
 		}
-		echo " || 3.1.0-a1 || " . str_replace("\n", ' ', $explanition) . "\n";
+		echo " || {$version} || " . str_replace("\n", ' ', $explanition) . "\n";
 
 	}
 }
