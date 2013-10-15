@@ -230,7 +230,12 @@ class filespec
 	*/
 	function get_mimetype($filename)
 	{
-		return $this->guesser->guess($filename);
+		$mimetype = $this->guesser->guess($filename);
+		if (!$mimetype)
+		{
+			$mimetype = 'application/octetstream';
+		}
+		return $mimetype;
 	}
 
 	/**

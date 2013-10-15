@@ -55,7 +55,7 @@ class mimetype_guesser implements MimeTypeGuesserInterface
 		// Some browsers choke on a mimetype of application/octet-stream
 		if (!$mimetype || $mimetype == 'application/octet-stream')
 		{
-			$mimetype = 'application/octetstream';
+			return null;
 		}
 
 		return $mimetype;
