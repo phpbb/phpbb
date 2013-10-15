@@ -464,10 +464,7 @@ class filespec
 	{
 		if ($this->guesser === false)
 		{
-			global $phpbb_container;
-
 			$this->guesser = MimeTypeGuesser::getInstance();
-			$this->guesser->register($phpbb_container->get('mimetype_guesser'));
 		}
 	}
 }

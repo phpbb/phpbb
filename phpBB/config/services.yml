@@ -230,9 +230,6 @@ services:
             - %core.php_ext%
             - %tables.log%
 
-    mimetype_guesser:
-        class: phpbb\mimetype_guesser
-
     notification_manager:
         class: phpbb\notification\manager
         arguments:

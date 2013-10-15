@@ -20,7 +20,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 
 		// Global $config required by unique_id
 		// Global $user required by fileupload::remote_upload
-		global $config, $user, $phpbb_container;
+		global $config, $user;
 
 		if (!is_array($config))
 		{
@@ -32,13 +32,6 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
-
-		$mimetype_guesser = new \phpbb\mimetype_guesser;
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-		$phpbb_container->expects($this->any())
-			->method('get')
-			->with('mimetype_guesser')
-			->will($this->returnValue($mimetype_guesser));
 	}
 
 	public function tearDown()
