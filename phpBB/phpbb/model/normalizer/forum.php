@@ -24,38 +24,40 @@ class phpbb_model_normalizer_forum implements NormalizerInterface
 {
 	public function normalize($forum, $format = null)
 	{
-		$whitelist = array(
-			'forum_id',
-			'parent_id',
-			'forum_name',
-			'forum_desc',
-			'forum_link',
-			'forum_image',
-			'forum_rules',
-			'forum_rules_link',
-			'forum_type',
-			'forum_posts_approved',
-			'forum_topics_approved',
-			'forum_last_post_id',
-			'forum_last_poster_id',
-			'forum_last_post_subject',
-			'forum_last_post_time',
-			'forum_last_poster_name',
-			'forum_last_poster_colour',
-			'subforums',
+		 $whitelist = array(
+			array('int', 'forum_id'),
+			array('int', 'parent_id'),
+			array('string', 'forum_name'),
+			array('string', 'forum_desc'),
+			array('string', 'forum_link'),
+			array('string', 'forum_image'),
+			array('string', 'forum_rules'),
+			array('string', 'forum_rules_link'),
+			array('int', 'forum_type'),
+			array('int', 'forum_posts_approved'),
+			array('int', 'forum_topics_approved'),
+			array('int', 'forum_last_post_id'),
+			array('int', 'forum_last_poster_id'),
+			array('string', 'forum_last_post_subject'),
+			array('int', 'forum_last_post_time'),
+			array('string', 'forum_last_poster_name'),
+			array('string', 'forum_last_poster_colour'),
+			array('unset', 'subforums'),
 		);
 
 		$normalized_forum = array();
 		foreach($whitelist as $field)
 		{
-			if($field == "subforums")
+			if($field[1] == "subforums")
 			{
-				$normalized_forum[$field] = ($forum->get('subforums') != null) ?
+				$normalized_forum[$field[1]] = ($forum->get('subforums') != null) ?
 					$this->normalize_subforum($forum->get('subforums')) : null;
 			}
 			else
 			{
-				$normalized_forum[$field] = $forum->get($field);
+				$value = $forum->get($field[1]);
+				settype($value, $field[0]);
+				$normalized_forum[$field[1]] = $value;
 			}
 		}
 

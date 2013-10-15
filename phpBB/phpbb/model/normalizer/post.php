@@ -18,30 +18,31 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Topic enitity normalizer
+ * Post enitity normalizer
  * @package phpBB3
  */
 class phpbb_model_normalizer_post implements NormalizerInterface
 {
-	public function normalize($topic, $format = null)
+	public function normalize($post, $format = null)
 	{
 		$whitelist = array(
-			'post_id',
-			'topic_id',
-			'forum_id',
-			'poster_id',
-			'icon_id',
-			'post_time',
-			'post_username',
-			'post_subject',
-			'post_text',
+			array('int', 'post_id'),
+			array('int', 'topic_id'),
+			array('int', 'forum_id'),
+			array('int', 'poster_id'),
+			array('int', 'icon_id'),
+			array('int', 'post_time'),
+			array('string', 'post_username'),
+			array('string', 'post_subject'),
+			array('string', 'post_text'),
 		);
 
 		$normalized_post = array();
 		foreach($whitelist as $field)
 		{
-
-			$normalized_post[$field] = $topic->get($field);
+			$value = $post->get($field[1]);
+			settype($value, $field[0]);
+			$normalized_post[$field[1]] = $value;
 
 		}
 
