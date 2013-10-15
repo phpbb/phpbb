@@ -1,17 +1,13 @@
 <?php
 /**
 *
-* @copyright (c) 2012 phpBB Group
+* @copyright (c) 2013 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-define('IN_PHPBB', 1);
-define('ANONYMOUS', 1);
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-$phpbb_root_path = __DIR__.'/../';
-
-include($phpbb_root_path . 'common.'.$phpEx);
+$phpbb_root_path = __DIR__ . '/../';
 
 function usage()
 {
