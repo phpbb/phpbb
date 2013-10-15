@@ -21,7 +21,7 @@ acp_overall_footer_after
 acp_overall_header_head_append
 ===
 * Location: adm/style/overall_header.html
-* Add assets within the `<head>` tags in the ACP
+* Purpose: Add assets within the `<head>` tags in the ACP
 
 acp_simple_footer_after
 ===
@@ -31,7 +31,7 @@ acp_simple_footer_after
 acp_simple_header_head_append
 ===
 * Location: adm/style/overall_header.html
-* Add assets within the `<head>` tags in the simple header of the ACP
+* Purpose: Add assets within the `<head>` tags in the simple header of the ACP
 
 acp_users_overview_options_append
 ===
@@ -91,7 +91,8 @@ overall_footer_after
 
 overall_footer_breadcrumb_append
 ===
-* Location: styles/prosilver/template/overall_footer.html
+* Locations:
+    + styles/prosilver/template/overall_footer.html
 * Purpose: Add links to the list of breadcrumbs in the footer
 
 overall_footer_copyright_append
@@ -124,12 +125,14 @@ overall_header_head_append
 
 overall_header_navigation_append
 ===
-* Location: styles/prosilver/template/overall_header.html
+* Locations:
+    + styles/prosilver/template/overall_header.html
 * Purpose: Add links after the navigation links in the header
 
 overall_header_navigation_prepend
 ===
-* Location: styles/prosilver/template/overall_header.html
+* Locations:
+    + styles/prosilver/template/overall_header.html
 * Purpose: Add links before the navigation links in the header
 
 posting_editor_options_prepend
@@ -141,7 +144,8 @@ posting_editor_options_prepend
 
 simple_footer_after
 ===
-* Location: styles/prosilver/template/simple_footer.html
+* Locations:
+    + styles/prosilver/template/simple_footer.html
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
 topiclist_row_prepend
@@ -164,19 +168,22 @@ topiclist_row_append
 
 ucp_pm_viewmessage_custom_fields_after
 ===
-* Location: styles/prosilver/template/ucp_pm_viewmessage.html
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
 * Purpose: Add data after the custom fields on the user profile when viewing
 a private message
 
 ucp_pm_viewmessage_custom_fields_before
 ===
-* Location: styles/prosilver/template/ucp_pm_viewmessage.html
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
 * Purpose: Add data before the custom fields on the user profile when viewing
 a private message
 
 ucp_pm_viewmessage_print_head_append
 ===
-* Location: styles/prosilver/template/ucp_pm_viewmessage_print.html
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
 ucp_prefs_personal_prepend
@@ -241,7 +248,8 @@ Display Options screen
 
 viewtopic_print_head_append
 ===
-* Location: styles/prosilver/template/viewtopic_print.html
+* Locations:
+    + styles/prosilver/template/viewtopic_print.html
 * Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
 
 viewtopic_body_footer_before
