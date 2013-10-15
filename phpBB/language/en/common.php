@@ -417,11 +417,7 @@ $lang = array_merge($lang, array(
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
 	'NOTIFICATIONS'				=> 'Notifications',
-	'NOTIFICATIONS_COUNT'		=> array(
-		0	=> '%d Notifications',
-		1	=> '<strong>%d</strong> Notification',
-		2	=> '<strong>%d</strong> Notifications',
-	),
+	'NOTIFICATIONS_COUNT'		=> 'Notifications (<strong>%d</strong>)',
 	'NOTIFICATION_BOOKMARK'				=> '%1$s replied to the topic "%2$s" you have bookmarked.',
 	'NOTIFICATION_GROUP_REQUEST'		=> '%1$s is requesting to join the group %2$s.',
 	'NOTIFICATION_GROUP_REQUEST_APPROVED'	=> 'Your request to join the group %1$s has been approved.',

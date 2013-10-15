@@ -707,6 +707,7 @@ a.sendemail {
 .icon-unsubscribe				{ background-image: url("./images/icon_unsubscribe.gif"); }
 .icon-pages						{ background-image: url("./images/icon_pages.gif"); }
 .icon-search					{ background-image: url("./images/icon_search.gif"); }
+.icon-notification				{ background-image: url("./images/icon_notification.gif"); }
 
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }
