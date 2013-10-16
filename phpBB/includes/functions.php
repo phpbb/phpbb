@@ -5225,10 +5225,9 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$l_online_time = $user->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
 	}
 
-	$privmsgs_count = 0;
 	$s_privmsg_new = false;
 
-	// Obtain number of unread private messages if user is logged in
+	// Check for new private messages if user is logged in
 	if (!empty($user->data['is_registered']))
 	{
 		if ($user->data['user_new_privmsg'])
@@ -5250,11 +5249,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		else
 		{
 			$s_privmsg_new = false;
-		}
-
-		if ($user->data['user_unread_privmsg'] && $user->data['user_unread_privmsg'] != $user->data['user_new_privmsg'])
-		{
-			$privmsgs_count = (int) $user->data['user_unread_privmsg'];
 		}
 	}
 
@@ -5345,7 +5339,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'TOTAL_USERS_ONLINE'			=> $l_online_users,
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
-		'PRIVATE_MESSAGE_COUNT'			=> $privmsgs_count,
+		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
