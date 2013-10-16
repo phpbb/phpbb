@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF S_FORUM_RULES and not (S_BOARD_SERVICES and not S_ACP) -->
+<!-- IF S_FORUM_RULES -->
 	<div class="forumrules">
 		<!-- IF U_FORUM_RULES -->
 			<h3>{L_FORUM_RULES}</h3><br />
@@ -30,13 +30,13 @@
 <div id="pagecontent">
 
 	<table width="100%" cellspacing="1">
-	<tr> 
+	<tr>
 		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
-		<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
+		<!-- IF not S_IS_BOT -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
-		</td> 
+		</td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
@@ -51,7 +51,7 @@
 			<table width="100%" cellspacing="0">
 			<tr>
 				<td class="nav" nowrap="nowrap">&nbsp;
-				<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
+				<!-- IF not S_IS_BOT -->
 					<!-- IF U_WATCH_TOPIC --><a href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}">{S_WATCH_TOPIC_TITLE}</a><!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC or U_BOOKMARK_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
 					<!-- IF U_BOOKMARK_TOPIC --><a href="{U_BOOKMARK_TOPIC}" title="{S_BOOKMARK_TOPIC}">{S_BOOKMARK_TOPIC}</a><!-- IF U_PRINT_TOPIC or U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
 					<!-- IF U_PRINT_TOPIC --><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a><!-- IF U_EMAIL_TOPIC or U_BUMP_TOPIC --> | <!-- ENDIF --><!-- ENDIF -->
@@ -318,7 +318,6 @@
 
 			<td class="profile"><strong><a href="#wrapheader">{L_BACK_TO_TOP}</a></strong></td>
 			<td>
-			<!-- IF not (S_BOARD_SERVICES and not S_ACP) --><td>&nbsp;
 				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">
 					&nbsp;<!-- IF postrow.U_POST_AUTHOR --><a href="{postrow.U_POST_AUTHOR}" class="imageset">{PROFILE_IMG}</a><!-- ENDIF -->
 					<!-- IF postrow.U_PM --><a href="{postrow.U_PM}" class="imageset">{PM_IMG}</a><!-- ENDIF -->
@@ -332,9 +331,8 @@
 					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_post_buttons_after -->
 				&nbsp;</div>
-    </td>	<!-- ENDIF -->
 			</td>
-			<!-- ENDIF -->   
+	<!-- ENDIF -->
 		</tr>
 
 	<tr>
@@ -354,7 +352,7 @@
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
-		<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
+		<!-- IF not S_IS_BOT -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
@@ -379,7 +377,6 @@
 <!-- EVENT viewtopic_body_footer_before -->
 <!-- INCLUDE breadcrumbs.html -->
 
-<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<br clear="all" />
 
@@ -413,7 +410,6 @@
 	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 </tr>
 </table>
-<!-- ENDIF -->
 
 <br clear="all" />
 

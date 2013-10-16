@@ -28,7 +28,7 @@
 <div class="topic-actions">
 
 	<div class="buttons">
-	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO and not (S_BOARD_SERVICES and not S_ACP) -->
+	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
 		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF --></a></div>
 	<!-- ENDIF -->
 	</div>
@@ -294,7 +294,7 @@
 
 <div class="topic-actions">
 	<div class="buttons">
-	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO and not (S_BOARD_SERVICES and not S_ACP) -->
+	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
 		<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->"><a href="{U_POST_REPLY_TOPIC}" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->"><span></span><!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF --></a></div>
 	<!-- ENDIF -->
 	</div>
@@ -340,7 +340,7 @@
 	</form>
 <!-- ENDIF -->
 
-<!-- IF S_DISPLAY_ONLINE_LIST and not (S_BOARD_SERVICES and not S_ACP) -->
+<!-- IF S_DISPLAY_ONLINE_LIST -->
 	<h3><!-- IF U_VIEWONLINE --><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a><!-- ELSE -->{L_WHO_IS_ONLINE}<!-- ENDIF --></h3>
 	<p>{LOGGED_IN_USER_LIST}</p>
 <!-- ENDIF -->

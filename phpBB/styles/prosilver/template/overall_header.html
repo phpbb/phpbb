@@ -98,7 +98,7 @@
 			<ul class="linklist leftside bulletin">
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
 				<li class="icon-notification">
-					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a>
+					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{L_NOTIFICATIONS} [<strong>{NOTIFICATIONS_COUNT}</strong>]</a>
 					<div id="notification_list" class="notification_list">
 						<div class="pointer"><div class="pointer_inner"></div></div>
 						<div class="header">
@@ -135,9 +135,13 @@
 					</div>
 				</li>
 				<!-- ENDIF -->
+				<!-- IF S_DISPLAY_PM -->
+					<li class="icon-pm">
+						<a href="{U_PRIVATEMSGS}">{L_PRIVATE_MESSAGES} [<strong>{PRIVATE_MESSAGE_COUNT}</strong>]</a>
+					</li>
+				<!-- ENDIF -->
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
-						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a>)<!-- ENDIF -->
 				</li>
 				<!-- IF S_DISPLAY_SEARCH -->
 					<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
@@ -149,12 +153,9 @@
 			<!-- ENDIF -->
 
 			<ul class="linklist rightside">
-		  <!-- IF not S_IS_BOT and (S_BOARD_SERVICES and not S_ACP) --><li><strong> {S_BOARD_SERVICES_MSG}</strong>&nbsp;<!-- ENDIF -->
-    <!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 				<!-- EVENT overall_header_navigation_prepend -->
-				 <li class="icon-faq"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
-				<!-- ENDIF -->
-				<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
+				<li class="icon-faq"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
+				<!-- IF not S_IS_BOT -->
 					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
 					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
 					<li class="icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
@@ -176,10 +177,3 @@
 			</div>
 		</div>
 		<!-- ENDIF -->
-		<!-- IF S_BOARD_SERVICES and S_USER_LOGGED_IN and U_ACP -->
-		<div id="information" class="rules">
-			<div class="inner"><span class="corners-top"><span></span></span>
-				<strong>{L_INFORMATION}:</strong> {L_BOARD_SERVICES}
-			<span class="corners-bottom"><span></span></span></div>
-		</div>
-		<!-- ENDIF -->   
