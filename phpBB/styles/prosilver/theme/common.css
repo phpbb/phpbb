@@ -821,6 +821,20 @@ li.pagination ul {
 	opacity: 0.5;
 }
 
+#loading_indicator {
+	background: center center no-repeat;
+	border-radius: 5px;
+	display: none;
+	opacity: 0.8;
+	margin-top: -50px;
+	margin-left: -50px;
+	height: 50px;
+	width: 50px;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+}
+
 /* Miscellaneous styles
 ---------------------------------------- */
 #forum-permissions {

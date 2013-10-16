@@ -12,7 +12,7 @@ var keymap = {
 };
 
 var dark = $('#darkenwrapper');
-var loadingAlert = $('#loadingalert');
+var loadingAlert = $('#loading_indicator');
 var phpbbAlertTimer = null;
 
 
@@ -22,18 +22,14 @@ var phpbbAlertTimer = null;
  * @returns object Returns loadingAlert.
  */
 phpbb.loadingAlert = function() {
-	if (dark.is(':visible')) {
+	if (!loadingAlert.is(':visible')) {
 		loadingAlert.fadeIn(phpbb.alertTime);
-	} else {
-		loadingAlert.show();
-		dark.fadeIn(phpbb.alertTime, function() {
-			// Wait fifteen seconds and display an error if nothing has been returned by then.
-			phpbbAlertTimer = setTimeout(function() {
-				if (loadingAlert.is(':visible')) {
-					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
-				}
-			}, 15000);
-		});
+		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		phpbbAlertTimer = setTimeout(function() {
+			if (loadingAlert.is(':visible')) {
+				phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
+			}
+		}, 15000);
 	}
 
 	return loadingAlert;
@@ -65,6 +61,10 @@ phpbb.alert = function(title, msg, fadedark) {
 	var div = $('#phpbb_alert');
 	div.find('.alert_title').html(title);
 	div.find('.alert_text').html(msg);
+
+	if (!dark.is(':visible')) {
+		dark.fadeIn(phpbb.alertTime);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -130,6 +130,10 @@ phpbb.alert = function(title, msg, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
 	div.find('.alert_text').html(msg);
+
+	if (!dark.is(':visible')) {
+		dark.fadeIn(phpbb.alertTime);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -372,12 +376,15 @@ phpbb.ajaxify = function(options) {
 			phpbb.loadingAlert();
 		}
 
-		$.ajax({
+		var request = $.ajax({
 			url: action,
 			type: method,
 			data: data,
 			success: returnHandler,
 			error: errorHandler
+		});
+		request.always(function() {
+			loadingAlert.fadeOut(phpbb.alertTime);
 		});
 
 		event.preventDefault();

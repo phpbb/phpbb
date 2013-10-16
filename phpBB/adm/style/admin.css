@@ -1593,6 +1593,20 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	}
 }
 
+#loading_indicator {
+	background: #000000 url("../images/loading.gif") center center no-repeat;
+	border-radius: 5px;
+	display: none;
+	opacity: 0.8;
+	margin-top: -50px;
+	margin-left: -50px;
+	height: 50px;
+	width: 50px;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+}
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
