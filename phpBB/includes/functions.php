@@ -5352,7 +5352,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
-		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
 		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],

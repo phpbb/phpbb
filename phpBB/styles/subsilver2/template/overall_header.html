@@ -152,7 +152,7 @@ function marklist(id, name, state)
 		<tr>
 			<td class="genmed">
 				<!-- IF S_NOTIFICATIONS_DISPLAY and not S_IS_BOT and S_USER_LOGGED_IN -->
-					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><img src="{T_THEME_PATH}/images/icon_mini_notification.gif" width="12" height="13" alt="*" /> {NOTIFICATIONS_COUNT}</a>&nbsp;
+					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><img src="{T_THEME_PATH}/images/icon_mini_notification.gif" width="12" height="13" alt="*" /> {L_NOTIFICATIONS} [<strong>{NOTIFICATIONS_COUNT}</strong>]</a>&nbsp;
 					<div id="notification_list" class="notification_list">
 						<div class="row1 header">
 							{L_NOTIFICATIONS}
@@ -193,7 +193,7 @@ function marklist(id, name, state)
 				<!-- ENDIF -->
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_USER_LOGGED_IN -->
-						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {L_PRIVATE_MESSAGES} (<strong>{PRIVATE_MESSAGE_COUNT}</strong>)</a><!-- ENDIF -->
+						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {L_PRIVATE_MESSAGES} [<strong>{PRIVATE_MESSAGE_COUNT}</strong>]</a><!-- ENDIF -->
 					<!-- ELSEIF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
 					<!-- ENDIF -->
 				<!-- ENDIF -->
