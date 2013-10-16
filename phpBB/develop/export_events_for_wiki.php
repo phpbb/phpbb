@@ -109,29 +109,13 @@ function check_for_events($file)
 		$lines = explode("\n", $content);
 		for ($i = 0, $num_lines = sizeof($lines); $i < $num_lines; $i++)
 		{
+			$event_line = 0;
 			if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->trigger_event('"))
 			{
 				$event_line = $i;
 				$event_name = $lines[$event_line];
 				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->trigger_event('"));
 				$event_name = substr($event_name, 0, strpos($event_name, "'"));
-
-				// Validate @event name
-				$find_event_line = 1;
-				while (strpos($lines[$event_line - $find_event_line], '* @event ') === false)
-				{
-					$find_event_line++;
-
-					if ($find_event_line > min(50, $event_line))
-					{
-						throw new LogicException('Can not find @event tag for event "' . $event_name . '" in file "' . $file . '"');
-					}
-				}
-				$event_name_tag = substr(trim($lines[$event_line - $find_event_line]), strlen('* @event '));
-				if ($event_name_tag !== $event_name)
-				{
-					throw new LogicException('Event name does not match @event tag for event "' . $event_name . '" in file "' . $file . '"');
-				}
 
 				// Find $vars array lines
 				$find_varsarray_line = 1;
@@ -168,6 +152,34 @@ function check_for_events($file)
 				{
 					throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
 				}
+			}
+			else if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->dispatch('"))
+			{
+				$event_line = $i;
+				$event_name = $lines[$event_line];
+				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->dispatch('"));
+				$event_name = substr($event_name, 0, strpos($event_name, "'"));
+				$arguments = array();
+			}
+
+			if ($event_line)
+			{
+				// Validate @event name
+				$find_event_line = 1;
+				while (strpos($lines[$event_line - $find_event_line], '* @event ') === false)
+				{
+					$find_event_line++;
+
+					if ($find_event_line > min(50, $event_line))
+					{
+						throw new LogicException('Can not find @event tag for event "' . $event_name . '" in file "' . $file . '"');
+					}
+				}
+				$event_name_tag = substr(trim($lines[$event_line - $find_event_line]), strlen('* @event '));
+				if ($event_name_tag !== $event_name)
+				{
+					throw new LogicException('Event name does not match @event tag for event "' . $event_name . '" in file "' . $file . '"');
+				}
 
 				// Find @since
 				$find_since_line = 1;
@@ -200,50 +212,6 @@ function check_for_events($file)
 					'event'			=> $event_name,
 					'file'			=> $file,
 					'arguments'		=> $arguments,
-					'since'			=> $since,
-					'description'	=> $description,
-				);
-			}
-			if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->dispatch('"))
-			{
-				$event_line = $i;
-				$event_name = $lines[$event_line];
-				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->dispatch('"));
-				$event_name = substr($event_name, 0, strpos($event_name, "'"));
-
-				// Validate @event name
-				$find_event_line = 1;
-				while (strpos($lines[$event_line - $find_event_line], '* @event ') === false)
-				{
-					$find_event_line++;
-				}
-				$event_name_tag = substr(trim($lines[$event_line - $find_event_line]), strlen('* @event '));
-				if ($event_name_tag !== $event_name)
-				{
-					throw new LogicException('Event name does not match @event tag for event "' . $event_name . '" in file "' . $file . '"');
-				}
-
-				// Find @since
-				$find_since_line = 1;
-				while (strpos($lines[$event_line - $find_since_line], '* @since ') === false)
-				{
-					$find_since_line++;
-				}
-				$since = substr(trim($lines[$event_line - $find_since_line]), strlen('* @since '));
-				$since = ($since == '3.1-A1') ? '3.1.0-a1' : $since;
-
-				// Find event description line
-				$find_description_line = 3;
-				while (strpos(trim($lines[$event_line - $find_description_line]), '*') === 0)
-				{
-					$find_description_line++;
-				}
-				$description = substr(trim($lines[$event_line - $find_description_line + 1]), strlen('* '));
-
-				$events[$event_name] = array(
-					'event'			=> $event_name,
-					'file'			=> $file,
-					'arguments'		=> array(),
 					'since'			=> $since,
 					'description'	=> $description,
 				);
