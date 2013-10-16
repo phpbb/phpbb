@@ -5228,13 +5228,11 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	$privmsgs_count = 0;
 	$s_privmsg_new = false;
 
-	// Obtain number of new private messages if user is logged in
+	// Obtain number of unread private messages if user is logged in
 	if (!empty($user->data['is_registered']))
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			$privmsgs_count = (int) $user->data['user_new_privmsg'];
-
 			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
@@ -5251,7 +5249,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 		else
 		{
-			$privmsgs_count = 0;
 			$s_privmsg_new = false;
 		}
 
