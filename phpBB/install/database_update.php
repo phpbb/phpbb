@@ -210,7 +210,7 @@ $safe_time_limit = min(15, (ini_get('max_execution_time') / 2));
 //  we want to try and take additional measures to prevent hitting the
 //  max execution time (if, say, one migration step takes much longer
 //  than the max execution time)
-set_time_limit(0);
+@set_time_limit(0);
 
 while (!$migrator->finished())
 {
