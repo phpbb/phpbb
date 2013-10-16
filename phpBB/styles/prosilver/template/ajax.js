@@ -285,8 +285,13 @@ phpbb.addAjaxCallback('revisions.delete', function(res) {
 		var revisionCount;
 
 		$(this).parents('li.row').remove();
-		revisionCount = parseInt($('#compare_summary').html());
-		$('#compare_summary').html(revisionCount - 1);
+		revisionCount = parseInt($('#compare_summary').html()) - 1;
+		$('#compare_summary').html(revisionCount);
+
+		// Disable radio buttons if there's only a single revision left.
+		if (revisionCount === 1) {
+			$('.revision_compare input[type="radio"]').attr({'disabled': 'disabled', 'checked': 'checked'});
+		}
 	}
 });
 
