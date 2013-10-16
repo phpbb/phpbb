@@ -169,7 +169,7 @@ class post_revisions
 
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-			'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+			'U_VIEW_PROFILE'	=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 
 			'RANK_TITLE'		=> $post_data['rank_title'],
 			'RANK_IMG'			=> $post_data['rank_image'],
@@ -229,7 +229,7 @@ class post_revisions
 
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-			'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+			'U_VIEW_PROFILE'	=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 
 			'RANK_TITLE'		=> $post_data['rank_title'],
 			'RANK_IMG'			=> $post_data['rank_image'],
@@ -586,7 +586,7 @@ class post_revisions
 			$comparison = new \phpbb\revisions\comparison($post->get_current_revision(), $revisions[$to]);
 			$this->template->assign_vars(array(
 				'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-				'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+				'U_VIEW_PROFILE'	=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 
 				'RANK_TITLE'		=> $post_data['rank_title'],
 				'RANK_IMG'			=> $post_data['rank_image'],
