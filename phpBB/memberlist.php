@@ -21,6 +21,12 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
+// Board Offline
+if ($config['board_service'] && !$auth->acl_gets('a_') && !$auth->acl_getf_global('a_'))
+{    
+	trigger_error ($user->lang['BOARD_SERVICES_ERROR']);    
+}
+
 // Grab data
 $mode		= request_var('mode', '');
 $action		= request_var('action', '');

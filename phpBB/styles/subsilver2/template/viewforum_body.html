@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF S_FORUM_RULES -->
+<!-- IF S_FORUM_RULES and not (S_BOARD_SERVICES and not S_ACP) -->
 	<div class="forumrules">
 		<!-- IF U_FORUM_RULES -->
 			<h3>{L_FORUM_RULES}</h3><br />
@@ -125,7 +125,7 @@
 	</tr>
 	</table>
 
-	<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
+	<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 
 		<br /><br />
 
@@ -150,7 +150,7 @@
 	<!-- IF S_DISPLAY_POST_INFO or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
-			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
+			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a></td>
 			<!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->
@@ -272,7 +272,7 @@
 	<!-- IF S_DISPLAY_POST_INFO or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
-			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
+			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a></td>
 			<!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->
@@ -289,8 +289,9 @@
 
 <!-- INCLUDE breadcrumbs.html -->
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- IF S_DISPLAY_ONLINE_LIST -->
-	<br clear="all" />
+	<br clear="all" />   
 
 	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
@@ -344,6 +345,7 @@
 		<td align="{S_CONTENT_FLOW_END}"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 	</tr>
 	</table>
+<!-- ENDIF -->
 <!-- ENDIF -->
 
 <br clear="all" />

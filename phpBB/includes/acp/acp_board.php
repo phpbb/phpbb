@@ -56,8 +56,6 @@ class acp_board
 						'site_home_url'			=> array('lang' => 'SITE_HOME_URL',			'validate' => 'string',	'type' => 'url:40:255', 'explain' => true),
 						'site_home_text'		=> array('lang' => 'SITE_HOME_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_index_text'		=> array('lang' => 'BOARD_INDEX_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
-						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
-						'board_disable_msg'		=> false,
 						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
@@ -67,7 +65,13 @@ class acp_board
 						'legend2'				=> 'WARNINGS',
 						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 
-						'legend3'					=> 'ACP_SUBMIT_CHANGES',
+						'legend3'				=> 'SERVICE_MODUS',
+						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
+						'board_disable_msg'		=> false,
+						'board_service'			=> array('lang' => 'SERVICE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_service', 'explain' => true),
+						'board_service_msg'		=> false,
+
+						'legend4'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -867,6 +871,17 @@ class acp_board
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
 	}
+	
+  
+  // Board Offline 
+  function board_service($value, $key)
+  {                                             
+    global $user;
+
+    $radio_ary = array(1 => 'YES', 0 => 'NO');
+
+    return h_radio('config[board_service]', $radio_ary, $value) . '<br />  <input id="' . $key . '" type="text" name="config[board_service_msg]" maxlength="255" size="40" value="' . $this->new_config['board_service_msg'] . '" />';
+  }   
 
 	/**
 	* Global quick reply enable/disable setting and button to enable in all forums

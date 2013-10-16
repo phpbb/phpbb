@@ -152,7 +152,7 @@ function marklist(id, name, state)
 		<tr>
 			<td class="genmed">
 				<!-- IF S_NOTIFICATIONS_DISPLAY and not S_IS_BOT and S_USER_LOGGED_IN -->
-					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><img src="{T_THEME_PATH}/images/icon_mini_notification.gif" width="12" height="13" alt="*" /> {L_NOTIFICATIONS} [<strong>{NOTIFICATIONS_COUNT}</strong>]</a>&nbsp;
+					[ <a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button">{NOTIFICATIONS_COUNT}</a> ]&nbsp;
 					<div id="notification_list" class="notification_list">
 						<div class="row1 header">
 							{L_NOTIFICATIONS}
@@ -191,18 +191,19 @@ function marklist(id, name, state)
 						</div>
 					</div>
 				<!-- ENDIF -->
-				<!-- IF not S_IS_BOT -->
+				<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) --><a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_LOGIN_LOGOUT}</a>&nbsp;<!-- ENDIF -->
+    <!-- IF S_BOARD_SERVICES and not S_ACP --><strong> {S_BOARD_SERVICES_MSG}</strong><!-- ENDIF -->
+				<!-- IF U_RESTORE_PERMISSIONS --> &nbsp;<a href="{U_RESTORE_PERMISSIONS}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_RESTORE_PERMISSIONS}</a><!-- ENDIF -->
+				<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span class="error">{L_BOARD_DISABLED}</span><!-- ENDIF -->
+				<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 					<!-- IF S_USER_LOGGED_IN -->
-						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {L_PRIVATE_MESSAGES} [<strong>{PRIVATE_MESSAGE_COUNT}</strong>]</a><!-- ENDIF -->
+						<!-- IF S_DISPLAY_PM --> &nbsp;<a href="{U_PRIVATEMSGS}"><img src="{T_THEME_PATH}/images/icon_mini_message.gif" width="12" height="13" alt="*" /> {PRIVATE_MESSAGE_INFO}<!-- IF PRIVATE_MESSAGE_INFO_UNREAD -->, {PRIVATE_MESSAGE_INFO_UNREAD}<!-- ENDIF --></a><!-- ENDIF -->
 					<!-- ELSEIF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --> &nbsp;<a href="{U_REGISTER}"><img src="{T_THEME_PATH}/images/icon_mini_register.gif" width="12" height="13" alt="*" /> {L_REGISTER}</a>
 					<!-- ENDIF -->
 				<!-- ENDIF -->
-				<!-- IF not S_IS_BOT --> &nbsp;<a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_LOGIN_LOGOUT}</a>&nbsp;<!-- ENDIF -->
-				<!-- IF U_RESTORE_PERMISSIONS --> &nbsp;<a href="{U_RESTORE_PERMISSIONS}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" alt="*" /> {L_RESTORE_PERMISSIONS}</a><!-- ENDIF -->
-				<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span class="error">{L_BOARD_DISABLED}</span><!-- ENDIF -->
 			</td>
 			<td class="genmed" align="{S_CONTENT_FLOW_END}">
-				<a href="{U_FAQ}"><img src="{T_THEME_PATH}/images/icon_mini_faq.gif" width="12" height="13" alt="*" /> {L_FAQ}</a>
+				<!-- IF not (S_BOARD_SERVICES and not S_ACP) --><a href="{U_FAQ}"><img src="{T_THEME_PATH}/images/icon_mini_faq.gif" width="12" height="13" alt="*" /> {L_FAQ}</a><!-- ENDIF -->
 				<!-- IF S_DISPLAY_SEARCH -->&nbsp; &nbsp;<a href="{U_SEARCH}"><img src="{T_THEME_PATH}/images/icon_mini_search.gif" width="12" height="13" alt="*" /> {L_SEARCH}</a><!-- ENDIF -->
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_DISPLAY_MEMBERLIST -->&nbsp; &nbsp;<a href="{U_MEMBERLIST}"><img src="{T_THEME_PATH}/images/icon_mini_members.gif" width="12" height="13" alt="*" /> {L_MEMBERLIST}</a><!-- ENDIF -->

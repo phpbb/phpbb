@@ -140,7 +140,7 @@ class ucp_notifications
 
 				$template->assign_vars(array(
 					'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $notifications['total_count'], $config['topics_per_page'], $start),
-					'TOTAL_COUNT'	=> $notifications['total_count'],
+					'TOTAL_COUNT'	=> $user->lang('NOTIFICATIONS_COUNT', $notifications['total_count']),
 					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
 				));
 

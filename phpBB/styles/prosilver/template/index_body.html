@@ -21,7 +21,7 @@
 
 <!-- INCLUDE forumlist_body.html -->
 
-<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
+<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 	<form method="post" action="{S_LOGIN_ACTION}" class="headerspace">
 	<h3><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a><!-- IF S_REGISTER_ENABLED -->&nbsp; &bull; &nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a><!-- ENDIF --></h3>
 		<fieldset class="quick-login">
@@ -36,6 +36,7 @@
 	</form>
 <!-- ENDIF -->
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- EVENT index_body_stat_blocks_before -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
@@ -47,6 +48,7 @@
 <!-- IF S_DISPLAY_BIRTHDAY_LIST -->
 	<h3>{L_BIRTHDAYS}</h3>
 	<p><!-- IF .birthdays -->{L_CONGRATULATIONS}{L_COLON} <strong><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></strong><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p>
+<!-- ENDIF -->
 <!-- ENDIF -->
 
 <!-- IF NEWEST_USER -->
