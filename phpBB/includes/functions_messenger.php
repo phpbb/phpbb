@@ -281,7 +281,7 @@ class messenger
 	/**
 	* Send the mail out to the recipients set previously in var $this->addresses
 	*/
-	function send($method = NOTIFY_EMAIL, $break = false)
+	function send($method = NOTIFY_EMAIL, $break = false, $is_html = true)
 	{
 		global $config, $user;
 
@@ -325,7 +325,7 @@ class messenger
 		switch ($method)
 		{
 			case NOTIFY_EMAIL:
-				$result = $this->msg_email();
+				$result = $this->msg_email($is_html);
 			break;
 
 			case NOTIFY_IM:
@@ -333,7 +333,7 @@ class messenger
 			break;
 
 			case NOTIFY_BOTH:
-				$result = $this->msg_email();
+				$result = $this->msg_email($is_html);
 				$this->msg_jabber();
 			break;
 		}
@@ -412,7 +412,7 @@ class messenger
 	/**
 	* Return email header
 	*/
-	function build_header($to, $cc, $bcc)
+	function build_header($to, $cc, $bcc, $is_html = true)
 	{
 		global $config;
 
@@ -437,7 +437,7 @@ class messenger
 		$headers[] = 'MIME-Version: 1.0';
 		$headers[] = 'Message-ID: <' . $this->generate_message_id() . '>';
 		$headers[] = 'Date: ' . date('r', time());
-		$headers[] = 'Content-Type: text/plain; charset=UTF-8'; // format=flowed
+		$headers[] = ($is_html) ? 'Content-Type: text/html; charset=UTF-8' : 'Content-Type: text/plain; charset=UTF-8';// format=flowed
 		$headers[] = 'Content-Transfer-Encoding: 8bit'; // 7bit
 
 		$headers[] = 'X-Priority: ' . $this->mail_priority;
@@ -457,7 +457,7 @@ class messenger
 	/**
 	* Send out emails
 	*/
-	function msg_email()
+	function msg_email($is_html=true)
 	{
 		global $config, $user;
 
@@ -512,7 +512,7 @@ class messenger
 		}
 
 		// Build header
-		$headers = $this->build_header($to, $cc, $bcc);
+		$headers = $this->build_header($to, $cc, $bcc, $is_html);
 
 		// Send message ...
 		if (!$use_queue)
@@ -520,6 +520,11 @@ class messenger
 			$mail_to = ($to == '') ? 'undisclosed-recipients:;' : $to;
 			$err_msg = '';
 
+                        if($is_html)
+                        {
+               			$this->msg = nl2br($this->msg);
+                        }
+                        
 			if ($config['smtp_delivery'])
 			{
 				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $err_msg, $headers);
