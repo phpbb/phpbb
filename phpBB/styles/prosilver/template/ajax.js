@@ -252,7 +252,7 @@ phpbb.addAjaxCallback('revisions.compare', function(res) {
 	var i;
 
 	for (i in res.revisions_block) {
-		$('#r' + res.revisions_block[i].ID).css('opacity', res.revisions_block[i].IN_RANGE ? 1.0 : 0.7);
+		$('#r' + res.revisions_block[i].ID).toggleClass('out_of_range', !res.revisions_block[i].IN_RANGE);
 	}
 
 	$('.first').html(res.subject_diff_rendered);

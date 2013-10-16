@@ -96,8 +96,8 @@ ul.revisions li.row dt, ul.revisions li.row dd {
 	vertical-align: middle;
 }
 
-ul.revisions.out_of_range {
-	opacity: 0.7;
+.out_of_range .revision_user, .out_of_range .revision_date, .out_of_range .revision_options {
+	opacity: 0.6;
 }
 .revision_compare, .revision_view, .revision_user, .revision_date {
 	text-align: center;
@@ -120,9 +120,9 @@ li.header dt.revision_view {
 .revision_compare { 
 	width: 6%;
 }
-.revision_user { width: 13%; }
-.revision_date { width: 15%; }
-.revision_reason { width: 25%; }
+.revision_user { width: 18%; }
+.revision_date { width: 16%; }
+.revision_reason { width: 35%; }
 
 .success_message {
 	font-size: 1.1em;
