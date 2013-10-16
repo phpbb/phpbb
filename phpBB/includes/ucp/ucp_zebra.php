@@ -64,7 +64,7 @@ class ucp_zebra
 						* @var	array	user_ids	User ids we remove
 						* @since 3.1-A1
 						*/
-						$vars = array('user_ids');
+						$vars = array('mode', 'user_ids');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
 
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '

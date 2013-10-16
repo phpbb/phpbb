@@ -1525,7 +1525,7 @@ $template->assign_vars(array(
 * @event core.posting_modify_template_vars
 * @since 3.1-A1
 */
-$phpbb_dispatcher->trigger_event('core.posting_modify_template_vars');
+$phpbb_dispatcher->dispatch('core.posting_modify_template_vars');
 
 // Build custom bbcodes array
 display_custom_bbcodes();
