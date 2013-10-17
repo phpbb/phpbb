@@ -441,5 +441,56 @@ function insert_single_user(formId, user)
 			// Fix .linkslist.bulletin lists
 			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 		}
+
+		// Responsive breadcrumbs
+		$('.breadcrumbs').each(function() {
+			var $this = $(this),
+				$body = $('body'),
+				links = $this.find('a'),
+				length = links.length,
+				classes = ['wrapped-wide', 'wrapped-medium', 'wrapped-small'],
+				classesLength = classes.length,
+				maxHeight = 0,
+				lastWidth = false,
+				wrapped = false;
+
+			// Test height by setting nowrap
+			$this.css('white-space', 'nowrap');
+			maxHeight = $this.height() + 1;
+			$this.css('white-space', '');
+
+			// Funciton that checks breadcrumbs
+			function check() {
+				var height = $this.height(),
+					width = $body.width(),
+					link, i, j;
+
+				if (height <= maxHeight) {
+					if (!wrapped || lastWidth === false || lastWidth >= width) {
+						lastWidth = width;
+						return;
+					}
+				}
+				lastWidth = width;
+
+				if (wrapped) {
+					$this.find('a.wrapped').removeClass('wrapped ' + classes.join(' '));
+					wrapped = false;
+					if ($this.height() <= maxHeight) return;
+				}
+
+				wrapped = true;
+				for (i = 0; i < classesLength; i ++) {
+					for (j = length; j >= 0; j --) {
+						links.eq(j).addClass('wrapped ' + classes[i]);
+						if ($this.height() <= maxHeight) return;
+					}
+				}
+			}
+
+			// Run function and set event
+			check();
+			$(window).resize(check);
+		});
 	});
 })(jQuery);

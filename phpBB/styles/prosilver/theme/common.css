@@ -378,6 +378,22 @@ ul.linklist.bulletin li.no-bulletin:before {
 	display: none;
 }
 
+/* Responsive breadcrumbs
+----------------------------------------*/
+.breadcrumbs a {
+	display: inline-block;
+}
+
+.breadcrumbs a.wrapped {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	vertical-align: bottom;
+}
+.breadcrumbs a.wrapped-wide { max-width: 120px; }
+.breadcrumbs a.wrapped-medium { max-width: 80px; }
+.breadcrumbs a.wrapped-small { max-width: 30px; }
+
 /* Table styles
 ----------------------------------------*/
 table.table1 {
@@ -835,4 +851,3 @@ form > p.post-notice strong {
 .notification_list p.notifications_time {
 	font-size: 11px;
 }
-
