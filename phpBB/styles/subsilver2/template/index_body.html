@@ -10,14 +10,17 @@
 
 <!-- INCLUDE forumlist_body.html -->
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- IF not S_IS_BOT or U_TEAM -->
 <span class="gensmall"><!-- IF not S_IS_BOT --><a href="{U_DELETE_COOKIES}">{L_DELETE_COOKIES}</a><!-- ENDIF --><!-- IF not S_IS_BOT and U_TEAM --> | <!-- ENDIF --><!-- IF U_TEAM --><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF --></span><br />
+<!-- ENDIF -->
 <!-- ENDIF -->
 
 <br clear="all" />
 
 <!-- INCLUDE breadcrumbs.html -->
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- EVENT index_body_stat_blocks_before -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
@@ -56,6 +59,7 @@
 	</tr>
 	</table>
 <!-- ENDIF -->
+<!-- ENDIF -->
 
 <br clear="all" />
 
@@ -69,7 +73,7 @@
 </tr>
 </table>
 
-<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
+<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT and not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 	<br clear="all" />
 
 	<form method="post" action="{S_LOGIN_ACTION}">
@@ -89,6 +93,7 @@
 
 <br clear="all" />
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <table class="legend">
 <tr>
 	<td width="20" align="center">{FORUM_UNREAD_IMG}</td>
@@ -101,5 +106,6 @@
 	<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
 </tr>
 </table>
+<!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

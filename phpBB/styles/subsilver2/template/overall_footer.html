@@ -3,6 +3,7 @@
 
 <div id="wrapfooter">
 	<!-- IF U_ACP --><span class="gensmall">[ <a href="{U_ACP}">{L_ACP}</a> ]</span><br /><br /><!-- ENDIF -->
+ <!-- IF (S_BOARD_SERVICES and not S_ACP) --><span class="gensmall">[ <a href="{U_LOGIN_LOGOUT}" title="{L_BOARD_SERVICES_WARN}" accesskey="x">{L_BOARD_SERVICES_INFO}</a> ]</span><br /><br /><!-- ENDIF -->	
 	<span class="copyright">
 	<!-- EVENT overall_footer_copyright_prepend -->
 	{CREDIT_LINE}

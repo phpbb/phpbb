@@ -37,7 +37,7 @@
 <!-- IF S_DISPLAY_POST_INFO or .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
 	<div class="topic-actions" <!-- IF S_HAS_SUBFORUM -->style="margin-top: 2em;"<!-- ENDIF -->>
 
-	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
+	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO and not (S_BOARD_SERVICES and not S_ACP) -->
 		<div class="buttons">
 			<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->"><a href="{U_POST_NEW_TOPIC}"><span></span><!-- IF S_IS_LOCKED -->{L_BUTTON_FORUM_LOCKED}<!-- ELSE -->{L_BUTTON_NEW_TOPIC}<!-- ENDIF --></a></div>
 		</div>
@@ -78,7 +78,7 @@
 		</div>
 	</div>
 
-	<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
+	<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 
 		<form action="{S_LOGIN_ACTION}" method="post">
 
@@ -209,7 +209,7 @@
 
 <!-- IF .topicrow and not S_DISPLAY_ACTIVE -->
 	<div class="topic-actions">
-		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
+		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO and not (S_BOARD_SERVICES and not S_ACP) -->
 		<div class="buttons">
 			<div class="<!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->"><a href="{U_POST_NEW_TOPIC}"><span></span><!-- IF S_IS_LOCKED -->{L_BUTTON_FORUM_LOCKED}<!-- ELSE -->{L_BUTTON_NEW_TOPIC}<!-- ENDIF --></a></div>
 		</div>
@@ -232,6 +232,7 @@
 
 <!-- INCLUDE jumpbox.html -->
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<h3><!-- IF U_VIEWONLINE --><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a><!-- ELSE -->{L_WHO_IS_ONLINE}<!-- ENDIF --></h3>
 	<p>{LOGGED_IN_USER_LIST}</p>
@@ -240,6 +241,7 @@
 <!-- IF S_DISPLAY_POST_INFO -->
 	<h3>{L_FORUM_PERMISSIONS}</h3>
 	<p><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></p>
+<!-- ENDIF -->
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->
