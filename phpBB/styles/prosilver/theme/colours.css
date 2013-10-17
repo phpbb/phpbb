@@ -706,7 +706,7 @@ a.sendemail {
 .icon-subscribe					{ background-image: url("./images/icon_subscribe.gif"); }
 .icon-unsubscribe				{ background-image: url("./images/icon_unsubscribe.gif"); }
 .icon-pages						{ background-image: url("./images/icon_pages.gif"); }
-.icon-search					{ background-image: url("./images/icon_search.gif"); }
+.icon-search, .responsive-search a	{ background-image: url("./images/icon_search.gif"); }
 .icon-notification				{ background-image: url("./images/icon_notification.gif"); }
 .icon-pm						{ background-image: url("./images/icon_pm.gif"); }
 

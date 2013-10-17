@@ -1,6 +1,10 @@
 /* Responsive Design
 ---------------------------------------- */
 
+.responsive-hide { display: none !important; }
+.responsive-show { display: block !important; }
+.responsive-show-inline { display: inline !important; }
+
 /* Content wrappers
 ----------------------------------------*/
 html {
@@ -54,6 +58,20 @@ body {
 ----------------------------------------*/
 .headerbar + .navbar {
 	margin-top: -5px;
+}
+
+/* Search
+----------------------------------------*/
+.responsive-search { display: block !important; }
+.responsive-search a {
+	display: block;
+	width: 16px;
+	height: 18px;
+	text-indent: 99px;
+	overflow: hidden;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	text-decoration: none;
 }
 
 /* .topiclist lists
