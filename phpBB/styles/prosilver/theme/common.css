@@ -836,3 +836,8 @@ form > p.post-notice strong {
 	font-size: 11px;
 }
 
+.notification_text:after {
+	content: '';
+	clear: both;
+	display: block;
+}
