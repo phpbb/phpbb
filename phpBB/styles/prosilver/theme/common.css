@@ -782,6 +782,7 @@ form > p.post-notice strong {
 
 #notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
 	display: block;
+	text-decoration: none;
 }
 
 .notification_list ul li img {
