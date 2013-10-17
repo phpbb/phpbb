@@ -465,7 +465,7 @@ function insert_single_user(formId, user)
 		});
 
 		// Responsive breadcrumbs
-		$('.breadcrumbs').each(function() {
+		$('.breadcrumbs:not(.skip-responsive)').each(function() {
 			var $this = $(this),
 				$body = $('body'),
 				links = $this.find('.crumb'),
@@ -504,17 +504,23 @@ function insert_single_user(formId, user)
 				if (wrapped) {
 					$this.removeClass('wrapped').find('.crumb.wrapped').removeClass('wrapped ' + classes.join(' '));
 					wrapped = false;
-					if ($this.height() <= maxHeight) return;
+					if ($this.height() <= maxHeight) {
+						return;
+					}
 				}
 
 				wrapped = true;
 				$this.addClass('wrapped');
-				if ($this.height() <= maxHeight) return;
+				if ($this.height() <= maxHeight) {
+					return;
+				}
 
 				for (i = 0; i < classesLength; i ++) {
 					for (j = length; j >= 0; j --) {
 						links.eq(j).addClass('wrapped ' + classes[i]);
-						if ($this.height() <= maxHeight) return;
+						if ($this.height() <= maxHeight) {
+							return;
+						}
 					}
 				}
 			}
@@ -522,6 +528,72 @@ function insert_single_user(formId, user)
 			// Run function and set event
 			check();
 			$(window).resize(check);
+		});
+
+		// Responsive link lists
+		$('.linklist:not(.navlinks, .skip-responsive)').each(function() {
+			var $this = $(this),
+				$body = $('body'),
+				links = $this.children().not('.skip-responsive'),
+				toggle = $this.append('<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>').children('.responsive-menu'),
+				menu = toggle.find('.responsive-popup'),
+				lastWidth = false,
+				responsive = false,
+				copied = false;
+
+			function check() {
+				var width = $body.width();
+				if (responsive && width <= lastWidth) {
+					return;
+				}
+
+				if (responsive) {
+					responsive = false;
+					$this.removeClass('responsive');
+					links.css('display', '');
+					toggle.css('display', 'none');
+				}
+
+				var maxHeight = 0;
+				links.each(function() {
+					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				});
+
+				if ($this.height() <= maxHeight) {
+					menu.hide();
+					return;
+				}
+				responsive = true;
+
+				if (!copied) {
+					if (menu.parents().is('.rightside')) {
+						menu.addClass('responsive-rightside');
+					}
+					menu.append(links.clone(true));
+					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
+					copied = true;
+				}
+
+				links.css('display', 'none');
+				toggle.css('display', '');
+				$this.addClass('responsive');
+			}
+
+			toggle.click(function() {
+				if (!responsive) return;
+				menu.toggle();
+			});
+
+			check();
+			$(window).resize(check);
+		});
+
+		$('#phpbb').click(function(e) {
+			var target = $(e.target);
+
+			if (!target.parents().is('.responsive-menu')) {
+				$('.responsive-popup').hide();
+			}
 		});
 	});
 })(jQuery);

@@ -1126,3 +1126,20 @@ input.disabled {
 .notification_list .pointer_inner {
 	border-bottom-color: #F1F8FF;
 }
+
+ul.linklist li.responsive-menu a.responsive-menu-link:before {
+	border-color: #105289;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link:hover:before {
+	border-color: #D31141;
+}
+
+ul.responsive-popup {
+	background: #fff;
+	border-color: #b9b9b9;
+	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
+}
+.navbar ul.responsive-popup {
+	background-color: #CADCEB;
+}

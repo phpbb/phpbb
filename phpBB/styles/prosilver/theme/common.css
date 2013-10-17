@@ -360,6 +360,30 @@ ul.rightside {
 	text-align: right;
 }
 
+ul.linklist.responsive {
+	position: relative;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link {
+	display: inline-block;
+	font-size: 16px;
+	position: relative;
+	width: 16px;
+	line-height: 16px;
+	text-decoration: none;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 7px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid transparent;
+	border-top: 0.375em double transparent;
+}
+
 /* Bulletin icons for list items
 ----------------------------------------*/
 ul.linklist.bulletin li:before {
@@ -376,6 +400,51 @@ ul.linklist.bulletin li:first-child:before, ul.linklist.bulletin li.rightside:la
 
 ul.linklist.bulletin li.no-bulletin:before {
 	display: none;
+}
+
+.icon-notification:before, ul.linklist.bulletin li.icon-notification:before, .icon-notification:after {
+	display: inline;
+	font: inherit;
+}
+
+.icon-notification:before, ul.linklist.bulletin li.icon-notification:before {
+	content: '[';
+	padding-right: 0;
+}
+
+.icon-notification:after {
+	content: ']';
+}
+
+.responsive-menu:before, .responsive-menu:after {
+	display: none !important;
+}
+
+/* Responsive popup
+----------------------------------------*/
+ul.responsive-popup {
+	position: absolute;
+	left: 0;
+	top: 24px;
+	z-index: 2;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding: 5px;
+}
+
+ul.responsive-popup.responsive-rightside {
+	left: auto;
+	right: 0;
+}
+
+ul.responsive-popup li {
+	float: none;
+	margin: 0;
+	white-space: nowrap;
+}
+
+ul.responsive-popup li:before, ul.responsive-popup li:after {
+	display: none !important;
 }
 
 /* Responsive breadcrumbs
