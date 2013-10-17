@@ -163,14 +163,10 @@ function marklist(id, name, state)
 							<table class="tablebg" width="310px" cellspacing="1">
 								<!-- BEGIN notifications -->
 									<tr class="row<!-- IF notifications.UNREAD -->2<!-- ELSE -->1<!-- ENDIF -->">
-										<!-- IF notifications.AVATAR -->
-											<td width="50px">
-												{notifications.AVATAR}
-											</td>
-											<td valign="top">
-										<!-- ELSE -->
-											<td colspan="2" valign="top">
-										<!-- ENDIF -->
+										<td width="50px">
+											<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+										</td>
+										<td valign="top">
 											<div class="notification_title">
 												<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
 													{notifications.FORMATTED_TITLE}
