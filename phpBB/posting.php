@@ -260,7 +260,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 }
 
 // Permission to do the action asked?
-$is_authed = false;
+$is_authed = $is_only_wiki_user = false;
 
 switch ($mode)
 {
@@ -292,9 +292,11 @@ switch ($mode)
 	break;
 
 	case 'edit':
-		if ($user->data['is_registered']
-			&& ($auth->acl_gets('f_edit', 'm_edit', $forum_id)
-				 || (!empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id))))
+		$authed_to_wiki_edit = (!empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id));
+		$authed_to_edit = ($auth->acl_get('m_edit', $forum_id) || ($auth->acl_get('f_edit', $forum_id) && $post_data['poster_id'] == $user->data['user_id']));
+		$is_only_wiki_user = ($authed_to_wiki_edit && !$authed_to_edit);
+
+		if ($user->data['is_registered'] && ($authed_to_edit || $authed_to_wiki_edit))
 		{
 			$is_authed = true;
 		}
@@ -348,11 +350,6 @@ if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_statu
 // else it depends on editing times, lock status and if we're the correct user
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 {
-	if ($user->data['user_id'] != $post_data['poster_id'] && (empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id)))
-	{
-		trigger_error('USER_CANNOT_EDIT');
-	}
-
 	if (!($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']))
 	{
 		trigger_error('CANNOT_EDIT_TIME');
@@ -750,7 +747,7 @@ if ($submit || $preview || $refresh)
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
-	$post_wiki			= (isset($_POST['wiki_post']));
+	$post_wiki			= ($is_only_wiki_user) ? $post_data['post_wiki'] : isset($_POST['wiki_post']);
 
 	if ($submit)
 	{
@@ -1537,7 +1534,8 @@ $template->assign_vars(array(
 	'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['drafts']) ? true : false,
 	'S_FORM_ENCTYPE'			=> $form_enctype,
 	'S_WIKI_ALLOWED'			=> $config['revisions_allow_wiki'] && $auth->acl_gets('m_revisions', 'f_wiki_create', 'f_revisions', $forum_id),
-	'S_WIKI_CHECKED'			=> !empty($post_data['post_wiki']),
+	'S_WIKI_CHECKED'			=> $post_data['post_wiki'],
+	'S_WIKI_OPTION_DISABLED'	=> $is_only_wiki_user,
 
 	'S_BBCODE_IMG'			=> $img_status,
 	'S_BBCODE_URL'			=> $url_status,
