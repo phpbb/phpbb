@@ -54,6 +54,12 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	protected $cache;
 
 	/**
+	* Path Helper
+	* @var \phpbb\path_helper
+	*/
+	protected $path_helper;
+
+	/**
 	* Array of allowed avatar image extensions
 	* Array is used for setting the allowed extensions in the fileupload class
 	* and as a base for a regex of allowed extensions, which will be formed by
@@ -77,12 +83,13 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	* @param string $php_ext PHP file extension
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null, \phpbb\path_helper $path_helper)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->cache = $cache;
+		$this->path_helper = $path_helper;
 	}
 
 	/**
