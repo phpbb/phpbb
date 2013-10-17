@@ -25,9 +25,17 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		$config = new \phpbb\config\config(array());
 		$request = $this->getMock('\phpbb\request\request');
 		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
+		$path_helper =  new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			new \phpbb\filesystem(),
+			$this->phpbb_root_path,
+			$this->phpEx
+		);
 
 		// $this->avatar_foobar will be needed later on
-		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache));
+		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache, $path_helper));
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
@@ -40,7 +48,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 
 		foreach ($this->avatar_drivers() as $driver)
 		{
-			$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache));
+			$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache, $path_helper));
 			$cur_avatar->expects($this->any())
 				->method('get_name')
 				->will($this->returnValue('avatar.driver.' . $driver));
