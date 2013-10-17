@@ -406,21 +406,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 	display: none;
 }
 
-.icon-notification:before, ul.linklist.bulletin li.icon-notification:before, .icon-notification:after {
-	display: inline;
-	font: inherit;
-}
-
-.icon-notification:before, ul.linklist.bulletin li.icon-notification:before {
-	content: '[';
-	padding-right: 0;
-}
-
-.icon-notification:after {
-	content: ']';
-}
-
-.responsive-menu:before, .responsive-menu:after {
+.responsive-menu:before {
 	display: none !important;
 }
 
