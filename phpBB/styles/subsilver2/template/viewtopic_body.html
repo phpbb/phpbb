@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF S_FORUM_RULES -->
+<!-- IF S_FORUM_RULES and not (S_BOARD_SERVICES and not S_ACP) -->
 	<div class="forumrules">
 		<!-- IF U_FORUM_RULES -->
 			<h3>{L_FORUM_RULES}</h3><br />
@@ -32,7 +32,7 @@
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
-		<!-- IF not S_IS_BOT -->
+		<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
@@ -169,18 +169,20 @@
 
 		<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-			<td valign="top" class="profile">
+			<td valign="top" class="profile">  
 				<table cellspacing="4" align="center" width="150">
+   <!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 			<!-- IF postrow.ONLINE_IMG -->
 				<tr>
 					<td>{postrow.ONLINE_IMG}</td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- ENDIF -->			
 			<!-- IF postrow.RANK_TITLE -->
 				<tr>
 					<td class="postdetails">{postrow.RANK_TITLE}</td>
 				</tr>
-			<!-- ENDIF -->
+			<!-- ENDIF -->	
 			<!-- IF postrow.RANK_IMG -->
 				<tr>
 					<td>{postrow.RANK_IMG}</td>
@@ -318,6 +320,7 @@
 
 			<td class="profile"><strong><a href="#wrapheader">{L_BACK_TO_TOP}</a></strong></td>
 			<td>
+			<!-- IF not (S_BOARD_SERVICES and not S_ACP) --><td>&nbsp;
 				<div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">
 					&nbsp;<!-- IF postrow.U_POST_AUTHOR --><a href="{postrow.U_POST_AUTHOR}" class="imageset">{PROFILE_IMG}</a><!-- ENDIF -->
 					<!-- IF postrow.U_PM --><a href="{postrow.U_PM}" class="imageset">{PM_IMG}</a><!-- ENDIF -->
@@ -331,10 +334,11 @@
 					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_post_buttons_after -->
 				&nbsp;</div>
+    </td>	<!-- ENDIF -->
 			</td>
-	<!-- ENDIF -->
+			<!-- ENDIF -->   
 		</tr>
-
+		
 	<tr>
 		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
@@ -352,7 +356,7 @@
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
-		<!-- IF not S_IS_BOT -->
+		<!-- IF not S_IS_BOT and not (S_BOARD_SERVICES and not S_ACP) -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
@@ -377,6 +381,7 @@
 <!-- EVENT viewtopic_body_footer_before -->
 <!-- INCLUDE breadcrumbs.html -->
 
+<!-- IF not (S_BOARD_SERVICES and not S_ACP) -->
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<br clear="all" />
 
@@ -410,6 +415,7 @@
 	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 </tr>
 </table>
+<!-- ENDIF -->
 
 <br clear="all" />
 

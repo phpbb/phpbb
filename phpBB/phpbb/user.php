@@ -294,6 +294,15 @@ class user extends \phpbb\session
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
 		}
+		
+  // Board Offline Start   
+		if ($config['board_service'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_') && !$auth->acl_getf_global('a_'))                                                                                                                                                         
+		{
+			if ($this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS)
+			{
+				$this->session_kill(true);
+			}    
+		}   
 
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
