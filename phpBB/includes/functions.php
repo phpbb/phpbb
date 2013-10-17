@@ -1478,7 +1478,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
