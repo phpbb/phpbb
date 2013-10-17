@@ -735,6 +735,8 @@ if ($submit || $preview || $refresh)
 	$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs', $forum_id) || !$auth->acl_get('u_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
+	$post_data['post_wiki']			= ($is_only_wiki_user) ? $post_data['post_wiki'] : $request->is_set('wiki_post', \phpbb\request\request_interface::POST);
+
 	if ($config['allow_topic_notify'] && $user->data['is_registered'])
 	{
 		$notify = (isset($_POST['notify'])) ? true : false;
@@ -747,7 +749,6 @@ if ($submit || $preview || $refresh)
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
-	$post_wiki			= ($is_only_wiki_user) ? $post_data['post_wiki'] : isset($_POST['wiki_post']);
 
 	if ($submit)
 	{
@@ -1163,7 +1164,7 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
-				'post_wiki'				=> $post_wiki,
+				'post_wiki'				=> $post_data['post_wiki'],
 
 
 				'original_post_data'	=> $original_post_data,
