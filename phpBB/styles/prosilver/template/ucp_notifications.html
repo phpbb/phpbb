@@ -70,7 +70,7 @@
 								<dt>
 									<div class="list-inner">
 										<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-											{notification_list.AVATAR}
+											<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
 											<div class="notifications">
 												<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
 												<p class="notifications_time">&raquo; {notification_list.TIME}</p>
