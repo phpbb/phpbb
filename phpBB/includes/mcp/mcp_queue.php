@@ -887,7 +887,7 @@ class mcp_queue
 			}
 			else
 			{
-				$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message;
+				$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>') . $add_message;
 			}
 
 			trigger_error($message);

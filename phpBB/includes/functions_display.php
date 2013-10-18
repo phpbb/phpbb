@@ -1168,9 +1168,10 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_UNWATCHING'];
+
 						if (!$request->is_ajax())
 						{
-							$message .= '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+							$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
 						}
 						trigger_error($message);
 					}
@@ -1182,9 +1183,10 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)];
+
 					if (!$request->is_ajax())
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+						$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
 					}
 					meta_refresh(3, $redirect_url);
 					trigger_error($message);
@@ -1240,9 +1242,10 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 						$message = $user->lang['ERR_WATCHING'];
+
 						if (!$request->is_ajax())
 						{
-							$message .= '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+							$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
 						}
 						trigger_error($message);
 					}
@@ -1255,9 +1258,10 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)];
+
 					if (!$request->is_ajax())
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+						$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
 					}
 					meta_refresh(3, $redirect_url);
 					trigger_error($message);

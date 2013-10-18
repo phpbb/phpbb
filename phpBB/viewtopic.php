@@ -501,15 +501,16 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 
 		if (!$request->is_ajax())
 		{
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
 		}
 	}
 	else
 	{
 		$message = $user->lang['BOOKMARK_ERR'];
+
 		if (!$request->is_ajax())
 		{
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
 		}
 	}
 	meta_refresh(3, $viewtopic_url);
