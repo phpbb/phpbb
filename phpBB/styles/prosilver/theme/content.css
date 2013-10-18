@@ -258,6 +258,7 @@ div[class].topic-actions {
 
 .postbody .content {
 	font-size: 1.3em;
+	overflow-x: auto;
 }
 
 .search .postbody {
@@ -509,10 +510,13 @@ blockquote .codebox {
 .attachbox {
 	float: left;
 	width: auto; 
+	max-width: 100%;
 	margin: 5px 5px 5px 0;
 	padding: 6px;
 	border: 1px dashed transparent;
 	clear: left;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .attachbox dt {
@@ -525,6 +529,7 @@ blockquote .codebox {
 	padding-top: 4px;
 	clear: left;
 	border-top: 1px solid transparent;
+	overflow-x: auto;
 }
 
 .attachbox dd dd {
@@ -546,7 +551,7 @@ blockquote .codebox {
 
 .attach-image {
 	margin: 3px 0;
-	width: 100%;
+	max-width: 100%;
 	max-height: 350px;
 	overflow: auto;
 }
