@@ -915,3 +915,12 @@ form > p.post-notice strong {
 .notification_list p.notifications_time {
 	font-size: 11px;
 }
+
+.compact .icon-notification > a > span, .compact .icon-pm > a > span {
+	display: none;
+}
+
+.compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
+	padding-left: 2px;
+}
+

@@ -553,6 +553,7 @@ function insert_single_user(formId, user)
 				toggleLink = toggle.find('a.responsive-menu-link'),
 				menu = toggle.find('ul.responsive-popup'),
 				lastWidth = false,
+				compact = false,
 				responsive = false,
 				copied = false;
 
@@ -562,6 +563,7 @@ function insert_single_user(formId, user)
 					return;
 				}
 
+				// Reset responsive and compact layout
 				if (responsive) {
 					responsive = false;
 					$this.removeClass('responsive');
@@ -569,9 +571,31 @@ function insert_single_user(formId, user)
 					toggle.css('display', 'none');
 				}
 
+				if (compact) {
+					compact = false;
+					$this.removeClass('compact');
+				}
+
+				// Find tallest element
 				var maxHeight = 0;
 				links.each(function() {
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				});
+
+				// Nothing to resize if block's height is not bigger than tallest element's height
+				if ($this.height() <= maxHeight) {
+					toggle.removeClass('visible');
+					menu.hide();
+					return;
+				}
+
+				// Enable compact layout, find tallest element, compare to height of whole block
+				compact = true;
+				$this.addClass('compact');
+
+				var compactMaxHeight = 0;
+				links.each(function() {
+					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 				});
 
 				if ($this.height() <= maxHeight) {
@@ -579,6 +603,10 @@ function insert_single_user(formId, user)
 					menu.hide();
 					return;
 				}
+
+				// Compact layout did not resize block enough, switch to responsive layout
+				compact = false;
+				$this.removeClass('compact');
 				responsive = true;
 
 				if (!copied) {
