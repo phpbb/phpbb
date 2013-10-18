@@ -325,7 +325,7 @@ function colorPalette(dir, width, height) {
 
 			for (b = 0; b < 5; b++) {
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				html += '<td bgcolor="#' + color + '" style="width: ' + width + 'px; height: ' + height + 'px;">';
+				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' + height + 'px;">';
 				html += '<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
 				html += '</td>';
 			}

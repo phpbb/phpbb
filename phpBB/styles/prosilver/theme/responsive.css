@@ -300,6 +300,53 @@ table.mcp-logs-full td:nth-child(3) {
 	text-align: right;
 }
 
+/* Forms
+----------------------------------------*/
+fieldset dt, fieldset.fields1 dt, fieldset.fields2 dt {
+	width: auto;
+	float: none;
+}
+
+fieldset dd, fieldset.fields1 dd, fieldset.fields2 dd {
+	margin-left: 20px;
+}
+
+textarea, dd textarea, #message-box textarea {
+	width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#smiley-box, #message-box {
+	float: none;
+	width: auto;
+}
+
+#smiley-box {
+	margin-top: 5px;
+}
+
+.bbcode-status {
+	display: none;
+}
+
+#colour_palette table, #colour_palette tbody, #colour_palette tr {
+	display: block;
+}
+
+#colour_palette td {
+	display: inline-block;
+	margin-right: 2px;
+}
+
+#colour_palette td:nth-child(2n) {
+	display: none;
+}
+
+#colour_palette a {
+	display: inline-block !important;
+}
+
 /* Misc stuff
 ----------------------------------------*/
 h2 {
