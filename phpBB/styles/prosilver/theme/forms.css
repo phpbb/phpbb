@@ -232,6 +232,11 @@ fieldset.submit-buttons input {
 /* Posting page styles
 ----------------------------------------*/
 
+#colour_palette table {
+	border-collapse: separate;
+	border-spacing: 1px;
+}
+
 /* Buttons used in the editor */
 #format-buttons {
 	margin: 15px 0 2px 0;
