@@ -331,11 +331,11 @@ $('#quick-mod-select').change(function () {
 	$('#quickmodform').submit();
 });
 
-$('#delete_permanent').click(function () {
+$('.alert_text, .fields1').on('click', '#delete_permanent', function () {
 	if ($(this).attr('checked')) {
-		$('#delete_reason').hide();
+		$('#delete_reason').hide(100);
 	} else {
-		$('#delete_reason').show();
+		$('#delete_reason').show(100);
 	}
 });
 
