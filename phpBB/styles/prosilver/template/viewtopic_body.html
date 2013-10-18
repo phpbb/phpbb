@@ -34,12 +34,13 @@
 	</div>
 
 	<!-- DEFINE $TOPIC_TOOLS_BLOCK -->
-		<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or S_HAS_ATTACHMENTS) -->
+		<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or S_HAS_ATTACHMENTS or S_DISPLAY_TOPIC_TOOLS) -->
 			<div class="dropdown-container dropdown-button-control topic-tools">
 				<span title="{L_TOPIC_TOOLS}" class="dropdown-trigger dropdown-select dropdown-select-icon tools-icon"><span></span></span>
 				<div class="dropdown hidden">
 					<div class="pointer"><div class="pointer-inner"></div></div>
 					<ul class="dropdown-contents">
+						<!-- EVENT viewtopic_topic_tools_before -->
 						<!-- IF U_WATCH_TOPIC -->
 							<li class="small-icon <!-- IF S_WATCHING_TOPIC -->icon-unsubscribe<!-- ELSE -->icon-subscribe<!-- ENDIF -->">
 								<a href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon <!-- IF not S_WATCHING_TOPIC -->icon-unsubscribe<!-- ELSE -->icon-subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}">
@@ -67,6 +68,7 @@
 								</ul>
 							</li>
 						<!-- ENDIF -->
+						<!-- EVENT viewtopic_topic_tools_after -->
 					</ul>
 				</div>
 			</div>
