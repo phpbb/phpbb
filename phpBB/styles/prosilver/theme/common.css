@@ -60,6 +60,7 @@ body {
 	line-height: normal;
 	margin: 0;
 	padding: 12px 0;
+	word-wrap: break-word;
 }
 
 h1 {
