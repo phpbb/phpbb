@@ -510,11 +510,11 @@ $('#notification_list_button').click(function(e) {
 	e.preventDefault();
 });
 $('#phpbb').click(function(e) {
-    var target = $(e.target);
+	var target = $(e.target);
 
-    if (!target.is('#notification_list') && !target.is('#notification_list_button') && !target.parents().is('#notification_list')) {
-        $('#notification_list').hide();
-    }
+	if (!target.is('#notification_list, #notification_list_button') && !target.parents().is('#notification_list, #notification_list_button')) {
+		$('#notification_list').hide();
+	}
 });
 
 phpbb.ajaxCallbacks = {};
