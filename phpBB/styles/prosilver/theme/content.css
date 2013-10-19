@@ -378,7 +378,7 @@ dl.faq dt {
 
 /* Post author */
 p.author {
-	margin: 0 15em 0.6em 0;
+	margin-bottom: 0.6em;
 	padding: 0 0 5px 0;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
@@ -680,7 +680,8 @@ fieldset.polls dd div {
 	/* Also see tweaks.css */
 	margin: 5px 0 10px 0;
 	min-height: 80px;
-	border-left: 1px solid transparent;
+	border: 1px solid transparent;
+	border-width: 0 0 0 1px;
 	width: 22%;
 	float: right;
 	display: inline;
@@ -700,7 +701,12 @@ fieldset.polls dd div {
 	font-weight: normal;
 }
 
-.avatar {
+.postprofile dt.no-profile-rank, .postprofile dd.profile-rank, .postprofile .search-result-date {
+	margin-bottom: 10px;
+}
+
+.postprofile .avatar {
+	display: block;
 	border: none;
 	margin-bottom: 3px;
 }

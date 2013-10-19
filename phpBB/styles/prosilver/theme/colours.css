@@ -627,21 +627,11 @@ fieldset.polls dd div {
 ----------------------------------------*/
 .postprofile {
 	color: #666666;
-	border-left-color: #FFFFFF;
-}
-
-.rtl .postprofile {
-	border-right-color: #FFFFFF;
-	border-left-color: transparent;
+	border-color: #FFFFFF;
 }
 
 .pm .postprofile {
-	border-left-color: #DDDDDD;
-}
-
-.rtl .pm .postprofile {
-	border-right-color: #DDDDDD;
-	border-left-color: transparent;
+	border-color: #DDDDDD;
 }
 
 .postprofile strong {

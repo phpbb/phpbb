@@ -18,10 +18,10 @@
 <div class="inner">
 
 	<dl class="postprofile" id="profile{MESSAGE_ID}">
-		<dt><!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}">{AUTHOR_AVATAR}</a><br /><!-- ENDIF -->{MESSAGE_AUTHOR_FULL}</dt>
-		<!-- IF RANK_TITLE --><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-		<!-- IF RANK_IMG --><dd>{RANK_IMG}</dd><!-- ENDIF -->
-		<dd>&nbsp;</dd>
+		<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF -->"><!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->{MESSAGE_AUTHOR_FULL}</dt>
+
+		<!-- IF RANK_TITLE or RANK_IMG --><dd class="profile-rank">{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
+
 		<dd><strong>{L_POSTS}{L_COLON}</strong> {AUTHOR_POSTS}</dd>
 		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}{L_COLON}</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->

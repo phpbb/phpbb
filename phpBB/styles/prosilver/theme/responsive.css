@@ -367,6 +367,51 @@ textarea, dd textarea, #message-box textarea {
 	}
 }
 
+/* Post
+----------------------------------------*/
+.postprofile, .postbody {
+	display: block;
+	width: auto;
+	float: none;
+	padding: 0;
+	min-height: 0;
+}
+
+.post .postprofile {
+	width: auto;
+	border-width: 0 0 1px 0;
+	padding-bottom: 5px;
+	margin: 0;
+	margin-bottom: 5px;
+	overflow: hidden;
+}
+
+.postprofile dd {
+	display: none;
+}
+
+.postprofile dt, .postprofile dd.profile-rank, .search .postprofile dd {
+	display: block;
+	margin: 0;
+}
+
+.postprofile ul.profile-icons {
+	display: none;
+}
+
+.postprofile .avatar {
+	display: block;
+	float: left;
+	margin-right: 5px;
+}
+
+.postprofile .avatar img {
+	width: auto !important;
+	height: auto !important;
+	display: block;
+	max-height: 32px;
+}
+
 /* Misc stuff
 ----------------------------------------*/
 h2 {
