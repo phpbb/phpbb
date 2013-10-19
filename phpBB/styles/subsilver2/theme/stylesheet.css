@@ -303,6 +303,11 @@ p.topicdetails {
 
 /* Tables
  ------------ */
+#color_palette_placeholder table {
+	border-collapse: separate;
+	border-spacing: 1px;
+}
+
 th {
 	color: #FFA34F;
 	font-size: 1.1em;
