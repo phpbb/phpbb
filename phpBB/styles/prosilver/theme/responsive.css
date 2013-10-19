@@ -367,6 +367,10 @@ p.rightside {
 	float: none;
 }
 
+.topic-actions {
+	overflow: hidden;
+}
+
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
 {
 	p.responsive-center {

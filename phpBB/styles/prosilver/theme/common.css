@@ -874,11 +874,6 @@ form > p.post-notice strong {
 
 .notification_list ul li p {
 	margin: 0;
-	word-wrap: break-word;
-}
-
-.notification_list ul.topiclist dt {
-	width: 88%;
 }
 
 .notification_list .pointer, .notification_list .pointer_inner {
