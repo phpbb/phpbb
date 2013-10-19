@@ -435,6 +435,10 @@ ul.responsive-popup li {
 	text-align: left;
 }
 
+.wrap ul.responsive-popup li {
+	white-space: normal;
+}
+
 ul.responsive-popup li:before, ul.responsive-popup li:after {
 	display: none !important;
 }
@@ -502,7 +506,7 @@ table.table1 tbody th {
 
 /* Specific column styles */
 table.table1 .name		{ text-align: left; }
-table.table1 .posts		{ text-align: center !important; width: 7%; }
+table.table1 .posts		{ text-align: center; width: 7%; }
 table.table1 .joined	{ text-align: left; width: 15%; }
 table.table1 .active	{ text-align: left; width: 15%; }
 table.table1 .mark		{ text-align: center; width: 7%; }

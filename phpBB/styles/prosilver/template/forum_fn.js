@@ -533,6 +533,72 @@ function insert_single_user(formId, user)
 			$(window).resize(check);
 		});
 
+		// Responsive tables
+		$('table.table1').not('.not-responsive').each(function() {
+			var $this = $(this),
+				th = $this.find('thead > tr > th'),
+				columns = th.length,
+				headers = [],
+				totalHeaders = 0,
+				i, headersLength;
+
+			// Find each header
+			th.each(function() {
+				var cell = $(this),
+					colspan = parseInt(cell.attr('colspan')),
+					dfn = cell.attr('data-dfn'),
+					text = dfn ? dfn : cell.text();
+
+				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
+
+				for (i=0; i<colspan; i++) {
+					headers.push(text);
+				}
+				totalHeaders ++;
+			});
+			
+			headersLength = headers.length;
+
+			// Add header text to each cell as <dfn>
+			$this.addClass('responsive');
+
+			if (totalHeaders < 2) {
+				$this.addClass('show-header');
+				return;
+			}
+
+			$this.find('tbody > tr').each(function() {
+				var row = $(this),
+					cells = row.children('td'),
+					column = 0;
+
+				if (cells.length == 1) {
+					row.addClass('big-column');
+					return;
+				}
+
+				cells.each(function() {
+					var cell = $(this),
+						colspan = parseInt(cell.attr('colspan')),
+						text = cell.text().trim();
+
+					if (headersLength <= column) {
+						return;
+					}
+
+					if (text.length && text !== '-') {
+						cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
+					}
+					else {
+						cell.addClass('empty');
+					}
+
+					colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
+					column += colspan;
+				});
+			});
+		});
+
 		// Responsive link lists
 		$('.linklist:not(.navlinks, .skip-responsive)').each(function() {
 			var $this = $(this),

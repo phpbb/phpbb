@@ -232,72 +232,50 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 
 /* Responsive tables
 ----------------------------------------*/
-table.responsive, table.responsive thead, table.responsive tbody, table.responsive tr, table.responsive th, table.responsive td {
-	display: block;
-	width: auto;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-table.responsive thead {
-	display: none;
-}
-
-table.responsive th {
-	display: none;
-	border-bottom-width: 0 !important;
-}
-
-table.mcp-warnings thead {
+table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
 	display: block;
 }
 
-table.mcp-warnings th:nth-child(1),
-table.mcp-warnings th:nth-child(3) {
-	display: inline;
+table.responsive thead, table.responsive th {
+	display: none;
 }
 
-table.mcp-warnings th:nth-child(1):after {
-	content: ',';
+table.responsive.show-header thead, table.responsive.show-header th:first-child {
+	display: block;
+	width: auto !important;
+	text-align: left !important;
 }
 
 table.responsive tr {
-	overflow: hidden;
-	margin: 5px 0;
+	margin: 2px 0;
 }
 
-table.mcp-logs td:nth-child(2),
-table.mcp-warnings td:nth-child(2n + 1) {
-	width: 50%;
-	float: left;
+table.responsive td {
+	width: auto !important;
+	text-align: left !important;
+	padding: 4px;
 }
 
-table.mcp-logs td:nth-child(3),
-table.mcp-warnings td:nth-child(2n) {
-	margin-left: 50%;
-	text-align: right;
+table.responsive td.empty {
+	display: none !important;
 }
 
-table.mcp-logs td:nth-child(4), table.mcp-logs td:nth-child(5),
-table.mcp-logs-full td:nth-child(1), table.mcp-logs-full td:nth-child(2) {
-	width: 33%;
-	float: left;
+table.responsive td > dfn {
+	display: inline-block !important;
 }
 
-table.mcp-logs td:nth-child(4), 
-table.mcp-logs-full td:nth-child(4) {
-	clear: left;
+table.responsive td > dfn:after {
+	content: ':';
+	padding-right: 5px;
 }
 
-table.mcp-logs td:nth-child(5),
-table.mcp-logs-full td:nth-child(2) {
-	text-align: center;
+table.responsive span.rank-img {
+	float: none;
+	padding-right: 5px;
 }
 
-table.mcp-logs td:nth-child(6),
-table.mcp-logs-full td:nth-child(3) {
-	margin-left: 66%;
-	text-align: right;
+table.responsive#memberlist td:first-child input[type="checkbox"] {
+	float: right;
 }
 
 /* Forms
