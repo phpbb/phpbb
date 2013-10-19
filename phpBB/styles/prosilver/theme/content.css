@@ -398,6 +398,11 @@ p.author {
 	width: 100%;
 }
 
+.signature.standalone {
+	border-top-width: 0;
+	margin-top: 0;
+}
+
 dd .signature {
 	margin: 0;
 	padding: 0;
