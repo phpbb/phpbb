@@ -11,8 +11,15 @@
 		color: #fff;
 	}
 
+	table {
+		border-collapse: separate;
+		border-spacing: 0;
+		border: 0;
+	}
+
 	td {
-		border: solid 1px #333; 
+		border: solid 1px #333;
+		padding: 1px;
 	}
 
 	.over { 
@@ -56,7 +63,7 @@
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td style="background-color: #' + color + ';" onmouseover="this.className=\'over\'" onmouseout="this.className=\'out\'">');
-				document.write('<a href="#" onclick="cell(\'' + color + '\'); return false;"><img src="{T_IMAGES_PATH}spacer.gif" width="15" height="12" alt="#' + color + '" title="#' + color + '" \/><\/a>');
+				document.write('<a href="#" onclick="cell(\'' + color + '\'); return false;"><img src="{T_IMAGES_PATH}spacer.gif" width="13" height="10" alt="#' + color + '" title="#' + color + '" \/><\/a>');
 				document.writeln('<\/td>');
 			}
 		}
