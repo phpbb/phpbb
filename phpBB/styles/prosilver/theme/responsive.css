@@ -347,6 +347,26 @@ textarea, dd textarea, #message-box textarea {
 	display: inline-block !important;
 }
 
+/* User profile
+----------------------------------------*/
+.column1, .column2, .left-box.profile-details {
+	float: none;
+	width: auto;
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+{
+	dl.details dt, dl.details dd {
+		width: auto;
+		float: none;
+		text-align: left;	
+	}
+
+	dl.details dd {
+		margin-left: 20px;
+	}
+}
+
 /* Misc stuff
 ----------------------------------------*/
 h2 {
@@ -387,6 +407,10 @@ p.rightside {
 
 	.topic-actions > .pagination, fieldset.jumpbox {
 		text-align: center;
+	}
+
+	.topic-actions > .pagination {
+		padding-bottom: 1px;
 	}
 
 	.topic-actions > div.search-box, p.jumpbox-return {

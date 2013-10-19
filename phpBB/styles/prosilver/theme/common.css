@@ -558,6 +558,10 @@ table.info tbody th {
 	text-align: left;
 }
 
+.left-box.profile-details {
+	width: 80%;
+}
+
 .right-box {
 	float: right;
 	width: auto;
