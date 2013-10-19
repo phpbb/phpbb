@@ -579,8 +579,13 @@ function insert_single_user(formId, user)
 				// Find tallest element
 				var maxHeight = 0;
 				links.each(function() {
+					if (!$(this).height()) return;
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 				});
+
+				if (maxHeight < 1) {
+					return;
+				}
 
 				// Nothing to resize if block's height is not bigger than tallest element's height
 				if ($this.height() <= maxHeight) {
@@ -595,6 +600,7 @@ function insert_single_user(formId, user)
 
 				var compactMaxHeight = 0;
 				links.each(function() {
+					if (!$(this).height()) return;
 					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 				});
 
