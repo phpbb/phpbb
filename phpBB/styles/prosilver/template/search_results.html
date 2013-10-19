@@ -120,11 +120,6 @@
 			{searchresults.L_IGNORE_POST}
 		</div>
 	<!-- ELSE -->
-		<div class="postbody">
-			<h3><a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a></h3>
-			<div class="content">{searchresults.MESSAGE}</div>
-		</div>
-
 		<dl class="postprofile">
 			<dt class="author">{L_POST_BY_AUTHOR} {searchresults.POST_AUTHOR_FULL}</dt>
 			<dd>{searchresults.POST_DATE}</dd>
@@ -134,6 +129,11 @@
 			<dd>{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></dd>
 			<dd>{L_VIEWS}{L_COLON} <strong>{searchresults.TOPIC_VIEWS}</strong></dd>
 		</dl>
+
+		<div class="postbody">
+			<h3><a href="{searchresults.U_VIEW_POST}">{searchresults.POST_SUBJECT}</a></h3>
+			<div class="content">{searchresults.MESSAGE}</div>
+		</div>
 	<!-- ENDIF -->
 
 	<!-- IF not searchresults.S_IGNORE_POST -->
