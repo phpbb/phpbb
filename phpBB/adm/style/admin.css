@@ -529,6 +529,11 @@ td {
 	text-align: right;
 }
 
+.table1 {
+	border-collapse: separate;
+	border-spacing: 1px;
+}
+
 table.type2 {
 	border: none;
 	background: none;
