@@ -75,12 +75,8 @@ class provider
 		$routes = new RouteCollection;
 		foreach ($this->routing_files as $file_path)
 		{
-			$path_info = explode('/', $file_path);
-			$file_name = array_pop($path_info);
-			$path = implode('/', $path_info) . '/';
-
-			$loader = new YamlFileLoader(new FileLocator($base_path . $path));
-			$routes->addCollection($loader->load($file_name));
+			$loader = new YamlFileLoader(new FileLocator(dirname($base_path . $file_path)));
+			$routes->addCollection($loader->load(basename($file_path)));
 		}
 
 		return $routes;
