@@ -438,7 +438,7 @@ function insert_single_user(formId, user)
 		delete test;
 
 		if (oldBrowser) {
-			// Fix .linkslist.bulletin lists
+			// Fix .linklist.bulletin lists
 			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
 
 			// Do not run functions below for old browsers
@@ -604,7 +604,10 @@ function insert_single_user(formId, user)
 			var $this = $(this),
 				$body = $('body'),
 				links = $this.children().not('.skip-responsive'),
-				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>';
+				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>',
+				// List of items that should be hidden last
+				filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read',
+				filtered = links.filter(filterString);
 
 			if (links.is('.rightside'))
 			{
@@ -690,10 +693,30 @@ function insert_single_user(formId, user)
 					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 					copied = true;
 				}
+				else {
+					menu.children().css('display', '');
+				}
 
-				links.css('display', 'none');
 				toggle.css('display', '');
 				$this.addClass('responsive');
+
+				// Try to not hide filtered items
+				if (filtered.length) {
+					links.not(filterString).css('display', 'none');
+
+					maxHeight = 0;
+					filtered.each(function() {
+						if (!$(this).height()) return;
+						maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+					});
+
+					if ($this.height() <= maxHeight) {
+						menu.children().filter(filterString).css('display', 'none');
+						return;
+					}
+				}
+
+				links.css('display', 'none');
 			}
 
 			toggleLink.click(function() {
