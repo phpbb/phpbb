@@ -317,6 +317,20 @@ textarea, dd textarea, #message-box textarea {
 	box-sizing: border-box;
 }
 
+dl.pmlist dt {
+	width: auto !important;
+	margin-bottom: 5px;
+}
+
+dl.pmlist dd {
+	display: inline-block;
+	margin-left: 0 !important;
+}
+
+dl.pmlist dd:first-of-type {
+	padding-left: 20px;
+}
+
 #smiley-box, #message-box {
 	float: none;
 	width: auto;
@@ -369,7 +383,7 @@ textarea, dd textarea, #message-box textarea {
 
 /* Post
 ----------------------------------------*/
-.postprofile, .postbody {
+.postprofile, .postbody, .search .postbody {
 	display: block;
 	width: auto;
 	float: none;
@@ -434,6 +448,12 @@ p.rightside {
 
 .topic-actions {
 	overflow: hidden;
+}
+
+fieldset.quickmod {
+	width: auto;
+	float: none;
+	text-align: center;
 }
 
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
