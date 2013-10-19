@@ -241,6 +241,7 @@ div[class].topic-actions {
 
 .postbody h3 {
 	/* Postbody requires a different h3 format - so change it here */
+	float: left;
 	font-size: 1.5em;
 	padding: 2px 0 0 0;
 	margin: 0 0 0.3em 0 !important;
@@ -297,21 +298,16 @@ div[class].topic-actions {
 
 /* MCP Post details
 ----------------------------------------*/
-#post_details
-{
+#post_details {
 	/* This will only work in IE7+, plus the others */
 	overflow: auto;
 	max-height: 300px;
 }
 
-#expand
-{
-	clear: both;
-}
-
 /* Content container styles
 ----------------------------------------*/
 .content {
+	clear: both;
 	min-height: 3em;
 	overflow: hidden;
 	line-height: 1.4em;
@@ -387,6 +383,7 @@ p.author {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	line-height: 1.2em;
+	clear: both;
 }
 
 /* Post signature */

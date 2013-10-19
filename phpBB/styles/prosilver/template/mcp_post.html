@@ -48,6 +48,8 @@
 	<div class="inner">
 
 	<div class="postbody">
+		<h3><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
+
 		<!-- IF U_EDIT -->
 		<ul class="profile-icons">
 			<li class="edit-icon"><a href="{U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT_POST}</span></a></li>
@@ -56,7 +58,6 @@
 
 		<span class="right-box" id="expand"><a href="#post_details" onclick="viewableArea(getElementById('post_details'), true); var rev_text = getElementById('expand').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'}; return false;">{L_EXPAND_VIEW}</a></span>
 
-		<h3><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
 		<!-- IF S_PM -->
 		<p class="author">
 			<strong>{L_SENT_AT}{L_COLON}</strong> {POST_DATE}
