@@ -37,7 +37,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			->find('./tests/controller/');
 
 		// This will need to be updated if any new routes are defined
-		$this->assertEquals(2, sizeof($routes));
+		$this->assertEquals(3, sizeof($routes));
 	}
 
 	public function test_controller_resolver()
