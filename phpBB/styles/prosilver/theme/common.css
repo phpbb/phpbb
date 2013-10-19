@@ -389,6 +389,10 @@ ul.linklist li.responsive-menu a.responsive-menu-link:before {
 	max-width: 48%;
 }
 
+.hasjs ul.linklist.fullwidth {
+	max-width: none;
+}
+
 /* Bulletin icons for list items
 ----------------------------------------*/
 ul.linklist.bulletin li:before {

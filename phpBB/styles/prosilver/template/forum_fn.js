@@ -468,7 +468,7 @@ function insert_single_user(formId, user)
 		});
 
 		// Responsive breadcrumbs
-		$('.breadcrumbs:not(.skip-responsive)').each(function() {
+		$('.breadcrumbs:not(.skip-responsive, .linklist .breadcrumbs)').each(function() {
 			var $this = $(this),
 				$body = $('body'),
 				links = $this.find('.crumb'),
@@ -606,7 +606,7 @@ function insert_single_user(formId, user)
 				links = $this.children().not('.skip-responsive'),
 				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>',
 				// List of items that should be hidden last
-				filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read',
+				filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .breadcrumbs',
 				filtered = links.filter(filterString);
 
 			if (links.is('.rightside'))
