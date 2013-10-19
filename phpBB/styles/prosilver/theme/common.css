@@ -830,11 +830,13 @@ form > p.post-notice strong {
 }
 
 .notification_list p.notifications_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 13px !important;
 	font-weight: bold;
 }
 
 .notification_list p.notifications_time {
-	font-size: 11px;
+	font-size: 11px !important;
 }
 
 .notification_text:after {

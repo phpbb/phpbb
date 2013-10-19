@@ -68,18 +68,17 @@
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF -->">
 							<dl>
 								<dt>
-									<div class="list-inner">
-										<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-											<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
-											<div class="notifications">
-												<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
-												<p class="notifications_time">&raquo; {notification_list.TIME}</p>
-
-												<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
-													<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>
-												<!-- ENDIF -->
-											</div>
-										<!-- IF notification_list.URL --></a><!-- ENDIF -->
+									<div class="list-inner">										
+										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+										<div class="notifications">
+											<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+											<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
+											<!-- IF notification_list.URL --></a><!-- ENDIF -->
+											<p class="notifications_time">{notification_list.TIME}</p>
+											<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
+												<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>
+											<!-- ENDIF -->
+										</div>
 									</div>
 								</dt>
 
