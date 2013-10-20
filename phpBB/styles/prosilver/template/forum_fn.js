@@ -600,13 +600,13 @@ function insert_single_user(formId, user)
 		});
 
 		// Responsive link lists
-		$('.linklist:not(.navlinks, .skip-responsive)').each(function() {
+		$('.linklist:not(.navlinks, .skip-responsive), .postbody ul.profile-icons:not(.skip-responsive)').each(function() {
 			var $this = $(this),
 				$body = $('body'),
 				links = $this.children().not('.skip-responsive'),
 				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>',
 				// List of items that should be hidden last
-				filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .breadcrumbs',
+				filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .breadcrumbs, .edit-icon, .quote-icon',
 				filtered = links.filter(filterString);
 
 			if (links.is('.rightside'))

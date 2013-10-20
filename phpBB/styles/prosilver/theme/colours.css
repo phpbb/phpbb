@@ -710,6 +710,7 @@ a.sendemail {
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
 .pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
 .quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
+ul.profile-icons.responsive a.responsive-menu-link	{ background-image: url("./images/icon_post_menu.png"); }
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background-image: url("./images/icon_post_report.gif"); }
