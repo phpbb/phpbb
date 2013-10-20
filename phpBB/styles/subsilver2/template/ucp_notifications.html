@@ -86,19 +86,15 @@
 			</tr>
 			<!-- BEGIN notification_list -->
 				<tr class="row<!-- IF notification_list.UNREAD -->3<!-- ELSEIF notification_list.S_ROW_COUNT is even -->1<!-- ELSE -->2<!-- ENDIF -->">
-					<!-- IF notification_list.AVATAR -->
-						<td width="50px">
-							{notification_list.AVATAR}
-						</td>
-						<td valign="top">
-					<!-- ELSE -->
-						<td colspan="2" valign="top" height="50px">
-					<!-- ENDIF -->
+					<td width="50">
+						<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+					</td>
+					<td valign="top">
 						<span class="gen">
 						<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
 							<strong>{notification_list.FORMATTED_TITLE}</strong>
 						<!-- IF notification_list.URL --></a><!-- ENDIF --><br />
-						&raquo; {notification_list.TIME}
+						{notification_list.TIME}
 						</span>
 					</td>
 					<td align="center">

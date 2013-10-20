@@ -875,6 +875,7 @@ form > p.post-notice strong {
 
 #notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
 	display: block;
+	text-decoration: none;
 }
 
 .notification_list ul li img {
@@ -918,11 +919,19 @@ form > p.post-notice strong {
 }
 
 .notification_list p.notifications_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 13px !important;
 	font-weight: bold;
 }
 
 .notification_list p.notifications_time {
-	font-size: 11px;
+	font-size: 11px !important;
+}
+
+.notification_text:after {
+	content: '';
+	clear: both;
+	display: block;
 }
 
 .compact .icon-notification > a > span, .compact .icon-pm > a > span {
@@ -932,4 +941,3 @@ form > p.post-notice strong {
 .compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
 	padding-left: 2px;
 }
-

@@ -118,8 +118,8 @@
 							<!-- BEGIN notifications -->
 								<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
 									<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
-										{notifications.AVATAR}
-										<div>
+										<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+										<div class="notification_text">
 											<p>{notifications.FORMATTED_TITLE}</p>
 											<p>&raquo; {notifications.TIME}</p>
 
