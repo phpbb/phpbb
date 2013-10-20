@@ -474,6 +474,10 @@ dl.mini dd.pm-legend {
 	padding: 0 5px;
 }
 
+fieldset.display-actions {
+	white-space: normal;
+}
+
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
 {
 	p.responsive-center {

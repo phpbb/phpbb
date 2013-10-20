@@ -660,7 +660,7 @@ fieldset.polls dd div {
 	font-weight: bold;
 	padding: 0 2px;
 	overflow: visible;
-	min-width: 2%;
+	min-width: 8px;
 }
 
 .pollbar1, .pollbar2, .pollbar3, .pollbar4, .pollbar5 {
