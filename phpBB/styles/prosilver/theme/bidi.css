@@ -392,11 +392,6 @@
 	margin-left: 0;
 }
 
-/* Post author */
-.rtl p.author {
-	margin: 0 0 0.6em 15em;
-}
-
 .rtl .signature {
 	clear: right;
 }
@@ -484,9 +479,7 @@
 /* Poster profile block
 ----------------------------------------*/
 .rtl .postprofile {
-	border-left: none;
-	border-right-width: 1px;
-	border-right-style: solid;
+	border-width: 0 1px 0 0;
 	float: left;
 /*	text-align: right; */
 }
