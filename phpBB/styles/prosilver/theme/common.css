@@ -879,8 +879,9 @@ form > p.post-notice strong {
 
 .notification_list ul li img {
 	float: left;
-	max-width: 50px;
 	max-height: 50px;
+	width: auto !important;
+	height: auto !important;
 	margin-right: 5px;
 }
 
