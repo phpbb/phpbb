@@ -624,8 +624,7 @@ phpbb.resizeTextArea = function(items, options) {
 	function resetAutoResize(item) 
 	{
 		var $item = $(item);
-		if ($item.hasClass('auto-resized'))
-		{
+		if ($item.hasClass('auto-resized')) {
 			$(item).css({height: '', resize: ''}).removeClass('auto-resized');
 			configuration.resetCallback.call(item, $item);
 		}
@@ -635,14 +634,14 @@ phpbb.resizeTextArea = function(items, options) {
 	{
 		function setHeight(height)
 		{
+			height += parseInt($item.css('height')) - $item.height();
 			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
 			configuration.resizeCallback.call(item, $item);
 		}
 
 		var windowHeight = $(window).height();
 
-		if (windowHeight < configuration.minWindowHeight)
-		{
+		if (windowHeight < configuration.minWindowHeight) {
 			resetAutoResize(item);
 			return;
 		}
@@ -652,12 +651,14 @@ phpbb.resizeTextArea = function(items, options) {
 			height = parseInt($item.height()),
 			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
-		if (height > maxHeight)
-		{
+		if (height < 0) {
+			return;
+		}
+
+		if (height > maxHeight) {
 			setHeight(maxHeight);
 		}
-		else if (scrollHeight > (height + 5))
-		{
+		else if (scrollHeight > (height + 5)) {
 			setHeight(Math.min(maxHeight, scrollHeight));
 		}
 	}
@@ -670,8 +671,7 @@ phpbb.resizeTextArea = function(items, options) {
 
 	$(window).resize(function() {
 		items.each(function() {
-			if ($(this).hasClass('auto-resized'))
-			{
+			if ($(this).hasClass('auto-resized')) {
 				autoResize(this);
 			}
 		});
