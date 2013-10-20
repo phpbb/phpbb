@@ -60,6 +60,7 @@ body {
 	line-height: normal;
 	margin: 0;
 	padding: 12px 0;
+	word-wrap: break-word;
 }
 
 h1 {
@@ -179,7 +180,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 #simple-wrap {
-	padding: 6px 10px;
+	padding: 6px 0;
 }
 
 #page-body {
@@ -360,6 +361,38 @@ ul.rightside {
 	text-align: right;
 }
 
+ul.linklist.responsive {
+	position: relative;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link {
+	display: inline-block;
+	font-size: 16px;
+	position: relative;
+	width: 16px;
+	line-height: 16px;
+	text-decoration: none;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 7px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid transparent;
+	border-top: 0.375em double transparent;
+}
+
+.hasjs ul.linklist.leftside, .hasjs ul.linklist.rightside {
+	max-width: 48%;
+}
+
+.hasjs ul.linklist.fullwidth {
+	max-width: none;
+}
+
 /* Bulletin icons for list items
 ----------------------------------------*/
 ul.linklist.bulletin li:before {
@@ -377,6 +410,62 @@ ul.linklist.bulletin li:first-child:before, ul.linklist.bulletin li.rightside:la
 ul.linklist.bulletin li.no-bulletin:before {
 	display: none;
 }
+
+.responsive-menu:before {
+	display: none !important;
+}
+
+/* Responsive popup
+----------------------------------------*/
+ul.responsive-popup {
+	position: absolute;
+	left: 0;
+	top: 24px;
+	z-index: 2;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding: 5px;
+}
+
+ul.responsive-popup.responsive-rightside {
+	left: auto;
+	right: 0;
+}
+
+ul.responsive-popup li {
+	float: none;
+	margin: 0;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.wrap ul.responsive-popup li {
+	white-space: normal;
+}
+
+ul.responsive-popup li:before, ul.responsive-popup li:after {
+	display: none !important;
+}
+
+/* Responsive breadcrumbs
+----------------------------------------*/
+.breadcrumbs .crumb {
+	display: inline-block;
+	vertical-align: bottom;
+}
+
+.breadcrumbs.wrapped .crumb {
+	letter-spacing: -.5px;
+}
+
+.breadcrumbs .crumb.wrapped {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.breadcrumbs .crumb.wrapped-wide { max-width: 120px; }
+.breadcrumbs .crumb.wrapped-medium { max-width: 80px; }
+.breadcrumbs .crumb.wrapped-small { max-width: 30px; }
 
 /* Table styles
 ----------------------------------------*/
@@ -421,7 +510,7 @@ table.table1 tbody th {
 
 /* Specific column styles */
 table.table1 .name		{ text-align: left; }
-table.table1 .posts		{ text-align: center !important; width: 7%; }
+table.table1 .posts		{ text-align: center; width: 7%; }
 table.table1 .joined	{ text-align: left; width: 15%; }
 table.table1 .active	{ text-align: left; width: 15%; }
 table.table1 .mark		{ text-align: center; width: 7%; }
@@ -477,6 +566,10 @@ table.info tbody th {
 	text-align: left;
 }
 
+.left-box.profile-details {
+	width: 80%;
+}
+
 .right-box {
 	float: right;
 	width: auto;
@@ -506,7 +599,7 @@ dl.details dd {
 	text-overflow: ellipsis;
 }
 
-.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
+.clearfix, fieldset dl, ul.topiclist dl, dl.polls {
 	height: 1%;
 	overflow: hidden;
 }
@@ -782,22 +875,19 @@ form > p.post-notice strong {
 
 #notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
 	display: block;
+	text-decoration: none;
 }
 
 .notification_list ul li img {
 	float: left;
-	max-width: 50px;
 	max-height: 50px;
+	width: auto !important;
+	height: auto !important;
 	margin-right: 5px;
 }
 
 .notification_list ul li p {
 	margin: 0;
-	word-wrap: break-word;
-}
-
-.notification_list ul.topiclist dt {
-	width: 88%;
 }
 
 .notification_list .pointer, .notification_list .pointer_inner {
@@ -829,10 +919,25 @@ form > p.post-notice strong {
 }
 
 .notification_list p.notifications_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 13px !important;
 	font-weight: bold;
 }
 
 .notification_list p.notifications_time {
-	font-size: 11px;
+	font-size: 11px !important;
 }
 
+.notification_text:after {
+	content: '';
+	clear: both;
+	display: block;
+}
+
+.compact .icon-notification > a > span, .compact .icon-pm > a > span {
+	display: none;
+}
+
+.compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
+	padding-left: 2px;
+}

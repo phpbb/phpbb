@@ -627,21 +627,11 @@ fieldset.polls dd div {
 ----------------------------------------*/
 .postprofile {
 	color: #666666;
-	border-left-color: #FFFFFF;
-}
-
-.rtl .postprofile {
-	border-right-color: #FFFFFF;
-	border-left-color: transparent;
+	border-color: #FFFFFF;
 }
 
 .pm .postprofile {
-	border-left-color: #DDDDDD;
-}
-
-.rtl .pm .postprofile {
-	border-right-color: #DDDDDD;
-	border-left-color: transparent;
+	border-color: #DDDDDD;
 }
 
 .postprofile strong {
@@ -706,7 +696,7 @@ a.sendemail {
 .icon-subscribe					{ background-image: url("./images/icon_subscribe.gif"); }
 .icon-unsubscribe				{ background-image: url("./images/icon_unsubscribe.gif"); }
 .icon-pages						{ background-image: url("./images/icon_pages.gif"); }
-.icon-search					{ background-image: url("./images/icon_search.gif"); }
+.icon-search, .responsive-search a	{ background-image: url("./images/icon_search.gif"); }
 .icon-notification				{ background-image: url("./images/icon_notification.gif"); }
 .icon-pm						{ background-image: url("./images/icon_pm.gif"); }
 
@@ -720,6 +710,7 @@ a.sendemail {
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
 .pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
 .quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
+ul.profile-icons.responsive a.responsive-menu-link	{ background-image: url("./images/icon_post_menu.png"); }
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background-image: url("./images/icon_post_report.gif"); }
@@ -855,6 +846,16 @@ ul.cplist {
 
 #minitabs li.activetab a, #minitabs li.activetab a:hover {
 	color: #333333;
+}
+
+/* Responsive tabs
+----------------------------------------*/
+.responsive-tab .responsive-tab-link span:before {
+	border-color: #536482;
+}
+
+.responsive-tab .responsive-tab-link:hover span:before {
+	border-color: #BC2A4D;
 }
 
 /* UCP navigation menu
@@ -1069,6 +1070,12 @@ a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, inpu
 	color: #BC2A4D;
 }
 
+/* Focus states */
+input.button1:focus, input.button2:focus, input.button3:focus {
+	border-color: #11A3EA;
+	color: #0F4987;
+}
+
 input.search {
 	background-image: url("./images/icon_textbox_search.gif");
 }
@@ -1125,4 +1132,27 @@ input.disabled {
 
 .notification_list .pointer_inner {
 	border-bottom-color: #F1F8FF;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link:before {
+	border-color: #105289;
+}
+
+ul.linklist li.responsive-menu a.responsive-menu-link:hover:before {
+	border-color: #D31141;
+}
+
+ul.responsive-popup {
+	background: #fff;
+	border-color: #b9b9b9;
+	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
+}
+.navbar ul.responsive-popup {
+	background-color: #CADCEB;
+}
+
+#tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {
+	background: #ddedfb;
+	border-color: #c0c9d5;
+	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.4);
 }
