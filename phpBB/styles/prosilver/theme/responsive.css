@@ -359,6 +359,24 @@ dl.pmlist dd:first-of-type {
 	}
 }
 
+/* Polls
+----------------------------------------*/
+fieldset.polls dt {
+	width: 90%;
+}
+
+fieldset.polls dd.resultbar {
+	padding-left: 20px;
+}
+
+fieldset.polls dd.poll_option_percent {
+	width: 20%;
+}
+
+fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
+	margin-top: 5px;
+}
+
 /* Post
 ----------------------------------------*/
 .postprofile, .postbody, .search .postbody {
