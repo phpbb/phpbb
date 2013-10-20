@@ -445,6 +445,9 @@ function insert_single_user(formId, user)
 			return;
 		}
 
+		// Adjust topiclist lists with check boxes
+		$('ul.topiclist dd.mark').siblings('dt').children('.list-inner').addClass('with-mark');
+
 		// Resize navigation block to keep all links on same line
 		$('.navlinks').each(function() {
 			var $this = $(this),

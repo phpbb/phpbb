@@ -107,6 +107,10 @@ ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
 	margin-right: 0;
 }
 
+ul.topiclist dt .list-inner.with-mark {
+	padding-right: 34px;
+}
+
 ul.topiclist dt .list-inner {
 	min-height: 28px;
 }
