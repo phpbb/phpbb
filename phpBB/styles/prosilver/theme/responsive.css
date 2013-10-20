@@ -29,6 +29,10 @@ body {
 	margin-right: -5px;
 }
 
+#cp-main .forabg, #cp-main .forumdb, #cp-main .post, #cp-main .panel {
+	border-radius: 7px;
+}
+
 /* Logo block
 ----------------------------------------*/
 #site-description {
@@ -101,6 +105,7 @@ ul.topiclist.missing-column dt, ul.topiclist.missing-column dt .list-inner,
 ul.topiclist.two-long-columns dt, ul.topiclist.two-long-columns dt .list-inner,
 ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
 	margin-right: 0;
+	min-height: 28px;
 }
 
 ul.topiclist dd { 
@@ -450,6 +455,16 @@ fieldset.quickmod {
 	width: auto;
 	float: none;
 	text-align: center;
+}
+
+dl.mini dd.pm-legend {
+	float: left;
+	min-width: 200px;
+}
+
+#topicreview {
+	margin: 0 -5px;
+	padding: 0 5px;
 }
 
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)

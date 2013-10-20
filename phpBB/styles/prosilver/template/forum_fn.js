@@ -468,7 +468,7 @@ function insert_single_user(formId, user)
 		});
 
 		// Responsive breadcrumbs
-		$('.breadcrumbs:not(.skip-responsive, .linklist .breadcrumbs)').each(function() {
+		$('.breadcrumbs:not(.skip-responsive, .linklist.leftside .breadcrumbs)').each(function() {
 			var $this = $(this),
 				$body = $('body'),
 				links = $this.find('.crumb'),
