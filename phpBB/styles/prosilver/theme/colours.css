@@ -1070,6 +1070,12 @@ a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, inpu
 	color: #BC2A4D;
 }
 
+/* Focus states */
+input.button1:focus, input.button2:focus, input.button3:focus {
+	border-color: #11A3EA;
+	color: #0F4987;
+}
+
 input.search {
 	background-image: url("./images/icon_textbox_search.gif");
 }
