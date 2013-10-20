@@ -105,7 +105,14 @@ ul.topiclist.missing-column dt, ul.topiclist.missing-column dt .list-inner,
 ul.topiclist.two-long-columns dt, ul.topiclist.two-long-columns dt .list-inner,
 ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
 	margin-right: 0;
+}
+
+ul.topiclist dt .list-inner {
 	min-height: 28px;
+}
+
+ul.topiclist li.header dt .list-inner {
+	min-height: 0;
 }
 
 ul.topiclist dd { 
