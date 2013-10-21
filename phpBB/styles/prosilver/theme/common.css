@@ -670,11 +670,20 @@ li.pagination ul {
 	position: fixed;
 	display: none;
 	top: 150px;
-	left: 25%;
-	width: 50%;
+	left: 0;
+	right: 0;
+	max-width: 640px;
+	margin: 0 auto;
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
+}
+
+@media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
+{
+	.phpbb_alert {
+		top: 25px;
+	}
 }
 
 .phpbb_alert .alert_close {
