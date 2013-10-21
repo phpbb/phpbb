@@ -442,6 +442,14 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	max-height: 32px;
 }
 
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 1.5dppx)
+{
+	/* Scale online image for HD displays */
+	.online {
+		background-size: 40px;
+	}
+}
+
 /* Misc stuff
 ----------------------------------------*/
 h2 {
