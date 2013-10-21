@@ -262,6 +262,10 @@ table.responsive.show-header thead, table.responsive.show-header th:first-child 
 	text-align: left !important;
 }
 
+table.responsive.show-header th:first-child span.rank-img {
+	display: none;
+}
+
 table.responsive tr {
 	margin: 2px 0;
 }

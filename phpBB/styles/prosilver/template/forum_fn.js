@@ -546,7 +546,7 @@ function insert_single_user(formId, user)
 				i, headersLength;
 
 			// Find each header
-			th.each(function() {
+			th.each(function(column) {
 				var cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
 					dfn = cell.attr('data-dfn'),
@@ -558,6 +558,10 @@ function insert_single_user(formId, user)
 					headers.push(text);
 				}
 				totalHeaders ++;
+
+				if (dfn && !column) {
+					$this.addClass('show-header');
+				}
 			});
 			
 			headersLength = headers.length;
