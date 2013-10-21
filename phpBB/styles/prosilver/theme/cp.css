@@ -417,3 +417,41 @@ ol.def-rules li {
 	border: 1px solid transparent;
 	text-align: center;
 }
+
+/* Responsive *CP navigation
+----------------------------------------*/
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+{
+	.nojs #tabs a span, .nojs #minitabs a span {
+		max-width: 40px; 
+		overflow: hidden;
+		text-overflow: ellipsis;
+		letter-spacing: -.5px;
+	}
+
+	#cp-menu, #navigation, #cp-main {
+		float: none;
+		width: auto;
+		margin: 0;
+	}
+
+	#navigation { 
+		padding: 0; 
+		margin: 0 auto;
+		max-width: 320px;
+	}
+
+	#navigation a {
+		background-image: none;
+	}
+
+	#navigation li:first-child a {
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+
+	#navigation li:last-child a {
+		border-bottom-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+	}
+}
