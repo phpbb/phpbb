@@ -5,8 +5,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
-            - @cache.driver
             - @path_helper
+            - @cache.driver
         calls:
             - [set_name, [avatar.driver.gravatar]]
         tags:
@@ -18,8 +18,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
-            - @cache.driver
             - @path_helper
+            - @cache.driver
         calls:
             - [set_name, [avatar.driver.local]]
         tags:
@@ -31,8 +31,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
-            - @cache.driver
             - @path_helper
+            - @cache.driver
         calls:
             - [set_name, [avatar.driver.remote]]
         tags:
@@ -44,8 +44,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
-            - @cache.driver
             - @path_helper
+            - @cache.driver
         calls:
             - [set_name, [avatar.driver.upload]]
         tags:

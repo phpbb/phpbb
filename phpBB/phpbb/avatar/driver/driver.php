@@ -83,7 +83,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	* @param string $php_ext PHP file extension
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null, \phpbb\path_helper $path_helper)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
