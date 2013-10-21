@@ -42,6 +42,16 @@
 								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->,<!-- ENDIF -->
 							<!-- END subforum -->
 						<!-- ENDIF -->
+
+						<!-- IF not S_IS_BOT -->
+						<div class="responsive-show" style="display: none;">
+							<!-- IF forumrow.CLICKS -->
+								{L_REDIRECTS}{L_COLON} <strong>{forumrow.CLICKS}</strong>
+							<!-- ELSEIF not forumrow.S_IS_LINK and forumrow.TOPICS -->
+								{L_TOPICS}{L_COLON} <strong>{forumrow.TOPICS}</strong>
+							<!-- ENDIF -->
+						</div>
+						<!-- ENDIF -->
 					</div>
 				</dt>
 				<!-- IF forumrow.CLICKS -->

@@ -536,6 +536,82 @@ function insert_single_user(formId, user)
 			$(window).resize(check);
 		});
 
+		// Responsive topic lists
+		$('.topiclist.responsive-show-all > li > dl').each(function() {
+			var $this = $(this),
+				block = $this.find('dt .responsive-show:last-child'),
+				first = true;
+
+			if (!block.length) {
+				$this.find('dt > .list-inner').append('<div class="responsive-show" style="display:none;" />');
+				block = $this.find('dt .responsive-show:last-child');
+			}
+			else {
+				first = (block.text().trim().length == 0);
+			}
+
+			$this.find('dd').not('.mark').each(function() {
+				var column = $(this),
+					children = column.children(),
+					html = column.html();
+
+				if (children.length == 1 && children.text() == column.text()) {
+					html = children.html();
+				}
+
+				block.append((first ? '' : '<br />') + html);
+
+				first = false;
+			});
+		});
+
+		$('.topiclist.responsive-show-columns').each(function() {
+			var list = $(this),
+				headers = [],
+				headersLength = 0;
+
+			list.prev('.topiclist').find('li.header dd').not('.mark').each(function() {
+				headers.push($(this).text());
+				headersLength ++;
+			});
+
+			if (!headersLength) {
+				return;
+			}
+
+			list.find('dl').each(function() {
+				var $this = $(this),
+					block = $this.find('dt .responsive-show:last-child'),
+					first = true;
+
+				if (!block.length) {
+					$this.find('dt > .list-inner').append('<div class="responsive-show" style="display:none;" />');
+					block = $this.find('dt .responsive-show:last-child');
+				}
+				else {
+					first = (block.text().trim().length == 0);
+				}
+
+				$this.find('dd').not('.mark').each(function(i) {
+					var column = $(this),
+						children = column.children(),
+						html = column.html();
+
+					if (children.length == 1 && children.text() == column.text()) {
+						html = children.html();
+					}
+
+					if (i < headersLength) {
+						html = headers[i] + ': <strong>' + html + '</strong>';
+					}
+
+					block.append((first ? '' : '<br />') + html);
+
+					first = false;
+				});
+			});
+		});
+
 		// Responsive tables
 		$('table.table1').not('.not-responsive').each(function() {
 			var $this = $(this),

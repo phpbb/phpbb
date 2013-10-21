@@ -32,6 +32,9 @@
 					<!-- IF not S_PRIVMSGS --><!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 					<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 					<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF --><!-- ENDIF -->
+					<div class="responsive-show" style="display: none;">
+						{L_SAVE_DATE}{L_COLON} <strong>{draftrow.DATE}</strong>
+					</div>
 				</div>
 			</dt>
 			<dd class="info"><span>{draftrow.DATE}</span></dd>

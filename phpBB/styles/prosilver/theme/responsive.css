@@ -133,33 +133,10 @@ ul.topiclist.forums dt, ul.topiclist.topics dt {
 }
 ul.topiclist.forums dt .list-inner, ul.topiclist.topics dt .list-inner {
 	margin-right: 250px;
-	padding-bottom: 18px;
 }
 
 ul.topiclist.forums dd.lastpost, ul.topiclist.topics dd.lastpost {
 	display: block;
-}
-
-ul.topiclist.forums dd.topics, ul.topiclist.topics dd.posts {
-	display: block;
-	position: absolute;
-	left: 45px;
-	right: 0;
-	bottom: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	min-height: 0;
-	height: auto;
-	border-width: 0;
-	margin: 0;
-	padding: 5px 0;
-	width: auto;
-	min-width: 0;
-	text-align: left;
-	font-weight: bold;
-	font-size: 1.2em;
-	line-height: 1em;
 }
 
 ul.topiclist dd.mark {
@@ -194,6 +171,11 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 	ul.topiclist.forums dd.lastpost, ul.topiclist.topics dd.lastpost {
 		display: none;
 	}
+}
+
+li.row .responsive-show strong {
+	font-weight: bold;
+	color: inherit;
 }
 
 /* Notifications list
