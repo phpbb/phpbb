@@ -711,6 +711,11 @@ fieldset.polls dd div {
 	margin-bottom: 3px;
 }
 
+.postprofile .avatar img {
+	max-width: 90%;
+	height: auto !important;
+}
+
 .online {
 	background-image: none;
 	background-position: 100% 0;
