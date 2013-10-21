@@ -480,6 +480,12 @@ fieldset.quickmod {
 	text-align: center;
 }
 
+fieldset.display-options label {
+	display: block;
+	clear: both;
+	margin-bottom: 5px;
+}
+
 dl.mini dd.pm-legend {
 	float: left;
 	min-width: 200px;
