@@ -56,8 +56,7 @@ class provider
 		// because the finder cannot find it
 		$this->routing_files = array_merge(array('config/routing.yml'), array_keys($finder
 			->directory('config')
-			->prefix('routing')
-			->suffix('.yml')
+			->suffix('routing.yml')
 			->find()
 		));
 
@@ -75,8 +74,8 @@ class provider
 		$routes = new RouteCollection;
 		foreach ($this->routing_files as $file_path)
 		{
-			$loader = new YamlFileLoader(new FileLocator(dirname($base_path . $file_path)));
-			$routes->addCollection($loader->load(basename($file_path)));
+			$loader = new YamlFileLoader(new FileLocator($base_path));
+			$routes->addCollection($loader->load($file_path));
 		}
 
 		return $routes;
