@@ -206,7 +206,11 @@ fieldset.forum-selection2 {
 fieldset.jumpbox {
 	text-align: right;
 	margin-top: 15px;
-	height: 2.5em;
+	min-height: 2.5em;
+}
+
+fieldset.jumpbox select {
+	max-width: 50%;
 }
 
 fieldset.quickmod {
