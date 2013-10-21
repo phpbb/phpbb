@@ -48,16 +48,16 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	protected $php_ext;
 
 	/**
-	* Cache driver
-	* @var \phpbb\cache\driver\driver_interface
-	*/
-	protected $cache;
-
-	/**
 	* Path Helper
 	* @var \phpbb\path_helper
 	*/
 	protected $path_helper;
+
+	/**
+	* Cache driver
+	* @var \phpbb\cache\driver\driver_interface
+	*/
+	protected $cache;
 
 	/**
 	* Array of allowed avatar image extensions
@@ -88,8 +88,8 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->cache = $cache;
 		$this->path_helper = $path_helper;
+		$this->cache = $cache;
 	}
 
 	/**
