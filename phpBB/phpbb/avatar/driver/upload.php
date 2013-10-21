@@ -29,7 +29,7 @@ class upload extends \phpbb\avatar\driver\driver
 	public function get_data($row, $ignore_config = false)
 	{
 		return array(
-			'src' => $this->phpbb_root_path . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'src' => $this->path_helper->get_web_root_path() . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
