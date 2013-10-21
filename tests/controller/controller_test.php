@@ -37,7 +37,14 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			->find(__DIR__);
 
 		// This will need to be updated if any new routes are defined
-		$this->assertEquals(3, sizeof($routes));
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('core_controller'));
+		$this->assertEquals('/core_foo', $routes->get('core_controller')->getPath());
+
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller1'));
+		$this->assertEquals('/foo', $routes->get('controller1')->getPath());
+
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller2'));
+		$this->assertEquals('/foo/bar', $routes->get('controller2')->getPath());
 	}
 
 	public function test_controller_resolver()
