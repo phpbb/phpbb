@@ -193,6 +193,12 @@ li.row .responsive-show strong {
 	margin: 5px 0;
 }
 
+.pagination li a, .pagination li span {
+	min-width: 10px;
+	display: inline-block;
+	text-align: center;
+}
+
 /* Responsive tables
 ----------------------------------------*/
 table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {

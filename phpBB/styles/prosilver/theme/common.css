@@ -665,7 +665,7 @@ li.pagination ul {
 	line-height: normal;
 }
 
-.pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
+.pagination li a, .pagnation li span, li .pagination li a, li .pagination li span, .pagination li.active span, .pagination li.ellipsis span {
 	font-weight: normal;
 	text-decoration: none;
 	padding: 0 2px;
