@@ -1,7 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <p class="{S_CONTENT_FLOW_END} responsive-center<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
-<!-- IF U_MCP --><p class="responsive-center">{CURRENT_TIME} <br />[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ELSEIF S_USER_LOGGED_IN --><p>{CURRENT_TIME}</p><!-- ENDIF -->
+<!-- IF U_MCP --><p class="responsive-center">{CURRENT_TIME} <br />[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ELSEIF S_USER_LOGGED_IN --><p class="responsive-center">{CURRENT_TIME}</p><!-- ENDIF -->
 
 <!-- IF S_DISPLAY_SEARCH or (S_USER_LOGGED_IN and not S_IS_BOT) -->
 <ul class="linklist bulletin">
