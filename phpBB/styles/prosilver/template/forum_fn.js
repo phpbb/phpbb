@@ -728,7 +728,8 @@ function parse_document(container)
 			$body = $('body'),
 			filterSkip = '.breadcrumbs, .skip-responsive',
 			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
-			links = $this.children().not(filterSkip),
+			allLinks = $this.children(),
+			links = allLinks.not(filterSkip),
 			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="popup-pointer" style="display: none;"><div class="popup-pointer-inner" /></div><ul class="responsive-popup" style="display:none;" /></li>',
 			filterLastList = links.filter(filterLast);
 
@@ -771,8 +772,9 @@ function parse_document(container)
 
 			// Find tallest element
 			var maxHeight = 0;
-			links.each(function() {
+			allLinks.each(function() {
 				if (!$(this).height()) return;
+				$(this).attr('data-height', $(this).outerHeight(true));
 				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 			});
 
@@ -792,7 +794,7 @@ function parse_document(container)
 			$this.addClass('compact');
 
 			var compactMaxHeight = 0;
-			links.each(function() {
+			allLinks.each(function() {
 				if (!$(this).height()) return;
 				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 			});
