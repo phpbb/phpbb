@@ -306,26 +306,9 @@ class oauth extends \phpbb\auth\provider\base
 	*/
 	public function get_login_data()
 	{
-		$login_data = array(
-			'TEMPLATE_FILE'		=> 'login_body_oauth.html',
-			'BLOCK_VAR_NAME'	=> 'oauth',
-			'BLOCK_VARS'		=> array(),
-		);
-
-		foreach ($this->service_providers as $service_name => $service_provider)
-		{
-			// Only include data if the credentials are set
-			$credentials = $service_provider->get_service_credentials();
-			if ($credentials['key'] && $credentials['secret'])
-			{
-				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
-				$redirect_url = build_url(false) . '&login=external&oauth_service=' . $actual_name;
-				$login_data['BLOCK_VARS'][$service_name] = array(
-					'REDIRECT_URL'	=> redirect($redirect_url, true),
-					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
-				);
-			}
-		}
+		$redirect_url_base = build_url(false) . '&login=external&oauth_service=';
+		$login_data = $this->get_base_data($redirect_url_base);
+		$login_data['TEMPLATE_FILE'] = 'login_body_oauth.html';
 
 		return $login_data;
 	}
@@ -616,5 +599,52 @@ class oauth extends \phpbb\auth\provider\base
 		$storage->clearToken($service_name);
 
 		return;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_register_data()
+	{
+		$redirect_url_base = build_url(false) . 'register=oauth&agreed=1&register_mode=external&oauth_service=';
+		$register_data = $this->get_base_data($redirect_url_base);
+		$register_data['TEMPLATE_FILE'] = 'ucp_register_mode_select_oauth.html';
+
+		return $register_data;
+	}
+
+	/**
+	* A helper method for get_register_data() and get_login_data() that returns
+	* an array of data common to both of the methods.
+	*
+	* @param	string	$redirect_url_base	The base url that is used for all
+	*										redirects. Needs to have the name of
+	*										the OAuth service appended to it.
+	* @return	array	Data commons to both get_register_data() and
+	*					get_login_data();
+	*/
+	protected function get_base_data($redirect_url_base)
+	{
+		$base_data = array(
+			'BLOCK_VAR_NAME'	=> 'oauth',
+			'BLOCK_VARS'		=> array(),
+		);
+
+		foreach ($this->service_providers as $service_name => $service_provider)
+		{
+			// Only include data if the credentials are set
+			$credentials = $service_provider->get_service_credentials();
+			if ($credentials['key'] && $credentials['secret'])
+			{
+				$actual_name = str_replace('auth.provider.oauth.service.', '', $service_name);
+				$redirect_url = $redirect_url_base . $actual_name;
+				$base_data['BLOCK_VARS'][$service_name] = array(
+					'REDIRECT_URL'	=> redirect($redirect_url, true),
+					'SERVICE_NAME'	=> $this->user->lang['AUTH_PROVIDER_OAUTH_SERVICE_' . strtoupper($actual_name)],
+				);
+			}
+		}
+
+		return $base_data;
 	}
 }

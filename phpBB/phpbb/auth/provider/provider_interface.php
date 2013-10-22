@@ -196,4 +196,10 @@ interface provider_interface
 	*								from a phpbb account.
 	*/
 	public function unlink_account(array $link_data);
+
+	/**
+	*
+	*
+	*/
+	public function get_register_data();
 }
