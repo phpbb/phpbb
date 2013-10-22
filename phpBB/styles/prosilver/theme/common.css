@@ -449,23 +449,25 @@ ul.responsive-popup li:before, ul.responsive-popup li:after {
 
 /* Responsive breadcrumbs
 ----------------------------------------*/
-.breadcrumbs .crumb {
+.breadcrumbs .crumb a {
 	display: inline-block;
 	vertical-align: bottom;
 }
 
-.breadcrumbs.wrapped .crumb {
-	letter-spacing: -.5px;
-}
+.breadcrumbs.wrapped .crumb a { letter-spacing: -.3px; }
+.breadcrumbs.wrapped .crumb.wrapped-medium a { letter-spacing: -.4px; }
+.breadcrumbs.wrapped .crumb.wrapped-tiny a { letter-spacing: -.5px; }
 
-.breadcrumbs .crumb.wrapped {
+.breadcrumbs .crumb.wrapped a {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.breadcrumbs .crumb.wrapped-wide { max-width: 120px; }
-.breadcrumbs .crumb.wrapped-medium { max-width: 80px; }
-.breadcrumbs .crumb.wrapped-small { max-width: 30px; }
+.breadcrumbs .crumb.wrapped-max a { max-width: 120px; }
+.breadcrumbs .crumb.wrapped-wide a { max-width: 100px; }
+.breadcrumbs .crumb.wrapped-medium a { max-width: 80px; }
+.breadcrumbs .crumb.wrapped-small a { max-width: 60px; }
+.breadcrumbs .crumb.wrapped-tiny a { max-width: 40px; }
 
 /* Table styles
 ----------------------------------------*/

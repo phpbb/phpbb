@@ -471,12 +471,12 @@ function parse_document(container)
 	/**
 	* Makes breadcrumbs responsive
 	*/
-	container.find('.breadcrumbs:not(.skip-responsive, .linklist.leftside .breadcrumbs)').each(function() {
+	container.find('.breadcrumbs:not(.skip-responsive)').each(function() {
 		var $this = $(this),
 			$body = $('body'),
 			links = $this.find('.crumb'),
 			length = links.length,
-			classes = ['wrapped-wide', 'wrapped-medium', 'wrapped-small'],
+			classes = ['wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny'],
 			classesLength = classes.length,
 			maxHeight = 0,
 			lastWidth = false,
@@ -726,11 +726,11 @@ function parse_document(container)
 	container.find('.linklist:not(.navlinks, .skip-responsive), .postbody ul.profile-icons:not(.skip-responsive)').each(function() {
 		var $this = $(this),
 			$body = $('body'),
-			links = $this.children().not('.skip-responsive'),
+			filterSkip = '.breadcrumbs, .skip-responsive',
+			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
+			links = $this.children().not(filterSkip),
 			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>',
-			// List of items that should be hidden last
-			filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .breadcrumbs, .edit-icon, .quote-icon',
-			filtered = links.filter(filterString);
+			filterLastList = links.filter(filterLast);
 
 		if (links.is('.rightside'))
 		{
@@ -824,17 +824,17 @@ function parse_document(container)
 			$this.addClass('responsive');
 
 			// Try to not hide filtered items
-			if (filtered.length) {
-				links.not(filterString).css('display', 'none');
+			if (filterLastList.length) {
+				links.not(filterLast).css('display', 'none');
 
 				maxHeight = 0;
-				filtered.each(function() {
+				filterLastList.each(function() {
 					if (!$(this).height()) return;
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 				});
 
 				if ($this.height() <= maxHeight) {
-					menu.children().filter(filterString).css('display', 'none');
+					menu.children().filter(filterLast).css('display', 'none');
 					return;
 				}
 			}
