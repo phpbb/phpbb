@@ -729,7 +729,7 @@ function parse_document(container)
 			filterSkip = '.breadcrumbs, .skip-responsive',
 			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
 			links = $this.children().not(filterSkip),
-			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>',
+			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="popup-pointer" style="display: none;"><div class="popup-pointer-inner" /></div><ul class="responsive-popup" style="display:none;" /></li>',
 			filterLastList = links.filter(filterLast);
 
 		if (links.is('.rightside'))
@@ -744,6 +744,7 @@ function parse_document(container)
 		var toggle = $this.children('.responsive-menu'),
 			toggleLink = toggle.find('a.responsive-menu-link'),
 			menu = toggle.find('ul.responsive-popup'),
+			toggleItems = toggle.find('ul.responsive-popup, div.popup-pointer'),
 			lastWidth = false,
 			compact = false,
 			responsive = false,
@@ -782,7 +783,7 @@ function parse_document(container)
 			// Nothing to resize if block's height is not bigger than tallest element's height
 			if ($this.height() <= maxHeight) {
 				toggle.removeClass('visible');
-				menu.hide();
+				toggleItems.hide();
 				return;
 			}
 
@@ -798,7 +799,7 @@ function parse_document(container)
 
 			if ($this.height() <= maxHeight) {
 				toggle.removeClass('visible');
-				menu.hide();
+				toggleItems.hide();
 				return;
 			}
 
@@ -809,7 +810,7 @@ function parse_document(container)
 
 			if (!copied) {
 				if (menu.parents().is('.rightside')) {
-					menu.addClass('responsive-rightside');
+					toggle.addClass('responsive-rightside');
 				}
 				menu.append(links.clone(true));
 				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
@@ -846,10 +847,10 @@ function parse_document(container)
 			if (!responsive) return;
 			if (!toggle.hasClass('visible')) {
 				// Hide other popups
-				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
+				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup, .popup-pointer').hide();
 			}
 			toggle.toggleClass('visible');
-			menu.toggle();
+			toggleItems.toggle();
 		});
 
 		check();
@@ -952,7 +953,7 @@ function parse_document(container)
 		$('#phpbb').click(function(e) {
 			var parents = $(e.target).parents();
 			if (!parents.is('.responsive-menu.visible')) {
-				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
+				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup, .popup-pointer').hide();
 			}
 			if (!parents.is('.responsive-tab')) {
 				$('.responsive-tabs').hide();

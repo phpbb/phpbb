@@ -1126,11 +1126,11 @@ input.disabled {
 	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
 }
 
-.notification_list .pointer {
+.popup-pointer {
 	border-bottom-color: #B9B9B9;
 }
 
-.notification_list .pointer_inner {
+.popup-pointer-inner {
 	border-bottom-color: #F1F8FF;
 }
 
@@ -1138,7 +1138,7 @@ ul.linklist li.responsive-menu a.responsive-menu-link:before {
 	border-color: #105289;
 }
 
-ul.linklist li.responsive-menu a.responsive-menu-link:hover:before {
+ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist li.responsive-menu.visible a.responsive-menu-link:before {
 	border-color: #D31141;
 }
 
@@ -1147,8 +1147,13 @@ ul.responsive-popup {
 	border-color: #b9b9b9;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 }
-.navbar ul.responsive-popup {
-	background-color: #CADCEB;
+
+.responsive-menu .popup-pointer {
+	border-bottom-color: #b9b9b9;
+}
+
+.responsive-menu .popup-pointer-inner {
+	border-bottom-color: #fff;
 }
 
 #tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {

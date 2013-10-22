@@ -361,12 +361,13 @@ ul.rightside {
 	text-align: right;
 }
 
-ul.linklist.responsive {
+ul.linklist li.responsive-menu {
 	position: relative;
 }
 
 ul.linklist li.responsive-menu a.responsive-menu-link {
 	display: inline-block;
+	margin: 0 5px;
 	font-size: 16px;
 	position: relative;
 	width: 16px;
@@ -420,16 +421,35 @@ ul.linklist.bulletin li.no-bulletin:before {
 ul.responsive-popup {
 	position: absolute;
 	left: 0;
-	top: 24px;
+	top: 22px;
 	z-index: 2;
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 5px;
 }
 
-ul.responsive-popup.responsive-rightside {
+.responsive-rightside ul.responsive-popup {
 	left: auto;
 	right: 0;
+}
+
+.responsive-menu .popup-pointer {
+	top: 22px;
+	z-index: 3;
+	left: 2px;
+}
+.responsive-menu ul.responsive-popup {
+	top: 32px;
+	left: -5px;
+}
+
+.responsive-menu.responsive-rightside .popup-pointer {
+	left: auto;
+	right: 2px;
+}
+.responsive-menu.responsive-rightside ul.responsive-popup {
+	left: auto;
+	right: -5px;
 }
 
 ul.responsive-popup li {
@@ -901,7 +921,7 @@ form > p.post-notice strong {
 	margin: 0;
 }
 
-.notification_list .pointer, .notification_list .pointer_inner {
+.popup-pointer, .popup-pointer-inner {
 	position: absolute;
 	width: 0;
 	height: 0;
@@ -913,13 +933,13 @@ form > p.post-notice strong {
 	display: block;
 }
 
-.notification_list .pointer {
+.popup-pointer {
 	right: auto;
 	left: 10px;
 	top: -11px;
 }
 
-.notification_list .pointer_inner {
+.popup-pointer-inner {
 	top: auto;
 	bottom: -11px;
 	left: -10px;
