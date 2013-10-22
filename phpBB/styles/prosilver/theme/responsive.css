@@ -306,6 +306,30 @@ dl.pmlist dd:first-of-type {
 	display: inline-block !important;
 }
 
+fieldset.quick-login label {
+	display: block;
+	margin-bottom: 5px;
+	white-space: normal;
+}
+
+fieldset.quick-login label > span {
+	display: inline-block;
+	min-width: 100px;
+}
+
+fieldset.quick-login input.inputbox {
+	width: 85%;
+	max-width: 300px;
+	margin-left: 20px;
+}
+
+fieldset.quick-login label[for="autologin"] {
+	display: inline-block;
+	text-align: right;
+	min-width: 50%;
+}
+
+
 /* User profile
 ----------------------------------------*/
 .column1, .column2, .left-box.profile-details {
