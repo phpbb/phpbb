@@ -606,7 +606,7 @@ class oauth extends \phpbb\auth\provider\base
 	*/
 	public function get_register_data()
 	{
-		$redirect_url_base = build_url(false) . 'register=oauth&agreed=1&register_mode=external&oauth_service=';
+		$redirect_url_base = build_url(false) . '&register=oauth&agreed=1&register_mode=external&oauth_service=';
 		$register_data = $this->get_base_data($redirect_url_base);
 		$register_data['TEMPLATE_FILE'] = 'ucp_register_mode_select_oauth.html';
 
