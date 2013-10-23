@@ -218,6 +218,10 @@ ul.cplist {
 
 /* Responsive tabs
 ----------------------------------------*/
+.responsive-tab {
+	position: relative;
+}
+
 .responsive-tab .responsive-tab-link span {
 	display: inline-block;
 	font-size: 16px;
@@ -251,29 +255,25 @@ ul.cplist {
 	position: relative;
 }
 
-#tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {
-	position: absolute;
-	right: 0;
-	top: 26px;
-	z-index: 2;
-	border: 1px solid transparent;
-	border-radius: 5px;
+#tabs .dropdown, #minitabs .dropdown {
+	top: 29px;
+	margin-right: -1px;
 }
 
-#minitabs ul.responsive-tabs {
-	top: 23px;
+#tabs .dropdown-up .dropdown, #minitabs .dropdown-up .dropdown {
+	bottom: -5px;
+	top: auto;
 }
 
-.tabs-container #minitabs ul.responsive-tabs {
-	right: auto;
-	left: 0;
+#tabs .dropdown-right .dropdown, #minitabs .dropdown-right .dropdown {
+	margin-left: -41px;
 }
 
-#tabs .responsive-tabs li, #minitabs .responsive-tabs li {
+#tabs .dropdown li, #minitabs .dropdown li {
 	display: block !important;
 }
 
-#tabs .responsive-tabs a, #tabs .responsive-tabs a span, #minitabs .responsive-tabs a, #minitabs .responsive-tabs a span {
+#tabs .dropdown a, #tabs .dropdown a span, #minitabs .dropdown a, #minitabs .dropdown a span {
 	background: transparent;
 	float: none;
 	margin: 0;
@@ -281,13 +281,15 @@ ul.cplist {
 	text-align: right;
 }
 
-.tabs-container #minitabs .responsive-tabs a span {
+.tabs-container #minitabs .dropdown a span {
 	text-align: left;
 }
 
-#tabs .responsive-tabs a span, #minitabs .responsive-tabs a span {
-	padding: 5px;
+#tabs .dropdown a span, #minitabs .dropdown a span {
+	padding: 5px 8px;
+	color: inherit !important;
 }
+
 
 /* UCP navigation menu
 ----------------------------------------*/

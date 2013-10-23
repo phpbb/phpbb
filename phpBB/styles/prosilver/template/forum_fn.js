@@ -410,6 +410,83 @@ function insert_single_user(formId, user)
 }
 
 /**
+* Dropdown handler
+* Shows/hides dropdown, decides which side to open to
+*
+* @param [jQuery] toggle Link that toggles dropdown
+* @param [jQuery] dropdown Dropdown menu
+* @param [Object] [options] List of options
+*/
+function toggle_dropdown()
+{
+	var $this = $(this),
+		options = $this.data('dropdown-options'),
+		parent = options.parent,
+		visible = parent.hasClass('dropdown-visible');
+
+	if (!visible) {
+		// Hide other dropdown menus
+		$('.dropdown-container.dropdown-visible .dropdown-toggle').each(toggle_dropdown);
+
+		// Figure out direction of dropdown
+		var direction = options.direction,
+			verticalDirection = options.verticalDirection,
+			offset = $this.offset();
+
+		if (direction == 'auto') {
+			if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
+				direction = 'right';
+			}
+			else {
+				direction = 'left';
+			}
+		}
+		parent.toggleClass(options.leftClass, direction == 'left').toggleClass(options.rightClass, direction == 'right');
+
+		if (verticalDirection == 'auto') {
+			var height = $(window).height(),
+				top = offset.top - $(window).scrollTop();
+
+			if (top < height * 0.7) {
+				verticalDirection = 'down';
+			}
+			else {
+				verticalDirection = 'up';
+			}
+		}
+		parent.toggleClass(options.upClass, verticalDirection == 'up').toggleClass(options.downClass, verticalDirection == 'down');
+	}
+
+	options.dropdown.toggle();
+	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
+}
+
+function register_dropdown(toggle, dropdown, options)
+{
+	var ops = {
+			parent: toggle.parent(), // Parent item to add classes to
+			direction: 'auto', // Direction of dropdown menu. Possible values: auto, left, right
+			verticalDirection: 'auto', // Vertical direction. Possible values: auto, up, down
+			visibleClass: 'visible', // Class to add to parent item when dropdown is visible
+			leftClass: 'dropdown-left', // Class to add to parent item when dropdown opens to left side
+			rightClass: 'dropdown-right', // Class to add to parent item when dropdown opens to right side
+			upClass: 'dropdown-up', // Class to add to parent item when dropdown opens above menu item
+			downClass: 'dropdown-down' // Class to add to parent item when dropdown opens below menu item
+		};
+	if (options) {
+		ops = $.extend(ops, options);
+	}
+	ops.dropdown = dropdown;
+
+	ops.parent.addClass('dropdown-container');
+	toggle.addClass('dropdown-toggle');
+
+	toggle.data('dropdown-options', ops);
+
+	toggle.click(toggle_dropdown);
+}
+
+/**
 * Parse document block
 */
 function parse_document(container) 
@@ -730,7 +807,7 @@ function parse_document(container)
 			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
-			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="popup-pointer" style="display: none;"><div class="popup-pointer-inner" /></div><ul class="responsive-popup" style="display:none;" /></li>',
+			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
 			filterLastList = links.filter(filterLast);
 
 		if (links.is('.rightside'))
@@ -742,10 +819,8 @@ function parse_document(container)
 			$this.append(html);
 		}
 
-		var toggle = $this.children('.responsive-menu'),
-			toggleLink = toggle.find('a.responsive-menu-link'),
-			menu = toggle.find('ul.responsive-popup'),
-			toggleItems = toggle.find('ul.responsive-popup, div.popup-pointer'),
+		var item = $this.children('.responsive-menu'),
+			menu = item.find('.dropdown-contents'),
 			lastWidth = false,
 			compact = false,
 			responsive = false,
@@ -762,7 +837,7 @@ function parse_document(container)
 				responsive = false;
 				$this.removeClass('responsive');
 				links.css('display', '');
-				toggle.css('display', 'none');
+				item.css('display', 'none');
 			}
 
 			if (compact) {
@@ -774,7 +849,6 @@ function parse_document(container)
 			var maxHeight = 0;
 			allLinks.each(function() {
 				if (!$(this).height()) return;
-				$(this).attr('data-height', $(this).outerHeight(true));
 				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 			});
 
@@ -784,8 +858,6 @@ function parse_document(container)
 
 			// Nothing to resize if block's height is not bigger than tallest element's height
 			if ($this.height() <= maxHeight) {
-				toggle.removeClass('visible');
-				toggleItems.hide();
 				return;
 			}
 
@@ -800,8 +872,6 @@ function parse_document(container)
 			});
 
 			if ($this.height() <= maxHeight) {
-				toggle.removeClass('visible');
-				toggleItems.hide();
 				return;
 			}
 
@@ -811,9 +881,6 @@ function parse_document(container)
 			responsive = true;
 
 			if (!copied) {
-				if (menu.parents().is('.rightside')) {
-					toggle.addClass('responsive-rightside');
-				}
 				menu.append(links.clone(true));
 				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
 				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
@@ -823,7 +890,7 @@ function parse_document(container)
 				menu.children().css('display', '');
 			}
 
-			toggle.css('display', '');
+			item.css('display', '');
 			$this.addClass('responsive');
 
 			// Try to not hide filtered items
@@ -845,15 +912,7 @@ function parse_document(container)
 			links.css('display', 'none');
 		}
 
-		toggleLink.click(function() {
-			if (!responsive) return;
-			if (!toggle.hasClass('visible')) {
-				// Hide other popups
-				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup, .popup-pointer').hide();
-			}
-			toggle.toggleClass('visible');
-			toggleItems.toggle();
-		});
+		register_dropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
 
 		check();
 		$(window).resize(check);
@@ -868,9 +927,8 @@ function parse_document(container)
 			ul = $this.children(),
 			tabs = ul.children().not('[data-skip-responsive]'),
 			links = tabs.children('a'),
-			toggle = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><ul class="responsive-tabs" style="display:none;" /></li>').find('li.responsive-tab'),
-			toggleLink = toggle.find('a.responsive-tab-link'),
-			menu = toggle.find('ul.responsive-tabs'),
+			item = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
+			menu = item.find('.dropdown-contents'),
 			maxHeight = 0,
 			lastWidth = false,
 			responsive = false;
@@ -888,18 +946,21 @@ function parse_document(container)
 			}
 
 			tabs.show();
-			toggle.hide();
+			item.hide();
 
 			lastWidth = width;
 			height = $this.height();
 			if (height <= maxHeight) {
 				responsive = false;
+				if (item.hasClass('dropdown-visible')) {
+					toggle_dropdown.call(item.find('a.responsive-tab-link').get(0));
+				}
 				return;
 			}
 
 			responsive = true;
-			toggle.show();
-			menu.hide().html('');
+			item.show();
+			menu.html('');
 
 			var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
 				total = availableTabs.length,
@@ -917,10 +978,7 @@ function parse_document(container)
 			menu.find('a').click(function() { check(true); });
 		}
 
-		toggleLink.click(function() {
-			if (!responsive) return;
-			menu.toggle();
-		});
+		register_dropdown(item.find('a.responsive-tab-link'), item.find('.dropdown'), {visibleClass: 'activetab'});
 
 		check(true);
 		$(window).resize(check);
@@ -951,14 +1009,12 @@ function parse_document(container)
 			$('#' + this.getAttribute('data-focus')).focus();
 		});
 
-		// Hide responsive menu and tabs
+		// Hide active dropdowns when click event happens outside
 		$('#phpbb').click(function(e) {
+
 			var parents = $(e.target).parents();
-			if (!parents.is('.responsive-menu.visible')) {
-				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup, .popup-pointer').hide();
-			}
-			if (!parents.is('.responsive-tab')) {
-				$('.responsive-tabs').hide();
+			if (!parents.is('.dropdown-container.dropdown-visible')) {
+				$('.dropdown-container.dropdown-visible .dropdown-toggle').each(toggle_dropdown);
 			}
 		});
 

@@ -102,38 +102,40 @@
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
 				<li class="icon-notification" data-skip-responsive="true">
 					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
-					<div id="notification_list" class="notification_list">
-						<div class="popup-pointer"><div class="popup-pointer-inner"></div></div>
-						<div class="header">
-							{L_NOTIFICATIONS}
-							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
-						</div>
+					<div id="notification_list" class="dropdown notification_list">
+						<div class="pointer"><div class="pointer-inner"></div></div>
+						<div class="dropdown-contents">
+							<div class="header">
+								{L_NOTIFICATIONS}
+								<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+							</div>
 
-						<ul>
-							<!-- IF not .notifications -->
-								<li>
-									{L_NO_NOTIFICATIONS}
-								</li>
-							<!-- ENDIF -->
-							<!-- BEGIN notifications -->
-								<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
-									<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
-										<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
-										<div class="notification_text">
-											<p>{notifications.FORMATTED_TITLE}</p>
-											<p>&raquo; {notifications.TIME}</p>
+							<ul>
+								<!-- IF not .notifications -->
+									<li>
+										{L_NO_NOTIFICATIONS}
+									</li>
+								<!-- ENDIF -->
+								<!-- BEGIN notifications -->
+									<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+										<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+											<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+											<div class="notification_text">
+												<p>{notifications.FORMATTED_TITLE}</p>
+												<p>&raquo; {notifications.TIME}</p>
 
-											<!-- IF not notifications.URL and notifications.U_MARK_READ -->
-												<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
-											<!-- ENDIF -->
-										</div>
-									<!-- IF notifications.URL --></a><!-- ENDIF -->
-								</li>
-				   			<!-- END notifications -->
-						</ul>
+												<!-- IF not notifications.URL and notifications.U_MARK_READ -->
+													<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
+												<!-- ENDIF -->
+											</div>
+										<!-- IF notifications.URL --></a><!-- ENDIF -->
+									</li>
+					   			<!-- END notifications -->
+							</ul>
 
-						<div class="footer">
-							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+							<div class="footer">
+								<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+							</div>
 						</div>
 					</div>
 				</li>
