@@ -1,0 +1,22 @@
+services:
+    mimetype.FileinfoMimeTypeGuesser:
+        class: Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser
+        tags:
+            - { name: mimetype.guessers }
+
+    mimetype.FileBinaryMimeTypeGuesser:
+        class: Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser
+        tags:
+            - { name: mimetype.guessers }
+
+    mimetype.guesser_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: mimetype.guessers }
+
+    mimetype.guesser:
+        class: phpbb\mimetype\guesser
+        arguments:
+            - @mimetype.guesser_collection
