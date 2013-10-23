@@ -540,6 +540,15 @@ function phpbb_user_id($user_id)
 	return (int) $user_id;
 }
 
+/**
+* Return correct user id value
+* Everyone's id will be one higher to allow the guest/anonymous user to have a positive id as well
+*/
+function phpbb_topic_replies_to_posts($num_replies)
+{
+	return (int) $num_replies + 1;
+}
+
 /* Copy additional table fields from old forum to new forum if user wants this (for Mod compatibility for example)
 function phpbb_copy_table_fields()
 {
