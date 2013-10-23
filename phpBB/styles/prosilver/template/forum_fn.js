@@ -471,7 +471,7 @@ function parse_document(container)
 	/**
 	* Makes breadcrumbs responsive
 	*/
-	container.find('.breadcrumbs:not(.skip-responsive)').each(function() {
+	container.find('.breadcrumbs:not([data-skip-responsive])').each(function() {
 		var $this = $(this),
 			$body = $('body'),
 			links = $this.find('.crumb'),
@@ -723,10 +723,10 @@ function parse_document(container)
 	/**
 	* Responsive link lists
 	*/
-	container.find('.linklist:not(.navlinks, .skip-responsive), .postbody ul.profile-icons:not(.skip-responsive)').each(function() {
+	container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody ul.profile-icons:not([data-skip-responsive])').each(function() {
 		var $this = $(this),
 			$body = $('body'),
-			filterSkip = '.breadcrumbs, .skip-responsive',
+			filterSkip = '.breadcrumbs, [data-skip-responsive]',
 			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
@@ -862,11 +862,11 @@ function parse_document(container)
 	/**
 	* Responsive tabs
 	*/
-	container.find('#tabs, #minitabs').not('.skip-responsive').each(function() {
+	container.find('#tabs, #minitabs').not('[data-skip-responsive]').each(function() {
 		var $this = $(this),
 			$body = $('body'),
 			ul = $this.children(),
-			tabs = ul.children().not('.skip-responsive'),
+			tabs = ul.children().not('[data-skip-responsive]'),
 			links = tabs.children('a'),
 			toggle = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><ul class="responsive-tabs" style="display:none;" /></li>').find('li.responsive-tab'),
 			toggleLink = toggle.find('a.responsive-tab-link'),
