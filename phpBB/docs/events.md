@@ -124,12 +124,16 @@ overall_header_head_append
 
 overall_header_navigation_append
 ===
-* Location: styles/prosilver/template/overall_header.html
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
 * Purpose: Add links after the navigation links in the header
 
 overall_header_navigation_prepend
 ===
-* Location: styles/prosilver/template/overall_header.html
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
 * Purpose: Add links before the navigation links in the header
 
 posting_editor_options_prepend
