@@ -409,14 +409,6 @@ function insert_single_user(formId, user)
 	self.close();
 }
 
-/**
-* Dropdown handler
-* Shows/hides dropdown, decides which side to open to
-*
-* @param [jQuery] toggle Link that toggles dropdown
-* @param [jQuery] dropdown Dropdown menu
-* @param [Object] [options] List of options
-*/
 function toggle_dropdown()
 {
 	var $this = $(this),
@@ -461,6 +453,14 @@ function toggle_dropdown()
 	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
 }
 
+/**
+* Dropdown handler
+* Shows/hides dropdown, decides which side to open to
+*
+* @param [jQuery] toggle Link that toggles dropdown
+* @param [jQuery] dropdown Dropdown menu
+* @param [Object] [options] List of options
+*/
 function register_dropdown(toggle, dropdown, options)
 {
 	var ops = {
