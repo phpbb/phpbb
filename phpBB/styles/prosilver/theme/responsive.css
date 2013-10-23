@@ -178,6 +178,14 @@ li.row .responsive-show strong {
 	color: inherit;
 }
 
+ul.topiclist li.row dt a.subforum {
+	display: inline-block;
+	vertical-align: bottom;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100px;
+}
+
 /* Notifications list
 ----------------------------------------*/
 @media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
