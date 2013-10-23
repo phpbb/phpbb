@@ -62,6 +62,47 @@ function phpbb_plupload_clear_params(obj) {
 	}
 }
 
+/**
+ * Update hidden attachment inputs in posting form
+ * Pre-existing hidden inputs will be removed by comparing the old attachment
+ * data (old_data) to the new attachment data (data) that has been sent back
+ * by plupload.
+ *
+ * @param object form Posting form
+ * @param object data Current attachment_data
+ * @param object old_date Previous attachment_data (before submission)
+ *
+ * @return void
+ */
+phpbb.update_hidden_attachment_inputs = function(form, data, old_data) {
+	// Update already existing hidden inputs
+	for (var i = 0; i < form.length; i++) {
+		if (data.hasOwnProperty(form[i].name)) {
+			form[i].value = data[form[i].name];
+			delete data[form[i].name];
+		} else if (typeof old_data !== 'undefined' && old_data.hasOwnProperty(form[i].name)) {
+			var inputRegex = /\b^[a-z_]+[+[0-9]+]/;
+			var inputName = inputRegex.exec(form[i].name);
+			if (typeof inputName !== 'undefined' && inputName[0] !== '') {
+				$("input[type='hidden'][name^='" + inputName[0] + "']").remove();
+			}
+		}
+	}
+
+	// Append new inputs
+	for (var key in data) {
+		if (!data.hasOwnProperty(key)) {
+			continue;
+		}
+
+		var input = $('<input />')
+			.attr('type', 'hidden')
+			.attr('name', key)
+			.attr('value', data[key]);
+		$(form).append(input);
+	}
+}
+
 jQuery(function($) {
 	$(phpbb.plupload.config.element_hook).pluploadQueue(phpbb.plupload.config);
 	var uploader = $(phpbb.plupload.config.element_hook).pluploadQueue();
@@ -208,26 +249,7 @@ jQuery(function($) {
 		var form = $(phpbb.plupload.config.form_hook)[0];
 		var data = phpbb_plupload_attachment_data_serialize();
 
-		// Update already existing hidden inputs
-		for (var i = 0; i < form.length; i++) {
-			if (data.hasOwnProperty(form[i].name)) {
-				form[i].value = data[form[i].name];
-				delete data[form[i].name];
-			}
-		}
-
-		// Append new inputs
-		for (var key in data) {
-			if (!data.hasOwnProperty(key)) {
-				continue;
-			}
-
-			var input = $('<input />')
-				.attr('type', 'hidden')
-				.attr('name', key)
-				.attr('value', data[key]);
-			$(form).append(input);
-		}
+		phpbb.update_hidden_attachment_inputs(form, data);
 
 		files.forEach(function(file) {
 			if (file.status !== plupload.DONE) {
@@ -257,6 +279,7 @@ jQuery(function($) {
 				var done = function(response) {
 					up.removeFile(file);
 					plupload.attachment_data = response;
+					phpbb.update_hidden_attachment_inputs(form, phpbb_plupload_attachment_data_serialize(), data);
 					phpbb_plupload_clear_params(up.settings.multipart_params);
 					up.settings.multipart_params = $.extend(
 						up.settings.multipart_params,
