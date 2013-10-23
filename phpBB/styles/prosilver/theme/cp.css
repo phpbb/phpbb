@@ -105,6 +105,7 @@ ul.cplist {
 .tabs-container #minitabs {
 	float: right;
 	margin-top: 19px;
+	max-width: 50%;
 }
 
 .tabs-container:after {

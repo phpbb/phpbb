@@ -934,7 +934,8 @@ function parse_document(container)
 			responsive = false;
 
 		links.each(function() {
-			maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+			var link = $(this);
+			maxHeight = Math.max(maxHeight, Math.max(link.outerHeight(true), link.parent().outerHeight(true)));
 		})
 
 		function check() {
