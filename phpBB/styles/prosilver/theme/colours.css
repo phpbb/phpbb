@@ -889,6 +889,13 @@ ul.cplist {
 	color: #D31141;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#navigation a, .rtl #navigation a {
+		background-image: none;
+	}
+}
+
 /* Preferences pane layout
 ----------------------------------------*/
 #cp-main h2 {
