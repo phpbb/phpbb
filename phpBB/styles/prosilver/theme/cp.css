@@ -260,9 +260,17 @@ ul.cplist {
 	margin-right: -1px;
 }
 
+#minitabs .dropdown {
+	top: 18px;
+}
+
 #tabs .dropdown-up .dropdown, #minitabs .dropdown-up .dropdown {
 	bottom: -5px;
 	top: auto;
+}
+
+#minitabs .dropdown-up .dropdown {
+	bottom: 18px;
 }
 
 #tabs .dropdown-right .dropdown, #minitabs .dropdown-right .dropdown {
@@ -271,6 +279,12 @@ ul.cplist {
 
 #tabs .dropdown li, #minitabs .dropdown li {
 	display: block !important;
+	background: transparent none;
+	padding: 0;
+}
+
+.tabs-container #minitabs .dropdown a span {
+	display: block;
 }
 
 #tabs .dropdown a, #tabs .dropdown a span, #minitabs .dropdown a, #minitabs .dropdown a span {

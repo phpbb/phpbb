@@ -844,7 +844,7 @@ ul.cplist {
 	background-color: #F9F9F9;
 }
 
-#minitabs li.activetab a, #minitabs li.activetab a:hover {
+#minitabs li.activetab a span, #minitabs li.activetab a:hover span {
 	color: #333333;
 }
 
@@ -1136,7 +1136,7 @@ input.disabled {
 	border-color: #FFF transparent;
 }
 
-#notification_list .pointer-inner {
+#notification_list .pointer-inner, #minitabs .pointer-inner {
 	border-color: #F1F8FF transparent;
 }
 
@@ -1153,6 +1153,11 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 	border-color: #b9b9b9;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 }
+
 .dropdown-up .dropdown-contents {
 	box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+#minitabs .dropdown-contents {
+	background-color: #F1F8FF;
 }
