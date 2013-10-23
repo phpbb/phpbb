@@ -9,6 +9,14 @@ services:
         tags:
             - { name: mimetype.guessers }
 
+    mimetype.content_guesser:
+        class: phpbb\mimetype\content_guesser
+        arguments:
+            - %core.root_path%
+            - @php_ini
+        tags:
+            - { name: mimetype.guessers }
+
     mimetype.guesser_collection:
         class: phpbb\di\service_collection
         arguments:
