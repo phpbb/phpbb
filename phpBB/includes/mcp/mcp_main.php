@@ -219,7 +219,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
@@ -279,6 +279,15 @@ function lock_unlock($action, $ids)
 		}
 
 		$success_msg = $l_prefix . ((sizeof($ids) == 1) ? '' : 'S') . '_' . (($action == 'lock' || $action == 'lock_post') ? 'LOCKED' : 'UNLOCKED') . '_SUCCESS';
+
+		meta_refresh(2, $redirect);
+		$message = $user->lang[$success_msg];
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+		}
+		trigger_error($message);
 	}
 	else
 	{
@@ -287,16 +296,7 @@ function lock_unlock($action, $ids)
 
 	$redirect = request_var('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
-	}
+	redirect($redirect);
 }
 
 /**
@@ -304,7 +304,7 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	switch ($action)
 	{
@@ -381,6 +381,15 @@ function change_topic_type($action, $topic_ids)
 				add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
 			}
 		}
+
+		meta_refresh(2, $redirect);
+		$message = $user->lang[$success_msg];
+
+		if (!$request->is_ajax())
+		{
+			$message .= $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+		}
+		trigger_error($message);
 	}
 	else
 	{
@@ -389,16 +398,7 @@ function change_topic_type($action, $topic_ids)
 
 	$redirect = request_var('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
-	}
+	redirect($redirect);
 }
 
 /**
