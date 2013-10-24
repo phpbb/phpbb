@@ -15,9 +15,6 @@ var on_page = '{ON_PAGE}';
 var per_page = '{PER_PAGE}';
 var base_url = '{BASE_URL|e('js')}';
 
-var menu_state = 'shown';
-
-
 /**
 * Jump to page
 */
@@ -104,56 +101,6 @@ function popup(url, width, height, name)
 	return false;
 }
 
-/**
-* Hiding/Showing the side menu
-*/
-function switch_menu()
-{
-	var menu = document.getElementById('menu');
-	var main = document.getElementById('main');
-	var toggle = document.getElementById('toggle');
-	var handle = document.getElementById('toggle-handle');
-
-	switch (menu_state)
-	{
-		// hide
-		case 'shown':
-			main.style.width = '93%';
-			menu_state = 'hidden';
-			menu.style.display = 'none';
-			toggle.style.width = '20px';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundRepeat = 'no-repeat';
-
-			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-				handle.style.backgroundPosition = '0% 50%';
-				toggle.style.left = '96%';
-			<!-- ELSE -->
-				handle.style.backgroundPosition = '100% 50%';
-				toggle.style.left = '0';
-			<!-- ENDIF -->
-		break;
-
-		// show
-		case 'hidden':
-			main.style.width = '76%';
-			menu_state = 'shown';
-			menu.style.display = 'block';
-			toggle.style.width = '5%';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundRepeat = 'no-repeat';
-
-			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-				handle.style.backgroundPosition = '100% 50%';
-				toggle.style.left = '75%';
-			<!-- ELSE -->
-				handle.style.backgroundPosition = '0% 50%';
-				toggle.style.left = '15%';
-			<!-- ENDIF -->
-		break;
-	}
-}
-
 // ]]>
 </script>
 <!-- EVENT acp_overall_header_head_append -->
@@ -179,10 +126,6 @@ function switch_menu()
 
 		<div id="acp">
 				<div id="content">
-					<!-- IF not S_USER_NOTICE --> 
-					<div id="toggle">
-						<a id="toggle-handle" accesskey="m" title="{L_MENU_TOGGLE}" onclick="switch_menu(); return false;" href="#"></a></div>
-					<!-- ENDIF -->
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 						<ul>
