@@ -396,6 +396,9 @@ class acp_users
 							{
 								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 								{
+									$phpbb_notifications = $phpbb_container->get('notification_manager');
+									$phpbb_notifications->mark_notifications_read('admin_activate_user', $user_row['user_id'], false);
+
 									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 									$messenger = new messenger(false);

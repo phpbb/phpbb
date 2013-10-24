@@ -27,7 +27,7 @@ class ucp_activate
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $phpbb_container;
 
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
@@ -108,6 +108,9 @@ class ucp_activate
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
+			$phpbb_notifications->mark_notifications_read('admin_activate_user', $user_row['user_id'], false);
+
 			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 			$messenger = new messenger(false);
