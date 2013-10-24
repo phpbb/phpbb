@@ -50,6 +50,15 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 					'avatar_delete'	=> array('tick', ''),
 				),
 			),
+			array(
+				'The URL you specified is invalid.',
+				'avatar_driver_remote',
+				array(
+					'avatar_remote_url'	=> 'https://www.phpbb.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
+					'avatar_remote_width'	=> 80,
+					'avatar_remote_height'	=> 80,
+				),
+			),
 		);
 	}
 
