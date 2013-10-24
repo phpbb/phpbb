@@ -103,6 +103,12 @@ ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:
 	display: none;
 }
 
+.icon-home > span:first-child > a, .icon-notification > a, .icon-pm > a {
+	display: inline-block;
+	margin-left: -17px;
+	padding-left: 17px;
+}
+
 /* Poster profile icons
 ----------------------------------------*/
 ul.profile-icons {
@@ -170,10 +176,16 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	border-top: 0.375em double transparent;
 }
 
-.postbody ul.profile-icons.responsive .responsive-popup {
+.postbody ul.profile-icons.responsive .popup-pointer {
 	left: auto;
 	right: 7px;
-	top: 19px;
+	top: 20px;
+}
+
+.postbody ul.profile-icons.responsive .responsive-popup {
+	left: auto;
+	right: -4px;
+	top: 30px;
 }
 
 .postbody ul.profile-icons.responsive .responsive-popup li, .postbody ul.profile-icons.responsive .responsive-popup li a {

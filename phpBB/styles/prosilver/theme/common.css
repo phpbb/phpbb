@@ -361,12 +361,14 @@ ul.rightside {
 	text-align: right;
 }
 
-ul.linklist.responsive {
+ul.linklist li.responsive-menu {
 	position: relative;
+	margin: 0 5px;
 }
 
 ul.linklist li.responsive-menu a.responsive-menu-link {
 	display: inline-block;
+	margin: 0 5px;
 	font-size: 16px;
 	position: relative;
 	width: 16px;
@@ -393,6 +395,24 @@ ul.linklist li.responsive-menu a.responsive-menu-link:before {
 	max-width: none;
 }
 
+li.responsive-menu.dropdown-right .dropdown {
+	left: -9px;
+}
+
+li.responsive-menu.dropdown-left .dropdown {
+	right: -6px;
+}
+
+li.responsive-menu .dropdown .dropdown-contents {
+	padding: 0 5px;
+}
+
+ul.linklist .dropdown li {
+	clear: both;
+}
+
+
+
 /* Bulletin icons for list items
 ----------------------------------------*/
 ul.linklist.bulletin li:before {
@@ -415,57 +435,123 @@ ul.linklist.bulletin li.no-bulletin:before {
 	display: none !important;
 }
 
-/* Responsive popup
+/* Dropdown menu
 ----------------------------------------*/
-ul.responsive-popup {
+.dropdown {
 	position: absolute;
 	left: 0;
-	top: 24px;
+	top: 22px;
 	z-index: 2;
 	border: 1px solid transparent;
 	border-radius: 5px;
-	padding: 5px;
+	padding: 9px 0 0;
 }
 
-ul.responsive-popup.responsive-rightside {
+.dropdown-up .dropdown {
+	top: auto;
+	bottom: 18px;
+	padding: 0 0 9px;
+}
+
+.dropdown-left .dropdown {
 	left: auto;
 	right: 0;
 }
 
-ul.responsive-popup li {
+
+.dropdown .pointer, .dropdown .pointer-inner {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top-width: 0;
+	border-bottom: 10px solid transparent;
+	border-left: 10px dashed transparent;
+	border-right: 10px dashed transparent;
+	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	display: block;
+}
+
+.dropdown-up .pointer, .dropdown-up .pointer-inner {
+	border-bottom-width: 0;
+	border-top: 10px solid transparent;
+}
+
+.dropdown .pointer {
+	right: auto;
+	left: 10px;
+	top: 0;
+	z-index: 3;
+}
+
+.dropdown-up .pointer {
+	bottom: 0;
+	top: auto;
+}
+
+.dropdown-left .dropdown .pointer {
+	left: auto;
+	right: 10px;
+}
+
+.dropdown .pointer-inner {
+	top: auto;
+	bottom: -11px;
+	left: -10px;
+}
+
+.dropdown-up .pointer-inner {
+	bottom: auto;
+	top: -11px;
+}
+
+.dropdown .dropdown-contents {
+	z-index: 2;
+	overflow: hidden;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding: 5px;
+	position: relative;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.dropdown li {
 	float: none;
 	margin: 0;
 	white-space: nowrap;
 	text-align: left;
 }
 
-.wrap ul.responsive-popup li {
+.wrap .dropdown li, .dropdown.wrap li {
 	white-space: normal;
 }
 
-ul.responsive-popup li:before, ul.responsive-popup li:after {
+.dropdown li:before, .dropdown li:after {
 	display: none !important;
 }
 
 /* Responsive breadcrumbs
 ----------------------------------------*/
-.breadcrumbs .crumb {
+.breadcrumbs .crumb a {
 	display: inline-block;
 	vertical-align: bottom;
 }
 
-.breadcrumbs.wrapped .crumb {
-	letter-spacing: -.5px;
-}
+.breadcrumbs.wrapped .crumb a { letter-spacing: -.3px; }
+.breadcrumbs.wrapped .crumb.wrapped-medium a { letter-spacing: -.4px; }
+.breadcrumbs.wrapped .crumb.wrapped-tiny a { letter-spacing: -.5px; }
 
-.breadcrumbs .crumb.wrapped {
+.breadcrumbs .crumb.wrapped a {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-.breadcrumbs .crumb.wrapped-wide { max-width: 120px; }
-.breadcrumbs .crumb.wrapped-medium { max-width: 80px; }
-.breadcrumbs .crumb.wrapped-small { max-width: 30px; }
+.breadcrumbs .crumb.wrapped-max a { max-width: 120px; }
+.breadcrumbs .crumb.wrapped-wide a { max-width: 100px; }
+.breadcrumbs .crumb.wrapped-medium a { max-width: 80px; }
+.breadcrumbs .crumb.wrapped-small a { max-width: 60px; }
+.breadcrumbs .crumb.wrapped-tiny a { max-width: 40px; }
 
 /* Table styles
 ----------------------------------------*/
@@ -643,7 +729,7 @@ li.pagination ul {
 	line-height: normal;
 }
 
-.pagination li a, .pagnation li span, li .pagination li a, li .pagnation li span, .pagination li.active span, .pagination li.ellipsis span {
+.pagination li a, .pagnation li span, li .pagination li a, li .pagination li span, .pagination li.active span, .pagination li.ellipsis span {
 	font-weight: normal;
 	text-decoration: none;
 	padding: 0 2px;
@@ -670,11 +756,20 @@ li.pagination ul {
 	position: fixed;
 	display: none;
 	top: 150px;
-	left: 25%;
-	width: 50%;
+	left: 0;
+	right: 0;
+	max-width: 640px;
+	margin: 0 auto;
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
+}
+
+@media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
+{
+	.phpbb_alert {
+		top: 25px;
+	}
 }
 
 .phpbb_alert .alert_close {
@@ -823,10 +918,7 @@ form > p.post-notice strong {
 	left: 0;
 	width: 330px;
 	z-index: 1;
-	border: 1px solid;
-	box-shadow: 3px 3px 5px darkgray;
-	border-radius: 5px;
-	top: 32px;
+	top: 22px;
 }
 
 #notification_list ul {
@@ -850,7 +942,11 @@ form > p.post-notice strong {
 	display: none;
 }
 
-#notification_list > .header {
+#notification_list .dropdown-contents {
+	padding: 0;
+}
+
+#notification_list .header {
 	padding: 0 10px;
 	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 11px;
@@ -862,18 +958,18 @@ form > p.post-notice strong {
 	border-radius: 5px 5px 0 0;
 }
 
-#notification_list > .header > .header_settings {
+#notification_list .header .header_settings {
 	float: right;
 	font-weight: normal;
 	text-transform: none;
 }
 
-#notification_list > .footer {
+#notification_list .footer {
 	text-align: center;
 	font-size: 1.2em;
 }
 
-#notification_list ul li a, .notification_list dt > a, #notification_list > .footer > a {
+#notification_list ul li a, .notification_list dt > a, #notification_list .footer > a {
 	display: block;
 	text-decoration: none;
 }
@@ -888,30 +984,6 @@ form > p.post-notice strong {
 
 .notification_list ul li p {
 	margin: 0;
-}
-
-.notification_list .pointer, .notification_list .pointer_inner {
-	position: absolute;
-	width: 0;
-	height: 0;
-	border-top-width: 0;
-	border-bottom: 10px solid;
-	border-left: 10px dashed transparent;
-	border-right: 10px dashed transparent;
-	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
-	display: block;
-}
-
-.notification_list .pointer {
-	right: auto;
-	left: 10px;
-	top: -11px;
-}
-
-.notification_list .pointer_inner {
-	top: auto;
-	bottom: -11px;
-	left: -10px;
 }
 
 .notification_list div.notifications {

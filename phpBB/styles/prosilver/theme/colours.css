@@ -844,7 +844,7 @@ ul.cplist {
 	background-color: #F9F9F9;
 }
 
-#minitabs li.activetab a, #minitabs li.activetab a:hover {
+#minitabs li.activetab a span, #minitabs li.activetab a:hover span {
 	color: #333333;
 }
 
@@ -887,6 +887,13 @@ ul.cplist {
 
 #navigation #active-subsection a:hover {
 	color: #D31141;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#navigation a, .rtl #navigation a {
+		background-image: none;
+	}
 }
 
 /* Preferences pane layout
@@ -1097,11 +1104,6 @@ input.disabled {
 	background-color: #000000;
 }
 
-#notification_list {
-	background-color: #FFFFFF;
-	border-color: #B9B9B9;
-}
-
 #notification_list ul li {
 	border-bottom-color: #B9B9B9;
 }
@@ -1111,12 +1113,12 @@ input.disabled {
 	color: #000000;
 }
 
-#notification_list > .header, .notification_list > .footer {
+#notification_list .header, .notification_list .footer {
 	border-color: #B9B9B9;
 	color: #000000;
 }
 
-#notification_list > .header {
+#notification_list .header {
 	background: #F1F8FF;
 	background: -moz-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F1F8FF), color-stop(100%, #CADCEB));
@@ -1126,33 +1128,36 @@ input.disabled {
 	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
 }
 
-.notification_list .pointer {
-	border-bottom-color: #B9B9B9;
+.dropdown .pointer {
+	border-color: #B9B9B9 transparent;
 }
 
-.notification_list .pointer_inner {
-	border-bottom-color: #F1F8FF;
+.dropdown .pointer-inner {
+	border-color: #FFF transparent;
+}
+
+#notification_list .pointer-inner, #minitabs .pointer-inner {
+	border-color: #F1F8FF transparent;
 }
 
 ul.linklist li.responsive-menu a.responsive-menu-link:before {
 	border-color: #105289;
 }
 
-ul.linklist li.responsive-menu a.responsive-menu-link:hover:before {
+ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist li.responsive-menu.visible a.responsive-menu-link:before {
 	border-color: #D31141;
 }
 
-ul.responsive-popup {
+.dropdown .dropdown-contents {
 	background: #fff;
 	border-color: #b9b9b9;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 }
-.navbar ul.responsive-popup {
-	background-color: #CADCEB;
+
+.dropdown-up .dropdown-contents {
+	box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
 }
 
-#tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {
-	background: #ddedfb;
-	border-color: #c0c9d5;
-	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.4);
+#minitabs .dropdown-contents {
+	background-color: #F1F8FF;
 }
