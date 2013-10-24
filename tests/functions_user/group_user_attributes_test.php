@@ -27,7 +27,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 				2,
 				array(
 					'group_avatar'	=> '',
-					'group_avatar_type'		=> 0,
+					'group_avatar_type'		=> '',
 					'group_avatar_height'	=> 0,
 					'group_avatar_width'	=> 0,
 					'group_rank'	=> 0,
@@ -43,7 +43,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 				2,
 				array(
 					'group_avatar'	=> '',
-					'group_avatar_type'		=> 0,
+					'group_avatar_type'		=> '',
 					'group_avatar_height'	=> 0,
 					'group_avatar_width'	=> 0,
 					'group_rank'	=> 0,
@@ -59,7 +59,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 				2,
 				array(
 					'group_avatar'	=> '',
-					'group_avatar_type'		=> 0,
+					'group_avatar_type'		=> '',
 					'group_avatar_height'	=> 0,
 					'group_avatar_width'	=> 0,
 					'group_rank'	=> 0,
@@ -75,7 +75,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 				3,
 				array(
 					'group_avatar'	=> 'default2',
-					'group_avatar_type'		=> 1,
+					'group_avatar_type'		=> 'avatar.driver.upload',
 					'group_avatar_height'	=> 1,
 					'group_avatar_width'	=> 1,
 					'group_rank'	=> 3,
@@ -91,7 +91,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 				3,
 				array(
 					'group_avatar'	=> 'default2',
-					'group_avatar_type'		=> 1,
+					'group_avatar_type'		=> 'avatar.driver.upload',
 					'group_avatar_height'	=> 1,
 					'group_avatar_width'	=> 1,
 					'group_rank'	=> 3,
@@ -107,7 +107,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 				3,
 				array(
 					'group_avatar'	=> 'default2',
-					'group_avatar_type'		=> 1,
+					'group_avatar_type'		=> 'avatar.driver.upload',
 					'group_avatar_height'	=> 1,
 					'group_avatar_width'	=> 1,
 					'group_rank'	=> 3,
