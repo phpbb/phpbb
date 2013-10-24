@@ -452,7 +452,7 @@ class content_guesser
 		'xif'		=> 'image/vnd.xiff',
 		'xl'		=> 'application/excel',
 		'xla'		=> 'application/excel',
-		'xlb'		=> 'application/excel',,
+		'xlb'		=> 'application/excel',
 		'xlc'		=> 'application/excel',
 		'xld'		=> 'application/excel',
 		'xlk'		=> 'application/excel',
