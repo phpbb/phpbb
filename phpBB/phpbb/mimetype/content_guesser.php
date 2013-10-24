@@ -24,16 +24,6 @@ if (!defined('IN_PHPBB'))
 class content_guesser
 {
 	/**
-	* @var phpbb_root_path
-	*/
-	protected $phpbb_root_path;
-
-	/**
-	* @var \phpbb\php\ini
-	*/
-	protected $php_ini;
-
-	/**
 	* @var file extension map
 	*/
 	protected $extension_map = array(
@@ -488,24 +478,7 @@ class content_guesser
 	);
 
 	/**
-	* @const mime_magic_file
-	*/
-	const mime_magic_file = 'phpbb/mimetype/fixture/magic.mgc';
-
-	/**
-	* Construct a content_guesser object
-	*
-	* @param string $phpbb_root_path phpBB root path
-	* @param \phpbb\php\ini $php_ini
-	*/
-	public function __construct($phpbb_root_path, \phpbb\php\ini $php_ini)
-	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ini = $php_ini;
-	}
-
-	/**
-	*
+	* @inheritdoc
 	*/
 	public function is_supported()
 	{

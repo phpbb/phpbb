@@ -11,9 +11,6 @@ services:
 
     mimetype.content_guesser:
         class: phpbb\mimetype\content_guesser
-        arguments:
-            - %core.root_path%
-            - @php_ini
         tags:
             - { name: mimetype.guessers }
 
