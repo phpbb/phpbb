@@ -451,6 +451,31 @@ function toggle_dropdown()
 
 	options.dropdown.toggle();
 	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
+
+	// Check dimensions when showing dropdown
+	// !visible because variable shows state of dropdown before it was toggled
+	if (!visible) {
+		options.dropdown.find('.dropdown-contents').each(function() {
+			var $this = $(this),
+				windowWidth = $(window).width();
+
+			$this.css({
+				marginLeft: 0,
+				left: 0,
+				maxWidth: (windowWidth - 4) + 'px'
+			});
+
+			var offset = $this.offset().left,
+				width = $this.outerWidth(true);
+
+			if (offset < 2) {
+				$this.css('left', (2 - offset) + 'px');
+			}
+			else if ((offset + width + 2) > windowWidth) {
+				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
+			}
+		});
+	}
 }
 
 /**

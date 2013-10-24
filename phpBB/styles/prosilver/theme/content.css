@@ -516,6 +516,7 @@ blockquote .codebox {
 	padding: 6px;
 	border: 1px dashed transparent;
 	clear: left;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
