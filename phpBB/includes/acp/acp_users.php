@@ -1742,7 +1742,7 @@ class acp_users
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = \phpbb\avatar\manager::clean_row($user_row);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user_row, 'user');
 
 					if ($submit)
 					{

@@ -178,14 +178,15 @@ class manager
 	}
 
 	/**
-	* Strip out user_ and group_ prefixes from keys
+	* Strip out user_, group_, or other prefixes from array keys
 	*
 	* @param array	$row User data or group data
+	* @param string $prefix Prefix of data keys
 	*
 	* @return array User data or group data with keys that have been
 	*        stripped from the preceding "user_" or "group_"
 	*/
-	static public function clean_row($row)
+	static public function clean_row($row, $prefix = '')
 	{
 		// Upon creation of a user/group $row might be empty
 		if (empty($row))
@@ -196,7 +197,7 @@ class manager
 		$keys = array_keys($row);
 		$values = array_values($row);
 
-		$keys = array_map(array('\phpbb\avatar\manager', 'strip_prefix'), $keys);
+		array_walk($keys, array('\phpbb\avatar\manager', 'strip_prefix'), $prefix);
 
 		return array_combine($keys, $values);
 	}
@@ -205,11 +206,12 @@ class manager
 	* Strip prepending user_ or group_ prefix from key
 	*
 	* @param string Array key
-	* @return string Key that has been stripped from its prefix
+	* @return void
 	*/
-	static protected function strip_prefix($key)
+	static protected function strip_prefix(&$key, $null, $prefix)
 	{
-		return preg_replace('#^(?:user_|group_)#', '', $key);
+		$regex = ($prefix !== '') ? "#^(?:{$prefix}_)#" : '#^(?:user_|group_)#';
+		$key = preg_replace($regex, '', $key);
 	}
 
 	/**

@@ -201,20 +201,58 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 					'foobar_avatar_height'	=> '',
 				),
 			),
+			array(
+				array(
+					'user_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
+				),
+				array(
+					'avatar'	=> '',
+					'id'		=> 4,
+				),
+			),
+			array(
+				array(
+					'user_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
+				),
+				array(
+					'avatar'	=> '',
+					'id'		=> 5,
+					'group_id'	=> 4,
+				),
+				'user',
+			),
+			array(
+				array(
+					'group_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
+				),
+				array(
+					'avatar'	=> '',
+					'id'		=> 4,
+					'user_id'	=> 5,
+				),
+				'group',
+			),
 		);
 	}
 
 	/**
 	* @dataProvider database_row_data
 	*/
-	public function test_clean_row(array $input, array $output)
+	public function test_clean_row(array $input, array $output, $prefix = '')
 	{
 		$cleaned_row = array();
 
-		$cleaned_row = \phpbb\avatar\manager::clean_row($input);
-		foreach ($output as $key => $null)
+		$cleaned_row = \phpbb\avatar\manager::clean_row($input, $prefix);
+		foreach ($output as $key => $value)
 		{
 			$this->assertArrayHasKey($key, $cleaned_row);
+			$this->assertEquals($output[$key], $value);
 		}
 	}
 
