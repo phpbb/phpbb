@@ -523,7 +523,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 	text-align: left;
 }
 
-.wrap .dropdown li, .dropdown.wrap li {
+.wrap .dropdown li, .dropdown.wrap li, #notification_list li {
 	white-space: normal;
 }
 
