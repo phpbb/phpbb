@@ -584,11 +584,6 @@ function parse_document(container)
 			lastWidth = false,
 			wrapped = false;
 
-		// Test height by setting nowrap
-		$this.css('white-space', 'nowrap');
-		maxHeight = $this.height() + 1;
-		$this.css('white-space', '');
-
 		// Set tooltips
 		$this.find('a').each(function() {
 			var $link = $(this);
@@ -600,6 +595,13 @@ function parse_document(container)
 			var height = $this.height(),
 				width = $body.width(),
 				link, i, j;
+
+			maxHeight = parseInt($this.css('line-height')) | 0;
+			links.each(function() {
+				if ($(this).height() > 0) {
+					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				}
+			});
 
 			if (height <= maxHeight) {
 				if (!wrapped || lastWidth === false || lastWidth >= width) {
