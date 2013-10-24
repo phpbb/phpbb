@@ -310,51 +310,18 @@ li {
 	margin: 4px 0;
 	padding: 3px 1px;
 	min-width: 550px;
-	background-color: #FFFFFF;
+	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
 	border: 1px #999999 solid;
+	border-radius: 5px;
+	box-shadow: #FFF 0 0 0 1px inset;
 }
 
 .panel {
 	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
-	padding: 0;
+	padding: 5px 0;
+	border-radius: 5px;
+	overflow: hidden;
 }
-
-span.corners-top, span.corners-bottom,
-span.corners-top span, span.corners-bottom span {
-	font-size: 1px;
-	line-height: 1px;
-	display: block;
-	height: 5px;
-	background-repeat: no-repeat;
-}
-
-span.corners-top {
-	background-image: url("../images/corners_left.gif");
-	background-position: 0 0;
-	margin: -4px -2px 0;
-}
-
-span.corners-top span {
-	background-image: url("../images/corners_right.gif");
-	background-position: 100% 0;
-}
-
-span.corners-bottom {
-	background-image: url("../images/corners_left.gif");
-	background-position: 0 100%;
-	margin: 0 -2px -4px;
-	clear: both;
-}
-
-span.corners-bottom span {
-	background-image: url("../images/corners_right.gif");
-	background-position: 100% 100%;
-}
-
-/* WinIE tweaks \*/
-* html span.corners-top, * html span.corners-bottom { background-image: url("../images/corners_left.gif"); }
-* html span.corners-top span, * html span.corners-bottom span { background-image: url("../images/corners_right.gif"); }
-/* End tweaks */
 
 /* Sub-navigation Menu
 ---------------------------------------- */
@@ -1619,58 +1586,13 @@ fieldset.permissions .padding {
 	float: left;
 	background-color: #CADCEB;
 	width: 100%;
+	border-radius: 5px;
+	overflow: hidden;
+	padding: 5px 0;
 }
 
 .rtl .permissions-panel {
 	float: right;
-}
-
-.permissions-panel span.corners-top {
-	background-image: url("../images/corners_left2.gif");
-}
-
-.permissions-panel span.corners-top span {
-	background-image: url("../images/corners_right2.gif");
-}
-
-.permissions-panel span.corners-bottom {
-	background-image: url("../images/corners_left2.gif");
-}
-
-.permissions-panel span.corners-bottom span {
-	background-image: url("../images/corners_right2.gif");
-}
-
-.permissions-panel span.corners-top, .permissions-panel span.corners-bottom,
-.permissions-panel span.corners-top span, .permissions-panel span.corners-bottom span {
-	font-size: 1px;
-	line-height: 1px;
-	display: block;
-	height: 5px;
-	background-repeat: no-repeat;
-}
-
-.permissions-panel span.corners-top {
-	background-image: url("../images/corners_left2.gif");
-	background-position: 0 0;
-	margin: 0 0;
-}
-
-.permissions-panel span.corners-top span {
-	background-image: url("../images/corners_right2.gif");
-	background-position: 100% 0;
-}
-
-.permissions-panel span.corners-bottom {
-	background-image: url("../images/corners_left2.gif");
-	background-position: 0 100%;
-	margin: 0 0;
-	clear: both;
-}
-
-.permissions-panel span.corners-bottom span {
-	background-image: url("../images/corners_right2.gif");
-	background-position: 100% 100%;
 }
 
 /* Permission table

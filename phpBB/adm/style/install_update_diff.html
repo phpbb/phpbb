@@ -44,6 +44,7 @@ window.onresize = resize_panel;
 
 #diff_content {
 	padding: 30px 10px 10px;
+	overflow: hidden;
 }
 
 <!-- IF DIFF_MODE neq 'side_by_side' and DIFF_MODE neq 'raw' -->
@@ -239,15 +240,13 @@ table.hrdiff caption span {
 
 	<div id="page-body">
 		<div id="acp">
-		<div class="panel" id="codepanel">
-			<span class="corners-top"><span></span></span>
+			<div id="codepanel">
 				<div id="diff_content">
 					<div id="main">
 						{DIFF_CONTENT}
 					</div>
 				</div>
-			<span class="corners-bottom"><span></span></span>
-		</div>
+			</div>
 		</div>
 	</div>
 
