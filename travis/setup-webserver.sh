@@ -4,6 +4,7 @@
 # @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 #
 set -e
+set -x
 
 sudo apt-get update -qq
 sudo apt-get install -qq nginx realpath
