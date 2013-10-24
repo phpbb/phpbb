@@ -27,12 +27,12 @@ phpbb.loadingAlert = function() {
 	} else {
 		loadingAlert.show();
 		dark.fadeIn(phpbb.alertTime, function() {
-			// Wait five seconds and display an error if nothing has been returned by then.
+			// Wait fifteen seconds and display an error if nothing has been returned by then.
 			phpbbAlertTimer = setTimeout(function() {
 				if (loadingAlert.is(':visible')) {
 					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
 				}
-			}, 5000);
+			}, 15000);
 		});
 	}
 
