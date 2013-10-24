@@ -1,10 +1,10 @@
 services:
-    mimetype.FileinfoMimeTypeGuesser:
+    mimetype.fileinfo_mimetype_guesser:
         class: Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser
         tags:
             - { name: mimetype.guessers }
 
-    mimetype.FileBinaryMimeTypeGuesser:
+    mimetype.filebinary_mimetype_guesser:
         class: Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser
         tags:
             - { name: mimetype.guessers }
