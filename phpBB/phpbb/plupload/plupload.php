@@ -135,7 +135,7 @@ class plupload
 				'tmp_name' => $file_path,
 				'name' => $this->request->variable('real_filename', ''),
 				'size' => filesize($file_path),
-				'type' => $this->mimetype_guesser->guess($file_path),
+				'type' => $this->mimetype_guesser->guess($file_path, $file_name),
 			);
 		}
 		else

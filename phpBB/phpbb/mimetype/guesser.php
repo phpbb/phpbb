@@ -77,7 +77,7 @@ class guesser
 	*
 	* @return string Guess for mimetype of file
 	*/
-	public function guess($file)
+	public function guess($file, $file_name = '')
 	{
 		if (!is_file($file))
 		{
@@ -91,7 +91,7 @@ class guesser
 
 		foreach ($this->guessers as $guesser)
 		{
-			$mimetype = $guesser->guess($file);
+			$mimetype = $guesser->guess($file, $file_name);
 
 			// Try to guess something that is not the fallback application/octet-stream
 			if ($mimetype !== null && $mimetype !== 'application/octet-stream')

@@ -492,7 +492,7 @@ class content_guesser
 	*
 	* @return string Guess for mimetype of file
 	*/
-	public function guess($file)
+	public function guess($file, $file_name = '')
 	{
 		$mimetype = null;
 		if (function_exists('mime_content_type'))
@@ -501,14 +501,22 @@ class content_guesser
 		}
 		else
 		{
-			$mimetype = $this->map_extension_to_type($file);
+			$file_name = (empty($file_name)) ? $file : $file_name;
+			$mimetype = $this->map_extension_to_type($file_name);
 		}
 		return $mimetype;
 	}
 
-	protected function map_extension_to_type($file)
+	/**
+	* Map extension of supplied file_name to mime type
+	*
+	* @param string $file_name Path to file or filename
+	*
+	* @return string|null Mimetype if known or null if not
+	*/
+	protected function map_extension_to_type($file_name)
 	{
-		$extension = pathinfo($file, PATHINFO_EXTENSION);
+		$extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
 		if (isset($this->extension_map[$extension]))
 		{

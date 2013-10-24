@@ -119,8 +119,9 @@ class guesser_test extends \phpbb_test_case
 	public function test_content_guesser($expected, $overload = false)
 	{
 		self::$function_exists = ($overload) ? false : true;
-		$guesser = new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\content_guesser($this->phpbb_root_path, new \phpbb\php\ini)));
+		$guesser = new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\content_guesser));
 		$this->assertEquals($expected[0], $guesser->guess($this->jpg_file));
+		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.jpg'));
 		@copy($this->jpg_file, $this->jpg_file . '.jpg');
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file . '.jpg'));
 		@unlink($this->jpg_file . '.jpg');
