@@ -906,7 +906,11 @@ function parse_document(container)
 			responsive = true;
 
 			if (!copied) {
-				menu.append(links.clone(true));
+				var clone = links.clone(true);
+				clone.filter('.rightside').each(function() {
+					menu.prepend(this);
+				});
+				menu.prepend(clone.not('.rightside'));
 				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
 				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 				copied = true;
