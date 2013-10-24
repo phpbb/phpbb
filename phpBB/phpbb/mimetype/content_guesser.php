@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package mimetype
 */
 
-class content_guesser
+class content_guesser implements guesser_interface
 {
 	/**
 	* @var file extension map
@@ -486,11 +486,7 @@ class content_guesser
 	}
 
 	/**
-	* Guess mimetype of supplied file
-	*
-	* @param string $file Path to file
-	*
-	* @return string Guess for mimetype of file
+	* @inheritdoc
 	*/
 	public function guess($file, $file_name = '')
 	{
