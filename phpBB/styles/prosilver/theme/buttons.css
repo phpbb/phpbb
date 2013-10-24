@@ -182,12 +182,6 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	top: 20px;
 }
 
-.postbody ul.profile-icons .dropdown {
-	left: auto;
-	right: -4px;
-	top: 30px;
-}
-
 .postbody ul.profile-icons .dropdown li, .postbody ul.profile-icons .dropdown li a {
 	display: block;
 	background: transparent none;
