@@ -2314,7 +2314,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		{
 			$group_id = $db->sql_nextid();
 
-			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
+			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == 'avatar.driver.upload')
 			{
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
 			}

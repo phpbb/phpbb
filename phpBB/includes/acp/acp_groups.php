@@ -325,6 +325,10 @@ class acp_groups
 
 					// This is normalised data, without the group_ prefix
 					$avatar_data = \phpbb\avatar\manager::clean_row($group_row);
+					if (!isset($avatar_data['id']))
+					{
+						$avatar_data['id'] = $group_id;
+					}
 				}
 
 
