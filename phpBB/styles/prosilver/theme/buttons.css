@@ -182,13 +182,7 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	top: 20px;
 }
 
-.postbody ul.profile-icons.responsive .responsive-popup {
-	left: auto;
-	right: -4px;
-	top: 30px;
-}
-
-.postbody ul.profile-icons.responsive .responsive-popup li, .postbody ul.profile-icons.responsive .responsive-popup li a {
+.postbody ul.profile-icons .dropdown li, .postbody ul.profile-icons .dropdown li a {
 	display: block;
 	background: transparent none;
 	width: auto;
@@ -199,7 +193,7 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	list-style-type: none;
 }
 
-.postbody ul.profile-icons.responsive .responsive-popup li span {
+.postbody ul.profile-icons .dropdown li span {
 	display: block;
 	text-align: right;
 	font-size: 1.2em;
