@@ -20,9 +20,19 @@ then
 	sudo apt-get install -qq python-software-properties
 fi
 
+MIRROR_DOMAIN='ftp.osuosl.org'
 sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xcbcb082a1bb943db
-sudo add-apt-repository "deb http://ftp.osuosl.org/pub/mariadb/repo/$VERSION/ubuntu $OS_CODENAME main"
+sudo add-apt-repository "deb http://$MIRROR_DOMAIN/pub/mariadb/repo/$VERSION/ubuntu $OS_CODENAME main"
 sudo apt-get update -qq
+
+# Pin repository in order to avoid conflicts with MySQL from distribution
+# repository. See https://mariadb.com/kb/en/installing-mariadb-deb-files
+# section "Version Mismatch Between MariaDB and Ubuntu/Debian Repositories"
+echo "
+Package: *
+Pin: origin $MIRROR_DOMAIN
+Pin-Priority: 1000
+" | sudo tee /etc/apt/preferences.d/mariadb
 
 sudo debconf-set-selections <<< "mariadb-server-$VERSION mysql-server/root_password password rootpasswd"
 sudo debconf-set-selections <<< "mariadb-server-$VERSION mysql-server/root_password_again password rootpasswd"
