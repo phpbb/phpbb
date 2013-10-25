@@ -341,6 +341,9 @@ if (!$get_info)
 			update_folder_pm_count();
 		', '
 			update_unread_count();
+		', (defined('MOD_ATTACHMENT')) ? '
+			phpbb_attachment_extension_group_name();
+		' : '
 		', '
 			phpbb_convert_authentication(\'start\');
 		', '

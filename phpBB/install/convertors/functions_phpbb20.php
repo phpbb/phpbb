@@ -1415,6 +1415,54 @@ function phpbb_attachment_category($cat_id)
 }
 
 /**
+* Convert the attachment extension names
+* This is only used if the Attachment MOD was installed
+*/
+function phpbb_attachment_extension_group_name()
+{
+	global $db, $phpbb_root_path, $phpEx;
+
+	// Update file extension group names to use language strings.
+	$sql = 'SELECT lang_dir
+		FROM ' . LANG_TABLE;
+	$result = $db->sql_query($sql);
+
+	$extension_groups_updated = array();
+	while ($lang_dir = $db->sql_fetchfield('lang_dir'))
+	{
+		$lang_dir = basename($lang_dir);
+
+		if (!file_exists($phpbb_root_path . 'language/' . $lang_dir . '/acp/attachments.' . $phpEx))
+		{
+			continue;
+		}
+
+		$lang = array();
+		include($lang_file);
+
+		foreach ($lang as $lang_key => $lang_val)
+		{
+			if (isset($extension_groups_updated[$lang_key]) || strpos($lang_key, 'EXT_GROUP_') !== 0)
+			{
+				continue;
+			}
+
+			$sql_ary = array(
+				'group_name'	=> substr($lang_key, 10), // Strip off 'EXT_GROUP_'
+			);
+
+			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE group_name = '" . $db->sql_escape($lang_val) . "'";
+			$db->sql_query($sql);
+
+			$extension_groups_updated[$lang_key] = true;
+		}
+	}
+	$db->sql_freeresult($result);
+}
+
+/**
 * Obtain list of forums in which different attachment categories can be used
 */
 function phpbb_attachment_forum_perms($forum_permissions)
