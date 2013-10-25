@@ -106,6 +106,13 @@ hr {
 	display: none;
 }
 
+@media only screen and (max-width: 800px), only screen and (max-device-width: 800px)
+{
+	body {
+		margin: 5px 5px 0;
+	}
+}
+
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	html, body {
@@ -186,7 +193,7 @@ li {
 
 #page-body {
 	clear: both;
-	min-width: 700px;
+	min-width: 650px;
 }
 
 #page-footer {
@@ -207,15 +214,11 @@ li {
 }
 
 #main {
-	float: left;
-	width: 76%;
-	margin: 0 0 0 3%;
-	min-height: 350px;
+	margin: 0 0 0 210px;
 }
 
 .rtl #main {
-	float: right;
-	margin: 0 3% 0 0;
+	margin: 0 210px 0 0;
 }
 
 * html #main {
@@ -253,6 +256,10 @@ li {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	#page-header fieldset {
+		margin-top: 5px;
 	}
 
 	#main, .rtl #main {
@@ -416,7 +423,7 @@ li {
 /* Menu */
 #menu {
 	float: left;
-	width: 20%;
+	width: 200px;
 	font-size: 1.00em;
 	padding: 0;
 	border-right: 1px solid #CCCFD3;
@@ -436,6 +443,7 @@ li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	word-wrap: normal;
 }
 
 /* Default list state */
@@ -459,6 +467,12 @@ li {
 
 .rtl #menu li span {
 	padding: 3px 8px 3px 3px;
+}
+
+#menu li span, #menu .header {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #menu li a:hover, #menu li a:hover span {
