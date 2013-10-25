@@ -64,8 +64,13 @@
 						<div class="list-inner">
 
 							<!-- EVENT topiclist_row_prepend -->
-							<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->
-							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a> {searchresults.ATTACH_ICON_IMG}
+							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->
+								<a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> 
+								<a href="{searchresults.U_NEWEST_POST}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
+							<!-- ELSE -->
+								<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
+							<!-- ENDIF -->
+							{searchresults.ATTACH_ICON_IMG}
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_DELETED --><a href="{searchresults.U_MCP_QUEUE}">{DELETED_IMG}</a> <!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
@@ -83,7 +88,7 @@
 								</ul>
 							</div>
 							<!-- ENDIF -->
-							{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+							{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; <!-- IF not S_IS_BOT --><a href="{searchresults.U_VIEW_TOPIC}" title="{L_GOTO_FIRST_POST}">{searchresults.FIRST_POST_TIME}</a><!-- ELSE -->{searchresults.FIRST_POST_TIME}<!-- ENDIF --> &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
 							<!-- EVENT topiclist_row_append -->
 
 						</div>
@@ -92,7 +97,7 @@
 					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
 					<dd class="lastpost"><span>
 						{L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL}
-						<!-- IF not S_IS_BOT --><a href="{searchresults.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{searchresults.LAST_POST_TIME}<br /> </span>
+						<!-- IF not S_IS_BOT --><a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{searchresults.LAST_POST_TIME}<br /> </span>
 					</dd>
 				</dl>
 			</li>
