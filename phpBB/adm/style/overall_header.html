@@ -128,14 +128,16 @@ function popup(url, width, height, name)
 				<div id="content">
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-						<ul>
 						<!-- DEFINE $LI_USED = 0 -->
 						<!-- BEGIN l_block1 -->
 							<!-- IF l_block1.S_SELECTED -->
 	
 						<!-- BEGIN l_block2 -->
 							<!-- IF .l_block1.l_block2.l_block3 -->
-							<li class="header">{l_block1.l_block2.L_TITLE}</li>
+							<!-- IF $LI_USED --></ul></div><!-- ENDIF -->
+							<div class="menu-block">
+								<a class="header" href="javascript:void(0);">{l_block1.l_block2.L_TITLE}</a>
+								<ul>
 							<!-- DEFINE $LI_USED = 1 -->
 							<!-- ENDIF -->
 	
@@ -147,8 +149,9 @@ function popup(url, width, height, name)
 						
 							<!-- ENDIF -->
 						<!-- END l_block1 -->
-						<!-- IF not $LI_USED -->
-							<li></li>
+						<!-- IF $LI_USED -->
+								</ul>
+							</div>
 						<!-- ENDIF -->
 						</ul>
 					</div>

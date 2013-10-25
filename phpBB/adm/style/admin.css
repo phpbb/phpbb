@@ -18,11 +18,11 @@ body, div, p, th, td, li, dd {
 	font-size: x-small;
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	font-size: small
+	font-size: small;
 }
 
 html>body, html>div, html>p, html>th, html>td, html>li, html>dd {
-	font-size: small
+	font-size: small;
 }
 
 html {
@@ -31,6 +31,7 @@ html {
 	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-ie browsers */
 	height: 100%;
 	margin-bottom: 1px;
+	word-wrap: break-word;
 }
 
 body {
@@ -105,6 +106,16 @@ hr {
 	display: none;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	html, body {
+		height: auto;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+
 /* General links  */
 a:link, a:visited {
 	color: #105289;
@@ -135,6 +146,7 @@ li {
 	display: list-item;
 	list-style-type: inherit;
 }
+
 
 /* Main blocks
 ---------------------------------------- */
@@ -215,6 +227,41 @@ li {
 	padding-right: 10px;
 	min-width: 0;
 }
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#wrap, #page-body, #page-body.simple-page-body {
+		padding: 0;
+		min-width: 300px;
+	}
+
+	#page-header {
+		margin: 5px;
+		padding-left: 160px;
+		height: auto;
+		min-height: 54px;
+		overflow: hidden;
+	}
+
+	.rtl #page-header {
+		padding-right: 160px;
+		padding-left: 0;
+	}
+
+	#page-header h1 {
+		font-size: 1.2em;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	#main, .rtl #main {
+		float: none;
+		width: auto;
+		margin: 0;
+	}
+}
+
 
 /* Tabbed menu
 	Based on: http://www.alistapart.com/articles/slidingdoors2/
@@ -323,6 +370,15 @@ li {
 	overflow: hidden;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#acp {
+		min-width: 0;
+		min-height: 0;
+	}
+}
+
+
 /* Sub-navigation Menu
 ---------------------------------------- */
 
@@ -352,12 +408,12 @@ li {
 }
 
 /* Default list state */
-#menu li {
+#menu li, #menu .header {
 	padding: 0;
 	margin: 0;
 	font-size: 0.85em;
 	font-weight: bold;
-	display: inline;
+	display: block;
 }
 
 /* Link styles for the sub-section links */
@@ -422,7 +478,7 @@ li {
 	background: url("../images/arrow_down.gif") 99% 50% no-repeat;
 }
 
-#menu li.header {
+#menu .header {
 	font-family: Tahoma, Helvetica, sans-serif;
 	display: block;
 	font-weight: bold;
@@ -432,7 +488,43 @@ li {
 	margin-top: 15px;
 	text-transform: uppercase;
 	font-size: 0.75em;
+	text-decoration: none;
+	cursor: inherit;
 }
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#menu {
+		float: none;
+		width: auto;
+		border-width: 0;
+		max-width: 200px;
+		margin: 0 auto 10px;
+	}
+
+	#menu .menu-block .header {
+		margin-top: 0;
+		cursor: pointer;
+		border-bottom-width: 0;
+	}
+
+	#menu .menu-block .header:focus {
+		color: #D31141;
+	}
+
+	#menu .menu-block ul {
+		display: none;
+	}
+
+	#menu .menu-block:hover ul, #menu .menu-block.active ul, #menu .menu-block.no-header ul {
+		display: block;
+	}
+
+	#menu .menu-block li:last-child {
+		border-bottom: 1px solid #327AA5;
+	}
+}
+
 
 /* Table styles
 ---------------------------------------- */
