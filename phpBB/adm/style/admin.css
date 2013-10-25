@@ -221,10 +221,6 @@ li {
 	margin: 0 210px 0 0;
 }
 
-* html #main {
-	height: 350px;
-}
-
 #page-body.simple-page-body {
 	padding: 0;
 	padding-right: 10px;
@@ -873,10 +869,6 @@ fieldset {
 	border-left: 1px solid #CCCCCC;
 }
 
-* html fieldset {
-	padding: 0 10px 5px 10px;
-}
-
 fieldset p {
 	font-size: 0.85em;
 }
@@ -893,18 +885,6 @@ legend {
 	line-height: 1.2em;
 	top: -.2em;
 	vertical-align: middle;
-}
-
-* html legend {
-	margin: 0 0 -10px -7px;
-	line-height: 1em;
-	font-size: .85em;
-}
-
-/* Holly hack, .rtl comes after html */
-* html .rtl legend {
-	margin: 0;
-	margin-right: -7px;
 }
 
 input, textarea {
@@ -1245,7 +1225,6 @@ textarea.full {
 	width: 99%;
 }
 
-* html input.full, * html textarea.full { width: 95%;}
 input.medium { width: 50%;}
 input.narrow { width: 25%;}
 input.tiny { width: 10%;}
@@ -1471,8 +1450,6 @@ li.pagination ul {
 .errorbox {
 	background-color: #BC2A4D;
 }
-
-* html .errorbox, * html .successbox { height: 1%; } /* Pixel shift fix for IE */
 
 .successbox h3, .errorbox h3 {
 	color: #FFFFFF;
