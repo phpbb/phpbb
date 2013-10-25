@@ -243,7 +243,9 @@ class manager
 		// Multiple hash passes needed
 		if (is_array($stored_hash_type))
 		{
-			return $this->helper->check_combined_hash($password, $stored_hash_type, $hash);
+			$correct = $this->helper->check_combined_hash($password, $stored_hash_type, $hash);
+			$this->convert_flag = ($correct === true) ? true : false;
+			return $correct;
 		}
 
 		if ($stored_hash_type->get_name() !== $this->type)

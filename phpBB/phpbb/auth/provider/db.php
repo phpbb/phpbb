@@ -245,7 +245,7 @@ class db extends \phpbb\auth\provider\base
 		if (!$row['user_pass_convert'] && $this->passwords_manager->check($password, $row['user_password']))
 		{
 			// Check for old password hash...
-			if (strlen($row['user_password']) == 32)
+			if ($this->passwords_manager->convert_flag || strlen($row['user_password']) == 32)
 			{
 				$hash = $this->passwords_manager->hash($password);
 

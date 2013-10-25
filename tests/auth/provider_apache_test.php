@@ -94,7 +94,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_row'		=> array(
 				'user_id' 				=> '1',
 				'username' 				=> 'foobar',
-				'user_password'			=> '$H$9E45lK6J8nLTSm9oJE5aNCSTFK9wqa/',
+				'user_password'			=> '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i',
 				'user_passchg' 			=> '0',
 				'user_email' 			=> 'example@example.com',
 				'user_type' 			=> '0',
@@ -130,7 +130,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_regdate' => '0',
 			'username' => 'foobar',
 			'username_clean' => 'foobar',
-			'user_password' => '$H$9E45lK6J8nLTSm9oJE5aNCSTFK9wqa/',
+			'user_password' => '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i',
 			'user_passchg' => '0',
 			'user_pass_convert' => '0',
 			'user_email' => 'example@example.com',
