@@ -260,6 +260,33 @@ li {
 		width: auto;
 		margin: 0;
 	}
+
+	#content {
+		background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
+		padding: 5px;
+	}
+
+	#page-footer {
+		padding: 0 5px 5px;
+	}
+}
+
+@media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
+{
+	#page-header {
+		background-size: 76px 26.5px;
+		padding-left: 80px;
+		min-height: 30px;
+	}
+
+	.rtl #page-header {
+		padding-right: 80px;
+	}
+
+	#page-header h1 {
+		padding-top: 0;
+		font-size: 1.1em;
+	}
 }
 
 
@@ -375,9 +402,13 @@ li {
 	#acp {
 		min-width: 0;
 		min-height: 0;
+		border-radius: 0;
+		border-width: 1px 0;
+		background: #fff;
+		padding: 1px 0;
+		box-shadow: none;
 	}
 }
-
 
 /* Sub-navigation Menu
 ---------------------------------------- */
@@ -490,6 +521,7 @@ li {
 	font-size: 0.75em;
 	text-decoration: none;
 	cursor: inherit;
+	outline-style: none;
 }
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
@@ -502,11 +534,19 @@ li {
 		margin: 0 auto 10px;
 	}
 
+	#menu p {
+		text-align: center;
+	}
+
 	#menu .menu-block.active {
-		margin: 0 -10px;
-		padding: 0 10px;
+		margin: 0 -5px;
+		padding: 0 5px 3px;
 		background: rgba(255, 255, 255, .5);
 		border-radius: 5px;
+	}
+
+	#menu .menu-block.no-header.active {
+		padding-top: 3px;
 	}
 
 	#menu .menu-block .header {
@@ -536,6 +576,10 @@ li {
 
 	#menu .menu-block:last-child li:last-child, #menu .menu-block.active li:last-child {
 		border-bottom-width: 0;
+	}
+
+	#menu .menu-block li a span {
+		border-radius: 2px;
 	}
 }
 
@@ -707,6 +751,7 @@ fieldset {
 	border-left: 1px solid #D7D7D7;
 	background-color: #FFFFFF;
 	position: relative;
+	border-radius: 3px;
 }
 
 .rtl fieldset {

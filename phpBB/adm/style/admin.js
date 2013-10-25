@@ -15,11 +15,27 @@ function parse_document(container)
 	/**
 	* Navigation
 	*/
-	container.find('#menu .menu-block > a.header').click(function() {
-		$(this).parent().toggleClass('active');
-	});
+	container.find('#menu').each(function() {
+		var menu = $(this),
+			blocks = menu.children('.menu-block');
 
-	container.find('#activemenu').parents('.menu-block').addClass('active');
+		if (!blocks.length) {
+			return;
+		}
+
+		// Set onclick event
+		blocks.children('a.header').click(function() {
+			$(this).parent().toggleClass('active');
+		});
+
+		// Set active menu
+		menu.find('#activemenu').parents('.menu-block').addClass('active');
+
+		// Check if there is active menu
+		if (!blocks.filter('.active').length) {
+			blocks.filter(':first').addClass('active');
+		}
+	});
 }
 
 /**
