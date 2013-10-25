@@ -17,7 +17,7 @@ body {
 }
 
 #wrap {
-	min-width: 320px;
+	min-width: 300px;
 	padding: 0;
 }
 
@@ -343,6 +343,19 @@ fieldset.quick-login label[for="autologin"] {
 	min-width: 50%;
 }
 
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+{
+	select, .inputbox {
+		max-width: 260px;
+	}
+}
+
+@media only screen and (max-width: 320px), only screen and (max-device-width: 320px)
+{
+	select, .inputbox {
+		max-width: 240px;
+	}
+}
 
 /* User profile
 ----------------------------------------*/
