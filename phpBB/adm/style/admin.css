@@ -1288,8 +1288,10 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	position: fixed;
 	display: none;
 	top: 150px;
-	left: 25%;
-	width: 50%;
+	left: 0;
+	right: 0;
+	max-width: 600px;
+	margin: 0 auto;
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
@@ -1343,6 +1345,21 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	height: 100%;
 	background-color: #000000;
 	opacity: 0.5;
+}
+
+@media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
+{
+	.phpbb_alert {
+		top: 25px;
+	}
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.phpbb_alert {
+		max-width: none;
+		margin: 0 25px;
+	}
 }
 
 /* Pagination
