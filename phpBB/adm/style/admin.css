@@ -494,7 +494,7 @@ li {
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
-	#menu {
+	#menu, .rtl #menu {
 		float: none;
 		width: auto;
 		border-width: 0;
@@ -502,26 +502,40 @@ li {
 		margin: 0 auto 10px;
 	}
 
-	#menu .menu-block .header {
-		margin-top: 0;
-		cursor: pointer;
-		border-bottom-width: 0;
+	#menu .menu-block.active {
+		margin: 0 -10px;
+		padding: 0 10px;
+		background: rgba(255, 255, 255, .5);
+		border-radius: 5px;
 	}
 
-	#menu .menu-block .header:focus {
+	#menu .menu-block .header {
+		margin-top: 5px;
+		cursor: pointer;
+		border-bottom-width: 0;
+		position: relative;
+		text-decoration: underline;
+	}
+
+	#menu .menu-block .header:focus, #menu .menu-block.active .header {
 		color: #D31141;
+		text-decoration: none;
 	}
 
 	#menu .menu-block ul {
 		display: none;
 	}
 
-	#menu .menu-block:hover ul, #menu .menu-block.active ul, #menu .menu-block.no-header ul {
+	.nojs #menu .menu-block:hover ul, #menu .menu-block.active ul, #menu .menu-block.no-header ul {
 		display: block;
 	}
 
 	#menu .menu-block li:last-child {
 		border-bottom: 1px solid #327AA5;
+	}
+
+	#menu .menu-block:last-child li:last-child, #menu .menu-block.active li:last-child {
+		border-bottom-width: 0;
 	}
 }
 
