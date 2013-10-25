@@ -754,6 +754,104 @@ td.name {
 	color: #BC2A4D;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
+		display: block;
+	}
+
+	table.responsive thead, table.responsive th, table.responsive colgroup {
+		display: none;
+	}
+
+	table.responsive.show-header thead, table.responsive.show-header th:first-child, table.responsive caption {
+		display: block;
+		width: auto !important;
+		text-align: left !important;
+		margin: 0;
+	}
+
+	table.responsive {
+		background: transparent none;
+		border-width: 0;
+	}
+
+	table.responsive caption {
+		padding: 3px 4px;
+		color: #FFFFFF;
+		background: #70AED3 url("../images/gradient2b.gif") bottom left repeat-x;
+		border-top: 1px solid #6DACD2;
+		border-bottom: 1px solid #327AA5;
+		text-align: left;
+		font-size: 0.75em;
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+
+	table.responsive.show-header th:first-child span.rank-img, table.responsive.no-caption caption, table.responsive.no-header thead {
+		display: none;
+	}
+
+	table.responsive tr {
+		margin: 2px 0;
+		border: 1px solid #CCCFD3;
+		background-color: #FFFFFF;
+		padding: 1px 1px 0;
+		overflow: hidden;
+	}
+
+	table.responsive tr.row1 td { background-color: #F9F9F9; }
+	table.responsive tr.row2 td { background-color: #DCEBFE; }
+	table.responsive tr.row3 td { background-color: #DBDFE2; }
+	table.responsive tr.row4 td { background-color: #E4E8EB; }
+	table.responsive tr.col1 td { background-color: #DCEBFE; }
+	table.responsive tr.col2 td { background-color: #F9F9F9; }
+	table.responsive tr.row1a td { background-color: #F9F9F9; }
+	table.responsive tr.row1b td { background-color: #F6F6F6; }
+	table.responsive tr.row2a td { background-color: #E7EEF4; }
+	table.responsive tr.row2b td { background-color: #E3EBF2; }
+
+	table.responsive td {
+		width: auto !important;
+		text-align: left !important;
+		padding: 4px;
+		margin-bottom: 1px;
+	}
+
+	table.responsive td.empty {
+		display: none !important;
+	}
+
+	table.responsive td > dfn {
+		display: inline-block !important;
+	}
+
+	table.responsive td > dfn:after {
+		content: ':';
+		padding-right: 5px;
+	}
+
+	table.responsive.two-columns td {
+		width: 50% !important;
+		float: left;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
+
+	table.responsive.two-columns td:nth-child(2n+1) {
+		clear: left;
+	}
+
+	table.responsive span.rank-img {
+		float: none;
+		padding-right: 5px;
+	}
+
+	table.responsive#memberlist td:first-child input[type="checkbox"] {
+		float: right;
+	}
+}
+
 /* General form styles
 ----------------------------------------*/
 fieldset {
