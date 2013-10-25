@@ -161,9 +161,15 @@ posting_editor_options_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-    + styles/prosilver/template/posting_body.html
-* Since: 3.1.0-a1
+    + styles/subsilver2/template/posting_body.html
 * Purpose: Add posting options on the posting screen
+
+posting_editor_subject_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Purpose: Add field (e.g. textbox) to the posting screen under the subject
 
 simple_footer_after
 ===
