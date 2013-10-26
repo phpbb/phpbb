@@ -214,11 +214,23 @@ li {
 }
 
 #main {
-	margin: 0 0 0 210px;
+	float: right;
+	width: 100%;
+	margin: 0 0 0 -210px;
 }
 
 .rtl #main {
-	margin: 0 210px 0 0;
+	float: right;
+	margin: 0 -210px 0 0;
+}
+
+.main {
+	margin-left: 210px;
+}
+
+.rtl .main {
+	margin-left: 0;
+	margin-right: 210px;
 }
 
 #page-body.simple-page-body {
@@ -258,7 +270,7 @@ li {
 		margin-top: 5px;
 	}
 
-	#main, .rtl #main {
+	#main, .rtl #main, .main, .rtl .main {
 		float: none;
 		width: auto;
 		margin: 0;
