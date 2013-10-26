@@ -493,6 +493,10 @@ li {
 	box-shadow: #FFF 0 0 0 1px inset;
 }
 
+#acp:first-child {
+	top: 0;
+}
+
 .panel {
 	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
 	padding: 5px 0;
