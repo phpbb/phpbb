@@ -934,7 +934,6 @@ input, textarea {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.90em;
 	font-weight: normal;
-	cursor: text;
 	vertical-align: middle;
 	padding: 2px;
 	color: #111111;
@@ -1100,6 +1099,10 @@ select#full_folder_action {
 {
 	fieldset {
 		padding: 5px;
+	}
+
+	fieldset.quick, p.quick {
+		text-align: center;
 	}
 }
 
@@ -1303,6 +1306,13 @@ fieldset.submit-buttons input, p.submit-buttons input {
 
 fieldset.submit-buttons legend {
 	display: none;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	p.submit-buttons {
+		margin-top: 0;
+	}
 }
 
 /* Input field styles
