@@ -1,21 +1,24 @@
 <!-- INCLUDE overall_header.html -->
 
-<a href="{U_VIEW_POST}" class="left-box arrow-left" accesskey="r">{L_RETURN_TO} {CURRENT_SUBJECT}</a>
-<br clear="both" />
+<h2>{L_VIEWING_POST_REVISION_HISTORY}</h2>
+<p class="jumpbox-return"><a href="{U_VIEW_POST}" class="left-box arrow-left" accesskey="r">{L_RETURN_TO} {CURRENT_SUBJECT}</a><span class="clear"></span></p>
 
-<div class="revision_action_success<!-- IF not L_REVISIONS_ACTION_SUCCESS --> no-display<!-- ENDIF -->">
+<div class="revision_action_success success_message<!-- IF not L_REVISIONS_ACTION_SUCCESS --> hidden<!-- ENDIF -->">
 	<div class="inner">
 		<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
 	</div>
 </div>
 
-<h2>{L_VIEWING_POST_REVISION_HISTORY}</h2>
-<p><div class="left-box"><strong>{L_LAST_REVISION_TIME}</strong></div>
-<div class="right-box">{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></div></p>
-<hr />
-<p><div class="left-box">{L_COMPARE_SUMMARY}<span id="revision_lines_changed"> {L_LINES_ADDED_REMOVED}</span></div></p>
-<br class="clear" />
+<div class="panel">
+	<div class="inner">
+		<div class="basic-content">
+			{L_COMPARE_SUMMARY} <span id="revision_lines_changed">{L_LINES_ADDED_REMOVED}</span> &bull; {L_LAST_REVISION_TIME}
+		</div>
+	</div>
+</div>
 <!-- INCLUDE revisions_comparison_list.html -->
+
+<h3 class="headerspace" id="comparing_to">{L_COMPARING} <a href="{U_FIRST_REVISION}">{FIRST_REVISION}</a> {L_WITH} <a href="{U_LAST_REVISION}">{LAST_REVISION}</a></h3>
 <div class="post bg1">
 	<div class="inner">
 		<div class="postbody">
@@ -27,7 +30,7 @@
 		<dl class="postprofile" id="profile{POST_ID}">
 			<dt>
 				<!-- IF AVATAR -->
-					<a href="{U_PROFILE}">{AVATAR}</a><br />
+					<a href="{U_VIEW_PROFILE}">{AVATAR}</a><br />
 				<!-- ENDIF -->
 				<strong>{POST_USERNAME}</strong>
 			</dt>

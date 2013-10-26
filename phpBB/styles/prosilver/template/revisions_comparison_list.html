@@ -1,44 +1,44 @@
-<div class="revisions_block forumbg">
-	<ul class="revisionlist">
-		<li class="header">
-			<dl>
-				<!-- IF S_DISPLAY_COMPARISON --><dd>{L_COMPARE}</dd><!-- ENDIF -->
-				<dd class="revisionview">{L_REVISION}</dd>
-				<dd class="revisionuser">{L_USERNAME}</dd>
-				<dd class="revisiondate">{L_REVISION} {L_TIME}</dd>
-				<dd class="revisionreason">{L_REASON}</dd>
-				<!-- IF S_DISPLAY_COMPARISON --><dd>{L_OPTIONS}</dd><!-- ENDIF -->
-			</dl>
-		</li>
-	</ul>
-	<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" data-ajax="revisions.compare" />
-		<!-- BEGIN revision -->
-		<ul class="revisions<!-- IF revision.S_ROW_COUNT is odd --> odd<!-- ELSE --> even<!-- ENDIF --><!-- IF not revision.IN_RANGE and S_DISPLAY_COMPARISON --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->" id="r{revision.ID}">
-			<!-- IF S_DISPLAY_COMPARISON -->
-			<li class="revision_compare"><input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /> <input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> /></li>
-			<!-- ENDIF -->
-			<li class="revision_id"><a href="{revision.U_REVISION_VIEW}">#{revision.NUMBER} ({L_VIEW})</a></li>
-			<li class="revision_user">{revision.USER_AVATAR} <span>{revision.USERNAME}</span></li>
-			<li class="revision_date">{revision.DATE}</li>
-			<li class="revision_reason"><!-- IF revision.REASON --><strong>{revision.REASON}</strong><!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></li>
-			<li class="revision_options">
-				<!-- IF S_DISPLAY_COMPARISON -->
-					<!-- IF not revision.IS_CURRENT_POST -->
-						<a href="{revision.U_PROTECT}" id="link_protect"<!-- IF not revision.S_PROTECT --> class="no-display"<!-- ENDIF --> data-ajax="revisions.protect">({L_PROTECT})</a>
-						<a href="{revision.U_UNPROTECT}" id="link_unprotect"<!-- IF not revision.S_UNPROTECT --> class="no-display"<!-- ENDIF --> data-ajax="revisions.unprotect">({L_UNPROTECT})</a>
-						<a href="{revision.U_RESTORE}" id="link_restore"<!-- IF not revision.S_RESTORE --> class="no-display"<!-- ENDIF -->>({L_RESTORE})</a>
-						<a href="{revision.U_DELETE}" id="link_delete"<!-- IF not revision.S_DELETE --> class="no-display"<!-- ENDIF --> data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
-					<!-- ELSE -->
-						<strong>{L_CURRENT_REVISION}</strong>
-					<!-- ENDIF -->
-				<!-- ENDIF -->
+<form name="revision_list" action="{U_VIEW_REVISIONS}" method="post" data-ajax="revisions.compare" />
+	<div class="forumbg">
+		<ul class="topiclist revisions">
+			<li class="header">
+				<dl>
+					<!-- IF S_DISPLAY_COMPARISON --><dd class="revision_compare">{L_COMPARE}</dd><!-- ENDIF -->
+					<dt class="revision_view">{L_REVISION}</dt>
+					<dd class="revision_user">{L_USERNAME}</dd>
+					<dd class="revision_date">{L_REVISION} {L_TIME}</dd>
+					<dd class="revision_reason">{L_REASON}</dd>
+					<!-- IF S_DISPLAY_COMPARISON --><dd class="revision_options">{L_OPTIONS}</dd><!-- ENDIF -->
+				</dl>
 			</li>
-		</ul>
+	<!-- BEGIN revision -->
+		<li class="row <!-- IF revision.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF not revision.IN_RANGE and S_DISPLAY_COMPARISON --> out_of_range<!-- ENDIF --><!-- IF revision.CURRENT_REVISION --> current<!-- ENDIF -->" id="r{revision.ID}">
+			<dl>
+			<!-- IF S_DISPLAY_COMPARISON -->
+				<dd class="revision_compare">
+					<input type="radio" name="first" value="{revision.ID}"<!-- IF revision.FIRST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> />
+					<input type="radio" name="last" value="{revision.ID}"<!-- IF revision.LAST_IN_COMPARE --> checked="checked"<!-- ENDIF --><!-- IF REVISION_COUNT eq 0 --> disabled="disabled"<!-- ENDIF --> />
+				</dd>
+			<!-- ENDIF -->
+				<dt class="revision_view"><a href="{revision.U_REVISION_VIEW}"><!-- IF revision.IS_CURRENT_POST -->{L_CURRENT_REVISION}<!-- ELSE -->#{revision.NUMBER}<!-- ENDIF --></a></dt>
+				<dd class="revision_user">{revision.USERNAME}</dd>
+				<dd class="revision_date">{revision.DATE}</dd>
+				<dd class="revision_reason"><!-- IF revision.REASON -->{revision.REASON}<!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></dd>
+			<!-- IF S_DISPLAY_COMPARISON and not revision.IS_CURRENT_POST -->
+				<dd class="revision_options">
+						<a href="{revision.U_PROTECT}" class="revision_protect<!-- IF not revision.S_PROTECT --> hidden<!-- ENDIF -->" data-ajax="revisions.protect">{L_PROTECT}</a>
+						<a href="{revision.U_UNPROTECT}" class="revision_unprotect<!-- IF not revision.S_UNPROTECT --> hidden<!-- ENDIF -->" data-ajax="revisions.unprotect">{L_UNPROTECT}</a>
+						<a href="{revision.U_RESTORE}" class="revision_restore<!-- IF not revision.S_RESTORE --> hidden<!-- ENDIF -->">{L_RESTORE}</a>
+						<a href="{revision.U_DELETE}" class="revision_delete<!-- IF not revision.S_DELETE --> hidden<!-- ENDIF -->" data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
+				</dd>
+			<!-- ENDIF -->
+			</dl>
 		<!-- END revision -->
-		<!-- IF S_DISPLAY_COMPARISON -->
-		<fieldset class="actions-left">
-			<input class="button1" type="submit" name="compare" value="{L_COMPARE_SELECTED}" />
-		</fieldset>
-		<!-- ENDIF -->
-	</form>
-</div>
+		</ul>
+	</div>
+<!-- IF S_DISPLAY_COMPARISON -->
+	<fieldset>
+		<input class="button1" type="submit" name="compare" value="{L_COMPARE_SELECTED}" />
+	</fieldset>
+<!-- ENDIF -->
+</form>

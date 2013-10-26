@@ -260,7 +260,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 }
 
 // Permission to do the action asked?
-$is_authed = false;
+$is_authed = $is_only_wiki_user = false;
 
 switch ($mode)
 {
@@ -292,9 +292,11 @@ switch ($mode)
 	break;
 
 	case 'edit':
-		if ($user->data['is_registered']
-			&& ($auth->acl_gets('f_edit', 'm_edit', $forum_id)
-				 || (!empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id))))
+		$authed_to_wiki_edit = (!empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id));
+		$authed_to_edit = ($auth->acl_get('m_edit', $forum_id) || ($auth->acl_get('f_edit', $forum_id) && $post_data['poster_id'] == $user->data['user_id']));
+		$is_only_wiki_user = ($authed_to_wiki_edit && !$authed_to_edit);
+
+		if ($user->data['is_registered'] && ($authed_to_edit || $authed_to_wiki_edit))
 		{
 			$is_authed = true;
 		}
@@ -348,11 +350,6 @@ if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_statu
 // else it depends on editing times, lock status and if we're the correct user
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 {
-	if ($user->data['user_id'] != $post_data['poster_id'] && (empty($post_data['post_wiki']) && $auth->acl_get('f_wiki_edit', $forum_id)))
-	{
-		trigger_error('USER_CANNOT_EDIT');
-	}
-
 	if (!($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']))
 	{
 		trigger_error('CANNOT_EDIT_TIME');
@@ -722,7 +719,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
+	$post_data['post_edit_reason']	= ($mode == 'edit') ? $request->variable('edit_reason', '', true) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -738,6 +735,8 @@ if ($submit || $preview || $refresh)
 	$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs', $forum_id) || !$auth->acl_get('u_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
+	$post_data['post_wiki']			= ($is_only_wiki_user) ? $post_data['post_wiki'] : $request->is_set('wiki_post', \phpbb\request\request_interface::POST);
+
 	if ($config['allow_topic_notify'] && $user->data['is_registered'])
 	{
 		$notify = (isset($_POST['notify'])) ? true : false;
@@ -750,7 +749,6 @@ if ($submit || $preview || $refresh)
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
-	$post_wiki			= (isset($_POST['wiki_post']));
 
 	if ($submit)
 	{
@@ -1166,7 +1164,7 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
-				'post_wiki'				=> $post_wiki,
+				'post_wiki'				=> $post_data['post_wiki'],
 
 
 				'original_post_data'	=> $original_post_data,
@@ -1509,7 +1507,6 @@ $template->assign_vars(array(
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
 	'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
-	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
 	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
@@ -1538,6 +1535,7 @@ $template->assign_vars(array(
 	'S_FORM_ENCTYPE'			=> $form_enctype,
 	'S_WIKI_ALLOWED'			=> $config['revisions_allow_wiki'] && $auth->acl_gets('m_revisions', 'f_wiki_create', 'f_revisions', $forum_id),
 	'S_WIKI_CHECKED'			=> !empty($post_data['post_wiki']),
+	'S_WIKI_OPTION_DISABLED'	=> $is_only_wiki_user,
 
 	'S_BBCODE_IMG'			=> $img_status,
 	'S_BBCODE_URL'			=> $url_status,

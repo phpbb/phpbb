@@ -90,164 +90,44 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
-ul.revisionlist li {
-	display: block;
-	list-style-type: none;
-	margin: 0;
-}
-
-ul.revisionlist dl {
-	position: relative;
-}
-
-ul.revisionlist li.row dl {
-	padding: 2px 0;
-}
-
-ul.revisionlist dt {
-	display: block;
-	float: left;
+ul.revisions li.row dt, ul.revisions li.row dd {
 	font-size: 1.1em;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding: 3px 5px;
+	vertical-align: middle;
+}
+
+.out_of_range .revision_user, .out_of_range .revision_date, .out_of_range .revision_options {
+	opacity: 0.6;
+}
+.revision_compare, .revision_view, .revision_user, .revision_date {
 	text-align: center;
-	line-height: 2.2em;
 }
 
-ul.revisionlist dd {
-	display: block;
-	float: left;
-	border-left: 1px solid transparent;
-	padding: 5px 11px;
+dd.revision_reason, dd.revision_options {
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
-dd.revisionview {
+li.header dt.revision_view, ul.topiclist dt.revision_view {
 	width: 8%;
-	line-height: 1.0em;
-	font-size: 1.0em;
+	margin-right: 0;
 }
 
-dd.revisionuser {
-	width: 10%;
-	line-height: 1.0em;
-	font-size: 1.0em;
+li.header dt.revision_view {
+	margin-left: 10px;
 }
 
-dd.revisiondate {
-	width: 25%;
-	line-height: 1.0em;
-	font-size: 1.0em;
+.revision_compare { 
+	width: 6%;
 }
+.revision_user { width: 18%; }
+.revision_date { width: 16%; }
+.revision_reason { width: 35%; }
 
-dd.revisionreason {
-	width: 25%;
-	line-height: 1.0em;
-	font-size: 1.0em;
-}
-
-div.revisions_block {
-	display: block;
-	width: auto;
-	margin: 0 auto;
-	margin-bottom: 30px;
-}
-
-fieldset.actions-left {
-	float: left;
-	padding-top:10px;
-}
-
-fieldset.actions-right {
-	float: right;
-}
-
-.no-display {
-	display: none;
-}
-
-ul.revisions {
-	display: block;
-	list-style-type: none;
-	width: 100%;
-	border-top: 1px solid #CADCEB;
+.success_message {
 	font-size: 1.1em;
-}
-
-ul.revisions:first-child {
-	margin-top: 5px;
-}
-
-ul.revisions:last-child {
-	margin-bottom: 5px;
-}
-
-ul.revisions.even {
-	background-color: #E1EBF2;
-}
-
-ul.revisions.odd {
-	background-color: #ECF3F7;
-}
-
-ul.revisions.out_of_range {
-	opacity: 0.7;
-}
-
-ul.revisions.current {
-	background-color: #CADCEB;
-	border: 1px solid #CADCEB;
-}
-
-ul.revisions li {
-	display: inline-block;
-	padding: 5px 10px;
-}
-
-ul.revisions li.revision_id {
-	vertical-align: middle;
-	width: 8%;
-}
-
-ul.revisions li.revision_user {
-	vertical-align: middle;
-	width: 10%;
-}
-
-ul.revisions li.revision_user span {
-	vertical-align: top;
-	padding-top: 2px;
-	display: inline-block;
-}
-
-ul.revisions li.revision_date {
-	width: 25%;
-}
-
-ul.revisions li.revision_reason {
-	width: 25%;
-}
-
-div.revision_action_success {
 	padding: 5px;
 	border-radius: 5px;
-}
-
-dl.revision {
-	display: block;
-	width: 100%;
-	border-bottom: 1px solid #CADCEB;
-	padding: 5px;
-}
-
-dl.revision dt {
-	display: inline-block;
-	width: 20%;
-	vertical-align: top;
-}
-
-dl.revision dd {
-	display: inline-block;
-	width: 75%;
 }
 
 .forum-image {
@@ -488,6 +368,10 @@ div[class].topic-actions {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	padding-bottom: 1px;
+}
+
+.basic-content {
+	font-size: 1.1em;
 }
 
 .content h2, .panel h2 {

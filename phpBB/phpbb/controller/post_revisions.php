@@ -169,7 +169,7 @@ class post_revisions
 
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-			'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+			'U_VIEW_PROFILE'	=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 
 			'RANK_TITLE'		=> $post_data['rank_title'],
 			'RANK_IMG'			=> $post_data['rank_image'],
@@ -221,9 +221,15 @@ class post_revisions
 			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>');
 		}
 
+		// Ensure that the user can view the revision
+		if (!$this->get_view_permission($post_data))
+		{
+			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
+		}
+
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-			'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+			'U_VIEW_PROFILE'	=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 
 			'RANK_TITLE'		=> $post_data['rank_title'],
 			'RANK_IMG'			=> $post_data['rank_image'],
@@ -580,7 +586,7 @@ class post_revisions
 			$comparison = new \phpbb\revisions\comparison($post->get_current_revision(), $revisions[$to]);
 			$this->template->assign_vars(array(
 				'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
-				'U_PROFILE'			=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
+				'U_VIEW_PROFILE'	=> get_username_string('profile', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
 
 				'RANK_TITLE'		=> $post_data['rank_title'],
 				'RANK_IMG'			=> $post_data['rank_image'],
