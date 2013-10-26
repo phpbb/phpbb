@@ -372,7 +372,7 @@ ul.linklist li.responsive-menu a.responsive-menu-link {
 	font-size: 16px;
 	position: relative;
 	width: 16px;
-	line-height: 16px;
+	line-height: 16.5px;
 	text-decoration: none;
 }
 
@@ -533,20 +533,22 @@ ul.linklist.bulletin li.no-bulletin:before {
 
 /* Responsive breadcrumbs
 ----------------------------------------*/
+.breadcrumbs .crumb {
+	word-wrap: normal;
+}
+
 .breadcrumbs .crumb a {
 	display: inline-block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 	vertical-align: bottom;
+	overflow: hidden;
 }
 
 .breadcrumbs.wrapped .crumb a { letter-spacing: -.3px; }
 .breadcrumbs.wrapped .crumb.wrapped-medium a { letter-spacing: -.4px; }
 .breadcrumbs.wrapped .crumb.wrapped-tiny a { letter-spacing: -.5px; }
 
-.breadcrumbs .crumb.wrapped a {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 .breadcrumbs .crumb.wrapped-max a { max-width: 120px; }
 .breadcrumbs .crumb.wrapped-wide a { max-width: 100px; }
 .breadcrumbs .crumb.wrapped-medium a { max-width: 80px; }
