@@ -1053,6 +1053,13 @@ select#full_folder_action {
 	width: 95%;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	fieldset {
+		padding: 5px;
+	}
+}
+
 /* Definition list layout for forms
 	Other general def. list properties defined in prosilver_main.css
 ---------------------------------------- */
@@ -1182,6 +1189,51 @@ input:focus, textarea:focus {
 	background-color: #E9E9E2;
 	color: #BC2A4D;
 	outline-style: none;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	fieldset dl {
+		margin-bottom: 5px;
+		padding-bottom: 5px;
+		border-bottom: 1px solid #e8e8e8;
+	}
+
+	fieldset > dl:last-child, fieldset > form:last-child > dl:last-child {
+		border-bottom-width: 0;
+		margin-bottom: 0;
+	}
+
+	fieldset dt, .rtl fieldset dt, fieldset dd, .rtl fieldset dd {
+		border-width: 0;
+		margin-left: 0;
+		margin-right: 0;
+		float: none;
+		width: auto;
+	}
+
+	.ltr fieldset dd {
+		padding-left: 20px;
+	}
+
+	.rtl fieldset dd {
+		padding-right: 20px;
+	}
+
+	dd select, dd input {
+		max-width: 300px;
+	}
+
+	dd input[type="number"] {
+		max-width: 70px;
+	}
+}
+
+@media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
+{
+	dd select, dd input {
+		max-width: 240px;
+	}	
 }
 
 /* Submit button fieldset or paragraph
@@ -1925,4 +1977,12 @@ fieldset.permissions .padding {
 .requirements_not_met dt label, .requirements_not_met dd p {
 	color: #FFFFFF;
 	font-size: 1.4em;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.responsive-hide { display: none !important; }
+	.responsive-show { display: block !important; }
+	.responsive-show-inline { display: inline !important; }
+	.responsive-show-inline-block { display: inline-block !important; }
 }

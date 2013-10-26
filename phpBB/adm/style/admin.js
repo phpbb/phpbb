@@ -133,6 +133,17 @@ function parse_document(container)
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
 	});
+
+	/**
+	* Fieldsets with empty <span>
+	*/
+	container.find('fieldset dt > span:last-child').each(function() {
+		var $this = $(this);
+		if ($this.html() == '&nbsp;') {
+			$this.addClass('responsive-hide');
+		}
+		
+	});
 }
 
 /**
