@@ -25,7 +25,11 @@ function parse_document(container)
 
 		// Set onclick event
 		blocks.children('a.header').click(function() {
-			$(this).parent().toggleClass('active');
+			var parent = $(this).parent();
+			if (!parent.hasClass('active')) {
+				parent.siblings().removeClass('active');
+			}
+			parent.toggleClass('active');
 		});
 
 		// Set active menu
