@@ -750,6 +750,19 @@ td.name {
 	color: #BC2A4D;
 }
 
+/* Forums list */
+table.forums td.folder {
+	width: 27px;
+	text-align: center;
+}
+
+table.forums td.actions {
+	vertical-align: middle;
+	width: 100px;
+	text-align: right;
+	white-space: nowrap;
+}
+
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
@@ -845,6 +858,36 @@ td.name {
 
 	table.responsive#memberlist td:first-child input[type="checkbox"] {
 		float: right;
+	}
+
+	/* Forums list */
+	table.responsive.forums td.folder {
+		float: left;
+		width: 27px;
+		background: transparent;
+	}
+	.rtl table.responsive.forums td.folder {
+		float: right;
+	}
+
+	table.responsive.forums td.forum-desc {
+		margin-left: 35px;
+		min-height: 27px;
+		background: transparent;
+	}
+
+	.rtl table.responsive.forums td.forum-desc {
+		margin-left: 0;
+		margin-right: 35px;
+	}
+
+	table.responsive.forums td.actions {
+		clear: both;
+		text-align: right !important;
+	}
+
+	.rtl table.responsive.forums td.actions {
+		text-align: left !important;
 	}
 }
 

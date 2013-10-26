@@ -51,12 +51,7 @@ function parse_document(container)
 		// Find columns
 		$this.find('colgroup:first').children().each(function(i) {
 			var column = $(this);
-			if (column.hasClass('col1')) {
-				$this.find('td:nth-child(' + (i + 1) + ')').addClass('col1');
-			}
-			if (column.hasClass('col2')) {
-				$this.find('td:nth-child(' + (i + 1) + ')').addClass('col2');
-			}
+			$this.find('td:nth-child(' + (i + 1) + ')').addClass(column.prop('className'));
 		});
 
 		// Find each header
