@@ -1956,6 +1956,35 @@ fieldset.permissions .padding {
 	padding: 0;
 }
 
+/* Avatars gallery
+---------------------------------------- */
+#gallery {
+	display: block;
+	margin: 0 -5px;
+	padding: 0;
+	overflow: hidden;
+}
+
+#gallery li {
+	display: block;
+	float: left;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	background: #fff;
+	padding: 5px;
+	margin: 5px;
+}
+
+#gallery li:hover {
+	background-color: #eee;
+}
+
+#gallery li label {
+	display: block;
+	text-align: center;
+	padding: 0;
+}
+
 /* Classes for additional tasks
 ---------------------------------------- */
 
