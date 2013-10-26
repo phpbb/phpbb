@@ -54,6 +54,16 @@ function parse_document(container)
 			$this.find('td:nth-child(' + (i + 1) + ')').addClass(column.prop('className'));
 		});
 
+		// Styles table
+		if ($this.hasClass('styles')) {
+			$this.find('td:first-child[style]').each(function() {
+				var style = $(this).attr('style');
+				if (style.length) {
+					$(this).parent('tr').attr('style', style.toLowerCase().replace('padding', 'margin')).addClass('responsive-style-row');
+				}
+			});
+		}
+
 		// Find each header
 		if (!$this.data('no-responsive-header'))
 		{

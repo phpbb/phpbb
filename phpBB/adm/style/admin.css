@@ -763,6 +763,11 @@ table.forums td.actions {
 	white-space: nowrap;
 }
 
+/* Styles list */
+table.styles td.users, table.styles td.actions, table.styles td.mark {
+	text-align: center;
+}
+
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
@@ -888,6 +893,16 @@ table.forums td.actions {
 
 	.rtl table.responsive.forums td.actions {
 		text-align: left !important;
+	}
+
+	/* Styles list */
+	table.responsive.styles tr.responsive-style-row td:first-child {
+		padding-left: 4px !important;
+		padding-right: 4px !important;
+	}
+
+	table.responsive.styles td:first-child > dfn, table.responsive.styles td.actions > dfn {
+		display: none !important;
 	}
 }
 

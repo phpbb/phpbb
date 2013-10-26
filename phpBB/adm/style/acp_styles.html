@@ -79,7 +79,7 @@
 <!-- ENDIF -->
 
 <!-- IF .styles_list -->
-	<table cellspacing="1">
+	<table cellspacing="1" class="styles">
 	<thead>
 	<tr>
 		<th>{L_STYLE_NAME}</th>
@@ -97,9 +97,9 @@
 		<!-- ELSE -->
 			<!-- IF $ROW_CLASS == 'row2a' --><!-- DEFINE $ROW_CLASS = 'row2b' --><!-- ELSE --><!-- DEFINE $ROW_CLASS = 'row2a' --><!-- ENDIF -->
 		<!-- ENDIF -->
-		<td class="{$ROW_CLASS}" style="padding-left: {styles_list.PADDING}px;">
+		<td class="{$ROW_CLASS}" style="padding-{S_CONTENT_FLOW_BEGIN}: {styles_list.PADDING}px;">
 			<!-- IF styles_list.STYLE_ID and styles_list.COMMENT == '' and styles_list.STYLE_ACTIVE -->
-				<div class="default-style" style="display: none; float: right;">
+				<div class="default-style" style="display: none; float: {S_CONTENT_FLOW_END};">
 					<input class="radio" type="radio" name="default" value="{styles_list.STYLE_ID}"<!-- IF styles_list.DEFAULT --> checked="checked"<!-- ELSE --><!-- DEFINE $S_DEFAULT = 1 --><!-- ENDIF --> title="{L_STYLE_DEFAULT}" />
 				</div>
 			<!-- ENDIF -->
@@ -117,9 +117,9 @@
 			<!-- ENDIF -->
 		</td>
 		<!-- IF not STYLES_LIST_HIDE_COUNT -->
-			<td class="{$ROW_CLASS}" style="text-align: center;">{styles_list.USERS}</td>
+			<td class="{$ROW_CLASS} users">{styles_list.USERS}</td>
 		<!-- ENDIF -->
-		<td class="{$ROW_CLASS}" style="text-align: center;">
+		<td class="{$ROW_CLASS} actions">
 			<!-- BEGIN actions -->
 				<!-- IF styles_list.actions.S_ROW_COUNT > 0 --> | <!-- ENDIF -->
 				<!-- IF styles_list.actions.U_ACTION -->
@@ -129,7 +129,7 @@
 			<!-- END actions -->
 		</td>
 		{styles_list.EXTRA}
-		<td class="{$ROW_CLASS}" width="20" style="text-align: center;">
+		<td class="{$ROW_CLASS} mark" width="20">
 			<!-- IF styles_list.STYLE_ID -->
 				<input class="checkbox" type="checkbox" name="ids[]" value="{styles_list.STYLE_ID}" />
 			<!-- ELSE -->
