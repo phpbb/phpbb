@@ -115,7 +115,7 @@ function parse_document(container)
 					return;
 				}
 
-				if (text.length && text !== '-') {
+				if ((text.length && text !== '-') || cell.children().length) {
 					cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
 				}
 				else {
