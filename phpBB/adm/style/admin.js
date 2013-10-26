@@ -71,8 +71,9 @@ function parse_document(container)
 				var cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
 					dfn = cell.attr('data-dfn'),
-					text = dfn ? dfn : cell.text();
+					text = dfn ? dfn : cell.text().trim();
 
+				if (text == '&nbsp;') text = '';
 				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
 
 				for (i=0; i<colspan; i++) {
@@ -116,7 +117,9 @@ function parse_document(container)
 				}
 
 				if ((text.length && text !== '-') || cell.children().length) {
-					cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
+					if (headers[column] != '') {
+						cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
+					}
 				}
 				else {
 					cell.addClass('empty');
