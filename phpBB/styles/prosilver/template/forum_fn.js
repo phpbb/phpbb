@@ -409,108 +409,6 @@ function insert_single_user(formId, user)
 	self.close();
 }
 
-function toggle_dropdown()
-{
-	var $this = $(this),
-		options = $this.data('dropdown-options'),
-		parent = options.parent,
-		visible = parent.hasClass('dropdown-visible');
-
-	if (!visible) {
-		// Hide other dropdown menus
-		$('.dropdown-container.dropdown-visible .dropdown-toggle').each(toggle_dropdown);
-
-		// Figure out direction of dropdown
-		var direction = options.direction,
-			verticalDirection = options.verticalDirection,
-			offset = $this.offset();
-
-		if (direction == 'auto') {
-			if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
-				direction = 'right';
-			}
-			else {
-				direction = 'left';
-			}
-		}
-		parent.toggleClass(options.leftClass, direction == 'left').toggleClass(options.rightClass, direction == 'right');
-
-		if (verticalDirection == 'auto') {
-			var height = $(window).height(),
-				top = offset.top - $(window).scrollTop();
-
-			if (top < height * 0.7) {
-				verticalDirection = 'down';
-			}
-			else {
-				verticalDirection = 'up';
-			}
-		}
-		parent.toggleClass(options.upClass, verticalDirection == 'up').toggleClass(options.downClass, verticalDirection == 'down');
-	}
-
-	options.dropdown.toggle();
-	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
-
-	// Check dimensions when showing dropdown
-	// !visible because variable shows state of dropdown before it was toggled
-	if (!visible) {
-		options.dropdown.find('.dropdown-contents').each(function() {
-			var $this = $(this),
-				windowWidth = $(window).width();
-
-			$this.css({
-				marginLeft: 0,
-				left: 0,
-				maxWidth: (windowWidth - 4) + 'px'
-			});
-
-			var offset = $this.offset().left,
-				width = $this.outerWidth(true);
-
-			if (offset < 2) {
-				$this.css('left', (2 - offset) + 'px');
-			}
-			else if ((offset + width + 2) > windowWidth) {
-				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
-			}
-		});
-	}
-}
-
-/**
-* Dropdown handler
-* Shows/hides dropdown, decides which side to open to
-*
-* @param [jQuery] toggle Link that toggles dropdown
-* @param [jQuery] dropdown Dropdown menu
-* @param [Object] [options] List of options
-*/
-function register_dropdown(toggle, dropdown, options)
-{
-	var ops = {
-			parent: toggle.parent(), // Parent item to add classes to
-			direction: 'auto', // Direction of dropdown menu. Possible values: auto, left, right
-			verticalDirection: 'auto', // Vertical direction. Possible values: auto, up, down
-			visibleClass: 'visible', // Class to add to parent item when dropdown is visible
-			leftClass: 'dropdown-left', // Class to add to parent item when dropdown opens to left side
-			rightClass: 'dropdown-right', // Class to add to parent item when dropdown opens to right side
-			upClass: 'dropdown-up', // Class to add to parent item when dropdown opens above menu item
-			downClass: 'dropdown-down' // Class to add to parent item when dropdown opens below menu item
-		};
-	if (options) {
-		ops = $.extend(ops, options);
-	}
-	ops.dropdown = dropdown;
-
-	ops.parent.addClass('dropdown-container');
-	toggle.addClass('dropdown-toggle');
-
-	toggle.data('dropdown-options', ops);
-
-	toggle.click(toggle_dropdown);
-}
-
 /**
 * Parse document block
 */
@@ -943,7 +841,7 @@ function parse_document(container)
 			links.css('display', 'none');
 		}
 
-		register_dropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+		phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
 
 		check();
 		$(window).resize(check);
@@ -985,7 +883,7 @@ function parse_document(container)
 			if (height <= maxHeight) {
 				responsive = false;
 				if (item.hasClass('dropdown-visible')) {
-					toggle_dropdown.call(item.find('a.responsive-tab-link').get(0));
+					phpbb.toggleDropdown.call(item.find('a.responsive-tab-link').get(0));
 				}
 				return;
 			}
@@ -1010,7 +908,7 @@ function parse_document(container)
 			menu.find('a').click(function() { check(true); });
 		}
 
-		register_dropdown(item.find('a.responsive-tab-link'), item.find('.dropdown'), {visibleClass: 'activetab'});
+		phpbb.registerDropdown(item.find('a.responsive-tab-link'), item.find('.dropdown'), {visibleClass: 'activetab'});
 
 		check(true);
 		$(window).resize(check);
@@ -1046,7 +944,7 @@ function parse_document(container)
 
 			var parents = $(e.target).parents();
 			if (!parents.is('.dropdown-container.dropdown-visible')) {
-				$('.dropdown-container.dropdown-visible .dropdown-toggle').each(toggle_dropdown);
+				$('.dropdown-container.dropdown-visible .dropdown-toggle').each(phpbb.toggleDropdown);
 			}
 		});
 
