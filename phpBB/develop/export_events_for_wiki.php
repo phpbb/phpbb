@@ -6,6 +6,11 @@
 *
 */
 
+if (php_sapi_name() != 'cli')
+{
+	die("This program must be run from the command line.\n");
+}
+
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 $phpbb_root_path = __DIR__ . '/../';
 
