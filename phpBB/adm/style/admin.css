@@ -1224,6 +1224,7 @@ select#full_folder_action {
 	}
 
 	fieldset.quick, p.quick {
+		float: none !important;
 		text-align: center;
 	}
 
@@ -1861,6 +1862,15 @@ li.pagination ul {
 /* Permission interface
 ---------------------------------------- */
 
+.column1, .column2 {
+	width: 48%;
+	float: left;
+}
+
+.ltr .column2, .rtl .column1 {
+	float: right;
+}
+
 fieldset.permissions legend {
 	text-transform: none;
 }
@@ -2147,6 +2157,66 @@ fieldset.permissions .padding {
 	display: block;
 	margin: 0;
 	padding: 0;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.column1, .column2 {
+		float: none !important;
+		width: auto;
+	}
+
+	.permissions-simple {
+		clear: both;
+	}
+
+	.permissions-simple td, .permissions-simple dd {
+		width: auto !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	.permissions-simple dd {
+		margin-top: 5px;
+	}
+
+	.permissions-panel .tablewrap {
+		margin: 0 5px;
+	}
+
+	.permissions-category {
+		min-width: 0;
+		margin: 0 !important;
+	}
+
+	.permissions-category a, .permissions-category a span.tabbg {
+		display: block;
+		float: none !important;
+		background: transparent none;
+	}
+
+	.permissions-category a {
+		background: #d9e5ee;
+		margin: 5px 0;
+		padding: 0 !important;
+		border-radius: 3px;
+		text-decoration: underline;
+	}
+
+	.permissions-category .activetab a {
+		background-color: #dd6900;
+		color: #fff;
+	}
+
+	.permissions-category a span.tabbg {
+		color: inherit !important;
+		padding-top: 6px !important;
+		padding-bottom: 6px !important;
+	}
+
+	.permissions-category .activetab span.colour {
+		border-color: #fff;
+	}
 }
 
 /* Avatars gallery
