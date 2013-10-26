@@ -24,9 +24,8 @@ function usage()
 	exit(2);
 }
 
-function export_from_eventsmd($filter)
+function export_from_eventsmd($phpbb_root_path, $filter)
 {
-	global $phpbb_root_path;
 	$file_content = file_get_contents($phpbb_root_path . 'docs/events.md');
 
 	$events = explode("\n\n", $file_content);
@@ -73,15 +72,13 @@ function export_from_eventsmd($filter)
 	}
 }
 
-function export_from_php()
+function export_from_php($phpbb_root_path)
 {
-	global $phpbb_root_path;
-
 	$files = get_file_list($phpbb_root_path);
 	$events = array();
 	foreach ($files as $file)
 	{
-		$file_events = check_for_events($file);
+		$file_events = check_for_events($phpbb_root_path, $file);
 		if (!empty($file_events))
 		{
 			$events = array_merge($events, $file_events);
@@ -97,10 +94,8 @@ function export_from_php()
 	}
 }
 
-function check_for_events($file)
+function check_for_events($phpbb_root_path, $file)
 {
-	global $phpbb_root_path;
-
 	$events = array();
 	$content = file_get_contents($phpbb_root_path . $file);
 
@@ -276,32 +271,30 @@ function get_file_list($dir, $path = '')
 	return $files;
 }
 
-function validate_argument_count($count)
+function validate_argument_count($arguments, $count)
 {
-	global $argv;
-
-	if (count($argv) <= $count)
+	if ($arguments <= $count)
 	{
 		usage();
 	}
 }
 
-validate_argument_count(1);
+validate_argument_count($argc, 1);
 
 $action = $argv[1];
 
 switch ($action)
 {
 	case 'acp':
-		export_from_eventsmd('acp');
+		export_from_eventsmd($phpbb_root_path, 'acp');
 		break;
 
 	case 'styles':
-		export_from_eventsmd('styles');
+		export_from_eventsmd($phpbb_root_path, 'styles');
 		break;
 
 	case 'php':
-		export_from_php();
+		export_from_php($phpbb_root_path);
 		break;
 
 	default:
