@@ -310,12 +310,10 @@ li {
 ----------------------------------------*/
 #tabs {
 	line-height: normal;
-	margin: 0 0 -6px 7px;
+	margin: 0 7px;
 	min-width: 600px;
-}
-
-.rtl #tabs {
-	margin: 0 7px -6px 0;
+	position: relative;
+	z-index: 2;
 }
 
 #tabs ul {
@@ -324,12 +322,25 @@ li {
 	list-style: none;
 }
 
+#tabs ul:after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
 #tabs li {
-	display: inline;
+	display: block;
+	float: left;
 	margin: 0;
 	padding: 0;
 	font-size: 0.85em;
 	font-weight: bold;
+}
+
+#tabs li:after {
+	content: '';
+	display: block;
+	clear: both;
 }
 
 #tabs a {
@@ -350,6 +361,7 @@ li {
 	display: block;
 	background: url("../images/bg_tabs2.gif") no-repeat 100% -34px;
 	padding: 7px 10px 4px 4px;
+	min-height: 14px;
 	color: #767676;
 	white-space: nowrap;
 	font-family: Arial, Helvetica, sans-serif;
@@ -369,12 +381,12 @@ li {
 	color: #BC2A4D;
 }
 
-#tabs #activetab a {
+#tabs .activetab a {
 	background-position: 0 0;
 	border-bottom: 1px solid #DCDEE2;
 }
 
-#tabs #activetab a span {
+#tabs .activetab a span {
 	background-position: 100% 0;
 	padding-bottom: 5px;
 	color: #23649F;
@@ -388,15 +400,91 @@ li {
 	background-position: 100% -69px;
 }
 
-#tabs #activetab a:hover span {
+#tabs .activetab a:hover span {
 	color: #115098;
 }
 
+.responsive-tab {
+	position: relative;
+}
+
+.responsive-tab .responsive-tab-link span {
+	display: inline-block;
+	font-size: 16px;
+	position: relative;
+	width: 16px;
+	line-height: 14px;
+	text-decoration: none;
+}
+
+.responsive-tab .responsive-tab-link span:before {
+	content: '';
+	position: absolute;
+	left: 5px;
+	top: 8px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid #767676;
+	border-top: 0.375em double #767676;
+}
+
+.responsive-tab .responsive-tab-link:hover span:before {
+	border-color: #BC2A4D;
+}
+
+.responsive-tab.activetab .responsive-tab-link span:before {
+	border-color: #23649F;
+}
+
+.responsive-tab.activetab .responsive-tab-link:hover span:before {
+	border-color: #115098;
+}
+
+#tabs .dropdown {
+	top: 18px;
+	margin-right: -1px;
+}
+
+#tabs .dropdown-right .dropdown {
+	margin-left: -2px;
+}
+
+#tabs .dropdown li {
+	display: block !important;
+	float: none;
+	background: transparent none;
+	padding: 0;
+}
+
+#tabs .dropdown a, #tabs .dropdown a span {
+	background: transparent;
+	display: block;
+	border-width: 0;
+	float: none;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+
+#tabs .dropdown a span {
+	padding: 4px 8px;
+	color: inherit !important;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#tabs {
+		min-width: 0;
+	}
+}
 
 /* Main Panel
 ---------------------------------------- */
 #acp {
-	margin: 4px 0;
+	clear: both;
+	position: relative;
+	top: -2px;
+	margin: 0 0 2px;
 	padding: 3px 1px;
 	min-width: 550px;
 	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
@@ -436,7 +524,7 @@ li {
 	padding: 0;
 	border-right: 1px solid #CCCFD3;
 	position: relative;
-	z-index: 2;
+	z-index: 1;
 }
 
 .rtl #menu {
@@ -1300,18 +1388,18 @@ input:focus, textarea:focus {
 		padding-right: 20px;
 	}
 
-	dd select, dd input {
+	select, dd select, dd input {
 		max-width: 300px;
 	}
 
-	dd input[type="number"] {
+	input[type="number"], dd input[type="number"] {
 		max-width: 70px;
 	}
 }
 
 @media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
 {
-	dd select, dd input {
+	select, dd select, dd input {
 		max-width: 240px;
 	}	
 }
@@ -1714,7 +1802,7 @@ li.pagination ul {
 	visibility: hidden;
 }*/
 
-.clearfix, #tabs, .row, #content, fieldset dl, #page-body {
+.clearfix, .row, #content, fieldset dl, #page-body {
 	height: 1%;
 	overflow: hidden;
 }
@@ -2085,6 +2173,116 @@ fieldset.permissions .padding {
 	text-align: center;
 	padding: 0;
 }
+
+/* Dropdown menu
+----------------------------------------*/
+.dropdown {
+	position: absolute;
+	left: 0;
+	top: 22px;
+	z-index: 2;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding: 9px 0 0;
+}
+
+.dropdown-up .dropdown {
+	top: auto;
+	bottom: 18px;
+	padding: 0 0 9px;
+}
+
+.dropdown-left .dropdown {
+	left: auto;
+	right: 0;
+}
+
+.dropdown .pointer, .dropdown .pointer-inner {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top-width: 0;
+	border-bottom: 10px solid transparent;
+	border-left: 10px dashed transparent;
+	border-right: 10px dashed transparent;
+	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	display: block;
+}
+
+.dropdown-up .pointer, .dropdown-up .pointer-inner {
+	border-bottom-width: 0;
+	border-top: 10px solid transparent;
+}
+
+.dropdown .pointer {
+	right: auto;
+	left: 10px;
+	top: 0;
+	z-index: 3;
+}
+
+.dropdown-up .pointer {
+	bottom: 0;
+	top: auto;
+}
+
+.dropdown-left .dropdown .pointer {
+	left: auto;
+	right: 10px;
+}
+
+.dropdown .pointer-inner {
+	top: auto;
+	bottom: -11px;
+	left: -10px;
+}
+
+.dropdown-up .pointer-inner {
+	bottom: auto;
+	top: -11px;
+}
+
+.dropdown .pointer {
+	border-color: #B9B9B9 transparent;
+}
+
+.dropdown .pointer-inner {
+	border-color: #FFF transparent;
+}
+
+.dropdown .dropdown-contents {
+	z-index: 2;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid #b9b9b9;
+	border-radius: 5px;
+	padding: 5px;
+	position: relative;
+	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.dropdown-up .dropdown-contents {
+	box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown li {
+	float: none;
+	margin: 0;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.wrap .dropdown li, .dropdown.wrap li {
+	white-space: normal;
+}
+
+.dropdown li:before, .dropdown li:after {
+	display: none !important;
+}
+
 
 /* Classes for additional tasks
 ---------------------------------------- */

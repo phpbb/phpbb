@@ -149,6 +149,73 @@ function parse_document(container)
 		}
 		
 	});
+
+	/**
+	* Responsive tabs
+	*/
+	container.find('#tabs').not('[data-skip-responsive]').each(function() {
+		var $this = $(this),
+			$body = $('body'),
+			ul = $this.children(),
+			tabs = ul.children().not('[data-skip-responsive]'),
+			links = tabs.children('a'),
+			item = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
+			menu = item.find('.dropdown-contents'),
+			maxHeight = 0,
+			lastWidth = false,
+			responsive = false;
+
+		links.each(function() {
+			var link = $(this);
+			maxHeight = Math.max(maxHeight, Math.max(link.outerHeight(true), link.parent().outerHeight(true)));
+		})
+
+		function check() {
+			var width = $body.width(),
+				height = $this.height();
+
+			if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
+				return;
+			}
+
+			tabs.show();
+			item.hide();
+
+			lastWidth = width;
+			height = $this.height();
+			if (height <= maxHeight) {
+				responsive = false;
+				if (item.hasClass('dropdown-visible')) {
+					phpbb.toggleDropdown.call(item.find('a.responsive-tab-link').get(0));
+				}
+				return;
+			}
+
+			responsive = true;
+			item.show();
+			menu.html('');
+
+			var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
+				total = availableTabs.length,
+				i, tab;
+
+			for (i = total - 1; i >= 0; i --) {
+				tab = availableTabs.eq(i);
+				menu.prepend(tab.clone(true));
+				tab.hide();
+				if ($this.height() <= maxHeight) {
+					menu.find('a').click(function() { check(true); });
+					return;
+				}
+			}
+			menu.find('a').click(function() { check(true); });
+		}
+
+		phpbb.registerDropdown(item.find('a.responsive-tab-link'), item.find('.dropdown'), {visibleClass: 'activetab', verticalDirection: 'down'});
+
+		check(true);
+		$(window).resize(check);
+	});
 }
 
 /**
