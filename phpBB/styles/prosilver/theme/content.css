@@ -268,7 +268,6 @@ div[class].topic-actions {
 	line-height: 1.48em;
 	width: 76%;
 	float: left;
-	clear: both;
 }
 
 .postbody .ignore {
@@ -282,6 +281,7 @@ div[class].topic-actions {
 
 .postbody h3 {
 	/* Postbody requires a different h3 format - so change it here */
+	float: left;
 	font-size: 1.5em;
 	padding: 2px 0 0 0;
 	margin: 0 0 0.3em 0 !important;
@@ -298,6 +298,7 @@ div[class].topic-actions {
 
 .postbody .content {
 	font-size: 1.3em;
+	overflow-x: auto;
 }
 
 .postbody .content ins {
@@ -347,21 +348,16 @@ div[class].topic-actions {
 
 /* MCP Post details
 ----------------------------------------*/
-#post_details
-{
+#post_details {
 	/* This will only work in IE7+, plus the others */
 	overflow: auto;
 	max-height: 300px;
 }
 
-#expand
-{
-	clear: both;
-}
-
 /* Content container styles
 ----------------------------------------*/
 .content {
+	clear: both;
 	min-height: 3em;
 	overflow: hidden;
 	line-height: 1.4em;
@@ -436,11 +432,12 @@ dl.faq dt {
 
 /* Post author */
 p.author {
-	margin: 0 15em 0.6em 0;
+	margin-bottom: 0.6em;
 	padding: 0 0 5px 0;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	line-height: 1.2em;
+	clear: both;
 }
 
 /* Post signature */
@@ -453,6 +450,11 @@ p.author {
 	line-height: 140%;
 	overflow: hidden;
 	width: 100%;
+}
+
+.signature.standalone {
+	border-top-width: 0;
+	margin-top: 0;
 }
 
 dd .signature {
@@ -563,10 +565,14 @@ blockquote .codebox {
 .attachbox {
 	float: left;
 	width: auto; 
+	max-width: 100%;
 	margin: 5px 5px 5px 0;
 	padding: 6px;
 	border: 1px dashed transparent;
 	clear: left;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .attachbox dt {
@@ -579,6 +585,7 @@ blockquote .codebox {
 	padding-top: 4px;
 	clear: left;
 	border-top: 1px solid transparent;
+	overflow-x: auto;
 }
 
 .attachbox dd dd {
@@ -600,7 +607,7 @@ blockquote .codebox {
 
 .attach-image {
 	margin: 3px 0;
-	width: 100%;
+	max-width: 100%;
 	max-height: 350px;
 	overflow: auto;
 }
@@ -708,7 +715,7 @@ fieldset.polls dd div {
 	font-weight: bold;
 	padding: 0 2px;
 	overflow: visible;
-	min-width: 2%;
+	min-width: 8px;
 }
 
 .pollbar1, .pollbar2, .pollbar3, .pollbar4, .pollbar5 {
@@ -728,7 +735,8 @@ fieldset.polls dd div {
 	/* Also see tweaks.css */
 	margin: 5px 0 10px 0;
 	min-height: 80px;
-	border-left: 1px solid transparent;
+	border: 1px solid transparent;
+	border-width: 0 0 0 1px;
 	width: 22%;
 	float: right;
 	display: inline;
@@ -748,9 +756,19 @@ fieldset.polls dd div {
 	font-weight: normal;
 }
 
-.avatar {
+.postprofile dt.no-profile-rank, .postprofile dd.profile-rank, .postprofile .search-result-date {
+	margin-bottom: 10px;
+}
+
+.postprofile .avatar {
+	display: block;
 	border: none;
 	margin-bottom: 3px;
+}
+
+.postprofile .avatar img {
+	max-width: 90%;
+	height: auto !important;
 }
 
 .online {
@@ -799,4 +817,19 @@ div.dl_links {
 
 .dl_links li {
 	display: inline-block;
+}
+
+/* Show scrollbars for items with overflow on iOS devices
+----------------------------------------*/
+.postbody .content::-webkit-scrollbar, #topicreview::-webkit-scrollbar, #post_details::-webkit-scrollbar, .codebox code::-webkit-scrollbar, .attachbox dd::-webkit-scrollbar, .attach-image::-webkit-scrollbar, #notification_list ul::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+	-webkit-appearance: none;
+	background: rgba(0, 0, 0, .1);
+	border-radius: 3px;
+}
+
+.postbody .content::-webkit-scrollbar-thumb, #topicreview::-webkit-scrollbar-thumb, #post_details::-webkit-scrollbar-thumb, .codebox code::-webkit-scrollbar-thumb, .attachbox dd::-webkit-scrollbar-thumb, .attach-image::-webkit-scrollbar-thumb, #notification_list ul::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, .3);
+	border-radius: 3px;
 }

@@ -27,12 +27,12 @@ phpbb.loadingAlert = function() {
 	} else {
 		loadingAlert.show();
 		dark.fadeIn(phpbb.alertTime, function() {
-			// Wait five seconds and display an error if nothing has been returned by then.
+			// Wait fifteen seconds and display an error if nothing has been returned by then.
 			phpbbAlertTimer = setTimeout(function() {
 				if (loadingAlert.is(':visible')) {
 					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
 				}
-			}, 5000);
+			}, 15000);
 		});
 	}
 
@@ -510,11 +510,11 @@ $('#notification_list_button').click(function(e) {
 	e.preventDefault();
 });
 $('#phpbb').click(function(e) {
-    var target = $(e.target);
+	var target = $(e.target);
 
-    if (!target.is('#notification_list') && !target.is('#notification_list_button') && !target.parents().is('#notification_list')) {
-        $('#notification_list').hide();
-    }
+	if (!target.is('#notification_list, #notification_list_button') && !target.parents().is('#notification_list, #notification_list_button')) {
+		$('#notification_list').hide();
+	}
 });
 
 phpbb.ajaxCallbacks = {};
@@ -624,8 +624,7 @@ phpbb.resizeTextArea = function(items, options) {
 	function resetAutoResize(item) 
 	{
 		var $item = $(item);
-		if ($item.hasClass('auto-resized'))
-		{
+		if ($item.hasClass('auto-resized')) {
 			$(item).css({height: '', resize: ''}).removeClass('auto-resized');
 			configuration.resetCallback.call(item, $item);
 		}
@@ -635,14 +634,14 @@ phpbb.resizeTextArea = function(items, options) {
 	{
 		function setHeight(height)
 		{
+			height += parseInt($item.css('height')) - $item.height();
 			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
 			configuration.resizeCallback.call(item, $item);
 		}
 
 		var windowHeight = $(window).height();
 
-		if (windowHeight < configuration.minWindowHeight)
-		{
+		if (windowHeight < configuration.minWindowHeight) {
 			resetAutoResize(item);
 			return;
 		}
@@ -652,12 +651,14 @@ phpbb.resizeTextArea = function(items, options) {
 			height = parseInt($item.height()),
 			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
-		if (height > maxHeight)
-		{
+		if (height < 0) {
+			return;
+		}
+
+		if (height > maxHeight) {
 			setHeight(maxHeight);
 		}
-		else if (scrollHeight > (height + 5))
-		{
+		else if (scrollHeight > (height + 5)) {
 			setHeight(Math.min(maxHeight, scrollHeight));
 		}
 	}
@@ -670,8 +671,7 @@ phpbb.resizeTextArea = function(items, options) {
 
 	$(window).resize(function() {
 		items.each(function() {
-			if ($(this).hasClass('auto-resized'))
-			{
+			if ($(this).hasClass('auto-resized')) {
 				autoResize(this);
 			}
 		});
@@ -830,11 +830,145 @@ phpbb.applyCodeEditor = function(textarea) {
 };
 
 /**
+* List of classes that toggle dropdown menu,
+* list of classes that contain visible dropdown menu
+*
+* Add your own classes to strings with comma (probably you
+* will never need to do that)
+*/
+phpbb.dropdownHandles = '.dropdown-container.dropdown-visible .dropdown-toggle';
+phpbb.dropdownVisibleContainers = '.dropdown-container.dropdown-visible';
+
+/**
+* Dropdown toggle event handler
+* This handler is used by phpBB.registerDropdown() and other functions
+*/
+phpbb.toggleDropdown = function() {
+	var $this = $(this),
+		options = $this.data('dropdown-options'),
+		parent = options.parent,
+		visible = parent.hasClass('dropdown-visible');
+
+	if (!visible) {
+		// Hide other dropdown menus
+		$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
+
+		// Figure out direction of dropdown
+		var direction = options.direction,
+			verticalDirection = options.verticalDirection,
+			offset = $this.offset();
+
+		if (direction == 'auto') {
+			if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
+				direction = 'right';
+			}
+			else {
+				direction = 'left';
+			}
+		}
+		parent.toggleClass(options.leftClass, direction == 'left').toggleClass(options.rightClass, direction == 'right');
+
+		if (verticalDirection == 'auto') {
+			var height = $(window).height(),
+				top = offset.top - $(window).scrollTop();
+
+			if (top < height * 0.7) {
+				verticalDirection = 'down';
+			}
+			else {
+				verticalDirection = 'up';
+			}
+		}
+		parent.toggleClass(options.upClass, verticalDirection == 'up').toggleClass(options.downClass, verticalDirection == 'down');
+	}
+
+	options.dropdown.toggle();
+	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
+
+	// Check dimensions when showing dropdown
+	// !visible because variable shows state of dropdown before it was toggled
+	if (!visible) {
+		options.dropdown.find('.dropdown-contents').each(function() {
+			var $this = $(this),
+				windowWidth = $(window).width();
+
+			$this.css({
+				marginLeft: 0,
+				left: 0,
+				maxWidth: (windowWidth - 4) + 'px'
+			});
+
+			var offset = $this.offset().left,
+				width = $this.outerWidth(true);
+
+			if (offset < 2) {
+				$this.css('left', (2 - offset) + 'px');
+			}
+			else if ((offset + width + 2) > windowWidth) {
+				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
+			}
+		});
+	}
+
+	// Prevent event propagation
+	if (arguments.length > 0) {
+		try {
+			var e = arguments[0];
+			e.preventDefault();
+			e.stopPropagation();
+		}
+		catch (error) { }
+	}
+	return false;
+};
+
+/**
+* Register dropdown menu
+* Shows/hides dropdown, decides which side to open to
+*
+* @param {jQuery} toggle Link that toggles dropdown.
+* @param {jQuery} dropdown Dropdown menu.
+* @param {Object} options List of options. Optional.
+*/
+phpbb.registerDropdown = function(toggle, dropdown, options)
+{
+	var ops = {
+			parent: toggle.parent(), // Parent item to add classes to
+			direction: 'auto', // Direction of dropdown menu. Possible values: auto, left, right
+			verticalDirection: 'auto', // Vertical direction. Possible values: auto, up, down
+			visibleClass: 'visible', // Class to add to parent item when dropdown is visible
+			leftClass: 'dropdown-left', // Class to add to parent item when dropdown opens to left side
+			rightClass: 'dropdown-right', // Class to add to parent item when dropdown opens to right side
+			upClass: 'dropdown-up', // Class to add to parent item when dropdown opens above menu item
+			downClass: 'dropdown-down' // Class to add to parent item when dropdown opens below menu item
+		};
+	if (options) {
+		ops = $.extend(ops, options);
+	}
+	ops.dropdown = dropdown;
+
+	ops.parent.addClass('dropdown-container');
+	toggle.addClass('dropdown-toggle');
+
+	toggle.data('dropdown-options', ops);
+
+	toggle.click(phpbb.toggleDropdown);
+};
+
+/**
 * Apply code editor to all textarea elements with data-bbcode attribute
 */
 $(document).ready(function() {
 	$('textarea[data-bbcode]').each(function() {
 		phpbb.applyCodeEditor(this);
+	});
+
+	// Hide active dropdowns when click event happens outside
+	$('body').click(function(e) {
+		var parents = $(e.target).parents();
+		if (!parents.is(phpbb.dropdownVisibleContainers)) {
+			$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
+		}
 	});
 });
 

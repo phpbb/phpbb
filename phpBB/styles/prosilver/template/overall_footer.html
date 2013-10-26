@@ -5,8 +5,8 @@
 	<div class="navbar">
 		<div class="inner">
 
-		<ul class="linklist leftside bulletin">
-			<li class="icon-home"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}">{L_SITE_HOME}</a> <strong>&#8249;</strong> <!-- ENDIF --><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a>
+		<ul class="linklist bulletin">
+			<li class="icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}">{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF --><span class="crumb"><a href="{U_INDEX}" accesskey="h">{L_INDEX}</a></span>
 				<!-- EVENT overall_footer_breadcrumb_append -->
 			</li>
 			<!-- IF not S_IS_BOT -->
@@ -15,11 +15,9 @@
 				<!-- IF U_BOOKMARK_TOPIC --><li class="icon-bookmark"><a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}">{S_BOOKMARK_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_BUMP_TOPIC --><li class="icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
 			<!-- ENDIF -->
-		</ul>
-		<ul class="linklist rightside bulletin">
-			<!-- IF U_TEAM --><li><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF -->
-			<!-- IF not S_IS_BOT --><li><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
-			<li>{S_TIMEZONE}</li>
+			<li class="rightside">{S_TIMEZONE}</li>
+			<!-- IF not S_IS_BOT --><li class="rightside"><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
+			<!-- IF U_TEAM --><li class="rightside"><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF -->
 		</ul>
 
 		</div>

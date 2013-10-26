@@ -154,7 +154,7 @@ class manager
 					AND nt.notification_type_id = n.notification_type_id
 					AND nt.notification_type_enabled = 1';
 			$result = $this->db->sql_query($sql);
-			$unread_count = (int) $this->db->sql_fetchfield('unread_count', $result);
+			$unread_count = (int) $this->db->sql_fetchfield('unread_count');
 			$this->db->sql_freeresult($result);
 		}
 
@@ -167,7 +167,7 @@ class manager
 					AND nt.notification_type_id = n.notification_type_id
 					AND nt.notification_type_enabled = 1';
 			$result = $this->db->sql_query($sql);
-			$total_count = (int) $this->db->sql_fetchfield('total_count', $result);
+			$total_count = (int) $this->db->sql_fetchfield('total_count');
 			$this->db->sql_freeresult($result);
 		}
 

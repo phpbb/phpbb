@@ -1,7 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
-<p class="{S_CONTENT_FLOW_END}<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
-<!-- IF U_MCP --><p>{CURRENT_TIME} <br />[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ELSEIF S_USER_LOGGED_IN --><p>{CURRENT_TIME}</p><!-- ENDIF -->
+<p class="{S_CONTENT_FLOW_END} responsive-center<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
+<!-- IF U_MCP --><p class="responsive-center">{CURRENT_TIME} <br />[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ELSEIF S_USER_LOGGED_IN --><p class="responsive-center">{CURRENT_TIME}</p><!-- ENDIF -->
 
 <!-- IF S_DISPLAY_SEARCH or (S_USER_LOGGED_IN and not S_IS_BOT) -->
 <ul class="linklist bulletin">
@@ -15,7 +15,7 @@
 		<!-- ENDIF -->
 		<li><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
 	<!-- ENDIF -->
-	<!-- IF not S_IS_BOT and U_MARK_FORUMS --><li class="rightside"><a href="{U_MARK_FORUMS}" accesskey="m" data-ajax="mark_forums_read" data-overlay="false">{L_MARK_FORUMS_READ}</a></li><!-- ENDIF -->
+	<!-- IF not S_IS_BOT and U_MARK_FORUMS --><li class="rightside mark-read"><a href="{U_MARK_FORUMS}" accesskey="m" data-ajax="mark_forums_read" data-overlay="false">{L_MARK_FORUMS_READ}</a></li><!-- ENDIF -->
 </ul>
 <!-- ENDIF -->
 
@@ -25,10 +25,10 @@
 	<form method="post" action="{S_LOGIN_ACTION}" class="headerspace">
 	<h3><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a><!-- IF S_REGISTER_ENABLED -->&nbsp; &bull; &nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a><!-- ENDIF --></h3>
 		<fieldset class="quick-login">
-			<label for="username">{L_USERNAME}{L_COLON}</label>&nbsp;<input type="text" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" />
-			<label for="password">{L_PASSWORD}{L_COLON}</label>&nbsp;<input type="password" name="password" id="password" size="10" class="inputbox" title="{L_PASSWORD}" />
+			<label for="username"><span>{L_USERNAME}{L_COLON}</span> <input type="text" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" /></label>
+			<label for="password"><span>{L_PASSWORD}{L_COLON}</span> <input type="password" name="password" id="password" size="10" class="inputbox" title="{L_PASSWORD}" /></label>
 			<!-- IF S_AUTOLOGIN_ENABLED -->
-				| <label for="autologin">{L_LOG_ME_IN} <input type="checkbox" name="autologin" id="autologin" /></label>
+				<span class="responsive-hide">|</span> <label for="autologin">{L_LOG_ME_IN} <input type="checkbox" name="autologin" id="autologin" /></label>
 			<!-- ENDIF -->
 			<input type="submit" name="login" value="{L_LOGIN}" class="button2" />
 			{S_LOGIN_REDIRECT}

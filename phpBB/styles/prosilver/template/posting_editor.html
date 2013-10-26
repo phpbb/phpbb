@@ -31,7 +31,7 @@
 			<!-- ENDIF -->
 			<!-- IF not S_EDIT_POST -->
 			<dl class="pmlist">
-				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></dt>
+				<dt><label>{L_TO}{L_COLON}<textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
 				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" tabindex="1" /></dd>
 				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" tabindex="1" /></dd>
@@ -111,14 +111,16 @@
 		<!-- ENDIF -->
 
 		<!-- IF BBCODE_STATUS -->
-		<!-- IF .smiley --><hr /><!-- ENDIF -->
-		{BBCODE_STATUS}<br />
-		<!-- IF S_BBCODE_ALLOWED -->
-			{IMG_STATUS}<br />
-			{FLASH_STATUS}<br />
-			{URL_STATUS}<br />
-		<!-- ENDIF -->
-		{SMILIES_STATUS}
+		<div class="bbcode-status">
+			<!-- IF .smiley --><hr /><!-- ENDIF -->
+			{BBCODE_STATUS}<br />
+			<!-- IF S_BBCODE_ALLOWED -->
+				{IMG_STATUS}<br />
+				{FLASH_STATUS}<br />
+				{URL_STATUS}<br />
+			<!-- ENDIF -->
+			{SMILIES_STATUS}
+		</div>
 		<!-- ENDIF -->
 		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
 			<!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->

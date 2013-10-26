@@ -91,16 +91,22 @@ a.sendemail {
 /* Icon images
 ---------------------------------------- */
 .sitehome, .icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout,
-.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search {
+.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .icon-notification, .icon-pm {
 	background-position: 0 50%;
 	background-repeat: no-repeat;
 	background-image: none;
 	padding: 1px 0 0 17px;
 }
 
-ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before,
+ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before, ul.linklist.bulletin li.icon-notification:before, ul.linklist.bulletin li.icon-pm:before,
 ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:before, ul.linklist.bulletin li.icon-subscribe:before, ul.linklist.bulletin li.icon-unsubscribe:before {
 	display: none;
+}
+
+.icon-home > span:first-child > a, .icon-notification > a, .icon-pm > a {
+	display: inline-block;
+	margin-left: -17px;
+	padding-left: 17px;
 }
 
 /* Poster profile icons
@@ -140,6 +146,65 @@ ul.profile-icons li a:hover { background: none; }
 	margin: 0 3px;
 }
 
+/* Responsive icons in postbody */
+.postbody ul.profile-icons.responsive .responsive-menu {
+	position: relative;
+}
+
+ul.profile-icons.responsive a.responsive-menu-link {
+	display: inline-block;
+	position: relative;
+	margin: 0 5px;
+	width: 20px;
+	height: 20px;
+	text-decoration: none;
+	background: none top left no-repeat;
+}
+
+ul.profile-icons.responsive a.responsive-menu-link:hover {
+	background-position: 0 -20px;
+}
+
+ul.profile-icons.responsive a.responsive-menu-link:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 7px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid transparent;
+	border-top: 0.375em double transparent;
+}
+
+.postbody ul.profile-icons.responsive .popup-pointer {
+	left: auto;
+	right: 7px;
+	top: 20px;
+}
+
+.postbody ul.profile-icons .dropdown li, .postbody ul.profile-icons .dropdown li a {
+	display: block;
+	background: transparent none;
+	width: auto;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	float: none;
+	list-style-type: none;
+}
+
+.postbody ul.profile-icons .dropdown li span {
+	display: block;
+	text-align: right;
+	font-size: 1.2em;
+	line-height: 1.8em;
+	white-space: nowrap;
+}
+
+.hasjs .postbody ul.profile-icons {
+	max-width: 40%;
+}
+
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background: none top left no-repeat; }
 .aim-icon, .aim-icon a			{ background: none top left no-repeat; }
@@ -173,6 +238,7 @@ ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
 ul.profile-icons li.delete-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.info-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.warn-icon	{ width: 20px; height: 20px; }
+ul.profile-icons a.responsive-menu-link	{ width: 20px; height: 20px; }
 
 /* Fix profile icon default margins */
 ul.profile-icons li.edit-icon	{ margin: 0 0 0 3px; }

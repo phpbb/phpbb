@@ -658,10 +658,10 @@ class ucp_profile
 							));
 						}
 					}
-				}
 
-				// Replace "error" strings with their real, localised form
-				$error = $phpbb_avatar_manager->localize_errors($user, $error);
+					// Replace "error" strings with their real, localised form
+					$error = $phpbb_avatar_manager->localize_errors($user, $error);
+				}
 
 				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
 

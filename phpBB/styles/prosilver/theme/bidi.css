@@ -392,11 +392,6 @@
 	margin-left: 0;
 }
 
-/* Post author */
-.rtl p.author {
-	margin: 0 0 0.6em 15em;
-}
-
 .rtl .signature {
 	clear: right;
 }
@@ -484,9 +479,7 @@
 /* Poster profile block
 ----------------------------------------*/
 .rtl .postprofile {
-	border-left: none;
-	border-right-width: 1px;
-	border-right-style: solid;
+	border-width: 0 1px 0 0;
 	float: left;
 /*	text-align: right; */
 }
@@ -535,7 +528,7 @@
 /* Icon images
 ---------------------------------------- */
 .rtl .sitehome, .rtl .icon-faq, .rtl .icon-members, .rtl .icon-home, .rtl .icon-ucp, .rtl .icon-register, .rtl .icon-logout,
-.rtl .icon-bookmark, .rtl .icon-bump, .rtl .icon-subscribe, .rtl .icon-unsubscribe, .rtl .icon-pages, .rtl .icon-search {
+.rtl .icon-bookmark, .rtl .icon-bump, .rtl .icon-subscribe, .rtl .icon-unsubscribe, .rtl .icon-pages, .rtl .icon-search, .rtl .icon-notification, .rtl .icon-pm {
 	background-position: 100% 50%;
 	padding: 1px 17px 0 0;
 }
