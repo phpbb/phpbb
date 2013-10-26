@@ -435,6 +435,8 @@ li {
 	font-size: 1.00em;
 	padding: 0;
 	border-right: 1px solid #CCCFD3;
+	position: relative;
+	z-index: 2;
 }
 
 .rtl #menu {
