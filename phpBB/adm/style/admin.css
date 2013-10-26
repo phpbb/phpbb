@@ -869,6 +869,14 @@ table td.actions {
 	white-space: nowrap;
 }
 
+table tr:first-child td.actions .up, table tr:last-child td.actions .down {
+	display: none;
+}
+
+table tr:first-child td.actions .up-disabled, table tr:last-child td.actions .down-disabled {
+	display: inline !important;
+}
+
 table.styles td.users, table td.mark {
 	text-align: center;
 }
