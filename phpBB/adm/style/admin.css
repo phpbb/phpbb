@@ -856,21 +856,20 @@ td.name {
 	color: #BC2A4D;
 }
 
-/* Forums list */
+/* Specific tables */
 table.forums td.folder {
 	width: 27px;
 	text-align: center;
 }
 
-table.forums td.actions {
+table td.actions {
 	vertical-align: middle;
 	width: 100px;
-	text-align: right;
+	text-align: center;
 	white-space: nowrap;
 }
 
-/* Styles list */
-table.styles td.users, table.styles td.actions, table.styles td.mark {
+table.styles td.users, table td.mark {
 	text-align: center;
 }
 
@@ -972,7 +971,7 @@ table.styles td.users, table.styles td.actions, table.styles td.mark {
 		float: right;
 	}
 
-	/* Forums list */
+	/* Specific tables */
 	table.responsive.forums td.folder {
 		float: left;
 		width: 27px;
@@ -993,22 +992,21 @@ table.styles td.users, table.styles td.actions, table.styles td.mark {
 		margin-right: 35px;
 	}
 
-	table.responsive.forums td.actions {
+	table.responsive td.actions {
 		clear: both;
 		text-align: right !important;
 	}
 
-	.rtl table.responsive.forums td.actions {
+	.rtl table.responsive td.actions {
 		text-align: left !important;
 	}
 
-	/* Styles list */
 	table.responsive.styles tr.responsive-style-row td:first-child {
 		padding-left: 4px !important;
 		padding-right: 4px !important;
 	}
 
-	table.responsive.styles td:first-child > dfn, table.responsive.styles td.actions > dfn {
+	table.responsive.styles td:first-child > dfn, table.responsive td.actions > dfn {
 		display: none !important;
 	}
 }
