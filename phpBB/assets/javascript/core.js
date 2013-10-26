@@ -830,6 +830,16 @@ phpbb.applyCodeEditor = function(textarea) {
 };
 
 /**
+* List of classes that toggle dropdown menu,
+* list of classes that contain visible dropdown menu
+*
+* Add your own classes to strings with comma (probably you
+* will never need to do that)
+*/
+phpbb.dropdownHandles = '.dropdown-container.dropdown-visible .dropdown-toggle';
+phpbb.dropdownVisibleContainers = '.dropdown-container.dropdown-visible';
+
+/**
 * Dropdown toggle event handler
 * This handler is used by phpBB.registerDropdown() and other functions
 */
@@ -841,7 +851,7 @@ phpbb.toggleDropdown = function() {
 
 	if (!visible) {
 		// Hide other dropdown menus
-		$('.dropdown-container.dropdown-visible .dropdown-toggle').each(phpbb.toggleDropdown);
+		$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
 
 		// Figure out direction of dropdown
 		var direction = options.direction,
@@ -951,6 +961,14 @@ phpbb.registerDropdown = function(toggle, dropdown, options)
 $(document).ready(function() {
 	$('textarea[data-bbcode]').each(function() {
 		phpbb.applyCodeEditor(this);
+	});
+
+	// Hide active dropdowns when click event happens outside
+	$('body').click(function(e) {
+		var parents = $(e.target).parents();
+		if (!parents.is(phpbb.dropdownVisibleContainers)) {
+			$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
+		}
 	});
 });
 

@@ -939,15 +939,6 @@ function parse_document(container)
 			$('#' + this.getAttribute('data-focus')).focus();
 		});
 
-		// Hide active dropdowns when click event happens outside
-		$('#phpbb').click(function(e) {
-
-			var parents = $(e.target).parents();
-			if (!parents.is('.dropdown-container.dropdown-visible')) {
-				$('.dropdown-container.dropdown-visible .dropdown-toggle').each(phpbb.toggleDropdown);
-			}
-		});
-
 		parse_document($('body'));
 	});
 })(jQuery);
