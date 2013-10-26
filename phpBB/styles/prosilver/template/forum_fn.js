@@ -924,6 +924,31 @@ function parse_document(container)
 			$(this).addClass('responsive-hide');
 		}
 	});
+
+	/**
+	* Replace responsive text
+	*/
+	container.find('[data-responsive-text]').each(function() {
+		var $this = $(this),
+			fullText = $this.text(),
+			responsiveText = $this.attr('data-responsive-text'),
+			responsive = false;
+
+		function check() {
+			if ($(window).width() > 700) {
+				if (!responsive) return;
+				$this.text(fullText);
+				responsive = false;
+				return;
+			}
+			if (responsive) return;
+			$this.text(responsiveText);
+			responsive = true;
+		}
+
+		check();
+		$(window).resize(check);
+	});
 }
 
 /**
