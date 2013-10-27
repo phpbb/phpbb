@@ -27,8 +27,8 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$this->user = $this->getMock('\phpbb\user');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
-			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
+			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
 		);
@@ -40,7 +40,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 
 		$passwords_helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
-		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, 'passwords.driver.bcrypt_2y');
+		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
 
 		if (version_compare(PHP_VERSION, '5.3.7', '<'))
 		{

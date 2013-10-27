@@ -63,15 +63,34 @@ class manager
 	* @param array $hashing_algorithms Hashing driver
 	*			service collection
 	* @param phpbb\passwords\helper $helper Passwords helper object
-	* @param string $default Default driver name
+	* @param string $defaults List of default driver types
 	*/
-	public function __construct(\phpbb\config\config $config, $hashing_algorithms, \phpbb\passwords\helper $helper, $default)
+	public function __construct(\phpbb\config\config $config, $hashing_algorithms, \phpbb\passwords\helper $helper, $defaults)
 	{
 		$this->config = $config;
-		$this->type = $default;
 
 		$this->fill_type_map($hashing_algorithms);
 		$this->load_passwords_helper($helper);
+		$this->register_default_type($defaults);
+	}
+
+	/**
+	* Register default type
+	* Will register the first supported type from the list of default types
+	*
+	* @param array $defaults List of default types in order from first to
+	*			use to last to use
+	*/
+	protected function register_default_type($defaults)
+	{
+		foreach ($defaults as $type)
+		{
+			if ($this->algorithms[$type]->is_supported())
+			{
+				$this->type = $type;
+				break;
+			}
+		}
 	}
 
 	/**
