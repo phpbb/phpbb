@@ -13,7 +13,14 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
+		if ((version_compare(PHP_VERSION, '5.3.7', '<')))
+		{
+			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user_533.xml');
+		}
+		else
+		{
+			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
+		}
 	}
 
 	public function test_login()
@@ -46,6 +53,14 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, 'passwords.driver.bcrypt_2y');
 
 		$provider = new \phpbb\auth\provider\db($db, $config, $passwords_manager, $request, $user, $phpbb_root_path, $phpEx);
+		if (version_compare(PHP_VERSION, '5.3.7', '<'))
+		{
+			$password_hash = '$2a$10$e01Syh9PbJjUkio66eFuUu4FhCE2nRgG7QPc1JACalsPXcIuG2bbi';
+		}
+		else
+		{
+			$password_hash = '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i';
+		}
 
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,
@@ -53,7 +68,7 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			'user_row'		=> array(
 				'user_id' 				=> '1',
 				'username' 				=> 'foobar',
-				'user_password'			=> '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i',
+				'user_password'			=> $password_hash,
 				'user_passchg' 			=> '0',
 				'user_pass_convert' 	=> '0',
 				'user_email' 			=> 'example@example.com',
