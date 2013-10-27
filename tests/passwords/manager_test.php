@@ -125,7 +125,8 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		}
 
 		// Check if convert_flag is correctly set
-		$this->assertEquals(($hash_type !== 'passwords.driver.bcrypt_2y'), $this->manager->convert_flag);
+		$default_type = (version_compare(PHP_VERSION, '5.3.7', '<')) ? 'passwords.driver.bcrypt' : 'passwords.driver.bcrypt_2y';
+		$this->assertEquals(($hash_type !== $default_type), $this->manager->convert_flag);
 	}
 
 
