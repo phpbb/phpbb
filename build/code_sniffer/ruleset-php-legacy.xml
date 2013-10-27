@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Legacy Standard">
+
+ <description>phpBB legacy coding standard for PHP files</description>
+
+ <rule ref="./ruleset-minimum.xml" />
+
+ <!-- The body of each structure MUST be enclosed by braces. -->
+ <rule ref="Generic.ControlStructures.InlineControlStructure" />
+ 
+ <!-- All PHP files MUST end with a single blank line. -->
+ 
+ <!-- Class constants MUST be declared in all upper case with underscore separators. -->
+ <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
+
+ <!-- Only <?php, no short tags. -->
+ <rule ref="Generic.PHP.DisallowShortOpenTag.EchoFound" />
+
+ <!-- Method arguments with default values MUST go at the end of the argument list. -->
+ <rule ref="PEAR.Functions.ValidDefaultValue" />
+
+ <!-- The ?> closing tag MUST be omitted from files containing only PHP. -->
+ <rule ref="Zend.Files.ClosingTag" />
+
+</ruleset>
