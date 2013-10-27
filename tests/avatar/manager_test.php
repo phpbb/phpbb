@@ -112,7 +112,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	public function test_get_driver_enabled($driver_name, $expected)
 	{
 		$driver = $this->manager->get_driver($driver_name);
-		$this->assertEquals($expected, $driver);
+		$this->assertEquals($expected, ($driver === null) ? null : $driver->get_name());
 	}
 
 	public function get_driver_data_all()
@@ -133,7 +133,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	public function test_get_driver_all($driver_name, $expected)
 	{
 		$driver = $this->manager->get_driver($driver_name, false);
-		$this->assertEquals($expected, $driver);
+		$this->assertEquals($expected, ($driver === null) ? $driver : $driver->get_name());
 	}
 
 	public function test_get_avatar_settings()
