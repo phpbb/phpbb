@@ -1575,6 +1575,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	height: 100%;
 	background-color: #000000;
 	opacity: 0.5;
+	z-index: 45;
 }
 
 @media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
