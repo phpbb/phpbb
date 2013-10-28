@@ -234,7 +234,9 @@ class manager
 	*/
 	public function enable($name)
 	{
+		// @codingStandardsIgnoreStart
 		while ($this->enable_step($name));
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -311,7 +313,9 @@ class manager
 	*/
 	public function disable($name)
 	{
+		// @codingStandardsIgnoreStart
 		while ($this->disable_step($name));
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -388,7 +392,9 @@ class manager
 	*/
 	public function purge($name)
 	{
+		// @codingStandardsIgnoreStart
 		while ($this->purge_step($name));
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**

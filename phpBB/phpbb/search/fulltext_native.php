@@ -850,7 +850,6 @@ class fulltext_native extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
-
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
 		if (!$total_results && $is_mysql)
 		{

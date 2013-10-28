@@ -259,7 +259,7 @@ class mssql extends \phpbb\db\driver\driver
 		{
 			foreach ($row as $key => $value)
 			{
-				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+				$row[$key] = ($value === ' ' || $value === null) ? '' : $value;
 			}
 		}
 

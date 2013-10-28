@@ -195,7 +195,7 @@ class result_mssqlnative
 */
 class mssqlnative extends \phpbb\db\driver\mssql_base
 {
-	var $m_insert_id = NULL;
+	var $m_insert_id = null;
 	var $last_query_text = '';
 	var $query_options = array();
 	var $connect_error = '';
@@ -427,7 +427,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		{
 			foreach ($row as $key => $value)
 			{
-				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+				$row[$key] = ($value === ' ' || $value === null) ? '' : $value;
 			}
 
 			// remove helper values from LIMIT queries

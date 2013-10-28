@@ -72,7 +72,6 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 		page_footer(true, false, false);
 
-
 		$status_code = $exception instanceof HttpException ? $exception->getStatusCode() : 500;
 		$response = new Response($this->template->assign_display('body'), $status_code);
 		$event->setResponse($response);
