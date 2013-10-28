@@ -1587,6 +1587,8 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 
 #darkenwrapper {
 	display: none;
+	position: relative;
+	z-index: 44;
 }
 
 #darken {
