@@ -74,6 +74,30 @@
 			passthru="true" />
 	</target>
 
+	<target name="sniff">
+		<exec command="phpBB/vendor/bin/phpcs
+				-s
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-legacy.xml
+				--ignore=phpBB/cache/*
+				--ignore=phpBB/develop/*
+				--ignore=phpBB/includes/diff/*.php
+				--ignore=phpBB/includes/sphinxapi.php
+				--ignore=phpBB/includes/utf/data/*
+				--ignore=phpBB/install/data/*
+				--ignore=phpBB/phpbb/*
+				--ignore=phpBB/vendor/*
+				phpBB"
+			dir="." passthru="true" />
+		<exec command="phpBB/vendor/bin/phpcs
+				-s
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-strict.xml
+				--ignore=phpBB/phpbb/db/migration/data/v30x/*
+				phpBB/phpbb"
+			dir="." passthru="true" />
+	</target>
+
 	<target name="docs">
 		<!-- only works if you setup phpdoctor:
                      git clone https://github.com/peej/phpdoctor.git

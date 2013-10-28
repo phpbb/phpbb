@@ -14,6 +14,7 @@
 		"fabpot/goutte": "1.0.*",
 		"phpunit/dbunit": "1.2.*",
 		"phpunit/phpunit": "3.7.*",
-		"phing/phing": "2.4.*"
+		"phing/phing": "2.4.*",
+		"squizlabs/php_codesniffer": "1.*"
 	}
 }
