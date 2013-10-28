@@ -810,6 +810,8 @@ li.pagination ul {
 
 #darkenwrapper {
 	display: none;
+	position: relative;
+	z-index: 44;
 }
 
 #darken {
@@ -819,6 +821,7 @@ li.pagination ul {
 	width: 100%;
 	height: 100%;
 	opacity: 0.5;
+	z-index: 45;
 }
 
 #loading_indicator {
