@@ -18,11 +18,11 @@ body, div, p, th, td, li, dd {
 	font-size: x-small;
 	voice-family: "\"}\"";
 	voice-family: inherit;
-	font-size: small
+	font-size: small;
 }
 
 html>body, html>div, html>p, html>th, html>td, html>li, html>dd {
-	font-size: small
+	font-size: small;
 }
 
 html {
@@ -31,6 +31,7 @@ html {
 	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-ie browsers */
 	height: 100%;
 	margin-bottom: 1px;
+	word-wrap: break-word;
 }
 
 body {
@@ -105,6 +106,23 @@ hr {
 	display: none;
 }
 
+@media only screen and (max-width: 800px), only screen and (max-device-width: 800px)
+{
+	body {
+		margin: 5px 5px 0;
+	}
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	html, body {
+		height: auto;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+
 /* General links  */
 a:link, a:visited {
 	color: #105289;
@@ -135,6 +153,7 @@ li {
 	display: list-item;
 	list-style-type: inherit;
 }
+
 
 /* Main blocks
 ---------------------------------------- */
@@ -174,7 +193,7 @@ li {
 
 #page-body {
 	clear: both;
-	min-width: 700px;
+	min-width: 650px;
 }
 
 #page-footer {
@@ -195,19 +214,23 @@ li {
 }
 
 #main {
-	float: left;
-	width: 76%;
-	margin: 0 0 0 3%;
-	min-height: 350px;
+	float: right;
+	width: 100%;
+	margin: 0 0 0 -210px;
 }
 
 .rtl #main {
 	float: right;
-	margin: 0 3% 0 0;
+	margin: 0 -210px 0 0;
 }
 
-* html #main {
-	height: 350px;
+.main {
+	margin-left: 210px;
+}
+
+.rtl .main {
+	margin-left: 0;
+	margin-right: 210px;
 }
 
 #page-body.simple-page-body {
@@ -216,17 +239,81 @@ li {
 	min-width: 0;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#wrap, #page-body, #page-body.simple-page-body {
+		padding: 0;
+		min-width: 300px;
+	}
+
+	#page-header {
+		margin: 5px;
+		padding-left: 160px;
+		height: auto;
+		min-height: 54px;
+		overflow: hidden;
+	}
+
+	.rtl #page-header {
+		padding-right: 160px;
+		padding-left: 0;
+	}
+
+	#page-header h1 {
+		font-size: 1.2em;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	#page-header fieldset {
+		margin-top: 5px;
+	}
+
+	#main, .rtl #main, .main, .rtl .main {
+		float: none;
+		width: auto;
+		margin: 0;
+	}
+
+	#content {
+		background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
+		padding: 5px;
+	}
+
+	#page-footer {
+		padding: 0 5px 5px;
+	}
+}
+
+@media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
+{
+	#page-header {
+		background-size: 76px 26.5px;
+		padding-left: 80px;
+		min-height: 30px;
+	}
+
+	.rtl #page-header {
+		padding-right: 80px;
+	}
+
+	#page-header h1 {
+		padding-top: 0;
+		font-size: 1.1em;
+	}
+}
+
+
 /* Tabbed menu
 	Based on: http://www.alistapart.com/articles/slidingdoors2/
 ----------------------------------------*/
 #tabs {
 	line-height: normal;
-	margin: 0 0 -6px 7px;
+	margin: 0 7px;
 	min-width: 600px;
-}
-
-.rtl #tabs {
-	margin: 0 7px -6px 0;
+	position: relative;
+	z-index: 2;
 }
 
 #tabs ul {
@@ -235,12 +322,25 @@ li {
 	list-style: none;
 }
 
+#tabs ul:after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
 #tabs li {
-	display: inline;
+	display: block;
+	float: left;
 	margin: 0;
 	padding: 0;
 	font-size: 0.85em;
 	font-weight: bold;
+}
+
+#tabs li:after {
+	content: '';
+	display: block;
+	clear: both;
 }
 
 #tabs a {
@@ -261,6 +361,7 @@ li {
 	display: block;
 	background: url("../images/bg_tabs2.gif") no-repeat 100% -34px;
 	padding: 7px 10px 4px 4px;
+	min-height: 14px;
 	color: #767676;
 	white-space: nowrap;
 	font-family: Arial, Helvetica, sans-serif;
@@ -280,12 +381,12 @@ li {
 	color: #BC2A4D;
 }
 
-#tabs #activetab a {
+#tabs .activetab a {
 	background-position: 0 0;
 	border-bottom: 1px solid #DCDEE2;
 }
 
-#tabs #activetab a span {
+#tabs .activetab a span {
 	background-position: 100% 0;
 	padding-bottom: 5px;
 	color: #23649F;
@@ -299,103 +400,135 @@ li {
 	background-position: 100% -69px;
 }
 
-#tabs #activetab a:hover span {
+#tabs .activetab a:hover span {
 	color: #115098;
 }
 
+.responsive-tab {
+	position: relative;
+}
+
+.responsive-tab .responsive-tab-link span {
+	display: inline-block;
+	font-size: 16px;
+	position: relative;
+	width: 16px;
+	line-height: 14px;
+	text-decoration: none;
+}
+
+.responsive-tab .responsive-tab-link span:before {
+	content: '';
+	position: absolute;
+	left: 5px;
+	top: 8px;
+	height: .125em;
+	width: 14px;
+	border-bottom: 0.125em solid #767676;
+	border-top: 0.375em double #767676;
+}
+
+.responsive-tab .responsive-tab-link:hover span:before {
+	border-color: #BC2A4D;
+}
+
+.responsive-tab.activetab .responsive-tab-link span:before {
+	border-color: #23649F;
+}
+
+.responsive-tab.activetab .responsive-tab-link:hover span:before {
+	border-color: #115098;
+}
+
+#tabs .dropdown {
+	top: 18px;
+	margin-right: -1px;
+}
+
+#tabs .dropdown-right .dropdown {
+	margin-left: -2px;
+}
+
+#tabs .dropdown li {
+	display: block !important;
+	float: none;
+	background: transparent none;
+	padding: 0;
+}
+
+#tabs .dropdown a, #tabs .dropdown a span {
+	background: transparent;
+	display: block;
+	border-width: 0;
+	float: none;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+
+#tabs .dropdown a span {
+	padding: 4px 8px;
+	color: inherit !important;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#tabs {
+		min-width: 0;
+	}
+}
 
 /* Main Panel
 ---------------------------------------- */
 #acp {
-	margin: 4px 0;
+	clear: both;
+	position: relative;
+	top: -2px;
+	margin: 0 0 2px;
 	padding: 3px 1px;
 	min-width: 550px;
-	background-color: #FFFFFF;
+	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
 	border: 1px #999999 solid;
+	border-radius: 5px;
+	box-shadow: #FFF 0 0 0 1px inset;
+}
+
+#acp:first-child {
+	top: 0;
 }
 
 .panel {
 	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
-	padding: 0;
+	padding: 5px 0;
+	border-radius: 5px;
+	overflow: hidden;
 }
 
-span.corners-top, span.corners-bottom,
-span.corners-top span, span.corners-bottom span {
-	font-size: 1px;
-	line-height: 1px;
-	display: block;
-	height: 5px;
-	background-repeat: no-repeat;
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#acp {
+		min-width: 0;
+		min-height: 0;
+		border-radius: 0;
+		border-width: 1px 0;
+		background: #fff;
+		padding: 1px 0;
+		box-shadow: none;
+	}
 }
-
-span.corners-top {
-	background-image: url("../images/corners_left.gif");
-	background-position: 0 0;
-	margin: -4px -2px 0;
-}
-
-span.corners-top span {
-	background-image: url("../images/corners_right.gif");
-	background-position: 100% 0;
-}
-
-span.corners-bottom {
-	background-image: url("../images/corners_left.gif");
-	background-position: 0 100%;
-	margin: 0 -2px -4px;
-	clear: both;
-}
-
-span.corners-bottom span {
-	background-image: url("../images/corners_right.gif");
-	background-position: 100% 100%;
-}
-
-/* WinIE tweaks \*/
-* html span.corners-top, * html span.corners-bottom { background-image: url("../images/corners_left.gif"); }
-* html span.corners-top span, * html span.corners-bottom span { background-image: url("../images/corners_right.gif"); }
-/* End tweaks */
 
 /* Sub-navigation Menu
 ---------------------------------------- */
 
-/* Toggle */
-#toggle {
-	padding: 5px;
-	width: 5%;
-	height: 100px;
-	position: absolute;
-	left: 15%;
-	top: 28px;
-	margin-left: 2px;
-}
-
-.rtl #toggle {
-	left: 75%;
-	margin-right: 0;
-	margin-left: 6px;
-}
-
-#toggle-handle {
-	display: block;
-	width: 18px;
-	height: 19px;
-	float: right;
-	background-image: url(../images/toggle.gif);
-}
-
-.rtl #toggle-handle {
-	background-image: url(../images/toggle.gif);
-	background-position: 100% 50%;
-}
-
 /* Menu */
 #menu {
 	float: left;
-	width: 20%;
+	width: 200px;
 	font-size: 1.00em;
 	padding: 0;
 	border-right: 1px solid #CCCFD3;
+	position: relative;
+	z-index: 1;
 }
 
 .rtl #menu {
@@ -412,15 +545,16 @@ span.corners-bottom span {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	word-wrap: normal;
 }
 
 /* Default list state */
-#menu li {
+#menu li, #menu .header {
 	padding: 0;
 	margin: 0;
 	font-size: 0.85em;
 	font-weight: bold;
-	display: inline;
+	display: block;
 }
 
 /* Link styles for the sub-section links */
@@ -435,6 +569,12 @@ span.corners-bottom span {
 
 .rtl #menu li span {
 	padding: 3px 8px 3px 3px;
+}
+
+#menu li span, #menu .header {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #menu li a:hover, #menu li a:hover span {
@@ -485,7 +625,7 @@ span.corners-bottom span {
 	background: url("../images/arrow_down.gif") 99% 50% no-repeat;
 }
 
-#menu li.header {
+#menu .header {
 	font-family: Tahoma, Helvetica, sans-serif;
 	display: block;
 	font-weight: bold;
@@ -495,7 +635,70 @@ span.corners-bottom span {
 	margin-top: 15px;
 	text-transform: uppercase;
 	font-size: 0.75em;
+	text-decoration: none;
+	cursor: inherit;
+	outline-style: none;
 }
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	#menu, .rtl #menu {
+		float: none;
+		width: auto;
+		border-width: 0;
+		max-width: 200px;
+		margin: 0 auto 10px;
+	}
+
+	#menu p {
+		text-align: center;
+	}
+
+	#menu .menu-block.active {
+		margin: 0 -5px;
+		padding: 0 5px 3px;
+		background: rgba(255, 255, 255, .5);
+		border-radius: 5px;
+	}
+
+	#menu .menu-block.no-header.active {
+		padding-top: 3px;
+	}
+
+	#menu .menu-block .header {
+		margin-top: 5px;
+		cursor: pointer;
+		border-bottom-width: 0;
+		position: relative;
+		text-decoration: underline;
+	}
+
+	#menu .menu-block .header:focus, #menu .menu-block.active .header {
+		color: #D31141;
+		text-decoration: none;
+	}
+
+	#menu .menu-block ul {
+		display: none;
+	}
+
+	.nojs #menu .menu-block:hover ul, #menu .menu-block.active ul, #menu .menu-block.no-header ul {
+		display: block;
+	}
+
+	#menu .menu-block li:last-child {
+		border-bottom: 1px solid #327AA5;
+	}
+
+	#menu .menu-block:last-child li:last-child, #menu .menu-block.active li:last-child {
+		border-bottom-width: 0;
+	}
+
+	#menu .menu-block li a span {
+		border-radius: 2px;
+	}
+}
+
 
 /* Table styles
 ---------------------------------------- */
@@ -653,6 +856,161 @@ td.name {
 	color: #BC2A4D;
 }
 
+/* Specific tables */
+table.forums td.folder {
+	width: 27px;
+	text-align: center;
+}
+
+table td.actions {
+	vertical-align: middle;
+	width: 100px;
+	text-align: center;
+	white-space: nowrap;
+}
+
+table.styles td.users, table td.mark {
+	text-align: center;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
+		display: block;
+	}
+
+	table.responsive thead, table.responsive th, table.responsive colgroup {
+		display: none;
+	}
+
+	table.responsive.show-header thead, table.responsive.show-header th:first-child, table.responsive caption {
+		display: block;
+		width: auto !important;
+		text-align: left !important;
+		margin: 0;
+	}
+
+	table.responsive {
+		background: transparent none;
+		border-width: 0;
+		padding: 0;
+	}
+
+	table.responsive caption {
+		padding: 3px 4px;
+		color: #FFFFFF;
+		background: #70AED3 url("../images/gradient2b.gif") bottom left repeat-x;
+		border-top: 1px solid #6DACD2;
+		border-bottom: 1px solid #327AA5;
+		text-align: left;
+		font-size: 0.75em;
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+
+	table.responsive.show-header th:first-child span.rank-img, table.responsive.no-caption caption, table.responsive.no-header thead {
+		display: none;
+	}
+
+	table.responsive tr {
+		margin: 2px 0;
+		border: 1px solid #CCCFD3;
+		background-color: #FFFFFF;
+		padding: 1px 1px 0;
+		overflow: hidden;
+	}
+
+	table.responsive tr.row1 td { background-color: #F9F9F9; }
+	table.responsive tr.row2 td { background-color: #DCEBFE; }
+	table.responsive tr.row3 td { background-color: #DBDFE2; }
+	table.responsive tr.row4 td { background-color: #E4E8EB; }
+	table.responsive tr.col1 td { background-color: #DCEBFE; }
+	table.responsive tr.col2 td { background-color: #F9F9F9; }
+	table.responsive tr.row1a td { background-color: #F9F9F9; }
+	table.responsive tr.row1b td { background-color: #F6F6F6; }
+	table.responsive tr.row2a td { background-color: #E7EEF4; }
+	table.responsive tr.row2b td { background-color: #E3EBF2; }
+
+	table.responsive td {
+		width: auto !important;
+		text-align: left !important;
+		padding: 4px;
+		margin-bottom: 1px;
+	}
+
+	table.responsive td.empty {
+		display: none !important;
+	}
+
+	table.responsive td > dfn {
+		display: inline-block !important;
+	}
+
+	table.responsive td > dfn:after {
+		content: ':';
+		padding-right: 5px;
+	}
+
+	table.responsive.two-columns td {
+		width: 50% !important;
+		float: left;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+	}
+
+	table.responsive.two-columns td:nth-child(2n+1) {
+		clear: left;
+	}
+
+	table.responsive span.rank-img {
+		float: none;
+		padding-right: 5px;
+	}
+
+	table.responsive#memberlist td:first-child input[type="checkbox"] {
+		float: right;
+	}
+
+	/* Specific tables */
+	table.responsive.forums td.folder {
+		float: left;
+		width: 27px;
+		background: transparent;
+	}
+	.rtl table.responsive.forums td.folder {
+		float: right;
+	}
+
+	table.responsive.forums td.forum-desc {
+		margin-left: 35px;
+		min-height: 27px;
+		background: transparent;
+	}
+
+	.rtl table.responsive.forums td.forum-desc {
+		margin-left: 0;
+		margin-right: 35px;
+	}
+
+	table.responsive td.actions {
+		clear: both;
+		text-align: right !important;
+	}
+
+	.rtl table.responsive td.actions {
+		text-align: left !important;
+	}
+
+	table.responsive.styles tr.responsive-style-row td:first-child {
+		padding-left: 4px !important;
+		padding-right: 4px !important;
+	}
+
+	table.responsive.styles td:first-child > dfn, table.responsive td.actions > dfn {
+		display: none !important;
+	}
+}
+
 /* General form styles
 ----------------------------------------*/
 fieldset {
@@ -664,6 +1022,7 @@ fieldset {
 	border-left: 1px solid #D7D7D7;
 	background-color: #FFFFFF;
 	position: relative;
+	border-radius: 3px;
 }
 
 .rtl fieldset {
@@ -671,10 +1030,6 @@ fieldset {
 	border-right: 1px solid #D7D7D7;
 	border-bottom: 1px solid #CCCCCC;
 	border-left: 1px solid #CCCCCC;
-}
-
-* html fieldset {
-	padding: 0 10px 5px 10px;
 }
 
 fieldset p {
@@ -695,23 +1050,10 @@ legend {
 	vertical-align: middle;
 }
 
-* html legend {
-	margin: 0 0 -10px -7px;
-	line-height: 1em;
-	font-size: .85em;
-}
-
-/* Holly hack, .rtl comes after html */
-* html .rtl legend {
-	margin: 0;
-	margin-right: -7px;
-}
-
 input, textarea {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.90em;
 	font-weight: normal;
-	cursor: text;
 	vertical-align: middle;
 	padding: 2px;
 	color: #111111;
@@ -873,6 +1215,22 @@ select#full_folder_action {
 	width: 95%;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	fieldset {
+		padding: 5px;
+	}
+
+	fieldset.quick, p.quick {
+		float: none !important;
+		text-align: center;
+	}
+
+	fieldset.display-options {
+		clear: both;
+	}
+}
+
 /* Definition list layout for forms
 	Other general def. list properties defined in prosilver_main.css
 ---------------------------------------- */
@@ -1004,6 +1362,51 @@ input:focus, textarea:focus {
 	outline-style: none;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	fieldset dl {
+		margin-bottom: 5px;
+		padding-bottom: 5px;
+		border-bottom: 1px solid #e8e8e8;
+	}
+
+	fieldset > dl:last-child, fieldset > form:last-child > dl:last-child {
+		border-bottom-width: 0;
+		margin-bottom: 0;
+	}
+
+	fieldset dt, .rtl fieldset dt, fieldset dd, .rtl fieldset dd {
+		border-width: 0;
+		margin-left: 0;
+		margin-right: 0;
+		float: none;
+		width: auto;
+	}
+
+	.ltr fieldset dd {
+		padding-left: 20px;
+	}
+
+	.rtl fieldset dd {
+		padding-right: 20px;
+	}
+
+	select, dd select, dd input {
+		max-width: 300px;
+	}
+
+	input[type="number"], dd input[type="number"] {
+		max-width: 70px;
+	}
+}
+
+@media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
+{
+	select, dd select, dd input {
+		max-width: 240px;
+	}	
+}
+
 /* Submit button fieldset or paragraph
 ---------------------------------------- */
 fieldset.submit-buttons {
@@ -1030,6 +1433,13 @@ fieldset.submit-buttons legend {
 	display: none;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	p.submit-buttons {
+		margin-top: 0;
+	}
+}
+
 /* Input field styles
 ---------------------------------------- */
 
@@ -1045,7 +1455,6 @@ textarea.full {
 	width: 99%;
 }
 
-* html input.full, * html textarea.full { width: 95%;}
 input.medium { width: 50%;}
 input.narrow { width: 25%;}
 input.tiny { width: 10%;}
@@ -1109,8 +1518,10 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	position: fixed;
 	display: none;
 	top: 150px;
-	left: 25%;
-	width: 50%;
+	left: 0;
+	right: 0;
+	max-width: 600px;
+	margin: 0 auto;
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
@@ -1164,6 +1575,21 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	height: 100%;
 	background-color: #000000;
 	opacity: 0.5;
+}
+
+@media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
+{
+	.phpbb_alert {
+		top: 25px;
+	}
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.phpbb_alert {
+		max-width: none;
+		margin: 0 25px;
+	}
 }
 
 /* Pagination
@@ -1247,6 +1673,20 @@ li.pagination ul {
 	border-color: #B4BAC0;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.pagination, .rtl .pagination {
+		float: none;
+		text-align: center;
+		margin: 5px 0;
+	}
+
+	.pagination li a, .pagination li span {
+		display: inline-block;
+		min-width: 10px;
+	}
+}
+
 /* Action Highlighting
 ---------------------------------------- */
 .successbox, .errorbox {
@@ -1271,8 +1711,6 @@ li.pagination ul {
 .errorbox {
 	background-color: #BC2A4D;
 }
-
-* html .errorbox, * html .successbox { height: 1%; } /* Pixel shift fix for IE */
 
 .successbox h3, .errorbox h3 {
 	color: #FFFFFF;
@@ -1367,7 +1805,7 @@ li.pagination ul {
 	visibility: hidden;
 }*/
 
-.clearfix, #tabs, .row, #content, fieldset dl, #page-body {
+.clearfix, .row, #content, fieldset dl, #page-body {
 	height: 1%;
 	overflow: hidden;
 }
@@ -1421,6 +1859,15 @@ li.pagination ul {
 
 /* Permission interface
 ---------------------------------------- */
+
+.column1, .column2 {
+	width: 48%;
+	float: left;
+}
+
+.ltr .column2, .rtl .column1 {
+	float: right;
+}
 
 fieldset.permissions legend {
 	text-transform: none;
@@ -1619,58 +2066,13 @@ fieldset.permissions .padding {
 	float: left;
 	background-color: #CADCEB;
 	width: 100%;
+	border-radius: 5px;
+	overflow: hidden;
+	padding: 5px 0;
 }
 
 .rtl .permissions-panel {
 	float: right;
-}
-
-.permissions-panel span.corners-top {
-	background-image: url("../images/corners_left2.gif");
-}
-
-.permissions-panel span.corners-top span {
-	background-image: url("../images/corners_right2.gif");
-}
-
-.permissions-panel span.corners-bottom {
-	background-image: url("../images/corners_left2.gif");
-}
-
-.permissions-panel span.corners-bottom span {
-	background-image: url("../images/corners_right2.gif");
-}
-
-.permissions-panel span.corners-top, .permissions-panel span.corners-bottom,
-.permissions-panel span.corners-top span, .permissions-panel span.corners-bottom span {
-	font-size: 1px;
-	line-height: 1px;
-	display: block;
-	height: 5px;
-	background-repeat: no-repeat;
-}
-
-.permissions-panel span.corners-top {
-	background-image: url("../images/corners_left2.gif");
-	background-position: 0 0;
-	margin: 0 0;
-}
-
-.permissions-panel span.corners-top span {
-	background-image: url("../images/corners_right2.gif");
-	background-position: 100% 0;
-}
-
-.permissions-panel span.corners-bottom {
-	background-image: url("../images/corners_left2.gif");
-	background-position: 0 100%;
-	margin: 0 0;
-	clear: both;
-}
-
-.permissions-panel span.corners-bottom span {
-	background-image: url("../images/corners_right2.gif");
-	background-position: 100% 100%;
 }
 
 /* Permission table
@@ -1755,6 +2157,205 @@ fieldset.permissions .padding {
 	padding: 0;
 }
 
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.column1, .column2 {
+		float: none !important;
+		width: auto;
+	}
+
+	.permissions-simple {
+		clear: both;
+	}
+
+	.permissions-simple td, .permissions-simple dd {
+		width: auto !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	.permissions-simple dd {
+		margin-top: 5px;
+	}
+
+	.permissions-panel .tablewrap {
+		margin: 0 5px;
+	}
+
+	.permissions-category {
+		min-width: 0;
+		margin: 0 !important;
+	}
+
+	.permissions-category a, .permissions-category a span.tabbg {
+		display: block;
+		float: none !important;
+		background: transparent none;
+	}
+
+	.permissions-category a {
+		background: #d9e5ee;
+		margin: 5px 0;
+		padding: 0 !important;
+		border-radius: 3px;
+		text-decoration: underline;
+	}
+
+	.permissions-category .activetab a {
+		background-color: #dd6900;
+		color: #fff;
+	}
+
+	.permissions-category a span.tabbg {
+		color: inherit !important;
+		padding-top: 6px !important;
+		padding-bottom: 6px !important;
+	}
+
+	.permissions-category .activetab span.colour {
+		border-color: #fff;
+	}
+}
+
+/* Avatars gallery
+---------------------------------------- */
+#gallery {
+	display: block;
+	margin: 0 -5px;
+	padding: 0;
+	overflow: hidden;
+}
+
+#gallery li {
+	display: block;
+	float: left;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	background: #fff;
+	padding: 5px;
+	margin: 5px;
+}
+
+#gallery li:hover {
+	background-color: #eee;
+}
+
+#gallery li label {
+	display: block;
+	text-align: center;
+	padding: 0;
+}
+
+/* Dropdown menu
+----------------------------------------*/
+.dropdown {
+	position: absolute;
+	left: 0;
+	top: 22px;
+	z-index: 2;
+	border: 1px solid transparent;
+	border-radius: 5px;
+	padding: 9px 0 0;
+}
+
+.dropdown-up .dropdown {
+	top: auto;
+	bottom: 18px;
+	padding: 0 0 9px;
+}
+
+.dropdown-left .dropdown {
+	left: auto;
+	right: 0;
+}
+
+.dropdown .pointer, .dropdown .pointer-inner {
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-top-width: 0;
+	border-bottom: 10px solid transparent;
+	border-left: 10px dashed transparent;
+	border-right: 10px dashed transparent;
+	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	display: block;
+}
+
+.dropdown-up .pointer, .dropdown-up .pointer-inner {
+	border-bottom-width: 0;
+	border-top: 10px solid transparent;
+}
+
+.dropdown .pointer {
+	right: auto;
+	left: 10px;
+	top: 0;
+	z-index: 3;
+}
+
+.dropdown-up .pointer {
+	bottom: 0;
+	top: auto;
+}
+
+.dropdown-left .dropdown .pointer {
+	left: auto;
+	right: 10px;
+}
+
+.dropdown .pointer-inner {
+	top: auto;
+	bottom: -11px;
+	left: -10px;
+}
+
+.dropdown-up .pointer-inner {
+	bottom: auto;
+	top: -11px;
+}
+
+.dropdown .pointer {
+	border-color: #B9B9B9 transparent;
+}
+
+.dropdown .pointer-inner {
+	border-color: #FFF transparent;
+}
+
+.dropdown .dropdown-contents {
+	z-index: 2;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid #b9b9b9;
+	border-radius: 5px;
+	padding: 5px;
+	position: relative;
+	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.dropdown-up .dropdown-contents {
+	box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown li {
+	float: none;
+	margin: 0;
+	white-space: nowrap;
+	text-align: left;
+}
+
+.wrap .dropdown li, .dropdown.wrap li {
+	white-space: normal;
+}
+
+.dropdown li:before, .dropdown li:after {
+	display: none !important;
+}
+
+
 /* Classes for additional tasks
 ---------------------------------------- */
 
@@ -1776,4 +2377,12 @@ fieldset.permissions .padding {
 .requirements_not_met dt label, .requirements_not_met dd p {
 	color: #FFFFFF;
 	font-size: 1.4em;
+}
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.responsive-hide { display: none !important; }
+	.responsive-show { display: block !important; }
+	.responsive-show-inline { display: inline !important; }
+	.responsive-show-inline-block { display: inline-block !important; }
 }
