@@ -150,7 +150,7 @@ abstract class base
 	*/
 	function get($key)
 	{
-		return (isset($this->keys[$key])) ? $this->keys[$key] : NULL;
+		return (isset($this->keys[$key])) ? $this->keys[$key] : null;
 	}
 
 	function get_readable_forums()

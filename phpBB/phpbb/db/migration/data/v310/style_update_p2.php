@@ -56,7 +56,7 @@ class style_update_p2 extends \phpbb\db\migration\migration
 			'add_tables'	=> array(
 				$this->table_prefix . 'styles_imageset'		=> array(
 					'COLUMNS'		=> array(
-						'imageset_id'				=> array('UINT', NULL, 'auto_increment'),
+						'imageset_id'				=> array('UINT', null, 'auto_increment'),
 						'imageset_name'				=> array('VCHAR_UNI:255', ''),
 						'imageset_copyright'		=> array('VCHAR_UNI', ''),
 						'imageset_path'				=> array('VCHAR:100', ''),
@@ -68,7 +68,7 @@ class style_update_p2 extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'styles_imageset_data'	=> array(
 					'COLUMNS'		=> array(
-						'image_id'				=> array('UINT', NULL, 'auto_increment'),
+						'image_id'				=> array('UINT', null, 'auto_increment'),
 						'image_name'			=> array('VCHAR:200', ''),
 						'image_filename'		=> array('VCHAR:200', ''),
 						'image_lang'			=> array('VCHAR:30', ''),
@@ -83,7 +83,7 @@ class style_update_p2 extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'styles_template'		=> array(
 					'COLUMNS'		=> array(
-						'template_id'			=> array('UINT', NULL, 'auto_increment'),
+						'template_id'			=> array('UINT', null, 'auto_increment'),
 						'template_name'			=> array('VCHAR_UNI:255', ''),
 						'template_copyright'	=> array('VCHAR_UNI', ''),
 						'template_path'			=> array('VCHAR:100', ''),
@@ -112,7 +112,7 @@ class style_update_p2 extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'styles_theme'			=> array(
 					'COLUMNS'		=> array(
-						'theme_id'				=> array('UINT', NULL, 'auto_increment'),
+						'theme_id'				=> array('UINT', null, 'auto_increment'),
 						'theme_name'			=> array('VCHAR_UNI:255', ''),
 						'theme_copyright'		=> array('VCHAR_UNI', ''),
 						'theme_path'			=> array('VCHAR:100', ''),

@@ -26,7 +26,7 @@ class notifications_schema_fix extends \phpbb\db\migration\migration
 			'add_tables'		=> array(
 				$this->table_prefix . 'notification_types'	=> array(
 					'COLUMNS'			=> array(
-						'notification_type_id'		=> array('USINT', NULL, 'auto_increment'),
+						'notification_type_id'		=> array('USINT', null, 'auto_increment'),
 						'notification_type_name'	=> array('VCHAR:255', ''),
 						'notification_type_enabled'	=> array('BOOL', 1),
 					),
@@ -37,7 +37,7 @@ class notifications_schema_fix extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'notifications'		=> array(
 					'COLUMNS'			=> array(
-						'notification_id'				=> array('UINT:10', NULL, 'auto_increment'),
+						'notification_id'				=> array('UINT:10', null, 'auto_increment'),
 						'notification_type_id'			=> array('USINT', 0),
 						'item_id'						=> array('UINT', 0),
 						'item_parent_id'				=> array('UINT', 0),
@@ -73,7 +73,7 @@ class notifications_schema_fix extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'notifications'		=> array(
 					'COLUMNS'			=> array(
-						'notification_id'  				=> array('UINT', NULL, 'auto_increment'),
+						'notification_id'  				=> array('UINT', null, 'auto_increment'),
 						'item_type'			   			=> array('VCHAR:255', ''),
 						'item_id'		  				=> array('UINT', 0),
 						'item_parent_id'   				=> array('UINT', 0),
