@@ -1235,7 +1235,6 @@ class session
 				$this->session_create(ANONYMOUS);
 			}
 
-
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';

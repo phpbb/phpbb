@@ -34,7 +34,7 @@ class approve_topic extends \phpbb\notification\type\topic
 	{
 		return 'approve_topic';
 	}
-	
+
 	/**
 	* Language key used to output the text
 	*

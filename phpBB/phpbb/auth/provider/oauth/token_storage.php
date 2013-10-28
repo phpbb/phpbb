@@ -78,7 +78,7 @@ class token_storage implements TokenStorageInterface
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken instanceOf TokenInterface)
+		if ($this->cachedToken instanceof TokenInterface)
 		{
 			return $this->cachedToken;
 		}
@@ -238,7 +238,7 @@ class token_storage implements TokenStorageInterface
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken instanceOf TokenInterface) {
+		if ($this->cachedToken instanceof TokenInterface) {
 			return $this->cachedToken;
 		}
 

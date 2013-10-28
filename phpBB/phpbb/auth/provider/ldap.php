@@ -97,7 +97,6 @@ class ldap extends \phpbb\auth\provider\base
 
 		@ldap_close($ldap);
 
-
 		if (!is_array($result) || sizeof($result) < 2)
 		{
 			return sprintf($this->user->lang['LDAP_NO_IDENTITY'], $this->user->data['username']);

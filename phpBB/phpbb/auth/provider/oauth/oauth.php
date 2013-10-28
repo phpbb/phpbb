@@ -179,7 +179,7 @@ class oauth extends \phpbb\auth\provider\base
 
 		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 		$query = 'mode=login&login=external&oauth_service=' . $service_name_original;
-		$service = $this->get_service($service_name_original, $storage, $service_credentials, $this->service_providers[$service_name]->get_auth_scope(), $query);
+		$service = $this->get_service($service_name_original, $storage, $service_credentials, $query, $this->service_providers[$service_name]->get_auth_scope());
 
 		if ($this->request->is_set('code', \phpbb\request\request_interface::GET))
 		{
@@ -273,13 +273,13 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	string	$service_name			The name of the service
 	* @param	\phpbb\auth\provider\oauth\token_storage $storage
 	* @param	array	$service_credentials	{@see \phpbb\auth\provider\oauth\oauth::get_service_credentials}
-	* @param	array	$scope					The scope of the request against
-	*											the api.
 	* @param	string	$query					The query string of the
 	*											current_uri used in redirection
+	* @param	array	$scope					The scope of the request against
+	*											the api.
 	* @return	\OAuth\Common\Service\ServiceInterface
 	*/
-	protected function get_service($service_name, \phpbb\auth\provider\oauth\token_storage $storage, array $service_credentials, array $scopes = array(), $query)
+	protected function get_service($service_name, \phpbb\auth\provider\oauth\token_storage $storage, array $service_credentials, $query, array $scopes = array())
 	{
 		$current_uri = $this->get_current_uri($service_name, $query);
 
@@ -458,7 +458,7 @@ class oauth extends \phpbb\auth\provider\base
 		// Prepare for an authentication request
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
+		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $query, $scopes);
 		$this->service_providers[$service_name]->set_external_service_provider($service);
 
 		// The user has already authenticated successfully, request to authenticate again
@@ -491,7 +491,7 @@ class oauth extends \phpbb\auth\provider\base
 		$query = 'i=ucp_auth_link&mode=auth_link&link=1&oauth_service=' . strtolower($link_data['oauth_service']);
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $scopes, $query);
+		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $query, $scopes);
 
 		if ($this->request->is_set('code', \phpbb\request\request_interface::GET))
 		{
