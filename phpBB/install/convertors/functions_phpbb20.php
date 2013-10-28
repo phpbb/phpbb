@@ -1926,3 +1926,10 @@ function phpbb_check_username_collisions()
 	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	$db->sql_query($drop_sql);
 }
+
+function phpbb_convert_timezone($timezone)
+{
+	global $config, $db, $phpbb_root_path, $phpEx, $table_prefix;
+	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, new \phpbb\db\tools($db), $phpbb_root_path, $phpEx, $table_prefix);
+	return $timezone_migration->convert_phpbb30_timezone($timezone, 0);
+}
