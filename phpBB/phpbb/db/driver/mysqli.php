@@ -31,7 +31,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false , $new_link = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		if (!function_exists('mysqli_connect'))
 		{

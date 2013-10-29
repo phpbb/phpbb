@@ -1117,7 +1117,7 @@ function words_unique(&$words)
 * Adds a user to the specified group and optionally makes them a group leader
 * This function does not create the group if it does not exist and so should only be called after the groups have been created
 */
-function add_user_group($group_id, $user_id, $group_leader=false)
+function add_user_group($group_id, $user_id, $group_leader = false)
 {
 	global $convert, $phpbb_root_path, $config, $user, $db;
 
