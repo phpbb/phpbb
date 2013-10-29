@@ -78,6 +78,13 @@
 		<exec command="phpBB/vendor/bin/phpcs
 				-s
 				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-strict.xml
+				--ignore=phpBB/phpbb/db/migration/data/v30x/*
+				phpBB/phpbb"
+			dir="." checkreturn="true" passthru="true" />
+		<exec command="phpBB/vendor/bin/phpcs
+				-s
+				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-legacy.xml
 				--ignore=phpBB/cache/*
 				--ignore=phpBB/develop/*
@@ -88,14 +95,7 @@
 				--ignore=phpBB/phpbb/*
 				--ignore=phpBB/vendor/*
 				phpBB"
-			dir="." passthru="true" />
-		<exec command="phpBB/vendor/bin/phpcs
-				-s
-				--extensions=php
-				--standard=build/code_sniffer/ruleset-php-strict.xml
-				--ignore=phpBB/phpbb/db/migration/data/v30x/*
-				phpBB/phpbb"
-			dir="." passthru="true" />
+			dir="." checkreturn="true" passthru="true" />
 	</target>
 
 	<target name="docs">
