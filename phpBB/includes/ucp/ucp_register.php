@@ -178,6 +178,11 @@ class ucp_register
 			return;
 		}
 
+		if ($config['coppa_enable'])
+		{
+			$s_hidden_fields['coppa'] = $coppa;
+		}
+
 		// Ask user if they wish to register with an external account or create a board account
 		$auth_provider_data = $auth_provider->get_register_data();
 		if (empty($login_link_data) && !empty($auth_provider_data) && $register_mode === '')
@@ -452,11 +457,6 @@ class ucp_register
 			'agreed'		=> 'true',
 			'change_lang'	=> 0,
 		));
-
-		if ($config['coppa_enable'])
-		{
-			$s_hidden_fields['coppa'] = $coppa;
-		}
 
 		if ($config['enable_confirm'])
 		{
