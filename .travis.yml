@@ -10,16 +10,18 @@ env:
   - DB=mysql
   - DB=postgres
 
-before_script:
-  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database phpbb_tests;' -U postgres; fi"
+install:
   - sh -c "if [ '$DB' = 'mariadb' ]; then travis/setup-mariadb.sh; fi"
-  - sh -c "if [ '$DB' = 'mysql' -o '$DB' = 'mariadb' ]; then mysql -e 'create database IF NOT EXISTS phpbb_tests;'; fi"
+  - sh -c "if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` = "1" ]; then travis/setup-webserver.sh; fi"
   - travis/install-php-extensions.sh
   - cd phpBB
   - php ../composer.phar install --dev --no-interaction --prefer-source
   - cd ..
-  - sh -c "if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` = "1" ]; then travis/setup-webserver.sh; fi"
+
+before_script:
+  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database phpbb_tests;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'mysql' -o '$DB' = 'mariadb' ]; then mysql -e 'create database IF NOT EXISTS phpbb_tests;'; fi"
 
 script:
   - cd build
