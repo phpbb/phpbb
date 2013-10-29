@@ -42,7 +42,7 @@ class ucp_register
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
-		$register_mode	= $request->variable('register_mode', '');
+		$register_mode	= $this->get_register_mode();
 		$auth_provider	= 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
 		$auth_provider	= $phpbb_container->get($auth_provider);
 
@@ -563,5 +563,29 @@ class ucp_register
 		}
 
 		return $new_data;
+	}
+
+	/**
+	 * This method determines the requested register mode (if any) and then
+	 * returns it.
+	 * @return	string	The register mode that the user has requested or empty
+	 *					string.
+	 */
+	protected function get_register_mode()
+	{
+		global $request;
+
+		$mode = $request->variable('request_mode', '');
+
+		if (!$mode && $request->is_set_post('submit_board'))
+		{
+			$mode = 'board';
+		}
+		else if (!$mode && $request->is_set_post('submit_external'))
+		{
+			$mode = 'external';
+		}
+
+		return $mode;
 	}
 }
