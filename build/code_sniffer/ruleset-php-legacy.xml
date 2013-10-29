@@ -5,6 +5,9 @@
 
  <rule ref="./ruleset-minimum.xml" />
 
+ <!-- "for (; bar; )" should be "while (bar)" instead -->
+ <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop" />
+
  <!-- The body of each structure MUST be enclosed by braces. -->
  <rule ref="Generic.ControlStructures.InlineControlStructure" />
 
