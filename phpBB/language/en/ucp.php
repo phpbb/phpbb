@@ -537,6 +537,7 @@ $lang = array_merge($lang, array(
 
 	'UCP_PASSWORD_RESET_DISABLED'	=> 'The password reset functionality has been disabled. If you need help accessing your account, please contact the %sBoard Administrator%s',
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
+	'UCP_REGISTER_MODE_EXPLAIN'		=> 'This board allows you to set up login via an external service such as Facebook or Google. If you do not wish to do this, please select board registration. Otherwise, please select external service.',
 	'UCP_REMIND'					=> 'Send password',
 	'UCP_RESEND'					=> 'Send activation email',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
