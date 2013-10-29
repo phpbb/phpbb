@@ -7,9 +7,7 @@
 
  <!-- The body of each structure MUST be enclosed by braces. -->
  <rule ref="Generic.ControlStructures.InlineControlStructure" />
- 
- <!-- All PHP files MUST end with a single blank line. -->
- 
+
  <!-- Class constants MUST be declared in all upper case with underscore separators. -->
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
 
