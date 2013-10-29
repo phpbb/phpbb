@@ -17,6 +17,15 @@
  <!-- Method arguments with default values MUST go at the end of the argument list. -->
  <rule ref="PEAR.Functions.ValidDefaultValue" />
 
+ <!-- In the argument list, there MUST NOT be a space before each comma,
+      and there MUST be one space after each comma. -->
+ <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
+  <properties>
+   <property name="equalsSpacing" value="1"/>
+  </properties>
+ </rule>
+ <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
+
  <!-- The ?> closing tag MUST be omitted from files containing only PHP. -->
  <rule ref="Zend.Files.ClosingTag" />
 
