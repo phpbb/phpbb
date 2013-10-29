@@ -182,6 +182,10 @@ class ucp_register
 		$auth_provider_data = $auth_provider->get_register_data();
 		if (empty($login_link_data) && !empty($auth_provider_data) && $register_mode === '')
 		{
+			$template->assign_vars(array(
+				'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
+				'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			));
 			$this->tpl_name = 'ucp_register_mode_select';
 			return;
 		}
