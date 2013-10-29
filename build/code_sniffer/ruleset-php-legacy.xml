@@ -8,6 +8,9 @@
  <!-- "for (; bar; )" should be "while (bar)" instead -->
  <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop" />
 
+ <!-- A method MUST not only call its parent -->
+ <rule ref="Generic.CodeAnalysis.UselessOverridingMethod" />
+
  <!-- The body of each structure MUST be enclosed by braces. -->
  <rule ref="Generic.ControlStructures.InlineControlStructure" />
 
