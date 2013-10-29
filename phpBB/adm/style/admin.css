@@ -1605,6 +1605,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	position: fixed;
 	left: 50%;
 	top: 50%;
+	z-index: 51;
 }
 
 /* Pagination
