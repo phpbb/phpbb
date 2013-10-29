@@ -16,6 +16,10 @@
  </rule>
  -->
 
+ <!-- A file MUST not contain more than one class/interface -->
+ <rule ref="Generic.Files.OneClassPerFile" />
+ <rule ref="Generic.Files.OneInterfacePerFile" />
+
  <!-- The PHP constants true, false, and null MUST be in lower case. -->
  <rule ref="Generic.PHP.LowerCaseConstant" />
 
