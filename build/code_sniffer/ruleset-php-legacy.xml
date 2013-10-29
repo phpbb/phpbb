@@ -17,6 +17,9 @@
  <!-- There MUST not be more than one statement per line. -->
  <rule ref="Generic.Formatting.DisallowMultipleStatements" />
 
+ <!-- Call-time pass-by-reference MUST not be used. -->
+ <rule ref="Generic.Functions.CallTimePassByReference.NotAllowed" />
+
  <!-- Class constants MUST be declared in all upper case with underscore separators. -->
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
 
