@@ -14,6 +14,9 @@
  <!-- The body of each structure MUST be enclosed by braces. -->
  <rule ref="Generic.ControlStructures.InlineControlStructure" />
 
+ <!-- There MUST not be more than one statement per line. -->
+ <rule ref="Generic.Formatting.DisallowMultipleStatements" />
+
  <!-- Class constants MUST be declared in all upper case with underscore separators. -->
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
 
