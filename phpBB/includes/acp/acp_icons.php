@@ -307,7 +307,6 @@ class acp_icons
 
 						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
-						'PHPBB_ROOT_PATH'	=> $phpbb_root_path,
 
 						'CODE'				=> $default_row['code'],
 						'EMOTION'			=> $default_row['emotion'],
