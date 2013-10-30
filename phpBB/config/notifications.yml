@@ -266,7 +266,7 @@ services:
             - { name: notification.type }
 
     notification.type.report_post_closed:
-        class: phpbb\notification\type\report_post
+        class: phpbb\notification\type\report_post_closed
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
