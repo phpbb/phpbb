@@ -440,19 +440,19 @@
 	<p><strong>{NAVIGATION}<!-- IF S_NO_FORUMS --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a><!-- IF not S_LINK --> | <a href="{U_SYNC}">{L_RESYNC}</a><!-- ENDIF -->]<!-- ENDIF --></strong></p>
 
 	<!-- IF .forums -->
-		<table class="table1">
+		<table class="table1 forums">
 			<col class="row1" /><col class="row1" /><col class="row2" />
 		<tbody>
 		<!-- BEGIN forums -->
 			<tr data-down="{forums.U_MOVE_DOWN}" data-up="{forums.U_MOVE_UP}">
-				<td style="width: 5%; text-align: center;">{forums.FOLDER_IMAGE}</td>
-				<td>
+				<td class="folder">{forums.FOLDER_IMAGE}</td>
+				<td class="forum-desc">
 					<!-- IF forums.FORUM_IMAGE --><div style="float: {S_CONTENT_FLOW_BEGIN}; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
 					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}{L_COLON} <strong>{forums.FORUM_TOPICS}</strong> / {L_POSTS}{L_COLON} <strong>{forums.FORUM_POSTS}</strong></span><!-- ENDIF -->
 				</td>
-				<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+				<td class="actions">
 					<!-- IF forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
 						<span class="up">{ICON_MOVE_UP_DISABLED}</span>
 						<span class="down"><a href="{forums.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>

@@ -41,7 +41,7 @@
 		<tr data-down="{legend.U_MOVE_DOWN}" data-up="{legend.U_MOVE_UP}">
 			<td><strong<!-- IF legend.GROUP_COLOUR --> style="color: {legend.GROUP_COLOUR}"<!-- ENDIF -->>{legend.GROUP_NAME}</strong></td>
 			<td style="text-align: center;">{legend.GROUP_TYPE}</td>
-			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+			<td class="actions">
 				<!-- IF legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
 					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
 					<span class="down"><a href="{legend.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
@@ -136,7 +136,7 @@
 			</td>
 			<td style="text-align: center;"><!-- IF teampage.GROUP_TYPE -->{teampage.GROUP_TYPE}<!-- ELSE -->-<!-- ENDIF -->
 			</td></td>
-			<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+			<td class="actions">
 				<!-- IF teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
 					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
 					<span class="down"><a href="{teampage.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>

@@ -5597,14 +5597,14 @@ function garbage_collection()
 	global $cache, $db;
 	global $phpbb_dispatcher;
 
-	/**
-	* Unload some objects, to free some memory, before we finish our task
-	*
-	* @event core.garbage_collection
-	* @since 3.1-A1
-	*/
 	if (!empty($phpbb_dispatcher))
 	{
+		/**
+		* Unload some objects, to free some memory, before we finish our task
+		*
+		* @event core.garbage_collection
+		* @since 3.1-A1
+		*/
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}
 

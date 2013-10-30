@@ -78,9 +78,9 @@ class ucp_notifications
 					trigger_error($message);
 				}
 
-				$this->output_notification_methods('notification_methods', $phpbb_notifications, $template, $user);
+				$this->output_notification_methods($phpbb_notifications, $template, $user, 'notification_methods');
 
-				$this->output_notification_types($subscriptions, 'notification_types', $phpbb_notifications, $template, $user);
+				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, 'notification_types');
 
 				$this->tpl_name = 'ucp_notifications';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
@@ -162,12 +162,12 @@ class ucp_notifications
 	/**
 	* Output all the notification types to the template
 	*
-	* @param string $block
 	* @param \phpbb\notification\manager $phpbb_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
+	* @param string $block
 	*/
-	public function output_notification_types($subscriptions, $block = 'notification_types', \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user)
+	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_types')
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
@@ -209,12 +209,12 @@ class ucp_notifications
 	/**
 	* Output all the notification methods to the template
 	*
-	* @param string $block
 	* @param \phpbb\notification\manager $phpbb_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
+	* @param string $block
 	*/
-	public function output_notification_methods($block = 'notification_methods', \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user)
+	public function output_notification_methods(\phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_methods')
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 

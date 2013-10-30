@@ -169,7 +169,7 @@ class metadata_manager
     			throw new \phpbb\extension\exception('file_get_contents failed on ' . $this->metadata_file);
 			}
 
-			if (($metadata = json_decode($file_contents, true)) === NULL)
+			if (($metadata = json_decode($file_contents, true)) === null)
 			{
     			throw new \phpbb\extension\exception('json_decode failed on ' . $this->metadata_file);
 			}

@@ -29,7 +29,7 @@
 <!-- IF S_ALLOW_CDN --><link href="//fonts.googleapis.com/css?family=Open+Sans:600&amp;subset=latin,cyrillic-ext,latin-ext,cyrillic,greek-ext,greek,vietnamese" rel="stylesheet" type="text/css" media="screen, projection" /><!-- ENDIF -->
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
 <link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet" type="text/css" media="screen, projection" />
-<link href="{T_THEME_PATH}/responsive.css" rel="stylesheet" type="text/css" media="only screen and (max-width: 700px), only screen and (max-device-width: 700px)" />
+<link href="{T_THEME_PATH}/responsive.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="only screen and (max-width: 700px), only screen and (max-device-width: 700px)" />
 
 <!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
 	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
@@ -97,43 +97,45 @@
 				<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH --><li class="responsive-search rightside" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH}</a></li><!-- ENDIF -->
 			</ul>
 
+			<ul class="linklist bulletin">
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
-			<ul class="linklist leftside bulletin">
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-				<li class="icon-notification skip-responsive">
+				<li class="icon-notification" data-skip-responsive="true">
 					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
-					<div id="notification_list" class="notification_list">
-						<div class="pointer"><div class="pointer_inner"></div></div>
-						<div class="header">
-							{L_NOTIFICATIONS}
-							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
-						</div>
+					<div id="notification_list" class="dropdown notification_list">
+						<div class="pointer"><div class="pointer-inner"></div></div>
+						<div class="dropdown-contents">
+							<div class="header">
+								{L_NOTIFICATIONS}
+								<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+							</div>
 
-						<ul>
-							<!-- IF not .notifications -->
-								<li>
-									{L_NO_NOTIFICATIONS}
-								</li>
-							<!-- ENDIF -->
-							<!-- BEGIN notifications -->
-								<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
-									<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
-										<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
-										<div class="notification_text">
-											<p>{notifications.FORMATTED_TITLE}</p>
-											<p>&raquo; {notifications.TIME}</p>
+							<ul>
+								<!-- IF not .notifications -->
+									<li>
+										{L_NO_NOTIFICATIONS}
+									</li>
+								<!-- ENDIF -->
+								<!-- BEGIN notifications -->
+									<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
+										<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+											<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
+											<div class="notification_text">
+												<p>{notifications.FORMATTED_TITLE}</p>
+												<p>&raquo; {notifications.TIME}</p>
 
-											<!-- IF not notifications.URL and notifications.U_MARK_READ -->
-												<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
-											<!-- ENDIF -->
-										</div>
-									<!-- IF notifications.URL --></a><!-- ENDIF -->
-								</li>
-				   			<!-- END notifications -->
-						</ul>
+												<!-- IF not notifications.URL and notifications.U_MARK_READ -->
+													<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
+												<!-- ENDIF -->
+											</div>
+										<!-- IF notifications.URL --></a><!-- ENDIF -->
+									</li>
+					   			<!-- END notifications -->
+							</ul>
 
-						<div class="footer">
-							<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+							<div class="footer">
+								<a href="{U_VIEW_ALL_NOTIFICATIONS}"><span>{L_SEE_ALL}</span></a>
+							</div>
 						</div>
 					</div>
 				</li>
@@ -152,18 +154,16 @@
 				<!-- IF U_RESTORE_PERMISSIONS -->
 					<li class="icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li>
 				<!-- ENDIF -->
-			</ul>
 			<!-- ENDIF -->
 
-			<ul class="linklist rightside<!-- IF S_IS_BOT or not S_USER_LOGGED_IN --> fullwidth<!-- ENDIF -->">
-				<!-- EVENT overall_header_navigation_prepend -->
-				<li class="icon-faq"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
-				<!-- IF not S_IS_BOT -->
-					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
-					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
-					<li class="icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
-				<!-- ENDIF -->
 				<!-- EVENT overall_header_navigation_append -->
+				<!-- IF not S_IS_BOT -->
+					<li class="icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
+					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
+					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
+				<!-- ENDIF -->
+				<li class="icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
+				<!-- EVENT overall_header_navigation_prepend -->
 			</ul>
 
 			</div>

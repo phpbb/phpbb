@@ -45,6 +45,10 @@
 							<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 							<!-- ELSEIF S_PRIVMSGS -->
 							<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF -->
+							<div class="responsive-show" style="display: none;">
+								{L_SAVE_DATE}{L_COLON} <strong>{draftrow.DATE}</strong><br />
+								<!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a> &bull; <!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a>
+							</div>
 						</div>
 					</dt>
 					<dd class="info"><span>{draftrow.DATE}<br /><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a> &bull; <!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></span></dd>

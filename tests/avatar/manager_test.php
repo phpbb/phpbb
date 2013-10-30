@@ -25,9 +25,17 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		$config = new \phpbb\config\config(array());
 		$request = $this->getMock('\phpbb\request\request');
 		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
+		$path_helper =  new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			new \phpbb\filesystem(),
+			$this->phpbb_root_path,
+			$this->phpEx
+		);
 
 		// $this->avatar_foobar will be needed later on
-		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache));
+		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
@@ -40,7 +48,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 
 		foreach ($this->avatar_drivers() as $driver)
 		{
-			$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $cache));
+			$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 			$cur_avatar->expects($this->any())
 				->method('get_name')
 				->will($this->returnValue('avatar.driver.' . $driver));
@@ -104,7 +112,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	public function test_get_driver_enabled($driver_name, $expected)
 	{
 		$driver = $this->manager->get_driver($driver_name);
-		$this->assertEquals($expected, $driver);
+		$this->assertEquals($expected, ($driver === null) ? null : $driver->get_name());
 	}
 
 	public function get_driver_data_all()
@@ -125,7 +133,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	public function test_get_driver_all($driver_name, $expected)
 	{
 		$driver = $this->manager->get_driver($driver_name, false);
-		$this->assertEquals($expected, $driver);
+		$this->assertEquals($expected, ($driver === null) ? $driver : $driver->get_name());
 	}
 
 	public function test_get_avatar_settings()

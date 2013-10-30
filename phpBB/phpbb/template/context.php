@@ -285,7 +285,7 @@ class context
 			// Search array to get correct position
 			list($search_key, $search_value) = @each($key);
 
-			$key = NULL;
+			$key = null;
 			foreach ($block as $i => $val_ary)
 			{
 				if ($val_ary[$search_key] === $search_value)
@@ -296,7 +296,7 @@ class context
 			}
 
 			// key/value pair not found
-			if ($key === NULL)
+			if ($key === null)
 			{
 				return false;
 			}
