@@ -335,7 +335,7 @@ input.button3 {
 	font-variant: small-caps;
 }
 
-input[type="button"], input[type="submit"], input[type="reset"] { 
+input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"] { 
 	cursor: pointer; 
 }
 
