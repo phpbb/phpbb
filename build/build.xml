@@ -92,6 +92,7 @@
 				--ignore=phpBB/includes/sphinxapi.php
 				--ignore=phpBB/includes/utf/data/*
 				--ignore=phpBB/install/data/*
+				--ignore=phpBB/install/database_update.php
 				--ignore=phpBB/phpbb/*
 				--ignore=phpBB/vendor/*
 				phpBB"
