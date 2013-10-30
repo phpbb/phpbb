@@ -45,5 +45,5 @@ class php extends \Twig_TokenParser
 	public function getTag()
 	{
 		return 'PHP';
-    }
+	}
 }

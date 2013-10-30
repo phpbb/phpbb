@@ -823,7 +823,7 @@ function get_avatar_dim($src, $axis, $func = false, $arg1 = false, $arg2 = false
 		break;
 
 		case AVATAR_REMOTE:
-			 // see notes on this functions usage and (hopefully) model $func to avoid this accordingly
+			// see notes on this functions usage and (hopefully) model $func to avoid this accordingly
 			return get_remote_avatar_dim($src, $axis);
 		break;
 
@@ -1297,7 +1297,7 @@ function restore_config($schema)
 				$src_ary = $schema['array_name'];
 				$config_value = (isset($convert_config[$src_ary][$src])) ? $convert_config[$src_ary][$src] : '';
 			}
-   		}
+		}
 
 		if ($config_value !== '')
 		{

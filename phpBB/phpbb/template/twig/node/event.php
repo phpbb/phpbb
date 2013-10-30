@@ -49,10 +49,10 @@ class event extends \Twig_Node
 				//  templates on page load rather than at compile. This is
 				//  slower, but makes developing extensions easier (no need to
 				//  purge the cache when a new event template file is added)
-		        $compiler
-		            ->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
-		            ->indent()
-		        ;
+				$compiler
+					->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
+					->indent()
+				;
 			}
 
 			if (defined('DEBUG') || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
@@ -71,7 +71,7 @@ class event extends \Twig_Node
 			{
 				$compiler
 					->outdent()
-		            ->write("}\n\n")
+					->write("}\n\n")
 				;
 			}
 		}
