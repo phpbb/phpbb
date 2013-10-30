@@ -16,10 +16,6 @@
  </rule>
  -->
 
- <!-- A file MUST not contain more than one class/interface -->
- <rule ref="Generic.Files.OneClassPerFile" />
- <rule ref="Generic.Files.OneInterfacePerFile" />
-
  <!-- The PHP constants true, false, and null MUST be in lower case. -->
  <rule ref="Generic.PHP.LowerCaseConstant" />
 
@@ -37,6 +33,12 @@
 
  <!-- Functions MUST NOT contain multiple empty lines in a row -->
  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines" />
+
+ <!-- Classes etc. MUST be namespaced -->
+ <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+
+ <!-- A file MUST not contain more than one class/interface -->
+ <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses" />
 
  <!-- When present, all use declarations MUST go after the namespace declaration.
       There MUST be one use keyword per declaration.
