@@ -1318,18 +1318,12 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
 		}
 
-		if (isset($user->lang['timezones'][$timezone['tz']]))
+		$label = $timezone['tz'];
+		if (isset($user->lang['timezones'][$label]))
 		{
-			$title = $label = $user->lang['timezones'][$timezone['tz']];
+			$label = $user->lang['timezones'][$label];
 		}
-		else
-		{
-			// No label, we'll figure one out
-			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
-
-			$label = implode(' - ', $bits);
-			$title = $timezone['offest'] . ' - ' . $label;
-		}
+		$title = $timezone['offest'] . ' - ' . $label;
 
 		if ($truncate)
 		{
