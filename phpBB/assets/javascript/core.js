@@ -12,27 +12,27 @@ var keymap = {
 };
 
 var dark = $('#darkenwrapper');
-var loadingAlert = $('#loading_indicator');
+var loading_indicator = $('#loading_indicator');
 var phpbbAlertTimer = null;
 
 
 /**
  * Display a loading screen
  *
- * @returns object Returns loadingAlert.
+ * @returns object Returns loading_indicator.
  */
-phpbb.loadingAlert = function() {
-	if (!loadingAlert.is(':visible')) {
-		loadingAlert.fadeIn(phpbb.alertTime);
+phpbb.loading_indicator = function() {
+	if (!loading_indicator.is(':visible')) {
+		loading_indicator.fadeIn(phpbb.alertTime);
 		// Wait fifteen seconds and display an error if nothing has been returned by then.
 		phpbbAlertTimer = setTimeout(function() {
-			if (loadingAlert.is(':visible')) {
+			if (loading_indicator.is(':visible')) {
 				phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
 			}
 		}, 15000);
 	}
 
-	return loadingAlert;
+	return loading_indicator;
 };
 
 /**
@@ -97,8 +97,8 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loadingAlert.is(':visible')) {
-		loadingAlert.fadeOut(phpbb.alertTime, function() {
+	if (loading_indicator.is(':visible')) {
+		loading_indicator.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
 			div.fadeIn(phpbb.alertTime);
 		});
@@ -188,8 +188,8 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loadingAlert.is(':visible')) {
-		loadingAlert.fadeOut(phpbb.alertTime, function() {
+	if (loading_indicator.is(':visible')) {
+		loading_indicator.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
 			div.fadeIn(phpbb.alertTime);
 		});
@@ -330,7 +330,7 @@ phpbb.ajaxify = function(options) {
 				// If confirmation is required, display a dialog to the user.
 				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del) {
-						phpbb.loadingAlert();
+						phpbb.loading_indicator();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
@@ -373,7 +373,7 @@ phpbb.ajaxify = function(options) {
 		}
 
 		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
-			phpbb.loadingAlert();
+			phpbb.loading_indicator();
 		}
 
 		var request = $.ajax({
@@ -384,7 +384,7 @@ phpbb.ajaxify = function(options) {
 			error: errorHandler
 		});
 		request.always(function() {
-			loadingAlert.fadeOut(phpbb.alertTime);
+			loading_indicator.fadeOut(phpbb.alertTime);
 		});
 
 		event.preventDefault();
