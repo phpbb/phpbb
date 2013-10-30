@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class extension extends \Twig_Extension
 {
 	/** @var \phpbb\template\context */

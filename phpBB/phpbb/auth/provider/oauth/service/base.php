@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider\oauth\service;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Base OAuth abstract class that all OAuth services should implement
 *
 * @package auth

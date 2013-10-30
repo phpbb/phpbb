@@ -10,14 +10,6 @@
 namespace phpbb\extension;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The extension metadata manager validates and gets meta-data for extensions
 *
 * @package extension

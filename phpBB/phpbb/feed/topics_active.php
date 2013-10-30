@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Active Topics feed
 *
 * This will give you the last {$this->num_items} topics

@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
  * Database authentication provider for phpBB3
  *
  * This is for authentication via the integrated user table

@@ -10,14 +10,6 @@
 namespace phpbb;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Session class
 * @package phpBB3
 */

@@ -10,14 +10,6 @@
 namespace phpbb\avatar;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package avatar
 */
 class manager

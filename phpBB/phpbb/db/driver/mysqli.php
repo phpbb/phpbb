@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * MySQLi Database Abstraction Layer
 * mysqli-extension has to be compiled with:
 * MySQL 4.1+ or MySQL 5.0+

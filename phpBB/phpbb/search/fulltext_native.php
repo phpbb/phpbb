@@ -10,14 +10,6 @@
 namespace phpbb\search;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * fulltext_native
 * phpBB's own db driven fulltext search, version 2
 * @package search

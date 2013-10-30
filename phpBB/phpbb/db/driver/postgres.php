@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * PostgreSQL Database Abstraction Layer
 * Minimum Requirement is Version 7.3+
 * @package dbal

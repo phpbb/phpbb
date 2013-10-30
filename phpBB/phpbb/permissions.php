@@ -9,14 +9,6 @@
 
 namespace phpbb;
 
-/**
-* DO NOT CHANGE
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class permissions
 {
 	/**

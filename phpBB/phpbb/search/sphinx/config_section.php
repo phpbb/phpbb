@@ -10,14 +10,6 @@
 namespace phpbb\search\sphinx;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * \phpbb\search\sphinx\config_section
 * Represents a single section inside the sphinx configuration
 */

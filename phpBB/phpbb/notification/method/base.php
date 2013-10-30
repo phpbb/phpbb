@@ -10,14 +10,6 @@
 namespace phpbb\notification\method;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Base notifications method class
 * @package notifications
 */

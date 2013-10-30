@@ -14,14 +14,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
  * Prior to version 1.1 the SQL Server Native PHP driver didn't support sqlsrv_num_rows, or cursor based seeking so we recall all rows into an array
  * and maintain our own cursor index into that array.
  */

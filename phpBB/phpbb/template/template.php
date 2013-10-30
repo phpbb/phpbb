@@ -9,14 +9,6 @@
 
 namespace phpbb\template;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 interface template
 {
 

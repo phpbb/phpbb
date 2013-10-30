@@ -10,14 +10,6 @@
 namespace phpbb\template;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Stores variables assigned to template.
 *
 * @package phpBB3

@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Firebird/Interbase Database Abstraction Layer
 * Minimum Requirement is Firebird 2.1
 * @package dbal

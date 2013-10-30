@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider\oauth\service;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * OAuth service exception class
 *
 * @package auth
