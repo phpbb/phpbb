@@ -28,6 +28,7 @@ phpbb.loadingAlert = function() {
 		loadingAlert.show();
 		dark.fadeIn(phpbb.alertTime, function() {
 			// Wait fifteen seconds and display an error if nothing has been returned by then.
+			phpbb.clearLoadingTimeout();
 			phpbbAlertTimer = setTimeout(function() {
 				if (loadingAlert.is(':visible')) {
 					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
@@ -310,7 +311,7 @@ phpbb.ajaxify = function(options) {
 						refresh = false;
 					}
 
-					setTimeout(function() {
+					phpbbAlertTimer = setTimeout(function() {
 						if (refresh) {
 							window.location = res.REFRESH_DATA.url;
 						}
