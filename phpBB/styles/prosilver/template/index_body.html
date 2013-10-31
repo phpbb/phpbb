@@ -1,7 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <p class="{S_CONTENT_FLOW_END} responsive-center<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
-<!-- IF U_MCP or U_ACP --><p class="responsive-center">{CURRENT_TIME} <br />[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}"><span class="responsive-hide">{L_ACP}</span><span class="responsive-show-inline" style="display: none;">{L_ACP_SHORT}</span></a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}"><span class="responsive-hide">{L_MCP}</span><span class="responsive-show-inline" style="display: none;">{L_MCP_SHORT}</span></a><!-- ENDIF -->&nbsp;]</p><!-- ELSEIF S_USER_LOGGED_IN --><p class="responsive-center">{CURRENT_TIME}</p><!-- ENDIF -->
+<!-- IF S_USER_LOGGED_IN --><p class="responsive-center">{CURRENT_TIME}<!-- IF U_MCP or U_ACP --> <br />[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- ENDIF -->&nbsp;]<!-- ENDIF --></p><!-- ENDIF -->
 
 <!-- IF S_DISPLAY_SEARCH or (S_USER_LOGGED_IN and not S_IS_BOT) -->
 <ul class="linklist bulletin">

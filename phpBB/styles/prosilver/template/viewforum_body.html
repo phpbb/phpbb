@@ -1,5 +1,5 @@
 <!-- INCLUDE overall_header.html -->
-<!-- IF U_ACP or U_MCP --><p>[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}"><span class="responsive-hide">{L_ACP}</span><span class="responsive-show-inline" style="display: none;">{L_ACP_SHORT}</span></a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}"><span class="responsive-hide">{L_MCP}</span><span class="responsive-show-inline" style="display: none;">{L_MCP_SHORT}</span></a><!-- ENDIF -->&nbsp;]</p><!-- ENDIF -->
+<!-- IF U_MCP or U_ACP --><p class="responsive-center">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p><!-- ENDIF -->
 <h2><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
 
 <!-- IF FORUM_DESC or MODERATORS or U_MCP -->
