@@ -157,6 +157,13 @@ overall_header_navigation_prepend
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
 
+posting_editor_message_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Purpose: Add field (e.g. textbox) to the posting screen before the message
+
 posting_editor_options_prepend
 ===
 * Locations:
