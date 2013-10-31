@@ -169,7 +169,14 @@ posting_editor_subject_after
 * Locations:
     + styles/prosilver/template/posting_editor.html
     + styles/subsilver2/template/posting_body.html
-* Purpose: Add field (e.g. textbox) to the posting screen under the subject
+* Purpose: Add field (e.g. textbox) to the posting screen after the subject
+
+posting_editor_subject_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
 simple_footer_after
 ===
