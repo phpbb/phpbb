@@ -22,8 +22,6 @@ before_script:
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database phpbb_tests;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'mysql' -o '$DB' = 'mariadb' ]; then mysql -e 'create database IF NOT EXISTS phpbb_tests;'; fi"
-  - echo 'extension = apc.so' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - echo 'apc.enable_cli=1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
   - cd build
