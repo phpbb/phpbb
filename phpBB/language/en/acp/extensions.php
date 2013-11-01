@@ -55,12 +55,12 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files, data and settings but removes any functionality added by the extension.',
 	'EXTENSION_ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
 	'EXTENSION_INSTALL_EXPLAIN'		=> 'Installing an extension will perform database changes that are required to use the extension on your board.',
-	'EXTENSION_UNINSTALL_EXPLAIN'	=> 'Uninstalling an extension removes all data and settings of the extensions. Only the extension files are retained, so you can install it again.',
+	'EXTENSION_UNINSTALL_EXPLAIN'	=> 'Uninstalling an extension removes all data and settings of the extensions. The extension files are retained so it can be installed again.',
 
-	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, please do not leave this page or refresh until it is completed.',
-	'EXTENSION_ENABLE_IN_PROGRESS'	=> 'The extension is currently being enabled, please do not leave this page or refresh until it is completed.',
-	'EXTENSION_INSTALL_IN_PROGRESS'	=> 'The extension is currently being installed, please do not leave this page or refresh until it is completed.',
-	'EXTENSION_UNINSTALL_IN_PROGRESS'	=> 'The extension is currently being purged, please do not leave this page or refresh until it is completed.',
+	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, please do not leave or refresh this page until it is completed.',
+	'EXTENSION_ENABLE_IN_PROGRESS'	=> 'The extension is currently being enabled, please do not leave or refresh this page until it is completed.',
+	'EXTENSION_INSTALL_IN_PROGRESS'	=> 'The extension is currently being installed, please do not leave or refresh this page until it is completed.',
+	'EXTENSION_UNINSTALL_IN_PROGRESS'	=> 'The extension is currently being purged, please do not leave or refresh this page until it is completed.',
 
 	'EXTENSION_DISABLE_SUCCESS'		=> 'The extension was disabled successfully',
 	'EXTENSION_ENABLE_SUCCESS'		=> 'The extension was enabled successfully',
