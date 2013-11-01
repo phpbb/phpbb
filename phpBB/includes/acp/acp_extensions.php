@@ -83,6 +83,7 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
+			case 'install_pre':
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -96,12 +97,15 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_enable';
 
 				$template->assign_vars(array(
-					'PRE'		=> true,
-					'U_ENABLE'	=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name),
+					'PRE'				=> true,
+					'IS_ENABLING'		=> $action == 'enable_pre',
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_' . (($action == 'enable_pre') ? 'ENABLE' : 'INSTALL') . '_CONFIRM', $ext_name),
+					'U_ENABLE'			=> $this->u_action . '&amp;action=' . (($action == 'enable_pre') ? 'enable' : 'install') . '&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
 			case 'enable':
+			case 'install':
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -116,7 +120,7 @@ class acp_extensions
 						{
 							$template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=' . $action . '&amp;ext_name=' . urlencode($ext_name));
 						}
 					}
 				}
@@ -128,7 +132,8 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_enable';
 
 				$template->assign_vars(array(
-					'U_RETURN'	=> $this->u_action . '&amp;action=list',
+					'IS_ENABLING'	=> $action == 'enable',
+					'U_RETURN'		=> $this->u_action . '&amp;action=list',
 				));
 			break;
 
@@ -141,8 +146,9 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_disable';
 
 				$template->assign_vars(array(
-					'PRE'		=> true,
-					'U_DISABLE'	=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name),
+					'PRE'				=> true,
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $ext_name),
+					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
@@ -169,8 +175,9 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_purge';
 
 				$template->assign_vars(array(
-					'PRE'		=> true,
-					'U_PURGE'	=> $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name),
+					'PRE'				=> true,
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_UNINSTALL_CONFIRM', $ext_name),
+					'U_PURGE'			=> $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
@@ -233,7 +240,7 @@ class acp_extensions
 
 				$this->output_actions('enabled', array(
 					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
-					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
+					'UNINSTALL'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(\phpbb\extension\exception $e)
@@ -267,7 +274,7 @@ class acp_extensions
 
 				$this->output_actions('disabled', array(
 					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
-					'PURGE'			=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
+					'UNINSTALL'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(\phpbb\extension\exception $e)
@@ -302,7 +309,7 @@ class acp_extensions
 				));
 
 				$this->output_actions('disabled', array(
-					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+					'INSTALL'		=> $this->u_action . '&amp;action=install_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(\phpbb\extension\exception $e)
@@ -325,8 +332,9 @@ class acp_extensions
 		foreach ($actions as $lang => $url)
 		{
 			$this->template->assign_block_vars($block . '.actions', array(
-				'L_ACTION'		=> $this->user->lang($lang),
-				'U_ACTION'		=> $url,
+				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
+				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
+				'U_ACTION'			=> $url,
 			));
 		}
 	}
