@@ -479,7 +479,7 @@ class acp_icons
 							$icons_updated++;
 						}
 
- 					}
+					}
 				}
 
 				$cache->destroy('_icons');

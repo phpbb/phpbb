@@ -10,14 +10,6 @@
 namespace phpbb\cron\task;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Cron task interface
 * @package phpBB3
 */

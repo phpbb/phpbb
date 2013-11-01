@@ -10,14 +10,6 @@
 namespace phpbb\request;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * A helper class that provides convenience methods for type casting.
 *
 * @package \phpbb\request\request

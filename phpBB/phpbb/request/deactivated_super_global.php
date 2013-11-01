@@ -10,14 +10,6 @@
 namespace phpbb\request;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Replacement for a superglobal (like $_GET or $_POST) which calls
 * trigger_error on all operations but isset, overloads the [] operator with SPL.
 *

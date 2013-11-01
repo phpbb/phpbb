@@ -269,7 +269,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				// There is the chance that all recipients of the message got deleted. To avoid creating
 				// exports without recipients, we add a bogus "undisclosed recipient".
 				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) &&
-				    !(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
+					!(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
 				{
 					$address[$message_id]['u'] = array();
 					$address[$message_id]['u']['to'] = array();

@@ -10,14 +10,6 @@
 namespace phpbb\groupposition;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Teampage group position class
 *
 * Teampage position is an ascending list 1, 2, ..., n for items which are displayed. 1 is the first item, n the last.

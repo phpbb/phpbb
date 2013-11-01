@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig\node;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 
 class definenode extends \Twig_Node
 {

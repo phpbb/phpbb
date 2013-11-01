@@ -9,14 +9,6 @@
 
 namespace phpbb\event;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class extension_subscriber_loader

@@ -10,14 +10,6 @@
 namespace phpbb\log;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * This class is used to add entries into the log table.
 *
 * @package \phpbb\log\log

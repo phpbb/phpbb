@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Board wide feed (aka overall feed)
 *
 * This will give you the newest {$this->num_items} posts

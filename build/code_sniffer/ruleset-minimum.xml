@@ -9,4 +9,7 @@
  <!-- All code files MUST use the Unix LF (linefeed) line ending. -->
  <rule ref="Generic.Files.LineEndings" />
 
+ <!-- Tabs MUST be used for indentation -->
+ <rule ref="Generic.WhiteSpace.DisallowSpaceIndent" />
+
 </ruleset>

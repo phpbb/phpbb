@@ -10,14 +10,6 @@
 namespace phpbb\template\twig;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * This class holds all DEFINE variables from the current page load
 */
 class definition

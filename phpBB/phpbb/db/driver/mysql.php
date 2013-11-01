@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * MySQL4 Database Abstraction Layer
 * Compatible with:
 * MySQL 3.23+

@@ -10,14 +10,6 @@
 namespace phpbb\groupposition;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Legend group position class
 *
 * group_legend is an ascending list 1, 2, ..., n for groups which are displayed. 1 is the first group, n the last.

@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * MSSQL Database Abstraction Layer
 * Minimum Requirement is MSSQL 2000+
 * @package dbal

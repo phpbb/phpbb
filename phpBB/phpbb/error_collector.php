@@ -9,14 +9,6 @@
 
 namespace phpbb;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class error_collector
 {
 	var $errors;
