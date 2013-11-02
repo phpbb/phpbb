@@ -21,7 +21,7 @@
 				</dd>
 			<!-- ENDIF -->
 				<dt class="revision_view"><a href="{revision.U_REVISION_VIEW}"><!-- IF revision.IS_CURRENT_POST -->{L_CURRENT_REVISION}<!-- ELSE -->#{revision.NUMBER}<!-- ENDIF --></a></dt>
-				<dd class="revision_user">{revision.USERNAME}</dd>
+				<dd class="revision_user">{revision.USER_AVATAR} {revision.USERNAME}</dd>
 				<dd class="revision_date">{revision.DATE}</dd>
 				<dd class="revision_reason"><!-- IF revision.REASON -->{revision.REASON}<!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></dd>
 			<!-- IF S_DISPLAY_COMPARISON and not revision.IS_CURRENT_POST -->

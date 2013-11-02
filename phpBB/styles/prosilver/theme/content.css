@@ -124,6 +124,10 @@ li.header dt.revision_view {
 .revision_date { width: 16%; }
 .revision_reason { width: 35%; }
 
+.revision_user a, .revision_user img {
+	vertical-align: middle;
+}
+
 .success_message {
 	font-size: 1.1em;
 	padding: 5px;
