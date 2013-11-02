@@ -162,6 +162,7 @@ class ucp_notifications
 	/**
 	* Output all the notification types to the template
 	*
+	* @param array $subscriptions Array containing global subscriptions
 	* @param \phpbb\notification\manager $phpbb_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
