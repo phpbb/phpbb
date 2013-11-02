@@ -10,14 +10,6 @@
 namespace phpbb\cache\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * An interface that all cache drivers must implement
 *
 * @package acm

@@ -10,14 +10,6 @@
 namespace phpbb;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The class loader resolves class names to file system paths and loads them if
 * necessary.
 *
@@ -55,7 +47,7 @@ class class_loader
 	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
 	*/
 	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
-    {
+	{
 		if ($namespace[0] !== '\\')
 		{
 			$namespace = '\\' . $namespace;

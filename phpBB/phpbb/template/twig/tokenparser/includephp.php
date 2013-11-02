@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 
 class includephp extends \Twig_TokenParser
 {
@@ -43,7 +35,7 @@ class includephp extends \Twig_TokenParser
 
 		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-		return new \phpbb\template\twig\node\includephp($expr, $this->parser->getEnvironment(), $ignoreMissing, $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\includephp($expr, $this->parser->getEnvironment(), $token->getLine(), $ignoreMissing, $this->getTag());
 	}
 
 	/**

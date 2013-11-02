@@ -1318,18 +1318,12 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
 		}
 
-		if (isset($user->lang['timezones'][$timezone['tz']]))
+		$label = $timezone['tz'];
+		if (isset($user->lang['timezones'][$label]))
 		{
-			$title = $label = $user->lang['timezones'][$timezone['tz']];
+			$label = $user->lang['timezones'][$label];
 		}
-		else
-		{
-			// No label, we'll figure one out
-			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
-
-			$label = implode(' - ', $bits);
-			$title = $timezone['offest'] . ' - ' . $label;
-		}
+		$title = $timezone['offest'] . ' - ' . $label;
 
 		if ($truncate)
 		{
@@ -1478,7 +1472,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
@@ -5597,14 +5590,14 @@ function garbage_collection()
 	global $cache, $db;
 	global $phpbb_dispatcher;
 
-	/**
-	* Unload some objects, to free some memory, before we finish our task
-	*
-	* @event core.garbage_collection
-	* @since 3.1-A1
-	*/
 	if (!empty($phpbb_dispatcher))
 	{
+		/**
+		* Unload some objects, to free some memory, before we finish our task
+		*
+		* @event core.garbage_collection
+		* @since 3.1-A1
+		*/
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}
 

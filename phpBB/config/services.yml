@@ -23,7 +23,6 @@ services:
         arguments:
             - @config
             - @avatar.driver_collection
-            - @service_container
 
     cache:
         class: phpbb\cache\service

@@ -74,6 +74,40 @@
 			passthru="true" />
 	</target>
 
+	<target name="sniff">
+		<exec command="phpBB/vendor/bin/phpcs
+				-s
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-strict.xml
+				--ignore=phpBB/phpbb/db/migration/data/v30x/*
+				phpBB/phpbb"
+			dir="." returnProperty="retval-php-strict" passthru="true" />
+		<exec command="phpBB/vendor/bin/phpcs
+				-s
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-legacy.xml
+				--ignore=phpBB/cache/*
+				--ignore=phpBB/develop/*
+				--ignore=phpBB/includes/diff/*.php
+				--ignore=phpBB/includes/sphinxapi.php
+				--ignore=phpBB/includes/utf/data/*
+				--ignore=phpBB/install/data/*
+				--ignore=phpBB/install/database_update.php
+				--ignore=phpBB/phpbb/*
+				--ignore=phpBB/vendor/*
+				phpBB"
+			dir="." returnProperty="retval-php-legacy" passthru="true" />
+		<if>
+			<or>
+				<not><equals arg1="${retval-php-strict}" arg2="0" /></not>
+				<not><equals arg1="${retval-php-legacy}" arg2="0" /></not>
+			</or>
+			<then>
+				<fail message="PHP Code Sniffer failed." />
+			</then>
+		</if>
+	</target>
+
 	<target name="docs">
 		<!-- only works if you setup phpdoctor:
                      git clone https://github.com/peej/phpdoctor.git

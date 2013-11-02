@@ -10,14 +10,6 @@
 namespace phpbb\cron\task\core;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Tidy warnings cron task.
 *
 * Will only run when warnings are configured to expire.

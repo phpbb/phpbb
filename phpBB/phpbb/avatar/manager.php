@@ -10,14 +10,6 @@
 namespace phpbb\avatar;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package avatar
 */
 class manager
@@ -42,12 +34,6 @@ class manager
 	protected $avatar_drivers;
 
 	/**
-	* Service container object
-	* @var object
-	*/
-	protected $container;
-
-	/**
 	* Default avatar data row
 	* @var array
 	*/
@@ -63,13 +49,27 @@ class manager
 	*
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param array $avatar_drivers Avatar drivers passed via the service container
-	* @param object $container Container object
 	*/
-	public function __construct(\phpbb\config\config $config, $avatar_drivers, $container)
+	public function __construct(\phpbb\config\config $config, $avatar_drivers)
 	{
 		$this->config = $config;
-		$this->avatar_drivers = $avatar_drivers;
-		$this->container = $container;
+		$this->register_avatar_drivers($avatar_drivers);
+	}
+
+	/**
+	* Register avatar drivers
+	*
+	* @param array $avatar_drivers Service collection of avatar drivers
+	*/
+	protected function register_avatar_drivers($avatar_drivers)
+	{
+		if (!empty($avatar_drivers))
+		{
+			foreach ($avatar_drivers as $driver)
+			{
+				$this->avatar_drivers[$driver->get_name()] = $driver;
+			}
+		}
 	}
 
 	/**
@@ -112,7 +112,7 @@ class manager
 		* There is no need to handle invalid avatar types as the following code
 		* will cause a ServiceNotFoundException if the type does not exist
 		*/
-		$driver = $this->container->get($avatar_type);
+		$driver = $this->avatar_drivers[$avatar_type];
 
 		return $driver;
 	}

@@ -2,6 +2,7 @@
 <html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width" />
 <!-- IF META -->{META}<!-- ENDIF -->
 <title>{PAGE_TITLE}</title>
 
@@ -13,9 +14,6 @@ var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
 var on_page = '{ON_PAGE}';
 var per_page = '{PER_PAGE}';
 var base_url = '{BASE_URL|e('js')}';
-
-var menu_state = 'shown';
-
 
 /**
 * Jump to page
@@ -103,62 +101,12 @@ function popup(url, width, height, name)
 	return false;
 }
 
-/**
-* Hiding/Showing the side menu
-*/
-function switch_menu()
-{
-	var menu = document.getElementById('menu');
-	var main = document.getElementById('main');
-	var toggle = document.getElementById('toggle');
-	var handle = document.getElementById('toggle-handle');
-
-	switch (menu_state)
-	{
-		// hide
-		case 'shown':
-			main.style.width = '93%';
-			menu_state = 'hidden';
-			menu.style.display = 'none';
-			toggle.style.width = '20px';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundRepeat = 'no-repeat';
-
-			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-				handle.style.backgroundPosition = '0% 50%';
-				toggle.style.left = '96%';
-			<!-- ELSE -->
-				handle.style.backgroundPosition = '100% 50%';
-				toggle.style.left = '0';
-			<!-- ENDIF -->
-		break;
-
-		// show
-		case 'hidden':
-			main.style.width = '76%';
-			menu_state = 'shown';
-			menu.style.display = 'block';
-			toggle.style.width = '5%';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundRepeat = 'no-repeat';
-
-			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-				handle.style.backgroundPosition = '100% 50%';
-				toggle.style.left = '75%';
-			<!-- ELSE -->
-				handle.style.backgroundPosition = '0% 50%';
-				toggle.style.left = '15%';
-			<!-- ENDIF -->
-		break;
-	}
-}
-
 // ]]>
 </script>
 <!-- EVENT acp_overall_header_head_append -->
 </head>
 
-<body class="{S_CONTENT_DIRECTION}">
+<body class="{S_CONTENT_DIRECTION} nojs">
 
 <div id="wrap">
 	<div id="page-header">
@@ -171,29 +119,25 @@ function switch_menu()
 		<div id="tabs">
 			<ul>
 			<!-- BEGIN t_block1 -->
-				<li<!-- IF t_block1.S_SELECTED --> id="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
+				<li<!-- IF t_block1.S_SELECTED --> class="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
 			<!-- END t_block1 -->
 			</ul>
 		</div>
 
 		<div id="acp">
-		<div class="panel">
-			<span class="corners-top"><span></span></span>
 				<div id="content">
-					<!-- IF not S_USER_NOTICE --> 
-					<div id="toggle">
-						<a id="toggle-handle" accesskey="m" title="{L_MENU_TOGGLE}" onclick="switch_menu(); return false;" href="#"></a></div>
-					<!-- ENDIF -->
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-						<ul>
 						<!-- DEFINE $LI_USED = 0 -->
 						<!-- BEGIN l_block1 -->
 							<!-- IF l_block1.S_SELECTED -->
 	
 						<!-- BEGIN l_block2 -->
 							<!-- IF .l_block1.l_block2.l_block3 -->
-							<li class="header">{l_block1.l_block2.L_TITLE}</li>
+							<!-- IF $LI_USED --></ul></div><!-- ENDIF -->
+							<div class="menu-block">
+								<a class="header" href="javascript:void(0);">{l_block1.l_block2.L_TITLE}</a>
+								<ul>
 							<!-- DEFINE $LI_USED = 1 -->
 							<!-- ENDIF -->
 	
@@ -205,10 +149,12 @@ function switch_menu()
 						
 							<!-- ENDIF -->
 						<!-- END l_block1 -->
-						<!-- IF not $LI_USED -->
-							<li></li>
+						<!-- IF $LI_USED -->
+								</ul>
+							</div>
 						<!-- ENDIF -->
 						</ul>
 					</div>
 	
 					<div id="main">
+						<div class="main">

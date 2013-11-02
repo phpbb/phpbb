@@ -9,14 +9,6 @@
 
 namespace phpbb\tree;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 abstract class nestedset implements \phpbb\tree\tree_interface
 {
 	/** @var \phpbb\db\driver\driver */

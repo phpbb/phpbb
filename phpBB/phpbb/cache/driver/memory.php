@@ -10,14 +10,6 @@
 namespace phpbb\cache\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * ACM Abstract Memory Class
 * @package acm
 */

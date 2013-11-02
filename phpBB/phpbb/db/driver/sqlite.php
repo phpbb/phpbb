@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Sqlite Database Abstraction Layer
 * Minimum Requirement: 2.8.2+
 * @package dbal

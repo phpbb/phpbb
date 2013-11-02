@@ -10,14 +10,6 @@
 namespace phpbb\search;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * fulltext_postgres
 * Fulltext search for PostgreSQL
 * @package search

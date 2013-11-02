@@ -10,14 +10,6 @@
 namespace phpbb\notification\method;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Email notification method class
 * This class handles sending emails for notifications
 *

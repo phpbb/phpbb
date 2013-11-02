@@ -888,7 +888,11 @@ class acp_styles
 	protected function list_style(&$style, $level)
 	{
 		// Mark row as shown
-		if (!empty($style['_shown'])) return;
+		if (!empty($style['_shown']))
+		{
+			return;
+		}
+
 		$style['_shown'] = true;
 
 		// Generate template variables

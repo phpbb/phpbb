@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Database Abstraction Layer
 * @package dbal
 */

@@ -772,8 +772,8 @@ class acp_board
 		global $user, $config;
 
 		$act_ary = array(
-		  'ACC_DISABLE' => USER_ACTIVATION_DISABLE,
-		  'ACC_NONE' => USER_ACTIVATION_NONE,
+			'ACC_DISABLE' => USER_ACTIVATION_DISABLE,
+			'ACC_NONE' => USER_ACTIVATION_NONE,
 		);
 		if ($config['email_enable'])
 		{

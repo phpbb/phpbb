@@ -10,14 +10,6 @@
 namespace phpbb\request;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * An interface through which all application input can be accessed.
 *
 * @package \phpbb\request\request

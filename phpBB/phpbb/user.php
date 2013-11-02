@@ -10,14 +10,6 @@
 namespace phpbb;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Base user class
 *
 * This is the overarching class which contains (through session extend)
@@ -342,7 +334,6 @@ class user extends \phpbb\session
 				}
 			}
 		}
-
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp

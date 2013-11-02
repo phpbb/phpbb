@@ -10,14 +10,6 @@
 namespace phpbb\groupposition;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Interface to manage group positions in various places of phpbb
 *
 * The interface provides simple methods to add, delete and move a group
