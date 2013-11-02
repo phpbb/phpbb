@@ -194,7 +194,7 @@ class comparison
 				// $can_restore generally comes from
 				// \phpbb\controller\post_revisions::get_restore_permission()
 				// We Also want to make sure the revision isn't protected
-				'S_RESTORE'			=> $can_restore && ($auth->acl_get('m_restore_revisions') || !$revision->is_protected),
+				'S_RESTORE'			=> $can_restore && ($auth->acl_get('m_restore_revisions') || !$revision->is_protected()),
 				// Revision may be deleted if:
 				// User has moderator permission to delete revisions OR
 				// User is post owner AND revision is not protected
