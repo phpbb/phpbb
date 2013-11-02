@@ -88,7 +88,7 @@ class engine_finediff extends engine_base
 		$edits = 0;
 		foreach ($this->operations AS $edit)
 		{
-			if ($edit instanceof FineDiffInsertOp || $edit instanceof FineDiffReplaceOp)
+			if (get_class($edit) == 'FineDiffInsertOp' || get_class($edit) == 'FineDiffReplaceOp')
 			{
 				$edits++;
 			}
@@ -106,7 +106,7 @@ class engine_finediff extends engine_base
 		$edits = 0;
 		foreach ($this->operations AS $edit)
 		{
-			if ($edit instanceof FineDiffDeleteOp || $edit instanceof FineDiffReplaceOp)
+			if (get_class($edit) == 'FineDiffDeleteOp' || get_class($edit) == 'FineDiffReplaceOp')
 			{
 				$edits++;
 			}

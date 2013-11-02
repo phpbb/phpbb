@@ -295,6 +295,11 @@ span.imageset {
 	padding-left: 20px;
 	padding-top: 20px;
 }
+.imageset.icon_lock {
+	background-image: url("./images/icon_lock.gif");
+	padding-left: 20px;
+	padding-top: 20px;
+}
 .imageset.icon_post_delete {
 	background-image: url("./images/icon_post_delete.gif");
 	padding-left: 20px;
@@ -349,6 +354,11 @@ span.imageset {
 	background-image: url("./images/icon_topic_unapproved.gif");
 	padding-left: 16px;
 	padding-top: 14px;
+}
+.imageset.icon_undo {
+	background-image: url("./images/icon_undo.gif");
+	padding-left: 20px;
+	padding-top: 20px;
 }
 .imageset.icon_user_warn {
 	background-image: url("./images/icon_user_warn.gif");

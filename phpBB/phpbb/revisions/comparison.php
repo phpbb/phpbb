@@ -191,12 +191,25 @@ class comparison
 				'U_PROTECT'			=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$this_revision_id/protect"),
 				'U_UNPROTECT'		=> append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$this_revision_id/unprotect"),
 
-				'S_RESTORE'			=> $can_restore,
-				'S_DELETE'			=> $auth->acl_get('m_delete_revisions'),
+				// $can_restore generally comes from
+				// \phpbb\controller\post_revisions::get_restore_permission()
+				// We Also want to make sure the revision isn't protected
+				'S_RESTORE'			=> $can_restore && ($auth->acl_get('m_restore_revisions') || !$revision->is_protected),
+				// Revision may be deleted if:
+				// User has moderator permission to delete revisions OR
+				// User is post owner AND revision is not protected
+				'S_DELETE'			=> $auth->acl_get('m_delete_revisions') || (!$revision->is_protected() && $revision->get_user_id() === (int) $user->data['user_id']),
+				// Revision may be given protected status if the revision is
+				// not already protected AND the user has moderator permission
+				// to do so.
 				'S_PROTECT'			=> !$revision->is_protected() && $auth->acl_get('m_protect_revisions'),
+				// Revision may be given unprotected status if the revision is
+				// protected AND the user has moderator permission to do so.
 				'S_UNPROTECT'		=> $revision->is_protected() && $auth->acl_get('m_protect_revisions'),
 
 				'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_REVISION'),
+				'PROTECT_IMG' 		=> $user->img('icon_lock', 'PROTECT_REVISION'),
+				'RESTORE_IMG'		=> $user->img('icon_undo', 'RESTORE_REVISION'),
 			);
 
 			$template->assign_block_vars('revision', $revision_block);

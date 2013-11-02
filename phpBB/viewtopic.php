@@ -1637,7 +1637,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		if (sizeof($revisions))
 		{
 			$comparison = new \phpbb\revisions\comparison(current($revisions), $revisions_post->get_current_revision());
-			$post_revision_comparison_output = $comparison->output_template_block($revisions_post, $template, $user, $auth, $request, true, $phpbb_root_path, $phpEx, false);
+			$post_revision_comparison_output = $comparison->output_template_block($revisions_post, $template, $user, $auth, $request, false, $phpbb_root_path, $phpEx, false);
 		}
 	}
 
