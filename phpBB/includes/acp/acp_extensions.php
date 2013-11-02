@@ -99,7 +99,7 @@ class acp_extensions
 				$template->assign_vars(array(
 					'PRE'				=> true,
 					'IS_ENABLING'		=> $action == 'enable_pre',
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_' . (($action == 'enable_pre') ? 'ENABLE' : 'INSTALL') . '_CONFIRM', $ext_name),
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_' . (($action == 'enable_pre') ? 'ENABLE' : 'INSTALL') . '_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_ENABLE'			=> $this->u_action . '&amp;action=' . (($action == 'enable_pre') ? 'enable' : 'install') . '&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
@@ -147,7 +147,7 @@ class acp_extensions
 
 				$template->assign_vars(array(
 					'PRE'				=> true,
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $ext_name),
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
@@ -176,7 +176,7 @@ class acp_extensions
 
 				$template->assign_vars(array(
 					'PRE'				=> true,
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_UNINSTALL_CONFIRM', $ext_name),
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_UNINSTALL_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_PURGE'			=> $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
