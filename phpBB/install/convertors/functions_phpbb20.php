@@ -1933,3 +1933,43 @@ function phpbb_convert_timezone($timezone)
 	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, new \phpbb\db\tools($db), $phpbb_root_path, $phpEx, $table_prefix);
 	return $timezone_migration->convert_phpbb30_timezone($timezone, 0);
 }
+
+function phpbb_add_notification_options($user_notify_pm)
+{
+	global $convert_row, $db;
+
+	$user_id = phpbb_user_id($convert_row['user_id']);
+	if ($user_id == ANONYMOUS)
+	{
+		return;
+	}
+
+	$rows = array();
+
+	$rows[] = array(
+		'item_type'		=> 'post',
+		'item_id'		=> 0,
+		'user_id'		=> (int) $user_id,
+		'notify'		=> 1,
+		'method'		=> 'email',
+	);
+	$rows[] = array(
+		'item_type'		=> 'topic',
+		'item_id'		=> 0,
+		'user_id'		=> (int) $user_id,
+		'notify'		=> 1,
+		'method'		=> 'email',
+	);
+	if ($user_notify_pm)
+	{
+		$rows[] = array(
+			'item_type'		=> 'pm',
+			'item_id'		=> 0,
+			'user_id'		=> (int) $user_id,
+			'notify'		=> 1,
+			'method'		=> 'email',
+		);
+	}
+
+	$sql = $db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
+}

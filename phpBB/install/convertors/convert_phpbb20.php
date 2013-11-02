@@ -828,7 +828,10 @@ if (!$get_info)
 			array(
 				'target'		=> GROUPS_TABLE,
 				'autoincrement'	=> 'group_id',
-				'query_first'	=> array('target', $convert->truncate_statement . GROUPS_TABLE),
+				'query_first'	=> array(
+					array('target', $convert->truncate_statement . GROUPS_TABLE),
+					array('target', $convert->truncate_statement . TEAMPAGE_TABLE),
+				),
 
 				array('group_id',				'groups.group_id',					''),
 				array('group_type',				'groups.group_type',				'phpbb_convert_group_type'),
@@ -845,6 +848,7 @@ if (!$get_info)
 				'query_first'	=> array('target', $convert->truncate_statement . USER_GROUP_TABLE),
 				'execute_first'	=> '
 					add_default_groups();
+					add_groups_to_teampage();
 				',
 
 				array('group_id',		'groups.group_id',					''),

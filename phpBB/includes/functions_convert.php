@@ -1748,13 +1748,45 @@ function add_default_groups()
 			'group_type'			=> GROUP_SPECIAL,
 			'group_colour'			=> (string) $data[0],
 			'group_legend'			=> (int) $data[1],
-			'group_founder_manage'	=> (int) $data[2]
+			'group_founder_manage'	=> (int) $data[2],
 		);
 	}
 
 	if (sizeof($sql_ary))
 	{
 		$db->sql_multi_insert(GROUPS_TABLE, $sql_ary);
+	}
+}
+
+function add_groups_to_teampage()
+{
+	global $db;
+
+	$teampage_groups = array(
+		'ADMINISTRATORS'	=> 1,
+		'GLOBAL_MODERATORS'	=> 2,
+	);
+
+	$sql = 'SELECT *
+		FROM ' . GROUPS_TABLE . '
+		WHERE ' . $db->sql_in_set('group_name', array_keys($teampage_groups));
+	$result = $db->sql_query($sql);
+
+	$teampage_ary = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$teampage_ary[] = array(
+			'group_id'				=> (int) $row['group_id'],
+			'teampage_name'			=> '',
+			'teampage_position'		=> (int) $teampage_groups[$row['group_name']],
+			'teampage_parent'		=> 0,
+		);
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($teampage_ary))
+	{
+		$db->sql_multi_insert(TEAMPAGE_TABLE, $teampage_ary);
 	}
 }
 
