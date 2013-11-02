@@ -876,7 +876,8 @@ if (!$get_info)
 				'autoincrement'	=> 'user_id',
 				'query_first'	=> array(
 					array('target', 'DELETE FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS),
-					array('target', $convert->truncate_statement . BOTS_TABLE)
+					array('target', $convert->truncate_statement . BOTS_TABLE),
+					array('target', $convert->truncate_statement . USER_NOTIFICATIONS_TABLE),
 				),
 
 				'execute_last'	=> '
@@ -948,6 +949,8 @@ if (!$get_info)
 				array('',							'users.user_sig_bbcode_uid AS old_bbcode_uid',	''),
 				array('user_sig_bbcode_bitfield',	'',												'get_bbcode_bitfield'),
 				array('',							'users.user_regdate AS post_time',				''),
+
+				array('',						'users.user_notify_pm',				'phpbb_add_notification_options'),
 
 				'where'			=> 'users.user_id <> -1',
 			),
