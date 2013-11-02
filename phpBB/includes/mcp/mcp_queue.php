@@ -692,17 +692,13 @@ class mcp_queue
 					'visible'			=> true,
 				));
 			}
-			else
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+
+			// If approving one post, also give links back to post...
+			if (sizeof($post_info) == 1 && $post_url)
 			{
-				$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
-
-				// If approving one post, also give links back to post...
-				if (sizeof($post_info) == 1 && $post_url)
-				{
-					$message .= '<br /><br />' . $user->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>');
-				}
+				$message .= '<br /><br />' . $user->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>');
 			}
-
 			trigger_error($message);
 		}
 		else
@@ -836,17 +832,13 @@ class mcp_queue
 					'visible'			=> true,
 				));
 			}
-			else
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+
+			// If approving one topic, also give links back to topic...
+			if (sizeof($topic_info) == 1 && $topic_url)
 			{
-				$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
-
-				// If approving one topic, also give links back to topic...
-				if (sizeof($topic_info) == 1 && $topic_url)
-				{
-					$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $topic_url . '">', '</a>');
-				}
+				$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $topic_url . '">', '</a>');
 			}
-
 			trigger_error($message);
 		}
 		else
@@ -1157,11 +1149,7 @@ class mcp_queue
 					'visible'			=> false,
 				));
 			}
-			else
-			{
-				$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
-			}
-
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 			trigger_error($message);
 		}
 		else
