@@ -83,7 +83,6 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
-			case 'install_pre':
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -98,14 +97,12 @@ class acp_extensions
 
 				$template->assign_vars(array(
 					'PRE'				=> true,
-					'IS_ENABLING'		=> $action == 'enable_pre',
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_' . (($action == 'enable_pre') ? 'ENABLE' : 'INSTALL') . '_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_ENABLE'			=> $this->u_action . '&amp;action=' . (($action == 'enable_pre') ? 'enable' : 'install') . '&amp;ext_name=' . urlencode($ext_name),
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
+					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
 			case 'enable':
-			case 'install':
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -120,7 +117,7 @@ class acp_extensions
 						{
 							$template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->u_action . '&amp;action=' . $action . '&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
 						}
 					}
 				}
@@ -132,7 +129,6 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_enable';
 
 				$template->assign_vars(array(
-					'IS_ENABLING'	=> $action == 'enable',
 					'U_RETURN'		=> $this->u_action . '&amp;action=list',
 				));
 			break;
@@ -309,7 +305,7 @@ class acp_extensions
 				));
 
 				$this->output_actions('disabled', array(
-					'INSTALL'		=> $this->u_action . '&amp;action=install_pre&amp;ext_name=' . urlencode($name),
+					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(\phpbb\extension\exception $e)

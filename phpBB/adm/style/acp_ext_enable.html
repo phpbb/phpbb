@@ -5,7 +5,7 @@
 	<h1>{L_EXTENSIONS_ADMIN}</h1>
 
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
-	<p><!-- IF IS_ENABLING -->{L_EXTENSION_ENABLE_EXPLAIN}<!-- ELSE -->{L_EXTENSION_INSTALL_EXPLAIN}<!-- ENDIF --></p>
+	<p>{L_EXTENSION_ENABLE_EXPLAIN}</p>
 
 	<!-- IF MIGRATOR_ERROR -->
 	<div class="errorbox">
@@ -20,18 +20,18 @@
 
 	<form id="acp_extensions" method="post" action="{U_ENABLE}">
 	<fieldset class="submit-buttons">
-		<legend><!-- IF IS_ENABLING -->{L_EXTENSION_ENABLE}<!-- ELSE -->{L_EXTENSION_INSTALL}<!-- ENDIF --></legend>
-		<input class="button1" type="submit" name="enable" value="<!-- IF IS_ENABLING -->{L_EXTENSION_ENABLE}<!-- ELSE -->{L_EXTENSION_INSTALL}<!-- ENDIF -->" />
+		<legend>{L_EXTENSION_ENABLE}</legend>
+		<input class="button1" type="submit" name="enable" value="{L_EXTENSION_ENABLE}" />
 		<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
 	</fieldset>
 	</form>
 	<!-- ELSEIF S_NEXT_STEP -->
 		<div class="errorbox">
-			<p><!-- IF IS_ENABLING -->{L_EXTENSION_ENABLE_IN_PROGRESS}<!-- ELSE -->{L_EXTENSION_INSTALL_IN_PROGRESS}<!-- ENDIF --></p>
+			<p>{L_EXTENSION_ENABLE_IN_PROGRESS}</p>
 		</div>
 	<!-- ELSE -->
 		<div class="successbox">
-			<p><!-- IF IS_ENABLING -->{L_EXTENSION_ENABLE_SUCCESS}<!-- ELSE -->{L_EXTENSION_INSTALL_SUCCESS}<!-- ENDIF --></p>
+			<p>{L_EXTENSION_ENABLE_SUCCESS}</p>
 			<br />
 			<p><a href="{U_RETURN}">{L_RETURN_TO_EXTENSION_LIST}</a></p>
 		</div>

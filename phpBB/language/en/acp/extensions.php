@@ -49,22 +49,18 @@ $lang = array_merge($lang, array(
 
 	'EXTENSION_DISABLE'		=> 'Disable',
 	'EXTENSION_ENABLE'		=> 'Enable',
-	'EXTENSION_INSTALL'		=> 'Install',
 	'EXTENSION_UNINSTALL'	=> 'Uninstall',
 
 	'EXTENSION_DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files, data and settings but removes any functionality added by the extension.',
 	'EXTENSION_ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
-	'EXTENSION_INSTALL_EXPLAIN'		=> 'Installing an extension will perform database changes that are required to use the extension on your board.',
 	'EXTENSION_UNINSTALL_EXPLAIN'	=> 'Uninstalling an extension removes all of its data and settings. The extension files are retained so it can be installed again.',
 
 	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, please do not leave or refresh this page until it is completed.',
 	'EXTENSION_ENABLE_IN_PROGRESS'	=> 'The extension is currently being enabled, please do not leave or refresh this page until it is completed.',
-	'EXTENSION_INSTALL_IN_PROGRESS'	=> 'The extension is currently being installed, please do not leave or refresh this page until it is completed.',
 	'EXTENSION_UNINSTALL_IN_PROGRESS'	=> 'The extension is currently being uninstalled, please do not leave or refresh this page until it is completed.',
 
 	'EXTENSION_DISABLE_SUCCESS'		=> 'The extension was disabled successfully',
 	'EXTENSION_ENABLE_SUCCESS'		=> 'The extension was enabled successfully',
-	'EXTENSION_INSTALL_SUCCESS'		=> 'The extension was installed successfully',
 	'EXTENSION_UNINSTALL_SUCCESS'	=> 'The extension was uninstalled successfully',
 
 	'EXTENSION_NAME'		=> 'Extension Name',
@@ -73,7 +69,6 @@ $lang = array_merge($lang, array(
 
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
 	'EXTENSION_ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable the “%s” extension?',
-	'EXTENSION_INSTALL_CONFIRM'		=> 'Are you sure that you wish to install the “%s” extension?',
 	'EXTENSION_UNINSTALL_CONFIRM'	=> 'Are you sure that you wish to uninstall the “%s” extension? This will remove all data and settings stored for this extension and cannot be undone!',
 
 	'RETURN_TO_EXTENSION_LIST'	=> 'Return to the extension list',
