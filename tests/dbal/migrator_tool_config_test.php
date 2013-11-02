@@ -94,6 +94,7 @@ class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 
 	public function test_reverse()
 	{
+		// add
 		$this->config->set('foo', 'bar');
 
 		try
@@ -106,6 +107,21 @@ class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 		}
 		$this->assertFalse(isset($this->config['foo']));
 
+		// remove
+		$this->config->delete('foo');
+
+		try
+		{
+			$this->tool->reverse('remove', 'foo');
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertTrue(isset($this->config['foo']));
+		$this->assertEquals('', $this->config['foo']);
+
+		// update_if_equals
 		$this->config->set('foo', 'bar');
 
 		try
