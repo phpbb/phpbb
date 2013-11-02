@@ -51,15 +51,15 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DISABLE'		=> 'Disable',
 	'EXTENSION_ENABLE'		=> 'Enable',
 
-	'EXTENSION_DELETE_DATA_EXPLAIN'	=> 'Deleting data of an extension removes all of its data and settings. The extension files are retained so it can be enabled again.',
+	'EXTENSION_DELETE_DATA_EXPLAIN'	=> 'Deleting an extension’s data removes all of its data and settings. The extension files are retained so it can be enabled again.',
 	'EXTENSION_DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files, data and settings but removes any functionality added by the extension.',
 	'EXTENSION_ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
 
-	'EXTENSION_DELETE_DATA_IN_PROGRESS'	=> 'The data of the extension is currently being deleted, please do not leave or refresh this page until it is completed.',
-	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, please do not leave or refresh this page until it is completed.',
-	'EXTENSION_ENABLE_IN_PROGRESS'	=> 'The extension is currently being enabled, please do not leave or refresh this page until it is completed.',
+	'EXTENSION_DELETE_DATA_IN_PROGRESS'	=> 'The extension’s data is currently being deleted. Please do not leave or refresh this page until it is completed.',
+	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled. Please do not leave or refresh this page until it is completed.',
+	'EXTENSION_ENABLE_IN_PROGRESS'	=> 'The extension is currently being enabled. Please do not leave or refresh this page until it is completed.',
 
-	'EXTENSION_DELETE_DATA_SUCCESS'	=> 'The data of the extension was deleted successfully',
+	'EXTENSION_DELETE_DATA_SUCCESS'	=> 'The extension’s data was deleted successfully',
 	'EXTENSION_DISABLE_SUCCESS'		=> 'The extension was disabled successfully',
 	'EXTENSION_ENABLE_SUCCESS'		=> 'The extension was enabled successfully',
 
@@ -67,7 +67,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION_ACTIONS'		=> 'Actions',
 	'EXTENSION_OPTIONS'		=> 'Options',
 
-	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete all data of the “%s” extension? This cannot be undone!',
+	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
 	'EXTENSION_ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable the “%s” extension?',
 
