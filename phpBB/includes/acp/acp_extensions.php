@@ -167,17 +167,21 @@ class acp_extensions
 				));
 			break;
 
-			case 'purge_pre':
-				$this->tpl_name = 'acp_ext_purge';
+			case 'delete_data_pre':
+				if ($phpbb_extension_manager->enabled($ext_name))
+				{
+					redirect($this->u_action);
+				}
+				$this->tpl_name = 'acp_ext_delete_data';
 
 				$template->assign_vars(array(
 					'PRE'				=> true,
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_UNINSTALL_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_PURGE'			=> $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name),
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')),
+					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name),
 				));
 			break;
 
-			case 'purge':
+			case 'delete_data':
 				try
 				{
 					while ($phpbb_extension_manager->purge_step($ext_name))
@@ -187,7 +191,7 @@ class acp_extensions
 						{
 							$template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->u_action . '&amp;action=purge&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name));
 						}
 					}
 				}
@@ -196,7 +200,7 @@ class acp_extensions
 					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
-				$this->tpl_name = 'acp_ext_purge';
+				$this->tpl_name = 'acp_ext_delete_data';
 
 				$template->assign_vars(array(
 					'U_RETURN'	=> $this->u_action . '&amp;action=list',
@@ -236,7 +240,6 @@ class acp_extensions
 
 				$this->output_actions('enabled', array(
 					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
-					'UNINSTALL'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(\phpbb\extension\exception $e)
@@ -270,7 +273,7 @@ class acp_extensions
 
 				$this->output_actions('disabled', array(
 					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
-					'UNINSTALL'		=> $this->u_action . '&amp;action=purge_pre&amp;ext_name=' . urlencode($name),
+					'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			catch(\phpbb\extension\exception $e)
