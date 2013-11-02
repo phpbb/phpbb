@@ -149,7 +149,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('html')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'vendor/moo'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('html')->text());
 	}
 
 	public function test_disable_pre()
@@ -161,7 +161,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('html')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=foo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_DISABLE_CONFIRM', 'foo'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang('EXTENSION_DISABLE_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('html')->text());
 	}
 
 	public function test_purge_pre()
@@ -171,7 +171,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContains('The required file does not exist', $crawler->filter('html')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=purge_pre&ext_name=foo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_UNINSTALL_CONFIRM', 'foo'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang('EXTENSION_UNINSTALL_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('html')->text());
 	}
 
 	public function test_actions()
