@@ -157,13 +157,45 @@ overall_header_navigation_prepend
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
 
+posting_editor_message_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen after the message
+
+posting_editor_message_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen before the message
+
 posting_editor_options_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-    + styles/prosilver/template/posting_body.html
+    + styles/subsilver2/template/posting_body.html
 * Since: 3.1.0-a1
 * Purpose: Add posting options on the posting screen
+
+posting_editor_subject_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen after the subject
+
+posting_editor_subject_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
 simple_footer_after
 ===

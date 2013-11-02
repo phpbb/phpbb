@@ -163,11 +163,12 @@
 	</tr>
 	<!-- ENDIF -->
 <!-- ENDIF -->
-
+<!-- EVENT posting_editor_subject_before -->
 <tr>
 	<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}{L_COLON}</b></td>
 	<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}" /></td>
 </tr>
+<!-- EVENT posting_editor_subject_after -->
 <tr>
 	<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}{L_COLON}</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}&nbsp;</span><br /><br />
 	<!-- IF S_SMILIES_ALLOWED -->
@@ -202,6 +203,7 @@
 
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 		<!-- INCLUDE posting_buttons.html -->
+		<!-- EVENT posting_editor_message_before -->
 		<tr>
 			<td valign="top" style="width: 100%;"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" style="width: 700px; height: 270px; min-width: 98%; max-width: 98%;">{MESSAGE}</textarea></td>
 			<!-- IF S_BBCODE_ALLOWED -->
@@ -214,6 +216,7 @@
 			</td>
 			<!-- ENDIF -->
 	 	</tr>
+	 	<!-- EVENT posting_editor_message_after -->
 		</table>
 	</td>
 </tr>
