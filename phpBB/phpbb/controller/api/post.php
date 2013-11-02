@@ -124,10 +124,10 @@ class phpbb_controller_api_post
 			return new Response($json, 200);
 		}
 
-		$user_id = $this->auth_repository->auth($request, $request['auth_key'], $request['serial'], $hash);
 
-		if (is_int($user_id))
-		{
+
+		try {
+			$user_id = $this->auth_repository->auth($request, $request['auth_key'], $request['serial'], $hash);
 			$post = $this->post_repository->new_post($request, $user_id);
 
 			if(is_int($post['post_id']))
@@ -149,9 +149,15 @@ class phpbb_controller_api_post
 				);
 			}
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
-			$response = $user_id;
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+					'valid' => false,
+				),
+			);
 		}
 
 		$json = $serializer->serialize($response, 'json');

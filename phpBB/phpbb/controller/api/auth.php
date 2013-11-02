@@ -97,10 +97,9 @@ class phpbb_controller_api_auth
 	{
 		$serializer = new Serializer(array(), array(new JsonEncoder()));
 
-		$user_id = $this->auth_repository->auth();
+		try {
+			$user_id = $this->auth_repository->auth();
 
-		if (is_int($user_id))
-		{
 			$keys = array(
 				'auth_key' => unique_id(),
 				'sign_key' => unique_id(),
@@ -111,10 +110,17 @@ class phpbb_controller_api_auth
 				'data' => $keys,
 			);
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
-			$response = $user_id;
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+					'valid' => false,
+				),
+			);
 		}
+
 
 		return new Response($serializer->serialize($response, 'json'), $response['status']);
 	}
@@ -126,11 +132,9 @@ class phpbb_controller_api_auth
 			return $this->helper->error($this->user->lang('API_NO_PERMISSION'));
 		}
 
-		// This will either be a guests user id or a response array for errors
-		$user_id = $this->auth_repository->auth();
+		try {
+			$user_id = $this->auth_repository->auth();
 
-		if (is_int($user_id))
-		{
 			$url = $this->helper->url('api/auth/allow');
 
 			$this->template->assign_vars(array(
@@ -143,7 +147,7 @@ class phpbb_controller_api_auth
 
 			return $this->helper->render('api_auth.html', $this->user->lang['AUTH_TITLE']);
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
 			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
 		}
@@ -159,8 +163,7 @@ class phpbb_controller_api_auth
 		// This will either be a guests user id or a response array for errors
 		$user_id = $this->auth_repository->auth();
 
-		if (is_int($user_id))
-		{
+		try {
 			if (!check_form_key('api_auth'))
 			{
 				return $this->helper->error($this->user->lang['AUTH_FORM_ERROR']);
@@ -195,7 +198,7 @@ class phpbb_controller_api_auth
 			/* @TODO: Add real response here */
 			return new Response();
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
 			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
 		}
@@ -209,11 +212,9 @@ class phpbb_controller_api_auth
 		$serial = $this->request->variable('serial', -1);
 		$hash = $this->request->variable('hash', '');
 
-		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/auth/verify'),
-			$auth_key, $serial, $hash);
-
-		if (is_int($user_id))
-		{
+		try {
+			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/auth/verify'),
+				$auth_key, $serial, $hash);
 			if ($user_id == ANONYMOUS)
 			{
 				$response = array(
@@ -235,9 +236,15 @@ class phpbb_controller_api_auth
 				);
 			}
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
-			$response = $user_id;
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+					'valid' => false,
+				),
+			);
 		}
 
 		return new Response($serializer->serialize($response, 'json'), $response['status']);

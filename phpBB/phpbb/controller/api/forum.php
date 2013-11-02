@@ -85,11 +85,11 @@ class phpbb_controller_api_forum
 		$serial = $this->request->variable('serial', -1);
 		$hash = $this->request->variable('hash', '');
 
-		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
-			$forum_id), $auth_key, $serial, $hash, $forum_id);
-
-		if (is_int($user_id))
+		try
 		{
+			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
+				$forum_id), $auth_key, $serial, $hash, $forum_id);
+
 			$forums = $this->forum_repository->get($forum_id, $user_id);
 
 			$response = array(
@@ -97,10 +97,17 @@ class phpbb_controller_api_forum
 				'data' => $serializer->normalize($forums),
 			);
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
-			$response = $user_id;
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+					'valid' => false,
+				),
+			);
 		}
+
 
 		$json = $serializer->serialize($response, 'json');
 
@@ -123,25 +130,31 @@ class phpbb_controller_api_forum
 		$serial = $this->request->variable('serial', -1);
 		$hash = $this->request->variable('hash', '');
 
-		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
-			$forum_id . '/' . $page), $auth_key, $serial, $hash, $forum_id);
-
 		$serializer = new Serializer(array(
 			new phpbb_model_normalizer_topic(),
 		), array(new JsonEncoder()));
 
-		if (is_int($user_id))
-		{
-			$topics = $this->forum_repository->get_topics($forum_id, $page);
+		try {
 
-			$response = array(
-				'status' => 200,
-				'data' => $serializer->normalize($topics),
-			);
+			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
+				$forum_id . '/' . $page), $auth_key, $serial, $hash, $forum_id);
+
+				$topics = $this->forum_repository->get_topics($forum_id, $page);
+
+				$response = array(
+					'status' => 200,
+					'data' => $serializer->normalize($topics),
+				);
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
-			$response = $user_id;
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+					'valid' => false,
+				),
+			);
 		}
 
 		$json = $serializer->serialize($response, 'json');

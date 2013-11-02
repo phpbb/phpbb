@@ -85,15 +85,16 @@ class phpbb_controller_api_topic
 		$serial = $this->request->variable('serial', -1);
 		$hash = $this->request->variable('hash', '');
 
-		$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/topic/' .
-			$topic_id . '/' . $page), $auth_key, $serial, $hash);
+
 
 		$serializer = new Serializer(array(
 			new phpbb_model_normalizer_post(),
 		), array(new JsonEncoder()));
 
-		if (is_int($user_id))
-		{
+		try {
+			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/topic/' .
+			$topic_id . '/' . $page), $auth_key, $serial, $hash);
+
 			$posts = $this->topic_repository->get($topic_id, $page, $user_id);
 
 			if ($posts !== false)
@@ -114,9 +115,15 @@ class phpbb_controller_api_topic
 				);
 			}
 		}
-		else
+		catch (phpbb_model_exception_api_exception $e)
 		{
-			$response = $user_id;
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+					'valid' => false,
+				),
+			);
 		}
 
 		$json = $serializer->serialize($response, 'json');

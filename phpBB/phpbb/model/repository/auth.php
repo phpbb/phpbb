@@ -69,20 +69,17 @@ class phpbb_model_repository_auth
 	 * @param $serial
 	 * @param $hash
 	 * @param int $forum_id
+	 * @throws phpbb_model_exception_no_permission_exception
+	 * @throws phpbb_model_exception_api_exception
+	 * @throws phpbb_model_exception_invalid_request_exception
+	 * @throws phpbb_model_exception_not_authed_exception
 	 * @return array|int
 	 */
 	public function auth($request = null, $auth_key = 'guest', $serial = null, $hash = null, $forum_id = 0)
 	{
 		if (!$this->config['allow_api'])
 		{
-			$response = array(
-				'status' => 500,
-				'data' => array(
-					'error' => 'The API is not enabled on this board',
-					'valid' => false,
-				),
-			);
-			return $response;
+			throw new phpbb_model_exception_api_exception('The API is not enabled on this board', 500);
 		}
 
 		if ($auth_key != 'guest')
@@ -100,14 +97,7 @@ class phpbb_model_repository_auth
 
 			if (empty($sign_key))
 			{
-				$response = array(
-					'status' => 401,
-					'data' => array(
-						'error' => 'The user has not authenticated this application',
-						'valid' => false,
-					),
-				);
-				return $response;
+				throw new phpbb_model_exception_not_authed_exception('The user has not authenticated this application', 401);
 			}
 
 			if (is_array($request))
@@ -124,26 +114,12 @@ class phpbb_model_repository_auth
 
 			if ($hash != $test_hash)
 			{
-				$response = array(
-					'status' => 400,
-					'data' => array(
-						'error' => 'Invalid hash',
-						'valid' => false,
-					),
-				);
-				return $response;
+				throw new phpbb_model_exception_invalid_request_exception('Invalid hash', 400);
 			}
 
 			if ($serial <= $dbserial)
 			{
-				$response = array(
-					'status' => 400,
-					'data' => array(
-						'error' => 'Invalid serial',
-						'valid' => false,
-					),
-				);
-				return $response;
+				throw new phpbb_model_exception_invalid_request_exception('Invalid serial', 400);
 			}
 
 			$userdata = $this->auth->obtain_user_data($user_id);
@@ -155,14 +131,7 @@ class phpbb_model_repository_auth
 				{
 					if (!$this->auth->acl_get('f_read', $forum_id))
 					{
-						$response = array(
-							'status' => 403,
-							'data' => array(
-								'error' => 'User has no permission to see this forum.',
-								'valid' => false,
-							),
-						);
-						return $response;
+						throw new phpbb_model_exception_no_permission_exception('User has no permission to read this forum', 403);
 					}
 				}
 
@@ -175,14 +144,7 @@ class phpbb_model_repository_auth
 			}
 			else
 			{
-				$response = array(
-					'status' => 403,
-					'data' => array(
-						'error' => 'User has no permission to use the API',
-						'valid' => false,
-					),
-				);
-				return $response;
+				throw new phpbb_model_exception_no_permission_exception('User has no permission to use the API', 403);
 			}
 		}
 		else
@@ -196,28 +158,14 @@ class phpbb_model_repository_auth
 				{
 					if (!$this->auth->acl_get('f_read', $forum_id))
 					{
-						$response = array(
-							'status' => 403,
-							'data' => array(
-								'error' => 'User has no permission to see this forum.',
-								'valid' => false,
-							),
-						);
-						return $response;
+						throw new phpbb_model_exception_no_permission_exception('User has no permission to read this forum', 403);
 					}
 				}
 				return ANONYMOUS;
 			}
 			else
 			{
-				$response = array(
-					'status' => 403,
-					'data' => array(
-						'error' => 'User has no permission to use the API',
-						'valid' => false,
-					),
-				);
-				return $response;
+				throw new phpbb_model_exception_no_permission_exception('User has no permission to use the API', 403);
 
 			}
 		}
