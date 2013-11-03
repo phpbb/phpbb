@@ -207,9 +207,9 @@ class comparison
 				// protected AND the user has moderator permission to do so.
 				'S_UNPROTECT'		=> $revision->is_protected() && $auth->acl_get('m_protect_revisions'),
 
-				'DELETE_IMG' 		=> $user->img('icon_post_delete', 'DELETE_REVISION'),
-				'PROTECT_IMG' 		=> $user->img('icon_lock', 'PROTECT_REVISION'),
-				'RESTORE_IMG'		=> $user->img('icon_undo', 'RESTORE_REVISION'),
+				'DELETE_IMG' 		=> $user->img('icon_post_delete', $user->lang('SINGLE_REVISION_DELETE', 1)),
+				'PROTECT_IMG' 		=> $user->img('icon_lock', $user->lang('SINGLE_REVISION_PROTECT', 1)),
+				'RESTORE_IMG'		=> $user->img('icon_undo', $user->lang('SINGLE_REVISION_RESTORE', 1)),
 			);
 
 			$template->assign_block_vars('revision', $revision_block);

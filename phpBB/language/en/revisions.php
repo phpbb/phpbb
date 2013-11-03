@@ -136,11 +136,22 @@ $lang = array_merge($lang, array(
 		1 => '1 deletion',
 		2 => '%1$s deletions',
 	),
-	'REVISION_USER_COUNT'				=> array(
-		0		=> '0 users',
-		1		=> '1 user',
-		2		=> '%1$s users',
+	'REVISION_RESTORE'					=> array(
+		1 => 'Restore revision',
+		2 => 'Restore revisions',
 	),
+	'REVISION_USER_COUNT'				=> array(
+		0 => '0 users',
+		1 => '1 user',
+		2 => '%1$s users',
+	),
+
+	// These are used exclusively in the revision comparison list where
+	// plurals don't work right
+	'SINGLE_REVISION_PROTECT'		=> 'Protect revision',
+	'SINGLE_REVISION_UNPROTECT'		=> 'Unprotect revision',
+	'SINGLE_REVISION_DELETE'		=> 'Delete revision',
+	'SINGLE_REVISION_RESTORE'		=> 'Restore revision',
 
 	'REVISIONS'							=> 'Revisions',
 	'REVISIONS_COMPARE_TITLE'			=> 'Comparing Post Revisions',

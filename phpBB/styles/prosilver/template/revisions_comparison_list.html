@@ -26,10 +26,10 @@
 				<dd class="revision_reason"><!-- IF revision.REASON -->{revision.REASON}<!-- ELSE --><em>{L_NO_REASON}</em><!-- ENDIF --></dd>
 			<!-- IF S_DISPLAY_COMPARISON and not revision.IS_CURRENT_POST -->
 				<dd class="revision_options">
-						<a href="{revision.U_PROTECT}"  title="{L_PROTECT_REVISION}"class="revision_protect<!-- IF not revision.S_PROTECT --> hidden<!-- ENDIF -->" data-ajax="revisions.protect">{revision.PROTECT_IMG}</a>
-						<a href="{revision.U_UNPROTECT}" class="revision_unprotect<!-- IF not revision.S_UNPROTECT --> hidden<!-- ENDIF -->" data-ajax="revisions.unprotect">{L_UNPROTECT}</a>
-						<a href="{revision.U_RESTORE}" title="{L_RESTORE_REVISION}" class="revision_restore<!-- IF not revision.S_RESTORE --> hidden<!-- ENDIF -->">{revision.RESTORE_IMG}</a>
-						<a href="{revision.U_DELETE}" title="{L_DELETE_REVISION}" class="revision_delete<!-- IF not revision.S_DELETE --> hidden<!-- ENDIF -->" data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
+						<a href="{revision.U_PROTECT}"  title="{L_SINGLE_REVISION_PROTECT}"class="revision_protect<!-- IF not revision.S_PROTECT --> hidden<!-- ENDIF -->" data-ajax="revisions.protect">{revision.PROTECT_IMG}</a>
+						<a href="{revision.U_UNPROTECT}" title="{L_SINGLE_REVISION_UNPROTECT}" class="revision_unprotect<!-- IF not revision.S_UNPROTECT --> hidden<!-- ENDIF -->" data-ajax="revisions.unprotect">{L_UNPROTECT}</a>
+						<a href="{revision.U_RESTORE}" title="{L_SINGLE_REVISION_RESTORE}" class="revision_restore<!-- IF not revision.S_RESTORE --> hidden<!-- ENDIF -->">{revision.RESTORE_IMG}</a>
+						<a href="{revision.U_DELETE}" title="{L_REVISION_DELETE}" class="revision_delete<!-- IF not revision.S_DELETE --> hidden<!-- ENDIF -->" data-ajax="revisions.delete" data-refresh="true">{revision.DELETE_IMG}</a>
 				</dd>
 			<!-- ENDIF -->
 			</dl>
