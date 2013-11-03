@@ -38,23 +38,14 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN legend -->
-		<tr data-down="{legend.U_MOVE_DOWN}" data-up="{legend.U_MOVE_UP}">
+		<tr>
 			<td><strong<!-- IF legend.GROUP_COLOUR --> style="color: {legend.GROUP_COLOUR}"<!-- ENDIF -->>{legend.GROUP_NAME}</strong></td>
 			<td style="text-align: center;">{legend.GROUP_TYPE}</td>
 			<td class="actions">
-				<!-- IF legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
-					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
-					<span class="down"><a href="{legend.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
-				<!-- ELSEIF not legend.S_FIRST_ROW && not legend.S_LAST_ROW -->
-					<span class="up"><a href="{legend.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
-					<span class="down"><a href="{legend.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
-				<!-- ELSEIF legend.S_LAST_ROW && not legend.S_FIRST_ROW -->
-					<span class="up"><a href="{legend.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
-					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
-				<!-- ELSE -->
-					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
-					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
-				<!-- ENDIF -->
+				<span class="up-disabled" style="display: none;">{ICON_MOVE_UP_DISABLED}</span>
+				<span class="up"><a href="{legend.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+				<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+				<span class="down"><a href="{legend.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 				<a href="{legend.U_DELETE}">{ICON_DELETE}</a>
 			</td>
 		</tr>
@@ -126,7 +117,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN teampage -->
-		<tr data-down="{teampage.U_MOVE_DOWN}" data-up="{teampage.U_MOVE_UP}">
+		<tr>
 			<td>
 				<!-- IF teampage.U_CATEGORY -->
 					<a href="{teampage.U_CATEGORY}">{teampage.GROUP_NAME}</a>
@@ -137,19 +128,10 @@
 			<td style="text-align: center;"><!-- IF teampage.GROUP_TYPE -->{teampage.GROUP_TYPE}<!-- ELSE -->-<!-- ENDIF -->
 			</td></td>
 			<td class="actions">
-				<!-- IF teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
-					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
-					<span class="down"><a href="{teampage.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
-				<!-- ELSEIF not teampage.S_FIRST_ROW && not teampage.S_LAST_ROW -->
-					<span class="up"><a href="{teampage.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
-					<span class="down"><a href="{teampage.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
-				<!-- ELSEIF teampage.S_LAST_ROW && not teampage.S_FIRST_ROW -->
-					<span class="up"><a href="{teampage.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
-					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
-				<!-- ELSE -->
-					<span class="up">{ICON_MOVE_UP_DISABLED}</span>
-					<span class="down">{ICON_MOVE_DOWN_DISABLED}</span>
-				<!-- ENDIF -->
+				<span class="up-disabled" style="display: none;">{ICON_MOVE_UP_DISABLED}</span>
+				<span class="up"><a href="{teampage.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+				<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+				<span class="down"><a href="{teampage.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
 				<a href="{teampage.U_DELETE}">{ICON_DELETE}</a>
 			</td>
 		</tr>
@@ -185,13 +167,5 @@
 			{S_FORM_TOKEN}
 		</fieldset>
 	</form>
-
-	<div class="hidden">
-		<a class="template-up-img" href="#">{ICON_MOVE_UP}</a>
-		<span class="template-up-img-disabled">{ICON_MOVE_UP_DISABLED}</span>
-
-		<a class="template-down-img" href="#">{ICON_MOVE_DOWN}</a>
-		<span class="template-down-img-disabled">{ICON_MOVE_DOWN_DISABLED}</span>
-	</div>
 
 <!-- INCLUDE overall_footer.html -->
