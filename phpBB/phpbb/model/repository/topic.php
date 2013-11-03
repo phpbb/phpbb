@@ -66,7 +66,7 @@ class phpbb_model_repository_topic
 
 		$sql = 'SELECT *
 			FROM ' . POSTS_TABLE . '
-			WHERE topic_id = ' . (int)$topic_id . '
+			WHERE topic_id = ' . (int) $topic_id . '
 			ORDER BY post_id ASC';
 
 		$result = $this->db->sql_query_limit($sql, $post_limit, $post_limit * ($page - 1));
@@ -85,7 +85,23 @@ class phpbb_model_repository_topic
 		}
 		$this->db->sql_freeresult($result);
 
-		return $posts;
+		$data['posts'] = $posts;
+
+		$sql = 'SELECT COUNT(*) as count
+			FROM ' . POSTS_TABLE . '
+			WHERE topic_id = ' . (int) $topic_id . '
+			ORDER BY post_id ASC';
+
+		$result = $this->db->sql_query($sql);
+
+		$data['total'] = (int) $this->db->sql_fetchrow($result)['count'];
+		$data['per_page'] = (int) $post_limit;
+		$data['page'] = $page;
+		$data['last_page'] = ceil($data['total'] / $post_limit);
+
+		$this->db->sql_freeresult($result);
+
+		return $data;
 	}
 
 }

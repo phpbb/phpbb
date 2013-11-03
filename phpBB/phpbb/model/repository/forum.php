@@ -101,7 +101,7 @@ class phpbb_model_repository_forum
 
 		$sql = 'SELECT *
 			FROM ' . TOPICS_TABLE . '
-			WHERE forum_id = ' . (int)$forum_id . '
+			WHERE forum_id = ' . (int) $forum_id . '
 			ORDER BY topic_id DESC';
 
 		$result = $this->db->sql_query_limit($sql, $topic_limit, $topic_limit * ($page - 1));
@@ -113,7 +113,21 @@ class phpbb_model_repository_forum
 		}
 		$this->db->sql_freeresult($result);
 
-		return $topics;
+		$data['topics'] = $topics;
+
+		$sql = 'SELECT COUNT(*) as count
+			FROM ' . TOPICS_TABLE . '
+			WHERE forum_id = ' . (int) $forum_id . '
+			ORDER BY topic_id ASC';
+
+		$result = $this->db->sql_query($sql);
+
+		$data['total'] = (int) $this->db->sql_fetchrow($result)['count'];
+		$data['per_page'] = (int) $topic_limit;
+		$data['page'] = $page;
+		$data['last_page'] = ceil($data['total'] / $topic_limit);
+
+		return $data;
 	}
 
 	/** @TODO: Something for nestedset? */

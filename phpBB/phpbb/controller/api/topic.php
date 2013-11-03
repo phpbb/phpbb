@@ -99,7 +99,11 @@ class phpbb_controller_api_topic
 
 			$response = array(
 				'status' => 200,
-				'data' => $serializer->normalize($posts),
+				'total' => $posts['total'],
+				'per_page' => $posts['per_page'],
+				'page' => $posts['page'],
+				'last_page' => $posts['last_page'],
+				'data' => $serializer->normalize($posts['posts']),
 			);
 		}
 		catch (phpbb_model_exception_api_exception $e)

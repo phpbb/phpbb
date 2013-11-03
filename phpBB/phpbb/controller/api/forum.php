@@ -143,7 +143,11 @@ class phpbb_controller_api_forum
 
 				$response = array(
 					'status' => 200,
-					'data' => $serializer->normalize($topics),
+					'total' => $topics['total'],
+					'per_page' => $topics['per_page'],
+					'page' => $topics['page'],
+					'last_page' => $topics['last_page'],
+					'data' => $serializer->normalize($topics['topics']),
 				);
 		}
 		catch (phpbb_model_exception_api_exception $e)
