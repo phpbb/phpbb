@@ -66,7 +66,7 @@ class acp_extensions
 			}
 			catch(\phpbb\extension\exception $e)
 			{
-				trigger_error($e);
+				trigger_error($e, E_USER_WARNING);
 			}
 		}
 
