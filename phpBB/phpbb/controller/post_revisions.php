@@ -78,8 +78,8 @@ class post_revisions
 	* /post/{id}/revisions
 	*
 	* @param int $id Post ID
-	* @param int $from Starting point in the comparison (a revision ID)
-	* @param int $to Ending point in the comparison (a revision ID)
+	* @param int|bool $from Starting point in the comparison (a revision ID)
+	* @param int|bool $to Ending point in the comparison (a revision ID)
 	* @return Response
 	*/
 	public function compare($id, $from = false, $to = false)
@@ -103,6 +103,15 @@ class post_revisions
 			// 401 is the Unauthorized status code
 			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
 		}
+
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> append_sid($this->phpbb_root_path . 'viewtopic.php', array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
+			'FORUM_NAME'	=> $post_data['post_subject'],
+		));
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION_HISTORY'),
+		));
 
 		$revisions = $post->get_revisions();
 		$current = $post->get_current_revision();
@@ -218,7 +227,7 @@ class post_revisions
 		$revision = !$revision_id ? $post->get_current_revision() : new \phpbb\revisions\revision($revision_id, $this->db);
 		if ($revision_id && !$revision->exists())
 		{
-			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>');
+			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>', 404);
 		}
 
 		// Ensure that the user can view the revision
@@ -226,6 +235,19 @@ class post_revisions
 		{
 			return $this->helper->error($this->user->lang('ERROR_AUTH_VIEW'), 401);
 		}
+
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> append_sid($this->phpbb_root_path . 'viewtopic.php', array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
+			'FORUM_NAME'	=> $post_data['post_subject'],
+		));
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION_HISTORY'),
+		));
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION'),
+		));
 
 		$this->template->assign_vars(array(
 			'POST_USERNAME'		=> get_username_string('full', $post_data['poster_id'], $post_data['username'], $post_data['user_colour'], $post_data['post_username']),
@@ -484,41 +506,58 @@ class post_revisions
 			return $this->helper->error($this->user->lang('ERROR_AUTH_RESTORE'), 401);
 		}
 
+		$error = '';
+		$code = 500;
+		if (!isset($revisions[$to]))
+		{
+			$error = 'ERROR_REVISION_NOT_FOUND';
+			$code = 404;
+		}
+		// We check specifically for the moderator permission here instead
+		// of using $this->get_restore_permission($post_data) because if
+		// a moderator has locked the post to future edits, we don't want
+		// a non-moderator to change things
+		else if ($post_data['post_edit_locked'] && !$this->auth->acl_get('m_restore_revisions', $post_data['forum_id']))
+		{
+			$error = 'ERROR_POST_EDIT_LOCKED';
+			// 401 is unauthorized
+			$code = 401;
+		}
+
+		if ($error)
+		{
+			$this->send_ajax_response(array(
+				'success' => false,
+				'message' => $this->user->lang($error),
+			));
+
+			return $this->helper->error($this->user->lang($error), $code);
+		}
+
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> append_sid($this->phpbb_root_path . 'viewtopic.php', array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
+			'FORUM_NAME'	=> $post_data['post_subject'],
+		));
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION_HISTORY'),
+		));
+		$this->template->assign_block_vars('navlinks', array(
+			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions/restore/{$to}"),
+			'FORUM_NAME'	=> $this->user->lang('REVISIONS_RESTORE_TITLE'),
+		));
+
 		if ($this->request->is_set_post('confirm'))
 		{
-			$error = '';
-			$code = 500;
 			if (!check_form_key('restore'))
-			{
-				$error = 'FORM_INVALID';
-			}
-			else if (!isset($revisions[$to]))
-			{
-				$error = 'ERROR_REVISION_NOT_FOUND';
-				$code = 404;
-			}
-			// We check specifically for the moderator permission here instead
-			// of using $this->get_restore_permission($post_data) because if
-			// a moderator has locked the post to future edits, we don't want
-			// a non-moderator to change things
-			else if ($post_data['post_edit_locked'] && !$this->auth->acl_get('m_restore_revisions', $post_data['forum_id']))
-			{
-				$error = 'ERROR_POST_EDIT_LOCKED';
-				// 401 is unauthorized
-				$code = 401;
-			}
-
-			if ($error)
 			{
 				$this->send_ajax_response(array(
 					'success' => false,
-					'message' => $this->user->lang($error),
+					'message' => $this->user->lang('FORM_INVALID'),
 				));
 
-				return $this->helper->error($this->user->lang($error), $code);
+				return $this->helper->error($this->user->lang('FORM_INVALID'), 500);
 			}
-
-			$restore_result = $post->restore($to);
 
 			if ($restore_result !== \phpbb\revisions\post::REVISION_RESTORE_SUCCESS)
 			{

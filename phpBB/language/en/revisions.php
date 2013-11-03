@@ -141,7 +141,6 @@ $lang = array_merge($lang, array(
 		1		=> '1 user',
 		2		=> '%1$s users',
 	),
-	'REVISION_VIEW_TITLE'				=> 'Viewing a Post Revision',
 
 	'REVISIONS'							=> 'Revisions',
 	'REVISIONS_COMPARE_TITLE'			=> 'Comparing Post Revisions',
@@ -156,7 +155,7 @@ $lang = array_merge($lang, array(
 	'WITH'						=> 'with',
 
 	'VIEW'							=> 'View',
-	'VIEWING_POST_REVISION'			=> 'Viewing Post Revision',
+	'VIEWING_POST_REVISION'			=> 'Post Revision',
 	'VIEWING_POST_REVISION_EXPLAIN'	=> 'This page displays the revision made by %1$s on %2$s.',
-	'VIEWING_POST_REVISION_HISTORY'	=> 'Viewing Post Revision History',
+	'VIEWING_POST_REVISION_HISTORY'	=> 'Post Revision History',
 ));
