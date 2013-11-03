@@ -144,45 +144,45 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	{
 		// Foo is already enabled (redirect to list)
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=foo&sid=' . $this->sid);
-		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('html')->text());
-		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('html')->text());
-		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('html')->text());
+		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
+		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
+		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('.errorbox')->text());
 	}
 
 	public function test_disable_pre()
 	{
 		// Moo is not enabled (redirect to list)
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('html')->text());
-		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('html')->text());
-		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('html')->text());
+		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
+		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
+		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=foo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_DISABLE_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang('EXTENSION_DISABLE_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('.errorbox')->text());
 	}
 
 	public function test_delete_data_pre()
 	{
 		// test2 is not available (error)
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=test2&sid=' . $this->sid);
-		$this->assertContains('The required file does not exist', $crawler->filter('html')->text());
+		$this->assertContains('The required file does not exist', $crawler->filter('.errorbox')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=foo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_DELETE_DATA_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang('EXTENSION_DELETE_DATA_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('.errorbox')->text());
 	}
 
 	public function test_actions()
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('html')->text());
+		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('html')->text());
+		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('html')->text());
+		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('.successbox')->text());
 	}
 }
