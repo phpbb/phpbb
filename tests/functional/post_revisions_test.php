@@ -12,6 +12,7 @@
 */
 class phpbb_functional_post_revisions_test extends phpbb_functional_test_case
 {
+	protected $topic_id;
 	public function test_create_revision()
 	{
 		// Ensure the post revision tracking system is enabled
@@ -21,6 +22,7 @@ class phpbb_functional_post_revisions_test extends phpbb_functional_test_case
 
 		// Test editing a topic
 		$post = $this->edit_post(2, 1, 'Edited post title', 'I am a post that has been edited by the test framework.');
+		$this->topic_id = $post['topic_id'];
 
 		// First make sure the edit actually happened
 		$crawler = $this->request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
@@ -32,11 +34,12 @@ class phpbb_functional_post_revisions_test extends phpbb_functional_test_case
 		// Count the number of revision rows. Even though the post has been
 		// revised only once, the original version of the post is considered
 		// to be a revision, so the original plus the new version make two
-		$crawler->filter('li.revision_id')->each(function() use (&$revisions) {
+		$crawler->filter('li dd.revision_compare')->each(function() use (&$revisions) {
 			$revisions++;
 		});
-		$this->assertEquals($revisions, 2);
-
+		// Expected is 3 because it includes the header row and the current
+		// revision row, as well as the original revision.
+		$this->assertEquals(3, $revisions);
 	}
 
 	/**
