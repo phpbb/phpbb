@@ -28,7 +28,11 @@ require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
+$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$phpbb_root_path/config");
+
 $application = new Application('phpBB Console', PHPBB_VERSION);
-$application->addCommands(array(
-));
+foreach($phpbb_container->findTaggedServiceIds('console.command') as $id => $void)
+{
+	$application->add($phpbb_container->get($id));
+}
 $application->run();
