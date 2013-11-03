@@ -1104,6 +1104,11 @@ input.disabled {
 	background-color: #000000;
 }
 
+#loading_indicator {
+	background-color: #000000;
+	background-image: url("./images/loading.gif");
+}
+
 #notification_list ul li {
 	border-bottom-color: #B9B9B9;
 }
