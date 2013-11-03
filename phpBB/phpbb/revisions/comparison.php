@@ -234,8 +234,10 @@ class comparison
 		$l_lines_added_removed .= $additions_count && $deletions_count ? strtolower($user->lang('AND')) . ' ' : '';
 		$l_lines_added_removed .= $deletions_count ? $user->lang('REVISION_DELETIONS', $deletions_count) : '';
 
-		$l_first_revision = $this->first->get_id() ? $user->lang('REVISION') . ' ' . $this->first->get_id() : $user->lang('CURRENT_REVISION');
-		$l_last_revision = $last_id ? $user->lang('REVISION') . ' ' . $last_id : $user->lang('CURRENT_REVISION');
+		$first_revision_array_position = $this->first->get_id() ? (array_search($this->first->get_id(), array_keys($revisions)) + 1) : 0;
+		$l_first_revision = $this->first->get_id() ? $user->lang('REVISION') . ' ' . $first_revision_array_position : $user->lang('CURRENT_REVISION');
+		$last_revision_array_position = $last_id ? (array_search($last_id, array_keys($revisions)) + 1) : 0;
+		$l_last_revision = $last_id ? $user->lang('REVISION') . ' ' . $last_revision_array_position : $user->lang('CURRENT_REVISION');
 		$u_first_revision = append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$first_id");
 		$u_last_revision = append_sid("{$phpbb_root_path}app.$phpEx/post/$post_id/revision/$last_id");
 
