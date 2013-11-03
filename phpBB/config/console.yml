@@ -1,0 +1,7 @@
+services:
+    console.command.fixup.recalculate_email_hash:
+        class: phpbb\console\command\fixup\recalculate_email_hash
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: console.command }
