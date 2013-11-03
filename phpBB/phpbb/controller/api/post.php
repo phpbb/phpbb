@@ -124,8 +124,6 @@ class phpbb_controller_api_post
 			return new Response($json, 200);
 		}
 
-
-
 		try {
 			$user_id = $this->auth_repository->auth($request, $request['auth_key'], $request['serial'], $hash);
 			$post = $this->post_repository->new_post($request, $user_id);
@@ -141,6 +139,7 @@ class phpbb_controller_api_post
 			}
 			else
 			{
+				// @ToDo: Research if posting will ever fail and return no post id
 				$response = array(
 					'status' => 500,
 					'data' => array(

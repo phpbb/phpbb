@@ -57,6 +57,7 @@ class phpbb_model_repository_topic
 	 * @param $topic_id int The topic to fetch
 	 * @param $page int the page
 	 * @param $user_id
+	 * @throws phpbb_model_exception_no_permission_exception
 	 * @return array An array of topics
 	 */
 	public function get($topic_id, $page, $user_id)
@@ -78,7 +79,7 @@ class phpbb_model_repository_topic
 		{
 			if (!$this->auth->acl_get('f_read', $row['forum_id']))
 			{
-				return false;
+				throw new phpbb_model_exception_no_permission_exception('User has no permission to read this forum', 403);
 			}
 			$posts[] = new phpbb_model_entity_post($row);
 		}

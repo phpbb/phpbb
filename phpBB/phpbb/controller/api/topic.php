@@ -97,23 +97,10 @@ class phpbb_controller_api_topic
 
 			$posts = $this->topic_repository->get($topic_id, $page, $user_id);
 
-			if ($posts !== false)
-			{
-				$response = array(
-					'status' => 200,
-					'data' => $serializer->normalize($posts),
-				);
-			}
-			else
-			{
-				$response = array(
-					'status' => 403,
-					'data' => array(
-						'error' => 'User has no permission to see this forum.',
-						'valid' => false,
-					),
-				);
-			}
+			$response = array(
+				'status' => 200,
+				'data' => $serializer->normalize($posts),
+			);
 		}
 		catch (phpbb_model_exception_api_exception $e)
 		{

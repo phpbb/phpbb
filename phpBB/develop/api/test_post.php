@@ -2,13 +2,13 @@
 
 $data = array(
 	'auth_key' => '0d2206b9114e99d0',
-	'serial' => 81,
+	'serial' => 99,
 
 	'username' => '',
 	'topic_type' => 0,
 
 	'forum_id' => 2,
-	'topic_id' => 0,
+	'topic_id' => 30,
 	'icon_id' => 0,
 
 	'enable_bbcode' => true,
@@ -18,7 +18,7 @@ $data = array(
 
 	'message' => 'tesasdasdt 元気ですか？',
 
-	'topic_title' => 'teasdasdasww22st',
+	'topic_title' => 'tww22st',
 
 	'notify' => false,
 );
@@ -28,7 +28,6 @@ $imploded_request = implode('/', $data);
 $hash = hash_hmac('sha256', $imploded_request, 'b758239365974841');
 
 $request['hash'] = $hash;
-
 $request['data'] = json_encode($data);
 
 $options = array(

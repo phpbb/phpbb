@@ -92,14 +92,14 @@ class phpbb_model_repository_post
 		{
 			if (!$this->auth->acl_get('f_post', $data['forum_id']))
 			{
-				return false;
+				throw new phpbb_model_exception_no_permission_exception('User has no permission to create a topic in this forum', 403);
 			}
 		}
 		else
 		{
 			if (!$this->auth->acl_get('f_reply', $data['forum_id']))
 			{
-				return false;
+				throw new phpbb_model_exception_no_permission_exception('User has no permission to reply to this post', 403);
 			}
 		}
 
