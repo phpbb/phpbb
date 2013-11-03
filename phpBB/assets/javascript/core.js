@@ -12,31 +12,27 @@ var keymap = {
 };
 
 var dark = $('#darkenwrapper');
-var loadingAlert = $('#loadingalert');
+var loadingIndicator = $('#loading_indicator');
 var phpbbAlertTimer = null;
 
 
 /**
  * Display a loading screen
  *
- * @returns object Returns loadingAlert.
+ * @returns object Returns loadingIndicator.
  */
-phpbb.loadingAlert = function() {
-	if (dark.is(':visible')) {
-		loadingAlert.fadeIn(phpbb.alertTime);
-	} else {
-		loadingAlert.show();
-		dark.fadeIn(phpbb.alertTime, function() {
-			// Wait fifteen seconds and display an error if nothing has been returned by then.
-			phpbbAlertTimer = setTimeout(function() {
-				if (loadingAlert.is(':visible')) {
-					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
-				}
-			}, 15000);
-		});
+phpbb.loadingIndicator = function() {
+	if (!loadingIndicator.is(':visible')) {
+		loadingIndicator.fadeIn(phpbb.alertTime);
+		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		phpbbAlertTimer = setTimeout(function() {
+			if (loadingIndicator.is(':visible')) {
+				phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
+			}
+		}, 15000);
 	}
 
-	return loadingAlert;
+	return loadingIndicator;
 };
 
 /**
@@ -65,6 +61,10 @@ phpbb.alert = function(title, msg, fadedark) {
 	var div = $('#phpbb_alert');
 	div.find('.alert_title').html(title);
 	div.find('.alert_text').html(msg);
+
+	if (!dark.is(':visible')) {
+		dark.fadeIn(phpbb.alertTime);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -97,8 +97,8 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loadingAlert.is(':visible')) {
-		loadingAlert.fadeOut(phpbb.alertTime, function() {
+	if (loadingIndicator.is(':visible')) {
+		loadingIndicator.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
 			div.fadeIn(phpbb.alertTime);
 		});
@@ -130,6 +130,10 @@ phpbb.alert = function(title, msg, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
 	div.find('.alert_text').html(msg);
+
+	if (!dark.is(':visible')) {
+		dark.fadeIn(phpbb.alertTime);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -184,8 +188,8 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loadingAlert.is(':visible')) {
-		loadingAlert.fadeOut(phpbb.alertTime, function() {
+	if (loadingIndicator.is(':visible')) {
+		loadingIndicator.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
 			div.fadeIn(phpbb.alertTime);
 		});
@@ -326,7 +330,7 @@ phpbb.ajaxify = function(options) {
 				// If confirmation is required, display a dialog to the user.
 				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del) {
-						phpbb.loadingAlert();
+						phpbb.loadingIndicator();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
@@ -369,15 +373,18 @@ phpbb.ajaxify = function(options) {
 		}
 
 		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
-			phpbb.loadingAlert();
+			phpbb.loadingIndicator();
 		}
 
-		$.ajax({
+		var request = $.ajax({
 			url: action,
 			type: method,
 			data: data,
 			success: returnHandler,
 			error: errorHandler
+		});
+		request.always(function() {
+			loadingIndicator.fadeOut(phpbb.alertTime);
 		});
 
 		event.preventDefault();
