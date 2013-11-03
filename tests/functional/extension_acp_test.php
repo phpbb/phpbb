@@ -170,8 +170,14 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=test2&sid=' . $this->sid);
 		$this->assertContains('The required file does not exist', $crawler->filter('.errorbox')->text());
 
+		// foo is not disabled (redirect to list)
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=foo&sid=' . $this->sid);
+		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
+		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
+		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
+
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
-		$this->assertContains($this->lang('EXTENSION_DELETE_DATA_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('.errorbox')->text());
+		$this->assertContains('Are you sure that you wish to delete the data associated with “phpBB Moo Extension”?', $crawler->filter('.errorbox')->text());
 	}
 
 	public function test_actions()
