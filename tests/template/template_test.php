@@ -158,7 +158,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc\n\$VALUE == 'abc'\n(\$VALUE == 'abc')\n((\$VALUE == 'abc'))\n!\$DOESNT_EXIST\n(!\$DOESNT_EXIST)\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?[]|foobar|",
+				"xyz\nabc\n\$VALUE == 'abc'\n(\$VALUE == 'abc')\n((\$VALUE == 'abc'))\n!\$DOESNT_EXIST\n(!\$DOESNT_EXIST)\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?[]|foobar|false",
 			),
 			array(
 				'define_advanced.html',
