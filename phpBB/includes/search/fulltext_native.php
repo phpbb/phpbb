@@ -357,22 +357,6 @@ class fulltext_native extends search_backend
 					$this->{$mode . '_ids'}[] = $words[$word];
 				}
 			}
-			// throw an error if we shall not ignore unexistant words
-			else if (!$ignore_no_id)
-			{
-				if (!isset($common_ids[$word]))
-				{
-					$len = utf8_strlen($word);
-					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
-					{
-						trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
-					}
-					else
-					{
-						$this->common_words[] = $word;
-					}
-				}
-			}
 			else
 			{
 				$len = utf8_strlen($word);
@@ -383,8 +367,11 @@ class fulltext_native extends search_backend
 			}
 		}
 
-		// we can't search for negatives only
-		if (!sizeof($this->must_contain_ids))
+		// If common words are present and no other search results then return false
+		// search.php will print out appropriate error message.
+		// If both common words and search results are empty return true and keyword_search()
+		// later will return false for that condition
+		if (empty($this->must_contain_ids) && sizeof($this->common_words))
 		{
 			return false;
 		}
@@ -424,6 +411,12 @@ class fulltext_native extends search_backend
 
 		// No keywords? No posts.
 		if (empty($this->search_query))
+		{
+			return false;
+		}
+
+		// we can't search for negatives only
+		if (empty($this->must_contain_ids))
 		{
 			return false;
 		}
