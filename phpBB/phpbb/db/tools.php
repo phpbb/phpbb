@@ -257,6 +257,36 @@ class tools
 				'VARBINARY'	=> 'blob',
 			),
 
+			'sqlite3'	=> array(
+				'INT:'		=> 'INT(%d)',
+				'BINT'		=> 'BIGINT(20)',
+				'UINT'		=> 'INTEGER UNSIGNED',
+				'UINT:'		=> 'INTEGER UNSIGNED',
+				'TINT:'		=> 'TINYINT(%d)',
+				'USINT'		=> 'INTEGER UNSIGNED',
+				'BOOL'		=> 'INTEGER UNSIGNED',
+				'VCHAR'		=> 'VARCHAR(255)',
+				'VCHAR:'	=> 'VARCHAR(%d)',
+				'CHAR:'		=> 'CHAR(%d)',
+				'XSTEXT'	=> 'TEXT(65535)',
+				'STEXT'		=> 'TEXT(65535)',
+				'TEXT'		=> 'TEXT(65535)',
+				'MTEXT'		=> 'MEDIUMTEXT(16777215)',
+				'XSTEXT_UNI'=> 'TEXT(65535)',
+				'STEXT_UNI'	=> 'TEXT(65535)',
+				'TEXT_UNI'	=> 'TEXT(65535)',
+				'MTEXT_UNI'	=> 'MEDIUMTEXT(16777215)',
+				'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
+				'DECIMAL'	=> 'DECIMAL(5,2)',
+				'DECIMAL:'	=> 'DECIMAL(%d,2)',
+				'PDECIMAL'	=> 'DECIMAL(6,3)',
+				'PDECIMAL:'	=> 'DECIMAL(%d,3)',
+				'VCHAR_UNI'	=> 'VARCHAR(255)',
+				'VCHAR_UNI:'=> 'VARCHAR(%d)',
+				'VCHAR_CI'	=> 'VARCHAR(255)',
+				'VARBINARY'	=> 'BLOB',
+			),
+
 			'postgres'	=> array(
 				'INT:'		=> 'INT4',
 				'BINT'		=> 'INT8',
@@ -299,7 +329,7 @@ class tools
 	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
 	* @var array
 	*/
-	var $supported_dbms = array('firebird', 'mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
+	var $supported_dbms = array('firebird', 'mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite', 'sqlite3');
 
 	/**
 	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
@@ -387,6 +417,13 @@ class tools
 				$sql = 'SELECT name
 					FROM sqlite_master
 					WHERE type = "table"';
+			break;
+
+			case 'sqlite3':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"
+						AND name <> "sqlite_sequence"';
 			break;
 
 			case 'mssql':
@@ -567,6 +604,7 @@ class tools
 					case 'mysql_41':
 					case 'postgres':
 					case 'sqlite':
+					case 'sqlite3':
 						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
 					break;
 
@@ -604,6 +642,7 @@ class tools
 
 			case 'mysql_40':
 			case 'sqlite':
+			case 'sqlite3':
 				$table_sql .= "\n);";
 				$statements[] = $table_sql;
 			break;
@@ -722,7 +761,7 @@ class tools
 		$sqlite = false;
 
 		// For SQLite we need to perform the schema changes in a much more different way
-		if ($this->db->sql_layer == 'sqlite' && $this->return_statements)
+		if (($this->db->sql_layer == 'sqlite' || $this->db->sql_layer == 'sqlite3') && $this->return_statements)
 		{
 			$sqlite_data = array();
 			$sqlite = true;
@@ -1140,6 +1179,7 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
@@ -1273,6 +1313,7 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 				$sql = "PRAGMA index_list('" . $table_name . "');";
 				$col = 'name';
 			break;
@@ -1293,6 +1334,7 @@ class tools
 				case 'oracle':
 				case 'postgres':
 				case 'sqlite':
+				case 'sqlite3':
 					$row[$col] = substr($row[$col], strlen($table_name) + 1);
 				break;
 			}
@@ -1377,6 +1419,7 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 				$sql = "PRAGMA index_list('" . $table_name . "');";
 				$col = 'name';
 			break;
@@ -1390,7 +1433,7 @@ class tools
 				continue;
 			}
 
-			if ($this->sql_layer == 'sqlite' && !$row['unique'])
+			if (($this->sql_layer == 'sqlite' || $this->sql_layer == 'sqlite3') && !$row['unique'])
 			{
 				continue;
 			}
@@ -1418,6 +1461,7 @@ class tools
 				case 'firebird':
 				case 'postgres':
 				case 'sqlite':
+				case 'sqlite3':
 					$row[$col] = substr($row[$col], strlen($table_name) + 1);
 				break;
 			}
@@ -1629,11 +1673,17 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 				$return_array['primary_key_set'] = false;
 				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 				{
 					$sql .= ' INTEGER PRIMARY KEY';
 					$return_array['primary_key_set'] = true;
+
+					if ($this->sql_layer === 'sqlite3')
+					{
+						$sql .= ' AUTOINCREMENT';
+					}
 				}
 				else
 				{
@@ -1770,13 +1820,14 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 
 				if ($inline && $this->return_statements)
 				{
 					return $column_name . ' ' . $column_data['column_type_sql'];
 				}
 
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
+				if (version_compare($this->db->sql_server_info(true), '3.0') == -1)
 				{
 					$sql = "SELECT sql
 						FROM sqlite_master
@@ -1829,7 +1880,7 @@ class tools
 				}
 				else
 				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 				}
 			break;
 		}
@@ -1908,67 +1959,61 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 
 				if ($inline && $this->return_statements)
 				{
 					return $column_name;
 				}
 
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
+				$sql = "SELECT sql
+					FROM sqlite_master
+					WHERE type = 'table'
+						AND name = '{$table_name}'
+					ORDER BY type DESC, name;";
+				$result = $this->db->sql_query($sql);
+
+				if (!$result)
 				{
-					$sql = "SELECT sql
-						FROM sqlite_master
-						WHERE type = 'table'
-							AND name = '{$table_name}'
-						ORDER BY type DESC, name;";
-					$result = $this->db->sql_query($sql);
-
-					if (!$result)
-					{
-						break;
-					}
-
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					$statements[] = 'begin';
-
-					// Create a backup table and populate it, destroy the existing one
-					$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
-					$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
-					$statements[] = 'DROP TABLE ' . $table_name;
-
-					preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-					$new_table_cols = trim($matches[1]);
-					$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
-					$column_list = array();
-
-					foreach ($old_table_cols as $declaration)
-					{
-						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
-						{
-							continue;
-						}
-						$column_list[] = $entities[0];
-					}
-
-					$columns = implode(',', $column_list);
-
-					$new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
-
-					// create a new table and fill it up. destroy the temp one
-					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
-					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
-					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
-
-					$statements[] = 'commit';
+					break;
 				}
-				else
+
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				$statements[] = 'begin';
+
+				// Create a backup table and populate it, destroy the existing one
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+				$statements[] = 'DROP TABLE ' . $table_name;
+
+				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+				$new_table_cols = trim($matches[1]);
+				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+				$column_list = array();
+
+				foreach ($old_table_cols as $declaration)
 				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
 				}
+
+				$columns = implode(',', $column_list);
+
+				$new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
+
+				// create a new table and fill it up. destroy the temp one
+				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+				$statements[] = 'commit';
 			break;
 		}
 
@@ -1998,6 +2043,7 @@ class tools
 			case 'oracle':
 			case 'postgres':
 			case 'sqlite':
+			case' sqlite3':
 				$statements[] = 'DROP INDEX ' . $table_name . '_' . $index_name;
 			break;
 		}
@@ -2104,6 +2150,7 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 
 				if ($inline && $this->return_statements)
 				{
@@ -2182,6 +2229,7 @@ class tools
 			case 'postgres':
 			case 'oracle':
 			case 'sqlite':
+			case 'sqlite3':
 				$statements[] = 'CREATE UNIQUE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
@@ -2225,6 +2273,7 @@ class tools
 			case 'postgres':
 			case 'oracle':
 			case 'sqlite':
+			case 'sqlite3':
 				$statements[] = 'CREATE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
@@ -2316,6 +2365,7 @@ class tools
 				break;
 
 				case 'sqlite':
+				case 'sqlite3':
 					$sql = "PRAGMA index_info('" . $table_name . "');";
 					$col = 'name';
 				break;
@@ -2335,6 +2385,7 @@ class tools
 					case 'oracle':
 					case 'postgres':
 					case 'sqlite':
+					case 'sqlite3':
 						$row[$col] = substr($row[$col], strlen($table_name) + 1);
 					break;
 				}
@@ -2488,6 +2539,7 @@ class tools
 			break;
 
 			case 'sqlite':
+			case 'sqlite3':
 
 				if ($inline && $this->return_statements)
 				{

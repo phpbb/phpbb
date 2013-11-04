@@ -376,6 +376,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 
 					case 'mssql':
 					case 'sqlite':
+					case 'sqlite3':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 						break;
 
