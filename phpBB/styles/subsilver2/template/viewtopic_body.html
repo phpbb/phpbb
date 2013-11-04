@@ -21,7 +21,7 @@
 	<p class="moderators"><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON} {MODERATORS}</p>
 <!-- ENDIF -->
 <!-- IF U_MCP -->
-	<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+	<p class="linkmcp">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p>
 <!-- ENDIF -->
 </div>
 
