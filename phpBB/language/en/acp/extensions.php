@@ -39,7 +39,7 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS'				=> 'Extensions',
 	'EXTENSIONS_ADMIN'			=> 'Extensions Manager',
 	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Manager is a tool in your phpBB Board which allows you to manage all of your extensions statuses and view information about them.',
-	'EXTENSION_INVALID_LIST'	=> 'The "%s" extension is not valid.<br /><p>%s</p>',
+	'EXTENSION_INVALID_LIST'	=> 'The "%s" extension is not valid.<br />%s<br /><br />',
 	'EXTENSION_NOT_AVAILABLE'	=> 'The selected extension is not available for this board, please verify your phpBB and PHP versions are allowed (see the details page).',
 
 	'DETAILS'				=> 'Details',
