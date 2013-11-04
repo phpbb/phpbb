@@ -116,6 +116,18 @@ class phpbb_test_case_helpers
 			));
 		}
 
+		if (extension_loaded('sqlite3') && version_compare(PHP_VERSION, '5.4.0', '>=') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
+		{
+			$config = array_merge($config, array(
+				'dbms'		=> 'phpbb\db\driver\sqlite3',
+				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite3', // filename
+				'dbport'	=> '',
+				'dbname'	=> '',
+				'dbuser'	=> '',
+				'dbpasswd'	=> '',
+			));
+		}
+
 		if (isset($_SERVER['PHPBB_TEST_CONFIG']))
 		{
 			// Could be an absolute path
