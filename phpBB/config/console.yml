@@ -1,4 +1,32 @@
 services:
+    console.command.extension.disable:
+        class: phpbb\console\command\extension\disable
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.extension.enable:
+        class: phpbb\console\command\extension\enable
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.extension.purge:
+        class: phpbb\console\command\extension\purge
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.extension.show:
+        class: phpbb\console\command\extension\show
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
     console.command.fixup.recalculate_email_hash:
         class: phpbb\console\command\fixup\recalculate_email_hash
         arguments:
