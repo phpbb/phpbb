@@ -16,7 +16,7 @@ if (php_sapi_name() != 'cli')
 }
 
 define('IN_PHPBB', true);
-$phpbb_root_path = __DIR__ . '/';
+$phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 require($phpbb_root_path . 'config.' . $phpEx);
