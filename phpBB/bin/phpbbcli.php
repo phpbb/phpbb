@@ -7,8 +7,6 @@
 *
 */
 
-use Symfony\Component\Console\Application;
-
 if (php_sapi_name() != 'cli')
 {
 	echo 'This program must be run from the command line.' . PHP_EOL;
@@ -32,9 +30,6 @@ $phpbb_class_loader_ext->register();
 
 $phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$phpbb_root_path/config");
 
-$application = new Application('phpBB Console', PHPBB_VERSION);
-foreach($phpbb_container->findTaggedServiceIds('console.command') as $id => $void)
-{
-	$application->add($phpbb_container->get($id));
-}
+$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION);
+$application->register_container_commands($phpbb_container);
 $application->run();
