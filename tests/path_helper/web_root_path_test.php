@@ -116,6 +116,13 @@ class phpbb_path_helper_web_root_path_test extends phpbb_test_case
 				'/phpbb3-fork/phpBB/foo/template',
 				'/phpbb3-fork/phpBB/app.php',
 			),
+			array(
+				$this->phpbb_root_path . 'test.php',
+				$this->phpbb_root_path . '../test.php',
+				'/',
+				'/phpbb3-fork/phpBB/app.php/',
+				'/phpbb3-fork/phpBB/app.php',
+			),
 		);
 	}
 
