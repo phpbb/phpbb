@@ -34,6 +34,6 @@ class phpbb_functions_install_ignore_new_file_on_update_test extends phpbb_test_
 	public function test_ignore_new_file_on_update($file, $expected)
 	{
 		global $phpbb_root_path;
-		$this->assertEquals($expected, ignore_new_file_on_update($phpbb_root_path, $file));
+		$this->assertEquals($expected, phpbb_ignore_new_file_on_update($phpbb_root_path, $file));
 	}
 }

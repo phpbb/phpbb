@@ -1311,7 +1311,7 @@ class install_update extends module
 					}
 				}*/
 
-				if (!ignore_new_file_on_update($phpbb_root_path, $file))
+				if (!phpbb_ignore_new_file_on_update($phpbb_root_path, $file))
 				{
 					$this->get_custom_info($update_list['new'], $file);
 					$update_list['new'][] = array('filename' => $file, 'custom' => false);

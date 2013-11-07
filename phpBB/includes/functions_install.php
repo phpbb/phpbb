@@ -546,7 +546,7 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 * @param	string	$file				File including path from phpbb root
 * @return	bool		Should we ignore the new file or add it to the board?
 */
-function ignore_new_file_on_update($phpbb_root_path, $file)
+function phpbb_ignore_new_file_on_update($phpbb_root_path, $file)
 {
 	$ignore_new_file = false;
 
