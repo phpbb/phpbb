@@ -535,7 +535,16 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 }
 
 /**
+* Check whether a file should be ignored on update
 *
+* We ignore new files in some circumstances:
+* 1. The file is a language file, but the language is not installed
+* 2. The file is a style file, but the style is not installed
+* 3. The file is a style language file, but the language is not installed
+*
+* @param	string	$phpbb_root_path	phpBB root path
+* @param	string	$file				File including path from phpbb root
+* @return	bool		Should we ignore the new file or add it to the board?
 */
 function ignore_new_file_on_update($phpbb_root_path, $file)
 {
