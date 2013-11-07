@@ -1512,7 +1512,6 @@ class acp_users
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
 					'notifymethod'		=> request_var('notifymethod', $user_row['user_notify_type']),
 					'notifypm'			=> request_var('notifypm', $user_row['user_notify_pm']),
-					'popuppm'			=> request_var('popuppm', $this->optionget($user_row, 'popuppm')),
 					'allowpm'			=> request_var('allowpm', $user_row['user_allow_pm']),
 
 					'topic_sk'			=> request_var('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
@@ -1556,7 +1555,6 @@ class acp_users
 
 					if (!sizeof($error))
 					{
-						$this->optionset($user_row, 'popuppm', $data['popuppm']);
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
 						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
@@ -1699,7 +1697,6 @@ class acp_users
 					'NOTIFY_IM'			=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
-					'POPUP_PM'			=> $data['popuppm'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
