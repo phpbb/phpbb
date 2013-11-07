@@ -1311,7 +1311,7 @@ class install_update extends module
 					}
 				}*/
 
-				if (file_exists($phpbb_root_path . dirname($file)) || (strpos($file, 'styles/') !== 0 && strpos($file, 'language/') !== 0))
+				if (!ignore_new_file_on_update($phpbb_root_path, $file))
 				{
 					$this->get_custom_info($update_list['new'], $file);
 					$update_list['new'][] = array('filename' => $file, 'custom' => false);
