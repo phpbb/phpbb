@@ -64,6 +64,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 		$this->delete_search_index();
+		$this->delete_topic($post['topic_id']);
 	}
 
 	protected function create_search_index()
