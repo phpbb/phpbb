@@ -463,6 +463,10 @@ ul.linklist.bulletin li.no-bulletin:before {
 	padding: 9px 0 0;
 }
 
+.dropdown-container.topic-tools {
+	float: left;
+}
+
 .dropdown-up .dropdown {
 	top: auto;
 	bottom: 1.2em;
@@ -472,6 +476,15 @@ ul.linklist.bulletin li.no-bulletin:before {
 .dropdown-left .dropdown, .nojs .rightside .dropdown {
 	left: auto;
 	right: 0;
+}
+
+.dropdown-button-control .dropdown {
+	top: 24px;
+}
+
+.dropdown-button-control.dropdown-up .dropdown {
+	top: auto;
+	bottom: 24px;
 }
 
 .dropdown .pointer, .dropdown .pointer-inner {
@@ -536,9 +549,14 @@ ul.linklist.bulletin li.no-bulletin:before {
 
 .dropdown li {
 	float: none;
+	list-style: none;
 	margin: 0;
 	white-space: nowrap;
 	text-align: left;
+}
+
+.dropdown li li {
+	padding-left: 10px;
 }
 
 .wrap .dropdown li, .dropdown.wrap li, #notification_list li {
