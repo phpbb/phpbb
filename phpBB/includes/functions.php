@@ -999,7 +999,9 @@ function phpbb_own_realpath($path)
 	// @internal The slash in is_dir() gets around an open_basedir restriction
 	if (!@file_exists($resolved) || (!@is_dir($resolved . '/') && !is_file($resolved)))
 	{
-		return false;
+		// In order to allow proper URL rewriting we need to allow
+		// paths that are non-existent
+		//return false;
 	}
 
 	// Put the slashes back to the native operating systems slashes
@@ -2696,20 +2698,6 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		if (!$disable_cd_check && !file_exists($pathinfo['dirname'] . '/'))
-		{
-			$url = str_replace('../', '', $url);
-			$pathinfo = pathinfo($url);
-
-			if (!file_exists($pathinfo['dirname'] . '/'))
-			{
-				// fallback to "last known user page"
-				// at least this way we know the user does not leave the phpBB root
-				$url = generate_board_url() . '/' . $user->page['page'];
-				$failover_flag = true;
-			}
-		}
-
 		if (!$failover_flag)
 		{
 			// Is the uri pointing to the current directory?
@@ -2723,14 +2711,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 					$url = substr($url, 1);
 				}
 
-				if ($user->page['page_dir'])
-				{
-					$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
-				}
-				else
-				{
-					$url = generate_board_url() . '/' . $url;
-				}
+				$url = generate_board_url() . '/' . $url;
 			}
 			else
 			{
@@ -2741,8 +2722,9 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 				$root_dirs = array_diff_assoc($root_dirs, $intersection);
 				$page_dirs = array_diff_assoc($page_dirs, $intersection);
+				$root_dirs_size = sizeof($root_dirs) - 2;
 
-				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+				$dir = (($root_dirs_size > 0) ? str_repeat('../', $root_dirs_size) : '') . implode('/', $page_dirs);
 
 				// Strip / from the end
 				if ($dir && substr($dir, -1, 1) == '/')
