@@ -55,6 +55,11 @@ class acp_extensions
 			$ext_name = '';
 		}
 
+		if (in_array($action, array('enable', 'disable', 'delete_data')) && !check_link_hash($request->variable('hash', ''), $action . '.' . $ext_name))
+		{
+			trigger_error('FORM_INVALID', E_USER_WARNING);
+		}
+
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
@@ -98,7 +103,7 @@ class acp_extensions
 				$template->assign_vars(array(
 					'PRE'				=> true,
 					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name),
+					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name),
 				));
 			break;
 
@@ -117,7 +122,7 @@ class acp_extensions
 						{
 							$template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
 						}
 					}
 				}
@@ -144,7 +149,7 @@ class acp_extensions
 				$template->assign_vars(array(
 					'PRE'				=> true,
 					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name),
+					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name),
 				));
 			break;
 
@@ -156,7 +161,7 @@ class acp_extensions
 					{
 						$template->assign_var('S_NEXT_STEP', true);
 
-						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name));
+						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
 					}
 				}
 
@@ -177,7 +182,7 @@ class acp_extensions
 				$template->assign_vars(array(
 					'PRE'				=> true,
 					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name),
+					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name),
 				));
 			break;
 
@@ -191,7 +196,7 @@ class acp_extensions
 						{
 							$template->assign_var('S_NEXT_STEP', true);
 
-							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name));
+							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
 						}
 					}
 				}
