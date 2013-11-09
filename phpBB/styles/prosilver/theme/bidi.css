@@ -357,8 +357,8 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 }
 
 .rtl li.header dd {
-	margin-left: 0;
-	margin-right: 1px;
+	padding-left: 0;
+	padding-right: 1px;
 }
 
 .rtl dl.icon {
