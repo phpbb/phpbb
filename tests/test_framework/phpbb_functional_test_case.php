@@ -868,9 +868,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @param string $expected Lang var of expected message after posting
 	* @return array post_id, topic_id
 	*/
-	public function create_topic($forum_id, $subject, $message, $additional_form_data = array())
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
 		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
 
@@ -880,7 +881,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+		if ($expected !== '')
+		{
+			return self::submit_post($posting_url, 'POST_TOPIC', $form_data, $expected);
+		}
+		else
+		{
+			return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+		}
 	}
 
 	/**
@@ -893,9 +901,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @param string $expected Lang var of expected message after posting
 	* @return array post_id, topic_id
 	*/
-	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array())
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
 		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
 
@@ -905,7 +914,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+		if ($expected !== '')
+		{
+			return self::submit_post($posting_url, 'POST_REPLY', $form_data, $expected);
+		}
+		else
+		{
+			return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+		}
 	}
 
 	/**
@@ -914,9 +930,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $posting_url
 	* @param string $posting_contains
 	* @param array $form_data
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	protected function submit_post($posting_url, $posting_contains, $form_data)
+	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = 'POST_STORED')
 	{
 		$this->add_lang('posting');
 
@@ -945,7 +962,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
-		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+		$this->assertContains($this->lang($expected), $crawler->filter('html')->text());
+
+		if ($expected !== 'POST_STORED')
+		{
+			return;
+		}
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
 
 		return array(
