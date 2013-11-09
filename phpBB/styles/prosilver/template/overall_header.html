@@ -84,7 +84,7 @@
 
 			<ul class="linklist navlinks">
 				<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
-				<li class="icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF -->
+				<li class="small-icon icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF -->
 					<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a></span> 
 					<!-- BEGIN navlinks --> <span class="crumb"><strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span><!-- END navlinks -->
 					<!-- EVENT overall_header_breadcrumb_append -->
@@ -100,7 +100,7 @@
 			<ul class="linklist bulletin">
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-				<li class="icon-notification" data-skip-responsive="true">
+				<li class="small-icon icon-notification" data-skip-responsive="true">
 					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
 					<div id="notification_list" class="dropdown notification_list">
 						<div class="pointer"><div class="pointer-inner"></div></div>
@@ -141,11 +141,11 @@
 				</li>
 				<!-- ENDIF -->
 				<!-- IF S_DISPLAY_PM -->
-					<li class="icon-pm">
+					<li class="small-icon icon-pm">
 						<a href="{U_PRIVATEMSGS}"><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></a>
 					</li>
 				<!-- ENDIF -->
-				<li class="icon-ucp">
+				<li class="small-icon icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 				</li>
 				<!-- IF S_DISPLAY_SEARCH -->
@@ -158,11 +158,11 @@
 
 				<!-- EVENT overall_header_navigation_append -->
 				<!-- IF not S_IS_BOT -->
-					<li class="icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
-					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
-					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
+					<li class="small-icon icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
+					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="small-icon icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
+					<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
 				<!-- ENDIF -->
-				<li class="icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
+				<li class="small-icon icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
 				<!-- EVENT overall_header_navigation_prepend -->
 			</ul>
 
