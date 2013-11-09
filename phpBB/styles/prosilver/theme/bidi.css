@@ -388,7 +388,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 /* Post body styles
 ----------------------------------------*/
-.rtl .postbody {
+.rtl .postbody, .rtl .postbody h3 {
 	float: right;
 }
 
