@@ -198,8 +198,9 @@
 
 /* Pagination in viewforum for multipage topics */
 .rtl .row .pagination {
+	background-position: 100% 50%;
 	float: left;
-	padding: 1px 0 1px 15px;
+	padding: 1px 15px 1px 0;
 }
 
 .rtl .pagination span {
