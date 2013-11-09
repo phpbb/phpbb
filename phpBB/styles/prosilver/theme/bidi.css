@@ -90,6 +90,13 @@
 	text-align: left;
 }
 
+/* Bulletin icons for list items
+----------------------------------------*/
+.rtl ul.linklist.bulletin li:before {
+	padding-left: 4px;
+	padding-right: 0;
+}
+
 /* Dropdown menu
 ---------------------------------------- */
 .rtl .dropdown-container.topic-tools {
