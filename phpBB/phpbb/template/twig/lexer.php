@@ -69,7 +69,7 @@ class lexer extends \Twig_Lexer
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
 		$code = $this->fix_inline_variable_tokens(array(
-			'DEFINE \$[a-zA-Z0-9_]+ =',
+			//'DEFINE \$[a-zA-Z0-9_]+ =', // Disabling for ticket 11943
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
@@ -128,14 +128,6 @@ class lexer extends \Twig_Lexer
 
 			// Replace template variables with start/end to parse variables (' ~ TEST ~ '.html)
 			$matches[2] = preg_replace('#{([a-zA-Z0-9_\.$]+)}#', "'~ \$1 ~'", $matches[2]);
-
-			// If the second item is exactly one of a few key words,
-			// do not quote it as it changes the meaning
-			// http://tracker.phpbb.com/browse/PHPBB3-11943
-			if (in_array($matches[2], array('false', 'true', 'null')))
-			{
-				return "<!-- {$matches[1]} {$matches[2]} -->";
-			}
 
 			// Surround the matches in single quotes ('' ~ TEST ~ '.html')
 			return "<!-- {$matches[1]} '{$matches[2]}' -->";
