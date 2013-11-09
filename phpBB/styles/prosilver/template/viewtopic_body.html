@@ -33,48 +33,7 @@
 	<!-- ENDIF -->
 	</div>
 
-	<!-- DEFINE $TOPIC_TOOLS_BLOCK -->
-		<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or S_HAS_ATTACHMENTS or S_DISPLAY_TOPIC_TOOLS) -->
-			<div class="dropdown-container dropdown-button-control topic-tools">
-				<span title="{L_TOPIC_TOOLS}" class="dropdown-trigger dropdown-select dropdown-select-icon tools-icon"><span></span></span>
-				<div class="dropdown hidden">
-					<div class="pointer"><div class="pointer-inner"></div></div>
-					<ul class="dropdown-contents">
-						<!-- EVENT viewtopic_topic_tools_before -->
-						<!-- IF U_WATCH_TOPIC -->
-							<li class="small-icon <!-- IF S_WATCHING_TOPIC -->icon-unsubscribe<!-- ELSE -->icon-subscribe<!-- ENDIF -->">
-								<a href="{U_WATCH_TOPIC}" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon <!-- IF not S_WATCHING_TOPIC -->icon-unsubscribe<!-- ELSE -->icon-subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}">
-									{S_WATCH_TOPIC_TITLE}
-								</a>
-							</li>
-						<!-- ENDIF -->
-						<!-- IF U_BOOKMARK_TOPIC -->
-							<li class="small-icon icon-bookmark">
-								<a href="{U_BOOKMARK_TOPIC}" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}">
-									{S_BOOKMARK_TOPIC}
-								</a>
-							</li>
-						<!-- ENDIF -->
-						<!-- IF U_BUMP_TOPIC --><li class="small-icon icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
-						<!-- IF S_HAS_ATTACHMENTS -->
-							<li class="small-icon icon-download">
-								<a class="dropdown-toggle-submenu" href="{U_DOWNLOAD_ALL_ATTACHMENTS}" title="{L_DOWNLOAD_ALL_ATTACHMENTS}">{L_DOWNLOAD_ALL_ATTACHMENTS}</a>
-								<ul class="dropdown-submenu hidden">
-									<li>
-									<!-- BEGIN dl_method -->
-										<a href="{dl_method.LINK}">{dl_method.TYPE}</a><!-- IF not dl_method.S_LAST_ROW --> &bull; <!-- ENDIF --> 
-									<!-- END dl_method -->
-									</li>
-								</ul>
-							</li>
-						<!-- ENDIF -->
-						<!-- EVENT viewtopic_topic_tools_after -->
-					</ul>
-				</div>
-			</div>
-		<!-- ENDIF -->
-	<!-- ENDDEFINE -->
-	{$TOPIC_TOOLS_BLOCK}
+	<!-- INCLUDE viewtopic_topic_tools.html -->
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
 		<div class="search-box">
@@ -342,7 +301,7 @@
 	<!-- ENDIF -->
 	</div>
 
-	{$TOPIC_TOOLS_BLOCK}
+	<!-- INCLUDE viewtopic_topic_tools.html -->
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">

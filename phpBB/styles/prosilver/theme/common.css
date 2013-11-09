@@ -548,14 +548,32 @@ ul.linklist.bulletin li.no-bulletin:before {
 }
 
 .dropdown li {
-	float: none;
+	border-bottom: 1px dotted transparent;
+	float: none !important;
+	line-height: normal !important;
+	font-size: 1em !important;
 	list-style: none;
 	margin: 0;
+	padding-top: 4px;
+	padding-bottom: 4px;
 	white-space: nowrap;
 	text-align: left;
 }
 
+.dropdown li:last-child, .dropdown li li {
+	border-bottom: 0;
+}
+
+.dropdown li li:first-child {
+	margin-top: 4px;
+}
+
+.dropdown li li:last-child {
+	padding-bottom: 0;
+}
+
 .dropdown li li {
+	border-top: 1px dotted transparent;
 	padding-left: 10px;
 }
 

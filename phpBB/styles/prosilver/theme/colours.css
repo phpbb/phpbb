@@ -1181,6 +1181,10 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 	box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
 }
 
+.dropdown li, .dropdown li li {
+	border-color: #DCDCDC;
+}
+
 #minitabs .dropdown-contents {
 	background-color: #F1F8FF;
 }
