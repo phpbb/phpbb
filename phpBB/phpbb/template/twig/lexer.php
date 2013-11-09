@@ -68,8 +68,20 @@ class lexer extends \Twig_Lexer
 		);
 
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
+		$code = $this->strip_surrounding_quotes(array(
+			'INCLUDE',
+			'INCLUDEPHP',
+			'INCLUDEJS',
+			'INCLUDECSS',
+		), $code);
 		$code = $this->fix_inline_variable_tokens(array(
-			//'DEFINE \$[a-zA-Z0-9_]+ =', // Disabling for ticket 11943
+			'DEFINE \$[a-zA-Z0-9_]+ =',
+			'INCLUDE',
+			'INCLUDEPHP',
+			'INCLUDEJS',
+			'INCLUDECSS',
+		), $code);
+		$code = $this->add_surrounding_quotes(array(
 			'INCLUDE',
 			'INCLUDEPHP',
 			'INCLUDEJS',
@@ -108,9 +120,29 @@ class lexer extends \Twig_Lexer
 	}
 
 	/**
+	* Strip surrounding quotes
+	*
+	* First step to fix tokens that may have inline variables
+	* E.g. <!-- INCLUDE '{TEST}.html' to <!-- INCLUDE {TEST}.html
+	*
+	* @param array $tokens array of tokens to search for (imploded to a regular expression)
+	* @param string $code
+	* @return string
+	*/
+	protected function strip_surrounding_quotes($tokens, $code)
+	{
+		// Remove matching quotes at the beginning/end if a statement;
+		// E.g. 'asdf'"' -> asdf'"
+		// E.g. "asdf'"" -> asdf'"
+		// E.g. 'asdf'" -> 'asdf'"
+		return preg_replace('#<!-- (' . implode('|', $tokens) . ') (([\'"])?(.*?)\1) -->#', '<!-- $1 $2 -->', $code);
+	}
+
+	/**
 	* Fix tokens that may have inline variables
 	*
-	* E.g. <!-- INCLUDE {TEST}.html
+	* Second step to fix tokens that may have inline variables
+	* E.g. <!-- INCLUDE '{TEST}.html' to <!-- INCLUDE ' ~ {TEST} ~ '.html
 	*
 	* @param array $tokens array of tokens to search for (imploded to a regular expression)
 	* @param string $code
@@ -120,20 +152,28 @@ class lexer extends \Twig_Lexer
 	{
 		$callback = function($matches)
 		{
-			// Remove matching quotes at the beginning/end if a statement;
-			// E.g. 'asdf'"' -> asdf'"
-			// E.g. "asdf'"" -> asdf'"
-			// E.g. 'asdf'" -> 'asdf'"
-			$matches[2] = preg_replace('#^([\'"])?(.*?)\1$#', '$2', $matches[2]);
-
 			// Replace template variables with start/end to parse variables (' ~ TEST ~ '.html)
 			$matches[2] = preg_replace('#{([a-zA-Z0-9_\.$]+)}#', "'~ \$1 ~'", $matches[2]);
 
-			// Surround the matches in single quotes ('' ~ TEST ~ '.html')
-			return "<!-- {$matches[1]} '{$matches[2]}' -->";
+			return "<!-- {$matches[1]} {$matches[2]} -->";
 		};
 
 		return preg_replace_callback('#<!-- (' . implode('|', $tokens) . ') (.+?) -->#', $callback, $code);
+	}
+
+	/**
+	* Add surrounding quotes
+	*
+	* Last step to fix tokens that may have inline variables
+	* E.g. <!-- INCLUDE '{TEST}.html' to <!-- INCLUDE '' ~ {TEST} ~ '.html'
+	*
+	* @param array $tokens array of tokens to search for (imploded to a regular expression)
+	* @param string $code
+	* @return string
+	*/
+	protected function add_surrounding_quotes($tokens, $code)
+	{
+		return preg_replace('#<!-- (' . implode('|', $tokens) . ') (.+?) -->#', '<!-- $1 \'$2\' -->', $code);
 	}
 
 	/**
