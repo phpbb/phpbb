@@ -392,11 +392,14 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	float: right;
 }
 
+.rtl p.post-notice {
+	padding-left: 5px;
+	padding-right: 26px;
+}
+
 .rtl p.post-notice:before {
 	left: auto;
 	right: 0;
-	padding-left: 5px;
-	padding-right: 26px;
 }
 
 /* Topic review panel
