@@ -103,7 +103,7 @@ class ucp_notifications
 					{
 						confirm_box(false, 'NOTIFICATIONS_MARK_ALL_READ', build_hidden_fields(array(
 							'mark'		=> 'all',
-							'form_time'	=> $form_time,
+							'form_time'	=> time(),
 						)));
 					}
 				}
