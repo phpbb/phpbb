@@ -24,6 +24,14 @@ class style_update_p2 extends \phpbb\db\migration\migration
 	public function update_schema()
 	{
 		return array(
+			'drop_keys'	=> array(
+				$this->table_prefix . 'styles'		=> array(
+					'imageset_id',
+					'template_id',
+					'theme_id',
+				),
+			),
+
 			'drop_columns'	=> array(
 				$this->table_prefix . 'styles'		=> array(
 					'imageset_id',
@@ -50,6 +58,14 @@ class style_update_p2 extends \phpbb\db\migration\migration
 					'imageset_id'	=> array('UINT', 0),
 					'template_id'	=> array('UINT', 0),
 					'theme_id'		=> array('UINT', 0),
+				),
+			),
+
+			'add_index'		=> array(
+				$this->table_prefix . 'styles'			=> array(
+					'imageset_id'		=> array('imageset_id'),
+					'template_id'		=> array('template_id'),
+					'theme_id'			=> array('theme_id'),
 				),
 			),
 
