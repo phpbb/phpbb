@@ -601,6 +601,10 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-left: 0;
 }
 
+.tabs-container h2 {
+	float: right;
+}
+
 /* CP tabbed menu
 ----------------------------------------*/
 .rtl #tabs {
@@ -618,7 +622,12 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
 .rtl #minitabs {
-	margin: -20px 0 0 7px;
+	margin-right: 0;
+	margin-left: 7px;
+}
+
+.rtl .tabs-container #minitabs {
+	float: left;
 }
 
 .rtl #minitabs li {
