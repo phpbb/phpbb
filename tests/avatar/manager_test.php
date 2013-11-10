@@ -233,7 +233,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 				),
 				array(
 					'avatar'	=> '',
-					'id'		=> 4,
+					'id'		=> 'g4',
 					'user_id'	=> 5,
 				),
 				'group',
@@ -252,7 +252,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		foreach ($output as $key => $value)
 		{
 			$this->assertArrayHasKey($key, $cleaned_row);
-			$this->assertEquals($output[$key], $value);
+			$this->assertEquals($cleaned_row[$key], $value);
 		}
 	}
 
