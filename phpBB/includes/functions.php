@@ -994,16 +994,6 @@ function phpbb_own_realpath($path)
 		$resolved .= $bit . (($i == $max) ? '' : '/');
 	}
 
-	// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
-	// because we must be inside that basedir, the question is where...
-	// @internal The slash in is_dir() gets around an open_basedir restriction
-	if (!@file_exists($resolved) || (!@is_dir($resolved . '/') && !is_file($resolved)))
-	{
-		// In order to allow proper URL rewriting we need to allow
-		// paths that are non-existent
-		//return false;
-	}
-
 	// Put the slashes back to the native operating systems slashes
 	$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
 
