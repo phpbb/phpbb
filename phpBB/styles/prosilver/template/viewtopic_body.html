@@ -367,19 +367,21 @@
 <!-- INCLUDE jumpbox.html -->
 
 <!-- IF .quickmod -->
-	<form method="post" action="{S_MOD_ACTION}" id="quickmodform">
-	<fieldset class="quickmod">
-		<label for="quick-mod-select">{L_QUICK_MOD}{L_COLON}</label>
-		<select name="action" id="quick-mod-select">
+	<div class="dropdown-container dropdown-container-right dropdown-up dropdown-left dropdown-button-control">
+		<span title="{L_QUICK_MOD}" class="dropdown-trigger dropdown-select">{L_QUICK_MOD}<span></span></span>
+		<div class="dropdown hidden">
+			<div class="pointer"><div class="pointer-inner"></div></div>
+			<ul class="dropdown-contents">
 			<!-- BEGIN quickmod -->
-			<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>
+				{% set QUICKMOD_AJAX = (quickmod.VALUE in ['lock', 'unlock', 'delete_topic', 'restore_topic', 'make_normal', 'make_sticky', 'make_announce', 'make_global']) %}
+				<li><a href="{quickmod.LINK}"<!-- IF QUICKMOD_AJAX --> data-ajax="true" data-refresh="true"<!-- ENDIF -->>{quickmod.TITLE}</a></li>
 			<!-- END quickmod -->
-		</select>
-		<input type="submit" value="{L_GO}" class="button2" />
-		{S_FORM_TOKEN}
-	</fieldset>
-	</form>
+			</ul>
+		</div>
+	</div>
+
 <!-- ENDIF -->
+<span class="clear"></span>
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<div class="stat-block online-list">

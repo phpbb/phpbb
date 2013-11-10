@@ -523,6 +523,19 @@ gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 // Quick mod tools
 $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
+$s_quickmod_action = append_sid(
+	"{$phpbb_root_path}mcp.$phpEx",
+	array(
+		'f'	=> $forum_id,
+		't'	=> $topic_id,
+		'start'		=> $start,
+		'quickmod'	=> 1,
+		'redirect'	=> urlencode(str_replace('&amp;', '&', $viewtopic_url)),
+	), 
+	true,
+	$user->session_id
+);
+
 $quickmod_array = array(
 //	'key'			=> array('LANG_KEY', $userHasPermissions),
 
@@ -546,7 +559,7 @@ foreach($quickmod_array as $option => $qm_ary)
 {
 	if (!empty($qm_ary[1]))
 	{
-		phpbb_add_quickmod_option($option, $qm_ary[0]);
+		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
 	}
 }
 
@@ -631,7 +644,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 	'S_SINGLE_MODERATOR'	=> (!empty($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id]) > 1) ? false : true,
 	'S_TOPIC_ACTION' 		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start")),
-	'S_MOD_ACTION' 			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . "&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, $user->session_id),
+	'S_MOD_ACTION' 			=> $s_quickmod_action,
 
 	'L_RETURN_TO_FORUM'		=> $user->lang('RETURN_TO', $topic_data['forum_name']),
 	'S_VIEWTOPIC'			=> true,
