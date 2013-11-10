@@ -2368,26 +2368,45 @@ function build_url($strip_vars = false)
 
 	// Append SID
 	$redirect = append_sid($page, false, false);
-
-	// Add delimiter if not there...
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect .= '?';
-	}
+	$basic_parts = phpbb_get_url_parts($redirect, '&');
+	$params = $basic_parts['params'];
 
 	// Strip vars...
-	if ($strip_vars !== false && strpos($redirect, '?') !== false)
+	if ($strip_vars !== false)
 	{
 		if (!is_array($strip_vars))
 		{
 			$strip_vars = array($strip_vars);
 		}
 
-		$query = $_query = array();
+		// Strip the vars off
+		foreach ($strip_vars as $strip)
+		{
+			if (isset($params[$strip]))
+			{
+				unset($params[$strip]);
+			}
+		}
+	}
 
-		$args = substr($redirect, strpos($redirect, '?') + 1);
-		$args = ($args) ? explode('&', $args) : array();
-		$redirect = substr($redirect, 0, strpos($redirect, '?'));
+	return $basic_parts['base'] . (($params) ? '?' . phpbb_glue_url_params($params) : '');
+}
+
+/**
+* Get the base and parameters of a URL
+*
+* @param string $url URL to break apart
+* @param string $separator Parameter separator. Defaults to &amp;
+* @return array Returns the base and parameters in the form of array('base' => string, 'params' => array(name => value))
+*/
+function phpbb_get_url_parts($url, $separator = '&amp;') {
+	$params = array();
+
+	if (strpos($url, '?') !== false)
+	{
+		$base = substr($url, 0, strpos($url, '?'));
+		$args = substr($url, strlen($base) + 1);
+		$args = ($args) ? explode($separator, $args) : array();
 
 		foreach ($args as $argument)
 		{
@@ -2400,29 +2419,54 @@ function build_url($strip_vars = false)
 				continue;
 			}
 
-			$query[$key] = implode('=', $arguments);
+			$params[$key] = implode('=', $arguments);
 		}
-
-		// Strip the vars off
-		foreach ($strip_vars as $strip)
-		{
-			if (isset($query[$strip]))
-			{
-				unset($query[$strip]);
-			}
-		}
-
-		// Glue the remaining parts together... already urlencoded
-		foreach ($query as $key => $value)
-		{
-			$_query[] = $key . '=' . $value;
-		}
-		$query = implode('&', $_query);
-
-		$redirect .= ($query) ? '?' . $query : '';
+	}
+	else
+	{
+		$base = $url;
 	}
 
-	return str_replace('&', '&amp;', $redirect);
+	return array(
+		'base'		=> $base,
+		'params'	=> $params,
+	);
+}
+
+/**
+* Glue URL parameters together
+*
+* @param array $params URL parameters in the form of array(name => value)
+* @return array Returns the glued string.
+*/
+function phpbb_glue_url_params($params) {
+	$_params = array();
+
+	foreach ($params as $key => $value)
+	{
+		$_params[] = $key . '=' . $value;
+	}
+	return implode('&amp;', $_params);	
+}
+
+/**
+* Append parameters to an already built URL.
+*
+* @param array $new_params Parameters to add in the form of array(name => value)
+* @return string Returns the new URL.
+*/
+function phpbb_append_url_params($url, $new_params) {
+	$url_parts = phpbb_get_url_parts($url);
+	$params = array_merge($url_parts['params'], $new_params);
+
+	// Move the sid to the end if it's set
+	if (isset($params['sid'])) {
+		$sid = $params['sid'];
+		unset($params['sid']);
+		$params['sid'] = $sid;
+	}
+
+	return $url_parts['base'] . '?' . phpbb_glue_url_params($params);
 }
 
 /**
