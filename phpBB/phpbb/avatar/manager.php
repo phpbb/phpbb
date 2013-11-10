@@ -180,11 +180,12 @@ class manager
 	/**
 	* Strip out user_, group_, or other prefixes from array keys
 	*
-	* @param array	$row User data or group data
-	* @param string $prefix Prefix of data keys
+	* @param array	$row			User data or group data
+	* @param string $prefix			Prefix of data keys (e.g. user), should not include the trailing underscore
 	*
-	* @return array User data or group data with keys that have been
-	*        stripped from the preceding "user_" or "group_"
+	* @return array	User or group data with keys that have been
+	*			stripped from the preceding "user_" or "group_"
+	*			Also the group id is prefixed with g, when the prefix group is removed.
 	*/
 	static public function clean_row($row, $prefix = '')
 	{
@@ -198,15 +199,24 @@ class manager
 		$values = array_values($row);
 
 		array_walk($keys, array('\phpbb\avatar\manager', 'strip_prefix'), $prefix);
+		$row = array_combine($keys, $values);
 
-		return array_combine($keys, $values);
+		if ($prefix == 'group')
+		{
+			$row['id'] = 'g' . $row['id'];
+		}
+
+		return $row;
 	}
 
 	/**
 	* Strip prepending user_ or group_ prefix from key
 	*
-	* @param string Array key
-	* @return void
+	* @param string		$key		Array key
+	* @param string		$null	Parameter is ignored by the function, just required by the array_walk
+	* @param string		$prefix		Prefix that should be stripped off from the keys (e.g. user)
+	*								Should not include the trailing underscore
+	* @return	null
 	*/
 	static protected function strip_prefix(&$key, $null, $prefix)
 	{
