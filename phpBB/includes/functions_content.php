@@ -195,11 +195,13 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	}
 	$db->sql_freeresult($result);
 	unset($padding_store);
+	$url_parts = phpbb_get_url_parts($action);
 
 	$template->assign_vars(array(
-		'S_DISPLAY_JUMPBOX'	=> $display_jumpbox,
-		'S_JUMPBOX_ACTION'	=> $action)
-	);
+		'S_DISPLAY_JUMPBOX'			=> $display_jumpbox,
+		'S_JUMPBOX_ACTION'			=> $action,
+		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> build_hidden_fields($url_parts['params']),
+	));
 
 	return;
 }

@@ -2437,7 +2437,7 @@ function phpbb_get_url_parts($url, $separator = '&amp;') {
 * Glue URL parameters together
 *
 * @param array $params URL parameters in the form of array(name => value)
-* @return array Returns the glued string.
+* @return string Returns the glued string.
 */
 function phpbb_glue_url_params($params) {
 	$_params = array();
@@ -2452,6 +2452,7 @@ function phpbb_glue_url_params($params) {
 /**
 * Append parameters to an already built URL.
 *
+* @param string $url URL to append parameters to
 * @param array $new_params Parameters to add in the form of array(name => value)
 * @return string Returns the new URL.
 */
@@ -4965,7 +4966,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -4982,7 +4982,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
-		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
