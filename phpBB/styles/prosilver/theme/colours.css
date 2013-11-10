@@ -803,11 +803,11 @@ Colours and backgrounds for cp.css
 /* Main CP box
 ----------------------------------------*/
 
-#cp-main h3, #cp-main hr, #cp-menu hr {
+.panel-container h3, .panel-container hr, #cp-menu hr {
 	border-color: #A4B3BF;
 }
 
-#cp-main .panel li.row {
+.panel-container .panel li.row {
 	border-bottom-color: #B5C1CB;
 	border-top-color: #F9F9F9;
 }
@@ -816,11 +816,11 @@ ul.cplist {
 	border-top-color: #B5C1CB;
 }
 
-#cp-main .panel li.header dd, #cp-main .panel li.header dt {
+.panel-container .panel li.header dd, .panel-container .panel li.header dt {
 	color: #000000;
 }
 
-#cp-main table.table1 thead th {
+.panel-container table.table1 thead th {
 	color: #333333;
 	border-bottom-color: #333333;
 }
@@ -921,11 +921,11 @@ ul.cplist {
 
 /* Preferences pane layout
 ----------------------------------------*/
-#cp-main h2 {
+.panel-container h2 {
 	color: #333333;
 }
 
-#cp-main .panel {
+.panel-container .panel {
 	background-color: #F9F9F9;
 }
 
