@@ -233,7 +233,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 				),
 				array(
 					'avatar'	=> '',
-					'id'		=> 4,
+					'id'		=> 'g4',
 					'user_id'	=> 5,
 				),
 				'group',
