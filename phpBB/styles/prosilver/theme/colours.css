@@ -76,8 +76,14 @@ hr {
 	color: #000000;
 }
 
-.bg1	{ background-color: #ECF3F7; }
-.bg2	{ background-color: #e1ebf2; }
+table.zebra-list tr:nth-child(odd) td, ul.zebra-list li:nth-child(odd), .bg1 {
+	background-color: #ECF3F7;
+}
+
+table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even), .bg2 {
+	background-color: #e1ebf2;
+}
+
 .bg3	{ background-color: #cadceb; }
 
 .ucprowbg {
