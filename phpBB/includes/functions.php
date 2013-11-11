@@ -2645,7 +2645,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path;
+	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem;
 
 	$failover_flag = false;
 
@@ -2713,16 +2713,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 				$root_dirs = array_diff_assoc($root_dirs, $intersection);
 				$page_dirs = array_diff_assoc($page_dirs, $intersection);
 
-				// Due to the dirname returned by pathinfo, the
-				// realpath for the $page_dirs array will be 2
-				// superordinate folders up from the phpBB root
-				// path even if the supplied path is in the
-				// phpBB root path. We need to subtract these 2
-				// folders in order to be able to correctly
-				// prepend '../' to the supplied path.
-				$superordinate_dirs_count = sizeof($root_dirs) - 2;
-
-				$dir = (($superordinate_dirs_count > 0) ? str_repeat('../', $superordinate_dirs_count) : '') . implode('/', $page_dirs);
+				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
 
 				// Strip / from the end
 				if ($dir && substr($dir, -1, 1) == '/')
@@ -2764,6 +2755,8 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	{
 		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
+
+	$url = $phpbb_filesystem->clean_path($url);
 
 	if ($return)
 	{
