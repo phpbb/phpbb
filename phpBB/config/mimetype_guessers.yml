@@ -1,3 +1,10 @@
+parameters:
+    mimetype.guesser.priority.lowest: -2
+    mimetype.guesser.priority.low: -1
+    mimetype.guesser.priority.default: 0
+    mimetype.guesser.priority.high: 1
+    mimetype.guesser.priority.highest: 2
+
 services:
     mimetype.fileinfo_mimetype_guesser:
         class: Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser
@@ -11,11 +18,15 @@ services:
 
     mimetype.content_guesser:
         class: phpbb\mimetype\content_guesser
+        calls:
+            - [set_priority, [%mimetype.guesser.priority.low%]]
         tags:
             - { name: mimetype.guessers }
 
     mimetype.extension_guesser:
         class: phpbb\mimetype\extension_guesser
+        calls:
+            - [set_priority, [%mimetype.guesser.priority.lowest%]]
         tags:
             - { name: mimetype.guessers }
 

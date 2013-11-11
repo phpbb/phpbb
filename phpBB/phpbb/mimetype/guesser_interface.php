@@ -38,4 +38,20 @@ interface guesser_interface
 	* @return string Guess for mimetype of file
 	*/
 	public function guess($file, $file_name = '');
+
+	/**
+	* Get the guesser priority
+	*
+	* @return int Guesser priority
+	*/
+	public function get_priority();
+
+	/**
+	* Set the guesser priority
+	*
+	* @param int Guesser priority
+	*
+	* @return void
+	*/
+	public function set_priority($priority);
 }

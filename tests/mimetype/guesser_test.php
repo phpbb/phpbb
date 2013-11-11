@@ -135,4 +135,19 @@ class guesser_test extends \phpbb_test_case
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file . '.jpg'));
 		@unlink($this->jpg_file . '.jpg');
 	}
+
+	public function test_sort_priority()
+	{
+		$guessers = array(
+			'FileinfoMimeTypeGuesser'	=> new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser,
+			'extension_guesser'		=> new \phpbb\mimetype\extension_guesser,
+			'FileBinaryMimeTypeGuesser'	=> new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser,
+			'content_guesser'		=> new \phpbb\mimetype\content_guesser,
+		);
+		$guessers['content_guesser']->set_priority(5);
+		$guessers['extension_guesser']->set_priority(-5);
+		usort($guessers, array($this->guesser, 'sort_priority'));
+		$this->assertInstanceOf('\phpbb\mimetype\content_guesser', $guessers[0]);
+		$this->assertInstanceOf('\phpbb\mimetype\extension_guesser', $guessers[3]);
+	}
 }

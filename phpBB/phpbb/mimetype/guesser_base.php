@@ -21,27 +21,26 @@ if (!defined('IN_PHPBB'))
 * @package mimetype
 */
 
-class content_guesser extends guesser_base
+abstract class guesser_base implements guesser_interface
 {
+	/**
+	* @var int Guesser Priority
+	*/
+	protected $priority;
+
 	/**
 	* @inheritdoc
 	*/
-	public function is_supported()
+	public function get_priority()
 	{
-		return true;
+		return $this->priority;
 	}
 
 	/**
 	* @inheritdoc
 	*/
-	public function guess($file, $file_name = '')
+	public function set_priority($priority)
 	{
-		$mimetype = null;
-		if (function_exists('mime_content_type'))
-		{
-			$mimetype = mime_content_type($file);
-		}
-
-		return $mimetype;
+		$this->priority = $priority;
 	}
 }

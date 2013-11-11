@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * @package mimetype
 */
 
-class extension_guesser implements guesser_interface
+class extension_guesser extends guesser_base
 {
 	/**
 	* @var file extension map
