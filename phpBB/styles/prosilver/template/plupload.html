@@ -56,16 +56,16 @@ phpbb.plupload = {
 		multipart_params: {'add_file': '{LA_ADD_FILE}'},
 		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',
 		element_hook: '#attach-panel .inner',
-		form_hook: '#postform'
-	}
-};
+		form_hook: '#postform',
+		browse_button: 'add_files',
+		drop_element : 'message',
 	},
 	lang: {
 		ERROR: '{LA_ERROR}',
 		TOO_MANY_ATTACHMENTS: '{LA_TOO_MANY_ATTACHMENTS}',
 	},
 	order: '{ATTACH_ORDER}',
-	max_files: {MAX_ATTACHMENTS},
+	maxFiles: {MAX_ATTACHMENTS},
 }
 //]]>
 </script>
