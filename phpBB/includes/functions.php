@@ -2368,28 +2368,13 @@ function build_url($strip_vars = false)
 
 	// Append SID
 	$redirect = append_sid($page, false, false);
-	$basic_parts = phpbb_get_url_parts($redirect, '&');
-	$params = $basic_parts['params'];
 
-	// Strip vars...
 	if ($strip_vars !== false)
 	{
-		if (!is_array($strip_vars))
-		{
-			$strip_vars = array($strip_vars);
-		}
-
-		// Strip the vars off
-		foreach ($strip_vars as $strip)
-		{
-			if (isset($params[$strip]))
-			{
-				unset($params[$strip]);
-			}
-		}
+		$redirect = phpbb_strip_url_params($redirect, $strip_vars, '&');
 	}
 
-	return $basic_parts['base'] . (($params) ? '?' . phpbb_glue_url_params($params) : '');
+	return $redirect;
 }
 
 /**
@@ -2450,14 +2435,47 @@ function phpbb_glue_url_params($params) {
 }
 
 /**
+* Strip parameters from an already built URL.
+*
+* @param string $url URL to strip parameters from
+* @param array|string $strip Parameters to strip.
+* @param string $separator Parameter separator. Defaults to &amp;
+* @return string Returns the new URL.
+*/
+function phpbb_strip_url_params($url, $strip, $separator = '&amp;') {
+	$url_parts = phpbb_get_url_parts($url, $separator);
+	$params = $url_parts['params'];
+
+	if (!is_array($strip))
+	{
+		$strip = array($strip);
+	}
+
+	if (!empty($params))
+	{
+		// Strip the parameters off
+		foreach ($strip as $param)
+		{
+			if (isset($params[$param]))
+			{
+				unset($params[$param]);
+			}
+		}
+	}
+
+	return $url_parts['base'] . (($params) ? '?' . phpbb_glue_url_params($params) : '');		
+}
+
+/**
 * Append parameters to an already built URL.
 *
 * @param string $url URL to append parameters to
 * @param array $new_params Parameters to add in the form of array(name => value)
+* @param string $separator Parameter separator. Defaults to &amp;
 * @return string Returns the new URL.
 */
-function phpbb_append_url_params($url, $new_params) {
-	$url_parts = phpbb_get_url_parts($url);
+function phpbb_append_url_params($url, $new_params, $separator = '&amp;') {
+	$url_parts = phpbb_get_url_parts($url, $separator);
 	$params = array_merge($url_parts['params'], $new_params);
 
 	// Move the sid to the end if it's set
