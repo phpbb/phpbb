@@ -101,14 +101,23 @@ class guesser_test extends \phpbb_test_case
 					'image/jpeg',
 					'image/jpeg',
 				),
+				array(new \phpbb\mimetype\content_guesser),
 				false,
+			),
+			array(
+				array(
+					'application/octet-stream',
+					'application/octet-stream',
+				),
+				array(new \phpbb\mimetype\content_guesser),
+				true,
 			),
 			array(
 				array(
 					'application/octet-stream',
 					'image/jpeg',
 				),
-				true,
+				array(new \phpbb\mimetype\extension_guesser),
 			),
 		);
 	}
@@ -116,10 +125,10 @@ class guesser_test extends \phpbb_test_case
 	/**
 	* @dataProvider data_content_guesser
 	*/
-	public function test_content_guesser($expected, $overload = false)
+	public function test_content_guesser($expected, $guessers, $overload = false)
 	{
 		self::$function_exists = ($overload) ? false : true;
-		$guesser = new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\content_guesser));
+		$guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->assertEquals($expected[0], $guesser->guess($this->jpg_file));
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.jpg'));
 		@copy($this->jpg_file, $this->jpg_file . '.jpg');

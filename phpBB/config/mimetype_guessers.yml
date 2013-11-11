@@ -14,6 +14,11 @@ services:
         tags:
             - { name: mimetype.guessers }
 
+    mimetype.extension_guesser:
+        class: phpbb\mimetype\extension_guesser
+        tags:
+            - { name: mimetype.guessers }
+
     mimetype.guesser_collection:
         class: phpbb\di\service_collection
         arguments:
