@@ -28,12 +28,11 @@ class content_guesser extends guesser_base
 	*/
 	public function guess($file, $file_name = '')
 	{
-		$mimetype = null;
 		if (function_exists('mime_content_type'))
 		{
-			$mimetype = mime_content_type($file);
+			return mime_content_type($file);
 		}
 
-		return $mimetype;
+		return null; // optional
 	}
 }
