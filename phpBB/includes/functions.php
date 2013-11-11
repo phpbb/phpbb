@@ -2712,9 +2712,17 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 				$root_dirs = array_diff_assoc($root_dirs, $intersection);
 				$page_dirs = array_diff_assoc($page_dirs, $intersection);
-				$root_dirs_size = sizeof($root_dirs) - 2;
 
-				$dir = (($root_dirs_size > 0) ? str_repeat('../', $root_dirs_size) : '') . implode('/', $page_dirs);
+				// Due to the dirname returned by pathinfo, the
+				// realpath for the $page_dirs array will be 2
+				// superordinate folders up from the phpBB root
+				// path even if the supplied path is in the
+				// phpBB root path. We need to subtract these 2
+				// folders in order to be able to correctly
+				// prepend '../' to the supplied path.
+				$superordinate_dirs_count = sizeof($root_dirs) - 2;
+
+				$dir = (($superordinate_dirs_count > 0) ? str_repeat('../', $superordinate_dirs_count) : '') . implode('/', $page_dirs);
 
 				// Strip / from the end
 				if ($dir && substr($dir, -1, 1) == '/')
