@@ -128,8 +128,6 @@ class plupload
 		{
 			rename("{$file_path}.part", $file_path);
 
-			$file_info = new \Symfony\Component\HttpFoundation\File\File($file_path);
-
 			// Need to modify some of the $_FILES values to reflect the new file
 			return array(
 				'tmp_name' => $file_path,
