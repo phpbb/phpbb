@@ -533,3 +533,51 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_test
 
 	return $config_data;
 }
+
+/**
+* Check whether a file should be ignored on update
+*
+* We ignore new files in some circumstances:
+* 1. The file is a language file, but the language is not installed
+* 2. The file is a style file, but the style is not installed
+* 3. The file is a style language file, but the language is not installed
+*
+* @param	string	$phpbb_root_path	phpBB root path
+* @param	string	$file				File including path from phpbb root
+* @return	bool		Should we ignore the new file or add it to the board?
+*/
+function phpbb_ignore_new_file_on_update($phpbb_root_path, $file)
+{
+	$ignore_new_file = false;
+
+	// We ignore new files in some circumstances:
+	// 1. The file is a language file, but the language is not installed
+	if (!$ignore_new_file && strpos($file, 'language/') === 0)
+	{
+		list($language_dir, $language_iso) = explode('/', $file);
+		$ignore_new_file = !file_exists($phpbb_root_path . $language_dir . '/' . $language_iso);
+	}
+
+	// 2. The file is a style file, but the style is not installed
+	if (!$ignore_new_file && strpos($file, 'styles/') === 0)
+	{
+		list($styles_dir, $style_name) = explode('/', $file);
+		$ignore_new_file = !file_exists($phpbb_root_path . $styles_dir . '/' . $style_name);
+	}
+
+	// 3. The file is a style language file, but the language is not installed
+	if (!$ignore_new_file && strpos($file, 'styles/') === 0)
+	{
+		$dirs = explode('/', $file);
+		if ($dirs >= 5)
+		{
+			list($styles_dir, $style_name, $template_component, $language_iso) = explode('/', $file);
+			if ($template_component == 'theme' && $language_iso !== 'images')
+			{
+				$ignore_new_file = !file_exists($phpbb_root_path . 'language/' . $language_iso);
+			}
+		}
+	}
+
+	return $ignore_new_file;
+}
