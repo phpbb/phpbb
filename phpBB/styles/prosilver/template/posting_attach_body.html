@@ -33,6 +33,25 @@
 					</tr>
 				</thead>
 				<tbody id="file-list">
+					<tr class="attach-row" id="attach-row-tpl">
+							<td class="attach-name">
+								<span class="file-name"></span>
+								<span class="attach-controls">
+									<input type="button" value="{L_PLACE_INLINE}" class="button2 hidden file-inline-bbcode" />&nbsp;
+									<input type="button" value="{L_DELETE_FILE}" class="button2 file-delete" />
+								</span>
+							</td>
+							<td class="attach-comment">
+								<textarea rows="1" cols="30" class="inputbox"></textarea>
+							</td>
+							<td class="attach-filesize file-size"></td>
+							<td class="attach-status">
+								<span class="file-progress">
+									<span class="file-progress-bar"></span>
+								</span>
+								<span class="file-status"></span>
+							</td>
+					</tr>
 					<!-- BEGIN attach_row -->
 						<tr class="attach-row" data-attach-id="{attach_row.ATTACH_ID}">
 							<td class="attach-name">
