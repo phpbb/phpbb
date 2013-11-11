@@ -51,7 +51,7 @@ phpbb.plupload = {
 		unique_names: true,
 		filters: [{FILTERS}],
 		{S_RESIZE}
-		headers: {'X-PHPBB-USING-PLUPLOAD': '1'},
+		headers: {'X-PHPBB-USING-PLUPLOAD': '1', 'X-Requested-With': 'XMLHttpRequest'},
 		file_data_name: 'fileupload',
 		multipart_params: {'add_file': '{LA_ADD_FILE}'},
 		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',

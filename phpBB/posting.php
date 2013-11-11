@@ -255,8 +255,18 @@ if (!$auth->acl_get('f_read', $forum_id))
 	{
 		trigger_error('USER_CANNOT_READ');
 	}
+	$message = $user->lang['LOGIN_EXPLAIN_POST'];
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_POST']);
+	if ($request->is_ajax())
+	{
+		$json = new phpbb\json_response();
+		$json->send(array(
+			'title'		=> $user->lang['INFORMATION'],
+			'message'	=> $message,
+		));
+	}
+
+	login_box('', $message);
 }
 
 // Permission to do the action asked?
@@ -326,8 +336,18 @@ if (!$is_authed)
 	{
 		trigger_error('USER_CANNOT_' . strtoupper($check_auth));
 	}
+	$message = $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)];
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
+	if ($request->is_ajax())
+	{
+		$json = new phpbb\json_response();
+		$json->send(array(
+			'title'		=> $user->lang['INFORMATION'],
+			'message'	=> $message,
+		));
+	}
+
+	login_box('', $message);
 }
 
 // Is the user able to post within this forum?
