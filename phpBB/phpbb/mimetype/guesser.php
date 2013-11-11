@@ -10,14 +10,6 @@
 namespace phpbb\mimetype;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package mimetype
 */
 
