@@ -148,6 +148,7 @@ phpbb.plupload.setData = function(data) {
  * @return undefined
  */
 phpbb.plupload.update = function (data, action, index) {
+	phpbb.plupload.updateBbcode(action, index);
 	phpbb.plupload.setData(data);
 	phpbb.plupload.updateRows();
 	phpbb.plupload.clearParams();
@@ -305,6 +306,60 @@ phpbb.plupload.hideEmptyList = function() {
 		$('#file-list-container').slideUp(100);
 	}
 }
+
+/**
+ * Update the indices used in inline attachment bbcodes. This ensures that the bbcodes
+ * correspond to the correct file after a file is added or removed. This should be called 
+ * before the phpbb.plupload,data and phpbb.plupload.ids arrays are updated, otherwise it will
+ * not work correctly.
+ *
+ * @param string action	The action that occurred -- either "addition" or "removal"
+ * @param int index		The index of the attachment from phpbb.plupload.ids that was affected.
+ *
+ * @return undefined
+ */
+phpbb.plupload.updateBbcode = function (action, index) {
+	var	textarea = $(phpbb.plupload.form).find('textarea[name="message"]'),
+		text = textarea.val(),
+		removal = (action === 'removal');
+
+	// Return if the bbcode isn't used at all.
+	if (text.indexOf('[attachment=') === -1) {
+		return;
+	}
+
+	// Private function used to replace the bbcode.
+	var updateBbcode = function(match, fileName) {
+		// Remove the bbcode if the file was removed.
+		if (removal && index === i) {
+			return '';
+		}
+		var newIndex = i + ((removal) ? -1 : 1);
+		return '[attachment=' + newIndex +']' + fileName + '[/attachment]';
+	};
+
+	// Private function used to generate search regexp
+	var searchRegexp = function (index) {
+		return new RegExp('\\[attachment=' + index + '\\](.*?)\\[\\/attachment\\]', 'g');
+	}
+	// The update order of the indices is based on the action taken to ensure that we don't corrupt
+	// the bbcode index by updating it several times as we move through the loop.
+	// Removal loop starts at the removed index and moves to the end of the array.
+	// Addition loop starts at the end of the array and moves to the added index at 0.
+	var searchLoop = function () {
+		if (typeof i === 'undefined') {
+			i = (removal) ? index : phpbb.plupload.ids.length - 1;
+		}
+		return (removal) ? (i < phpbb.plupload.ids.length): (i >= index);
+	}
+	var i;
+
+	while (searchLoop()) {
+		text = text.replace(searchRegexp(i), updateBbcode);
+		(removal) ? i++ : i--;
+	}
+	textarea.val(text);
+};
 
 /**
  * Get Plupload file objects based on their upload status.
