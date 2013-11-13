@@ -963,7 +963,11 @@ phpbb.registerDropdown = function(toggle, dropdown, options)
 };
 
 /**
-* Get the HTML for a color palette table
+* Get the HTML for a color palette table.
+*
+* @param string dir Palette direction - either v or h
+* @param int width Palette cell width.
+* @param int height Palette cell height.
 */
 phpbb.colorPalette = function(dir, width, height) {
 	var r = 0, 
@@ -979,7 +983,7 @@ phpbb.colorPalette = function(dir, width, height) {
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	html += '<table>';
+	html += '<table style="width: auto;">';
 
 	for (r = 0; r < 5; r++) {
 		if (dir == 'h') {
@@ -994,7 +998,7 @@ phpbb.colorPalette = function(dir, width, height) {
 			for (b = 0; b < 5; b++) {
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' + height + 'px;">';
-				html += '<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
+				html += '<a href="#" data-color="' + color + '" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
 				html += '</td>';
 			}
 
@@ -1009,6 +1013,40 @@ phpbb.colorPalette = function(dir, width, height) {
 	}
 	html += '</table>';
 	return html;
+}
+
+/**
+* Register a color palette.
+*
+* @param object el jQuery object for the palette container.
+*/
+phpbb.registerPalette = function(el) {
+	var	orientation	= el.attr('data-orientation'),
+		height		= el.attr('data-height'),
+		width		= el.attr('data-width'),
+		target		= el.attr('data-target'),
+		bbcode		= el.attr('data-bbcode');
+
+	// Insert the palette HTML into the container.
+	el.html(phpbb.colorPalette(orientation, width, height));
+
+	// Add toggle control.
+	$('#color_palette_toggle').click(function(e) {
+		el.toggle();
+		e.preventDefault();
+	});
+
+	// Attach event handler when a palette cell is clicked.
+	$(el).on('click', 'a', function(e) {
+		var color = $(this).attr('data-color');
+
+		if (bbcode) {
+			bbfontstyle('[color=#' + color + ']', '[/color]');
+		} else {
+			$(target).val(color);
+		}
+		e.preventDefault();
+	});
 }
 
 /**
@@ -1028,11 +1066,7 @@ $(document).ready(function() {
 	});
 
 	$('#color_palette_placeholder').each(function() {
-		var	orientation = $(this).attr('data-orientation'),
-			height = $(this).attr('data-height'),
-			width = $(this).attr('data-width');
-
-		$(this).html(phpbb.colorPalette(orientation, width, height));
+		phpbb.registerPalette($(this));
 	});
 });
 
