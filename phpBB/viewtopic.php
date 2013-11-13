@@ -1747,6 +1747,20 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		}
 	}
 
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event core.viewtopic_post_row_after
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
+	* @var	array	user_poster_data	Poster's data from user cache
+	* @var	array	post_row			Template block array of the post
+	* @since 3.1-A2
+	*/
+	$vars = array('row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_row_after', compact($vars)));
+
 	$prev_post_id = $row['post_id'];
 
 	unset($rowset[$post_list[$i]]);
