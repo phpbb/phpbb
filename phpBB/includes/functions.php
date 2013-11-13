@@ -2645,7 +2645,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem;
+	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper;
 
 	$failover_flag = false;
 
@@ -2661,6 +2661,16 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
+
+	// The url currently uses the web root path.
+	// However as we prepend the full board url later,
+	// we need to remove the relative web root path and
+	// prepend the normal root path again. Otherwise redirects
+	// from inside routes will not work as intended.
+	if ($phpbb_path_helper instanceof \phpbb\path_helper)
+	{
+		$url = $phpbb_path_helper->remove_web_root_path($url);
+	}
 
 	// Determine which type of redirect we need to handle...
 	$url_parts = @parse_url($url);

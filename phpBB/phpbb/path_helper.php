@@ -102,6 +102,27 @@ class path_helper
 	}
 
 	/**
+	* Strips away the web root path and prepends the normal root path
+	*
+	* This replaces get_web_root_path() . some_url with
+	*	$phpbb_root_path . some_url
+	*
+	* @param string $path The path to be updated
+	* @return string
+	*/
+	public function remove_web_root_path($path)
+	{
+		if (strpos($path, $this->get_web_root_path()) === 0)
+		{
+			$path = substr($path, strlen($this->get_web_root_path()));
+
+			return $this->phpbb_root_path . $path;
+		}
+
+		return $path;
+	}
+
+	/**
 	* Get a relative root path from the current URL
 	*
 	* @return string

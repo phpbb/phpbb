@@ -13,3 +13,7 @@ foo_template_controller:
 foo_exception_controller:
     pattern: /foo/exception
     defaults: { _controller: foo_bar.controller:exception }
+
+foo_redirect_controller:
+    pattern: /foo/redirect
+    defaults: { _controller: foo_bar.controller:redirect }
