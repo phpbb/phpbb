@@ -1011,6 +1011,7 @@ $sql_ary = array(
 * @var	int		start		Pagination information
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
 * @since 3.1-A1
+* @change 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
 */
 $vars = array('forum_id', 'topic_id', 'topic_data', 'post_list', 'sort_days', 'sort_key', 'sort_dir', 'start', 'sql_ary');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
@@ -1714,6 +1715,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
+	* @change 3.1.0-a2 Added vars start, i, end and attachments
 	*/
 	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
@@ -1763,7 +1765,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
-	* @since 3.1-A2
+	* @since 3.1.0-a2
 	*/
 	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_row_after', compact($vars)));
