@@ -17,8 +17,9 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 	static private $helper;
 
 	static protected $fixtures = array(
-		'foo/bar/language/en/',
+		'foo/bar/config/',
 		'foo/bar/event/',
+		'foo/bar/language/en/',
 	);
 
 	static public function setUpBeforeClass()
