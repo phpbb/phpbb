@@ -1706,11 +1706,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @event core.viewtopic_modify_post_row
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
 	*/
-	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');
+	$vars = array('row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
