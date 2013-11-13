@@ -346,7 +346,11 @@ function colorPalette(dir, width, height) {
 (function($) {
 	$(document).ready(function() {
 		$('#color_palette_placeholder').each(function() {
-			$(this).html(colorPalette('h', 15, 12));
+			var	orientation = $(this).attr('data-orientation'),
+				height = $(this).attr('data-height'),
+				width = $(this).attr('data-width');
+
+			$(this).html(colorPalette(orientation, width, height));
 		});
 	});
 })(jQuery);
