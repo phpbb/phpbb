@@ -152,31 +152,20 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		return array(
 			array(
 				array(
-					'user_avatar'			=> '',
-					'user_avatar_type'		=> '',
-					'user_avatar_width'		=> '',
+					'user_avatar'		=> '',
+					'user_avatar_type'	=> '',
+					'user_avatar_width'	=> '',
 					'user_avatar_height'	=> '',
+					'group_avatar'		=> '',
 				),
 				array(
-					'avatar'			=> '',
-					'avatar_type'		=> '',
-					'avatar_width'		=> '',
-					'avatar_height'		=> '',
+					'user_avatar'		=> '',
+					'user_avatar_type'	=> '',
+					'user_avatar_width'	=> '',
+					'user_avatar_height'	=> '',
+					'group_avatar'		=> '',
 				),
-			),
-			array(
-				array(
-					'group_avatar'			=> '',
-					'group_avatar_type'		=> '',
-					'group_avatar_width'	=> '',
-					'group_avatar_height'	=> '',
-				),
-				array(
-					'avatar'			=> '',
-					'avatar_type'		=> '',
-					'avatar_width'		=> '',
-					'avatar_height'		=> '',
-				),
+				'foobar',
 			),
 			array(
 				array(),
@@ -189,27 +178,14 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 			),
 			array(
 				array(
-					'foobar_avatar'			=> '',
-					'foobar_avatar_type'	=> '',
-					'foobar_avatar_width'	=> '',
-					'foobar_avatar_height'	=> '',
-				),
-				array(
-					'foobar_avatar'			=> '',
-					'foobar_avatar_type'	=> '',
-					'foobar_avatar_width'	=> '',
-					'foobar_avatar_height'	=> '',
-				),
-			),
-			array(
-				array(
 					'user_avatar'	=> '',
 					'user_id'	=> 5,
 					'group_id'	=> 4,
 				),
 				array(
-					'avatar'	=> '',
-					'id'		=> 4,
+					'user_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
 				),
 			),
 			array(

@@ -195,33 +195,19 @@ class manager
 			return self::$default_row;
 		}
 
-		$keys = array_keys($row);
-		$values = array_values($row);
-
-		array_walk($keys, array('\phpbb\avatar\manager', 'strip_prefix'), $prefix);
-		$row = array_combine($keys, $values);
-
-		if ($prefix == 'group')
+		$output = array();
+		foreach ($row as $key => $value)
 		{
-			$row['id'] = 'g' . $row['id'];
+			$key = preg_replace("#^(?:{$prefix}_)#", '', $key);
+			$output[$key] = $value;
 		}
 
-		return $row;
-	}
+		if ($prefix === 'group' && isset($output['id']))
+		{
+			$output['id'] = 'g' . $output['id'];
+		}
 
-	/**
-	* Strip prepending user_ or group_ prefix from key
-	*
-	* @param string		$key		Array key
-	* @param string		$null	Parameter is ignored by the function, just required by the array_walk
-	* @param string		$prefix		Prefix that should be stripped off from the keys (e.g. user)
-	*								Should not include the trailing underscore
-	* @return	null
-	*/
-	static protected function strip_prefix(&$key, $null, $prefix)
-	{
-		$regex = ($prefix !== '') ? "#^(?:{$prefix}_)#" : '#^(?:user_|group_)#';
-		$key = preg_replace($regex, '', $key);
+		return $output;
 	}
 
 	/**
