@@ -465,7 +465,7 @@ class ucp_groups
 							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 							// This is normalised data, without the group_ prefix
-							$avatar_data = \phpbb\avatar\manager::clean_row($group_row);
+							$avatar_data = \phpbb\avatar\manager::clean_row($group_row, 'group');
 						}
 
 						// Did we submit?
