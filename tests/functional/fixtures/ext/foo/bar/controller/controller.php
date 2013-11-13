@@ -8,10 +8,12 @@ class controller
 {
 	protected $template;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\template\template $template)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\template\template $template, $root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->helper = $helper;
+		$this->root_path = $root_path;
+		$this->php_ext = $php_ext;
 	}
 
 	public function handle()
@@ -34,5 +36,31 @@ class controller
 	public function exception()
 	{
 		throw new \phpbb\controller\exception('Exception thrown from foo/exception route');
+	}
+
+	public function redirect()
+	{
+		$redirects = array(
+			append_sid($this->root_path . 'index.' . $this->php_ext),
+			append_sid($this->root_path . '../index.' . $this->php_ext),
+			append_sid($this->root_path . 'tests/index.' . $this->php_ext),
+			append_sid($this->root_path . '../tests/index.' . $this->php_ext),
+			$this->helper->url('index'),
+			$this->helper->url('../index'),
+			$this->helper->url('../../index'),
+			$this->helper->url('tests/index'),
+			$this->helper->url('../tests/index'),
+			$this->helper->url('../../tests/index'),
+			$this->helper->url('../tests/../index'),
+		);
+
+		foreach ($redirects as $redirect)
+		{
+			$this->template->assign_block_vars('redirects', array(
+				'URL'		=> redirect($redirect, true),
+			));
+		}
+
+		return $this->helper->render('redirect_body.html');
 	}
 }
