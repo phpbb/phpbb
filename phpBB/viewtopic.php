@@ -1001,10 +1001,17 @@ $sql_ary = array(
 * Event to modify the SQL query before the post and poster data is retrieved
 *
 * @event core.viewtopic_get_post_data
+* @var	int		forum_id	Forum ID
+* @var	int		topic_id	Topic ID
+* @var	array	topic_data	Array with topic data
+* @var	array	post_list	Array with post_ids we are going to retrieve
+* @var	int		sort_days	Display posts of previous x days
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_dir	Direction the posts are sorted by
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
 * @since 3.1-A1
 */
-$vars = array('sql_ary');
+$vars = array('forum_id', 'topic_id', 'topic_data', 'post_list', 'sort_days', 'sort_key', 'sort_dir', 'sql_ary');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
