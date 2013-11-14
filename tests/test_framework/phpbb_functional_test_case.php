@@ -868,8 +868,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
-	* @param string $expected Lang var of expected message after posting or null
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
 	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
 	{
@@ -894,8 +894,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
-	* @param string $expected Lang var of expected message after posting or null
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
 	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
 	{
