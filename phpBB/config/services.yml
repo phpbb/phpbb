@@ -244,6 +244,7 @@ services:
             - @notification.method_collection
             - @service_container
             - @user_loader
+            - @config
             - @dbal.conn
             - @cache
             - @user
