@@ -232,7 +232,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '60');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_expire_days', '30');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_last_gc', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_gc', '86400');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
@@ -288,6 +287,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_us
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('plupload_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_seed', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('rand_seed_last_update', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('read_notification_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_indexing_state', '', 1);
