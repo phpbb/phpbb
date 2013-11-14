@@ -32,7 +32,5 @@ class content_guesser extends guesser_base
 		{
 			return mime_content_type($file);
 		}
-
-		return null; // optional
 	}
 }
