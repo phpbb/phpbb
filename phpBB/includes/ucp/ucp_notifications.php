@@ -27,7 +27,8 @@ class ucp_notifications
 		add_form_key('ucp_notification');
 
 		$start = $request->variable('start', 0);
-		$form_time = min($request->variable('form_time', 0), time());
+		$form_time = $request->variable('form_time', 0);
+		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
@@ -103,7 +104,7 @@ class ucp_notifications
 					{
 						confirm_box(false, 'NOTIFICATIONS_MARK_ALL_READ', build_hidden_fields(array(
 							'mark'		=> 'all',
-							'form_time'	=> time(),
+							'form_time'	=> $form_time,
 						)));
 					}
 				}
