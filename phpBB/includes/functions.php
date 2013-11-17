@@ -2647,8 +2647,6 @@ function redirect($url, $return = false, $disable_cd_check = false)
 {
 	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper;
 
-	$failover_flag = false;
-
 	if (empty($user->lang))
 	{
 		$user->add_lang('common');
@@ -2698,56 +2696,53 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		if (!$failover_flag)
+		// Is the uri pointing to the current directory?
+		if ($pathinfo['dirname'] == '.')
 		{
-			// Is the uri pointing to the current directory?
-			if ($pathinfo['dirname'] == '.')
+			$url = str_replace('./', '', $url);
+
+			// Strip / from the beginning
+			if ($url && substr($url, 0, 1) == '/')
 			{
-				$url = str_replace('./', '', $url);
-
-				// Strip / from the beginning
-				if ($url && substr($url, 0, 1) == '/')
-				{
-					$url = substr($url, 1);
-				}
-
-				$url = generate_board_url() . '/' . $url;
+				$url = substr($url, 1);
 			}
-			else
+
+			$url = generate_board_url() . '/' . $url;
+		}
+		else
+		{
+			// Used ./ before, but $phpbb_root_path is working better with urls within another root path
+			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
+			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
+
+			$root_dirs = array_diff_assoc($root_dirs, $intersection);
+			$page_dirs = array_diff_assoc($page_dirs, $intersection);
+
+			$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+
+			// Strip / from the end
+			if ($dir && substr($dir, -1, 1) == '/')
 			{
-				// Used ./ before, but $phpbb_root_path is working better with urls within another root path
-				$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
-				$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
-				$intersection = array_intersect_assoc($root_dirs, $page_dirs);
-
-				$root_dirs = array_diff_assoc($root_dirs, $intersection);
-				$page_dirs = array_diff_assoc($page_dirs, $intersection);
-
-				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
-
-				// Strip / from the end
-				if ($dir && substr($dir, -1, 1) == '/')
-				{
-					$dir = substr($dir, 0, -1);
-				}
-
-				// Strip / from the beginning
-				if ($dir && substr($dir, 0, 1) == '/')
-				{
-					$dir = substr($dir, 1);
-				}
-
-				$url = str_replace($pathinfo['dirname'] . '/', '', $url);
-
-				// Strip / from the beginning
-				if (substr($url, 0, 1) == '/')
-				{
-					$url = substr($url, 1);
-				}
-
-				$url = (!empty($dir) ? $dir . '/' : '') . $url;
-				$url = generate_board_url() . '/' . $url;
+				$dir = substr($dir, 0, -1);
 			}
+
+			// Strip / from the beginning
+			if ($dir && substr($dir, 0, 1) == '/')
+			{
+				$dir = substr($dir, 1);
+			}
+
+			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+			// Strip / from the beginning
+			if (substr($url, 0, 1) == '/')
+			{
+				$url = substr($url, 1);
+			}
+
+			$url = (!empty($dir) ? $dir . '/' : '') . $url;
+			$url = generate_board_url() . '/' . $url;
 		}
 	}
 
