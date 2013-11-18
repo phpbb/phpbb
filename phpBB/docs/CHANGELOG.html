@@ -90,6 +90,80 @@
 
 	<a name="v310a1"></a><h3>1.i. Changes since 3.1.0-a1</h3>
 
+<h4>Bug</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-4776">PHPBB3-4776</a>] - Long post gets hidden behind posting profile</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10449">PHPBB3-10449</a>] - Lines spilling in subscriptions view</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10948">PHPBB3-10948</a>] - Color swatch in 3.1 does not display properly</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11030">PHPBB3-11030</a>] - I beam cursor in prosilver when hovering on browse button for uploading attachments</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11073">PHPBB3-11073</a>] - Reported/Unapproved moderator information in viewtopic is striked through instead of underlined</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11138">PHPBB3-11138</a>] - Resync features in ACP should not use AJAX</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11280">PHPBB3-11280</a>] - Double clicking &quot;mark topics read&quot; produces an error the second time</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11525">PHPBB3-11525</a>] - phpbb_avatar_manager::clean_row collapses user_id and group_id</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11534">PHPBB3-11534</a>] - Remote avatar does not properly check if remote file is an image</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11626">PHPBB3-11626</a>] - Auth ACP options should be moved to separate html file</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11663">PHPBB3-11663</a>] - In generate_text_for_storage the function does not check for errors of parse_message:parse() and act accordingly</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11691">PHPBB3-11691</a>] - Soft delete migration conversion should be staggered</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11739">PHPBB3-11739</a>] - Wrong name for UCP Module &quot;Edit &quot;Remember Me&quot; login keys&quot;</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11842">PHPBB3-11842</a>] - Create a new group Error with avatar driver</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11857">PHPBB3-11857</a>] - Avatar manager must not depend on entire container</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11872">PHPBB3-11872</a>] - MCP: Users with most warnings list is invalid</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11896">PHPBB3-11896</a>] - &quot;Mark all notifications read&quot; does not work</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11899">PHPBB3-11899</a>] - New ajax poll vote should give feedback while waiting for servers response</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11916">PHPBB3-11916</a>] - Remove files from hidden attach list after deletion</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11922">PHPBB3-11922</a>] - Migrator fails to remove columns on MSSQL when they have/had an index</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11923">PHPBB3-11923</a>] - UCP avatar error when user has no permissions to change his/her avatar</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11924">PHPBB3-11924</a>] - Add a script to export the events in wiki format</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11926">PHPBB3-11926</a>] - Plupload Migration has a broken dependency.</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11927">PHPBB3-11927</a>] - Missing Files after 3.1.0-A1 Automatic Updater</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11930">PHPBB3-11930</a>] - Avatar paths are incorrect when using app.php</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11935">PHPBB3-11935</a>] - Invalid HTML in &quot;Sort By&quot; form elements in Prosilver</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11936">PHPBB3-11936</a>] - Fixes to Notifications Window</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11939">PHPBB3-11939</a>] - Quick reply editor has unnecessary data-ajax attribute</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11943">PHPBB3-11943</a>] - $VAR = false has unexpected result</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11945">PHPBB3-11945</a>] - Focused buttons are hard to notice</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11947">PHPBB3-11947</a>] - Notification popup does not appear when clicking number in text</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11948">PHPBB3-11948</a>] - Extensions should be allowed to have more then 1 routing file</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11949">PHPBB3-11949</a>] - cannot upgrade to 3.1</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11960">PHPBB3-11960</a>] - Responsive design removed teampage names</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11972">PHPBB3-11972</a>] - Add template event posting_editor_subject_after</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11977">PHPBB3-11977</a>] - Ajax delete should disable moving options</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11982">PHPBB3-11982</a>] - Navigation is shown above AJAX background in ACP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11983">PHPBB3-11983</a>] - Subscriptions argument missing from docblock in ucp_notifications</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11986">PHPBB3-11986</a>] - Undefined index: poster_id in file.php</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11987">PHPBB3-11987</a>] - {ROOT_PATH} in ACP leads to adm/</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11990">PHPBB3-11990</a>] - Remove result_mssqlnative from acp_database</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11991">PHPBB3-11991</a>] - PHP notices when closing reported posts entries in MCP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11992">PHPBB3-11992</a>] - Wrong variable to close &quot;Users with most warnings&quot; block at MCP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11994">PHPBB3-11994</a>] - Admin options for extensions are bad/misleading</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11995">PHPBB3-11995</a>] - Reverting a config.remove fails</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12002">PHPBB3-12002</a>] - Extension management page should use generate/check link hash</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12007">PHPBB3-12007</a>] - Default last_result of callable steps must be integer instead of false</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12008">PHPBB3-12008</a>] - &quot;Prune notifications&quot; cron task always ran, blocking others</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12016">PHPBB3-12016</a>] - Event listeners should be services</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12017">PHPBB3-12017</a>] - Extension tests are broken on current develop</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12018">PHPBB3-12018</a>] - Use path_helper for admin style CSS in sql report</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12023">PHPBB3-12023</a>] - New css files missing after update</li>
+</ul>
+<h4>Improvement</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11552">PHPBB3-11552</a>] - Responsive design for prosilver</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11746">PHPBB3-11746</a>] - Add &quot;account activation required&quot; notification for Administrators</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11921">PHPBB3-11921</a>] - Improve Notifications and PMs in the header</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11928">PHPBB3-11928</a>] - Replace AJAX loading info pop up with animation</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11957">PHPBB3-11957</a>] - Responsive design for admin control panel</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11973">PHPBB3-11973</a>] - Remove logic from language files where possible</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11974">PHPBB3-11974</a>] - All timezones should be translatable</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11975">PHPBB3-11975</a>] - Add ACP link next to MCP</li>
+</ul>
+<h4>Task</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11031">PHPBB3-11031</a>] - Bring phpBB2 converter up to speed with 3.1 changes</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11980">PHPBB3-11980</a>] - Setup PHP Code Sniffer</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11981">PHPBB3-11981</a>] - Review/Fix Code Sniffer complaints</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11998">PHPBB3-11998</a>] - Add console / command line client environment </li>
+</ul>
+
 	<a name="v30x"></a><h3>1.ii. Changes since 3.0.x</h3>
 
 <h4>Bug</h4>
