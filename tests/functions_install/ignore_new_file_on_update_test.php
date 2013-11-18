@@ -25,6 +25,8 @@ class phpbb_functions_install_ignore_new_file_on_update_test extends phpbb_test_
 
 			array('styles/prosilver/theme/en/icon_user_online.gif', false),
 			array('styles/prosilver/theme/languagewillneverexist/icon_user_online.gif', true),
+
+			array('styles/prosilver/theme/imageset.css', false),
 		);
 	}
 
