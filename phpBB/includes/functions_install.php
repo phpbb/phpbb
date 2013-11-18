@@ -569,7 +569,7 @@ function phpbb_ignore_new_file_on_update($phpbb_root_path, $file)
 	if (!$ignore_new_file && strpos($file, 'styles/') === 0)
 	{
 		$dirs = explode('/', $file);
-		if ($dirs >= 5)
+		if (sizeof($dirs) >= 5)
 		{
 			list($styles_dir, $style_name, $template_component, $language_iso) = explode('/', $file);
 			if ($template_component == 'theme' && $language_iso !== 'images')
