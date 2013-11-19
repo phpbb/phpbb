@@ -460,8 +460,8 @@ function parse_document(container)
 
 		if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
 		if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
-		if ($this.hasClass('dropdown-left')) options.verticalDirection = 'left';
-		if ($this.hasClass('dropdown-right')) options.verticalDirection = 'right';
+		if ($this.hasClass('dropdown-left')) options.direction = 'left';
+		if ($this.hasClass('dropdown-right')) options.direction = 'right';
 
 		phpbb.registerDropdown(trigger, contents, options);
 	});
