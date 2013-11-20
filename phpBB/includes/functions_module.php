@@ -528,12 +528,12 @@ class p_master
 			* the style paths for the extension (the ext author can change them
 			* if necessary).
 			*/
-			$module_dir = explode('_', get_class($this->module));
+			$module_dir = explode('\\', get_class($this->module));
 
-			// 0 phpbb, 1 ext, 2 vendor, 3 extension name, ...
-			if (isset($module_dir[3]) && $module_dir[1] === 'ext')
+			// 0 vendor, 1 extension name, ...
+			if (isset($module_dir[1]))
 			{
-				$module_style_dir = 'ext/' . $module_dir[2] . '/' . $module_dir[3] . '/styles';
+				$module_style_dir =  $phpbb_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/styles';
 
 				if (is_dir($phpbb_root_path . $module_style_dir))
 				{
