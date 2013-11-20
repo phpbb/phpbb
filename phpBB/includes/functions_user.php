@@ -463,7 +463,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$added_guest_posts = 0;
 	foreach ($user_rows as $user_id => $user_row)
 	{
-		if ($user_row['user_avatar'] && ($user_row['user_avatar_type'] == AVATAR_UPLOAD || $user_row['user_avatar_type'] == 'avatar.driver.upload'))
+		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == 'avatar.driver.upload')
 		{
 			avatar_delete('user', $user_row);
 		}
