@@ -867,7 +867,6 @@ function utf8_recode($string, $encoding)
 
 	// Trigger an error?! Fow now just give bad data :-(
 	trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
-	//return $string; // use utf_normalizer::cleanup() ?
 }
 
 /**
@@ -1611,14 +1610,8 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 	// do the case fold
 	$text = utf8_case_fold($text, $option);
 
-	if (!class_exists('utf_normalizer'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-	}
-
 	// convert to NFKC
-	utf_normalizer::nfkc($text);
+	Normalizer::normalize($text, Normalizer::NFKC);
 
 	// FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
 	$text = strtr($text, $fc_nfkc_closure);
@@ -1714,106 +1707,56 @@ function utf8_case_fold_nfc($text, $option = 'full')
 	return $text;
 }
 
-if (extension_loaded('intl'))
+/**
+* wrapper around PHP's native normalizer from intl
+* previously a PECL extension, included in the core since PHP 5.3.0
+* http://php.net/manual/en/normalizer.normalize.php
+*
+* @param	mixed	$strings	a string or an array of strings to normalize
+* @return	mixed				the normalized content, preserving array keys if array given.
+*/
+function utf8_normalize_nfc($strings)
 {
-	/**
-	* wrapper around PHP's native normalizer from intl
-	* previously a PECL extension, included in the core since PHP 5.3.0
-	* http://php.net/manual/en/normalizer.normalize.php
-	*
-	* @param	mixed	$strings	a string or an array of strings to normalize
-	* @return	mixed				the normalized content, preserving array keys if array given.
-	*/
-	function utf8_normalize_nfc($strings)
+	if (empty($strings))
 	{
-		if (empty($strings))
+		return $strings;
+	}
+
+	if (!is_array($strings))
+	{
+		if (Normalizer::isNormalized($strings))
 		{
 			return $strings;
 		}
-
-		if (!is_array($strings))
+		return (string) Normalizer::normalize($strings);
+	}
+	else
+	{
+		foreach ($strings as $key => $string)
 		{
-			if (Normalizer::isNormalized($strings))
+			if (is_array($string))
 			{
-				return $strings;
-			}
-			return (string) Normalizer::normalize($strings);
-		}
-		else
-		{
-			foreach ($strings as $key => $string)
-			{
-				if (is_array($string))
+				foreach ($string as $_key => $_string)
 				{
-					foreach ($string as $_key => $_string)
-					{
-						if (Normalizer::isNormalized($strings[$key][$_key]))
-						{
-							continue;
-						}
-						$strings[$key][$_key] = (string) Normalizer::normalize($strings[$key][$_key]);
-					}
-				}
-				else
-				{
-					if (Normalizer::isNormalized($strings[$key]))
+					if (Normalizer::isNormalized($strings[$key][$_key]))
 					{
 						continue;
 					}
-					$strings[$key] = (string) Normalizer::normalize($strings[$key]);
+					$strings[$key][$_key] = (string) Normalizer::normalize($strings[$key][$_key]);
 				}
 			}
-		}
-
-		return $strings;
-	}
-}
-else
-{
-	/**
-	* A wrapper function for the normalizer which takes care of including the class if
-	* required and modifies the passed strings to be in NFC (Normalization Form Composition).
-	*
-	* @param	mixed	$strings	a string or an array of strings to normalize
-	* @return	mixed				the normalized content, preserving array keys if array given.
-	*/
-	function utf8_normalize_nfc($strings)
-	{
-		if (empty($strings))
-		{
-			return $strings;
-		}
-
-		if (!class_exists('utf_normalizer'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-		}
-
-		if (!is_array($strings))
-		{
-			utf_normalizer::nfc($strings);
-		}
-		else if (is_array($strings))
-		{
-			foreach ($strings as $key => $string)
+			else
 			{
-				if (is_array($string))
+				if (Normalizer::isNormalized($strings[$key]))
 				{
-					foreach ($string as $_key => $_string)
-					{
-						utf_normalizer::nfc($strings[$key][$_key]);
-					}
+					continue;
 				}
-				else
-				{
-					utf_normalizer::nfc($strings[$key]);
-				}
+				$strings[$key] = (string) Normalizer::normalize($strings[$key]);
 			}
 		}
-
-		return $strings;
 	}
+
+	return $strings;
 }
 
 /**

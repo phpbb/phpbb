@@ -27,6 +27,7 @@
 	"require": {
 		"php": ">=5.3.3",
 		"lusitanian/oauth": "0.2.*",
+		"patchwork/utf8": "1.1.*",
 		"symfony/config": "2.5.*",
 		"symfony/console": "2.5.*",
 		"symfony/dependency-injection": "2.5.*",
