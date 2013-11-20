@@ -535,7 +535,7 @@ class p_master
 			{
 				$module_style_dir =  $phpbb_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/styles';
 
-				if (is_dir($phpbb_root_path . $module_style_dir))
+				if (is_dir($module_style_dir))
 				{
 					$template->set_style(array($module_style_dir, 'styles'));
 				}
