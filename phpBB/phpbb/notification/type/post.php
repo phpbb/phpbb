@@ -183,6 +183,10 @@ class post extends \phpbb\notification\type\base
 			'username'		=> $this->get_data('post_username'),
 		)), $responders);
 
+		$responders_cnt = sizeof($responders);
+		$responders = $this->trim_user_ary($responders);
+		$extra_cnt = $responders_cnt - sizeof($responders);
+
 		foreach ($responders as $responder)
 		{
 			if ($responder['username'])
@@ -194,11 +198,18 @@ class post extends \phpbb\notification\type\base
 				$usernames[] = $this->user_loader->get_username($responder['poster_id'], 'no_profile');
 			}
 		}
+		$lang_key = $this->language_key;
+
+		if ($responders_cnt > 4)
+		{
+			$lang_key .= '_TRIMMED';
+		}
 
 		return $this->user->lang(
-			$this->language_key,
+			$lang_key,
 			implode(', ', $usernames),
-			censor_text($this->get_data('topic_title'))
+			censor_text($this->get_data('topic_title')),
+			$extra_cnt
 		);
 	}
 
@@ -272,6 +283,22 @@ class post extends \phpbb\notification\type\base
 			}
 		}
 
+		return $this->trim_user_ary($users);
+	}
+
+	/**
+	* Trim the user array passed down to 3 users if the array contains
+	* more than 4 users.
+	*
+	* @param array $users Array of users
+	* @return array Trimmed array of user_ids
+	*/
+	public function trim_user_ary($users)
+	{
+		if (sizeof($users) > 4)
+		{
+			array_splice($users, 3);
+		}
 		return $users;
 	}
 
