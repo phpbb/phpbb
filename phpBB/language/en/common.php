@@ -153,7 +153,6 @@ $lang = array_merge($lang, array(
 		1	=> '%d character',
 		2	=> '%d characters',
 	),
-	'CLICK_VIEW_PRIVMSG'	=> '%sGo to your inbox%s',
 	'COLLAPSE_VIEW'			=> 'Collapse view',
 	'CLOSE_WINDOW'			=> 'Close window',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
@@ -839,9 +838,6 @@ $lang = array_merge($lang, array(
 	'YES'				=> 'Yes',
 	'YIM'				=> 'YIM',
 	'YOU_LAST_VISIT'	=> 'Last visit was: %s',
-	'YOU_NEW_PM'		=> 'A new private message is waiting for you in your Inbox.',
-	'YOU_NEW_PMS'		=> 'New private messages are waiting for you in your Inbox.',
-	'YOU_NO_NEW_PM'		=> 'No new private messages are waiting for you.',
 
 	'datetime'			=> array(
 		'TODAY'		=> 'Today',
