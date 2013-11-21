@@ -111,6 +111,14 @@ overall_footer_breadcrumb_append
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the footer
 
+overall_footer_content_after
+===
+* Locations:
+    + styles/prosilver/template/overall_footer.html
+    + styles/subsilver2/template/overall_footer.html
+* Since: 3.1.0-a3
+* Purpose: Add content on all pages after the main content, before the footer
+
 overall_footer_copyright_append
 ===
 * Locations:
@@ -134,6 +142,14 @@ overall_header_breadcrumb_append
     + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the header
+
+overall_header_content_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.0-a3
+* Purpose: Add content on all pages before the main content, after the header
 
 overall_header_head_append
 ===
