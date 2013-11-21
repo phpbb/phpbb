@@ -59,7 +59,7 @@ index_body_forumlist_before
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
-* Since: 3.1.0-a2
+* Since: 3.1.0-a3
 * Purpose: Add content above the forums list (on forum index only)
 
 index_body_stat_blocks_before
