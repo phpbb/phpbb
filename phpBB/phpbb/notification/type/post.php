@@ -207,7 +207,7 @@ class post extends \phpbb\notification\type\base
 
 		return $this->user->lang(
 			$lang_key,
-			implode(', ', $usernames),
+			implode($this->user->lang['COMMA_SEPARATOR'], $usernames),
 			censor_text($this->get_data('topic_title')),
 			$extra_cnt
 		);
