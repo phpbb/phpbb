@@ -576,6 +576,7 @@ class mcp_queue
 		}
 
 		$redirect = $request->variable('redirect', build_url(array('quickmod')));
+		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
 
@@ -729,8 +730,6 @@ class mcp_queue
 			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = $request->variable('redirect', "index.$phpEx");
-		$redirect = reapply_sid($redirect);
 		redirect($redirect);
 	}
 
@@ -754,6 +753,7 @@ class mcp_queue
 		}
 
 		$redirect = $request->variable('redirect', build_url(array('quickmod')));
+		$redirect = reapply_sid($redirect);
 		$success_msg = $topic_url = '';
 		$approve_log = array();
 
@@ -869,8 +869,6 @@ class mcp_queue
 			confirm_box(false, strtoupper($action) . '_TOPIC' . ((sizeof($topic_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = $request->variable('redirect', "index.$phpEx");
-		$redirect = reapply_sid($redirect);
 		redirect($redirect);
 	}
 
@@ -893,6 +891,7 @@ class mcp_queue
 		}
 
 		$redirect = $request->variable('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
+		$redirect = reapply_sid($redirect);
 		$reason = $request->variable('reason', '', true);
 		$reason_id = $request->variable('reason_id', 0);
 		$success_msg = $additional_msg = '';
@@ -1199,8 +1198,6 @@ class mcp_queue
 			confirm_box(false, $l_confirm_msg, $s_hidden_fields, $confirm_template);
 		}
 
-		$redirect = $request->variable('redirect', "index.$phpEx");
-		$redirect = reapply_sid($redirect);
 		redirect($redirect);
 	}
 }

@@ -256,6 +256,7 @@ function lock_unlock($action, $ids)
 	unset($orig_ids);
 
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$redirect = reapply_sid($redirect);
 
 	$s_hidden_fields = build_hidden_fields(array(
 		$sql_id . '_list'	=> $ids,
@@ -294,8 +295,6 @@ function lock_unlock($action, $ids)
 		confirm_box(false, strtoupper($action) . '_' . $l_prefix . ((sizeof($ids) == 1) ? '' : 'S'), $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
-	$redirect = reapply_sid($redirect);
 	redirect($redirect);
 }
 
@@ -341,6 +340,7 @@ function change_topic_type($action, $topic_ids)
 	}
 
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$redirect = reapply_sid($redirect);
 
 	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
@@ -387,7 +387,7 @@ function change_topic_type($action, $topic_ids)
 
 		if (!$request->is_ajax())
 		{
-			$message .= $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 		}
 		trigger_error($message);
 	}
@@ -396,8 +396,6 @@ function change_topic_type($action, $topic_ids)
 		confirm_box(false, $l_new_type, build_hidden_fields($s_hidden_fields));
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
-	$redirect = reapply_sid($redirect);
 	redirect($redirect);
 }
 
