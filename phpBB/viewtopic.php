@@ -1715,7 +1715,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
-	* @change 3.1.0-a2 Added vars start, i, end and attachments
+	* @change 3.1.0-a2 Added vars start, i, end, and attachments
 	*/
 	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
