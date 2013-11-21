@@ -1689,12 +1689,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	$user_poster_data = $user_cache[$poster_id];
 
+	$current_row_number = $i;
+
 	/**
 	* Modify the posts template block
 	*
 	* @event core.viewtopic_modify_post_row
 	* @var	int		start				Start item of this page
-	* @var	int		i					Number of the post on this page
+	* @var	int		current_row_number	Number of the post on this page
 	* @var	int		end					Number of posts on this page
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
@@ -1702,10 +1704,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
-	* @change 3.1.0-a2 Added vars start, i, end, and attachments
+	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	*/
-	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
+
+	$i = $current_row_number;
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
 	{
@@ -1740,22 +1744,26 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		}
 	}
 
+	$current_row_number = $i;
+
 	/**
 	* Event after the post data has been assigned to the template
 	*
 	* @event core.viewtopic_post_row_after
 	* @var	int		start				Start item of this page
-	* @var	int		i					Number of the post on this page
+	* @var	int		current_row_number	Number of the post on this page
 	* @var	int		end					Number of posts on this page
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
 	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
-	* @since 3.1.0-a2
+	* @since 3.1.0-a3
 	*/
-	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_row_after', compact($vars)));
+
+	$i = $current_row_number;
 
 	$prev_post_id = $row['post_id'];
 
