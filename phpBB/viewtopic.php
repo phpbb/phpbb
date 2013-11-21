@@ -988,10 +988,19 @@ $sql_ary = array(
 * Event to modify the SQL query before the post and poster data is retrieved
 *
 * @event core.viewtopic_get_post_data
+* @var	int		forum_id	Forum ID
+* @var	int		topic_id	Topic ID
+* @var	array	topic_data	Array with topic data
+* @var	array	post_list	Array with post_ids we are going to retrieve
+* @var	int		sort_days	Display posts of previous x days
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_dir	Direction the posts are sorted by
+* @var	int		start		Pagination information
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
 * @since 3.1-A1
+* @change 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
 */
-$vars = array('sql_ary');
+$vars = array('forum_id', 'topic_id', 'topic_data', 'post_list', 'sort_days', 'sort_key', 'sort_dir', 'start', 'sql_ary');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
@@ -1684,13 +1693,18 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* Modify the posts template block
 	*
 	* @event core.viewtopic_modify_post_row
+	* @var	int		start				Start item of this page
+	* @var	int		i					Number of the post on this page
+	* @var	int		end					Number of posts on this page
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
+	* @change 3.1.0-a2 Added vars start, i, end, and attachments
 	*/
-	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');
+	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
@@ -1725,6 +1739,23 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$template->assign_block_vars('postrow.dl_method', $method);
 		}
 	}
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event core.viewtopic_post_row_after
+	* @var	int		start				Start item of this page
+	* @var	int		i					Number of the post on this page
+	* @var	int		end					Number of posts on this page
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
+	* @var	array	user_poster_data	Poster's data from user cache
+	* @var	array	post_row			Template block array of the post
+	* @since 3.1.0-a2
+	*/
+	$vars = array('start', 'i', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_row_after', compact($vars)));
 
 	$prev_post_id = $row['post_id'];
 
