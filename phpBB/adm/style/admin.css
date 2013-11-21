@@ -381,6 +381,14 @@ li {
 	color: #BC2A4D;
 }
 
+#tabs a:hover {
+	background-position: 0 -69px;
+}
+
+#tabs a:hover span {
+	background-position: 100% -69px;
+}
+
 #tabs .activetab a {
 	background-position: 0 0;
 	border-bottom: 1px solid #DCDEE2;
@@ -390,14 +398,6 @@ li {
 	background-position: 100% 0;
 	padding-bottom: 5px;
 	color: #23649F;
-}
-
-#tabs a:hover {
-	background-position: 0 -69px;
-}
-
-#tabs a:hover span {
-	background-position: 100% -69px;
 }
 
 #tabs .activetab a:hover span {
