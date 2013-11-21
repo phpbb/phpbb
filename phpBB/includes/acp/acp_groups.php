@@ -657,7 +657,6 @@ class acp_groups
 					'GROUP_HIDDEN'		=> $type_hidden,
 
 					'U_BACK'			=> $u_back,
-					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));

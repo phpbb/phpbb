@@ -631,6 +631,11 @@ table.info tbody th {
 	margin: 0 -1px;
 }
 
+#color_palette_placeholder table {
+	border-collapse: separate;
+	border-spacing: 1px;
+}
+
 /* Misc layout styles
 ---------------------------------------- */
 /* column[1-2] styles are containers for two column layouts
