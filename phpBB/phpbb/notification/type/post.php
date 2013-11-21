@@ -185,7 +185,7 @@ class post extends \phpbb\notification\type\base
 
 		$responders_cnt = sizeof($responders);
 		$responders = $this->trim_user_ary($responders);
-		$extra_cnt = $responders_cnt - sizeof($responders);
+		$trimmed_responders_cnt = $responders_cnt - sizeof($responders);
 
 		foreach ($responders as $responder)
 		{
@@ -200,7 +200,7 @@ class post extends \phpbb\notification\type\base
 		}
 		$lang_key = $this->language_key;
 
-		if ($responders_cnt > 4)
+		if ($trimmed_responders_cnt)
 		{
 			$lang_key .= '_TRIMMED';
 		}
@@ -209,7 +209,7 @@ class post extends \phpbb\notification\type\base
 			$lang_key,
 			implode($this->user->lang['COMMA_SEPARATOR'], $usernames),
 			censor_text($this->get_data('topic_title')),
-			$extra_cnt
+			$trimmed_responders_cnt
 		);
 	}
 
