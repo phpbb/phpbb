@@ -336,7 +336,7 @@ phpbb.ajaxify = function(options) {
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
-							data: data + '&confirm=' + res.YES_VALUE,
+							data: data + '&confirm=' + res.YES_VALUE + '&' + $('#phpbb_confirm form').serialize(),
 							success: returnHandler,
 							error: errorHandler
 						});
