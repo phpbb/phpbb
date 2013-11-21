@@ -347,23 +347,10 @@ if ($topic_data['forum_password'])
 	login_forum_box($topic_data);
 }
 
-// Redirect to login or to the correct post upon emailed notification links
-if (isset($_GET['e']))
+// Redirect to login upon emailed notification links if user is not logged in.
+if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
-	$jump_to = request_var('e', 0);
-
-	$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
-
-	if ($user->data['user_id'] == ANONYMOUS)
-	{
-		login_box($redirect_url . "&amp;p=$post_id&amp;e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
-	}
-
-	if ($jump_to > 0)
-	{
-		// We direct the already logged in user to the correct post...
-		redirect($redirect_url . ((!$post_id) ? "&amp;p=$jump_to" : "&amp;p=$post_id") . "#p$jump_to");
-	}
+	login_box(build_url('e') . '#unread', $user->lang['LOGIN_NOTIFY_TOPIC']);
 }
 
 // What is start equal to?
