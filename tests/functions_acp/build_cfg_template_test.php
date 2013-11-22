@@ -243,16 +243,16 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				'key_name',
 				array('config_key_name'	=> '0'),
 				'config_key_name',
-				array(),
-				'<select name="config[config_key_name]" id="key_name"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
+				array('method' => 'select_helper'),
+				'<select id="key_name" name="config[config_key_name]"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
 			),
 			array(
 				array('select', 8),
 				'key_name',
 				array('config_key_name'	=> '1'),
 				'config_key_name',
-				array(),
-				'<select name="config[config_key_name]" id="key_name" size="8"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
+				array('method' => 'select_helper'),
+				'<select id="key_name" name="config[config_key_name]" size="8"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
 			),
 		);
 	}
@@ -262,11 +262,26 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_select($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user, $phpbb_dispatcher;
+		global $module, $user, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
+		$user->module = $this;
+		$module = $user;
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+	}
+
+	public function select_helper()
+	{
+		return build_select(
+			array(
+				'1'	=> 'First_Option',
+				'2'	=> 'Second_Option',
+				'3'	=> 'Third_Option',
+			),
+			'2'
+		);
 	}
 }
