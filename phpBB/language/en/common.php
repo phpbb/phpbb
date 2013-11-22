@@ -440,7 +440,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_POST_IN_QUEUE'		=> 'A new post titled "%2$s" was posted by %1$s and needs approval.',
 	'NOTIFICATION_QUOTE'				=> '%1$s quoted you in the post "%2$s".',
 	'NOTIFICATION_QUOTE_TRIMMED'		=> array(
-		2	=> '%1$s and %3$d others replied to the topic “%2$s”',
+		2	=> '%1$s and %3$d quoted you in the post “%2$s”',
 	),
 	'NOTIFICATION_REPORT_PM'			=> '%1$s reported a Private Message "%2$s" for reason: "%3$s".',
 	'NOTIFICATION_REPORT_POST'			=> '%1$s reported a post "%2$s" for reason: "%3$s".',
