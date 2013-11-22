@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_password_complexity_test extends phpbb_test_case
 {
