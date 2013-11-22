@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpbb/cache/driver/driver_interface.php';
+
 class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
