@@ -10,14 +10,6 @@
 namespace phpbb\groupposition;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package groupposition
 */
 class exception extends \Exception

@@ -10,14 +10,6 @@
 namespace phpbb\db;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Database Tools for handling cross-db actions such as altering columns, etc.
 * Currently not supported is returning SQL for creating tables.
 *
@@ -33,7 +25,7 @@ class tools
 	/**
 	* @var object DB object
 	*/
-	var $db = NULL;
+	var $db = null;
 
 	/**
 	* The Column types for every database we support

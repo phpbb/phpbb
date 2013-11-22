@@ -11,7 +11,6 @@ fieldset {
 
 input {
 	font-weight: normal;
-	cursor: pointer;
 	vertical-align: middle;
 	padding: 0 3px;
 	font-size: 1em;
@@ -206,7 +205,11 @@ fieldset.forum-selection2 {
 fieldset.jumpbox {
 	text-align: right;
 	margin-top: 15px;
-	height: 2.5em;
+	min-height: 2.5em;
+}
+
+fieldset.jumpbox select {
+	max-width: 50%;
 }
 
 fieldset.quickmod {
@@ -231,11 +234,6 @@ fieldset.submit-buttons input {
 
 /* Posting page styles
 ----------------------------------------*/
-
-#colour_palette table {
-	border-collapse: separate;
-	border-spacing: 1px;
-}
 
 /* Buttons used in the editor */
 #format-buttons {
@@ -275,7 +273,6 @@ fieldset.submit-buttons input {
 .inputbox {
 	border: 1px solid transparent;
 	padding: 2px;
-	cursor: text;
 }
 
 .inputbox:hover, .inputbox:focus {
@@ -331,6 +328,10 @@ input.button3 {
 	height: 12px;
 	background-image: none;
 	font-variant: small-caps;
+}
+
+input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"] { 
+	cursor: pointer; 
 }
 
 /* Alternative button */

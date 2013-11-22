@@ -10,14 +10,6 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Topic approved notifications class
 * This class handles notifications for topics when they are approved (for authors)
 *
@@ -34,7 +26,7 @@ class approve_topic extends \phpbb\notification\type\topic
 	{
 		return 'approve_topic';
 	}
-	
+
 	/**
 	* Language key used to output the text
 	*

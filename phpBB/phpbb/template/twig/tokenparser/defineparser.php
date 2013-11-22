@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 
 class defineparser extends \Twig_TokenParser
 {
@@ -37,6 +29,13 @@ class defineparser extends \Twig_TokenParser
 		if ($stream->test(\Twig_Token::OPERATOR_TYPE, '=')) {
 			$stream->next();
 			$value = $this->parser->getExpressionParser()->parseExpression();
+
+			if ($value instanceof \Twig_Node_Expression_Name)
+			{
+				// This would happen if someone improperly formed their DEFINE syntax
+				// e.g. <!-- DEFINE $VAR = foo -->
+				throw new \Twig_Error_Syntax('Invalid DEFINE', $token->getLine(), $this->parser->getFilename());
+			}
 
 			$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 		} else {

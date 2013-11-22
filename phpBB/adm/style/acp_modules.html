@@ -132,7 +132,7 @@
 		</div>
 	<!-- ENDIF -->
 
-	<table cellspacing="1">
+	<table class="table1">
 	<tbody>
 	<tr>
 		<td class="row3">{NAVIGATION}<!-- IF S_NO_MODULES --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a> | <!-- IF MODULE_ENABLED --><a href="{U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->]<!-- ENDIF --></td>
@@ -141,7 +141,7 @@
 	</table>
 
 	<!-- IF .modules -->
-		<table cellspacing="1">
+		<table class="table1">
 			<col class="row1" /><col class="row1" /><col class="row2" /><col class="row2" />
 		<tbody>
 		<!-- BEGIN modules -->
@@ -149,20 +149,11 @@
 				<td style="width: 5%; text-align: center;">{modules.MODULE_IMAGE}</td>
 				<td><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
 				<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;<!-- IF modules.MODULE_ENABLED --><a href="{modules.U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{modules.U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->&nbsp;</td>
-				<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-					<!-- IF modules.S_FIRST_ROW && not modules.S_LAST_ROW -->
-						{ICON_MOVE_UP_DISABLED}
-						<a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-					<!-- ELSEIF not modules.S_FIRST_ROW && not modules.S_LAST_ROW-->
-						<a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-						<a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-					<!-- ELSEIF modules.S_LAST_ROW && not modules.S_FIRST_ROW -->
-						<a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
-						{ICON_MOVE_DOWN_DISABLED}
-					<!-- ELSE -->
-						{ICON_MOVE_UP_DISABLED}
-						{ICON_MOVE_DOWN_DISABLED}
-					<!-- ENDIF -->
+				<td class="actions">
+					<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="up"><a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a></span>
+					<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+					<span class="down"><a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a></span>
 					<a href="{modules.U_EDIT}">{ICON_EDIT}</a> 
 					<a href="{modules.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 				</td>

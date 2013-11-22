@@ -10,14 +10,6 @@
 namespace phpbb\template\twig;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Twig Template class.
 * @package phpBB3
 */

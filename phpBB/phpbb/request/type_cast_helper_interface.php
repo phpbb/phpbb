@@ -10,14 +10,6 @@
 namespace phpbb\request;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * An interface for type cast operations.
 *
 * @package \phpbb\request\request

@@ -9,14 +9,6 @@
 
 namespace phpbb\tree;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class nestedset_forum extends \phpbb\tree\nestedset
 {
 	/**

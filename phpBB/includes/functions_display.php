@@ -1352,7 +1352,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 */
 function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	$row = \phpbb\avatar\manager::clean_row($user_row);
+	$row = \phpbb\avatar\manager::clean_row($user_row, 'user');
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
@@ -1367,7 +1367,7 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 */
 function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
 {
-	$row = \phpbb\avatar\manager::clean_row($user_row);
+	$row = \phpbb\avatar\manager::clean_row($user_row, 'group');
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 

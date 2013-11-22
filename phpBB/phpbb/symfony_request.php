@@ -11,14 +11,6 @@ namespace phpbb;
 
 use Symfony\Component\HttpFoundation\Request;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class symfony_request extends Request
 {
 	/**

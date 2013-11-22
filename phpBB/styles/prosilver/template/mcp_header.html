@@ -3,10 +3,8 @@
 <h2>{L_MCP}</h2>
 
 <!-- IF U_MCP -->
-	<p class="linkmcp">
-		[ <a href="{U_MCP}">{L_MCP}</a><!-- IF U_MCP_FORUM --> | <a href="{U_MCP_FORUM}">{L_MODERATE_FORUM}</a><!-- ENDIF -->
-		<!-- IF U_MCP_TOPIC --> | <a href="{U_MCP_TOPIC}">{L_MODERATE_TOPIC}</a><!-- ENDIF -->
-		<!-- IF U_MCP_POST --> | <a href="{U_MCP_POST}">{L_MODERATE_POST}</a><!-- ENDIF --> ]
+	<p class="linkmcp responsive-center">
+		[<!-- IF U_ACP -->&nbsp;<a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a>&nbsp;|<!-- ENDIF -->&nbsp;<a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- IF U_MCP_FORUM -->&nbsp;|&nbsp;<a href="{U_MCP_FORUM}">{L_MODERATE_FORUM}</a><!-- ENDIF --><!-- IF U_MCP_TOPIC -->&nbsp;|&nbsp;<a href="{U_MCP_TOPIC}">{L_MODERATE_TOPIC}</a><!-- ENDIF --><!-- IF U_MCP_POST -->&nbsp;|&nbsp;<a href="{U_MCP_POST}">{L_MODERATE_POST}</a><!-- ENDIF -->&nbsp;]
 	</p>
 <!-- ENDIF -->
 

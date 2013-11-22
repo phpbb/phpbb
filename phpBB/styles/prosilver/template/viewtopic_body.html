@@ -1,5 +1,5 @@
 <!-- INCLUDE overall_header.html -->
-<!-- IF U_MCP --><p>[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ENDIF -->
+<!-- IF U_MCP or U_ACP --><p class="responsive-center">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p><!-- ENDIF -->
 <h2><!-- EVENT viewtopic_topic_title_prepend --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
 <!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
@@ -60,7 +60,7 @@
 <div class="clear"></div>
 
 <!-- IF S_HAS_POLL -->
-	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" data-overlay="false" class="topic_poll">
+	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" class="topic_poll">
 
 	<div class="panel">
 		<div class="inner">
@@ -193,7 +193,7 @@
 			<!-- ENDIF -->
 		<!-- ENDIF -->
 
-			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF -->{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; {postrow.POST_DATE} </p>
+			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE} </p>
 
 			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
@@ -283,7 +283,8 @@
 		<!-- IF U_NEXT_PAGE --><a href="{U_NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF not S_IS_BOT -->
 		<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> <label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
+		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> <label>{S_SELECT_SORT_DIR}</label>
+		<input type="submit" name="sort" value="{L_GO}" class="button2" />
 		<!-- ENDIF -->
 	</fieldset>
 

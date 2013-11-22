@@ -49,7 +49,11 @@
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></td>
-		<td class="row2"><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</span></td>
+		<td class="row2">
+			<input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;
+			<span>[ <a href="#" id="color_palette_toggle">{L_COLOUR_SWATCH}</a> ]</span>
+			<div id="color_palette_placeholder" style="display: none;" data-orientation="h" data-height="12" data-width="15" data-target="#group_colour"></div>
+		</td>
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label for="group_rank">{L_GROUP_RANK}{L_COLON}</label></td>

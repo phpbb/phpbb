@@ -1,5 +1,5 @@
 <!-- INCLUDE overall_header.html -->
-<!-- IF U_MCP --><p>[&nbsp;<a href="{U_MCP}">{L_MCP}</a>&nbsp;]</p><!-- ENDIF -->
+<!-- IF U_MCP or U_ACP --><p class="responsive-center">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p><!-- ENDIF -->
 <h2><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
 
 <!-- IF FORUM_DESC or MODERATORS or U_MCP -->
@@ -163,8 +163,19 @@
 							</ul>
 						</div>
 						<!-- ENDIF -->
-						<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
-						<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
+						<div class="responsive-hide">
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
+						</div>
+						<!-- IF not S_IS_BOT -->
+						<div class="responsive-show" style="display: none;">
+							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
+							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --><br />{L_POSTED} {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
+							<!-- IF topicrow.REPLIES --><br />{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong><!-- ENDIF -->
+						</div>
+						<!-- ENDIF -->
+
 						<!-- EVENT topiclist_row_append -->
 					</div>
 				</dt>
@@ -200,7 +211,8 @@
 	<!-- IF not S_IS_BOT -->
 			<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
-			<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
+			<label>{S_SELECT_SORT_DIR}</label>
+			<input type="submit" name="sort" value="{L_GO}" class="button2" />
 	<!-- ENDIF -->
 		</fieldset>
 	</form>

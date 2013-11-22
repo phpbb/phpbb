@@ -396,6 +396,9 @@ class acp_users
 							{
 								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 								{
+									$phpbb_notifications = $phpbb_container->get('notification_manager');
+									$phpbb_notifications->delete_notifications('admin_activate_user', $user_row['user_id']);
+
 									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 									$messenger = new messenger(false);
@@ -647,8 +650,8 @@ class acp_users
 								while ($row = $db->sql_fetchrow($result))
 								{
 									if ($topic_id_ary[$row['topic_id']][ITEM_APPROVED] == $row['topic_posts_approved']
-									 && $topic_id_ary[$row['topic_id']][ITEM_UNAPPROVED] == $row['topic_posts_unapproved']
-									 && $topic_id_ary[$row['topic_id']][ITEM_DELETED] == $row['topic_posts_softdeleted'])
+										&& $topic_id_ary[$row['topic_id']][ITEM_UNAPPROVED] == $row['topic_posts_unapproved']
+										&& $topic_id_ary[$row['topic_id']][ITEM_DELETED] == $row['topic_posts_softdeleted'])
 									{
 										$move_topic_ary[] = $row['topic_id'];
 									}
@@ -1509,7 +1512,6 @@ class acp_users
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
 					'notifymethod'		=> request_var('notifymethod', $user_row['user_notify_type']),
 					'notifypm'			=> request_var('notifypm', $user_row['user_notify_pm']),
-					'popuppm'			=> request_var('popuppm', $this->optionget($user_row, 'popuppm')),
 					'allowpm'			=> request_var('allowpm', $user_row['user_allow_pm']),
 
 					'topic_sk'			=> request_var('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
@@ -1553,7 +1555,6 @@ class acp_users
 
 					if (!sizeof($error))
 					{
-						$this->optionset($user_row, 'popuppm', $data['popuppm']);
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
 						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
@@ -1696,7 +1697,6 @@ class acp_users
 					'NOTIFY_IM'			=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
-					'POPUP_PM'			=> $data['popuppm'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
@@ -1742,7 +1742,7 @@ class acp_users
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = \phpbb\avatar\manager::clean_row($user_row);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user_row, 'user');
 
 					if ($submit)
 					{

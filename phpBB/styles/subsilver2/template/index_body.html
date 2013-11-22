@@ -1,8 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF U_MCP -->
+<!-- IF U_MCP or U_ACP -->
 	<div id="pageheader">
-		<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+		<p class="linkmcp">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p>
 	</div>
 
 	<br clear="all" /><br />

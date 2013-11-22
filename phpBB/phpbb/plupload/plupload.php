@@ -10,14 +10,6 @@
 namespace phpbb\plupload;
 
 /**
- * @ignore
- */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * This class handles all server-side plupload functions
 *
 * @package \phpbb\plupload\plupload

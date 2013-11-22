@@ -14,188 +14,11 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
- * Prior to version 1.1 the SQL Server Native PHP driver didn't support sqlsrv_num_rows, or cursor based seeking so we recall all rows into an array
- * and maintain our own cursor index into that array.
- */
-class result_mssqlnative
-{
-	public function result_mssqlnative($queryresult = false)
-	{
-		$this->m_cursor = 0;
-		$this->m_rows = array();
-		$this->m_num_fields = sqlsrv_num_fields($queryresult);
-		$this->m_field_meta = sqlsrv_field_metadata($queryresult);
-
-		while ($row = sqlsrv_fetch_array($queryresult, SQLSRV_FETCH_ASSOC))
-		{
-			if ($row !== null)
-			{
-				foreach($row as $k => $v)
-				{
-					if (is_object($v) && method_exists($v, 'format'))
-					{
-						$row[$k] = $v->format("Y-m-d\TH:i:s\Z");
-					}
-				}
-				$this->m_rows[] = $row;//read results into memory, cursors are not supported
-			}
-		}
-
-		$this->m_row_count = sizeof($this->m_rows);
-	}
-
-	private function array_to_obj($array, &$obj)
-	{
-		foreach ($array as $key => $value)
-		{
-			if (is_array($value))
-			{
-				$obj->$key = new \stdClass();
-				array_to_obj($value, $obj->$key);
-			}
-			else
-			{
-				$obj->$key = $value;
-			}
-		}
-		return $obj;
-	}
-
-	public function fetch($mode = SQLSRV_FETCH_BOTH, $object_class = 'stdClass')
-	{
-		if ($this->m_cursor >= $this->m_row_count || $this->m_row_count == 0)
-		{
-			return false;
-		}
-
-		$ret = false;
-		$arr_num = array();
-
-		if ($mode == SQLSRV_FETCH_NUMERIC || $mode == SQLSRV_FETCH_BOTH)
-		{
-			foreach($this->m_rows[$this->m_cursor] as $key => $value)
-			{
-				$arr_num[] = $value;
-			}
-		}
-
-		switch ($mode)
-		{
-			case SQLSRV_FETCH_ASSOC:
-				$ret = $this->m_rows[$this->m_cursor];
-			break;
-			case SQLSRV_FETCH_NUMERIC:
-				$ret = $arr_num;
-			break;
-			case 'OBJECT':
-				$ret = $this->array_to_obj($this->m_rows[$this->m_cursor], $o = new $object_class);
-			break;
-			case SQLSRV_FETCH_BOTH:
-			default:
-				$ret = $this->m_rows[$this->m_cursor] + $arr_num;
-			break;
-		}
-		$this->m_cursor++;
-		return $ret;
-	}
-
-	public function get($pos, $fld)
-	{
-		return $this->m_rows[$pos][$fld];
-	}
-
-	public function num_rows()
-	{
-		return $this->m_row_count;
-	}
-
-	public function seek($iRow)
-	{
-		$this->m_cursor = min($iRow, $this->m_row_count);
-	}
-
-	public function num_fields()
-	{
-		return $this->m_num_fields;
-	}
-
-	public function field_name($nr)
-	{
-		$arr_keys = array_keys($this->m_rows[0]);
-		return $arr_keys[$nr];
-	}
-
-	public function field_type($nr)
-	{
-		$i = 0;
-		$int_type = -1;
-		$str_type = '';
-
-		foreach ($this->m_field_meta as $meta)
-		{
-			if ($nr == $i)
-			{
-				$int_type = $meta['Type'];
-				break;
-			}
-			$i++;
-		}
-
-		//http://msdn.microsoft.com/en-us/library/cc296183.aspx contains type table
-		switch ($int_type)
-		{
-			case SQLSRV_SQLTYPE_BIGINT: 		$str_type = 'bigint'; break;
-			case SQLSRV_SQLTYPE_BINARY: 		$str_type = 'binary'; break;
-			case SQLSRV_SQLTYPE_BIT: 			$str_type = 'bit'; break;
-			case SQLSRV_SQLTYPE_CHAR: 			$str_type = 'char'; break;
-			case SQLSRV_SQLTYPE_DATETIME: 		$str_type = 'datetime'; break;
-			case SQLSRV_SQLTYPE_DECIMAL/*($precision, $scale)*/: $str_type = 'decimal'; break;
-			case SQLSRV_SQLTYPE_FLOAT: 			$str_type = 'float'; break;
-			case SQLSRV_SQLTYPE_IMAGE: 			$str_type = 'image'; break;
-			case SQLSRV_SQLTYPE_INT: 			$str_type = 'int'; break;
-			case SQLSRV_SQLTYPE_MONEY: 			$str_type = 'money'; break;
-			case SQLSRV_SQLTYPE_NCHAR/*($charCount)*/: $str_type = 'nchar'; break;
-			case SQLSRV_SQLTYPE_NUMERIC/*($precision, $scale)*/: $str_type = 'numeric'; break;
-			case SQLSRV_SQLTYPE_NVARCHAR/*($charCount)*/: $str_type = 'nvarchar'; break;
-			case SQLSRV_SQLTYPE_NTEXT: 			$str_type = 'ntext'; break;
-			case SQLSRV_SQLTYPE_REAL: 			$str_type = 'real'; break;
-			case SQLSRV_SQLTYPE_SMALLDATETIME: 	$str_type = 'smalldatetime'; break;
-			case SQLSRV_SQLTYPE_SMALLINT: 		$str_type = 'smallint'; break;
-			case SQLSRV_SQLTYPE_SMALLMONEY: 	$str_type = 'smallmoney'; break;
-			case SQLSRV_SQLTYPE_TEXT: 			$str_type = 'text'; break;
-			case SQLSRV_SQLTYPE_TIMESTAMP: 		$str_type = 'timestamp'; break;
-			case SQLSRV_SQLTYPE_TINYINT: 		$str_type = 'tinyint'; break;
-			case SQLSRV_SQLTYPE_UNIQUEIDENTIFIER: $str_type = 'uniqueidentifier'; break;
-			case SQLSRV_SQLTYPE_UDT: 			$str_type = 'UDT'; break;
-			case SQLSRV_SQLTYPE_VARBINARY/*($byteCount)*/: $str_type = 'varbinary'; break;
-			case SQLSRV_SQLTYPE_VARCHAR/*($charCount)*/: $str_type = 'varchar'; break;
-			case SQLSRV_SQLTYPE_XML: 			$str_type = 'xml'; break;
-			default: $str_type = $int_type;
-		}
-		return $str_type;
-	}
-
-	public function free()
-	{
-		unset($this->m_rows);
-		return;
-	}
-}
-
-/**
 * @package dbal
 */
 class mssqlnative extends \phpbb\db\driver\mssql_base
 {
-	var $m_insert_id = NULL;
+	var $m_insert_id = null;
 	var $last_query_text = '';
 	var $query_options = array();
 	var $connect_error = '';
@@ -427,7 +250,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		{
 			foreach ($row as $key => $value)
 			{
-				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+				$row[$key] = ($value === ' ' || $value === null) ? '' : $value;
 			}
 
 			// remove helper values from LIMIT queries

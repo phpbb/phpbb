@@ -105,6 +105,7 @@ ul.cplist {
 .tabs-container #minitabs {
 	float: right;
 	margin-top: 19px;
+	max-width: 50%;
 }
 
 .tabs-container:after {
@@ -218,6 +219,10 @@ ul.cplist {
 
 /* Responsive tabs
 ----------------------------------------*/
+.responsive-tab {
+	position: relative;
+}
+
 .responsive-tab .responsive-tab-link span {
 	display: inline-block;
 	font-size: 16px;
@@ -251,29 +256,39 @@ ul.cplist {
 	position: relative;
 }
 
-#tabs ul.responsive-tabs, #minitabs ul.responsive-tabs {
-	position: absolute;
-	right: 0;
-	top: 26px;
-	z-index: 2;
-	border: 1px solid transparent;
-	border-radius: 5px;
+#tabs .dropdown, #minitabs .dropdown {
+	top: 29px;
+	margin-right: -1px;
 }
 
-#minitabs ul.responsive-tabs {
-	top: 23px;
+#minitabs .dropdown {
+	top: 18px;
 }
 
-.tabs-container #minitabs ul.responsive-tabs {
-	right: auto;
-	left: 0;
+#tabs .dropdown-up .dropdown, #minitabs .dropdown-up .dropdown {
+	bottom: -5px;
+	top: auto;
 }
 
-#tabs .responsive-tabs li, #minitabs .responsive-tabs li {
+#minitabs .dropdown-up .dropdown {
+	bottom: 18px;
+}
+
+#tabs .dropdown-right .dropdown, #minitabs .dropdown-right .dropdown {
+	margin-left: -41px;
+}
+
+#tabs .dropdown li, #minitabs .dropdown li {
 	display: block !important;
+	background: transparent none;
+	padding: 0;
 }
 
-#tabs .responsive-tabs a, #tabs .responsive-tabs a span, #minitabs .responsive-tabs a, #minitabs .responsive-tabs a span {
+.tabs-container #minitabs .dropdown a span {
+	display: block;
+}
+
+#tabs .dropdown a, #tabs .dropdown a span, #minitabs .dropdown a, #minitabs .dropdown a span {
 	background: transparent;
 	float: none;
 	margin: 0;
@@ -281,13 +296,15 @@ ul.cplist {
 	text-align: right;
 }
 
-.tabs-container #minitabs .responsive-tabs a span {
+.tabs-container #minitabs .dropdown a span {
 	text-align: left;
 }
 
-#tabs .responsive-tabs a span, #minitabs .responsive-tabs a span {
-	padding: 5px;
+#tabs .dropdown a span, #minitabs .dropdown a span {
+	padding: 5px 8px;
+	color: inherit !important;
 }
+
 
 /* UCP navigation menu
 ----------------------------------------*/
@@ -416,4 +433,42 @@ ol.def-rules li {
 	width: auto;
 	border: 1px solid transparent;
 	text-align: center;
+}
+
+/* Responsive *CP navigation
+----------------------------------------*/
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+{
+	.nojs #tabs a span, .nojs #minitabs a span {
+		max-width: 40px; 
+		overflow: hidden;
+		text-overflow: ellipsis;
+		letter-spacing: -.5px;
+	}
+
+	#cp-menu, #navigation, #cp-main {
+		float: none;
+		width: auto;
+		margin: 0;
+	}
+
+	#navigation { 
+		padding: 0; 
+		margin: 0 auto;
+		max-width: 320px;
+	}
+
+	#navigation a {
+		background-image: none;
+	}
+
+	#navigation li:first-child a {
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+
+	#navigation li:last-child a {
+		border-bottom-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+	}
 }

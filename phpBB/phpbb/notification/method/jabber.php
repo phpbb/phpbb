@@ -10,14 +10,6 @@
 namespace phpbb\notification\method;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Jabber notification method class
 * This class handles sending Jabber messages for notifications
 *

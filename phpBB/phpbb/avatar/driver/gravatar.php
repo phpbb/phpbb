@@ -10,14 +10,6 @@
 namespace phpbb\avatar\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Handles avatars hosted at gravatar.com
 * @package phpBB3
 */

@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider\oauth\service;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Google OAuth service
 *
 * @package auth

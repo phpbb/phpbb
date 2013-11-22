@@ -10,14 +10,6 @@
 namespace phpbb\cron\task\core;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Tidy cache cron task.
 *
 * @package phpBB3
