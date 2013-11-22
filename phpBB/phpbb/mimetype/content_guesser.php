@@ -20,7 +20,7 @@ class content_guesser extends guesser_base
 	*/
 	public function is_supported()
 	{
-		return true;
+		return function_exists('mime_content_type');
 	}
 
 	/**
@@ -28,9 +28,6 @@ class content_guesser extends guesser_base
 	*/
 	public function guess($file, $file_name = '')
 	{
-		if (function_exists('mime_content_type'))
-		{
-			return mime_content_type($file);
-		}
+		return mime_content_type($file);
 	}
 }
