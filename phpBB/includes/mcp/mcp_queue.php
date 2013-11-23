@@ -785,9 +785,12 @@ class mcp_queue
 			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
 
 			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+			$first_post_ids = array();
+
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
 				$phpbb_content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+				$first_post_ids[$topic_id] = (int) $topic_data['topic_first_post_id'];
 
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
 
@@ -811,23 +814,43 @@ class mcp_queue
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
+				// Grab the first post text as it's needed for the quote notification.
+				$sql = 'SELECT topic_id, post_text
+					FROM ' . POSTS_TABLE . '
+					WHERE ' . $db->sql_in_set('post_id', $first_post_ids);
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_info[$row['topic_id']]['post_text'] = $row['post_text'];
+				}
+				$db->sql_freeresult($result);
+
 				// Handle notifications
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				foreach ($topic_info as $topic_id => $topic_data)
 				{
-					$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+					$topic_data = array_merge($topic_data, array(
+						'post_id'		=> $topic_data['topic_first_post_id'],
+						'post_subject'	=> $topic_data['topic_title'],
+						'post_time'		=> $topic_data['topic_time'],
+						'poster_id'		=> $topic_data['topic_poster'],
+						'username'		=> $topic_data['topic_first_poster_name'],
+					));
+
+					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
 					$phpbb_notifications->add_notifications(array(
 						'quote',
 						'topic',
-					), $post_data);
+					), $topic_data);
 
-					$phpbb_notifications->mark_notifications_read('quote', $post_data['post_id'], $user->data['user_id']);
-					$phpbb_notifications->mark_notifications_read('topic', $post_data['topic_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('quote', $topic_data['post_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('topic', $topic_id, $user->data['user_id']);
 
 					if ($notify_poster)
 					{
-						$phpbb_notifications->add_notifications('approve_topic', $post_data);
+						$phpbb_notifications->add_notifications('approve_topic', $topic_data);
 					}
 				}
 			}
