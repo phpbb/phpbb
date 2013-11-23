@@ -127,7 +127,20 @@ class guesser_test extends \phpbb_test_case
 	*/
 	public function test_content_guesser($expected, $guessers, $overload = false)
 	{
+		$supported = false;
 		self::$function_exists = !$overload;
+
+		// Cover possible LogicExceptions
+		foreach ($guessers as $cur_guesser)
+		{
+			$supported += $cur_guesser->is_supported();
+		}
+
+		if (!$supported)
+		{
+			$this->setExpectedException('\LogicException');
+		}
+
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->assertEquals($expected[0], $guesser->guess($this->jpg_file));
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.jpg'));
