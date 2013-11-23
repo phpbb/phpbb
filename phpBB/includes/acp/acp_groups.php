@@ -327,7 +327,7 @@ class acp_groups
 					$avatar_data = \phpbb\avatar\manager::clean_row($group_row);
 					if (!isset($avatar_data['id']))
 					{
-						$avatar_data['id'] = $group_id;
+						$avatar_data['id'] = 'g' . $group_id;
 					}
 				}
 
