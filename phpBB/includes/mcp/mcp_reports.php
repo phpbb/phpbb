@@ -615,23 +615,25 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 		unset($close_report_posts, $close_report_topics);
 
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 		foreach ($reports as $report)
 		{
 			if ($pm)
 			{
 				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
+				$phpbb_notifications->delete_notifications('report_pm', $report['pm_id']);
 			}
 			else
 			{
 				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+				$phpbb_notifications->delete_notifications('report_post', $report['post_id']);
 			}
 		}
 
 		// Notify reporters
 		if (sizeof($notify_reporters))
 		{
-			$phpbb_notifications = $phpbb_container->get('notification_manager');
-
 			foreach ($notify_reporters as $report_id => $reporter)
 			{
 				if ($reporter['user_id'] == ANONYMOUS)
@@ -648,8 +650,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						'closer_id'			=> $user->data['user_id'],
 						'from_user_id'		=> $post_info[$post_id]['author_id'],
 					)));
-
-					$phpbb_notifications->delete_notifications('report_pm', $post_id);
 				}
 				else
 				{
@@ -657,8 +657,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 					)));
-
-					$phpbb_notifications->delete_notifications('report_post', $post_id);
 				}
 			}
 		}
