@@ -652,6 +652,11 @@ class mcp_queue
 				// Handle notifications
 				foreach ($post_info as $post_id => $post_data)
 				{
+					// A single topic approval may also happen here, so handle deleting the respective notification.
+					if (!$post_data['topic_posts_approved'])
+					{
+						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+					}
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 					$phpbb_notifications->add_notifications(array(
