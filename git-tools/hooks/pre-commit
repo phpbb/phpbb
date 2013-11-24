@@ -86,3 +86,39 @@ then
 	$echo_e "$errors"
 	exit 1
 fi
+
+
+# Compile a list of changed files
+files=`git diff --name-only HEAD^`
+error=0
+
+egrep -q '[[:space:]]$' $files
+if [ $? -eq 0 ]
+then
+	printf "\n\e[1mTrailing whitespace detected:\e[0m\n\n"
+	egrep -n -H '[[:space:]]$' $files
+	error=1
+fi
+
+egrep -q '^ +	' $files
+if [ $? -eq 0 ]
+then
+	printf "\n\e[1mSpace before tab detected:\e[0m\n\n"
+	egrep -n -H '^ +	' $files
+	error=1
+fi
+
+for file in $files
+do
+	if ! tail -c1 $file | read _
+	then
+		printf "No newline at end of $file\n"
+		error=1
+	fi
+done
+
+# Abort commit if any errors
+if [ $error -eq 1 ]
+then
+	exit 1
+fi
