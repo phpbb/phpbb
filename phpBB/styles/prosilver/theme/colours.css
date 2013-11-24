@@ -258,6 +258,11 @@ a:active	{ color: #368AD2; }
 	color: #C8E6FF;
 }
 
+/* Notification mark read link */
+#notification_list a.mark_read {
+	background-color: #FFFFFF;
+}
+
 /* Links for forum/topic lists */
 a.forumtitle {
 	color: #105289;
@@ -716,6 +721,7 @@ a.sendemail {
 .icon-notification				{ background-image: url("./images/icon_notification.gif"); }
 .icon-pm						{ background-image: url("./images/icon_pm.gif"); }
 .icon-download					{ background-image: url("./images/icon_download.gif"); }
+.icon-mark						{ background-image: url("./images/icon_mark.gif"); }
 
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }

@@ -1015,6 +1015,7 @@ form > p.post-notice strong {
 	list-style-type: none;
 	font-size: 0.95em;
 	clear: both;
+	position: relative;
 }
 
 #notification_list ul li:before, #notification_list ul li:after {

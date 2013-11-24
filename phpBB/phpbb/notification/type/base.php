@@ -282,15 +282,17 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function prepare_for_display()
 	{
+		$mark_hash = generate_link_hash('mark_notification_read');
+
 		if ($this->get_url())
 		{
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id);
+			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash);
 		}
 		else
 		{
 			$redirect = (($this->user->page['page_dir']) ? $this->user->page['page_dir'] . '/' : '') . $this->user->page['page_name'] . (($this->user->page['query_string']) ? '?' . $this->user->page['query_string'] : '');
 
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;redirect=' . urlencode($redirect));
+			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash . '&amp;redirect=' . urlencode($redirect));
 		}
 
 		return array(
