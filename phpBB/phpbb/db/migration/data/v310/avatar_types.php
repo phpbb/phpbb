@@ -11,6 +11,15 @@ namespace phpbb\db\migration\data\v310;
 
 class avatar_types extends \phpbb\db\migration\migration
 {
+	/**
+	* @var avatar type map
+	*/
+	protected $avatar_type_map = array(
+		AVATAR_UPLOAD	=> 'avatar.driver.upload',
+		AVATAR_REMOTE	=> 'avatar.driver.remote',
+		AVATAR_GALLERY	=> 'avatar.driver.local',
+	);
+
 	static public function depends_on()
 	{
 		return array(
@@ -29,37 +38,23 @@ class avatar_types extends \phpbb\db\migration\migration
 
 	public function update_user_avatar_type()
 	{
-		$sql = 'UPDATE ' . $this->table_prefix . "users
-			SET user_avatar_type = 'avatar.driver.upload'
-			WHERE user_avatar_type = " . AVATAR_UPLOAD;
-		$this->db->sql_query($sql);
-
-		$sql = 'UPDATE ' . $this->table_prefix . "users
-			SET user_avatar_type = 'avatar.driver.remote'
-			WHERE user_avatar_type = " . AVATAR_REMOTE;
-		$this->db->sql_query($sql);
-
-		$sql = 'UPDATE ' . $this->table_prefix . "users
-			SET user_avatar_type = 'avatar.driver.local'
-			WHERE user_avatar_type = " . AVATAR_GALLERY;
-		$this->db->sql_query($sql);
+		foreach ($this->avatar_type_map as $old => $new)
+		{
+			$sql = 'UPDATE ' . $this->table_prefix . "users
+				SET user_avatar_type = '$new'
+				WHERE user_avatar_type = $old";
+			$this->db->sql_query($sql);
+		}
 	}
 
 	public function update_group_avatar_type()
 	{
-		$sql = 'UPDATE ' . $this->table_prefix . "groups
-			SET group_avatar_type = 'avatar.driver.upload'
-			WHERE group_avatar_type = " . AVATAR_UPLOAD;
-		$this->db->sql_query($sql);
-
-		$sql = 'UPDATE ' . $this->table_prefix . "groups
-			SET group_avatar_type = 'avatar.driver.remote'
-			WHERE group_avatar_type = " . AVATAR_REMOTE;
-		$this->db->sql_query($sql);
-
-		$sql = 'UPDATE ' . $this->table_prefix . "groups
-			SET group_avatar_type = 'avatar.driver.local'
-			WHERE group_avatar_type = " . AVATAR_GALLERY;
-		$this->db->sql_query($sql);
+		foreach ($this->avatar_type_map as $old => $new)
+		{
+			$sql = 'UPDATE ' . $this->table_prefix . "groups
+				SET group_avatar_type = '$new'
+				WHERE group_avatar_type = $old";
+			$this->db->sql_query($sql);
+		}
 	}
 }
