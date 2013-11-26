@@ -28,3 +28,6 @@ require_once 'test_framework/phpbb_test_case.php';
 require_once 'test_framework/phpbb_database_test_case.php';
 require_once 'test_framework/phpbb_database_test_connection_manager.php';
 require_once 'test_framework/phpbb_functional_test_case.php';
+
+$user = new phpbb_mock_user;
+$request = new phpbb_mock_request;

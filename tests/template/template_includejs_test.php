@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/template_test_case_with_tree.php';
+require_once dirname(__FILE__) . '/../../phpBB/phpbb/template/twig/node/expression/binary/equalequal.php';
 
 class phpbb_template_template_includejs_test extends phpbb_template_template_test_case_with_tree
 {
