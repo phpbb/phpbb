@@ -32,7 +32,7 @@
 	float: right;
 }
 
-#attach-row-tpl {
+#attach-row-tpl, .nojs .file-inline-bbcode {
 	display: none;
 }
 
