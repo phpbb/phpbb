@@ -410,6 +410,548 @@ function insert_single_user(formId, user)
 }
 
 /**
+* Parse document block
+*/
+function parse_document(container) 
+{
+	var test = document.createElement('div'),
+		oldBrowser = (typeof test.style.borderRadius == 'undefined');
+
+	delete test;
+
+	/**
+	* Reset avatar dimensions when changing URL or EMAIL
+	*/
+	container.find('input[data-reset-on-edit]').bind('keyup', function() {
+		$(this.getAttribute('data-reset-on-edit')).val('');
+	});
+
+	/**
+	* Pagination
+	*/
+	container.find('a.pagination-trigger').click(function() {
+		jumpto($(this));
+	});
+
+	/**
+	* Adjust HTML code for IE8 and older versions		
+	*/
+	if (oldBrowser) {
+		// Fix .linklist.bulletin lists
+		container.find('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
+
+		// Do not run functions below for old browsers
+		return;
+	}
+
+	/**
+	* Resize navigation block to keep all links on same line
+	*/
+	container.find('.navlinks').each(function() {
+		var $this = $(this),
+			left = $this.children().not('.rightside'),
+			right = $this.children('.rightside');
+
+		if (left.length !== 1 || !right.length) return;
+
+		function resize() {
+			var width = 0,
+				diff = left.outerWidth(true) - left.width();
+
+			right.each(function() {
+				width += $(this).outerWidth(true);
+			});
+			left.css('max-width', Math.floor($this.width() - width - diff) + 'px');
+		}
+
+		resize();
+		$(window).resize(resize);
+	});
+
+	/**
+	* Makes breadcrumbs responsive
+	*/
+	container.find('.breadcrumbs:not([data-skip-responsive])').each(function() {
+		var $this = $(this),
+			$body = $('body'),
+			links = $this.find('.crumb'),
+			length = links.length,
+			classes = ['wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny'],
+			classesLength = classes.length,
+			maxHeight = 0,
+			lastWidth = false,
+			wrapped = false;
+
+		// Set tooltips
+		$this.find('a').each(function() {
+			var $link = $(this);
+			$link.attr('title', $link.text());
+		});
+
+		// Funciton that checks breadcrumbs
+		function check() {
+			var height = $this.height(),
+				width = $body.width(),
+				link, i, j;
+
+			maxHeight = parseInt($this.css('line-height')) | 0;
+			links.each(function() {
+				if ($(this).height() > 0) {
+					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				}
+			});
+
+			if (height <= maxHeight) {
+				if (!wrapped || lastWidth === false || lastWidth >= width) {
+					lastWidth = width;
+					return;
+				}
+			}
+			lastWidth = width;
+
+			if (wrapped) {
+				$this.removeClass('wrapped').find('.crumb.wrapped').removeClass('wrapped ' + classes.join(' '));
+				wrapped = false;
+				if ($this.height() <= maxHeight) {
+					return;
+				}
+			}
+
+			wrapped = true;
+			$this.addClass('wrapped');
+			if ($this.height() <= maxHeight) {
+				return;
+			}
+
+			for (i = 0; i < classesLength; i ++) {
+				for (j = length - 1; j >= 0; j --) {
+					links.eq(j).addClass('wrapped ' + classes[i]);
+					if ($this.height() <= maxHeight) {
+						return;
+					}
+				}
+			}
+		}
+
+		// Run function and set event
+		check();
+		$(window).resize(check);
+	});
+
+	/**
+	* Adjust topiclist lists with check boxes
+	*/
+	container.find('ul.topiclist dd.mark').siblings('dt').children('.list-inner').addClass('with-mark');
+
+	/**
+	* Appends contents of all extra columns to first column in
+	* .topiclist lists for mobile devices. Copies contents as is.
+	*
+	* To add that functionality to .topiclist list simply add
+	* responsive-show-all to list of classes
+	*/
+	container.find('.topiclist.responsive-show-all > li > dl').each(function() {
+		var $this = $(this),
+			block = $this.find('dt .responsive-show:last-child'),
+			first = true;
+
+		// Create block that is visible only on mobile devices
+		if (!block.length) {
+			$this.find('dt > .list-inner').append('<div class="responsive-show" style="display:none;" />');
+			block = $this.find('dt .responsive-show:last-child');
+		}
+		else {
+			first = (block.text().trim().length == 0);
+		}
+
+		// Copy contents of each column
+		$this.find('dd').not('.mark').each(function() {
+			var column = $(this),
+				children = column.children(),
+				html = column.html();
+
+			if (children.length == 1 && children.text() == column.text()) {
+				html = children.html();
+			}
+
+			block.append((first ? '' : '<br />') + html);
+
+			first = false;
+		});
+	});
+
+	/**
+	* Same as above, but prepends text from header to each
+	* column before contents of that column.
+	*
+	* To add that functionality to .topiclist list simply add
+	* responsive-show-columns to list of classes
+	*/
+	container.find('.topiclist.responsive-show-columns').each(function() {
+		var list = $(this),
+			headers = [],
+			headersLength = 0;
+
+		// Find all headers, get contents
+		list.prev('.topiclist').find('li.header dd').not('.mark').each(function() {
+			headers.push($(this).text());
+			headersLength ++;
+		});
+
+		if (!headersLength) {
+			return;
+		}
+
+		// Parse each row
+		list.find('dl').each(function() {
+			var $this = $(this),
+				block = $this.find('dt .responsive-show:last-child'),
+				first = true;
+
+			// Create block that is visible only on mobile devices
+			if (!block.length) {
+				$this.find('dt > .list-inner').append('<div class="responsive-show" style="display:none;" />');
+				block = $this.find('dt .responsive-show:last-child');
+			}
+			else {
+				first = (block.text().trim().length == 0);
+			}
+
+			// Copy contents of each column
+			$this.find('dd').not('.mark').each(function(i) {
+				var column = $(this),
+					children = column.children(),
+					html = column.html();
+
+				if (children.length == 1 && children.text() == column.text()) {
+					html = children.html();
+				}
+
+				// Prepend contents of matching header before contents of column
+				if (i < headersLength) {
+					html = headers[i] + ': <strong>' + html + '</strong>';
+				}
+
+				block.append((first ? '' : '<br />') + html);
+
+				first = false;
+			});
+		});
+	});
+
+	/**
+	* Responsive tables
+	*/
+	container.find('table.table1').not('.not-responsive').each(function() {
+		var $this = $(this),
+			th = $this.find('thead > tr > th'),
+			columns = th.length,
+			headers = [],
+			totalHeaders = 0,
+			i, headersLength;
+
+		// Find each header
+		th.each(function(column) {
+			var cell = $(this),
+				colspan = parseInt(cell.attr('colspan')),
+				dfn = cell.attr('data-dfn'),
+				text = dfn ? dfn : cell.text();
+
+			colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
+
+			for (i=0; i<colspan; i++) {
+				headers.push(text);
+			}
+			totalHeaders ++;
+
+			if (dfn && !column) {
+				$this.addClass('show-header');
+			}
+		});
+		
+		headersLength = headers.length;
+
+		// Add header text to each cell as <dfn>
+		$this.addClass('responsive');
+
+		if (totalHeaders < 2) {
+			$this.addClass('show-header');
+			return;
+		}
+
+		$this.find('tbody > tr').each(function() {
+			var row = $(this),
+				cells = row.children('td'),
+				column = 0;
+
+			if (cells.length == 1) {
+				row.addClass('big-column');
+				return;
+			}
+
+			cells.each(function() {
+				var cell = $(this),
+					colspan = parseInt(cell.attr('colspan')),
+					text = cell.text().trim();
+
+				if (headersLength <= column) {
+					return;
+				}
+
+				if ((text.length && text !== '-') || cell.children().length) {
+					cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
+				}
+				else {
+					cell.addClass('empty');
+				}
+
+				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
+				column += colspan;
+			});
+		});
+	});
+
+	/**
+	* Hide empty responsive tables
+	*/
+	container.find('table.responsive > tbody').each(function() {
+		var items = $(this).children('tr');
+		if (items.length == 0)
+		{
+			$(this).parent('table:first').addClass('responsive-hide');
+		}
+	});
+
+	/**
+	* Responsive link lists
+	*/
+	container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody ul.profile-icons:not([data-skip-responsive])').each(function() {
+		var $this = $(this),
+			$body = $('body'),
+			filterSkip = '.breadcrumbs, [data-skip-responsive]',
+			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
+			allLinks = $this.children(),
+			links = allLinks.not(filterSkip),
+			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+			filterLastList = links.filter(filterLast);
+
+		if (links.is('.rightside'))
+		{
+			links.filter('.rightside:first').before(html);
+		}
+		else
+		{
+			$this.append(html);
+		}
+
+		var item = $this.children('.responsive-menu'),
+			menu = item.find('.dropdown-contents'),
+			lastWidth = false,
+			compact = false,
+			responsive = false,
+			copied = false;
+
+		function check() {
+			var width = $body.width();
+			if (responsive && width <= lastWidth) {
+				return;
+			}
+
+			// Reset responsive and compact layout
+			if (responsive) {
+				responsive = false;
+				$this.removeClass('responsive');
+				links.css('display', '');
+				item.css('display', 'none');
+			}
+
+			if (compact) {
+				compact = false;
+				$this.removeClass('compact');
+			}
+
+			// Find tallest element
+			var maxHeight = 0;
+			allLinks.each(function() {
+				if (!$(this).height()) return;
+				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+			});
+
+			if (maxHeight < 1) {
+				return;
+			}
+
+			// Nothing to resize if block's height is not bigger than tallest element's height
+			if ($this.height() <= maxHeight) {
+				return;
+			}
+
+			// Enable compact layout, find tallest element, compare to height of whole block
+			compact = true;
+			$this.addClass('compact');
+
+			var compactMaxHeight = 0;
+			allLinks.each(function() {
+				if (!$(this).height()) return;
+				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
+			});
+
+			if ($this.height() <= maxHeight) {
+				return;
+			}
+
+			// Compact layout did not resize block enough, switch to responsive layout
+			compact = false;
+			$this.removeClass('compact');
+			responsive = true;
+
+			if (!copied) {
+				var clone = links.clone(true);
+				clone.filter('.rightside').each(function() {
+					menu.prepend(this);
+				});
+				menu.prepend(clone.not('.rightside'));
+				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
+				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+				copied = true;
+			}
+			else {
+				menu.children().css('display', '');
+			}
+
+			item.css('display', '');
+			$this.addClass('responsive');
+
+			// Try to not hide filtered items
+			if (filterLastList.length) {
+				links.not(filterLast).css('display', 'none');
+
+				maxHeight = 0;
+				filterLastList.each(function() {
+					if (!$(this).height()) return;
+					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				});
+
+				if ($this.height() <= maxHeight) {
+					menu.children().filter(filterLast).css('display', 'none');
+					return;
+				}
+			}
+
+			links.css('display', 'none');
+		}
+
+		phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+
+		check();
+		$(window).resize(check);
+	});
+
+	/**
+	* Responsive tabs
+	*/
+	container.find('#tabs, #minitabs').not('[data-skip-responsive]').each(function() {
+		var $this = $(this),
+			$body = $('body'),
+			ul = $this.children(),
+			tabs = ul.children().not('[data-skip-responsive]'),
+			links = tabs.children('a'),
+			item = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
+			menu = item.find('.dropdown-contents'),
+			maxHeight = 0,
+			lastWidth = false,
+			responsive = false;
+
+		links.each(function() {
+			var link = $(this);
+			maxHeight = Math.max(maxHeight, Math.max(link.outerHeight(true), link.parent().outerHeight(true)));
+		})
+
+		function check() {
+			var width = $body.width(),
+				height = $this.height();
+
+			if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
+				return;
+			}
+
+			tabs.show();
+			item.hide();
+
+			lastWidth = width;
+			height = $this.height();
+			if (height <= maxHeight) {
+				responsive = false;
+				if (item.hasClass('dropdown-visible')) {
+					phpbb.toggleDropdown.call(item.find('a.responsive-tab-link').get(0));
+				}
+				return;
+			}
+
+			responsive = true;
+			item.show();
+			menu.html('');
+
+			var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
+				total = availableTabs.length,
+				i, tab;
+
+			for (i = total - 1; i >= 0; i --) {
+				tab = availableTabs.eq(i);
+				menu.prepend(tab.clone(true));
+				tab.hide();
+				if ($this.height() <= maxHeight) {
+					menu.find('a').click(function() { check(true); });
+					return;
+				}
+			}
+			menu.find('a').click(function() { check(true); });
+		}
+
+		phpbb.registerDropdown(item.find('a.responsive-tab-link'), item.find('.dropdown'), {visibleClass: 'activetab'});
+
+		check(true);
+		$(window).resize(check);
+	});
+
+	/**
+	 * Hide UCP/MCP navigation if there is only 1 item
+	 */
+	container.find('#navigation').each(function() {
+		var items = $(this).children('ol, ul').children('li');
+		if (items.length == 1)
+		{
+			$(this).addClass('responsive-hide');
+		}
+	});
+
+	/**
+	* Replace responsive text
+	*/
+	container.find('[data-responsive-text]').each(function() {
+		var $this = $(this),
+			fullText = $this.text(),
+			responsiveText = $this.attr('data-responsive-text'),
+			responsive = false;
+
+		function check() {
+			if ($(window).width() > 700) {
+				if (!responsive) return;
+				$this.text(fullText);
+				responsive = false;
+				return;
+			}
+			if (responsive) return;
+			$this.text(responsiveText);
+			responsive = true;
+		}
+
+		check();
+		$(window).resize(check);
+	});
+}
+
+/**
 * Run onload functions
 */
 (function($) {
@@ -422,412 +964,6 @@ function insert_single_user(formId, user)
 			$('#' + this.getAttribute('data-focus')).focus();
 		});
 
-		// Reset avatar dimensions when changing URL or EMAIL
-		$('input[data-reset-on-edit]').bind('keyup', function() {
-			$(this.getAttribute('data-reset-on-edit')).val('');
-		});
-
-		// Pagination
-		$('a.pagination-trigger').click(function() {
-			jumpto($(this));
-		});
-
-		// Adjust HTML code for IE8 and older versions		
-		var test = document.createElement('div'),
-			oldBrowser = (typeof test.style.borderRadius == 'undefined');
-		delete test;
-
-		if (oldBrowser) {
-			// Fix .linklist.bulletin lists
-			$('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
-
-			// Do not run functions below for old browsers
-			return;
-		}
-
-		// Adjust topiclist lists with check boxes
-		$('ul.topiclist dd.mark').siblings('dt').children('.list-inner').addClass('with-mark');
-
-		// Resize navigation block to keep all links on same line
-		$('.navlinks').each(function() {
-			var $this = $(this),
-				left = $this.children().not('.rightside'),
-				right = $this.children('.rightside');
-
-			if (left.length !== 1 || !right.length) return;
-
-			function resize() {
-				var width = 0,
-					diff = left.outerWidth(true) - left.width();
-
-				right.each(function() {
-					width += $(this).outerWidth(true);
-				});
-				left.css('max-width', Math.floor($this.width() - width - diff) + 'px');
-			}
-
-			resize();
-			$(window).resize(resize);
-		});
-
-		// Responsive breadcrumbs
-		$('.breadcrumbs:not(.skip-responsive, .linklist.leftside .breadcrumbs)').each(function() {
-			var $this = $(this),
-				$body = $('body'),
-				links = $this.find('.crumb'),
-				length = links.length,
-				classes = ['wrapped-wide', 'wrapped-medium', 'wrapped-small'],
-				classesLength = classes.length,
-				maxHeight = 0,
-				lastWidth = false,
-				wrapped = false;
-
-			// Test height by setting nowrap
-			$this.css('white-space', 'nowrap');
-			maxHeight = $this.height() + 1;
-			$this.css('white-space', '');
-
-			// Set tooltips
-			$this.find('a').each(function() {
-				var $link = $(this);
-				$link.attr('title', $link.text());
-			});
-
-			// Funciton that checks breadcrumbs
-			function check() {
-				var height = $this.height(),
-					width = $body.width(),
-					link, i, j;
-
-				if (height <= maxHeight) {
-					if (!wrapped || lastWidth === false || lastWidth >= width) {
-						lastWidth = width;
-						return;
-					}
-				}
-				lastWidth = width;
-
-				if (wrapped) {
-					$this.removeClass('wrapped').find('.crumb.wrapped').removeClass('wrapped ' + classes.join(' '));
-					wrapped = false;
-					if ($this.height() <= maxHeight) {
-						return;
-					}
-				}
-
-				wrapped = true;
-				$this.addClass('wrapped');
-				if ($this.height() <= maxHeight) {
-					return;
-				}
-
-				for (i = 0; i < classesLength; i ++) {
-					for (j = length - 1; j >= 0; j --) {
-						links.eq(j).addClass('wrapped ' + classes[i]);
-						if ($this.height() <= maxHeight) {
-							return;
-						}
-					}
-				}
-			}
-
-			// Run function and set event
-			check();
-			$(window).resize(check);
-		});
-
-		// Responsive tables
-		$('table.table1').not('.not-responsive').each(function() {
-			var $this = $(this),
-				th = $this.find('thead > tr > th'),
-				columns = th.length,
-				headers = [],
-				totalHeaders = 0,
-				i, headersLength;
-
-			// Find each header
-			th.each(function() {
-				var cell = $(this),
-					colspan = parseInt(cell.attr('colspan')),
-					dfn = cell.attr('data-dfn'),
-					text = dfn ? dfn : cell.text();
-
-				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
-
-				for (i=0; i<colspan; i++) {
-					headers.push(text);
-				}
-				totalHeaders ++;
-			});
-			
-			headersLength = headers.length;
-
-			// Add header text to each cell as <dfn>
-			$this.addClass('responsive');
-
-			if (totalHeaders < 2) {
-				$this.addClass('show-header');
-				return;
-			}
-
-			$this.find('tbody > tr').each(function() {
-				var row = $(this),
-					cells = row.children('td'),
-					column = 0;
-
-				if (cells.length == 1) {
-					row.addClass('big-column');
-					return;
-				}
-
-				cells.each(function() {
-					var cell = $(this),
-						colspan = parseInt(cell.attr('colspan')),
-						text = cell.text().trim();
-
-					if (headersLength <= column) {
-						return;
-					}
-
-					if (text.length && text !== '-') {
-						cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
-					}
-					else {
-						cell.addClass('empty');
-					}
-
-					colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
-					column += colspan;
-				});
-			});
-		});
-
-		// Responsive link lists
-		$('.linklist:not(.navlinks, .skip-responsive), .postbody ul.profile-icons:not(.skip-responsive)').each(function() {
-			var $this = $(this),
-				$body = $('body'),
-				links = $this.children().not('.skip-responsive'),
-				html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><ul class="responsive-popup" style="display:none;" /></li>',
-				// List of items that should be hidden last
-				filterString = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .breadcrumbs, .edit-icon, .quote-icon',
-				filtered = links.filter(filterString);
-
-			if (links.is('.rightside'))
-			{
-				links.filter('.rightside:first').before(html);
-			}
-			else
-			{
-				$this.append(html);
-			}
-
-			var toggle = $this.children('.responsive-menu'),
-				toggleLink = toggle.find('a.responsive-menu-link'),
-				menu = toggle.find('ul.responsive-popup'),
-				lastWidth = false,
-				compact = false,
-				responsive = false,
-				copied = false;
-
-			function check() {
-				var width = $body.width();
-				if (responsive && width <= lastWidth) {
-					return;
-				}
-
-				// Reset responsive and compact layout
-				if (responsive) {
-					responsive = false;
-					$this.removeClass('responsive');
-					links.css('display', '');
-					toggle.css('display', 'none');
-				}
-
-				if (compact) {
-					compact = false;
-					$this.removeClass('compact');
-				}
-
-				// Find tallest element
-				var maxHeight = 0;
-				links.each(function() {
-					if (!$(this).height()) return;
-					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-				});
-
-				if (maxHeight < 1) {
-					return;
-				}
-
-				// Nothing to resize if block's height is not bigger than tallest element's height
-				if ($this.height() <= maxHeight) {
-					toggle.removeClass('visible');
-					menu.hide();
-					return;
-				}
-
-				// Enable compact layout, find tallest element, compare to height of whole block
-				compact = true;
-				$this.addClass('compact');
-
-				var compactMaxHeight = 0;
-				links.each(function() {
-					if (!$(this).height()) return;
-					compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
-				});
-
-				if ($this.height() <= maxHeight) {
-					toggle.removeClass('visible');
-					menu.hide();
-					return;
-				}
-
-				// Compact layout did not resize block enough, switch to responsive layout
-				compact = false;
-				$this.removeClass('compact');
-				responsive = true;
-
-				if (!copied) {
-					if (menu.parents().is('.rightside')) {
-						menu.addClass('responsive-rightside');
-					}
-					menu.append(links.clone(true));
-					menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
-					menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
-					copied = true;
-				}
-				else {
-					menu.children().css('display', '');
-				}
-
-				toggle.css('display', '');
-				$this.addClass('responsive');
-
-				// Try to not hide filtered items
-				if (filtered.length) {
-					links.not(filterString).css('display', 'none');
-
-					maxHeight = 0;
-					filtered.each(function() {
-						if (!$(this).height()) return;
-						maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-					});
-
-					if ($this.height() <= maxHeight) {
-						menu.children().filter(filterString).css('display', 'none');
-						return;
-					}
-				}
-
-				links.css('display', 'none');
-			}
-
-			toggleLink.click(function() {
-				if (!responsive) return;
-				if (!toggle.hasClass('visible')) {
-					// Hide other popups
-					$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
-				}
-				toggle.toggleClass('visible');
-				menu.toggle();
-			});
-
-			check();
-			$(window).resize(check);
-		});
-
-		// Responsive tabs
-		$('#tabs, #minitabs').not('.skip-responsive').each(function() {
-			var $this = $(this),
-				$body = $('body'),
-				ul = $this.children(),
-				tabs = ul.children().not('.skip-responsive'),
-				links = tabs.children('a'),
-				toggle = ul.append('<li class="responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link"><span>&nbsp;</span></a><ul class="responsive-tabs" style="display:none;" /></li>').find('li.responsive-tab'),
-				toggleLink = toggle.find('a.responsive-tab-link'),
-				menu = toggle.find('ul.responsive-tabs'),
-				maxHeight = 0,
-				lastWidth = false,
-				responsive = false;
-
-			links.each(function() {
-				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-			})
-
-			function check() {
-				var width = $body.width(),
-					height = $this.height();
-
-				if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
-					return;
-				}
-
-				tabs.show();
-				toggle.hide();
-
-				lastWidth = width;
-				height = $this.height();
-				if (height <= maxHeight) {
-					responsive = false;
-					return;
-				}
-
-				responsive = true;
-				toggle.show();
-				menu.hide().html('');
-
-				var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
-					total = availableTabs.length,
-					i, tab;
-
-				for (i = total - 1; i >= 0; i --) {
-					tab = availableTabs.eq(i);
-					menu.prepend(tab.clone(true));
-					tab.hide();
-					if ($this.height() <= maxHeight) {
-						menu.find('a').click(function() { check(true); });
-						return;
-					}
-				}
-				menu.find('a').click(function() { check(true); });
-			}
-
-			toggleLink.click(function() {
-				if (!responsive) return;
-				menu.toggle();
-			});
-
-			check(true);
-			$(window).resize(check);
-		});
-
-		// Hide responsive menu and tabs
-		$('#phpbb').click(function(e) {
-			var parents = $(e.target).parents();
-			if (!parents.is('.responsive-menu.visible')) {
-				$('.responsive-menu.visible').removeClass('visible').find('.responsive-popup').hide();
-			}
-			if (!parents.is('.responsive-tab')) {
-				$('.responsive-tabs').hide();
-			}
-		});
-
-		// Hide *CP navigation if there is only 1 item
-		$('#navigation').each(function() {
-			var items = $(this).children('ol, ul').children('li');
-			if (items.length == 1)
-			{
-				$(this).addClass('responsive-hide');
-			}
-		});
-
-		// Hide empty responsive tables
-		$('table.responsive > tbody').each(function() {
-			var items = $(this).children('tr');
-			if (items.length == 0)
-			{
-				$(this).parent('table:first').addClass('responsive-hide');
-			}
-		});
+		parse_document($('body'));
 	});
 })(jQuery);

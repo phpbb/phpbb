@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * MSSQL Database Abstraction Layer
 * Minimum Requirement is MSSQL 2000+
 * @package dbal
@@ -259,7 +251,7 @@ class mssql extends \phpbb\db\driver\driver
 		{
 			foreach ($row as $key => $value)
 			{
-				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+				$row[$key] = ($value === ' ' || $value === null) ? '' : $value;
 			}
 		}
 

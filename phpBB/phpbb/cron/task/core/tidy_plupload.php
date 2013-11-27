@@ -10,14 +10,6 @@
 namespace phpbb\cron\task\core;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Cron task for cleaning plupload's temporary upload directory.
 *
 * @package phpBB3

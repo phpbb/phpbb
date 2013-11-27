@@ -1318,18 +1318,12 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
 		}
 
-		if (isset($user->lang['timezones'][$timezone['tz']]))
+		$label = $timezone['tz'];
+		if (isset($user->lang['timezones'][$label]))
 		{
-			$title = $label = $user->lang['timezones'][$timezone['tz']];
+			$label = $user->lang['timezones'][$label];
 		}
-		else
-		{
-			// No label, we'll figure one out
-			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
-
-			$label = implode(' - ', $bits);
-			$title = $timezone['offest'] . ' - ' . $label;
-		}
+		$title = $timezone['offest'] . ' - ' . $label;
 
 		if ($truncate)
 		{
@@ -1478,7 +1472,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
@@ -5365,7 +5358,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
@@ -5393,7 +5385,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> (!empty($user->data['is_registered'])) ? true : false,
 		'S_IS_BOT'				=> (!empty($user->data['is_bot'])) ? true : false,
-		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
@@ -5597,14 +5588,14 @@ function garbage_collection()
 	global $cache, $db;
 	global $phpbb_dispatcher;
 
-	/**
-	* Unload some objects, to free some memory, before we finish our task
-	*
-	* @event core.garbage_collection
-	* @since 3.1-A1
-	*/
 	if (!empty($phpbb_dispatcher))
 	{
+		/**
+		* Unload some objects, to free some memory, before we finish our task
+		*
+		* @event core.garbage_collection
+		* @since 3.1-A1
+		*/
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}
 

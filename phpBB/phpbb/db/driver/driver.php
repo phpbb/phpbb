@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Database Abstraction Layer
 * @package dbal
 */
@@ -824,7 +816,7 @@ class driver
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $phpbb_admin_path, $user;
+		global $cache, $starttime, $phpbb_root_path, $phpbb_path_helper, $user;
 		global $request;
 
 		if (is_object($request) && !$request->variable('explain', false))
@@ -854,7 +846,7 @@ class driver
 					<head>
 						<meta charset="utf-8">
 						<title>SQL Report</title>
-						<link href="' . htmlspecialchars($phpbb_admin_path) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+						<link href="' . htmlspecialchars($phpbb_path_helper->update_web_root_path($phpbb_root_path) . $phpbb_path_helper->get_adm_relative_path()) . 'style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
 					<body id="errorpage">
 					<div id="wrap">

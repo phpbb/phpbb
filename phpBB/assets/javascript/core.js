@@ -12,31 +12,28 @@ var keymap = {
 };
 
 var dark = $('#darkenwrapper');
-var loadingAlert = $('#loadingalert');
+var loadingIndicator = $('#loading_indicator');
 var phpbbAlertTimer = null;
 
+var isTouch = (window && typeof window.ontouchstart !== 'undefined');
 
 /**
  * Display a loading screen
  *
- * @returns object Returns loadingAlert.
+ * @returns object Returns loadingIndicator.
  */
-phpbb.loadingAlert = function() {
-	if (dark.is(':visible')) {
-		loadingAlert.fadeIn(phpbb.alertTime);
-	} else {
-		loadingAlert.show();
-		dark.fadeIn(phpbb.alertTime, function() {
-			// Wait five seconds and display an error if nothing has been returned by then.
-			phpbbAlertTimer = setTimeout(function() {
-				if (loadingAlert.is(':visible')) {
-					phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
-				}
-			}, 5000);
-		});
+phpbb.loadingIndicator = function() {
+	if (!loadingIndicator.is(':visible')) {
+		loadingIndicator.fadeIn(phpbb.alertTime);
+		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		phpbbAlertTimer = setTimeout(function() {
+			if (loadingIndicator.is(':visible')) {
+				phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
+			}
+		}, 15000);
 	}
 
-	return loadingAlert;
+	return loadingIndicator;
 };
 
 /**
@@ -65,6 +62,10 @@ phpbb.alert = function(title, msg, fadedark) {
 	var div = $('#phpbb_alert');
 	div.find('.alert_title').html(title);
 	div.find('.alert_text').html(msg);
+
+	if (!dark.is(':visible')) {
+		dark.fadeIn(phpbb.alertTime);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -97,8 +98,8 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loadingAlert.is(':visible')) {
-		loadingAlert.fadeOut(phpbb.alertTime, function() {
+	if (loadingIndicator.is(':visible')) {
+		loadingIndicator.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
 			div.fadeIn(phpbb.alertTime);
 		});
@@ -130,6 +131,10 @@ phpbb.alert = function(title, msg, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var div = $('#phpbb_confirm');
 	div.find('.alert_text').html(msg);
+
+	if (!dark.is(':visible')) {
+		dark.fadeIn(phpbb.alertTime);
+	}
 
 	div.bind('click', function(e) {
 		e.stopPropagation();
@@ -184,8 +189,8 @@ phpbb.confirm = function(msg, callback, fadedark) {
 		e.preventDefault();
 	});
 
-	if (loadingAlert.is(':visible')) {
-		loadingAlert.fadeOut(phpbb.alertTime, function() {
+	if (loadingIndicator.is(':visible')) {
+		loadingIndicator.fadeOut(phpbb.alertTime, function() {
 			dark.append(div);
 			div.fadeIn(phpbb.alertTime);
 		});
@@ -326,12 +331,12 @@ phpbb.ajaxify = function(options) {
 				// If confirmation is required, display a dialog to the user.
 				phpbb.confirm(res.MESSAGE_BODY, function(del) {
 					if (del) {
-						phpbb.loadingAlert();
+						phpbb.loadingIndicator();
 						data =  $('<form>' + res.S_HIDDEN_FIELDS + '</form>').serialize();
 						$.ajax({
 							url: res.S_CONFIRM_ACTION,
 							type: 'POST',
-							data: data + '&confirm=' + res.YES_VALUE,
+							data: data + '&confirm=' + res.YES_VALUE + '&' + $('#phpbb_confirm form').serialize(),
 							success: returnHandler,
 							error: errorHandler
 						});
@@ -369,15 +374,18 @@ phpbb.ajaxify = function(options) {
 		}
 
 		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
-			phpbb.loadingAlert();
+			phpbb.loadingIndicator();
 		}
 
-		$.ajax({
+		var request = $.ajax({
 			url: action,
 			type: method,
 			data: data,
 			success: returnHandler,
 			error: errorHandler
+		});
+		request.always(function() {
+			loadingIndicator.fadeOut(phpbb.alertTime);
 		});
 
 		event.preventDefault();
@@ -616,8 +624,9 @@ phpbb.resizeTextArea = function(items, options) {
 		resetCallback: function(item) { }
 	};
 
-	if (arguments.length > 1)
-	{
+	if (isTouch) return;
+
+	if (arguments.length > 1) {
 		configuration = $.extend(configuration, options);
 	}
 
@@ -830,11 +839,236 @@ phpbb.applyCodeEditor = function(textarea) {
 };
 
 /**
+* List of classes that toggle dropdown menu,
+* list of classes that contain visible dropdown menu
+*
+* Add your own classes to strings with comma (probably you
+* will never need to do that)
+*/
+phpbb.dropdownHandles = '.dropdown-container.dropdown-visible .dropdown-toggle';
+phpbb.dropdownVisibleContainers = '.dropdown-container.dropdown-visible';
+
+/**
+* Dropdown toggle event handler
+* This handler is used by phpBB.registerDropdown() and other functions
+*/
+phpbb.toggleDropdown = function() {
+	var $this = $(this),
+		options = $this.data('dropdown-options'),
+		parent = options.parent,
+		visible = parent.hasClass('dropdown-visible');
+
+	if (!visible) {
+		// Hide other dropdown menus
+		$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
+
+		// Figure out direction of dropdown
+		var direction = options.direction,
+			verticalDirection = options.verticalDirection,
+			offset = $this.offset();
+
+		if (direction == 'auto') {
+			if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
+				direction = 'right';
+			}
+			else {
+				direction = 'left';
+			}
+		}
+		parent.toggleClass(options.leftClass, direction == 'left').toggleClass(options.rightClass, direction == 'right');
+
+		if (verticalDirection == 'auto') {
+			var height = $(window).height(),
+				top = offset.top - $(window).scrollTop();
+
+			if (top < height * 0.7) {
+				verticalDirection = 'down';
+			}
+			else {
+				verticalDirection = 'up';
+			}
+		}
+		parent.toggleClass(options.upClass, verticalDirection == 'up').toggleClass(options.downClass, verticalDirection == 'down');
+	}
+
+	options.dropdown.toggle();
+	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
+
+	// Check dimensions when showing dropdown
+	// !visible because variable shows state of dropdown before it was toggled
+	if (!visible) {
+		options.dropdown.find('.dropdown-contents').each(function() {
+			var $this = $(this),
+				windowWidth = $(window).width();
+
+			$this.css({
+				marginLeft: 0,
+				left: 0,
+				maxWidth: (windowWidth - 4) + 'px'
+			});
+
+			var offset = $this.offset().left,
+				width = $this.outerWidth(true);
+
+			if (offset < 2) {
+				$this.css('left', (2 - offset) + 'px');
+			}
+			else if ((offset + width + 2) > windowWidth) {
+				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
+			}
+		});
+	}
+
+	// Prevent event propagation
+	if (arguments.length > 0) {
+		try {
+			var e = arguments[0];
+			e.preventDefault();
+			e.stopPropagation();
+		}
+		catch (error) { }
+	}
+	return false;
+};
+
+/**
+* Register dropdown menu
+* Shows/hides dropdown, decides which side to open to
+*
+* @param {jQuery} toggle Link that toggles dropdown.
+* @param {jQuery} dropdown Dropdown menu.
+* @param {Object} options List of options. Optional.
+*/
+phpbb.registerDropdown = function(toggle, dropdown, options)
+{
+	var ops = {
+			parent: toggle.parent(), // Parent item to add classes to
+			direction: 'auto', // Direction of dropdown menu. Possible values: auto, left, right
+			verticalDirection: 'auto', // Vertical direction. Possible values: auto, up, down
+			visibleClass: 'visible', // Class to add to parent item when dropdown is visible
+			leftClass: 'dropdown-left', // Class to add to parent item when dropdown opens to left side
+			rightClass: 'dropdown-right', // Class to add to parent item when dropdown opens to right side
+			upClass: 'dropdown-up', // Class to add to parent item when dropdown opens above menu item
+			downClass: 'dropdown-down' // Class to add to parent item when dropdown opens below menu item
+		};
+	if (options) {
+		ops = $.extend(ops, options);
+	}
+	ops.dropdown = dropdown;
+
+	ops.parent.addClass('dropdown-container');
+	toggle.addClass('dropdown-toggle');
+
+	toggle.data('dropdown-options', ops);
+
+	toggle.click(phpbb.toggleDropdown);
+};
+
+/**
+* Get the HTML for a color palette table.
+*
+* @param string dir Palette direction - either v or h
+* @param int width Palette cell width.
+* @param int height Palette cell height.
+*/
+phpbb.colorPalette = function(dir, width, height) {
+	var r = 0, 
+		g = 0, 
+		b = 0,
+		numberList = new Array(6),
+		color = '',
+		html = '';
+
+	numberList[0] = '00';
+	numberList[1] = '40';
+	numberList[2] = '80';
+	numberList[3] = 'BF';
+	numberList[4] = 'FF';
+
+	html += '<table style="width: auto;">';
+
+	for (r = 0; r < 5; r++) {
+		if (dir == 'h') {
+			html += '<tr>';
+		}
+
+		for (g = 0; g < 5; g++) {
+			if (dir == 'v') {
+				html += '<tr>';
+			}
+
+			for (b = 0; b < 5; b++) {
+				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
+				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' + height + 'px;">';
+				html += '<a href="#" data-color="' + color + '" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
+				html += '</td>';
+			}
+
+			if (dir == 'v') {
+				html += '</tr>';
+			}
+		}
+
+		if (dir == 'h') {
+			html += '</tr>';
+		}
+	}
+	html += '</table>';
+	return html;
+}
+
+/**
+* Register a color palette.
+*
+* @param object el jQuery object for the palette container.
+*/
+phpbb.registerPalette = function(el) {
+	var	orientation	= el.attr('data-orientation'),
+		height		= el.attr('data-height'),
+		width		= el.attr('data-width'),
+		target		= el.attr('data-target'),
+		bbcode		= el.attr('data-bbcode');
+
+	// Insert the palette HTML into the container.
+	el.html(phpbb.colorPalette(orientation, width, height));
+
+	// Add toggle control.
+	$('#color_palette_toggle').click(function(e) {
+		el.toggle();
+		e.preventDefault();
+	});
+
+	// Attach event handler when a palette cell is clicked.
+	$(el).on('click', 'a', function(e) {
+		var color = $(this).attr('data-color');
+
+		if (bbcode) {
+			bbfontstyle('[color=#' + color + ']', '[/color]');
+		} else {
+			$(target).val(color);
+		}
+		e.preventDefault();
+	});
+}
+
+/**
 * Apply code editor to all textarea elements with data-bbcode attribute
 */
 $(document).ready(function() {
 	$('textarea[data-bbcode]').each(function() {
 		phpbb.applyCodeEditor(this);
+	});
+
+	// Hide active dropdowns when click event happens outside
+	$('body').click(function(e) {
+		var parents = $(e.target).parents();
+		if (!parents.is(phpbb.dropdownVisibleContainers)) {
+			$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
+		}
+	});
+
+	$('#color_palette_placeholder').each(function() {
+		phpbb.registerPalette($(this));
 	});
 });
 

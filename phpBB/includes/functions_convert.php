@@ -823,7 +823,7 @@ function get_avatar_dim($src, $axis, $func = false, $arg1 = false, $arg2 = false
 		break;
 
 		case AVATAR_REMOTE:
-			 // see notes on this functions usage and (hopefully) model $func to avoid this accordingly
+			// see notes on this functions usage and (hopefully) model $func to avoid this accordingly
 			return get_remote_avatar_dim($src, $axis);
 		break;
 
@@ -1027,7 +1027,6 @@ function set_user_options()
 		'attachsig'		=> array('bit' => 6, 'default' => 0),
 		'bbcode'		=> array('bit' => 8, 'default' => 1),
 		'smilies'		=> array('bit' => 9, 'default' => 1),
-		'popuppm'		=> array('bit' => 10, 'default' => 0),
 		'sig_bbcode'	=> array('bit' => 15, 'default' => 1),
 		'sig_smilies'	=> array('bit' => 16, 'default' => 1),
 		'sig_links'		=> array('bit' => 17, 'default' => 1),
@@ -1117,7 +1116,7 @@ function words_unique(&$words)
 * Adds a user to the specified group and optionally makes them a group leader
 * This function does not create the group if it does not exist and so should only be called after the groups have been created
 */
-function add_user_group($group_id, $user_id, $group_leader=false)
+function add_user_group($group_id, $user_id, $group_leader = false)
 {
 	global $convert, $phpbb_root_path, $config, $user, $db;
 
@@ -1297,7 +1296,7 @@ function restore_config($schema)
 				$src_ary = $schema['array_name'];
 				$config_value = (isset($convert_config[$src_ary][$src])) ? $convert_config[$src_ary][$src] : '';
 			}
-   		}
+		}
 
 		if ($config_value !== '')
 		{
@@ -1719,7 +1718,7 @@ function add_default_groups()
 		'GUESTS'			=> array('', 0, 0),
 		'REGISTERED'		=> array('', 0, 0),
 		'REGISTERED_COPPA'	=> array('', 0, 0),
-		'GLOBAL_MODERATORS'	=> array('00AA00', 1, 0),
+		'GLOBAL_MODERATORS'	=> array('00AA00', 2, 0),
 		'ADMINISTRATORS'	=> array('AA0000', 1, 1),
 		'BOTS'				=> array('9E8DA7', 0, 0),
 		'NEWLY_REGISTERED'		=> array('', 0, 0),
@@ -1748,13 +1747,45 @@ function add_default_groups()
 			'group_type'			=> GROUP_SPECIAL,
 			'group_colour'			=> (string) $data[0],
 			'group_legend'			=> (int) $data[1],
-			'group_founder_manage'	=> (int) $data[2]
+			'group_founder_manage'	=> (int) $data[2],
 		);
 	}
 
 	if (sizeof($sql_ary))
 	{
 		$db->sql_multi_insert(GROUPS_TABLE, $sql_ary);
+	}
+}
+
+function add_groups_to_teampage()
+{
+	global $db;
+
+	$teampage_groups = array(
+		'ADMINISTRATORS'	=> 1,
+		'GLOBAL_MODERATORS'	=> 2,
+	);
+
+	$sql = 'SELECT *
+		FROM ' . GROUPS_TABLE . '
+		WHERE ' . $db->sql_in_set('group_name', array_keys($teampage_groups));
+	$result = $db->sql_query($sql);
+
+	$teampage_ary = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$teampage_ary[] = array(
+			'group_id'				=> (int) $row['group_id'],
+			'teampage_name'			=> '',
+			'teampage_position'		=> (int) $teampage_groups[$row['group_name']],
+			'teampage_parent'		=> 0,
+		);
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($teampage_ary))
+	{
+		$db->sql_multi_insert(TEAMPAGE_TABLE, $teampage_ary);
 	}
 }
 

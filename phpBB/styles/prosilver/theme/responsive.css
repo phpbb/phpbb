@@ -17,7 +17,7 @@ body {
 }
 
 #wrap {
-	min-width: 320px;
+	min-width: 300px;
 	padding: 0;
 }
 
@@ -133,33 +133,10 @@ ul.topiclist.forums dt, ul.topiclist.topics dt {
 }
 ul.topiclist.forums dt .list-inner, ul.topiclist.topics dt .list-inner {
 	margin-right: 250px;
-	padding-bottom: 18px;
 }
 
 ul.topiclist.forums dd.lastpost, ul.topiclist.topics dd.lastpost {
 	display: block;
-}
-
-ul.topiclist.forums dd.topics, ul.topiclist.topics dd.posts {
-	display: block;
-	position: absolute;
-	left: 45px;
-	right: 0;
-	bottom: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	min-height: 0;
-	height: auto;
-	border-width: 0;
-	margin: 0;
-	padding: 5px 0;
-	width: auto;
-	min-width: 0;
-	text-align: left;
-	font-weight: bold;
-	font-size: 1.2em;
-	line-height: 1em;
 }
 
 ul.topiclist dd.mark {
@@ -196,6 +173,19 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 	}
 }
 
+li.row .responsive-show strong {
+	font-weight: bold;
+	color: inherit;
+}
+
+ul.topiclist li.row dt a.subforum {
+	display: inline-block;
+	vertical-align: bottom;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 100px;
+}
+
 /* Notifications list
 ----------------------------------------*/
 @media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
@@ -211,39 +201,10 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 	margin: 5px 0;
 }
 
-/* *CP navigation
-----------------------------------------*/
-.nojs #tabs a span, .nojs #minitabs a span {
-	max-width: 40px; 
-	overflow: hidden;
-	text-overflow: ellipsis;
-	letter-spacing: -.5px;
-}
-
-#cp-menu, #navigation, #cp-main {
-	float: none;
-	width: auto;
-	margin: 0;
-}
-
-#navigation { 
-	padding: 0; 
-	margin: 0 auto;
-	max-width: 320px;
-}
-
-#navigation a {
-	background-image: none;
-}
-
-#navigation li:first-child a {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-}
-
-#navigation li:last-child a {
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
+.pagination li a, .pagination li span {
+	min-width: 10px;
+	display: inline-block;
+	text-align: center;
 }
 
 /* Responsive tables
@@ -260,6 +221,10 @@ table.responsive.show-header thead, table.responsive.show-header th:first-child 
 	display: block;
 	width: auto !important;
 	text-align: left !important;
+}
+
+table.responsive.show-header th:first-child span.rank-img {
+	display: none;
 }
 
 table.responsive tr {
@@ -355,6 +320,43 @@ dl.pmlist dd:first-of-type {
 	display: inline-block !important;
 }
 
+fieldset.quick-login label {
+	display: block;
+	margin-bottom: 5px;
+	white-space: normal;
+}
+
+fieldset.quick-login label > span {
+	display: inline-block;
+	min-width: 100px;
+}
+
+fieldset.quick-login input.inputbox {
+	width: 85%;
+	max-width: 300px;
+	margin-left: 20px;
+}
+
+fieldset.quick-login label[for="autologin"] {
+	display: inline-block;
+	text-align: right;
+	min-width: 50%;
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+{
+	select, .inputbox {
+		max-width: 260px;
+	}
+}
+
+@media only screen and (max-width: 320px), only screen and (max-device-width: 320px)
+{
+	select, .inputbox {
+		max-width: 240px;
+	}
+}
+
 /* User profile
 ----------------------------------------*/
 .column1, .column2, .left-box.profile-details {
@@ -438,6 +440,14 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	max-height: 32px;
 }
 
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 1.5dppx)
+{
+	/* Scale online image for HD displays */
+	.online {
+		background-size: 40px;
+	}
+}
+
 /* Misc stuff
 ----------------------------------------*/
 h2 {
@@ -468,6 +478,12 @@ fieldset.quickmod {
 	text-align: center;
 }
 
+fieldset.display-options label {
+	display: block;
+	clear: both;
+	margin-bottom: 5px;
+}
+
 dl.mini dd.pm-legend {
 	float: left;
 	min-width: 200px;
@@ -480,6 +496,11 @@ dl.mini dd.pm-legend {
 
 fieldset.display-actions {
 	white-space: normal;
+}
+
+.phpbb_alert {
+	max-width: none;
+	margin: 0 25px;
 }
 
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)

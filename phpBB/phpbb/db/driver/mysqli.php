@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * MySQLi Database Abstraction Layer
 * mysqli-extension has to be compiled with:
 * MySQL 4.1+ or MySQL 5.0+
@@ -31,7 +23,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false , $new_link = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		if (!function_exists('mysqli_connect'))
 		{
@@ -47,11 +39,11 @@ class mysqli extends \phpbb\db\driver\mysql_base
 		$this->server = ($this->persistency) ? 'p:' . (($sqlserver) ? $sqlserver : 'localhost') : $sqlserver;
 
 		$this->dbname = $database;
-		$port = (!$port) ? NULL : $port;
+		$port = (!$port) ? null : $port;
 
 		// If port is set and it is not numeric, most likely mysqli socket is set.
 		// Try to map it to the $socket parameter.
-		$socket = NULL;
+		$socket = null;
 		if ($port)
 		{
 			if (is_numeric($port))
@@ -61,7 +53,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			else
 			{
 				$socket = $port;
-				$port = NULL;
+				$port = null;
 			}
 		}
 

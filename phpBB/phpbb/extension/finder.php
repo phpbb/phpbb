@@ -10,14 +10,6 @@
 namespace phpbb\extension;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The extension finder provides a simple way to locate files in active extensions
 *
 * @package extension

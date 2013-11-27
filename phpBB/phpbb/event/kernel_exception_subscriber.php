@@ -9,14 +9,6 @@
 
 namespace phpbb\event;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -71,7 +63,6 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		));
 
 		page_footer(true, false, false);
-
 
 		$status_code = $exception instanceof HttpException ? $exception->getStatusCode() : 500;
 		$response = new Response($this->template->assign_display('body'), $status_code);

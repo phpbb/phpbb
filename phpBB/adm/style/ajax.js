@@ -2,13 +2,6 @@
 
 "use strict";
 
-var imgTemplates = {
-	up: $('.template-up-img'),
-	upDisabled: $('.template-up-img-disabled'),
-	down: $('.template-down-img'),
-	downDisabled: $('.template-down-img-disabled')
-};
-
 /**
  * The following callbacks are for reording items. row_down
  * is triggered when an item is moved down, and row_up is triggered when
@@ -20,43 +13,7 @@ phpbb.addAjaxCallback('row_down', function() {
 		tr = el.parents('tr'),
 		trSwap = tr.next();
 
-	/*
-	* If the element was the first one, we have to:
-	* - Add the up-link to the row we moved
-	* - Remove the up-link on the next row
-	*/
-	if (tr.is(':first-child')) {
-		var upImg = imgTemplates.up.clone().attr('href', tr.attr('data-up'));
-		tr.find('.up').html(upImg);
-
-		phpbb.ajaxify({
-			selector: tr.find('.up').children('a'),
-			callback: 'row_up',
-			overlay: false
-		});
-
-		trSwap.find('.up').html(imgTemplates.upDisabled.clone());
-	}
-
 	tr.insertAfter(trSwap);
-
-	/*
-	* As well as:
-	* - Remove the down-link on the moved row, if it is now the last row
-	* - Add the down-link to the next row, if it was the last row
-	*/
-	if (tr.is(':last-child')) {
-		tr.find('.down').html(imgTemplates.downDisabled.clone());
-
-		var downImg = imgTemplates.down.clone().attr('href', trSwap.attr('data-down'));
-		trSwap.find('.down').html(downImg);
-
-		phpbb.ajaxify({
-			selector: trSwap.find('.down').children('a'),
-			callback: 'row_down',
-			overlay: false
-		});
-	}
 });
 
 phpbb.addAjaxCallback('row_up', function() {
@@ -64,43 +21,7 @@ phpbb.addAjaxCallback('row_up', function() {
 		tr = el.parents('tr'),
 		trSwap = tr.prev();
 
-	/*
-	* If the element was the last one, we have to:
-	* - Add the down-link to the row we moved
-	* - Remove the down-link on the next row
-	*/
-	if (tr.is(':last-child')) {
-		var downImg = imgTemplates.down.clone().attr('href', tr.attr('data-down'));
-		tr.find('.down').html(downImg);
-
-		phpbb.ajaxify({
-			selector: tr.find('.down').children('a'),
-			callback: 'row_down',
-			overlay: false
-		});
-
-		trSwap.find('.down').html(imgTemplates.downDisabled.clone());
-	}
-
 	tr.insertBefore(trSwap);
-
-	/*
-	* As well as:
-	* - Remove the up-link on the moved row, if it is now the first row
-	* - Add the up-link to the previous row, if it was the first row
-	*/
-	if (tr.is(':first-child')) {
-		tr.find('.up').html(imgTemplates.upDisabled.clone());
-
-		var upImg = imgTemplates.up.clone().attr('href', trSwap.attr('data-up'));
-		trSwap.find('.up').html(upImg);
-
-		phpbb.ajaxify({
-			selector: trSwap.find('.up').children('a'),
-			callback: 'row_up',
-			overlay: false
-		});
-	}
 });
 
 /**

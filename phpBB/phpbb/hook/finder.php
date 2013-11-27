@@ -10,14 +10,6 @@
 namespace phpbb\hook;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The hook finder locates installed hooks.
 *
 * @package phpBB3

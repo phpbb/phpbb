@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Topic feed for a specific topic
 *
 * This will give you the last {$this->num_items} posts made within this topic.

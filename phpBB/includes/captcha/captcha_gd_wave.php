@@ -86,7 +86,7 @@ class captcha
 
 		$fontcolors[0] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
 
- 		$colors = array();
+		$colors = array();
 
 		$minr = mt_rand(20, 30);
 		$ming = mt_rand(20, 30);
@@ -184,7 +184,7 @@ class captcha
 
 			for ($x = 1; $x <= $full_x; ++$x)
 			{
-				$cur_height		= $this->wave_height($x, $y, $subdivision_factor) + $this->grid_height($x, $y, 1, $x_grid, $y_grid);
+				$cur_height		= $this->wave_height($x, $y, $subdivision_factor) + $this->grid_height($x, $y, $x_grid, $y_grid, 1);
 
 				// height is a z-factor, not a y-factor
 				$offset			= $cur_height - $prev_height;
@@ -264,7 +264,7 @@ class captcha
 		return ((sin($x / (3 * $factor)) + sin($y / (3 * $factor))) * 10 * $tweak);
 	}
 
-	function grid_height($x, $y, $factor = 1, $x_grid, $y_grid)
+	function grid_height($x, $y, $x_grid, $y_grid, $factor = 1)
 	{
 		return ((!($x % ($x_grid * $factor)) || !($y % ($y_grid * $factor))) ? 3 : 0);
 	}
