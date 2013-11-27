@@ -112,6 +112,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_WRONG_FILESIZE'			=> 'The avatar’s filesize must be between 0 and %1d %2s.',
 	'AVATAR_WRONG_SIZE'				=> 'The submitted avatar is %5$s wide and %6$s high. Avatars must be at least %1$s wide and %2$s high, but no larger than %3$s wide and %4$s high.',
 
+	'B'						=> 'B', // Short for Bytes
 	'BACK_TO_TOP'			=> 'Top',
 	'BACK_TO_PREV'			=> 'Back to previous page',
 	'BAN_TRIGGERED_BY_EMAIL'=> 'A ban has been issued on your email address.',
