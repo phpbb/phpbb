@@ -26,26 +26,33 @@
 			<table class="table1 zebra-list">
 				<thead>
 					<tr>
-						<th class="attach-name">{LA_PLUPLOAD_FILENAME}</th>
+						<th class="attach-name">{L_PLUPLOAD_FILENAME}</th>
 						<th class="attach-comment">{L_FILE_COMMENT}</th>
 						<th class="attach-filesize">{L_PLUPLOAD_SIZE}</th>
 						<th class="attach-status">{L_PLUPLOAD_STATUS}</th>
 					</tr>
 				</thead>
-				<tbody id="file-list">
+				<tbody class="responsive-skip-empty" id="file-list">
 					<tr class="attach-row" id="attach-row-tpl">
 							<td class="attach-name">
+								<dfn style="display: none;">{L_PLUPLOAD_FILENAME}</dfn>
 								<span class="file-name"></span>
 								<span class="attach-controls">
 									<input type="button" value="{L_PLACE_INLINE}" class="button2 hidden file-inline-bbcode" />&nbsp;
 									<input type="button" value="{L_DELETE_FILE}" class="button2 file-delete" />
 								</span>
+								<span class="clear"></span>
 							</td>
 							<td class="attach-comment">
+								<dfn style="display: none;">{L_FILE_COMMENT}</dfn>
 								<textarea rows="1" cols="30" class="inputbox"></textarea>
 							</td>
-							<td class="attach-filesize file-size"></td>
+							<td class="attach-filesize">
+								<dfn style="display: none;">{L_PLUPLOAD_SIZE}</dfn>
+								<span class="file-size"></span>
+							</td>
 							<td class="attach-status">
+								<dfn style="display: none;">{L_PLUPLOAD_STATUS}</dfn>
 								<span class="file-progress">
 									<span class="file-progress-bar"></span>
 								</span>
@@ -60,12 +67,15 @@
 									<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" onclick="attach_inline({attach_row.ASSOC_INDEX}, '{attach_row.A_FILENAME}');" class="button2 file-inline-bbcode" />&nbsp; <!-- ENDIF -->
 									<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button2 file-delete" />
 								</span>
+								<span class="clear"></span>
 							</td>
 							<td class="attach-comment">
 								<textarea name="comment_list[{attach_row.ASSOC_INDEX}]" rows="1" cols="30" class="inputbox">{attach_row.FILE_COMMENT}</textarea>
 								{attach_row.S_HIDDEN}
 							</td>
-							<td class="attach-filesize file-size">{attach_row.FILESIZE}</td>
+							<td class="attach-filesize">
+								<span class="file-size">{attach_row.FILESIZE}</span>
+							</td>
 							<td class="attach-status">
 								<span class="file-status file-uploaded"></span>
 							</td>
