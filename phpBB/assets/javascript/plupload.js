@@ -588,6 +588,9 @@ uploader.bind('FilesAdded', function(up, files) {
 		$('#file-total-progress-bar').css('width', up.total.percent + '%');
 	});
 
+	// Do not allow more files to be added to the running queue.
+	phpbb.plupload.disableUploader();
+
 	// Start uploading the files once the user has selected them.
 	up.start();
 });
@@ -659,6 +662,9 @@ uploader.bind('UploadComplete', function(up, files) {
 			$(this).css('width', 0).show();
 		});
 	}, 2000);
+
+	// Re-enable the uploader
+	phpbb.plupload.enableUploader();
 });
 
 })(jQuery); // Avoid conflicts with other libraries
