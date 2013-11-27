@@ -142,15 +142,17 @@ phpbb.plupload.setData = function(data) {
 /**
  * Update the attachment data in the HTML and the phpbb & phpbb.plupload objects.
  * 
- * @param array data	Array containing the new data to use.
- * @param string action	The action that required the update. Used to update the inline attachment bbcodes.
- * @param int index		The index from phpbb.plupload_ids that was affected by the action.
+ * @param array data		Array containing the new data to use.
+ * @param string action		The action that required the update. Used to update the inline attachment bbcodes.
+ * @param int index			The index from phpbb.plupload_ids that was affected by the action.
+ * @param array downloadUrl	Optional array of download urls to update.
  * @return undefined
  */
-phpbb.plupload.update = function (data, action, index) {
+phpbb.plupload.update = function (data, action, index, downloadUrl) {
+
 	phpbb.plupload.updateBbcode(action, index);
 	phpbb.plupload.setData(data);
-	phpbb.plupload.updateRows();
+	phpbb.plupload.updateRows(downloadUrl);
 	phpbb.plupload.clearParams();
 	phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 };
@@ -158,11 +160,12 @@ phpbb.plupload.update = function (data, action, index) {
 /**
  * Update the relevant elements and hidden data for all attachments.
  * 
+ * @param array downloadUrl	Optional array of download urls to update.
  * @return undefined
  */
-phpbb.plupload.updateRows = function () {
+phpbb.plupload.updateRows = function (downloadUrl) {
 	for (var i = 0; i < phpbb.plupload.ids.length; i++) {
-		phpbb.plupload.updateRow(i);
+		phpbb.plupload.updateRow(i, downloadUrl);
 	}
 };
 
@@ -193,11 +196,21 @@ phpbb.plupload.insertRow = function(file) {
  * Update the relevant elements and hidden data for an attachment.
  * 
  * @param int index	The index from phpbb.plupload.ids of the attachment to edit.
+ * @param array downloadUrl	Optional array of download urls to update. 
  * @return undefined
  */
-phpbb.plupload.updateRow = function (index) {
-	var attach = phpbb.plupload.data[index];
-	var row = $('[data-attach-id="' + attach.attach_id + '"]');
+phpbb.plupload.updateRow = function (index, downloadUrl) {
+	var attach = phpbb.plupload.data[index],
+		row = $('[data-attach-id="' + attach.attach_id + '"]');
+
+	// Add the link to the file
+	if (typeof downloadUrl !== 'undefined' && typeof downloadUrl[index] !== 'undefined') {
+		var url = downloadUrl[index].replace('&amp;', '&'),
+			link = $('<a></a>');
+
+		link.attr('href', url).html(attach.real_filename);
+		row.find('.file-name').html(link)	
+	}
 
 	row.find('textarea').attr('name', 'comment_list[' + index + ']');
 	row.find('.file-inline-bbcode').attr('onclick', 'attach_inline(' + index + ',\'' + attach.real_filename + '\');');
@@ -637,12 +650,12 @@ uploader.bind('FileUploaded', function(up, file, response) {
 	if (typeof error !== 'undefined') {
 		phpbb.plupload.fileError(file, error);
 	} else if (file.status === plupload.DONE) {
-		file.attachment_data = json[0];
+		file.attachment_data = json['data'][0];
 
 		row.attr('data-attach-id', file.attachment_data.attach_id);
 		row.find('.file-inline-bbcode').show();
 		row.find('.file-status').addClass('file-uploaded');
-		phpbb.plupload.update(json, 'addition', 0);
+		phpbb.plupload.update(json['data'], 'addition', 0, [json['download_url']]);
 	}
 });
 

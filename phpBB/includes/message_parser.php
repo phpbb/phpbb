@@ -1582,8 +1582,10 @@ class parse_message extends bbcode_firstpass
 
 						if (isset($this->plupload) && $this->plupload->is_active())
 						{
+							$download_url = append_sid("{$phpbb_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
+
 							// Send the client the attachment data to maintain state
-							$json_response->send($this->attachment_data);
+							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));
 						}
 					}
 				}
