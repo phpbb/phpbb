@@ -13,6 +13,13 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.config.get:
+        class: phpbb\console\command\config\get
+        arguments:
+            - @config
+        tags:
+            - { name: console.command }
+
     console.command.config.set:
         class: phpbb\console\command\config\set
         arguments:

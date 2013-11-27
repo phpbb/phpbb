@@ -13,28 +13,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class increment extends command
+class get extends command
 {
 	protected function configure()
 	{
 		$this
-			->setName('config:increment')
-			->setDescription("Sets a configuration option's value")
+			->setName('config:get')
+			->setDescription("Gets a configuration option's value")
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
 				"The configuration option's name"
-			)
-			->addArgument(
-				'increment',
-				InputArgument::REQUIRED,
-				'Amount to increment by'
-			)
-			->addOption(
-				'dynamic',
-				'd',
-				InputOption::VALUE_NONE,
-				'Set this option if the configuration option changes too frequently to be efficiently cached.'
 			)
 		;
 	}
@@ -42,11 +31,14 @@ class increment extends command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$key = $input->getArgument('key');
-		$increment = $input->getArgument('increment');
-		$use_cache = !$input->getOption('dynamic');
 
-		$this->config->increment($key, $increment, $use_cache);
-
-		$output->writeln("<info>Successfully incremented config $key</info>");
+		if (isset($this->config[$key]))
+		{
+			$output->writeln("<info>{$this->config[$key]}</info>");
+		}
+		else
+		{
+			$output->writeln("<error>Could not get config $key</error>");
+		}
 	}
 }
