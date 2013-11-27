@@ -563,6 +563,11 @@ uploader.bind('ChunkUploaded', function(up, file, response) {
 		});
 	}
 
+	// If trigger_error() was called, then a permission error likely occurred.
+	if (typeof json.title !== 'undefined') {
+		json.error = {message: json.message};
+	}
+
 	if (json.error) {
 		file.status = plupload.FAILED;
 		up.trigger('FileUploaded', file, {
