@@ -168,6 +168,14 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_upload.html';
+	}
+
+	/**
 	* Check if user is able to upload an avatar
 	*
 	* @return bool True if user can upload, false if not

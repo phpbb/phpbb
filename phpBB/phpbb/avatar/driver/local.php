@@ -135,6 +135,14 @@ class local extends \phpbb\avatar\driver\driver
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_local.html';
+	}
+
+	/**
 	* Get a list of avatars that are locally available
 	* Results get cached for 24 hours (86400 seconds)
 	*
