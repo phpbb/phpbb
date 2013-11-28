@@ -281,8 +281,9 @@ function user_add($user_row, $cp_data = false)
 			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 		}
 
+		$cp = new custom_profile();
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
-			$db->sql_build_array('INSERT', custom_profile::build_insert_sql_array($cp_data));
+			$db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 		$db->sql_query($sql);
 	}
 
