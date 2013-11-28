@@ -26,6 +26,11 @@ phpbb.plupload.initialize = function() {
 
 	// Initialize the Plupload uploader.
 	uploader.init();
+
+	// Point out the drag-and-drop zone if it's supported.
+	if (!uploader.features.dragdrop) {
+		$('#drag-n-drop-message').show();
+	}
 };
 
 /**

@@ -42,6 +42,7 @@ $lang = array_merge($lang, array(
 	'PLUPLOAD_CLOSE'			=> 'Close',
 	'PLUPLOAD_DRAG'				=> 'Drag files here.',
 	'PLUPLOAD_DUPLICATE_ERROR'	=> 'Duplicate file error.',
+	'PLUPLOAD_DRAG_TEXTAREA'	=> 'You may also attach files by dragging and dropping them in the message box.',
 	'PLUPLOAD_ERR_INPUT'		=> 'Failed to open input stream.',
 	'PLUPLOAD_ERR_MOVE_UPLOADED'	=> 'Failed to move uploaded file.',
 	'PLUPLOAD_ERR_OUTPUT'		=> 'Failed to open output stream.',
