@@ -516,10 +516,11 @@ class acp_prune
 			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.poster_id', $user_ids, false, true) . '
+					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;
-			$result = $db->sql_query($result);
+			$result = $db->sql_query($sql);
 
 			// same intersection logic as the above group ID portion
 			$user_ids = $usernames = array();
