@@ -358,12 +358,12 @@ class acp_prune
 	*/
 	function get_prune_users(&$user_ids, &$usernames)
 	{
-		global $user, $db;
+		global $user, $db, $request;
 
 		$users_by_name = request_var('users', '', true);
 		$users_by_id = request_var('user_ids', array(0));
 		$group_id = request_var('group_id', 0);
-		$posts_on_queue = request_var('posts_on_queue', 0);
+		$posts_on_queue = (trim($request->variable('posts_on_queue', '')) === '') ? false : $request->variable('posts_on_queue', 0);
 
 		if ($users_by_name)
 		{
@@ -511,7 +511,7 @@ class acp_prune
 			$db->sql_freeresult($result);
 		}
 
-		if ($posts_on_queue)
+		if ($posts_on_queue !== false)
 		{
 			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
