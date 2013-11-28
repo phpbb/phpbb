@@ -500,8 +500,8 @@ class acp_prune
 				WHERE ug.group_id = ' . (int) $group_id . '
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
-					AND ug.user_pending = 0
-					AND ' . $db->sql_in_set('ug.user_id', $user_ids, false, true) . '
+					AND ug.user_pending = 0 ' .
+					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
 					AND u.user_id = ug.user_id';
 			$result = $db->sql_query($sql);
 
@@ -525,9 +525,9 @@ class acp_prune
 		{
 			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE ' . $db->sql_in_set('p.poster_id', $user_ids, false, true) . '
-					AND u.user_id <> ' . ANONYMOUS . '
-					AND u.user_type <> ' . USER_FOUNDER . '
+				WHERE u.user_id <> ' . ANONYMOUS . '
+					AND u.user_type <> ' . USER_FOUNDER .
+					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
 					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
