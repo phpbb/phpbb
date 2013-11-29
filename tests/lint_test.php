@@ -23,6 +23,7 @@ class phpbb_lint_test extends phpbb_test_case
 		}
 
 		self::$exclude = array(
+			dirname(__FILE__) . '/../.git',
 			dirname(__FILE__) . '/../build/new_version',
 			dirname(__FILE__) . '/../build/old_versions',
 			// PHP Fatal error:  Cannot declare class Container because the name is already in use in /var/www/projects/phpbb3/tests/../phpBB/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests/Fixtures/php/services1-1.php on line 20
@@ -47,7 +48,7 @@ class phpbb_lint_test extends phpbb_test_case
 		$dh = opendir($root);
 		while (($filename = readdir($dh)) !== false)
 		{
-			if ($filename == '.' || $filename == '..' || $filename == 'git')
+			if ($filename == '.' || $filename == '..')
 			{
 				continue;
 			}
