@@ -26,6 +26,7 @@ class phpbb_lint_test extends phpbb_test_case
 			dirname(__FILE__) . '/../.git',
 			dirname(__FILE__) . '/../build/new_version',
 			dirname(__FILE__) . '/../build/old_versions',
+			dirname(__FILE__) . '/../phpBB/cache',
 			// PHP Fatal error:  Cannot declare class Container because the name is already in use in /var/www/projects/phpbb3/tests/../phpBB/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests/Fixtures/php/services1-1.php on line 20
 			// https://gist.github.com/e003913ffd493da63cbc
 			dirname(__FILE__) . '/../phpBB/vendor',
