@@ -9,17 +9,30 @@
 
 class phpbb_lint_test extends phpbb_test_case
 {
+	static protected $php_binary;
 	static protected $exclude;
 
 	static public function setUpBeforeClass()
 	{
+		// Try to use PHP_BINARY constant if available so lint tests are run
+		// using the same php binary as phpunit. If not available (pre PHP
+		// 5.4), assume binary is called 'php' and is in PATH.
+		self::$php_binary = defined('PHP_BINARY') ? escapeshellcmd(PHP_BINARY) : 'php';
+
 		$output = array();
 		$status = 1;
-		exec('(php -v) 2>&1', $output, $status);
+		exec(sprintf('(%s --version) 2>&1', self::$php_binary), $output, $status);
 		if ($status)
 		{
 			$output = implode("\n", $output);
-			self::markTestSkipped("php is not in PATH or broken: $output");
+			if (self::$php_binary === 'php')
+			{
+				self::markTestSkipped(sprintf('php is not in PATH or broken. Output: %s', $output));
+			}
+			else
+			{
+				self::markTestSkipped(sprintf('Could not run PHP_BINARY %s. Output: %s', self::$php_binary, $output));
+			}
 		}
 
 		self::$exclude = array(
@@ -61,13 +74,12 @@ class phpbb_lint_test extends phpbb_test_case
 			}
 			else if (substr($filename, strlen($filename)-4) == '.php')
 			{
-				// assume php binary is called php and it is in PATH
-				$cmd = '(php -l ' . escapeshellarg($path) . ') 2>&1';
+				$cmd = sprintf('(%s -l %s) 2>&1', self::$php_binary, escapeshellarg($path));
 				$output = array();
 				$status = 1;
 				exec($cmd, $output, $status);
 				$output = implode("\n", $output);
-				$this->assertEquals(0, $status, "php -l failed for $path:\n$output");
+				$this->assertEquals(0, $status, "PHP lint failed for $path:\n$output");
 			}
 		}
 	}
