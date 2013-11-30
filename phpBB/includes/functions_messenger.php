@@ -486,12 +486,26 @@ class messenger
 
 		if (empty($this->replyto))
 		{
-			$this->replyto = '<' . $config['board_contact'] . '>';
+			if ($config['board_contact_name'])
+			{
+				$this->replyto = '"' . $config['board_contact_name'] . '" <' . $config['board_contact'] . '>';
+			}
+			else
+			{
+				$this->replyto = '<' . $config['board_contact'] . '>';
+			}
 		}
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_contact'] . '>';
+			if ($config['board_contact_name'])
+			{
+				$this->from = '"' . $config['board_contact_name'] . '" <' . $config['board_contact'] . '>';
+			}
+			else
+			{
+				$this->from = '<' . $config['board_contact'] . '>';
+			}
 		}
 
 		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
