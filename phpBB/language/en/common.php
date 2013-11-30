@@ -143,6 +143,7 @@ $lang = array_merge($lang, array(
 	'BUTTON_QUOTE'			=> 'Quote',
 	'BUTTON_TOPIC_LOCKED'	=> 'Locked',
 	'BYTES'					=> 'Bytes',
+	'BYTES_SHORT'			=> 'B',
 
 	'CANCEL'				=> 'Cancel',
 	'CHANGE'				=> 'Change',
