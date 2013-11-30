@@ -331,23 +331,30 @@ class acp_prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
-		$s_group_list = '<option value="0"></option>';
 		$sql = 'SELECT group_id, group_name
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
 			ORDER BY group_name ASC';
 		$result = $db->sql_query($sql);
 
+		$s_group_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		$db->sql_freeresult($result);
 
+		if ($s_group_list)
+		{
+			// Only prepend the "All groups" option if there are groups,
+			// otherwise we don't want to display this option at all.
+			$s_group_list = '<option value="0">' . $user->lang['PRUNE_USERS_GROUP_NONE'] . '</option>' . $s_group_list;
+		}
+
 		$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
-			'S_GROUP_LIST'      => $s_group_list,
+			'S_GROUP_LIST'		=> $s_group_list,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
 		));
