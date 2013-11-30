@@ -488,12 +488,12 @@ class messenger
 
 		if (empty($this->replyto))
 		{
-			$this->replyto = '<' . $config['board_contact'] . '>';
+			$this->replyto = '"' . $config['sitename'] . '" <' . $config['board_contact'] . '>';
 		}
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_contact'] . '>';
+			$this->from = '"' . $config['sitename'] . '" <' . $config['board_contact'] . '>';
 		}
 
 		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
