@@ -210,13 +210,18 @@ class post extends \phpbb\notification\type\base
 		if ($trimmed_responders_cnt)
 		{
 			$lang_key .= '_TRIMMED';
+			$lang_user_cnt = $trimmed_responders_cnt;
+		}
+		else
+		{
+			$lang_user_cnt = $responders_cnt;
 		}
 
 		return $this->user->lang(
 			$lang_key,
 			implode($this->user->lang['COMMA_SEPARATOR'], $usernames),
 			censor_text($this->get_data('topic_title')),
-			$trimmed_responders_cnt
+			$lang_user_cnt
 		);
 	}
 

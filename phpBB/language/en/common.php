@@ -424,21 +424,27 @@ $lang = array_merge($lang, array(
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
 	'NOTIFICATIONS'				=> 'Notifications',
-	'NOTIFICATION_BOOKMARK'				=> '%1$s replied to the topic "%2$s" you have bookmarked.',
+	'NOTIFICATION_BOOKMARK'				=> array(
+		1	=> '%1$s replied to the topic “%2$s” you have bookmarked.',
+	),
 	'NOTIFICATION_BOOKMARK_TRIMMED'		=> array(
 		2	=> '%1$s and %3$d others replied to the topic “%2$s” you have bookmarked.',
 	),
 	'NOTIFICATION_GROUP_REQUEST'		=> '%1$s is requesting to join the group %2$s.',
 	'NOTIFICATION_GROUP_REQUEST_APPROVED'	=> 'Your request to join the group %1$s has been approved.',
 	'NOTIFICATION_PM'					=> '%1$s sent you a Private Message "%2$s".',
-	'NOTIFICATION_POST'					=> '%1$s replied to the topic "%2$s".',
+	'NOTIFICATION_POST'					=> array(
+		1	=> '%1$s replied to the topic “%2$s”.',
+	),
 	'NOTIFICATION_POST_TRIMMED'			=> array(
 		2	=> '%1$s and %3$d others replied to the topic “%2$s”',
 	),
 	'NOTIFICATION_POST_APPROVED'		=> 'Your post was approved "%2$s".',
 	'NOTIFICATION_POST_DISAPPROVED'		=> 'Your post "%1$s" was disapproved for reason: "%2$s".',
 	'NOTIFICATION_POST_IN_QUEUE'		=> 'A new post titled "%2$s" was posted by %1$s and needs approval.',
-	'NOTIFICATION_QUOTE'				=> '%1$s quoted you in the post "%2$s".',
+	'NOTIFICATION_QUOTE'				=> array(
+		1	=> '%1$s quoted you in the post “%2$s”.',
+	),
 	'NOTIFICATION_QUOTE_TRIMMED'		=> array(
 		2	=> '%1$s and %3$d quoted you in the post “%2$s”',
 	),
