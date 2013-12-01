@@ -427,6 +427,7 @@ $lang = array_merge($lang, array(
 	// This is used for a list of up to 4 users. 5 users or more uses _TRIMMED.
 	'NOTIFICATION_BOOKMARK'				=> array(
 		1	=> '%1$s replied to the topic “%3$s” you have bookmarked.',
+		// X, Y, and Z replied to the topic “Test” you have bookmarked.
 		2	=> '%1$s and %2$s replied to the topic “%3$s” you have bookmarked.',
 	),
 	// X, Y, Z and 2 others replied to the topic “Test” you have bookmarked.
@@ -439,6 +440,7 @@ $lang = array_merge($lang, array(
 	// This is used for a list of up to 4 users. 5 users or more uses _TRIMMED.
 	'NOTIFICATION_POST'					=> array(
 		1	=> '%1$s replied to the topic “%3$s”.',
+		// X, Y, and Z replied to the topic “Test”.
 		2	=> '%1$s and %2$s replied to the topic “%3$s”.',
 	),
 	// X, Y, Z and 2 others replied to the topic “Test”.
@@ -451,6 +453,7 @@ $lang = array_merge($lang, array(
 	// This is used for a list of up to 4 users. 5 users or more uses _TRIMMED.
 	'NOTIFICATION_QUOTE'				=> array(
 		1	=> '%1$s quoted you in the post “%3$s”.',
+		// X, Y, and Z quoted you in the post “Re: Test”.
 		2	=> '%1$s and %2$s quoted you in the post “%3$s”.',
 	),
 	// X, Y, Z and 2 others quoted you in the post “Re: Test”.
