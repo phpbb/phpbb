@@ -424,29 +424,38 @@ $lang = array_merge($lang, array(
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
 	'NOTIFICATIONS'				=> 'Notifications',
+	// This is used for a list of up to 4 users. 5 users or more uses _TRIMMED.
 	'NOTIFICATION_BOOKMARK'				=> array(
-		1	=> '%1$s replied to the topic “%2$s” you have bookmarked.',
+		1	=> '%1$s replied to the topic “%3$s” you have bookmarked.',
+		2	=> '%1$s and %2$s replied to the topic “%3$s” you have bookmarked.',
 	),
+	// X, Y, Z and 2 others replied to the topic “Test” you have bookmarked.
 	'NOTIFICATION_BOOKMARK_TRIMMED'		=> array(
-		2	=> '%1$s and %3$d others replied to the topic “%2$s” you have bookmarked.',
+		2	=> '%1$s and %4$d others replied to the topic “%3$s” you have bookmarked.',
 	),
 	'NOTIFICATION_GROUP_REQUEST'		=> '%1$s is requesting to join the group %2$s.',
 	'NOTIFICATION_GROUP_REQUEST_APPROVED'	=> 'Your request to join the group %1$s has been approved.',
 	'NOTIFICATION_PM'					=> '%1$s sent you a Private Message "%2$s".',
+	// This is used for a list of up to 4 users. 5 users or more uses _TRIMMED.
 	'NOTIFICATION_POST'					=> array(
-		1	=> '%1$s replied to the topic “%2$s”.',
+		1	=> '%1$s replied to the topic “%3$s”.',
+		2	=> '%1$s and %2$s replied to the topic “%3$s”.',
 	),
+	// X, Y, Z and 2 others replied to the topic “Test”.
 	'NOTIFICATION_POST_TRIMMED'			=> array(
-		2	=> '%1$s and %3$d others replied to the topic “%2$s”',
+		2	=> '%1$s and %4$d others replied to the topic “%3$s”',
 	),
 	'NOTIFICATION_POST_APPROVED'		=> 'Your post was approved "%2$s".',
 	'NOTIFICATION_POST_DISAPPROVED'		=> 'Your post "%1$s" was disapproved for reason: "%2$s".',
 	'NOTIFICATION_POST_IN_QUEUE'		=> 'A new post titled "%2$s" was posted by %1$s and needs approval.',
+	// This is used for a list of up to 4 users. 5 users or more uses _TRIMMED.
 	'NOTIFICATION_QUOTE'				=> array(
-		1	=> '%1$s quoted you in the post “%2$s”.',
+		1	=> '%1$s quoted you in the post “%3$s”.',
+		2	=> '%1$s and %2$s quoted you in the post “%3$s”.',
 	),
+	// X, Y, Z and 2 others quoted you in the post “Re: Test”.
 	'NOTIFICATION_QUOTE_TRIMMED'		=> array(
-		2	=> '%1$s and %3$d quoted you in the post “%2$s”',
+		2	=> '%1$s and %4$d quoted you in the post “%3$s”',
 	),
 	'NOTIFICATION_REPORT_PM'			=> '%1$s reported a Private Message "%2$s" for reason: "%3$s".',
 	'NOTIFICATION_REPORT_POST'			=> '%1$s reported a post "%2$s" for reason: "%3$s".',

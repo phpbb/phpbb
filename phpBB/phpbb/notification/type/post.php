@@ -205,6 +205,7 @@ class post extends \phpbb\notification\type\base
 				$usernames[] = $this->user_loader->get_username($responder['poster_id'], 'no_profile');
 			}
 		}
+		$last_user = '';
 		$lang_key = $this->language_key;
 
 		if ($trimmed_responders_cnt)
@@ -215,11 +216,17 @@ class post extends \phpbb\notification\type\base
 		else
 		{
 			$lang_user_cnt = $responders_cnt;
+
+			if ($responders_cnt > 1)
+			{
+				$last_user = array_pop($usernames);
+			}
 		}
 
 		return $this->user->lang(
 			$lang_key,
 			implode($this->user->lang['COMMA_SEPARATOR'], $usernames),
+			$last_user,
 			censor_text($this->get_data('topic_title')),
 			$lang_user_cnt
 		);
