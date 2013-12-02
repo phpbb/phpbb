@@ -55,17 +55,15 @@
 		</div>
 	<!-- ENDIF -->
 
-	<!-- IF .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
-		<div class="pagination">
-			<!-- IF not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="mark_topics_read" data-overlay="false">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
-			<!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS} &bull; <!-- ENDIF -->
-			<!-- IF .pagination -->
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE -->
-				{PAGE_NUMBER}
-			<!-- ENDIF -->
-		</div>
-	<!-- ENDIF -->
+	<div class="pagination">
+		<!-- IF not S_IS_BOT and U_MARK_TOPICS and .topicrow --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="mark_topics_read" data-overlay="false">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
+		{TOTAL_TOPICS} &bull; 
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			{PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
 
 	</div>
 <!-- ENDIF -->
@@ -227,18 +225,15 @@
 		</div>
 		<!-- ENDIF -->
 
-		<!-- IF PAGE_NUMBER or TOTAL_POSTS or TOTAL_TOPICS -->
 		<div class="pagination">
-			<!-- IF TOTAL_TOPICS and not S_IS_BOT and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" data-ajax="mark_topics_read" data-overlay="false">{L_MARK_TOPICS_READ}</a> &bull;  <!-- ENDIF -->
-			<!-- IF TOTAL_POSTS and not NEWEST_USER --> {TOTAL_POSTS}<!-- ELSEIF TOTAL_TOPICS and not NEWEST_USER --> {TOTAL_TOPICS} &bull; <!-- ENDIF -->
-			<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull; <!-- ENDIF -->
+			<!-- IF not S_IS_BOT and U_MARK_TOPICS and .topicrow --><a href="{U_MARK_TOPICS}" data-ajax="mark_topics_read" data-overlay="false">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
+			{TOTAL_TOPICS} &bull; 
 			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->
 				{PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
-		<!-- ENDIF -->
 	</div>
 <!-- ENDIF -->
 
