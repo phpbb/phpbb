@@ -45,7 +45,6 @@ class set extends command
 		$value = $input->getArgument('value');
 		$use_cache = !$input->getOption('dynamic');
 
-		var_dump($key, $value, $use_cache);
 		$this->config->set($key, $value, $use_cache);
 
 		$output->writeln("<info>Successfully set config $key</info>");
