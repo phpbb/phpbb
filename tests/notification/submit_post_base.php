@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_notification_submit_post_base extends phpbb_database_test_case
+abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
