@@ -6,6 +6,7 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_user_lang_test extends phpbb_test_case
 {

@@ -48,6 +48,9 @@ class phpbb_functions_acp_built_select_test extends phpbb_test_case
 	{
 		global $user;
 
+		$user = new phpbb_mock_user();
+		$request = new phpbb_mock_request();
+
 		$user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_select($option_ary, $option_default));
