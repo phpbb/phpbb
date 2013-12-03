@@ -50,7 +50,7 @@
 		<!-- IF topicrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 			<td style="padding: 4px;" width="100%" valign="top">
-				<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+				<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="<!-- IF topicrow.S_UNREAD_TOPIC -->{topicrow.U_NEWEST_POST}<!-- ELSE -->{topicrow.U_VIEW_TOPIC}<!-- ENDIF -->">{topicrow.TOPIC_TITLE}</a></p>
 				<!-- IF topicrow.S_GLOBAL_TOPIC --><span class="gensmall">{L_GLOBAL_ANNOUNCEMENT}</span><!-- ELSE --><span class="gensmall"><b>{L_FORUM}{L_COLON} </b><a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></span><!-- ENDIF -->
 				<!-- IF .topicrow.pagination -->
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}{L_COLON} 
