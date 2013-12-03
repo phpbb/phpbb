@@ -533,9 +533,9 @@ class p_master
 			// 0 vendor, 1 extension name, ...
 			if (isset($module_dir[1]))
 			{
-				$module_style_dir =  $phpbb_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/styles';
+				$module_style_dir = 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/styles';
 
-				if (is_dir($module_style_dir))
+				if (is_dir($phpbb_root_path . $module_style_dir))
 				{
 					$template->set_style(array($module_style_dir, 'styles'));
 				}
