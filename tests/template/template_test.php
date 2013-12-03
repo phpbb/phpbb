@@ -9,7 +9,12 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/template_test_case.php';
-
+// Need this for HHVM support right now in order to run this test file by
+// itself. Looking to see why.
+if (getenv("PHP_BINARY") !== false) {
+  require_once dirname(__FILE__) . '/../../phpBB/phpbb/template/twig/node/expression/binary/equalequal.php';
+  require_once dirname(__FILE__) . '/../../phpBB/phpbb/template/twig/node/expression/binary/notequalequal.php';
+}
 class phpbb_template_template_test extends phpbb_template_template_test_case
 {
 	/**

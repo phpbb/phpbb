@@ -54,6 +54,9 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	{
 		global $user;
 
+		$user = new phpbb_mock_user();
+		$request = new phpbb_mock_request();
+
 		$user->lang = new phpbb_mock_lang();
 
 		$phpbb_error = array();
@@ -92,6 +95,9 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	public function test_validate_range_too_low($test_data)
 	{
 		global $user;
+
+		$user = new phpbb_mock_user();
+		$request = new phpbb_mock_request();
 
 		$user->lang = new phpbb_mock_lang();
 
@@ -132,6 +138,9 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	{
 		global $user;
 
+		$user = new phpbb_mock_user();
+		$request = new phpbb_mock_request();
+
 		$user->lang = new phpbb_mock_lang();
 
 		$phpbb_error = array();
@@ -159,6 +168,9 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	public function test_validate_range_too_long($test_data)
 	{
 		global $user;
+
+		$user = new phpbb_mock_user();
+		$request = new phpbb_mock_request();
 
 		$user->lang = new phpbb_mock_lang();
 
