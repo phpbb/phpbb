@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 {
@@ -61,6 +62,9 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 	public function test_validate_config_vars_fit($test_data, $cfg_array)
 	{
 		global $user;
+
+    $user = new phpbb_mock_user();
+    $request = new phpbb_mock_request();
 
 		$user->lang = new phpbb_mock_lang();
 
@@ -147,6 +151,9 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 	public function test_validate_config_vars_error($test_data, $cfg_array, $expected)
 	{
 		global $user;
+
+    $user = new phpbb_mock_user();
+    $request = new phpbb_mock_request();
 
 		$user->lang = new phpbb_mock_lang();
 

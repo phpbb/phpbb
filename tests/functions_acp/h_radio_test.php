@@ -113,7 +113,10 @@ class phpbb_functions_acp_h_radio_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user->lang = new phpbb_mock_lang();
+    $user = new phpbb_mock_user();
+    $request = new phpbb_mock_request();
+		
+    $user->lang = new phpbb_mock_lang();
 
 		$this->assertEquals($expected, h_radio($name, $input_ary, $input_default, $id, $key));
 	}
