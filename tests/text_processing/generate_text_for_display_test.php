@@ -16,7 +16,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 {
 	public function setUp()
 	{
-		global $cache, $user;
+		global $cache, $user, $phpbb_dispatcher;
 
 		parent::setUp();
 
@@ -24,6 +24,8 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 		$user = new phpbb_mock_user;
 		$user->optionset('viewcensors', false);
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 	}
 
 	public function test_empty_string()

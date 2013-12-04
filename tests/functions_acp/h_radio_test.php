@@ -11,6 +11,16 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_h_radio_test extends phpbb_test_case
 {
+	protected function setUp()
+	{
+		parent::setUp();
+
+		global $user;
+
+		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
+	}
+
 	public function h_radio_data()
 	{
 		return array(
@@ -111,10 +121,6 @@ class phpbb_functions_acp_h_radio_test extends phpbb_test_case
 	*/
 	public function test_h_radio($name, $input_ary, $input_default, $id, $key, $expected)
 	{
-		global $user;
-
-		$user->lang = new phpbb_mock_lang();
-
 		$this->assertEquals($expected, h_radio($name, $input_ary, $input_default, $id, $key));
 	}
 }
