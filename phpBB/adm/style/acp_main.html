@@ -216,7 +216,7 @@
 
 		<div style="text-align: right;"><a href="{U_ADMIN_LOG}">&raquo; {L_VIEW_ADMIN_LOG}</a></div>
 
-		<table class="table1">
+		<table class="table1 zebra-table">
 		<thead>
 		<tr>
 			<th>{L_USERNAME}</th>
@@ -227,8 +227,7 @@
 		</thead>
 		<tbody>
 		<!-- BEGIN log -->
-			<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
+			<tr>
 				<td>{log.USERNAME}</td>
 				<td style="text-align: center;">{log.IP}</td>
 				<td style="text-align: center;">{log.DATE}</td>
@@ -249,7 +248,7 @@
 
 		<div style="text-align: right;"><a href="{U_INACTIVE_USERS}">&raquo; {L_VIEW_INACTIVE_USERS}</a></div>
 
-		<table class="table1">
+		<table class="table1 zebra-table">
 		<thead>
 		<tr>
 			<th>{L_USERNAME}</th>
@@ -261,8 +260,7 @@
 		</thead>
 		<tbody>
 		<!-- BEGIN inactive -->
-			<!-- IF inactive.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
+			<tr>
 				<td style="vertical-align: top;">
 					{inactive.USERNAME_FULL}
 					<!-- IF inactive.POSTS --><br />{L_POSTS}{L_COLON} <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->

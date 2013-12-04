@@ -74,7 +74,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<table class="table1" id="smilies">
+	<table class="table1 zebra-table" id="smilies">
 	<thead>
 	<tr>
 		<th colspan="{COLSPAN}">{L_CONFIG}</th>
@@ -100,7 +100,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN items -->
-		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 	
 		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="" title="" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
 		<td style="vertical-align: top;">[{items.IMG}]</td>
@@ -218,7 +218,7 @@
 
 	<legend>{L_TITLE}</legend>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_TITLE}</th>
@@ -236,7 +236,7 @@
 				<td class="row3" colspan="{COLSPAN}" style="text-align: center;">{L_NOT_DISPLAYED}</td>
 			</tr>
 		<!-- ENDIF -->
-		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td style="width: 85%; text-align: center;"><img src="{items.IMG_SRC}" width="{items.WIDTH}" height="{items.HEIGHT}" alt="{items.ALT_TEXT}" title="{items.ALT_TEXT}" /></td>
 			<!-- IF S_SMILIES -->
 				<td style="text-align: center;">{items.CODE}</td>

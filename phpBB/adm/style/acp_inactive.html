@@ -16,7 +16,7 @@
 </div>
 <!-- ENDIF -->
 
-<table class="table1">
+<table class="table1 zebra-table">
 <thead>
 <tr>
 	<th>{L_USERNAME}</th>
@@ -29,8 +29,7 @@
 </thead>
 <tbody>
 <!-- BEGIN inactive -->
-	<!-- IF inactive.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
+	<tr>
 		<td style="vertical-align: top;">
 			{inactive.USERNAME_FULL}
 			<!-- IF inactive.POSTS --><br />{L_POSTS}{L_COLON} <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->

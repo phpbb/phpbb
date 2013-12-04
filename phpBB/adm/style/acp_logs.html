@@ -22,7 +22,7 @@
 <div><br style="clear: both;" /></div>
 
 <!-- IF .log -->
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_USERNAME}</th>
@@ -36,7 +36,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN log -->
-		<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td>
 				{log.USERNAME}
 				<!-- IF log.REPORTEE_USERNAME -->

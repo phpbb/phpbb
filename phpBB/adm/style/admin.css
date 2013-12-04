@@ -840,8 +840,14 @@ td.name {
 	text-align: right;
 }
 
-.row1 { background-color: #F9F9F9; }
-.row2 { background-color: #DCEBFE; }
+.row1, table.zebra-table tbody tr:nth-child(odd) {
+	background-color: #F9F9F9;
+}
+
+.row2, table.zebra-table tbody tr:nth-child(even) {
+	background-color: #DCEBFE;
+}
+
 .row3 { background-color: #DBDFE2; }
 .row4 { background-color: #E4E8EB; }
 .col1 { background-color: #DCEBFE; }
