@@ -8,6 +8,7 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 {
