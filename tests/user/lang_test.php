@@ -7,6 +7,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+
 class phpbb_user_lang_test extends phpbb_test_case
 {
 	public function test_user_lang_sprintf()
