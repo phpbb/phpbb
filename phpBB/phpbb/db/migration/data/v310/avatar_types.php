@@ -42,7 +42,7 @@ class avatar_types extends \phpbb\db\migration\migration
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "users
 				SET user_avatar_type = '$new'
-				WHERE user_avatar_type = $old";
+				WHERE user_avatar_type = '$old'";
 			$this->db->sql_query($sql);
 		}
 	}
@@ -53,7 +53,7 @@ class avatar_types extends \phpbb\db\migration\migration
 		{
 			$sql = 'UPDATE ' . $this->table_prefix . "groups
 				SET group_avatar_type = '$new'
-				WHERE group_avatar_type = $old";
+				WHERE group_avatar_type = '$old'";
 			$this->db->sql_query($sql);
 		}
 	}
