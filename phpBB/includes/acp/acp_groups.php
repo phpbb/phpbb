@@ -325,6 +325,10 @@ class acp_groups
 
 					// This is normalised data, without the group_ prefix
 					$avatar_data = \phpbb\avatar\manager::clean_row($group_row, 'group');
+					if (!isset($avatar_data['id']))
+					{
+						$avatar_data['id'] = 'g' . $group_id;
+					}
 				}
 
 
@@ -379,7 +383,7 @@ class acp_groups
 						}
 						else
 						{
-							$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+							$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
 							if ($driver)
 							{
 								$driver->delete($avatar_data);
