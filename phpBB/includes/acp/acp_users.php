@@ -1775,7 +1775,7 @@ class acp_users
 							}
 							else
 							{
-								$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+								$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
 								if ($driver)
 								{
 									$driver->delete($avatar_data);
