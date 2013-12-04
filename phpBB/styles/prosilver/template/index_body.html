@@ -3,6 +3,8 @@
 <p class="{S_CONTENT_FLOW_END} responsive-center<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
 <!-- IF S_USER_LOGGED_IN --><p class="responsive-center">{CURRENT_TIME}<!-- IF U_MCP or U_ACP --> <br />[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- ENDIF -->&nbsp;]<!-- ENDIF --></p><!-- ENDIF -->
 
+<!-- EVENT index_body_linklist_before -->
+
 <!-- IF S_DISPLAY_SEARCH or (S_USER_LOGGED_IN and not S_IS_BOT) -->
 <ul class="linklist bulletin">
 	<!-- IF S_DISPLAY_SEARCH -->
@@ -19,7 +21,7 @@
 </ul>
 <!-- ENDIF -->
 
-<!-- EVENT index_body_forumlist_before -->
+<!-- EVENT index_body_linklist_after -->
 
 <!-- INCLUDE forumlist_body.html -->
 
