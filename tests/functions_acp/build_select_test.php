@@ -11,6 +11,16 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_built_select_test extends phpbb_test_case
 {
+	protected function setUp()
+	{
+		parent::setUp();
+
+		global $user;
+
+		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
+	}
+
 	public function build_select_data()
 	{
 		return array(
@@ -46,10 +56,6 @@ class phpbb_functions_acp_built_select_test extends phpbb_test_case
 	*/
 	public function test_build_select($option_ary, $option_default, $expected)
 	{
-		global $user;
-
-		$user->lang = new phpbb_mock_lang();
-
 		$this->assertEquals($expected, build_select($option_ary, $option_default));
 	}
 }
