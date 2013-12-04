@@ -7,6 +7,7 @@ imports:
     - { resource: feed.yml }
     - { resource: auth_providers.yml }
     - { resource: console.yml }
+    - { resource: mimetype_guessers.yml }
 
 services:
     acl.permissions:
@@ -274,6 +275,7 @@ services:
             - @request
             - @user
             - @php_ini
+            - @mimetype.guesser
 
     request:
         class: phpbb\request\request
