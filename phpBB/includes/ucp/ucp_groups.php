@@ -509,7 +509,7 @@ class ucp_groups
 								}
 								else
 								{
-									if ($driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+									if ($driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']))
 									{
 										$driver->delete($avatar_data);
 									}

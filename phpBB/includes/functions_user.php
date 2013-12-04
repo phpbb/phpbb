@@ -213,7 +213,7 @@ function user_add($user_row, $cp_data = false)
 		'user_occ'				=> '',
 		'user_interests'		=> '',
 		'user_avatar'			=> '',
-		'user_avatar_type'		=> 0,
+		'user_avatar_type'		=> '',
 		'user_avatar_width'		=> 0,
 		'user_avatar_height'	=> 0,
 		'user_new_privmsg'		=> 0,
@@ -464,7 +464,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$added_guest_posts = 0;
 	foreach ($user_rows as $user_id => $user_row)
 	{
-		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == AVATAR_UPLOAD)
+		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == 'avatar.driver.upload')
 		{
 			avatar_delete('user', $user_row);
 		}
@@ -2315,7 +2315,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		{
 			$group_id = $db->sql_nextid();
 
-			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
+			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == 'avatar.driver.upload')
 			{
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
 			}
@@ -2416,7 +2416,7 @@ function avatar_remove_db($avatar_name)
 
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_avatar = '',
-		user_avatar_type = 0
+		user_avatar_type = ''
 		WHERE user_avatar = '" . $db->sql_escape($avatar_name) . '\'';
 	$db->sql_query($sql);
 }
@@ -2826,7 +2826,7 @@ function remove_default_avatar($group_id, $user_ids)
 
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_avatar = '',
-			user_avatar_type = 0,
+			user_avatar_type = '',
 			user_avatar_width = 0,
 			user_avatar_height = 0
 		WHERE group_id = " . (int) $group_id . "
@@ -3084,7 +3084,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		'group_colour'			=> 'string',
 		'group_rank'			=> 'int',
 		'group_avatar'			=> 'string',
-		'group_avatar_type'		=> 'int',
+		'group_avatar_type'		=> 'string',
 		'group_avatar_width'	=> 'int',
 		'group_avatar_height'	=> 'int',
 	);
