@@ -127,6 +127,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 	{
 		global $auth, $cache, $db, $phpbb_dispatcher, $user, $phpbb_container, $phpbb_log, $phpbb_root_path, $phpEx;
 
+		$user = new phpbb_mock_user;
 		$user->ip = '';
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
