@@ -108,21 +108,23 @@ class acp_bbcodes
 					'DISPLAY_ON_POSTING'	=> $display_on_posting,
 				);
 
+				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
+
 				/**
 				* Modify bbcode template before we display the add/edit form
 				*
 				* @event core.acp_bbcodes_edit_add
-				* @var	string	action		Type of the action: add|edit
-				* @var	array	tpl_ary		Array with bbcodes add/edit data
-				* @var	int		bbcode_id	The id of the bbcode (being edited)
+				* @var	string	action			Type of the action: add|edit
+				* @var	array	tpl_ary			Array with bbcodes add/edit data
+				* @var	int		bbcode_id		The id of the bbcode (being edited)
+				* @var	array	bbcode_token	Array of bbcode tokens
 				* @since 3.1-A3
 				*/
-				$vars = array('action', 'tpl_ary', 'bbcode_id');
+				$vars = array('action', 'tpl_ary', 'bbcode_id', 'bbcode_tokens');
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_edit_add', compact($vars)));
 
 				$template->assign_vars($tpl_ary);
 
-				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
 				foreach ($bbcode_tokens as $token)
 				{
 					$template->assign_block_vars('token', array(
