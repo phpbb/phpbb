@@ -363,11 +363,26 @@ class acp_bbcodes
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('bbcodes', array(
+			$bbcodes_array = array(
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'])
+				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'],
 			);
+
+			/**
+			*  Modify display of bbcodes in the form
+			*
+			* @event core.acp_bbcodes_display_bbcodes
+			* @var	array	row				Array with current bbcode data
+			* @var	array	bbcodes_array	Array of bbcodes template data
+			* @var	object	this_u_action	$this->u_action object
+			* @since 3.1-A3
+			*/
+			$vars = array('bbcodes_array', 'row', 'this_u_action');
+			extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
+
+			$template->assign_block_vars('bbcodes', $bbcodes_array);
+
 		}
 		$db->sql_freeresult($result);
 	}
