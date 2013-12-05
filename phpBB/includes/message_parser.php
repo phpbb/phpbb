@@ -1215,6 +1215,8 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
+		global $phpbb_dispatcher;
+		
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
 		{
@@ -1242,6 +1244,26 @@ class parse_message extends bbcode_firstpass
 
 		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
+
+		$text = $this->message;
+		$uid = $this->bbcode_uid;
+
+		/**
+		* Use this event to modify the text after it is parsed
+		*
+		* @event core.modify_text_for_format_display_after
+		* @var string	text			The text to parse
+		* @var string	uid				The BBCode UID
+		* @var bool		allow_bbcode	Allow BBCodes switch
+		* @var bool		allow_magic_url	Allow magic urls switch
+		* @var bool		allow_smilies	Allow smilies switch
+		* @since 3.1-A3
+		*/
+		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies');
+		extract($phpbb_dispatcher->trigger_event('core.modify_text_for_format_display_after', compact($vars)));
+
+		$this->message = $text;
+		$this->bbcode_uid = $uid;
 
 		if (!$update_this_message)
 		{
