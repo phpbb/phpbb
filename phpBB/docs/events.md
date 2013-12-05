@@ -1,3 +1,9 @@
+acp_bbcodes_edit_form_append
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add settings to edit BBCodes form
+
 acp_forums_normal_settings_append
 ===
 * Location: adm/style/acp_forums.html
