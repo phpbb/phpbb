@@ -932,6 +932,17 @@ function display_custom_bbcodes()
 		FROM ' . BBCODES_TABLE . '
 		WHERE display_on_posting = 1
 		ORDER BY bbcode_tag';
+
+	/**
+	* Modify the SQL statement retrieving the custom bbcodes
+	*
+	* @event core.display_custom_bbcodes_modify_sql
+	* @var	string	sql		SQL SELECT statement
+	* @since 3.1-A3
+	*/
+	$vars = array('sql');
+	extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_sql', compact($vars)));
+
 	$result = $db->sql_query($sql);
 
 	$i = 0;
