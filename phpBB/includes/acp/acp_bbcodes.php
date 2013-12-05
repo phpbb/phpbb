@@ -138,6 +138,26 @@ class acp_bbcodes
 			case 'modify':
 			case 'create':
 
+				$sql_ary = $hidden_fields = array();
+				
+				/**
+				* Modify bbcode data before modify/create
+				*
+				* @event core.acp_bbcodes_modify_create
+				* @var	string	action				Type of the action: modify|create
+				* @var	array	sql_ary				Array with new bbcode data
+				* @var	int		bbcode_id			The id of the bbcode (being modified)
+				* @var	int		display_on_posting	display_on_posting var from thr form
+				* @var	string	bbcode_match		bbcode_match var from thr form
+				* @var	string	bbcode_tpl			bbcode_tpl var from thr form
+				* @var	string	bbcode_helpline		bbcode_helpline var from thr form
+				* @var	array	hidden_fields		Array of hidden fields for use when
+				*									submitting form when $warn_text is true
+				* @since 3.1-A3
+				*/
+				$vars = array('action', 'sql_ary', 'bbcode_id', 'display_on_posting', 'bbcode_match', 'bbcode_tpl', 'bbcode_helpline', 'hidden_fields');
+				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
+
 				$warn_text = preg_match('%<[^>]*\{text[\d]*\}[^>]*>%i', $bbcode_tpl);
 				if (!$warn_text || confirm_box(true))
 				{
@@ -192,7 +212,7 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$sql_ary = array(
+					$sql_ary = array_merge($sql_ary, array(
 						'bbcode_tag'				=> $data['bbcode_tag'],
 						'bbcode_match'				=> $bbcode_match,
 						'bbcode_tpl'				=> $bbcode_tpl,
@@ -202,7 +222,7 @@ class acp_bbcodes
 						'first_pass_replace'		=> $data['first_pass_replace'],
 						'second_pass_match'			=> $data['second_pass_match'],
 						'second_pass_replace'		=> $data['second_pass_replace']
-					);
+					));
 
 					if ($action == 'create')
 					{
@@ -258,13 +278,13 @@ class acp_bbcodes
 				}
 				else
 				{
-					confirm_box(false, $user->lang['BBCODE_DANGER'], build_hidden_fields(array(
+					confirm_box(false, $user->lang['BBCODE_DANGER'], build_hidden_fields(array_merge($hidden_fields, array(
 						'action'				=> $action,
 						'bbcode'				=> $bbcode_id,
 						'bbcode_match'			=> $bbcode_match,
 						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl),
 						'bbcode_helpline'		=> $bbcode_helpline,
-						'display_on_posting'	=> $display_on_posting,
+						'display_on_posting'	=> $display_on_posting)
 						))
 					, 'confirm_bbcode.html');
 				}
