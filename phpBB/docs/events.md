@@ -1,3 +1,15 @@
+acp_bbcodes_actions_append
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add actions to the BBCodes page, after edit/delete buttons
+
+acp_bbcodes_actions_prepend
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add actions to the BBCodes page, before edit/delete buttons
+
 acp_bbcodes_edit_form_append
 ===
 * Location: adm/style/acp_bbcodes.html
