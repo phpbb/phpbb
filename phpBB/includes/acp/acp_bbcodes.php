@@ -117,7 +117,7 @@ class acp_bbcodes
 				* @var	string	action			Type of the action: add|edit
 				* @var	array	tpl_ary			Array with bbcodes add/edit data
 				* @var	int		bbcode_id		The id of the bbcode (being edited)
-				* @var	array	bbcode_token	Array of bbcode tokens
+				* @var	array	bbcode_tokens	Array of bbcode tokens
 				* @since 3.1-A3
 				*/
 				$vars = array('action', 'tpl_ary', 'bbcode_id', 'bbcode_tokens');
