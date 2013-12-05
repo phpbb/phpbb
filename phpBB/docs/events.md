@@ -199,6 +199,24 @@ overall_header_navigation_prepend
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
 
+posting_editor_buttons_after
+===
+* Locations:
+    + adm/style/acp_users_signature.html
+    + styles/prosilver/template/posting_buttons.html
+    + styles/subsilver2/template/posting_buttons.html
+* Since: 3.1.0-a3
+* Purpose: Add content after the BBCode posting buttons
+
+posting_editor_buttons_before
+===
+* Locations:
+    + adm/style/acp_users_signature.html
+    + styles/prosilver/template/posting_buttons.html
+    + styles/subsilver2/template/posting_buttons.html
+* Since: 3.1.0-a3
+* Purpose: Add content before the BBCode posting buttons
+
 posting_editor_message_after
 ===
 * Locations:
