@@ -919,7 +919,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 /**
 * Assign/Build custom bbcodes for display in screens supporting using of bbcodes
-* The custom bbcodes buttons will be placed within the template block 'custom_codes'
+* The custom bbcodes buttons will be placed within the template block 'custom_tags'
 */
 function display_custom_bbcodes()
 {
