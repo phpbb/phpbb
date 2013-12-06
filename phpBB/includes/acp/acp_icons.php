@@ -832,6 +832,7 @@ class acp_icons
 					WHERE {$fields}_order = $switch_order_id
 						AND {$fields}_id <> $icon_id";
 				$db->sql_query($sql);
+				$move_executed = (bool) $db->sql_affectedrows();
 
 				// Only update the other entry too if the previous entry got updated
 				if ($db->sql_affectedrows())
@@ -845,6 +846,14 @@ class acp_icons
 
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
+
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> $move_executed,
+					));
+				}
 
 			break;
 		}
