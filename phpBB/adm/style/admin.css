@@ -2365,11 +2365,14 @@ fieldset.permissions .padding {
 .dropdown .dropdown-contents {
 	z-index: 2;
 	overflow: hidden;
+	overflow-y: auto;
 	background: #fff;
 	border: 1px solid #b9b9b9;
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
+	min-width: 40px;
+	max-height: 200px;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;

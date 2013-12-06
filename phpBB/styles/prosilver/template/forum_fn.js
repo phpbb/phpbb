@@ -434,6 +434,39 @@ function parse_document(container)
 	});
 
 	/**
+	* Dropdowns
+	*/
+	container.find('.dropdown-container').each(function() {
+		var $this = $(this),
+			trigger = $this.find('.dropdown-trigger:first'),
+			contents = $this.find('.dropdown'),
+			options = {
+				direction: 'auto',
+				verticalDirection: 'auto'
+			},
+			data;
+
+		if (!trigger.length) {
+			data = $this.attr('data-dropdown-trigger');
+			trigger = data ? $this.children(data) : $this.children('a:first');
+		}
+
+		if (!contents.length) {
+			data = $this.attr('data-dropdown-contents');
+			contents = data ? $this.children(data) : $this.children('div:first');
+		}
+
+		if (!trigger.length || !contents.length) return;
+
+		if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
+		if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
+		if ($this.hasClass('dropdown-left')) options.direction = 'left';
+		if ($this.hasClass('dropdown-right')) options.direction = 'right';
+
+		phpbb.registerDropdown(trigger, contents, options);
+	});
+
+	/**
 	* Adjust HTML code for IE8 and older versions		
 	*/
 	if (oldBrowser) {
