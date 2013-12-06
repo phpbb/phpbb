@@ -216,4 +216,119 @@ class path_helper
 
 		return $scheme . $this->filesystem->clean_path($path);
 	}
+
+	/**
+	* Glue URL parameters together
+	*
+	* @param array $params URL parameters in the form of array(name => value)
+	* @return string Returns the glued string, e.g. name1=value1&amp;name2=value2
+	*/
+	public function glue_url_params($params)
+	{
+		$_params = array();
+
+		foreach ($params as $key => $value)
+		{
+			$_params[] = $key . '=' . $value;
+		}
+		return implode('&amp;', $_params);
+	}
+
+	/**
+	* Get the base and parameters of a URL
+	*
+	* @param string $url URL to break apart
+	* @param string $separator Parameter separator. Defaults to &amp;
+	* @return array Returns the base and parameters in the form of array('base' => string, 'params' => array(name => value))
+	*/
+	public function get_url_parts($url, $separator = '&amp;')
+	{
+		$params = array();
+
+		if (strpos($url, '?') !== false)
+		{
+			$base = substr($url, 0, strpos($url, '?'));
+			$args = substr($url, strlen($base) + 1);
+			$args = ($args) ? explode($separator, $args) : array();
+
+			foreach ($args as $argument)
+			{
+				$arguments = explode('=', $argument);
+				$key = $arguments[0];
+				unset($arguments[0]);
+
+				if ($key === '')
+				{
+					continue;
+				}
+
+				$params[$key] = implode('=', $arguments);
+			}
+		}
+		else
+		{
+			$base = $url;
+		}
+
+		return array(
+			'base'		=> $base,
+			'params'	=> $params,
+		);
+	}
+
+	/**
+	* Strip parameters from an already built URL.
+	*
+	* @param string $url URL to strip parameters from
+	* @param array|string $strip Parameters to strip.
+	* @param string $separator Parameter separator. Defaults to &amp;
+	* @return string Returns the new URL.
+	*/
+	public function strip_url_params($url, $strip, $separator = '&amp;')
+	{
+		$url_parts = $this->get_url_parts($url, $separator);
+		$params = $url_parts['params'];
+
+		if (!is_array($strip))
+		{
+			$strip = array($strip);
+		}
+
+		if (!empty($params))
+		{
+			// Strip the parameters off
+			foreach ($strip as $param)
+			{
+				if (isset($params[$param]))
+				{
+					unset($params[$param]);
+				}
+			}
+		}
+
+		return $url_parts['base'] . (($params) ? '?' . $this->glue_url_params($params) : '');
+	}
+
+	/**
+	* Append parameters to an already built URL.
+	*
+	* @param string $url URL to append parameters to
+	* @param array $new_params Parameters to add in the form of array(name => value)
+	* @param string $separator Parameter separator. Defaults to &amp;
+	* @return string Returns the new URL.
+	*/
+	public function append_url_params($url, $new_params, $separator = '&amp;')
+	{
+		$url_parts = $this->get_url_parts($url, $separator);
+		$params = array_merge($url_parts['params'], $new_params);
+
+		// Move the sid to the end if it's set
+		if (isset($params['sid'])) {
+			$sid = $params['sid'];
+			unset($params['sid']);
+			$params['sid'] = $sid;
+		}
+
+		return $url_parts['base'] . '?' . $this->glue_url_params($params);
+	}
 }

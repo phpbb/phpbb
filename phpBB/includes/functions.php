@@ -2344,8 +2344,10 @@ function reapply_sid($url)
 */
 function build_url($strip_vars = false)
 {
-	global $config, $user, $phpEx, $phpbb_root_path;
+	global $config, $user, $phpbb_container;
 
+	$path_helper = $phpbb_container->get('path_helper');
+	$php_ext = $path_helper->get_php_ext();
 	$page = $user->page['page'];
 
 	// We need to be cautious here.
@@ -2358,12 +2360,12 @@ function build_url($strip_vars = false)
 	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 	{
 		// Remove 'app.php/' from the page, when rewrite is enabled
-		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $phpEx . '/') === 0)
+		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $php_ext . '/') === 0)
 		{
-			$page = substr($page, strlen('app.' . $phpEx . '/'));
+			$page = substr($page, strlen('app.' . $php_ext . '/'));
 		}
 
-		$page = $phpbb_root_path . $page;
+		$page = $path_helper->get_phpbb_root_path() . $page;
 	}
 
 	// Append SID
@@ -2371,121 +2373,10 @@ function build_url($strip_vars = false)
 
 	if ($strip_vars !== false)
 	{
-		$redirect = phpbb_strip_url_params($redirect, $strip_vars, '&');
+		$redirect = $path_helper->strip_url_params($redirect, $strip_vars, '&');
 	}
 
 	return $redirect;
-}
-
-/**
-* Get the base and parameters of a URL
-*
-* @param string $url URL to break apart
-* @param string $separator Parameter separator. Defaults to &amp;
-* @return array Returns the base and parameters in the form of array('base' => string, 'params' => array(name => value))
-*/
-function phpbb_get_url_parts($url, $separator = '&amp;') {
-	$params = array();
-
-	if (strpos($url, '?') !== false)
-	{
-		$base = substr($url, 0, strpos($url, '?'));
-		$args = substr($url, strlen($base) + 1);
-		$args = ($args) ? explode($separator, $args) : array();
-
-		foreach ($args as $argument)
-		{
-			$arguments = explode('=', $argument);
-			$key = $arguments[0];
-			unset($arguments[0]);
-
-			if ($key === '')
-			{
-				continue;
-			}
-
-			$params[$key] = implode('=', $arguments);
-		}
-	}
-	else
-	{
-		$base = $url;
-	}
-
-	return array(
-		'base'		=> $base,
-		'params'	=> $params,
-	);
-}
-
-/**
-* Glue URL parameters together
-*
-* @param array $params URL parameters in the form of array(name => value)
-* @return string Returns the glued string.
-*/
-function phpbb_glue_url_params($params) {
-	$_params = array();
-
-	foreach ($params as $key => $value)
-	{
-		$_params[] = $key . '=' . $value;
-	}
-	return implode('&amp;', $_params);	
-}
-
-/**
-* Strip parameters from an already built URL.
-*
-* @param string $url URL to strip parameters from
-* @param array|string $strip Parameters to strip.
-* @param string $separator Parameter separator. Defaults to &amp;
-* @return string Returns the new URL.
-*/
-function phpbb_strip_url_params($url, $strip, $separator = '&amp;') {
-	$url_parts = phpbb_get_url_parts($url, $separator);
-	$params = $url_parts['params'];
-
-	if (!is_array($strip))
-	{
-		$strip = array($strip);
-	}
-
-	if (!empty($params))
-	{
-		// Strip the parameters off
-		foreach ($strip as $param)
-		{
-			if (isset($params[$param]))
-			{
-				unset($params[$param]);
-			}
-		}
-	}
-
-	return $url_parts['base'] . (($params) ? '?' . phpbb_glue_url_params($params) : '');		
-}
-
-/**
-* Append parameters to an already built URL.
-*
-* @param string $url URL to append parameters to
-* @param array $new_params Parameters to add in the form of array(name => value)
-* @param string $separator Parameter separator. Defaults to &amp;
-* @return string Returns the new URL.
-*/
-function phpbb_append_url_params($url, $new_params, $separator = '&amp;') {
-	$url_parts = phpbb_get_url_parts($url, $separator);
-	$params = array_merge($url_parts['params'], $new_params);
-
-	// Move the sid to the end if it's set
-	if (isset($params['sid'])) {
-		$sid = $params['sid'];
-		unset($params['sid']);
-		$params['sid'] = $sid;
-	}
-
-	return $url_parts['base'] . '?' . phpbb_glue_url_params($params);
 }
 
 /**
