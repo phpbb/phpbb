@@ -231,7 +231,6 @@ p.post-notice.reported:before, p.post-notice.error:before {
 	background-image: url("./images/icon_topic_reported.gif");
 }
 
-
 /*
 --------------------------------------------------------------
 Colours and backgrounds for links.css
@@ -655,7 +654,7 @@ a.sendemail {
 	background-image: url("./images/icon_sendemail.gif");
 }
 
-.buttons div a {
+.buttons div a, .dropdown-select {
 	border-color: #C7C3BF;
 	background-color: #FFFFFF;
 	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
@@ -668,7 +667,16 @@ a.sendemail {
 	color: #BC2A4D !important;
 }
 
-.buttons div a:hover {
+.dropdown-select {
+	color: #5C6482 !important;
+}
+
+.dropdown-select:after {
+	border-color: #DADADA;
+}
+
+.buttons div a:hover, .dropdown-select:hover, .dropdown-visible .dropdown-select,
+.dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select  {
 	border-color: #0a8ed0;
 	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
@@ -678,7 +686,16 @@ a.sendemail {
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.buttons div a:after {
+.dropdown-select:hover {
+	border-color: #C7C3BF; 
+}
+
+.dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
+	border-color: #A6B2BA;
+	color: #105289 !important;
+}
+
+.buttons div a:after, .dropdown-select-icon:before, .dropdown-select:after {
 	background-image: url("images/buttons.png");
 }
 
@@ -698,6 +715,7 @@ a.sendemail {
 .icon-search, .responsive-search a	{ background-image: url("./images/icon_search.gif"); }
 .icon-notification				{ background-image: url("./images/icon_notification.gif"); }
 .icon-pm						{ background-image: url("./images/icon_pm.gif"); }
+.icon-download					{ background-image: url("./images/icon_download.gif"); }
 
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }
@@ -1160,6 +1178,10 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 
 .dropdown-up .dropdown-contents {
 	box-shadow: 1px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown li, .dropdown li li {
+	border-color: #DCDCDC;
 }
 
 #minitabs .dropdown-contents {

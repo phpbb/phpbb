@@ -90,6 +90,21 @@
 	text-align: left;
 }
 
+/* Dropdown menu
+---------------------------------------- */
+.rtl .dropdown-container.topic-tools {
+	float: right;
+}
+
+.rtl .dropdown li {
+	text-align: right;
+}
+
+.rtl .dropdown li li {
+	padding-left: 0;
+	padding-right: 10px;
+}
+
 /* Table styles
 ----------------------------------------*/
 .rtl table.table1 thead th {
