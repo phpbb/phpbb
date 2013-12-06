@@ -157,20 +157,11 @@
 			<!-- IF roles.ROLE_DESCRIPTION --><br /><span>{roles.ROLE_DESCRIPTION}</span><!-- ENDIF -->
 		</td>
 		<td style="width: 30%; text-align: center; vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
-		<td style="width: 80px; text-align: right; vertical-align: top; white-space: nowrap;">
-			<!-- IF roles.S_FIRST_ROW && not roles.S_LAST_ROW -->
-				{ICON_MOVE_UP_DISABLED}
-				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-			<!-- ELSEIF not roles.S_FIRST_ROW && not roles.S_LAST_ROW-->
-				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-				<a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-			<!-- ELSEIF roles.S_LAST_ROW && not roles.S_FIRST_ROW -->
-				<a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
-				{ICON_MOVE_DOWN_DISABLED}
-			<!-- ELSE -->
-				{ICON_MOVE_UP_DISABLED}
-				{ICON_MOVE_DOWN_DISABLED}
-			<!-- ENDIF -->	
+		<td class="actions">
+			<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+			<span class="up"><a href="{roles.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
+			<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+			<span class="down"><a href="{roles.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
 			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a> 
 			<a href="{roles.U_REMOVE}" title="{L_REMOVE_ROLE}" data-ajax="row_delete">{ICON_DELETE}</a>
 		</td>
