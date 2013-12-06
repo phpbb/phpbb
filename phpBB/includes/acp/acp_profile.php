@@ -39,10 +39,16 @@ class acp_profile
 		$this->tpl_name = 'acp_profile';
 		$this->page_title = 'ACP_CUSTOM_PROFILE_FIELDS';
 
+		$field_id = $request->variable('field_id', 0);
 		$action = (isset($_POST['create'])) ? 'create' : request_var('action', '');
 
 		$error = array();
 		$s_hidden_fields = '';
+
+		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
+		{
+			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		// Define some default values for each field type
 		$default_values = array(
@@ -98,12 +104,6 @@ class acp_profile
 		switch ($action)
 		{
 			case 'delete':
-				$field_id = request_var('field_id', 0);
-
-				if (!$field_id)
-				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
 
 				if (confirm_box(true))
 				{
@@ -210,12 +210,6 @@ class acp_profile
 			break;
 
 			case 'activate':
-				$field_id = request_var('field_id', 0);
-
-				if (!$field_id)
-				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
@@ -256,12 +250,6 @@ class acp_profile
 			break;
 
 			case 'deactivate':
-				$field_id = request_var('field_id', 0);
-
-				if (!$field_id)
-				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 0
@@ -291,7 +279,19 @@ class acp_profile
 
 			case 'move_up':
 			case 'move_down':
-				$field_order = request_var('order', 0);
+
+				$sql = 'SELECT field_order
+					FROM ' . PROFILE_FIELDS_TABLE . "
+					WHERE field_id = $field_id";
+				$result = $db->sql_query($sql);
+				$field_order = $db->sql_fetchfield('field_order');
+				$db->sql_freeresult($result);
+
+				if ($field_order === false || ($field_order == 0 && $action == 'move_up'))
+				{
+					break;
+				}
+				$field_order = (int) $field_order;
 				$order_total = $field_order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
@@ -312,7 +312,6 @@ class acp_profile
 			case 'create':
 			case 'edit':
 
-				$field_id = request_var('field_id', 0);
 				$step = request_var('step', 1);
 
 				$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
@@ -324,11 +323,6 @@ class acp_profile
 				// We are editing... we need to grab basic things
 				if ($action == 'edit')
 				{
-					if (!$field_id)
-					{
-						trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
 					$sql = 'SELECT l.*, f.*
 						FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
 						WHERE l.lang_id = ' . $this->edit_lang_id . "
@@ -927,8 +921,8 @@ class acp_profile
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
 				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
 				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
-				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;order={$row['field_order']}",
-				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;order={$row['field_order']}",
+				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id",
+				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id",
 
 				'S_NEED_EDIT'				=> $s_need_edit)
 			);

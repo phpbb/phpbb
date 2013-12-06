@@ -47,6 +47,11 @@ class acp_permission_roles
 		$form_name = 'acp_permissions';
 		add_form_key($form_name);
 
+		if (!$role_id && in_array($action, array('remove', 'edit', 'move_up', 'move_down')))
+		{
+			trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		switch ($mode)
 		{
 			case 'admin_roles':
@@ -86,11 +91,6 @@ class acp_permission_roles
 			{
 				case 'remove':
 
-					if (!$role_id)
-					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
@@ -124,10 +124,6 @@ class acp_permission_roles
 				break;
 
 				case 'edit':
-					if (!$role_id)
-					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
 
 					// Get role we edit
 					$sql = 'SELECT *
@@ -274,12 +270,7 @@ class acp_permission_roles
 			case 'edit':
 
 				if ($action == 'edit')
-				{
-					if (!$role_id)
-					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-					
+				{					
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
@@ -367,7 +358,17 @@ class acp_permission_roles
 			case 'move_up':
 			case 'move_down':
 
-				$order = request_var('order', 0);
+				$sql = 'SELECT role_order
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_id = $role_id";
+				$result = $db->sql_query($sql);
+				$order = $db->sql_fetchfield('role_order');
+
+				if ($order === false || ($order == 0 && $action == 'move_up'))
+				{
+					break;
+				}
+				$order = (int) $order;
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
@@ -430,8 +431,8 @@ class acp_permission_roles
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;order=' . $row['role_order'],
-				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['role_order'],
+				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'],
+				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'],
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 
