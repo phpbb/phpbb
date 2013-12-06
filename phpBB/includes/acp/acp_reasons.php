@@ -26,6 +26,7 @@ class acp_reasons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $request;
 
 		$user->add_lang(array('mcp', 'acp/posting'));
 
@@ -288,6 +289,13 @@ class acp_reasons
 					WHERE reason_order IN (' . $order . ', ' . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
 
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> (bool) $db->sql_affectedrows(),
+					));
+				}
 			break;
 		}
 
