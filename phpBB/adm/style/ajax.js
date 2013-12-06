@@ -8,7 +8,11 @@
  * an item is moved up. It moves the row up or down, and deactivates /
  * activates any up / down icons that require it (the ones at the top or bottom).
  */
-phpbb.addAjaxCallback('row_down', function() {
+phpbb.addAjaxCallback('row_down', function(res) {
+	if (typeof res.success === 'undefined' || !res.success) {
+		return;
+	}
+
 	var el = $(this),
 		tr = el.parents('tr'),
 		trSwap = tr.next();
@@ -16,7 +20,11 @@ phpbb.addAjaxCallback('row_down', function() {
 	tr.insertAfter(trSwap);
 });
 
-phpbb.addAjaxCallback('row_up', function() {
+phpbb.addAjaxCallback('row_up', function(res) {
+	if (typeof res.success === 'undefined' || !res.success) {
+		return;
+	}
+
 	var el = $(this),
 		tr = el.parents('tr'),
 		trSwap = tr.prev();
