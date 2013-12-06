@@ -835,7 +835,7 @@ class acp_icons
 				$move_executed = (bool) $db->sql_affectedrows();
 
 				// Only update the other entry too if the previous entry got updated
-				if ($db->sql_affectedrows())
+				if ($move_executed)
 				{
 					$sql = "UPDATE $table
 						SET {$fields}_order = $switch_order_id
