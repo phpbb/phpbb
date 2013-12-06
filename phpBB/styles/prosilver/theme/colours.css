@@ -675,7 +675,8 @@ a.sendemail {
 	border-color: #DADADA;
 }
 
-.buttons div a:hover, .dropdown-select:hover {
+.buttons div a:hover, .dropdown-select:hover, .dropdown-visible .dropdown-select,
+.dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select  {
 	border-color: #0a8ed0;
 	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
@@ -690,8 +691,6 @@ a.sendemail {
 }
 
 .dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
-	background-color: #FFFFFF;
-	background-image: none;
 	border-color: #A6B2BA;
 	color: #105289 !important;
 }
