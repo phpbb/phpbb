@@ -932,6 +932,14 @@ phpbb.toggleDropdown = function() {
 };
 
 /**
+* Toggle dropdown submenu
+*/
+phpbb.toggleSubmenu = function(e) {
+	$(this).siblings('.dropdown-submenu').toggle();
+	e.preventDefault();
+}
+
+/**
 * Register dropdown menu
 * Shows/hides dropdown, decides which side to open to
 *
@@ -962,6 +970,7 @@ phpbb.registerDropdown = function(toggle, dropdown, options)
 	toggle.data('dropdown-options', ops);
 
 	toggle.click(phpbb.toggleDropdown);
+	$('.dropdown-toggle-submenu', ops.parent).click(phpbb.toggleSubmenu);
 };
 
 /**

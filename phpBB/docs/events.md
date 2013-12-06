@@ -399,3 +399,17 @@ viewtopic_topic_title_prepend
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly before the topic title link on the View topic screen
+
+viewtopic_topic_tools_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_topic_tools.html
+* Since: 3.1.0-a3
+* Purpose: Add a new topic tool after the rest of the existing ones
+
+viewtopic_topic_tools_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_topic_tools.html
+* Since: 3.1.0-a3
+* Purpose: Add a new topic tool before the rest of the existing ones

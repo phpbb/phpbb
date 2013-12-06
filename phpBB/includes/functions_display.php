@@ -1464,6 +1464,8 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 	}
 
 	$methods = compress::methods();
+	// Sort by preferred type.
+	$methods = array_intersect(array('.zip', '.tar.bz2', '.tar.gz', '.tar'), $methods);
 	$links = array();
 
 	foreach ($methods as $method)
