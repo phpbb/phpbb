@@ -183,4 +183,28 @@ class path_helper
 		*/
 		return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $corrections - 1);
 	}
+
+	/**
+	* Get the redirect URL for controllers
+	*
+	* @param string $url URL to the controller
+	*
+	* @param string Redirect URL for controller
+	*/
+	public function get_controller_redirect_url($url)
+	{
+		// Remove predecing dots
+		$url = ltrim($this->remove_web_root_path($url), '.');
+
+		// Get position of URL delimiter
+		$delimiter_position = strpos($url, '/');
+
+		// Add URL delimiter in front of path if it doesn't exist
+		if ($delimiter_position === false || $delimiter_position > 1)
+		{
+			$url = '/' . $url;
+		}
+
+		return generate_board_url() . $url;
+	}
 }
