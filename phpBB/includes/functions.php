@@ -2655,6 +2655,8 @@ function redirect($url, $return = false, $disable_cd_check = false)
 {
 	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper;
 
+	$failover_flag = false;
+
 	if (empty($user->lang))
 	{
 		$user->add_lang('common');
@@ -2667,16 +2669,6 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
-
-	// The url currently uses the web root path.
-	// However as we prepend the full board url later,
-	// we need to remove the relative web root path and
-	// prepend the normal root path again. Otherwise redirects
-	// from inside routes will not work as intended.
-	if ($phpbb_path_helper instanceof \phpbb\path_helper)
-	{
-		$url = $phpbb_path_helper->remove_web_root_path($url);
-	}
 
 	// Determine which type of redirect we need to handle...
 	$url_parts = @parse_url($url);
@@ -2704,53 +2696,87 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		// Is the uri pointing to the current directory?
-		if ($pathinfo['dirname'] == '.')
+		// Also treat URLs that have a non-existing basename
+		if (!$disable_cd_check && (!file_exists($pathinfo['dirname'] . '/') || !file_exists($pathinfo['basename'])))
 		{
-			$url = str_replace('./', '', $url);
+			$url = str_replace('../', '', $url);
+			$pathinfo = pathinfo($url);
 
-			// Strip / from the beginning
-			if ($url && substr($url, 0, 1) == '/')
+			// Also treat URLs that have a non-existing basename
+			if (!file_exists($pathinfo['dirname'] . '/') || !file_exists($pathinfo['basename']))
 			{
-				$url = substr($url, 1);
+				// fallback to "last known user page"
+				// at least this way we know the user does not leave the phpBB root
+				if ($phpbb_path_helper instanceof \phpbb\path_helper)
+				{
+					$url = $phpbb_path_helper->get_controller_redirect_url($url);
+				}
+				else
+				{
+					$url = generate_board_url() . '/' . $user->page['page'];
+				}
+				$failover_flag = true;
 			}
-
-			$url = generate_board_url() . '/' . $url;
 		}
-		else
+
+		if (!$failover_flag)
 		{
-			// Used ./ before, but $phpbb_root_path is working better with urls within another root path
-			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
-			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
-
-			$root_dirs = array_diff_assoc($root_dirs, $intersection);
-			$page_dirs = array_diff_assoc($page_dirs, $intersection);
-
-			$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
-
-			// Strip / from the end
-			if ($dir && substr($dir, -1, 1) == '/')
+			// Is the uri pointing to the current directory?
+			if ($pathinfo['dirname'] == '.')
 			{
-				$dir = substr($dir, 0, -1);
-			}
+				$url = str_replace('./', '', $url);
 
-			// Strip / from the beginning
-			if ($dir && substr($dir, 0, 1) == '/')
+				// Strip / from the beginning
+				if ($url && substr($url, 0, 1) == '/')
+				{
+					$url = substr($url, 1);
+				}
+
+				if ($user->page['page_dir'])
+				{
+					$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
+				}
+				else
+				{
+					$url = generate_board_url() . '/' . $url;
+				}
+			}
+			else
 			{
-				$dir = substr($dir, 1);
+				// Used ./ before, but $phpbb_root_path is working better with urls within another root path
+				$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
+				$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
+				$intersection = array_intersect_assoc($root_dirs, $page_dirs);
+
+				$root_dirs = array_diff_assoc($root_dirs, $intersection);
+				$page_dirs = array_diff_assoc($page_dirs, $intersection);
+
+				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+
+				// Strip / from the end
+				if ($dir && substr($dir, -1, 1) == '/')
+				{
+					$dir = substr($dir, 0, -1);
+				}
+
+				// Strip / from the beginning
+				if ($dir && substr($dir, 0, 1) == '/')
+				{
+					$dir = substr($dir, 1);
+				}
+
+				$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+				// Strip / from the beginning
+				if (substr($url, 0, 1) == '/')
+				{
+					$url = substr($url, 1);
+				}
+
+				$url = (!empty($dir) ? $dir . '/' : '') . $url;
+				$url = generate_board_url() . '/' . $url;
 			}
-
-			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
-
-			// Strip / from the beginning
-			if (substr($url, 0, 1) == '/')
-			{
-				$url = substr($url, 1);
-			}
-
-			$url = (!empty($dir) ? $dir . '/' : '') . $url;
-			$url = generate_board_url() . '/' . $url;
+			$url = $phpbb_filesystem->clean_path($url);
 		}
 	}
 
@@ -2768,8 +2794,6 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	{
 		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
-
-	$url = $phpbb_filesystem->clean_path($url);
 
 	if ($return)
 	{
