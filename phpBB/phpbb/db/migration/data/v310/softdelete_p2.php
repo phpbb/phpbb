@@ -34,7 +34,10 @@ class softdelete_p2 extends \phpbb\db\migration\migration
 			),
 			'drop_keys'		=> array(
 				$this->table_prefix . 'posts'			=> array('post_approved'),
-				$this->table_prefix . 'topics'			=> array('forum_appr_last'),
+				$this->table_prefix . 'topics'			=> array(
+					'forum_appr_last',
+					'topic_approved',
+				),
 			),
 		);
 	}
@@ -63,6 +66,7 @@ class softdelete_p2 extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'topics'		=> array(
 					'forum_appr_last'	=> array('forum_id', 'topic_approved', 'topic_last_post_id'),
+					'topic_approved'	=> array('topic_approved'),
 				),
 			),
 		);

@@ -52,4 +52,37 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 			$this->assert_checkbox_is_unchecked($cplist, $checkbox_name);
 		}
 	}
+
+	public function test_mark_notifications_read()
+	{
+		// Create a new standard user
+		$this->create_user('notificationtestuser');
+		$this->add_user_group('NEWLY_REGISTERED', array('notificationtestuser'));
+		$this->login('notificationtestuser');
+		$crawler = self::request('GET', 'index.php');
+		$this->assertContains('notificationtestuser', $crawler->filter('.icon-logout')->text());
+
+		// Post a new post that needs approval
+		$this->create_post(2, 1, 'Re: Welcome to phpBB3', 'This is a test [b]post[/b] posted by notificationtestuser.', array(), 'POST_STORED_MOD');
+		$crawler = self::request('GET', "viewtopic.php?t=1&sid={$this->sid}");
+		$this->assertNotContains('This is a test post posted by notificationtestuser.', $crawler->filter('html')->text());
+
+		// logout
+		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+
+		// admin login
+		$this->login();
+		$this->add_lang('ucp');
+		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications');
+
+		// At least one notification should exist
+		$this->assertGreaterThan(0, $crawler->filter('#notification_list_button strong')->text());
+
+		// Get form token
+		$link = $crawler->selectLink($this->lang('NOTIFICATIONS_MARK_ALL_READ'))->link()->getUri();
+		$crawler = self::request('GET', substr($link, strpos($link, 'ucp.')));
+		$form = $crawler->selectButton($this->lang('YES'))->form();
+		$crawler = self::submit($form);
+		$this->assertEquals(0, $crawler->filter('#notification_list_button strong')->text());
+	}
 }

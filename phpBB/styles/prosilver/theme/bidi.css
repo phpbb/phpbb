@@ -90,6 +90,21 @@
 	text-align: left;
 }
 
+/* Dropdown menu
+---------------------------------------- */
+.rtl .dropdown-container.topic-tools {
+	float: right;
+}
+
+.rtl .dropdown li {
+	text-align: right;
+}
+
+.rtl .dropdown li li {
+	padding-left: 0;
+	padding-right: 10px;
+}
+
 /* Table styles
 ----------------------------------------*/
 .rtl table.table1 thead th {
@@ -229,6 +244,11 @@
 .rtl a {
 	direction: rtl;
 	unicode-bidi: embed;
+}
+
+ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
+	padding-left: 0;
+	padding-right: 19px;
 }
 
 .rtl a.top {
@@ -527,10 +547,13 @@
 
 /* Icon images
 ---------------------------------------- */
-.rtl .sitehome, .rtl .icon-faq, .rtl .icon-members, .rtl .icon-home, .rtl .icon-ucp, .rtl .icon-register, .rtl .icon-logout,
-.rtl .icon-bookmark, .rtl .icon-bump, .rtl .icon-subscribe, .rtl .icon-unsubscribe, .rtl .icon-pages, .rtl .icon-search, .rtl .icon-notification, .rtl .icon-pm {
+.rtl .small-icon {
 	background-position: 100% 50%;
-	padding: 1px 17px 0 0;
+	padding: 1px 19px 0 0;
+}
+
+.rtl ul.linklist li.small-icon {
+	padding-right: 0;
 }
 
 /* Poster profile icons

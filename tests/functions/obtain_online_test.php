@@ -21,8 +21,9 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $config, $db;
+		global $config, $db, $user;
 
+		$user = new StdClass;
 		$db = $this->db = $this->new_dbal();
 		$config = array(
 			'load_online_time'	=> 5,

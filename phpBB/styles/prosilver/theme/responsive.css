@@ -468,10 +468,6 @@ p.rightside {
 	float: none;
 }
 
-.topic-actions {
-	overflow: hidden;
-}
-
 fieldset.quickmod {
 	width: auto;
 	float: none;
@@ -511,17 +507,14 @@ fieldset.display-actions {
 		margin: 0;
 	}
 
-	.topic-actions > div {
-		float: none;
-		overflow: hidden;
-		clear: both;
-	}
-
 	.topic-actions > .pagination, fieldset.jumpbox {
 		text-align: center;
 	}
 
 	.topic-actions > .pagination {
+		float: none;
+		overflow: hidden;
+		clear: both;
 		padding-bottom: 1px;
 	}
 

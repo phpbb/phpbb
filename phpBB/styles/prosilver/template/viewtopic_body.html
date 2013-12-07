@@ -33,6 +33,8 @@
 	<!-- ENDIF -->
 	</div>
 
+	<!-- INCLUDE viewtopic_topic_tools.html -->
+
 	<!-- IF S_DISPLAY_SEARCHBOX -->
 		<div class="search-box">
 			<form method="get" id="topic-search" action="{S_SEARCHBOX_ACTION}">
@@ -55,9 +57,8 @@
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
-
+	<div class="clear"></div>
 </div>
-<div class="clear"></div>
 
 <!-- IF S_HAS_POLL -->
 	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" class="topic_poll">
@@ -299,16 +300,7 @@
 	<!-- ENDIF -->
 	</div>
 
-	<!-- IF S_HAS_ATTACHMENTS -->
-		<div class="dl_links">
-			<strong>{L_DOWNLOAD_ALL_ATTACHMENTS}{L_COLON}</strong>
-			<ul>
-			<!-- BEGIN dl_method -->
-				<li>[ <a href="{dl_method.LINK}">{dl_method.TYPE}</a> ]</li>
-			<!-- END dl_method -->
-			</ul>
-		</div>
-	<!-- ENDIF -->
+	<!-- INCLUDE viewtopic_topic_tools.html -->
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
@@ -320,6 +312,7 @@
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
+	<div class="clear"></div>
 </div>
 
 <!-- EVENT viewtopic_body_footer_before -->

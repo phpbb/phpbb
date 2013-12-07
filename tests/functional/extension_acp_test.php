@@ -182,13 +182,34 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_actions()
 	{
+		// Access enable page without hash
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$this->assertContainsLang('FORM_INVALID', $crawler->filter('.errorbox')->text());
+
+		// Correctly submit the enable form
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$form = $crawler->selectButton('enable')->form();
+		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
+		// Access disable page without hash
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$this->assertContainsLang('FORM_INVALID', $crawler->filter('.errorbox')->text());
+
+		// Correctly submit the disable form
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$form = $crawler->selectButton('disable')->form();
+		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
+		// Access delete_data page without hash
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$this->assertContainsLang('FORM_INVALID', $crawler->filter('.errorbox')->text());
+
+		// Correctly submit the delete data form
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
+		$form = $crawler->selectButton('delete_data')->form();
+		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('.successbox')->text());
 	}
 }

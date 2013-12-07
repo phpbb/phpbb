@@ -567,7 +567,7 @@ class ucp_profile
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = \phpbb\avatar\manager::clean_row($user->data);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user->data, 'user');
 
 					if ($submit)
 					{
@@ -603,7 +603,7 @@ class ucp_profile
 							}
 							else
 							{
-								if ($driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+								if ($driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']))
 								{
 									$driver->delete($avatar_data);
 								}

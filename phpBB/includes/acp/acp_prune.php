@@ -331,23 +331,30 @@ class acp_prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
-		$s_group_list = '<option value="0"></option>';
 		$sql = 'SELECT group_id, group_name
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_type <> ' . GROUP_SPECIAL . '
 			ORDER BY group_name ASC';
 		$result = $db->sql_query($sql);
 
+		$s_group_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
 		$db->sql_freeresult($result);
 
+		if ($s_group_list)
+		{
+			// Only prepend the "All groups" option if there are groups,
+			// otherwise we don't want to display this option at all.
+			$s_group_list = '<option value="0">' . $user->lang['PRUNE_USERS_GROUP_NONE'] . '</option>' . $s_group_list;
+		}
+
 		$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
-			'S_GROUP_LIST'      => $s_group_list,
+			'S_GROUP_LIST'		=> $s_group_list,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
 		));
@@ -358,12 +365,12 @@ class acp_prune
 	*/
 	function get_prune_users(&$user_ids, &$usernames)
 	{
-		global $user, $db;
+		global $user, $db, $request;
 
 		$users_by_name = request_var('users', '', true);
 		$users_by_id = request_var('user_ids', array(0));
 		$group_id = request_var('group_id', 0);
-		$posts_on_queue = request_var('posts_on_queue', 0);
+		$posts_on_queue = (trim($request->variable('posts_on_queue', '')) === '') ? false : $request->variable('posts_on_queue', 0);
 
 		if ($users_by_name)
 		{
@@ -450,8 +457,8 @@ class acp_prune
 			}
 		}
 
-		// Protect the admin, do not prune if no options are given...
-		if (!$where_sql)
+		// If no search criteria were provided, go no further.
+		if (!$where_sql && !$group_id && $posts_on_queue === false)
 		{
 			return;
 		}
@@ -468,34 +475,40 @@ class acp_prune
 		}
 		$db->sql_freeresult($result);
 
-		// Do not prune founder members
-		$sql = 'SELECT user_id, username
-			FROM ' . USERS_TABLE . '
-			WHERE user_id <> ' . ANONYMOUS . '
-				AND user_type <> ' . USER_FOUNDER . "
-			$where_sql";
-		$result = $db->sql_query($sql);
-
-		$user_ids = $usernames = array();
-
-		while ($row = $db->sql_fetchrow($result))
+		// Protect the admin, do not prune if no options are given...
+		if ($where_sql)
 		{
-			// Do not prune bots and the user currently pruning.
-			if ($row['user_id'] != $user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
+			// Do not prune founder members
+			$sql = 'SELECT user_id, username
+				FROM ' . USERS_TABLE . '
+				WHERE user_id <> ' . ANONYMOUS . '
+					AND user_type <> ' . USER_FOUNDER . "
+				$where_sql";
+			$result = $db->sql_query($sql);
+
+			$user_ids = $usernames = array();
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_ids[] = $row['user_id'];
-				$usernames[$row['user_id']] = $row['username'];
+				// Do not prune bots and the user currently pruning.
+				if ($row['user_id'] != $user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
+				{
+					$user_ids[] = $row['user_id'];
+					$usernames[$row['user_id']] = $row['username'];
+				}
 			}
+			$db->sql_freeresult($result);
 		}
-		$db->sql_freeresult($result);
 
 		if ($group_id)
 		{
 			$sql = 'SELECT u.user_id, u.username
 				FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
 				WHERE ug.group_id = ' . (int) $group_id . '
-					AND ug.user_pending = 0
-					AND ' . $db->sql_in_set('ug.user_id', $user_ids, false, true) . '
+					AND ug.user_id <> ' . ANONYMOUS . '
+					AND u.user_type <> ' . USER_FOUNDER . '
+					AND ug.user_pending = 0 ' .
+					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
 					AND u.user_id = ug.user_id';
 			$result = $db->sql_query($sql);
 
@@ -505,28 +518,39 @@ class acp_prune
 			$user_ids = $usernames = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_ids[] = $row['user_id'];
-				$usernames[$row['user_id']] = $row['username'];
+				// Do not prune bots and the user currently pruning.
+				if ($row['user_id'] != $user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
+				{
+					$user_ids[] = $row['user_id'];
+					$usernames[$row['user_id']] = $row['username'];
+				}
 			}
 			$db->sql_freeresult($result);
 		}
 
-		if ($posts_on_queue)
+		if ($posts_on_queue !== false)
 		{
 			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE ' . $db->sql_in_set('p.poster_id', $user_ids, false, true) . '
+				WHERE u.user_id <> ' . ANONYMOUS . '
+					AND u.user_type <> ' . USER_FOUNDER .
+					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
+					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;
-			$result = $db->sql_query($result);
+			$result = $db->sql_query($sql);
 
 			// same intersection logic as the above group ID portion
 			$user_ids = $usernames = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_ids[] = $row['user_id'];
-				$usernames[$row['user_id']] = $row['username'];
+				// Do not prune bots and the user currently pruning.
+				if ($row['user_id'] != $user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
+				{
+					$user_ids[] = $row['user_id'];
+					$usernames[$row['user_id']] = $row['username'];
+				}
 			}
 			$db->sql_freeresult($result);
 		}

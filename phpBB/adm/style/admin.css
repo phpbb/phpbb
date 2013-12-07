@@ -381,6 +381,14 @@ li {
 	color: #BC2A4D;
 }
 
+#tabs a:hover {
+	background-position: 0 -69px;
+}
+
+#tabs a:hover span {
+	background-position: 100% -69px;
+}
+
 #tabs .activetab a {
 	background-position: 0 0;
 	border-bottom: 1px solid #DCDEE2;
@@ -390,14 +398,6 @@ li {
 	background-position: 100% 0;
 	padding-bottom: 5px;
 	color: #23649F;
-}
-
-#tabs a:hover {
-	background-position: 0 -69px;
-}
-
-#tabs a:hover span {
-	background-position: 100% -69px;
 }
 
 #tabs .activetab a:hover span {
@@ -735,6 +735,15 @@ td {
 .table1 {
 	border-collapse: separate;
 	border-spacing: 1px;
+}
+
+dt#color_palette_placeholder table {
+	margin-right: 5px;
+	width: 80px;
+}
+
+#color_palette_placeholder td {
+	padding: 0;
 }
 
 table.type2 {
@@ -1578,6 +1587,8 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 
 #darkenwrapper {
 	display: none;
+	position: relative;
+	z-index: 44;
 }
 
 #darken {
@@ -2354,11 +2365,14 @@ fieldset.permissions .padding {
 .dropdown .dropdown-contents {
 	z-index: 2;
 	overflow: hidden;
+	overflow-y: auto;
 	background: #fff;
 	border: 1px solid #b9b9b9;
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
+	min-width: 40px;
+	max-height: 200px;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;

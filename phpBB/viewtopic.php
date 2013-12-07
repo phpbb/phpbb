@@ -347,23 +347,10 @@ if ($topic_data['forum_password'])
 	login_forum_box($topic_data);
 }
 
-// Redirect to login or to the correct post upon emailed notification links
-if (isset($_GET['e']))
+// Redirect to login upon emailed notification links if user is not logged in.
+if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
-	$jump_to = request_var('e', 0);
-
-	$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
-
-	if ($user->data['user_id'] == ANONYMOUS)
-	{
-		login_box($redirect_url . "&amp;p=$post_id&amp;e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
-	}
-
-	if ($jump_to > 0)
-	{
-		// We direct the already logged in user to the correct post...
-		redirect($redirect_url . ((!$post_id) ? "&amp;p=$jump_to" : "&amp;p=$post_id") . "#p$jump_to");
-	}
+	login_box(build_url('e') . '#unread', $user->lang['LOGIN_NOTIFY_TOPIC']);
 }
 
 // What is start equal to?
@@ -497,11 +484,21 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
 		}
-		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']);
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
+		}
 	}
 	else
 	{
-		$message = $user->lang['BOOKMARK_ERR'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+		$message = $user->lang['BOOKMARK_ERR'];
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
+		}
 	}
 	meta_refresh(3, $viewtopic_url);
 
@@ -1001,10 +998,19 @@ $sql_ary = array(
 * Event to modify the SQL query before the post and poster data is retrieved
 *
 * @event core.viewtopic_get_post_data
+* @var	int		forum_id	Forum ID
+* @var	int		topic_id	Topic ID
+* @var	array	topic_data	Array with topic data
+* @var	array	post_list	Array with post_ids we are going to retrieve
+* @var	int		sort_days	Display posts of previous x days
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_dir	Direction the posts are sorted by
+* @var	int		start		Pagination information
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
 * @since 3.1-A1
+* @change 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
 */
-$vars = array('sql_ary');
+$vars = array('forum_id', 'topic_id', 'topic_data', 'post_list', 'sort_days', 'sort_key', 'sort_dir', 'start', 'sql_ary');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
@@ -1378,15 +1384,16 @@ if (sizeof($attach_list))
 	}
 }
 
-$template->assign_vars(array(
-	'S_HAS_ATTACHMENTS' => $topic_data['topic_attachment'],
-));
-
 $methods = phpbb_gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);
 foreach ($methods as $method)
 {
 	$template->assign_block_vars('dl_method', $method);
 }
+
+$template->assign_vars(array(
+	'S_HAS_ATTACHMENTS'				=> $topic_data['topic_attachment'],
+	'U_DOWNLOAD_ALL_ATTACHMENTS'	=> $methods[0]['LINK'],
+));
 
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
@@ -1693,18 +1700,27 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	$user_poster_data = $user_cache[$poster_id];
 
+	$current_row_number = $i;
+
 	/**
 	* Modify the posts template block
 	*
 	* @event core.viewtopic_modify_post_row
+	* @var	int		start				Start item of this page
+	* @var	int		current_row_number	Number of the post on this page
+	* @var	int		end					Number of posts on this page
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
+	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	*/
-	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
+
+	$i = $current_row_number;
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
 	{
@@ -1738,6 +1754,27 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$template->assign_block_vars('postrow.dl_method', $method);
 		}
 	}
+
+	$current_row_number = $i;
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event core.viewtopic_post_row_after
+	* @var	int		start				Start item of this page
+	* @var	int		current_row_number	Number of the post on this page
+	* @var	int		end					Number of posts on this page
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
+	* @var	array	user_poster_data	Poster's data from user cache
+	* @var	array	post_row			Template block array of the post
+	* @since 3.1.0-a3
+	*/
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_row_after', compact($vars)));
+
+	$i = $current_row_number;
 
 	$prev_post_id = $row['post_id'];
 

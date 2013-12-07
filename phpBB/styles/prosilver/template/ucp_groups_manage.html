@@ -54,7 +54,12 @@
 	<fieldset>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" class="inputbox narrow" /> <span style="background-color: {GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span> [ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</dd>
+		<dd>
+			<input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" class="inputbox narrow" />
+			<span style="background-color: {GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span>
+			[ <a href="#" id="color_palette_toggle">{L_COLOUR_SWATCH}</a> ]
+			<div id="color_palette_placeholder" class="hidden" data-orientation="h" data-height="12" data-width="15" data-target="#group_colour"></div>
+		</dd>
 	</dl>
 	<dl>
 		<dt><label for="group_rank">{L_GROUP_RANK}{L_COLON}</label></dt>

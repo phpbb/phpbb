@@ -407,6 +407,14 @@ li.responsive-menu .dropdown .dropdown-contents {
 	padding: 0 5px;
 }
 
+ul.linklist .dropdown-down .dropdown {
+	top: 22px;
+}
+
+ul.linklist .dropdown-up .dropdown {
+	bottom: 18px;
+}
+
 ul.linklist .dropdown li {
 	clear: both;
 }
@@ -437,27 +445,47 @@ ul.linklist.bulletin li.no-bulletin:before {
 
 /* Dropdown menu
 ----------------------------------------*/
+.dropdown-container {
+	position: relative;
+}
+
+.nojs .dropdown-container:hover .dropdown {
+	display: block !important;
+}
+
 .dropdown {
 	position: absolute;
 	left: 0;
-	top: 22px;
+	top: 1.2em;
 	z-index: 2;
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 9px 0 0;
 }
 
+.dropdown-container.topic-tools {
+	float: left;
+}
+
 .dropdown-up .dropdown {
 	top: auto;
-	bottom: 18px;
+	bottom: 1.2em;
 	padding: 0 0 9px;
 }
 
-.dropdown-left .dropdown {
+.dropdown-left .dropdown, .nojs .rightside .dropdown {
 	left: auto;
 	right: 0;
 }
 
+.dropdown-button-control .dropdown {
+	top: 24px;
+}
+
+.dropdown-button-control.dropdown-up .dropdown {
+	top: auto;
+	bottom: 24px;
+}
 
 .dropdown .pointer, .dropdown .pointer-inner {
 	position: absolute;
@@ -488,7 +516,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 	top: auto;
 }
 
-.dropdown-left .dropdown .pointer {
+.dropdown-left .dropdown .pointer, .nojs .rightside .dropdown .pointer {
 	left: auto;
 	right: 10px;
 }
@@ -507,20 +535,46 @@ ul.linklist.bulletin li.no-bulletin:before {
 .dropdown .dropdown-contents {
 	z-index: 2;
 	overflow: hidden;
+	overflow-y: auto;
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
+	min-width: 40px;
+	max-height: 200px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
 .dropdown li {
-	float: none;
+	border-bottom: 1px dotted transparent;
+	float: none !important;
+	line-height: normal !important;
+	font-size: 1em !important;
+	list-style: none;
 	margin: 0;
+	padding-top: 4px;
+	padding-bottom: 4px;
 	white-space: nowrap;
 	text-align: left;
+}
+
+.dropdown li:last-child, .dropdown li li {
+	border-bottom: 0;
+}
+
+.dropdown li li:first-child {
+	margin-top: 4px;
+}
+
+.dropdown li li:last-child {
+	padding-bottom: 0;
+}
+
+.dropdown li li {
+	border-top: 1px dotted transparent;
+	padding-left: 10px;
 }
 
 .wrap .dropdown li, .dropdown.wrap li, #notification_list li {
@@ -629,6 +683,11 @@ table.info tbody th {
 
 .forumbg-table > .inner {
 	margin: 0 -1px;
+}
+
+#color_palette_placeholder table {
+	border-collapse: separate;
+	border-spacing: 1px;
 }
 
 /* Misc layout styles
@@ -810,6 +869,8 @@ li.pagination ul {
 
 #darkenwrapper {
 	display: none;
+	position: relative;
+	z-index: 44;
 }
 
 #darken {
@@ -819,6 +880,7 @@ li.pagination ul {
 	width: 100%;
 	height: 100%;
 	opacity: 0.5;
+	z-index: 45;
 }
 
 #loading_indicator {

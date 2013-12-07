@@ -54,6 +54,14 @@ forumlist_body_last_post_title_prepend
 * Since: 3.1.0-a1
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
+index_body_forumlist_before
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-a3
+* Purpose: Add content above the forums list (on forum index only)
+
 index_body_stat_blocks_before
 ===
 * Locations:
@@ -111,6 +119,14 @@ overall_footer_breadcrumb_append
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the footer
 
+overall_footer_content_after
+===
+* Locations:
+    + styles/prosilver/template/overall_footer.html
+    + styles/subsilver2/template/overall_footer.html
+* Since: 3.1.0-a3
+* Purpose: Add content on all pages after the main content, before the footer
+
 overall_footer_copyright_append
 ===
 * Locations:
@@ -134,6 +150,14 @@ overall_header_breadcrumb_append
     + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the header
+
+overall_header_content_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.0-a3
+* Purpose: Add content on all pages before the main content, after the header
 
 overall_header_head_append
 ===
@@ -375,3 +399,17 @@ viewtopic_topic_title_prepend
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly before the topic title link on the View topic screen
+
+viewtopic_topic_tools_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_topic_tools.html
+* Since: 3.1.0-a3
+* Purpose: Add a new topic tool after the rest of the existing ones
+
+viewtopic_topic_tools_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_topic_tools.html
+* Since: 3.1.0-a3
+* Purpose: Add a new topic tool before the rest of the existing ones

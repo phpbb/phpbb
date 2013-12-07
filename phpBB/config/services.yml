@@ -6,6 +6,8 @@ imports:
     - { resource: avatars.yml }
     - { resource: feed.yml }
     - { resource: auth_providers.yml }
+    - { resource: console.yml }
+    - { resource: mimetype_guessers.yml }
 
 services:
     acl.permissions:
@@ -140,9 +142,16 @@ services:
         class: phpbb\event\extension_subscriber_loader
         arguments:
             - @dispatcher
-            - @ext.manager
+            - @event.listener_collection
         calls:
             - [load, []]
+
+    event.listener_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: event.listener }
 
     ext.manager:
         class: phpbb\extension\manager
@@ -236,6 +245,7 @@ services:
             - @notification.method_collection
             - @service_container
             - @user_loader
+            - @config
             - @dbal.conn
             - @cache
             - @user
@@ -265,6 +275,7 @@ services:
             - @request
             - @user
             - @php_ini
+            - @mimetype.guesser
 
     request:
         class: phpbb\request\request
