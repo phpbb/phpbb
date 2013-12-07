@@ -47,6 +47,35 @@ class context
 	}
 
 	/**
+	* Store the tpl data and clear it
+	*
+	* @param bool $clear Clear tpldata if true (default: true)
+	* @return array tpldata
+	*/
+	public function store($clear = true)
+	{
+		$tpldata = $this->tpldata;
+
+		if ($clear)
+		{
+			$this->clear();
+		}
+
+		return $tpldata;
+	}
+
+	/**
+	* Reset the tpldata to given input
+	*
+	* @param array $tpldata Template Data (must be properly formatted)
+	*/
+	public function reset($tpldata)
+	{
+		$this->tpldata = $tpldata;
+		$this->rootref = &$this->tpldata['.'][0];
+	}
+
+	/**
 	* Assign a single scalar value to a single key.
 	*
 	* Value can be a string, an integer or a boolean.

@@ -312,7 +312,7 @@ class twig extends \phpbb\template\base
 			$context_vars['.'][0], // To get normal vars
 			array(
 				'definition'	=> new \phpbb\template\twig\definition(),
-				'form'			=> new \phpbb\template\twig\form($this, $this->user),
+				'form'			=> new \phpbb\template\twig\form($this, $this->user, $this->context),
 				'user'			=> $this->user,
 				'loops'			=> $context_vars, // To get loops
 			)

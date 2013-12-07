@@ -20,14 +20,19 @@ class formrendererengine implements FormRendererEngineInterface
     /** @var phpbb\template\template */
     protected $template;
 
+    /** @var phpbb\template\context */
+    protected $context;
+
     /**
 	 * Constructor
 	 *
      * @param phpbb\template\template $template
+     * @param phpbb\template\context $context
      */
-    public function __construct(\phpbb\template\template $template)
+    public function __construct(\phpbb\template\template $template, \phpbb\template\context $context)
     {
         $this->template = $template;
+        $this->context = $context;
     }
 
     /**
@@ -198,11 +203,17 @@ class formrendererengine implements FormRendererEngineInterface
      */
     public function renderBlock(FormView $view, $resource, $blockName, array $variables = array())
 	{
+		$tpldata = $this->context->store();
+
 		$this->template->assign_vars($variables);
 
 		$this->template->assign_var('form_data', $view);
 
-		return $this->template->assign_display($resource);
+		$output = $this->template->assign_display($resource);
+
+		$this->context->reset($tpldata);
+
+		return $output;
 	}
 
 	/**

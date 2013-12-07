@@ -37,13 +37,14 @@ class form
 	 *
      * @param phpbb\template\template $template
      * @param phpbb\user $user
+     * @param phpbb\template\context $context
      */
-    public function __construct(\phpbb\template\template $template, \phpbb\user $user)
+    public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\template\context $context)
     {
         $this->template = $template;
         $this->user = $user;
 
-		$renderer_engine = new formrendererengine($template);
+		$renderer_engine = new formrendererengine($template, $context);
 		$this->renderer = new FormRenderer($renderer_engine);
     }
 
