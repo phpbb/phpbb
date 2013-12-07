@@ -1,0 +1,11 @@
+<div {{ form.block(form_data, 'widget_container_attributes') }}>
+    <!-- IF !form.parent and errors -->
+    <tr>
+        <td colspan="2">
+            {{ form.errors(form_data) }}
+        </td>
+    </tr>
+    <!-- ENDIF -->
+    {{ form.block(form_data, 'form_rows') }}
+    {{ form.rest(form_data) }}
+</div>

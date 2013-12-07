@@ -312,6 +312,7 @@ class twig extends \phpbb\template\base
 			$context_vars['.'][0], // To get normal vars
 			array(
 				'definition'	=> new \phpbb\template\twig\definition(),
+				'form'			=> new \phpbb\template\twig\form($this, $this->user),
 				'user'			=> $this->user,
 				'loops'			=> $context_vars, // To get loops
 			)
@@ -324,7 +325,7 @@ class twig extends \phpbb\template\base
 	}
 
 	/**
-	* Get path to template for handle (required for BBCode parser)
+	* Get path to template for handle
 	*
 	* @return string
 	*/

@@ -1,0 +1,9 @@
+<!-- FOR index, choice in choices -->
+    <!-- IF choice is iterable -->
+        <optgroup label="{index}">
+            {{ form.block(form_data, 'choice_widget_options', {'choices': choice}) }}
+        </optgroup>
+    <!-- ELSE -->
+        <option value="{choice.value}"<!-- IF choice.value == value --> selected="selected"<!-- ENDIF -->>{choice.label}</option>
+    <!-- ENDIF -->
+<!-- ENDFOR -->

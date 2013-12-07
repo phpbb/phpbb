@@ -1,0 +1,18 @@
+<form
+	name="{form_data.vars.name}"
+	<!-- IF form_data.vars.method == 'GET' or form_data.vars.method == 'POST' -->
+		method="{form_data.vars.method|lower}"
+	<!-- ELSE -->
+		method="post"
+	<!-- ENDIF -->
+	action="{form_data.vars.action}"
+
+	<!-- FOR k, v in attr -->
+		{k}="{v}"
+	<!-- ENDFOR -->
+
+	<!-- IF form_data.vars.multipart -->enctype="multipart/form-data"<!-- ENDIF -->
+>
+	<!-- IF form_data.vars.method != 'GET' and form_data.vars.method != 'POST' -->
+		<input type="hidden" name="_method" value="{form_data.vars.method}" />
+	<!-- ENDIF -->
