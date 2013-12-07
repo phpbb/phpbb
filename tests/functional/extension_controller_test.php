@@ -115,28 +115,27 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_redirect()
 	{
+		$filesystem = new \phpbb\filesystem();
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/redirect');
 
 		$test_redirects = array(
 			'index.php',
-			'../index.php',
+			'index.php',
 			'tests/index.php',
-			'../tests/index.php',
+			'tests/index.php',
 			'app.php/index',
-			'index',
-			'../index',
+			'app.php/index',
+			'app.php/index',
 			'app.php/tests/index',
-			'tests/index',
-			'../tests/index',
-			'index',
+			'app.php/tests/index',
+			'app.php/tests/index',
+			'app.php/tests/index',
 		);
-
-		$filesystem = new \phpbb\filesystem();
 
 		foreach ($test_redirects as $row_num => $redirect)
 		{
-			$this->assertContains($filesystem->clean_path(self::$root_url . $redirect), $crawler->filter('#redirect_' . $row_num)->text());
+			$this->assertContains($filesystem->clean_path(self::$root_url) . $redirect, $crawler->filter('#redirect_' . $row_num)->text());
 		}
 
 		$this->phpbb_extension_manager->purge('foo/bar');

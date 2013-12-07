@@ -26,21 +26,21 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array('http://localhost/phpBB/app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
 			array('./app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
 			array('app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
-			array('./../app.php/foobar', false, false, 'http://localhost/app.php/foobar'),
-			array('./../app.php/foobar', true, false, 'http://localhost/app.php/foobar'),
-			array('./../app.php/foo/bar', false, false, 'http://localhost/app.php/foo/bar'),
-			array('./../app.php/foo/bar', true, false, 'http://localhost/app.php/foo/bar'),
-			array('./../foo/bar', false, false, 'http://localhost/foo/bar'),
-			array('./../foo/bar', true, false, 'http://localhost/foo/bar'),
+			array('./../app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
+			array('./../app.php/foobar', true, 'INSECURE_REDIRECT', false),
+			array('./../app.php/foo/bar', false, false, 'http://localhost/phpBB/app.php/foo/bar'),
+			array('./../app.php/foo/bar', true, 'INSECURE_REDIRECT', false),
+			array('./../foo/bar', false, false, 'http://localhost/phpBB/foo/bar'),
+			array('./../foo/bar', true, 'INSECURE_REDIRECT', false),
 			array('app.php/', false, false, 'http://localhost/phpBB/app.php/'),
 			array('./app.php/', false, false, 'http://localhost/phpBB/app.php/'),
 			array('foobar', false, false, 'http://localhost/phpBB/foobar'),
 			array('./foobar', false, false, 'http://localhost/phpBB/foobar'),
 			array('foo/bar', false, false, 'http://localhost/phpBB/foo/bar'),
 			array('./foo/bar', false, false, 'http://localhost/phpBB/foo/bar'),
-			array('./../index.php', false, false, 'http://localhost/index.php'),
+			array('./../index.php', false, false, 'http://localhost/phpBB/index.php'),
 			array('./../index.php', true, false, 'http://localhost/index.php'),
-			array('../index.php', false, false, 'http://localhost/index.php'),
+			array('../index.php', false, false, 'http://localhost/phpBB/index.php'),
 			array('../index.php', true, false, 'http://localhost/index.php'),
 			array('./index.php', false, false, 'http://localhost/phpBB/index.php'),
 		);
@@ -53,6 +53,15 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		$GLOBALS['config'] = array(
 			'force_server_vars'	=> '0',
 		);
+
+		$this->path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			new \phpbb\filesystem(),
+			$this->phpbb_root_path,
+			'php'
+		);
 	}
 
 	/**
@@ -60,7 +69,9 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 	*/
 	public function test_redirect($test, $disable_cd_check, $expected_error, $expected_result)
 	{
-		global $user, $phpbb_root_path;
+		global $user, $phpbb_root_path, $phpbb_path_helper;
+
+		$phpbb_path_helper = $this->path_helper;
 
 		$temp_phpbb_root_path = $phpbb_root_path;
 		// We need to hack phpbb_root_path here, so it matches the actual fileinfo of the testing script.
