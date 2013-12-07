@@ -39,7 +39,7 @@ class form
      * @param phpbb\user $user
      * @param phpbb\template\context $context
      */
-    public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\template\context $context)
+    public function __construct(\phpbb\template\template $template, $user, \phpbb\template\context $context)
     {
         $this->template = $template;
         $this->user = $user;
