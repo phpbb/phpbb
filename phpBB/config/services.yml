@@ -175,6 +175,12 @@ services:
             - %core.php_ext%
             - _ext_finder
 
+    form:
+        class: phpbb\form
+        arguments:
+            - @config
+            - @user
+
     filesystem:
         class: phpbb\filesystem
 
