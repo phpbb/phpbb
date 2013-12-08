@@ -1,9 +1,0 @@
-<!-- IF widget == 'single_text' -->
-    {{ form.block(form_data, 'form_widget_simple') }}
-<!-- ELSE -->
-    <div {{ form.block(form_data, 'widget_container_attributes') }}>
-		{{ form.widget(form_data.hour, vars) }}
-		<!-- IF within_minutes -->: {{ form.widget(form_data.minute, vars) }}<!-- ENDIF -->
-		<!-- IF with_seconds -->: {{ form.widget(form_data.second, vars) }}<!-- ENDIF -->
-    </div>
-<!-- ENDIF -->

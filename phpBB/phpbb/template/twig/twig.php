@@ -105,10 +105,26 @@ class twig extends \phpbb\template\base
 			)
 		);
 
+		// Stuff related to phpBB
 		$this->twig->addExtension(
 			new \phpbb\template\twig\extension(
 				$this->context,
 				$this->user
+			)
+		);
+
+		// Secred for Csrf provider
+		$secret = 'secret'; // @todo change
+
+		// Symfony Forms
+		$renderer_engine = new \Symfony\Bridge\Twig\Form\TwigRendererEngine(array('form_layout.html'));
+		$renderer_engine->setEnvironment($this->twig);
+		$this->twig->addExtension(
+			new \Symfony\Bridge\Twig\Extension\FormExtension(
+				new \Symfony\Bridge\Twig\Form\TwigRenderer(
+					$renderer_engine,
+					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($secret)
+				)
 			)
 		);
 
@@ -312,7 +328,6 @@ class twig extends \phpbb\template\base
 			$context_vars['.'][0], // To get normal vars
 			array(
 				'definition'	=> new \phpbb\template\twig\definition(),
-				'form'			=> new \phpbb\template\twig\form($this, $this->user, $this->context),
 				'user'			=> $this->user,
 				'loops'			=> $context_vars, // To get loops
 			)
