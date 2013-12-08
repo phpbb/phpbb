@@ -213,6 +213,22 @@ posting_editor_subject_before
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
+posting_layout_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+    + styles/prosilver/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content after the topic title on the posting screen (outside of the <a></a> tags)
+
+posting_layout_topic_title_before
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+    + styles/prosilver/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content before the topic title on the posting screen (outside of the <a></a> tags)
+
 simple_footer_after
 ===
 * Locations:
