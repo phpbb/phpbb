@@ -13,6 +13,7 @@ use Symfony\Component\Form\Forms;
 use Symfony\Component\Form\FormRenderer;
 use Symfony\Component\Form\Extension\Csrf\CsrfExtension;
 use Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider;
+use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationRequestHandler;
 use Symfony\Component\Form\Extension\Templating\TemplatingRendererEngine;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Validator\Validation;
@@ -64,6 +65,16 @@ class form
 				new ValidatorExtension(Validation::createValidator())
 			)
 			->getFormFactory()
-			->createBuilder();
+			->createBuilder()
+			->setRequestHandler(new HttpFoundationRequestHandler());
+	}
+
+	public function handle_request($form, $request, $symfony_request)
+	{
+		$request->enable_super_globals();
+
+		$form->handleRequest($symfony_request);
+
+		$request->disable_super_globals();
 	}
 }
