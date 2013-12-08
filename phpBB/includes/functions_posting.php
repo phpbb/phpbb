@@ -2311,13 +2311,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* available in the $data array.
 	*
 	* The only action that can be done by altering data made available to this
-	* event is to modify the return URL ($urL).
+	* event is to modify the return URL ($url).
 	*
 	* @event core.submit_post_end
 	* @var	string		url						The "Return to topic" URL
 	* @var	array		data					Array of post data about the
 	*											submitted post
-	* @since 3.1-A2
+	* @since 3.1-A3
 	*/
 	$vars = array('url', 'data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_end', compact($vars)));
