@@ -1,1 +1,1 @@
-<button type="<!-- IF type -->{type}<!-- ELSE -->button<!-- ENDIF -->" {{ form.block(form_data, 'button_attributes') }}>{label}</button>
+<button type="<!-- IF type -->{type}<!-- ELSE -->button<!-- ENDIF -->" {{ form.block(form_data, 'button_attributes') }}><!-- IF label -->{{user.lang(label)}}<!-- ELSE -->{{user.lang(name)}}<!-- ENDIF --></button>
