@@ -221,6 +221,14 @@ posting_layout_topic_title_after
 * Since: 3.1.0-a2
 * Purpose: Add content after the topic title on the posting screen (outside of the <a></a> tags)
 
+posting_layout_topic_title_append
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+    + styles/prosilver/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content after the topic title on the posting screen (inside of the <a></a> tags)
+
 posting_layout_topic_title_before
 ===
 * Locations:
@@ -228,6 +236,14 @@ posting_layout_topic_title_before
     + styles/prosilver/template/posting_body.html
 * Since: 3.1.0-a2
 * Purpose: Add content before the topic title on the posting screen (outside of the <a></a> tags)
+
+posting_layout_topic_title_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+    + styles/prosilver/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content before the topic title on the posting screen (inside of the <a></a> tags)
 
 simple_footer_after
 ===

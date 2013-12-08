@@ -20,7 +20,7 @@
 
 <!-- IF not S_PRIVMSGS -->
 	<div id="pageheader">
-		<h2><!-- IF TOPIC_TITLE --><!-- EVENT posting_layout_topic_title_before --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- EVENT posting_layout_topic_title_after --><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- ENDIF --></h2>
+		<h2><!-- IF TOPIC_TITLE --><!-- EVENT posting_layout_topic_title_before --><a class="titles" href="{U_VIEW_TOPIC}"><!-- EVENT posting_layout_topic_title_prepend -->{TOPIC_TITLE}<!-- EVENT posting_layout_topic_title_append --></a><!-- EVENT posting_layout_topic_title_after --><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- ENDIF --></h2>
 
 		<!-- IF MODERATORS -->
 			<p class="moderators">{L_MODERATORS}{L_COLON} {MODERATORS}</p>
