@@ -340,7 +340,7 @@ class twig extends \phpbb\template\base
 	}
 
 	/**
-	* Get path to template for handle
+	* Get path to template for handle (required for BBCode parser)
 	*
 	* @return string
 	*/
