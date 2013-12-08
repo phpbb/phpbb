@@ -113,17 +113,13 @@ class twig extends \phpbb\template\base
 			)
 		);
 
-		// Secred for Csrf provider
-		$secret = 'secret'; // @todo change
-
 		// Symfony Forms
 		$renderer_engine = new \Symfony\Bridge\Twig\Form\TwigRendererEngine(array('form_layout.html'));
 		$renderer_engine->setEnvironment($this->twig);
 		$this->twig->addExtension(
 			new \Symfony\Bridge\Twig\Extension\FormExtension(
 				new \Symfony\Bridge\Twig\Form\TwigRenderer(
-					$renderer_engine,
-					new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider($secret)
+					$renderer_engine
 				)
 			)
 		);
