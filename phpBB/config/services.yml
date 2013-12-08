@@ -179,7 +179,10 @@ services:
         class: phpbb\form
         arguments:
             - @config
+            - @dispatcher
+            - @request
             - @user
+            - @symfony_request
 
     filesystem:
         class: phpbb\filesystem
