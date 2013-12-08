@@ -240,6 +240,22 @@ topiclist_row_append
 * Since: 3.1.0-a1
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
+topiclist_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content before the topic title on the viewforum topic list (outside of the <a></a> tags)
+
+topiclist_topic_title_before
+===
+* Locations:
+    + styles/prosilver/template/viewform_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content after the topic title on the viewforum topic list (outside of the <a></a> tags)
+
 ucp_pm_viewmessage_custom_fields_after
 ===
 * Locations:
@@ -301,7 +317,7 @@ ucp_prefs_view_radio_buttons_prepend
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the top of the radio buttons block of the Edit 
+* Purpose: Add options to the top of the radio buttons block of the Edit
 Display Options screen
 
 ucp_prefs_view_radio_buttons_append
@@ -310,7 +326,7 @@ ucp_prefs_view_radio_buttons_append
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the bottom of the radio buttons block of the Edit 
+* Purpose: Add options to the bottom of the radio buttons block of the Edit
 Display Options screen
 
 ucp_prefs_view_select_menu_prepend
@@ -319,7 +335,7 @@ ucp_prefs_view_select_menu_prepend
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the top of the drop-down lists block of the Edit 
+* Purpose: Add options to the top of the drop-down lists block of the Edit
 Display Options screen
 
 ucp_prefs_view_select_menu_append
@@ -328,7 +344,7 @@ ucp_prefs_view_select_menu_append
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the bottom of the drop-down lists block of the Edit 
+* Purpose: Add options to the bottom of the drop-down lists block of the Edit
 Display Options screen
 
 viewtopic_print_head_append
