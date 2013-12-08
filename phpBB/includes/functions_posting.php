@@ -2305,6 +2305,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
 	$url = append_sid($url, 'f=' . $data['forum_id'] . $params) . $add_anchor;
 
+	/**
+	* This event is used for performing actions directly after a post or topic
+	* has been submitted. When a new topic is posted, the topic ID is
+	* available in the $data array.
+	*
+	* The only action that can be done by altering data made available to this
+	* event is to modify the return URL ($urL).
+	*
+	* @event core.submit_post_end
+	* @var	string		url						The "Return to topic" URL
+	* @var	array		data					Array of post data about the
+	*											submitted post
+	* @since 3.1-A2
+	*/
+	$vars = array('url', 'data');
+	extract($phpbb_dispatcher->trigger_event('core.submit_post_end', compact($vars)));
+
 	return $url;
 }
 
