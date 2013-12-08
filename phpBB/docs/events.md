@@ -248,6 +248,14 @@ topiclist_topic_title_after
 * Since: 3.1.0-a2
 * Purpose: Add content before the topic title on the viewforum topic list (outside of the <a></a> tags)
 
+topiclist_topic_title_append
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content after the topic title on the viewforum topic list (within the <a></a> tags)
+
 topiclist_topic_title_before
 ===
 * Locations:
@@ -255,6 +263,14 @@ topiclist_topic_title_before
     + styles/subsilver2/template/viewforum_body.html
 * Since: 3.1.0-a2
 * Purpose: Add content after the topic title on the viewforum topic list (outside of the <a></a> tags)
+
+topiclist_topic_title_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-a2
+* Purpose: Add content before the topic title on the viewforum topic list (within the <a></a> tags)
 
 ucp_pm_viewmessage_custom_fields_after
 ===
