@@ -63,6 +63,8 @@ class form
 		$this->phpbb_request = $phpbb_request;
 		$this->phpbb_user = $phpbb_user;
 		$this->symfony_request = $symfony_request;
+
+		$this->phpbb_user->add_lang('form');
 	}
 
 	/**
@@ -76,6 +78,12 @@ class form
 		$token_sid = ($this->phpbb_user->data['user_id'] == ANONYMOUS && !empty($this->phpbb_config['form_token_sid_guests'])) ? $this->phpbb_user->session_id : '';
 		$secret = $this->phpbb_user->data['user_form_salt'] . $token_sid;
 
+		$validator = Validation::createValidatorBuilder()
+			->setTranslator(new \phpbb\validator_translator($this->phpbb_user))
+			->getValidator()
+		;
+		$validator_extension = new ValidatorExtension($validator);
+
 		return Forms::createFormFactoryBuilder()
 			// CSRF Extension
 			->addExtension(
@@ -85,10 +93,10 @@ class form
 			)
 
 			// Validator Extension
-			->addExtension(
-				new ValidatorExtension(Validation::createValidator())
-			)
+			->addExtension($validator_extension)
+
 			->getFormFactory()
+
 			// Create the form builder
 			->createNamedBuilder($form_name, 'form', null, array(
 				'intention' => $form_name,
@@ -103,25 +111,44 @@ class form
 	}
 
 	/**
+	* Get a constraint
+	*
+	* A helper that makes it a little easier to add constraints (validation)
+	*
+	* @param string $name The constraint name
+	*                         http://symfony.com/doc/2.3/book/validation.html#constraints
+	* @param array|null $options The options for the constraint
+	* @return \Symfony\Component\Validator\Constraint
+	*/
+	public function get_constraint($name, $options = null)
+	{
+		$class = '\Symfony\Component\Validator\Constraints\\' . $name;
+
+		return new $class($options);
+	}
+
+	/**
 	* Prepare the form
 	*
 	* This function creates an event to allow modifying the form (form.form_name)
 	* This also gets the form and handles the request
 	*
 	* @param \Symfony\Component\Form\FormBuilder $form
-	* @return null
+	* @return $this
 	*/
 	public function prepare_form(\Symfony\Component\Form\FormBuilder &$form)
 	{
 		/**
 		* This event is used to modify forms
 		*
-		* @event form.(form name)
+		* @event core.prepare_form
 		* @var  Symfony\Component\Form\FormBuilder form
+		* @var  string                             form_name The form name (read only)
 		* @since 3.1-A3
 		*/
-		$vars = array('form');
-		extract($this->phpbb_dispatcher->trigger_event('form.' . $form->getName(), compact($vars)));
+		$form_name = $form->getName();
+		$vars = array('form', 'form_name');
+		extract($this->phpbb_dispatcher->trigger_event('core.prepare_form', compact($vars)));
 
 		// Get the form
 		$form = $form->getForm();
@@ -134,5 +161,7 @@ class form
 
 		// Disable super globals again
 		$this->phpbb_request->disable_super_globals();
+
+		return $this;
 	}
 }
