@@ -40,6 +40,9 @@ class validator_translator implements TranslatorInterface
 	/** @var \phpbb\user */
 	protected $phpbb_user;
 
+	/**
+	* @var array Validator string to phpBB language string conversion table
+	*/
 	protected $lang_string_converter = array(
 		'This value should be false.' => 'VALIDATE_FALSE',
 		'This value should be true.' => 'VALIDATE_TRUE',
@@ -221,6 +224,6 @@ class validator_translator implements TranslatorInterface
      */
     public function getLocale()
     {
-        return 'en';
+        return '';
     }
 }
