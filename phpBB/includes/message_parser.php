@@ -1252,11 +1252,12 @@ class parse_message extends bbcode_firstpass
 		* Use this event to modify the text after it is parsed
 		*
 		* @event core.modify_text_for_format_display_after
-		* @var string	text			The text to parse
-		* @var string	uid				The BBCode UID
-		* @var bool		allow_bbcode	Allow BBCodes switch
-		* @var bool		allow_magic_url	Allow magic urls switch
-		* @var bool		allow_smilies	Allow smilies switch
+		* @var string	text				The text to parse
+		* @var string	uid					The BBCode UID
+		* @var bool		allow_bbcode		Allow BBCodes switch
+		* @var bool		allow_magic_url		Allow magic urls switch
+		* @var bool		allow_smilies		Allow smilies switch
+		* @var bool		update_this_message	Update message switch
 		* @since 3.1-A3
 		*/
 		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
