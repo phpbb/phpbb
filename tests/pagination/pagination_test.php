@@ -13,7 +13,22 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 {
 	protected $test_path = 'tests/pagination';
 
-	public function phpbb_generate_template_pagination_data()
+	public function return_callback_implode()
+	{
+		return implode('-', func_get_args());
+	}
+
+	public function setUp()
+	{
+		parent::setUp();
+		$user = $this->getMock('\phpbb\user');
+		$user->expects($this->any())
+			->method('lang')
+			->will($this->returnCallback(array($this, 'return_callback_implode')));
+		$this->pagination = new \phpbb\pagination($this->template, $user);
+	}
+
+	public function generate_template_pagination_data()
 	{
 		return array(
 			array(
@@ -98,20 +113,76 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	}
 
 	/**
-	* @dataProvider phpbb_generate_template_pagination_data
+	* @dataProvider generate_template_pagination_data
 	*/
-	public function test_phpbb_generate_template_pagination($base_url, $start_name, $num_items, $per_page, $start_item, $expect)
+	public function test_generate_template_pagination($base_url, $start_name, $num_items, $per_page, $start_item, $expect)
 	{
-		$pagination = new \phpbb\pagination($this->template, $this->getMock('\phpbb\user'));
-		$pagination->set_per_page($per_page)
-			->set_num_items($num_items)
-			->set_start_name($start_name)
-			->set_base_url($base_url)
-			->set_template_block_name('pagination');
-
-		$pagination->generate_template_pagination($start_item);
+		$this->pagination->generate_template_pagination($base_url, 'pagination', $start_name, $num_items, $per_page, $start_item);
 		$this->template->set_filenames(array('test' => 'pagination.html'));
 
 		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
+	}
+
+	public function on_page_data()
+	{
+		return array(
+			array(
+				'page.php',
+				10,
+				10,
+				0,
+				'PAGE_OF-1-1',
+				'on_page
+				per_page:10
+				on_page:1
+				base_url:page.php',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider on_page_data
+	*/
+	public function test_on_page($base_url, $num_items, $per_page, $start_item, $expect_return, $expect)
+	{
+		$this->assertEquals($expect_return, $this->pagination->on_page($base_url, $num_items, $per_page, $start_item));
+
+		$this->template->set_filenames(array('test' => 'on_page.html'));
+
+		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
+	}
+
+	public function validate_start_data()
+	{
+		return array(
+			array(
+				-1,
+				0,
+			),
+			array(
+				0,
+				0,
+			),
+			array(
+				10,
+				10,
+			),
+			array(
+				20,
+				10,
+			),
+			array(
+				30,
+				10,
+			),
+		);
+	}
+
+	/**
+	* @dataProvider validate_start_data
+	*/
+	public function test_validate_start($start, $expect)
+	{
+		$this->assertEquals($expect, $this->pagination->validate_start($start, 10, 20));
 	}
 }
