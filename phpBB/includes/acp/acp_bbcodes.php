@@ -336,7 +336,7 @@ class acp_bbcodes
 			break;
 		}
 
-		$this_u_action = $this->u_action;
+		$u_action = $this->u_action;
 
 		$template_data = array(
 			'U_ACTION'		=> $this->u_action . '&amp;action=add',
@@ -355,10 +355,10 @@ class acp_bbcodes
 		* @var	string	action			Type of the action: modify|create
 		* @var	string	sql_ary			The SQL array to get custom bbcode data
 		* @var	array	template_data	Array with form template data
-		* @var	object	this_u_action	$this->u_action object
+		* @var	object	u_action		$this->u_action object
 		* @since 3.1-A3
 		*/
-		$vars = array('action', 'sql_ary', 'template_data', 'this_u_action');
+		$vars = array('action', 'sql_ary', 'template_data', 'u_action');
 		extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
 
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
@@ -369,8 +369,8 @@ class acp_bbcodes
 		{
 			$bbcodes_array = array(
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
-				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'],
+				'U_EDIT'			=> $u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
+				'U_DELETE'			=> $u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'],
 			);
 
 			/**
@@ -379,18 +379,16 @@ class acp_bbcodes
 			* @event core.acp_bbcodes_display_bbcodes
 			* @var	array	row				Array with current bbcode data
 			* @var	array	bbcodes_array	Array of bbcodes template data
-			* @var	object	this_u_action	$this->u_action object
+			* @var	object	u_action		$this->u_action object
 			* @since 3.1-A3
 			*/
-			$vars = array('bbcodes_array', 'row', 'this_u_action');
+			$vars = array('bbcodes_array', 'row', 'u_action');
 			extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
 
 			$template->assign_block_vars('bbcodes', $bbcodes_array);
 
 		}
 		$db->sql_freeresult($result);
-
-		$this->u_action = $this_u_action;
 	}
 
 	/*
