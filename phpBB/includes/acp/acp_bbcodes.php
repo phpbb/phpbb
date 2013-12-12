@@ -286,8 +286,8 @@ class acp_bbcodes
 						'bbcode_match'			=> $bbcode_match,
 						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl),
 						'bbcode_helpline'		=> $bbcode_helpline,
-						'display_on_posting'	=> $display_on_posting)
-						))
+						'display_on_posting'	=> $display_on_posting,
+						)))
 					, 'confirm_bbcode.html');
 				}
 
