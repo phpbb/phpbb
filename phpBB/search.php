@@ -120,6 +120,7 @@ $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
+$pagination = $phpbb_container->get('pagination');
 
 if ($keywords || $author || $author_id || $search_id || $submit)
 {
@@ -501,14 +502,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 
 			// Make sure $start is set to the last page if it exceeds the amount
-			if ($start < 0)
-			{
-				$start = 0;
-			}
-			else if ($start >= $total_match_count)
-			{
-				$start = floor(($total_match_count - 1) / $per_page) * $per_page;
-			}
+			$start = $pagination->validate_start($start, $per_page, $total_match_count);
 
 			$id_ary = array_slice($id_ary, $start, $per_page);
 		}
@@ -600,7 +594,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
 	}
 
-	phpbb_generate_template_pagination($template, $u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
+	$pagination->generate_template_pagination($u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
 
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
@@ -608,7 +602,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'SEARCH_WORDS'		=> $keywords,
 		'SEARCHED_QUERY'	=> $search->get_search_query(),
 		'IGNORED_WORDS'		=> (sizeof($common_words)) ? implode(' ', $common_words) : '',
-		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $u_search, $total_match_count, $per_page, $start),
+		'PAGE_NUMBER'		=> $pagination->on_page($u_search, $total_match_count, $per_page, $start),
 
 		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
 
@@ -1025,7 +1019,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($show_results == 'topics')
 			{
-				phpbb_generate_template_pagination($template, $view_topic_url, 'searchresults.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
+				$pagination->generate_template_pagination($view_topic_url, 'searchresults.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 			}
 		}
 
