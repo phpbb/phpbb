@@ -111,7 +111,7 @@ class acp_bbcodes
 				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
 
 				/**
-				* Modify bbcode template before we display the add/edit form
+				* Event to modify custom bbcode template before displaying the add/edit form
 				*
 				* @event core.acp_bbcodes_edit_add
 				* @var	string	action			Type of the action: add|edit
@@ -143,7 +143,7 @@ class acp_bbcodes
 				$sql_ary = $hidden_fields = array();
 				
 				/**
-				* Modify bbcode data before modify/create
+				* Event to modify custom bbcode data before modify/create
 				*
 				* @event core.acp_bbcodes_modify_create
 				* @var	string	action				Type of the action: modify|create
@@ -349,7 +349,7 @@ class acp_bbcodes
 		);
 
 		/**
-		*  Modify bbcode template data before we display the form
+		*  Event to modify custom bbcode template data before displaying the form
 		*
 		* @event core.acp_bbcodes_display_form
 		* @var	string	action			Type of the action: modify|create
@@ -374,7 +374,7 @@ class acp_bbcodes
 			);
 
 			/**
-			*  Modify display of bbcodes in the form
+			*  Event to modify display of custom bbcodes in the form
 			*
 			* @event core.acp_bbcodes_display_bbcodes
 			* @var	array	row				Array with current bbcode data
