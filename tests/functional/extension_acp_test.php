@@ -97,6 +97,12 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContains('phpBB Bar Extension', $crawler->filter('.ext_disabled')->eq(3)->text());
 		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(3)->text());
 		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(3)->text());
+
+		// Check that invalid extensions are not listed.
+		$this->assertNotContains('phpBB BarFoo Extension', $crawler->filter('.table1')->text());
+		$this->assertNotContains('barfoo', $crawler->filter('.table1')->text());
+
+		$this->assertNotContains('vendor3/bar', $crawler->filter('.table1')->text());
 	}
 
 	public function test_details()
