@@ -355,7 +355,7 @@ class acp_bbcodes
 		* @var	string	action			Type of the action: modify|create
 		* @var	string	sql_ary			The SQL array to get custom bbcode data
 		* @var	array	template_data	Array with form template data
-		* @var	object	u_action		$this->u_action object
+		* @var	string	u_action		The u_action link
 		* @since 3.1.0-A3
 		*/
 		$vars = array('action', 'sql_ary', 'template_data', 'u_action');
@@ -379,7 +379,7 @@ class acp_bbcodes
 			* @event core.acp_bbcodes_display_bbcodes
 			* @var	array	row				Array with current bbcode data
 			* @var	array	bbcodes_array	Array of bbcodes template data
-			* @var	object	u_action		$this->u_action object
+			* @var	string	u_action		The u_action link
 			* @since 3.1.0-A3
 			*/
 			$vars = array('bbcodes_array', 'row', 'u_action');
