@@ -50,7 +50,6 @@ $lang = array_merge($lang, array(
 	'PLUPLOAD_ERR_FILE_COUNT'	=> 'File count error.',
 	'PLUPLOAD_ERR_FILE_INVALID_EXT'	=> 'Error: Invalid file extension:',
 	'PLUPLOAD_ERR_RUNTIME_MEMORY'	=> 'Runtime ran out of available memory.',
-	'PLUPLOAD_ERR_UPLOAD_LIMIT'	=> 'Upload element accepts only %d file(s) at a time. Extra files were stripped.',
 	'PLUPLOAD_ERR_UPLOAD_URL'	=> 'Upload URL might be wrong or does not exist.',
 	'PLUPLOAD_EXTENSION_ERROR'	=> 'File extension error.',
 	'PLUPLOAD_FILE'				=> 'File: %s',
