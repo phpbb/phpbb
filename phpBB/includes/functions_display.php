@@ -940,7 +940,7 @@ function display_custom_bbcodes()
 	*
 	* @event core.display_custom_bbcodes_modify_sql
 	* @var	array	sql_ary	The SQL array to get the bbcode data
-	* @since 3.1-A3
+	* @since 3.1.0-A3
 	*/
 	$vars = array('sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_sql', compact($vars)));

@@ -118,7 +118,7 @@ class acp_bbcodes
 				* @var	array	tpl_ary			Array with bbcodes add/edit data
 				* @var	int		bbcode_id		The id of the bbcode (being edited)
 				* @var	array	bbcode_tokens	Array of bbcode tokens
-				* @since 3.1-A3
+				* @since 3.1.0-A3
 				*/
 				$vars = array('action', 'tpl_ary', 'bbcode_id', 'bbcode_tokens');
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_edit_add', compact($vars)));
@@ -155,7 +155,7 @@ class acp_bbcodes
 				* @var	string	bbcode_helpline		bbcode_helpline var from thr form
 				* @var	array	hidden_fields		Array of hidden fields for use when
 				*									submitting form when $warn_text is true
-				* @since 3.1-A3
+				* @since 3.1.0-A3
 				*/
 				$vars = array('action', 'sql_ary', 'bbcode_id', 'display_on_posting', 'bbcode_match', 'bbcode_tpl', 'bbcode_helpline', 'hidden_fields');
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
@@ -356,7 +356,7 @@ class acp_bbcodes
 		* @var	string	sql_ary			The SQL array to get custom bbcode data
 		* @var	array	template_data	Array with form template data
 		* @var	object	u_action		$this->u_action object
-		* @since 3.1-A3
+		* @since 3.1.0-A3
 		*/
 		$vars = array('action', 'sql_ary', 'template_data', 'u_action');
 		extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
@@ -380,7 +380,7 @@ class acp_bbcodes
 			* @var	array	row				Array with current bbcode data
 			* @var	array	bbcodes_array	Array of bbcodes template data
 			* @var	object	u_action		$this->u_action object
-			* @since 3.1-A3
+			* @since 3.1.0-A3
 			*/
 			$vars = array('bbcodes_array', 'row', 'u_action');
 			extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));

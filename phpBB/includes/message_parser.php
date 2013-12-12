@@ -173,7 +173,7 @@ class bbcode_firstpass extends bbcode
 		* @event core.modify_bbcode_init
 		* @var array	bbcodes		The array of bbcode data for use in parsing
 		* @var array	rowset		The array of bbcode data from the database
-		* @since 3.1-A3
+		* @since 3.1.0-A3
 		*/
 		$vars = array('bbcodes', 'rowset');
 		extract($phpbb_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
@@ -1258,7 +1258,7 @@ class parse_message extends bbcode_firstpass
 		* @var bool		allow_magic_url		Allow magic urls switch
 		* @var bool		allow_smilies		Allow smilies switch
 		* @var bool		update_this_message	Update message switch
-		* @since 3.1-A3
+		* @since 3.1.0-A3
 		*/
 		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
 		extract($phpbb_dispatcher->trigger_event('core.modify_text_for_format_display_after', compact($vars)));
