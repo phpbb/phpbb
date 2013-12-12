@@ -222,7 +222,7 @@ class pagination
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
 	* @return int	Current page number
 	*/
-	protected function get_on_page($per_page, $start)
+	public function get_on_page($per_page, $start)
 	{
 		return floor($start / $per_page) + 1;
 	}
@@ -253,8 +253,9 @@ class pagination
 	/**
 	* Get current page number
 	*
-	* @param int $per_page the number of items, posts, etc. per page
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
+	* @param int $per_page the number of items, posts, etc. per page
+	* @param int $num_items the total number of items, posts, topics, etc.
 	* @return int	Current page number
 	*/
 	public function validate_start($start, $per_page, $num_items)
@@ -265,5 +266,41 @@ class pagination
 		}
 
 		return $start;
+	}
+
+	/**
+	* Get new start when searching from the end
+	*
+	* If the user is trying to reach late pages, start searching from the end.
+	*
+	* @param int $start the item which should be considered currently active, used to determine the page we're on
+	* @param int $limit the number of items, posts, etc. to display
+	* @param int $num_items the total number of items, posts, topics, etc.
+	* @return int	Current page number
+	*/
+	public function reverse_start($start, $limit, $num_items)
+	{
+		return max(0, $num_items - $limit - $start);
+	}
+
+	/**
+	* Get new item limit when searching from the end
+	*
+	* If the user is trying to reach late pages, start searching from the end.
+	* In this case the items to display might be lower then the actual per_page setting.
+	*
+	* @param int $start the item which should be considered currently active, used to determine the page we're on
+	* @param int $per_page the number of items, posts, etc. per page
+	* @param int $num_items the total number of items, posts, topics, etc.
+	* @return int	Current page number
+	*/
+	public function reverse_limit($start, $per_page, $num_items)
+	{
+		if ($start + $per_page > $num_items)
+		{
+			return min($per_page, max(1, $num_items - $start));
+		}
+
+		return $per_page;
 	}
 }

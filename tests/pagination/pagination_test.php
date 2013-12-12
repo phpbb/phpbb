@@ -185,4 +185,56 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	{
 		$this->assertEquals($expect, $this->pagination->validate_start($start, 10, 20));
 	}
+
+	public function reverse_start_data()
+	{
+		return array(
+			array(
+				10,
+				5,
+				15,
+				0,
+			),
+			array(
+				10,
+				10,
+				25,
+				5,
+			),
+		);
+	}
+
+	/**
+	* @dataProvider reverse_start_data
+	*/
+	public function test_reverse_start($start, $limit, $num_items, $expect)
+	{
+		$this->assertEquals($expect, $this->pagination->reverse_start($start, $limit, $num_items));
+	}
+
+	public function reverse_limit_data()
+	{
+		return array(
+			array(
+				10,
+				10,
+				15,
+				5,
+			),
+			array(
+				20,
+				10,
+				15,
+				1,
+			),
+		);
+	}
+
+	/**
+	* @dataProvider reverse_limit_data
+	*/
+	public function test_reverse_limit($start, $per_page, $num_items, $expect)
+	{
+		$this->assertEquals($expect, $this->pagination->reverse_limit($start, $per_page, $num_items));
+	}
 }
