@@ -186,4 +186,12 @@ class remote extends \phpbb\avatar\driver\driver
 			'avatar_height' => $height,
 		);
 	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_remote.html';
+	}
 }

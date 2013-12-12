@@ -18,4 +18,9 @@ class foobar extends \phpbb\avatar\driver\driver
 	{
 		return false;
 	}
+
+	public function get_template_name()
+	{
+		return 'foobar.html';
+	}
 }

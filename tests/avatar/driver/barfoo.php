@@ -18,4 +18,9 @@ class barfoo extends \phpbb\avatar\driver\driver
 	{
 		return false;
 	}
+
+	public function get_template_name()
+	{
+		return 'barfoo.html';
+	}
 }
