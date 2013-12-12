@@ -387,6 +387,8 @@ class acp_bbcodes
 
 		}
 		$db->sql_freeresult($result);
+		
+		$this->u_action = $this_u_action;
 	}
 
 	/*
