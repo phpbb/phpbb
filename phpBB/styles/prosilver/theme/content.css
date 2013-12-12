@@ -516,6 +516,7 @@ blockquote .codebox {
 	padding: 6px;
 	border: 1px dashed transparent;
 	clear: left;
+	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
@@ -709,6 +710,11 @@ fieldset.polls dd div {
 	display: block;
 	border: none;
 	margin-bottom: 3px;
+}
+
+.postprofile .avatar img {
+	max-width: 90%;
+	height: auto !important;
 }
 
 .online {

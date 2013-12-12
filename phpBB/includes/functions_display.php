@@ -1167,7 +1167,12 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					if ($uid != $user_id || $request->variable('unwatch', '', false, \phpbb\request\request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-						$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+						$message = $user->lang['ERR_UNWATCHING'];
+
+						if (!$request->is_ajax())
+						{
+							$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
+						}
 						trigger_error($message);
 					}
 
@@ -1177,8 +1182,12 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$db->sql_query($sql);
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />';
-					$message .= sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)];
+
+					if (!$request->is_ajax())
+					{
+						$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
+					}
 					meta_refresh(3, $redirect_url);
 					trigger_error($message);
 				}
@@ -1232,7 +1241,12 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					if ($uid != $user_id || $request->variable('watch', '', false, \phpbb\request\request_interface::GET) != $mode)
 					{
 						$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-						$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+						$message = $user->lang['ERR_WATCHING'];
+
+						if (!$request->is_ajax())
+						{
+							$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
+						}
 						trigger_error($message);
 					}
 
@@ -1243,7 +1257,12 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$db->sql_query($sql);
 
 					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)];
+
+					if (!$request->is_ajax())
+					{
+						$message .= '<br /><br />' . $user->lang('RETURN_' . strtoupper($mode), '<a href="' . $redirect_url . '">', '</a>');
+					}
 					meta_refresh(3, $redirect_url);
 					trigger_error($message);
 				}
@@ -1352,7 +1371,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 */
 function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
 {
-	$row = \phpbb\avatar\manager::clean_row($user_row);
+	$row = \phpbb\avatar\manager::clean_row($user_row, 'user');
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
@@ -1367,7 +1386,7 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 */
 function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
 {
-	$row = \phpbb\avatar\manager::clean_row($user_row);
+	$row = \phpbb\avatar\manager::clean_row($user_row, 'group');
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 
@@ -1445,6 +1464,8 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 	}
 
 	$methods = compress::methods();
+	// Sort by preferred type.
+	$methods = array_intersect(array('.zip', '.tar.bz2', '.tar.gz', '.tar'), $methods);
 	$links = array();
 
 	foreach ($methods as $method)

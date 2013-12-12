@@ -10,14 +10,6 @@
 namespace phpbb\avatar\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Handles avatars uploaded to the board
 * @package phpBB3
 */
@@ -173,6 +165,14 @@ class upload extends \phpbb\avatar\driver\driver
 		}
 
 		return true;
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_upload.html';
 	}
 
 	/**

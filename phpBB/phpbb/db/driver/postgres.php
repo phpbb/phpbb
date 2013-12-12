@@ -10,14 +10,6 @@
 namespace phpbb\db\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * PostgreSQL Database Abstraction Layer
 * Minimum Requirement is Version 7.3+
 * @package dbal
@@ -328,7 +320,7 @@ class postgres extends \phpbb\db\driver\driver
 					return false;
 				}
 
-				$temp_result = @pg_fetch_assoc($temp_q_id, NULL);
+				$temp_result = @pg_fetch_assoc($temp_q_id, null);
 				@pg_free_result($query_id);
 
 				return ($temp_result) ? $temp_result['last_value'] : false;
@@ -456,7 +448,7 @@ class postgres extends \phpbb\db\driver\driver
 
 					if ($result = @pg_query($this->db_connect_id, "EXPLAIN $explain_query"))
 					{
-						while ($row = @pg_fetch_assoc($result, NULL))
+						while ($row = @pg_fetch_assoc($result, null))
 						{
 							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 						}
@@ -476,7 +468,7 @@ class postgres extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @pg_query($this->db_connect_id, $query);
-				while ($void = @pg_fetch_assoc($result, NULL))
+				while ($void = @pg_fetch_assoc($result, null))
 				{
 					// Take the time spent on parsing rows into account
 				}

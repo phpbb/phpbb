@@ -10,14 +10,6 @@
 namespace phpbb\lock;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * File locking class
 * @package phpBB3
 */

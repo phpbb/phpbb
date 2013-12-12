@@ -10,14 +10,6 @@
 namespace phpbb\search;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * fulltext_mysql
 * Fulltext search for MySQL
 * @package search

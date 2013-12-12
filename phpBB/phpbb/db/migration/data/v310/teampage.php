@@ -27,7 +27,7 @@ class teampage extends \phpbb\db\migration\migration
 			'add_tables'		=> array(
 				$this->table_prefix . 'teampage'	=> array(
 					'COLUMNS'		=> array(
-						'teampage_id'		=> array('UINT', NULL, 'auto_increment'),
+						'teampage_id'		=> array('UINT', null, 'auto_increment'),
 						'group_id'			=> array('UINT', 0),
 						'teampage_name'		=> array('VCHAR_UNI:255', ''),
 						'teampage_position'	=> array('UINT', 0),

@@ -10,14 +10,6 @@
 namespace phpbb\request;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * All application input is accessed through this class.
 *
 * It provides a method to disable access to input data through super globals.

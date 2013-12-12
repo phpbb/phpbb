@@ -10,14 +10,6 @@
 namespace phpbb\cron\task;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Parametrized cron task interface.
 *
 * Parametrized cron tasks are somewhat of a cross between regular cron tasks and

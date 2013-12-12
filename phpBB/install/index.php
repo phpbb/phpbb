@@ -691,7 +691,7 @@ class module
 	/**
 	* Generate the relevant HTML for an input field and the associated label and explanatory text
 	*/
-	function input_field($name, $type, $value='', $options='')
+	function input_field($name, $type, $value = '', $options = '')
 	{
 		global $lang;
 		$tpl_type = explode(':', $type);

@@ -12,6 +12,16 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 {
+	protected function setUp()
+	{
+		parent::setUp();
+
+		global $user;
+
+		$user = new phpbb_mock_user();
+		$user->lang = new phpbb_mock_lang();
+	}
+
 	/**
 	* Data sets that don't throw an error.
 	*/
@@ -52,10 +62,6 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	*/
 	public function test_validate_range_fit($test_data)
 	{
-		global $user;
-
-		$user->lang = new phpbb_mock_lang();
-
 		$phpbb_error = array();
 		validate_range($test_data, $phpbb_error);
 
@@ -91,10 +97,6 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	*/
 	public function test_validate_range_too_low($test_data)
 	{
-		global $user;
-
-		$user->lang = new phpbb_mock_lang();
-
 		$phpbb_error = array();
 		validate_range($test_data, $phpbb_error);
 
@@ -130,10 +132,6 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	*/
 	public function test_validate_range_too_big($test_data)
 	{
-		global $user;
-
-		$user->lang = new phpbb_mock_lang();
-
 		$phpbb_error = array();
 		validate_range($test_data, $phpbb_error);
 
@@ -158,10 +156,6 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	*/
 	public function test_validate_range_too_long($test_data)
 	{
-		global $user;
-
-		$user->lang = new phpbb_mock_lang();
-
 		$phpbb_error = array();
 		validate_range($test_data, $phpbb_error);
 

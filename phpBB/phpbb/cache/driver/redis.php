@@ -9,14 +9,6 @@
 
 namespace phpbb\cache\driver;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 if (!defined('PHPBB_ACM_REDIS_PORT'))
 {
 	define('PHPBB_ACM_REDIS_PORT', 6379);

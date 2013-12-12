@@ -139,9 +139,12 @@ $sql_ary = array(
 * @event core.viewonline_modify_sql
 * @var	array	sql_ary			The SQL array
 * @var	bool	show_guests		Do we display guests in the list
+* @var	int		guest_counter	Number of guests displayed
+* @var	array	forum_data		Array with forum data
 * @since 3.1-A1
+* @change 3.1.0-a2 Added vars guest_counter and forum_data
 */
-$vars = array('sql_ary', 'show_guests');
+$vars = array('sql_ary', 'show_guests', 'guest_counter', 'forum_data');
 extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
 
 $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
@@ -345,9 +348,11 @@ while ($row = $db->sql_fetchrow($result))
 	* @var	array	row				Array with the users sql row
 	* @var	string	location		Page name to displayed in the list
 	* @var	string	location_url	Page url to displayed in the list
+	* @var	array	forum_data		Array with forum data
 	* @since 3.1-A1
+	* @change 3.1.0-a2 Added var forum_data
 	*/
-	$vars = array('on_page', 'row', 'location', 'location_url');
+	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data');
 	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
 
 	$template->assign_block_vars('user_row', array(

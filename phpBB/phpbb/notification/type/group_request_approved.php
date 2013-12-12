@@ -9,14 +9,6 @@
 
 namespace phpbb\notification\type;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class group_request_approved extends \phpbb\notification\type\base
 {
 	/**

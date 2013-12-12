@@ -10,14 +10,6 @@
 namespace phpbb;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * phpbb_visibility
 * Handle fetching and setting the visibility for topics and posts
 * @package phpbb

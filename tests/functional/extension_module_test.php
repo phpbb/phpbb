@@ -80,18 +80,53 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		);
 		$modules->update_module_data($module_data, true);
 
+		$parent_data = array(
+			'module_basename'	=> '',
+			'module_enabled'	=> 1,
+			'module_display'	=> 1,
+			'parent_id'			=> 0,
+			'module_class'		=> 'ucp',
+			'module_langname'	=> 'UCP_FOOBAR_TITLE',
+			'module_mode'		=> '',
+			'module_auth'		=> '',
+		);
+		$modules->update_module_data($parent_data, true);
+
+		$module_data = array(
+			'module_basename'	=> 'foo\\bar\\ucp\\main_module',
+			'module_enabled'	=> 1,
+			'module_display'	=> 1,
+			'parent_id'			=> $parent_data['module_id'],
+			'module_class'		=> 'ucp',
+			'module_langname'	=> 'UCP_FOOBAR_TITLE',
+			'module_mode'		=> 'mode',
+			'module_auth'		=> '',
+		);
+		$modules->update_module_data($module_data, true);
+
 		$this->purge_cache();
 	}
 
-	/**
-	* Check a controller for extension foo/bar.
-	*/
-	public function test_foo_bar()
+	public function test_acp()
 	{
 		$this->login();
 		$this->admin_login();
+
 		$crawler = self::request('GET', 'adm/index.php?i=foo%5cbar%5cacp%5cmain_module&mode=mode&sid=' . $this->sid);
-		$this->assertContains("Bertie rulez!", $crawler->filter('#main')->text());
+		$this->assertContains('Bertie rulez!', $crawler->filter('#main')->text());
+	}
+
+	public function test_ucp()
+	{
+		$this->login();
+
+		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid);
+		$this->assertContains('UCP_FOOBAR_TITLE', $crawler->filter('#tabs')->text());
+
+		$link = $crawler->selectLink('UCP_FOOBAR_TITLE')->link()->getUri();
+		$crawler = self::request('GET', substr($link, strpos($link, 'ucp.')));
+		$this->assertContains('UCP Extension Template Test Passed!', $crawler->filter('#content')->text());
+
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 }

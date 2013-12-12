@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 
 class includeparser extends \Twig_TokenParser_Include
 {

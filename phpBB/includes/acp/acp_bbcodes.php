@@ -108,11 +108,12 @@ class acp_bbcodes
 					'DISPLAY_ON_POSTING'	=> $display_on_posting)
 				);
 
-				foreach ($user->lang['tokens'] as $token => $token_explain)
+				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
+				foreach ($bbcode_tokens as $token)
 				{
 					$template->assign_block_vars('token', array(
 						'TOKEN'		=> '{' . $token . '}',
-						'EXPLAIN'	=> ($token === 'LOCAL_URL') ? sprintf($token_explain, generate_board_url() . '/') : $token_explain,
+						'EXPLAIN'	=> ($token === 'LOCAL_URL') ? $user->lang(array('tokens', $token), generate_board_url() . '/') : $user->lang(array('tokens', $token)),
 					));
 				}
 

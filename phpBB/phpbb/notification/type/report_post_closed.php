@@ -10,14 +10,6 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Post report closed notifications class
 * This class handles notifications for when reports are closed on posts (for the one who reported the post)
 *

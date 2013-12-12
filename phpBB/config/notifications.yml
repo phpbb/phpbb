@@ -266,7 +266,7 @@ services:
             - { name: notification.type }
 
     notification.type.report_post_closed:
-        class: phpbb\notification\type\report_post
+        class: phpbb\notification\type\report_post_closed
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader
@@ -303,6 +303,24 @@ services:
 
     notification.type.topic_in_queue:
         class: phpbb\notification\type\topic_in_queue
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+            - %tables.user_notifications%
+        tags:
+            - { name: notification.type }
+
+    notification.type.admin_activate_user:
+        class: phpbb\notification\type\admin_activate_user
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader

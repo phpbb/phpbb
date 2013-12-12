@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
  * Database authentication provider for phpBB3
  *
  * This is for authentication via the integrated user table
@@ -96,7 +88,6 @@ class ldap extends \phpbb\auth\provider\base
 		$result = @ldap_get_entries($ldap, $search);
 
 		@ldap_close($ldap);
-
 
 		if (!is_array($result) || sizeof($result) < 2)
 		{

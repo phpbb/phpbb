@@ -67,7 +67,8 @@ function adm_page_header($page_title)
 		'SID'					=> $SID,
 		'_SID'					=> $_SID,
 		'SESSION_ID'			=> $user->session_id,
-		'ROOT_PATH'				=> $phpbb_admin_path,
+		'ROOT_PATH'				=> $phpbb_root_path,
+		'ADMIN_ROOT_PATH'		=> $phpbb_admin_path,
 
 		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
 		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
@@ -362,7 +363,9 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 
 			if ($tpl_type[0] == 'select')
 			{
-				$tpl = '<select id="' . $key . '" name="' . $name . '">' . $return . '</select>';
+				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
+
+				$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size > 1) ? ' size="' . $size . '"' : '') . '>' . $return . '</select>';
 			}
 			else
 			{

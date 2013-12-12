@@ -324,7 +324,11 @@ class acp_groups
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the group_ prefix
-					$avatar_data = \phpbb\avatar\manager::clean_row($group_row);
+					$avatar_data = \phpbb\avatar\manager::clean_row($group_row, 'group');
+					if (!isset($avatar_data['id']))
+					{
+						$avatar_data['id'] = 'g' . $group_id;
+					}
 				}
 
 
@@ -379,7 +383,7 @@ class acp_groups
 						}
 						else
 						{
-							$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+							$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
 							if ($driver)
 							{
 								$driver->delete($avatar_data);
@@ -657,7 +661,6 @@ class acp_groups
 					'GROUP_HIDDEN'		=> $type_hidden,
 
 					'U_BACK'			=> $u_back,
-					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));

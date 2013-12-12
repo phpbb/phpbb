@@ -481,6 +481,16 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
 * Expects $text to be the value directly from request_var() and in it's non-parsed form
+* 
+* @param string $text The text to be replaced with the parsed one
+* @param string $uid The BBCode uid for this parse
+* @param string $bitfield The BBCode bitfield for this parse
+* @param int $flags The allow_bbcode, allow_urls and allow_smilies compiled into a single integer.
+* @param bool $allow_bbcode If BBCode is allowed (i.e. if BBCode is parsed)
+* @param bool $allow_urls If urls is allowed
+* @param bool $allow_smilies If smilies are allowed
+*
+* @return array	An array of string with the errors that occurred while parsing
 */
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
@@ -542,7 +552,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	$vars = array('text', 'uid', 'bitfield', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
 
-	return;
+	return $message_parser->warn_msg;
 }
 
 /**

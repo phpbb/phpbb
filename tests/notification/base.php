@@ -70,6 +70,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			array(),
 			$this->container,
 			$this->user_loader,
+			$this->config,
 			$this->db,
 			$this->cache,
 			$this->user,

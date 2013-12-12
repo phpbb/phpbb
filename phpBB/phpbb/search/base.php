@@ -12,14 +12,6 @@ namespace phpbb\search;
 /**
 * @ignore
 */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* @ignore
-*/
 define('SEARCH_RESULT_NOT_IN_CACHE', 0);
 define('SEARCH_RESULT_IN_CACHE', 1);
 define('SEARCH_RESULT_INCOMPLETE', 2);

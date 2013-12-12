@@ -748,7 +748,6 @@ class acp_attachments
 						}
 
 						$template->assign_vars(array(
-							'PHPBB_ROOT_PATH'		=> $phpbb_root_path,
 							'IMG_PATH'				=> $img_path,
 							'ACTION'				=> $action,
 							'GROUP_ID'				=> $group_id,

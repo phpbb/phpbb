@@ -10,14 +10,6 @@
 namespace phpbb\plupload;
 
 /**
- * @ignore
- */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * This class handles all server-side plupload functions
 *
 * @package \phpbb\plupload\plupload
@@ -50,6 +42,11 @@ class plupload
 	protected $php_ini;
 
 	/**
+	* @var \phpbb\mimetype\guesser
+	*/
+	protected $mimetype_guesser;
+
+	/**
 	* Final destination for uploaded files, i.e. the "files" directory.
 	* @var string
 	*/
@@ -69,16 +66,18 @@ class plupload
 	* @param \phpbb\request\request_interface $request
 	* @param \phpbb\user $user
 	* @param \phpbb\php\ini $php_ini
+	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	*
 	* @return null
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \phpbb\php\ini $php_ini)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \phpbb\php\ini $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
 		$this->request = $request;
 		$this->user = $user;
 		$this->php_ini = $php_ini;
+		$this->mimetype_guesser = $mimetype_guesser;
 
 		$this->upload_directory = $this->phpbb_root_path . $this->config['upload_path'];
 		$this->temporary_directory = $this->upload_directory . '/plupload';
@@ -121,14 +120,12 @@ class plupload
 		{
 			rename("{$file_path}.part", $file_path);
 
-			$file_info = new \Symfony\Component\HttpFoundation\File\File($file_path);
-
 			// Need to modify some of the $_FILES values to reflect the new file
 			return array(
 				'tmp_name' => $file_path,
 				'name' => $this->request->variable('real_filename', ''),
 				'size' => filesize($file_path),
-				'type' => $file_info->getMimeType($file_path),
+				'type' => $this->mimetype_guesser->guess($file_path, $file_name),
 			);
 		}
 		else

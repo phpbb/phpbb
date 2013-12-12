@@ -10,14 +10,6 @@
 namespace phpbb\avatar\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Base class for avatar drivers
 * @package phpBB3
 */
@@ -115,17 +107,6 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	public function delete($row)
 	{
 		return true;
-	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_template_name()
-	{
-		$driver = preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this));
-		$template = "ucp_avatar_options_$driver.html";
-
-		return $template;
 	}
 
 	/**

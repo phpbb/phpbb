@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
  * The interface authentication provider classes have to implement.
  *
  * @package auth

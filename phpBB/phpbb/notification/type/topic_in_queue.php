@@ -10,14 +10,6 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Topic in queue notifications class
 * This class handles notifications for topics when they are put in the moderation queue (for moderators)
 *

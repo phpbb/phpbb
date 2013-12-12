@@ -50,6 +50,15 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 					'avatar_delete'	=> array('tick', ''),
 				),
 			),
+			array(
+				'The URL you specified is invalid.',
+				'avatar_driver_remote',
+				array(
+					'avatar_remote_url'	=> 'https://www.phpbb.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
+					'avatar_remote_width'	=> 80,
+					'avatar_remote_height'	=> 80,
+				),
+			),
 		);
 	}
 
@@ -59,5 +68,14 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 	public function test_avatar_acp_groups($expected, $avatar_type, $data)
 	{
 		$this->assert_avatar_submit($expected, $avatar_type, $data);
+	}
+
+	// Test if avatar was really deleted
+	public function test_no_avatar_acp_groups()
+	{
+		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form_data = $form->getValues();
+		$this->assertEmpty($form_data['avatar_type']);
 	}
 }

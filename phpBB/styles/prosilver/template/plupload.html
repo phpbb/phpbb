@@ -1,31 +1,47 @@
-<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.js"></script>
-<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.html5.js"></script>
-<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.full.min.js?assets_version={T_ASSETS_VERSION}"></script>
+<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/jquery.plupload.queue.min.js?assets_version={T_ASSETS_VERSION}"></script>
 <script type="text/javascript">
 //<![CDATA[
 phpbb.plupload = {
 	i18n: {
-		'Select files': '{LA_PLUPLOAD_SELECT_FILES}',
+		'b': '{LA_BYTES_SHORT}',
+		'kb': '{LA_KB}',
+		'mb': '{LA_MB}',
+		'gb': '{LA_GB}',
+		'tb': '{LA_TB}',
+		'Add Files': '{LA_PLUPLOAD_ADD_FILES}',
 		'Add files to the upload queue and click the start button.': '{LA_PLUPLOAD_ADD_FILES_TO_QUEUE}',
-		'Filename': '{LA_PLUPLOAD_FILENAME}',
-		'Status': '{LA_PLUPLOAD_STATUS}',
-		'Size': '{LA_PLUPLOAD_SIZE}',
-		'Add files': '{LA_PLUPLOAD_ADD_FILES}',
-		'Stop current upload': '{LA_PLUPLOAD_STOP_CURRENT_UPLOAD}',
-		'Start uploading queue': '{LA_PLUPLOAD_START_CURRENT_UPLOAD}',
-		'Uploaded %d/%d files': '{LA_PLUPLOAD_UPLOADED}',
-		'N/A': '{LA_PLUPLOAD_NOT_APPLICABLE}',
+		'Close': '{LA_PLUPLOAD_CLOSE}',
 		'Drag files here.': '{LA_PLUPLOAD_DRAG}',
+		'Duplicate file error.': '{LA_PLUPLOAD_DUPLICATE_ERROR}',
+		'Error: File too large:': '{LA_PLUPLOAD_ERR_FILE_TOO_LARGE}',
+		'Error: Invalid file extension:': '{LA_PLUPLOAD_ERR_FILE_INVALID_EXT}',
+		'File: %s': '{LA_PLUPLOAD_FILE}',
+		'File: %s, size: %d, max file size: %d': '{LA_PLUPLOAD_FILE_DETAILS}',
+		'File count error.': '{LA_PLUPLOAD_ERR_FILE_COUNT}',
 		'File extension error.': '{LA_PLUPLOAD_EXTENSION_ERROR}',
 		'File size error.': '{LA_PLUPLOAD_SIZE_ERROR}',
-		'Init error.': '{LA_PLUPLOAD_INIT_ERROR}',
-		'HTTP Error.': '{LA_PLUPLOAD_HTTP_ERROR}',
-		'Security error.': '{LA_PLUPLOAD_SECURITY_ERROR}',
+		'Filename': '{LA_PLUPLOAD_FILENAME}',
 		'Generic error.': '{LA_PLUPLOAD_GENERIC_ERROR}',
+		'HTTP Error.': '{LA_PLUPLOAD_HTTP_ERROR}',
+		'Image format either wrong or not supported.': '{LA_PLUPLOAD_IMAGE_FORMAT}',
+		'Init error.': '{LA_PLUPLOAD_INIT_ERROR}',
 		'IO error.': '{LA_PLUPLOAD_IO_ERROR}',
+		'N/A': '{LA_PLUPLOAD_NOT_APPLICABLE}',
+		'Runtime ran out of available memory.': '{LA_PLUPLOAD_ERR_RUNTIME_MEMORY}',
+		'Security error.': '{LA_PLUPLOAD_SECURITY_ERROR}',
+		'Select files': '{LA_PLUPLOAD_SELECT_FILES}',
+		'Size': '{LA_PLUPLOAD_SIZE}',
+		'Start Upload': '{LA_PLUPLOAD_START_UPLOAD}',
+		'Start uploading queue': '{LA_PLUPLOAD_START_CURRENT_UPLOAD}',
+		'Status': '{LA_PLUPLOAD_STATUS}',
 		'Stop Upload': '{LA_PLUPLOAD_STOP_UPLOAD}',
-		'Start upload': '{LA_PLUPLOAD_START_UPLOAD}',
-		'%d files queued': '{LA_PLUPLOAD_FILES_QUEUED}'
+		'Stop current upload': '{LA_PLUPLOAD_STOP_CURRENT_UPLOAD}',
+		'Upload element accepts only %d file(s) at a time. Extra files were stripped.': '{LA_PLUPLOAD_ERR_UPLOAD_LIMIT}',
+		"Upload URL might be wrong or doesn't exist.": '{LA_PLUPLOAD_ERR_UPLOAD_URL}',
+		'Uploaded %d/%d files': '{LA_PLUPLOAD_UPLOADED}',
+		'%d files queued': '{LA_PLUPLOAD_FILES_QUEUED}',
+		'%s already present in the queue.': '{LA_PLUPLOAD_ALREADY_QUEUED}'
 	},
 	config: {
 		runtimes: 'html5',

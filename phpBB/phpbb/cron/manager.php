@@ -10,14 +10,6 @@
 namespace phpbb\cron;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Cron manager class.
 *
 * Finds installed cron tasks, stores task objects, provides task selection.

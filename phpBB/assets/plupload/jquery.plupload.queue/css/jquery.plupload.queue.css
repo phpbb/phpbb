@@ -1,4 +1,4 @@
-/* 
+/*
    Plupload
 ------------------------------------------------------------------- */
 
@@ -7,18 +7,18 @@
 	display: inline-block;
 	font: normal 12px sans-serif;
 	text-decoration: none;
-    color: #42454a;
-    border: 1px solid #bababa;
-    padding: 2px 8px 3px 20px;
+	color: #42454a;
+	border: 1px solid #bababa;
+	padding: 2px 8px 3px 20px;
 	margin-right: 4px;
-    background: #f3f3f3 url('../img/buttons.png') no-repeat 0 center;
+	background: #f3f3f3 url('../img/buttons.png') no-repeat 0 center;
 	outline: 0;
 
-    /* Optional rounded corners for browsers that support it */
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
+	/* Optional rounded corners for browsers that support it */
+	-moz-border-radius: 3px;
+	-khtml-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
 }
 
 .plupload_button:hover {
@@ -27,9 +27,9 @@
 }
 
 .plupload_disabled, a.plupload_disabled:hover {
-    color: #737373;
-    border-color: #c5c5c5;
-    background: #ededed url('../img/buttons-disabled.png') no-repeat 0 center;
+	color: #737373;
+	border-color: #c5c5c5;
+	background: #ededed url('../img/buttons-disabled.png') no-repeat 0 center;
 	cursor: default;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .plupload_wrapper {
-	font: normal 11px Verdana,sans-serif;
+	font: normal 11px Verdana, sans-serif;
 	width: 100%;
 }
 
@@ -92,7 +92,7 @@
 	padding: 8px 8px;
 	color: #42454A;
 }
-.plupload_filelist_header {	
+.plupload_filelist_header {
 	border-top: 1px solid #EEE;
 	border-bottom: 1px solid #CDCDCD;
 }
@@ -165,7 +165,7 @@ li.plupload_done a {
 .plupload_clearer, .plupload_progress_bar {
 	display: block;
 	font-size: 0;
-	line-height: 0;	
+	line-height: 0;
 }
 
 li.plupload_droptext {

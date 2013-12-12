@@ -10,13 +10,6 @@
 namespace phpbb;
 
 /**
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * User loader class
 *
 * This handles loading users from the database and

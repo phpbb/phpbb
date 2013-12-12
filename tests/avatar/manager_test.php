@@ -112,7 +112,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	public function test_get_driver_enabled($driver_name, $expected)
 	{
 		$driver = $this->manager->get_driver($driver_name);
-		$this->assertEquals($expected, $driver);
+		$this->assertEquals($expected, ($driver === null) ? null : $driver->get_name());
 	}
 
 	public function get_driver_data_all()
@@ -133,7 +133,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	public function test_get_driver_all($driver_name, $expected)
 	{
 		$driver = $this->manager->get_driver($driver_name, false);
-		$this->assertEquals($expected, $driver);
+		$this->assertEquals($expected, ($driver === null) ? $driver : $driver->get_name());
 	}
 
 	public function test_get_avatar_settings()
@@ -152,31 +152,20 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 		return array(
 			array(
 				array(
-					'user_avatar'			=> '',
-					'user_avatar_type'		=> '',
-					'user_avatar_width'		=> '',
+					'user_avatar'		=> '',
+					'user_avatar_type'	=> '',
+					'user_avatar_width'	=> '',
 					'user_avatar_height'	=> '',
+					'group_avatar'		=> '',
 				),
 				array(
-					'avatar'			=> '',
-					'avatar_type'		=> '',
-					'avatar_width'		=> '',
-					'avatar_height'		=> '',
+					'user_avatar'		=> '',
+					'user_avatar_type'	=> '',
+					'user_avatar_width'	=> '',
+					'user_avatar_height'	=> '',
+					'group_avatar'		=> '',
 				),
-			),
-			array(
-				array(
-					'group_avatar'			=> '',
-					'group_avatar_type'		=> '',
-					'group_avatar_width'	=> '',
-					'group_avatar_height'	=> '',
-				),
-				array(
-					'avatar'			=> '',
-					'avatar_type'		=> '',
-					'avatar_width'		=> '',
-					'avatar_height'		=> '',
-				),
+				'foobar',
 			),
 			array(
 				array(),
@@ -189,17 +178,41 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 			),
 			array(
 				array(
-					'foobar_avatar'			=> '',
-					'foobar_avatar_type'	=> '',
-					'foobar_avatar_width'	=> '',
-					'foobar_avatar_height'	=> '',
+					'user_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
 				),
 				array(
-					'foobar_avatar'			=> '',
-					'foobar_avatar_type'	=> '',
-					'foobar_avatar_width'	=> '',
-					'foobar_avatar_height'	=> '',
+					'user_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
 				),
+			),
+			array(
+				array(
+					'user_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
+				),
+				array(
+					'avatar'	=> '',
+					'id'		=> 5,
+					'group_id'	=> 4,
+				),
+				'user',
+			),
+			array(
+				array(
+					'group_avatar'	=> '',
+					'user_id'	=> 5,
+					'group_id'	=> 4,
+				),
+				array(
+					'avatar'	=> '',
+					'id'		=> 'g4',
+					'user_id'	=> 5,
+				),
+				'group',
 			),
 		);
 	}
@@ -207,14 +220,15 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 	/**
 	* @dataProvider database_row_data
 	*/
-	public function test_clean_row(array $input, array $output)
+	public function test_clean_row(array $input, array $output, $prefix = '')
 	{
 		$cleaned_row = array();
 
-		$cleaned_row = \phpbb\avatar\manager::clean_row($input);
-		foreach ($output as $key => $null)
+		$cleaned_row = \phpbb\avatar\manager::clean_row($input, $prefix);
+		foreach ($output as $key => $value)
 		{
 			$this->assertArrayHasKey($key, $cleaned_row);
+			$this->assertEquals($cleaned_row[$key], $value);
 		}
 	}
 
