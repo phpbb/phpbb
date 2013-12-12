@@ -1,6 +1,6 @@
 <?php
 
-namespace bar;
+namespace vendor3\bar;
 
 class ext extends \phpbb\extension\base
 {

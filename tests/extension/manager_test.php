@@ -7,8 +7,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/ext/bar/ext.php';
-require_once dirname(__FILE__) . '/ext/foo/ext.php';
+require_once dirname(__FILE__) . '/ext/vendor2/bar/ext.php';
+require_once dirname(__FILE__) . '/ext/vendor2/foo/ext.php';
 require_once dirname(__FILE__) . '/ext/vendor/moo/ext.php';
 
 class phpbb_extension_manager_test extends phpbb_database_test_case
@@ -30,52 +30,53 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	public function test_available()
 	{
-		$this->assertEquals(array('bar', 'barfoo', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_available()));
+		// barfoo and vendor3/bar should not listed due to missing composer.json. barfoo also has incorrect dir structure.
+		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_available()));
 	}
 
 	public function test_enabled()
 	{
-		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
 	}
 
 	public function test_configured()
 	{
-		$this->assertEquals(array('foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
+		$this->assertEquals(array('vendor/moo', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 	}
 
 	public function test_enable()
 	{
-		bar\ext::$state = 0;
+		vendor2\bar\ext::$state = 0;
 
-		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
-		$this->extension_manager->enable('bar');
-		$this->assertEquals(array('bar', 'foo'), array_keys($this->extension_manager->all_enabled()));
-		$this->assertEquals(array('bar', 'foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->extension_manager->enable('vendor2/bar');
+		$this->assertEquals(array('vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
-		$this->assertEquals(4, bar\ext::$state);
+		$this->assertEquals(4, vendor2\bar\ext::$state);
 	}
 
 	public function test_disable()
 	{
-		foo\ext::$disabled = false;
+		vendor2\foo\ext::$disabled = false;
 
-		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
-		$this->extension_manager->disable('foo');
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->extension_manager->disable('vendor2/foo');
 		$this->assertEquals(array(), array_keys($this->extension_manager->all_enabled()));
-		$this->assertEquals(array('foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
+		$this->assertEquals(array('vendor/moo', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
-		$this->assertTrue(foo\ext::$disabled);
+		$this->assertTrue(vendor2\foo\ext::$disabled);
 	}
 
 	public function test_purge()
 	{
 		vendor\moo\ext::$purged = false;
 
-		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
-		$this->assertEquals(array('foo', 'vendor/moo'), array_keys($this->extension_manager->all_configured()));
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->assertEquals(array('vendor/moo', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 		$this->extension_manager->purge('vendor/moo');
-		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_enabled()));
-		$this->assertEquals(array('foo'), array_keys($this->extension_manager->all_configured()));
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
 		$this->assertTrue(vendor\moo\ext::$purged);
 	}
@@ -84,7 +85,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		$extension_manager = $this->create_extension_manager(false);
 
-		$this->assertEquals(array('foo'), array_keys($extension_manager->all_enabled()));
+		$this->assertEquals(array('vendor2/foo'), array_keys($extension_manager->all_enabled()));
 	}
 
 	protected function create_extension_manager($with_cache = true)
