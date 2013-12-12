@@ -1259,7 +1259,7 @@ class parse_message extends bbcode_firstpass
 		* @var bool		allow_smilies	Allow smilies switch
 		* @since 3.1-A3
 		*/
-		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies');
+		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
 		extract($phpbb_dispatcher->trigger_event('core.modify_text_for_format_display_after', compact($vars)));
 
 		$this->message = $text;
