@@ -219,5 +219,9 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('delete_data')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('.successbox')->text());
+
+		// Attempt to enable invalid extension
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=barfoo&sid=' . $this->sid);
+		$this->assertContainsLang('EXTENSION_DIR_INVALID', $crawler->filter('.errorbox')->text());
 	}
 }
