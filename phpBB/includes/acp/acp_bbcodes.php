@@ -342,24 +342,26 @@ class acp_bbcodes
 			'U_ACTION'		=> $this->u_action . '&amp;action=add',
 		);
 
-		$sql = 'SELECT *
-			FROM ' . BBCODES_TABLE . '
-			ORDER BY bbcode_tag';
+		$sql_ary = array(
+			'SELECT'	=> 'b.*',
+			'FROM'		=> array(BBCODES_TABLE => 'b'),
+			'ORDER_BY'	=> 'b.bbcode_tag',
+		);
 
 		/**
 		*  Modify bbcode template data before we display the form
 		*
 		* @event core.acp_bbcodes_display_form
 		* @var	string	action			Type of the action: modify|create
-		* @var	string	sql				SQL statement to get bbcode data
+		* @var	string	sql_ary			The SQL array to get custom bbcode data
 		* @var	array	template_data	Array with form template data
 		* @var	object	this_u_action	$this->u_action object
 		* @since 3.1-A3
 		*/
-		$vars = array('action', 'sql', 'template_data', 'this_u_action');
+		$vars = array('action', 'sql_ary', 'template_data', 'this_u_action');
 		extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
 
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 		$template->assign_vars($template_data);
 
@@ -387,7 +389,7 @@ class acp_bbcodes
 
 		}
 		$db->sql_freeresult($result);
-		
+
 		$this->u_action = $this_u_action;
 	}
 

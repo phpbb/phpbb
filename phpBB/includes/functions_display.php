@@ -928,22 +928,24 @@ function display_custom_bbcodes()
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
 
-	$sql = 'SELECT bbcode_id, bbcode_tag, bbcode_helpline
-		FROM ' . BBCODES_TABLE . '
-		WHERE display_on_posting = 1
-		ORDER BY bbcode_tag';
+	$sql_ary = array(
+		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline',
+		'FROM'		=> array(BBCODES_TABLE => 'b'),
+		'WHERE'		=> 'b.display_on_posting = 1',
+		'ORDER_BY'	=> 'b.bbcode_tag',
+	);
 
 	/**
-	* Modify the SQL statement retrieving the custom bbcodes
+	* Event to modify the SQL query before custom bbcode data is queried
 	*
 	* @event core.display_custom_bbcodes_modify_sql
-	* @var	string	sql		SQL SELECT statement
+	* @var	array	sql_ary	The SQL array to get the bbcode data
 	* @since 3.1-A3
 	*/
-	$vars = array('sql');
+	$vars = array('sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_sql', compact($vars)));
 
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 	$i = 0;
 	while ($row = $db->sql_fetchrow($result))
@@ -963,7 +965,7 @@ function display_custom_bbcodes()
 		);
 
 		/**
-		* Modify the template data block of a bbcode
+		* Event to modify the template data block of a custom bbcode
 		*
 		* This event is triggered once per bbcode
 		*
