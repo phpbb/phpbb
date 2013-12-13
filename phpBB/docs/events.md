@@ -10,7 +10,7 @@ acp_bbcodes_actions_prepend
 * Since: 3.1.0-a3
 * Purpose: Add actions to the BBCodes page, before edit/delete buttons
 
-acp_bbcodes_edit_form_append
+acp_bbcodes_edit_fieldsets_after
 ===
 * Location: adm/style/acp_bbcodes.html
 * Since: 3.1.0-a3
