@@ -64,6 +64,20 @@ acp_users_overview_options_append
 * Since: 3.1.0-a1
 * Purpose: Add options and settings on user overview page
 
+acp_users_signature_editor_buttons_after
+===
+* Locations:
+    + adm/style/acp_users_signature.html
+* Since: 3.1.0-a3
+* Purpose: Add content after BBCode posting buttons in the ACP user signature
+
+acp_users_signature_editor_buttons_before
+===
+* Locations:
+    + adm/style/acp_users_signature.html
+* Since: 3.1.0-a3
+* Purpose: Add content before BBCode posting buttons in the ACP user signature
+
 forumlist_body_last_post_title_prepend
 ====
 * Locations:
@@ -202,7 +216,6 @@ overall_header_navigation_prepend
 posting_editor_buttons_after
 ===
 * Locations:
-    + adm/style/acp_users_signature.html
     + styles/prosilver/template/posting_buttons.html
     + styles/subsilver2/template/posting_buttons.html
 * Since: 3.1.0-a3
@@ -211,7 +224,6 @@ posting_editor_buttons_after
 posting_editor_buttons_before
 ===
 * Locations:
-    + adm/style/acp_users_signature.html
     + styles/prosilver/template/posting_buttons.html
     + styles/subsilver2/template/posting_buttons.html
 * Since: 3.1.0-a3
