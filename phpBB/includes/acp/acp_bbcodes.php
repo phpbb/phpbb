@@ -149,7 +149,7 @@ class acp_bbcodes
 				* @var	string	action				Type of the action: modify|create
 				* @var	array	sql_ary				Array with new bbcode data
 				* @var	int		bbcode_id			The id of the bbcode (being modified)
-				* @var	int		display_on_posting	display_on_posting var from thr form
+				* @var	bool	display_on_posting	Display bbcode on posting form
 				* @var	string	bbcode_match		bbcode_match var from thr form
 				* @var	string	bbcode_tpl			bbcode_tpl var from thr form
 				* @var	string	bbcode_helpline		bbcode_helpline var from thr form
