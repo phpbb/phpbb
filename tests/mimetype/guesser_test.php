@@ -124,6 +124,7 @@ class guesser_test extends \phpbb_test_case
 
 	/**
 	* @dataProvider data_content_guesser
+	* @requires function mime_content_type
 	*/
 	public function test_content_guesser($expected, $guessers, $overload = false)
 	{
