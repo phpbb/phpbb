@@ -60,7 +60,7 @@ index_body_linklist_after
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
 * Since: 3.1.0-a3
-* Purpose: Add content after the linklist at the top of the forum index (index page only)
+* Purpose: Add content after the linklist above the forum list on Board index
 
 index_body_linklist_before
 ===
@@ -68,7 +68,7 @@ index_body_linklist_before
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
 * Since: 3.1.0-a3
-* Purpose: Add content before the linklist at the top of the forum index (index page only)
+* Purpose: Add content before the linklist above the forum list on Board index
 
 index_body_stat_blocks_before
 ===
