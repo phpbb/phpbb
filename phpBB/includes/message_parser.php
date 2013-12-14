@@ -1251,7 +1251,7 @@ class parse_message extends bbcode_firstpass
 		/**
 		* Use this event to modify the text after it is parsed
 		*
-		* @event core.modify_text_for_format_display_after
+		* @event core.modify_format_display_text_after
 		* @var string	text				The text to parse
 		* @var string	uid					The BBCode UID
 		* @var bool		allow_bbcode		Allow BBCodes switch
@@ -1261,7 +1261,7 @@ class parse_message extends bbcode_firstpass
 		* @since 3.1.0-a3
 		*/
 		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
-		extract($phpbb_dispatcher->trigger_event('core.modify_text_for_format_display_after', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
 
 		$this->message = $text;
 		$this->bbcode_uid = $uid;
