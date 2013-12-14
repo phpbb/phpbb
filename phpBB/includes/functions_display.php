@@ -939,10 +939,12 @@ function display_custom_bbcodes()
 	* Event to modify the SQL query before custom bbcode data is queried
 	*
 	* @event core.display_custom_bbcodes_modify_sql
-	* @var	array	sql_ary	The SQL array to get the bbcode data
+	* @var	array	sql_ary					The SQL array to get the bbcode data
+	* @var	int		num_predefined_bbcodes	The number of predefined core bbcodes
+	*										(multiplied by factor of 2)
 	* @since 3.1.0-a3
 	*/
-	$vars = array('sql_ary');
+	$vars = array('sql_ary', 'num_predefined_bbcodes');
 	extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_sql', compact($vars)));
 
 	$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
