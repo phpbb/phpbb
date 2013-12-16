@@ -1,6 +1,6 @@
 <?php
 
-namespace foo\mcp;
+namespace vendor2\foo\mcp;
 
 class a_module
 {

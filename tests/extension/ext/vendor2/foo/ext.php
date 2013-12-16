@@ -1,6 +1,6 @@
 <?php
 
-namespace foo;
+namespace vendor2\foo;
 
 class ext extends \phpbb\extension\base
 {

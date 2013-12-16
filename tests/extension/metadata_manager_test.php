@@ -82,7 +82,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	// Should fail from missing composer.json
 	public function test_bar()
 	{
-		$ext_name = 'bar';
+		$ext_name = 'vendor3/bar';
 
 		$manager = $this->get_metadata_manager($ext_name);
 
@@ -98,7 +98,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	// Should be the same as a direct json_decode of the composer.json file
 	public function test_foo()
 	{
-		$ext_name = 'foo';
+		$ext_name = 'vendor2/foo';
 
 		$manager = $this->get_metadata_manager($ext_name);
 
@@ -111,7 +111,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 
-		$json = json_decode(file_get_contents($this->phpbb_root_path . 'ext/foo/composer.json'), true);
+		$json = json_decode(file_get_contents($this->phpbb_root_path . 'ext/vendor2/foo/composer.json'), true);
 
 		$this->assertEquals($metadata, $json);
 	}

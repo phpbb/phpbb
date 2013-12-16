@@ -266,13 +266,23 @@ class metadata_manager
 	 */
 	public function validate_enable()
 	{
-		// Check for phpBB, PHP versions
-		if (!$this->validate_require_phpbb() || !$this->validate_require_php())
+		// Check for valid directory & phpBB, PHP versions
+		if (!$this->validate_dir() || !$this->validate_require_phpbb() || !$this->validate_require_php())
 		{
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validates the most basic directory structure to ensure it follows <vendor>/<ext> convention.
+	 *
+	 * @return boolean True when passes validation
+	 */
+	public function validate_dir()
+	{
+		return (substr_count($this->ext_name, '/') === 1 && $this->ext_name == $this->get_metadata('name'));
 	}
 
 
