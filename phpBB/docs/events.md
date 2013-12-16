@@ -54,13 +54,21 @@ forumlist_body_last_post_title_prepend
 * Since: 3.1.0-a1
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
-index_body_forumlist_before
+index_body_linklist_after
 ===
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
 * Since: 3.1.0-a3
-* Purpose: Add content above the forums list (on forum index only)
+* Purpose: Add content after the linklist above the forum list on Board index
+
+index_body_linklist_before
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-a3
+* Purpose: Add content before the linklist above the forum list on Board index
 
 index_body_stat_blocks_before
 ===
