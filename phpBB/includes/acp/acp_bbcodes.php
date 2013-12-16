@@ -150,9 +150,9 @@ class acp_bbcodes
 				* @var	array	sql_ary				Array with new bbcode data
 				* @var	int		bbcode_id			The id of the bbcode (being modified)
 				* @var	bool	display_on_posting	Display bbcode on posting form
-				* @var	string	bbcode_match		bbcode_match var from thr form
-				* @var	string	bbcode_tpl			bbcode_tpl var from thr form
-				* @var	string	bbcode_helpline		bbcode_helpline var from thr form
+				* @var	string	bbcode_match		BBCode usage string to match
+				* @var	string	bbcode_tpl			BBCode HTML replacement string
+				* @var	string	bbcode_helpline		BBCode help line string
 				* @var	array	hidden_fields		Array of hidden fields for use when
 				*									submitting form when $warn_text is true
 				* @since 3.1.0-a3
