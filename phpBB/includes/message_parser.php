@@ -1216,7 +1216,7 @@ class parse_message extends bbcode_firstpass
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
 		global $phpbb_dispatcher;
-		
+
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
 		{
