@@ -1,12 +1,13 @@
 {
-	"name": "foo/example",
+	"name": "vendor/barfoo",
 	"type": "phpbb-extension",
 	"description": "An example/sample extension to be used for testing purposes in phpBB Development.",
 	"version": "1.0.0",
 	"time": "2012-02-15 01:01:01",
-	"licence": "GPL-2.0",
+	"licence": "GNU GPL v2",
 	"authors": [{
 			"name": "John Smith",
+			"username": "JohnSmith27",
 			"email": "email@phpbb.com",
 			"homepage": "http://phpbb.com",
 			"role": "N/A"
@@ -16,6 +17,6 @@
 		"phpbb/phpbb": "3.1.*@dev"
 	},
 	"extra": {
-		"display-name": "phpBB Foo Extension"
+		"display-name": "phpBB BarFoo Extension"
 	}
 }

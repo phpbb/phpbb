@@ -45,7 +45,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		// Insert our base data
 		$insert_rows = array(
 			array(
-				'ext_name'		=> 'foo',
+				'ext_name'		=> 'vendor2/foo',
 				'ext_active'	=> true,
 				'ext_state'		=> 'b:0;',
 			),
@@ -57,12 +57,12 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 			// do not exist
 			array(
-				'ext_name'		=> 'test2',
+				'ext_name'		=> 'vendor/test2',
 				'ext_active'	=> true,
 				'ext_state'		=> 'b:0;',
 			),
 			array(
-				'ext_name'		=> 'test3',
+				'ext_name'		=> 'vendor/test3',
 				'ext_active'	=> false,
 				'ext_state'		=> 'b:0;',
 			),
@@ -80,30 +80,38 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
 		$this->assertCount(1, $crawler->filter('.ext_enabled'));
-		$this->assertCount(5, $crawler->filter('.ext_disabled'));
+		$this->assertCount(4, $crawler->filter('.ext_disabled'));
 
 		$this->assertContains('phpBB Foo Extension', $crawler->filter('.ext_enabled')->eq(0)->text());
 		$this->assertContainsLang('EXTENSION_DISABLE', $crawler->filter('.ext_enabled')->eq(0)->text());
 
-		$this->assertContains('The “test2” extension is not valid.', $crawler->filter('.ext_disabled')->eq(0)->text());
+		$this->assertContains('phpBB Moo Extension', $crawler->filter('.ext_disabled')->eq(1)->text());
+		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(1)->text());
+		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(1)->text());
+		$this->assertContainsLang('EXTENSION_DELETE_DATA', $crawler->filter('.ext_disabled')->eq(1)->text());
 
-		$this->assertContains('The “test3” extension is not valid.', $crawler->filter('.ext_disabled')->eq(1)->text());
+		$this->assertContains('The “vendor/test2” extension is not valid.', $crawler->filter('.ext_disabled')->eq(0)->text());
 
-		$this->assertContains('phpBB Moo Extension', $crawler->filter('.ext_disabled')->eq(2)->text());
-		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(2)->text());
-		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(2)->text());
-		$this->assertContainsLang('EXTENSION_DELETE_DATA', $crawler->filter('.ext_disabled')->eq(2)->text());
+		$this->assertContains('The “vendor/test3” extension is not valid.', $crawler->filter('.ext_disabled')->eq(2)->text());
 
-		$this->assertContains('The “bar” extension is not valid.', $crawler->filter('.ext_disabled')->eq(3)->text());
+		$this->assertContains('phpBB Bar Extension', $crawler->filter('.ext_disabled')->eq(3)->text());
+		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(3)->text());
+		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(3)->text());
+
+		// Check that invalid extensions are not listed.
+		$this->assertNotContains('phpBB BarFoo Extension', $crawler->filter('.table1')->text());
+		$this->assertNotContains('barfoo', $crawler->filter('.table1')->text());
+
+		$this->assertNotContains('vendor3/bar', $crawler->filter('.table1')->text());
 	}
 
 	public function test_details()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=foo&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
 
 		$validation = array(
 			'DISPLAY_NAME'		=> 'phpBB Foo Extension',
-			'CLEAN_NAME'		=> 'foo/example',
+			'CLEAN_NAME'		=> 'vendor2/foo',
 			'TYPE'				=> 'phpbb-extension',
 			'DESCRIPTION'		=> 'An example/sample extension to be used for testing purposes in phpBB Development.',
 			'VERSION'	  		=> '1.0.0',
@@ -143,7 +151,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	public function test_enable_pre()
 	{
 		// Foo is already enabled (redirect to list)
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=foo&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
 		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
@@ -160,7 +168,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=foo&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
 		$this->assertContains($this->lang('EXTENSION_DISABLE_CONFIRM', 'phpBB Foo Extension'), $crawler->filter('.errorbox')->text());
 	}
 
@@ -171,7 +179,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContains('The required file does not exist', $crawler->filter('.errorbox')->text());
 
 		// foo is not disabled (redirect to list)
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=foo&sid=' . $this->sid);
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);
 		$this->assertContainsLang('EXTENSION_NAME', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_OPTIONS', $crawler->filter('div.main thead')->text());
 		$this->assertContainsLang('EXTENSION_ACTIONS', $crawler->filter('div.main thead')->text());
@@ -211,5 +219,9 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('delete_data')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('.successbox')->text());
+
+		// Attempt to enable invalid extension
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=barfoo&sid=' . $this->sid);
+		$this->assertContainsLang('EXTENSION_DIR_INVALID', $crawler->filter('.errorbox')->text());
 	}
 }

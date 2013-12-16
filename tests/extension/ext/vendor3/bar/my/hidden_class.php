@@ -1,6 +1,6 @@
 <?php
 
-namespace bar\my;
+namespace vendor3\bar\my;
 
 class hidden_class
 {

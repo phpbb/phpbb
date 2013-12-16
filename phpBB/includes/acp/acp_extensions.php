@@ -88,6 +88,11 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
+				if (!$md_manager->validate_dir())
+				{
+					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -108,6 +113,11 @@ class acp_extensions
 			break;
 
 			case 'enable':
+				if (!$md_manager->validate_dir())
+				{
+					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
