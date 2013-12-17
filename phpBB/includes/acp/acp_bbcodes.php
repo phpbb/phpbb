@@ -111,12 +111,13 @@ class acp_bbcodes
 				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
 
 				/**
-				* Event to modify custom bbcode template before displaying the add/edit form
+				* Modify custom bbcode template data before we display the add/edit form
 				*
 				* @event core.acp_bbcodes_edit_add
 				* @var	string	action			Type of the action: add|edit
-				* @var	array	tpl_ary			Array with bbcodes add/edit data
-				* @var	int		bbcode_id		The id of the bbcode (being edited)
+				* @var	array	tpl_ary			Array with custom bbcode add/edit data
+				* @var	int		bbcode_id		When editing: the bbcode id,
+				*								when creating: 0
 				* @var	array	bbcode_tokens	Array of bbcode tokens
 				* @since 3.1.0-a3
 				*/
@@ -143,12 +144,13 @@ class acp_bbcodes
 				$sql_ary = $hidden_fields = array();
 				
 				/**
-				* Event to modify custom bbcode data before modify/create
+				* Modify custom bbcode data before the modify/create action
 				*
 				* @event core.acp_bbcodes_modify_create
 				* @var	string	action				Type of the action: modify|create
 				* @var	array	sql_ary				Array with new bbcode data
-				* @var	int		bbcode_id			The id of the bbcode (being modified)
+				* @var	int		bbcode_id			When editing: the bbcode id,
+				*									when creating: 0
 				* @var	bool	display_on_posting	Display bbcode on posting form
 				* @var	string	bbcode_match		The bbcode usage string to match
 				* @var	string	bbcode_tpl			The bbcode HTML replacement string
@@ -349,7 +351,7 @@ class acp_bbcodes
 		);
 
 		/**
-		*  Event to modify custom bbcode template data before displaying the form
+		*  Modify custom bbcode template data before we display the form
 		*
 		* @event core.acp_bbcodes_display_form
 		* @var	string	action			Type of the action: modify|create
@@ -374,7 +376,7 @@ class acp_bbcodes
 			);
 
 			/**
-			*  Event to modify display of custom bbcodes in the form
+			*  Modify display of custom bbcodes in the form
 			*
 			* @event core.acp_bbcodes_display_bbcodes
 			* @var	array	row				Array with current bbcode data

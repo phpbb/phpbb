@@ -14,7 +14,7 @@ acp_bbcodes_edit_fieldsets_after
 ===
 * Location: adm/style/acp_bbcodes.html
 * Since: 3.1.0-a3
-* Purpose: Add settings to edit BBCodes form
+* Purpose: Add settings to BBCode add/edit form
 
 acp_forums_normal_settings_append
 ===
