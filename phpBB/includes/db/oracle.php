@@ -645,6 +645,22 @@ class dbal_oracle extends dbal
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	function sql_encode_binary($data)
+	{
+		return bin2hex($data);
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	function sql_decode_binary($data)
+	{
+		return unpack('H*', $data);
+	}
+
+	/**
 	* Build LIKE expression
 	* @access private
 	*/

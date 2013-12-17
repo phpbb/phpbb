@@ -957,6 +957,30 @@ class dbal
 	}
 
 	/**
+	* Transforms a binary string into the format required for a binary column in the database.
+	*
+	* @param string $data			Binary string
+	*
+	* @return string				Transformed string
+	*/
+	function sql_encode_binary($data)
+	{
+		return $data;
+	}
+
+	/**
+	* Transforms the result returned by the database back into the original binary string.
+	*
+	* @param string $data			Binary string
+	*
+	* @return string				Transformed string
+	*/
+	function sql_decode_binary($data)
+	{
+		return $data;
+	}
+
+	/**
 	* Gets the estimated number of rows in a specified table.
 	*
 	* @param string $table_name		Table name
