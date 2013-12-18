@@ -1,14 +1,14 @@
 <?php
 
 $data = array(
-	'auth_key' => '0d2206b9114e99d0',
-	'serial' => 99,
+	'auth_key' => 'f7db17b9636a46ac',
+	'serial' => 6,
 
 	'username' => '',
 	'topic_type' => 0,
 
 	'forum_id' => 2,
-	'topic_id' => 30,
+	'topic_id' => 0,
 	'icon_id' => 0,
 
 	'enable_bbcode' => true,
@@ -25,7 +25,7 @@ $data = array(
 
 $imploded_request = implode('/', $data);
 
-$hash = hash_hmac('sha256', $imploded_request, 'b758239365974841');
+$hash = hash_hmac('sha256', $imploded_request, '472cb7ca7b661917');
 
 $request['hash'] = $hash;
 $request['data'] = json_encode($data);

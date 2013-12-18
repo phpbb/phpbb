@@ -971,7 +971,8 @@ CREATE TABLE [phpbb_posts] (
 	[post_edit_locked] [int] DEFAULT (0) NOT NULL ,
 	[post_delete_time] [int] DEFAULT (0) NOT NULL ,
 	[post_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[post_delete_user] [int] DEFAULT (0) NOT NULL 
+	[post_delete_user] [int] DEFAULT (0) NOT NULL ,
+	[post_api_post] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

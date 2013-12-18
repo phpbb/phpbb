@@ -548,7 +548,8 @@ CREATE TABLE phpbb_posts (
 	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_delete_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_delete_reason text(65535) NOT NULL DEFAULT '',
-	post_delete_user INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	post_delete_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_api_post INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_posts_forum_id ON phpbb_posts (forum_id);

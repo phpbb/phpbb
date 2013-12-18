@@ -565,6 +565,7 @@ CREATE TABLE phpbb_posts (
 	post_delete_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	post_delete_reason blob NOT NULL,
 	post_delete_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	post_api_post tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (post_id),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),

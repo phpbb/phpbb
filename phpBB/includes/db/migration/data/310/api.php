@@ -30,6 +30,11 @@ class phpbb_db_migration_data_310_api extends phpbb_db_migration
 					'PRIMARY_KEY'			=> 'key_id',
 				),
 			),
+			'add_columns'		=> array(
+				$this->table_prefix . 'posts'        => array(
+					'post_api_post'    => array('BOOL', 0),
+				),
+			),
 		);
 	}
 
@@ -39,6 +44,11 @@ class phpbb_db_migration_data_310_api extends phpbb_db_migration
 			'drop_tables'	=> array(
 				$this->table_prefix . 'api_keys',
 			),
+			'drop_columns'	=> array(
+				$this->table_prefix . 'posts'        => array(
+					'post_api_post'
+				),
+			)
 		);
 	}
 

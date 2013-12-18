@@ -1061,6 +1061,7 @@ CREATE TABLE phpbb_posts (
 	post_delete_time number(11) DEFAULT '0' NOT NULL,
 	post_delete_reason varchar2(765) DEFAULT '' ,
 	post_delete_user number(8) DEFAULT '0' NOT NULL,
+	post_api_post number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_posts PRIMARY KEY (post_id)
 )
 /

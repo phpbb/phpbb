@@ -124,6 +124,7 @@ class phpbb_model_repository_post
 		$data['post_edit_locked'] = false;
 		$data['notify_set'] = true;
 		$data['enable_indexing'] = true;
+		$data['api'] = true;
 
 		if (!function_exists('submit_post'))
 		{

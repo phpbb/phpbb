@@ -759,6 +759,7 @@ CREATE TABLE phpbb_posts (
 	post_delete_time INT4 DEFAULT '0' NOT NULL CHECK (post_delete_time >= 0),
 	post_delete_reason varchar(255) DEFAULT '' NOT NULL,
 	post_delete_user INT4 DEFAULT '0' NOT NULL CHECK (post_delete_user >= 0),
+	post_api_post INT2 DEFAULT '0' NOT NULL CHECK (post_api_post >= 0),
 	PRIMARY KEY (post_id)
 );
 

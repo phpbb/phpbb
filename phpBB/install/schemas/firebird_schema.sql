@@ -791,7 +791,8 @@ CREATE TABLE phpbb_posts (
 	post_edit_locked INTEGER DEFAULT 0 NOT NULL,
 	post_delete_time INTEGER DEFAULT 0 NOT NULL,
 	post_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	post_delete_user INTEGER DEFAULT 0 NOT NULL
+	post_delete_user INTEGER DEFAULT 0 NOT NULL,
+	post_api_post INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_posts ADD PRIMARY KEY (post_id);;
