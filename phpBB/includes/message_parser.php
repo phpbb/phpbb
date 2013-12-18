@@ -168,11 +168,11 @@ class bbcode_firstpass extends bbcode
 		$bbcodes = $this->bbcodes;
 
 		/**
-		* Use this event to modify the bbcode data for later parsing
+		* Event to modify the bbcode data for later parsing
 		*
 		* @event core.modify_bbcode_init
-		* @var array	bbcodes		The array of bbcode data for use in parsing
-		* @var array	rowset		The array of bbcode data from the database
+		* @var array	bbcodes		Array of bbcode data for use in parsing
+		* @var array	rowset		Array of bbcode data from the database
 		* @since 3.1.0-a3
 		*/
 		$vars = array('bbcodes', 'rowset');
@@ -1249,7 +1249,7 @@ class parse_message extends bbcode_firstpass
 		$uid = $this->bbcode_uid;
 
 		/**
-		* Use this event to modify the text after it is parsed
+		* Event to modify the text after it is parsed
 		*
 		* @event core.modify_format_display_text_after
 		* @var string	text				The message text to parse
