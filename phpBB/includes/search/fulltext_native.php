@@ -231,7 +231,6 @@ class fulltext_native extends search_backend
 			}
 			$db->sql_freeresult($result);
 		}
-		unset($exact_words);
 
 		// now analyse the search query, first split it using the spaces
 		$query = explode(' ', $keywords);
@@ -359,24 +358,19 @@ class fulltext_native extends search_backend
 			}
 			else
 			{
-				$len = utf8_strlen($word);
-				if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
+				if (!isset($common_ids[$word]))
 				{
-					$this->common_words[] = $word;
+					$len = utf8_strlen($word);
+					if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
+					{
+						$this->common_words[] = $word;
+					}
 				}
 			}
 		}
 
-		// If common words are present and no other search results then return false
-		// search.php will print out appropriate error message.
-		// If both common words and search results are empty return true and keyword_search()
-		// later will return false for that condition
-		if (empty($this->must_contain_ids) && sizeof($this->common_words))
-		{
-			return false;
-		}
-
-		if (!empty($this->search_query))
+		// Return true if all words are not common words
+		if (sizeof($exact_words) - sizeof($this->common_words) > 0)
 		{
 			return true;
 		}
