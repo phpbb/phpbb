@@ -206,6 +206,8 @@ if (sizeof($package->old_packages))
 				continue;
 			}
 
+			$filename = $file;
+
 			// Create Directories along the way?
 			$file = explode('/', $file);
 			// Remove filename portion
@@ -230,15 +232,15 @@ if (sizeof($package->old_packages))
 			foreach ($copy_relative_directories as $reference => $data)
 			{
 				// Copy all relative referenced files if needed
-				if (strpos($file, $reference) === 0 && !$data['copied'])
+				if (strpos($filename, $reference) === 0 && !$data['copied'])
 				{
 					foreach ($data['copy'] as $source_dir_files => $destination_dir)
 					{
 						// Create Directories along the way?
-						$directories = explode('/', $directory);
+						$directories = explode('/', $destination_dir);
 
 						chdir($dest_filename_dir . '/install/update/new');
-						foreach ($destination_dir as $dir)
+						foreach ($directories as $dir)
 						{
 							$dir = trim($dir);
 							if ($dir)
@@ -252,7 +254,6 @@ if (sizeof($package->old_packages))
 						}
 						$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_dir_files;
 						$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
-
 						$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
 					}
 					$copy_relative_directories[$reference]['copied'] = true;
