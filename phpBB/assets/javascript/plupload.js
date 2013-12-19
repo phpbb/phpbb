@@ -218,7 +218,6 @@ phpbb.plupload.updateRow = function(index, downloadUrl) {
 	}
 
 	row.find('textarea').attr('name', 'comment_list[' + index + ']');
-	row.find('.file-inline-bbcode').attr('onclick', 'attach_inline(' + index + ',\'' + attach.real_filename + '\');');
 	phpbb.plupload.updateHiddenData(row, attach, index);
 };
 
@@ -487,6 +486,17 @@ phpbb.plupload.initialize();
 
 
 
+
+/**
+ * Insert inline attachment bbcode.
+ */
+ $('#file-list').on('click', '.file-inline-bbcode', function(e) {
+	var attachId = $(this).parents('.attach-row').attr('data-attach-id'),
+		index = phpbb.plupload.getIndex(attachId);
+
+	attach_inline(index, phpbb.plupload.data[index].real_filename);	
+	e.preventDefault();
+});
 
 /**
  * Delete a file.
