@@ -174,6 +174,21 @@ if (sizeof($package->old_packages))
 			$package->run_command('cp ' . $source_filename . ' ' . $dest_filename);
 		}
 
+		/**
+		* When we create the update packages, we try to make them as small as possible.
+		* However sometimes we need to include additional files, that are not included
+		* in the diff, in order to able to correctly include the relative referenced
+		* files from the same or subsequent directories.
+		*/
+		$copy_relative_directories = array(
+			'config/'	=> array(
+				'copied'	=> false,
+				'copy'		=> array(
+					'config/*.yml' => 'config',
+				),
+			),
+		);
+
 		// Then fill the 'new' directory
 		foreach ($file_contents['all'] as $file)
 		{
@@ -205,6 +220,38 @@ if (sizeof($package->old_packages))
 			}
 
 			$package->run_command('cp ' . $source_filename . ' ' . $dest_filename);
+
+			foreach ($copy_relative_directories as $reference => $data)
+			{
+				// Copy all relative referenced files if needed
+				if (strpos($file, $reference) === 0 && !$data['copied'])
+				{
+					foreach ($data['copy'] as $source_dir_files => $destination_dir)
+					{
+						// Create Directories along the way?
+						$directories = explode('/', $directory);
+
+						chdir($dest_filename_dir . '/install/update/new');
+						foreach ($destination_dir as $dir)
+						{
+							$dir = trim($dir);
+							if ($dir)
+							{
+								if (!file_exists('./' . $dir))
+								{
+									$package->run_command('mkdir ' . $dir);
+								}
+								chdir('./' . $dir);
+							}
+						}
+						$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_dir_files;
+						$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
+
+						$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+					}
+					$copy_relative_directories[$reference]['copied'] = true;
+				}
+			}
 		}
 
 		// Build index.php file for holding the file structure
