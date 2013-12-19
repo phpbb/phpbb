@@ -215,7 +215,7 @@ class content_visibility
 	/**
 	* Change visibility status of one post or all posts of a topic
 	*
-	* @param $visibility	int		Element of {ITEM_APPROVED, ITEM_DELETED}
+	* @param $visibility	int		Element of {ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED}
 	* @param $post_id		mixed	Post ID or array of post IDs to act on,
 	*								if it is empty, all posts of topic_id will be modified
 	* @param $topic_id		int		Topic where $post_id is found
@@ -231,7 +231,7 @@ class content_visibility
 	*/
 	public function set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $limit_visibility = false, $limit_delete_time = false)
 	{
-		if (!in_array($visibility, array(ITEM_APPROVED, ITEM_DELETED)))
+		if (!in_array($visibility, array(ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED)))
 		{
 			return array();
 		}
@@ -326,7 +326,7 @@ class content_visibility
 		// Update users postcounts
 		foreach ($postcounts as $num_posts => $poster_ids)
 		{
-			if ($visibility == ITEM_DELETED)
+			if (in_array($visibility, array(ITEM_UNAPPROVED, ITEM_DELETED)))
 			{
 				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_posts = 0
@@ -387,54 +387,35 @@ class content_visibility
 		// Update the topic's reply count and the forum's post count
 		if ($update_topic_postcount)
 		{
-			$cur_posts = $cur_unapproved_posts = $cur_softdeleted_posts = 0;
+			$field_alias = array(
+				ITEM_APPROVED	=> 'posts_approved',
+				ITEM_UNAPPROVED	=> 'posts_unapproved',
+				ITEM_DELETED	=> 'posts_softdeleted',
+			);
+			$cur_posts = array_fill_keys($field_alias, 0);
+
 			foreach ($postcount_visibility as $post_visibility => $visibility_posts)
 			{
-				// We need to substract the posts from the counters ...
-				if ($post_visibility == ITEM_APPROVED)
-				{
-					$cur_posts += $visibility_posts;
-				}
-				else if ($post_visibility == ITEM_UNAPPROVED)
-				{
-					$cur_unapproved_posts += $visibility_posts;
-				}
-				else if ($post_visibility == ITEM_DELETED)
-				{
-					$cur_softdeleted_posts += $visibility_posts;
-				}
+				$cur_posts[$field_alias[(int) $post_visibility]] += $visibility_posts;
 			}
 
 			$sql_ary = array();
-			if ($visibility == ITEM_DELETED)
+			$recipient_field = $field_alias[$visibility];
+
+			foreach ($cur_posts as $field => $count)
 			{
-				if ($cur_posts)
+				// Decrease the count for the old statuses.
+				if ($count && $field != $recipient_field)
 				{
-					$sql_ary['posts_approved'] = ' - ' . $cur_posts;
-				}
-				if ($cur_unapproved_posts)
-				{
-					$sql_ary['posts_unapproved'] = ' - ' . $cur_unapproved_posts;
-				}
-				if ($cur_posts + $cur_unapproved_posts)
-				{
-					$sql_ary['posts_softdeleted'] = ' + ' . ($cur_posts + $cur_unapproved_posts);
+					$sql_ary[$field] = " - $count";
 				}
 			}
-			else
+			// Add up the count from all statuses excluding the recipient status.
+			$count_increase = array_sum(array_diff($cur_posts, array($recipient_field)));
+
+			if ($count_increase)
 			{
-				if ($cur_unapproved_posts)
-				{
-					$sql_ary['posts_unapproved'] = ' - ' . $cur_unapproved_posts;
-				}
-				if ($cur_softdeleted_posts)
-				{
-					$sql_ary['posts_softdeleted'] = ' - ' . $cur_softdeleted_posts;
-				}
-				if ($cur_softdeleted_posts + $cur_unapproved_posts)
-				{
-					$sql_ary['posts_approved'] = ' + ' . ($cur_softdeleted_posts + $cur_unapproved_posts);
-				}
+				$sql_ary[$recipient_field] = " + $count_increase";
 			}
 
 			if (sizeof($sql_ary))
