@@ -1,5 +1,5 @@
 plupload.addI18n(phpbb.plupload.i18n);
-phpbb.plupload.data = phpbb.plupload.ids = [];
+phpbb.plupload.ids = [];
 
 (function($) {  // Avoid conflicts with other libraries
 
@@ -19,9 +19,8 @@ phpbb.plupload.initialize = function() {
 	// Show multi-file upload options.
 	$('#attach-panel-multi').show();
 
-	// Gather existing attachment data from HTML.
-	var data = phpbb.plupload.getDataFromHtml();
-	phpbb.plupload.setData(data);
+	// Set attachment data.
+	phpbb.plupload.setData(phpbb.plupload.data);
 	phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 
 	// Initialize the Plupload uploader.
@@ -82,35 +81,6 @@ phpbb.plupload.getSerializedData = function() {
 		}
 	}
 	return obj;
-};
-
-/**
- * Grab all attachment data present in the HTML. This assumes
- * that all revelant data is present in form elements that have a name that follows
- * the naming convention of attachment_data[index][property]
- *
- * @return array An array containing all gathered data in the form of 
- * array(index => object(property: value))
- */
-phpbb.plupload.getDataFromHtml = function() {
-	var data = [],
-		form = phpbb.plupload.form;
-
-	for (var i = 0; i < form.length; i++) {
-		if (form[i].name.indexOf('attachment_data[') !== 0) {
-			continue;
-		}
-
-		var matches = form[i].name.match(/attachment_data\[(\d+)\]\[([^\]]+)\]/);
-		var index = matches[1];
-		var property = matches[2];
-
-		if (typeof data[index] === 'undefined') {
-			data[index] = {};
-		}
-		data[index][property] = form[i].value;
-	}
-	return data;
 };
 
 /**
