@@ -181,6 +181,12 @@ if (sizeof($package->old_packages))
 		* files from the same or subsequent directories.
 		*/
 		$copy_relative_directories = array(
+			'adm/style/admin.css'	=> array(
+				'copied'	=> false,
+				'copy'		=> array(
+					'adm/images/*' => 'adm/images',
+				),
+			),
 			'config/'	=> array(
 				'copied'	=> false,
 				'copy'		=> array(
