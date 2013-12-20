@@ -103,6 +103,8 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_init($allow_custom_bbcode = true)
 	{
+		global $phpbb_dispatcher;
+		
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this
@@ -162,6 +164,21 @@ class bbcode_firstpass extends bbcode
 				'regexp'	=> array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
+
+		$bbcodes = $this->bbcodes;
+
+		/**
+		* Event to modify the bbcode data for later parsing
+		*
+		* @event core.modify_bbcode_init
+		* @var array	bbcodes		Array of bbcode data for use in parsing
+		* @var array	rowset		Array of bbcode data from the database
+		* @since 3.1.0-a3
+		*/
+		$vars = array('bbcodes', 'rowset');
+		extract($phpbb_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
+
+		$this->bbcodes = $bbcodes;
 	}
 
 	/**
@@ -1198,6 +1215,8 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
+		global $phpbb_dispatcher;
+
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
 		{
@@ -1225,6 +1244,28 @@ class parse_message extends bbcode_firstpass
 
 		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
+
+		$text = $this->message;
+		$uid = $this->bbcode_uid;
+
+		/**
+		* Event to modify the text after it is parsed
+		*
+		* @event core.modify_format_display_text_after
+		* @var string	text				The message text to parse
+		* @var string	uid					The bbcode uid
+		* @var bool		allow_bbcode		Do we allow bbcodes
+		* @var bool		allow_magic_url		Do we allow magic urls
+		* @var bool		allow_smilies		Do we allow smilies
+		* @var bool		update_this_message	Do we update the internal message
+		*									with the parsed result
+		* @since 3.1.0-a3
+		*/
+		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
+		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
+
+		$this->message = $text;
+		$this->bbcode_uid = $uid;
 
 		if (!$update_this_message)
 		{

@@ -36,6 +36,8 @@
 		<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
 
 <!-- IF S_BBCODE_ALLOWED -->
+	<!-- EVENT posting_editor_buttons_before -->
+	<div id="core-bbcode-buttons">
 		<input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" onmouseout="helpline('tip')" />
 		<input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" onmouseout="helpline('tip')" />
 		<input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" onmouseout="helpline('tip')" />
@@ -66,15 +68,19 @@
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		</select></span>
+	</div>
+	<!-- EVENT posting_editor_buttons_after -->
 <!-- ENDIF -->
 	</td>
 </tr>
 <!-- IF S_BBCODE_ALLOWED and .custom_tags -->
 	<tr valign="middle" align="{S_CONTENT_FLOW_BEGIN}">
 		<td colspan="2">
+		<div id="custom-bbcode-buttons">
 		<!-- BEGIN custom_tags -->
 			<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
 		<!-- END custom_tags -->
+		</div>
 		</td>
 	</tr>
 <!-- ENDIF -->
