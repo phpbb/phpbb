@@ -287,7 +287,7 @@ class ftp extends transfer
 	/**
 	* Requests data
 	*/
-	function data()
+	static public function data()
 	{
 		global $user;
 
@@ -541,7 +541,7 @@ class ftp_fsock extends transfer
 	/**
 	* Requests data
 	*/
-	function data()
+	static public function data()
 	{
 		global $user;
 
