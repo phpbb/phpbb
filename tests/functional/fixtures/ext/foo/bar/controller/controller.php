@@ -41,23 +41,60 @@ class controller
 	public function redirect()
 	{
 		$redirects = array(
-			append_sid($this->root_path . 'index.' . $this->php_ext),
-			append_sid($this->root_path . '../index.' . $this->php_ext),
-			append_sid($this->root_path . 'tests/index.' . $this->php_ext),
-			append_sid($this->root_path . '../tests/index.' . $this->php_ext),
-			$this->helper->url('index'),
-			$this->helper->url('../index'),
-			$this->helper->url('../../index'),
-			$this->helper->url('tests/index'),
-			$this->helper->url('../tests/index'),
-			$this->helper->url('../../tests/index'),
-			$this->helper->url('../tests/../index'),
+			array(
+				append_sid($this->root_path . 'index.' . $this->php_ext),
+				'index.php',
+			),
+			array(
+				append_sid($this->root_path . '../index.' . $this->php_ext),
+				'index.php',
+			),
+			array(
+				append_sid($this->root_path . 'tests/index.' . $this->php_ext),
+				'tests/index.php',
+			),
+			array(
+				append_sid($this->root_path . '../tests/index.' . $this->php_ext),
+				'tests/index.php',
+			),
+			array(
+				$this->helper->url('index'),
+				'app.php/index',
+			),
+			array(
+				$this->helper->url('../index'),
+				'app.php/index',
+			),
+			array(
+				$this->helper->url('../../index'),
+				'app.php/index',
+			),
+			array(
+				$this->helper->url('tests/index'),
+				'app.php/tests/index',
+			),
+			array(
+				$this->helper->url('../tests/index'),
+				'app.php/tests/index',
+			),
+			array(
+				$this->helper->url('../../tests/index'),
+				'app.php/tests/index',
+			),
+			array(
+				$this->helper->url('../tests/../index'),
+				'app.php/tests/index',
+			),
 		);
 
 		foreach ($redirects as $redirect)
 		{
 			$this->template->assign_block_vars('redirects', array(
-				'URL'		=> redirect($redirect, true),
+				'URL'		=> redirect($redirect[0], true),
+			));
+
+			$this->template->assign_block_vars('redirects_expected', array(
+				'URL'		=> $redirect[1],
 			));
 		}
 

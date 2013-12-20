@@ -121,23 +121,18 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/redirect');
 
-		$test_redirects = array(
-			'index.php',
-			'index.php',
-			'tests/index.php',
-			'tests/index.php',
-			'app.php/index',
-			'app.php/index',
-			'app.php/index',
-			'app.php/tests/index',
-			'app.php/tests/index',
-			'app.php/tests/index',
-			'app.php/tests/index',
-		);
+		$nodes = $crawler->filter('div')->extract(array('id'));
 
-		foreach ($test_redirects as $row_num => $redirect)
+		foreach ($nodes as $redirect)
 		{
-			$this->assertContains($filesystem->clean_path(self::$root_url) . $redirect, $crawler->filter('#redirect_' . $row_num)->text());
+			if (strpos($redirect, 'redirect_expected') !== 0)
+			{
+				continue;
+			}
+
+			$row_num = str_replace('redirect_expected_', '', $redirect);
+
+			$this->assertContains($filesystem->clean_path(self::$root_url) . $crawler->filter('#redirect_expected_' .  $row_num)->text(), $crawler->filter('#redirect_' . $row_num)->text());
 		}
 
 		$this->phpbb_extension_manager->purge('foo/bar');
