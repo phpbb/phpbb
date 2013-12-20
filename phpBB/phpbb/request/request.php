@@ -217,7 +217,7 @@ class request implements \phpbb\request\request_interface
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function untrimmed_variable($var_name, $default, $multibyte, $super_global = \phpbb\request\request_interface::REQUEST)
+	public function untrimmed_variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST)
 	{
 		return $this->_variable($var_name, $default, $multibyte, $super_global, false);
 	}
