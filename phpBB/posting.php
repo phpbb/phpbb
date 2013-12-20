@@ -42,7 +42,7 @@ $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($
 $mode		= request_var('mode', '');
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
-if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)))
+if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_gets('f_delete', 'm_delete', $forum_id)))
 {
 	$mode = 'soft_delete';
 }
