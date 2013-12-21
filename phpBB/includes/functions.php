@@ -2777,7 +2777,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 				$url = (!empty($dir) ? $dir . '/' : '') . $url;
 				$url = generate_board_url() . '/' . $url;
 			}
-			$url = $phpbb_filesystem->clean_path($url);
+			$url = $phpbb_path_helper->clean_url($url);;
 		}
 	}
 
