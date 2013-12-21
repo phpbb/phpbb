@@ -2653,7 +2653,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper;
+	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx;
 
 	$failover_flag = false;
 
@@ -2696,14 +2696,15 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		// Also treat URLs that have a non-existing basename
-		if (!$disable_cd_check && (!file_exists($pathinfo['dirname'] . '/') || !file_exists($pathinfo['basename'])))
+		// Also treat URLs that have a non-existing basename and fit
+		// controller style URLs
+		if (!$disable_cd_check && (!file_exists($pathinfo['dirname'] . '/') || (!file_exists($url) && preg_match('/^[\.]?+[\/]?+(?:app\.php)?+[a-zA-Z0-9\/]/', $url))))
 		{
 			$url = str_replace('../', '', $url);
 			$pathinfo = pathinfo($url);
 
 			// Also treat URLs that have a non-existing basename
-			if (!file_exists($pathinfo['dirname'] . '/') || !file_exists($pathinfo['basename']))
+			if (!file_exists($pathinfo['dirname'] . '/') || (!file_exists($url) && preg_match('/^[\.]?+[\/]?+(?:app\.php)?+[a-zA-Z0-9\/]/', $url)))
 			{
 				// fallback to "last known user page"
 				// at least this way we know the user does not leave the phpBB root

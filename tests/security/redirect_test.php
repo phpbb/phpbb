@@ -38,9 +38,9 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array('./foobar', false, false, 'http://localhost/phpBB/foobar'),
 			array('foo/bar', false, false, 'http://localhost/phpBB/foo/bar'),
 			array('./foo/bar', false, false, 'http://localhost/phpBB/foo/bar'),
-			array('./../index.php', false, false, 'http://localhost/phpBB/index.php'),
+			array('./../index.php', false, false, 'http://localhost/index.php'),
 			array('./../index.php', true, false, 'http://localhost/index.php'),
-			array('../index.php', false, false, 'http://localhost/phpBB/index.php'),
+			array('../index.php', false, false, 'http://localhost/index.php'),
 			array('../index.php', true, false, 'http://localhost/index.php'),
 			array('./index.php', false, false, 'http://localhost/phpBB/index.php'),
 		);
