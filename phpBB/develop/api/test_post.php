@@ -2,7 +2,7 @@
 
 $data = array(
 	'auth_key' => 'f7db17b9636a46ac',
-	'serial' => 6,
+	'serial' => 8,
 
 	'username' => '',
 	'topic_type' => 0,

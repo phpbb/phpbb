@@ -35,7 +35,8 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'APPROVE'								=> 'Approve',
+	'API'								=> 'Manage API key',
+	'APPROVE'							=> 'Approve',
 	'ATTACHMENT'						=> 'Attachment',
 	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled.',
 
@@ -51,7 +52,7 @@ $lang = array_merge($lang, array(
 
 	'DELETE_TOPIC'			=> 'Delete topic',
 	'DELETED_INFORMATION'	=> 'Deleted by %1$s on %2$s',
-	'DISAPPROVE'					=> 'Disapprove',
+	'DISAPPROVE'			=> 'Disapprove',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
 	'EDITED_TIMES_TOTAL'	=> array(

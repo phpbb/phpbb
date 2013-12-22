@@ -1057,6 +1057,7 @@ while ($row = $db->sql_fetchrow($result))
 		'post_delete_time'	=> $row['post_delete_time'],
 		'post_delete_reason'=> $row['post_delete_reason'],
 		'post_delete_user'	=> $row['post_delete_user'],
+		'post_api_post'		=> $row['post_api_post'],
 
 		// Make sure the icon actually exists
 		'icon_id'			=> (isset($icons[$row['icon_id']]['img'], $icons[$row['icon_id']]['height'], $icons[$row['icon_id']]['width'])) ? $row['icon_id'] : 0,
@@ -1647,6 +1648,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_EDIT'			=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
+		'U_API'			=> ($auth->acl_get('m_api') && $row['post_api_post']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=manage_api_key&amp;p=" . $row['post_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 		'U_PROFILE'		=> $user_cache[$poster_id]['profile'],

@@ -345,6 +345,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_spli
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_softdelete', 1, 1);
 
 # -- Global moderator auth option (not a local option)
+INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_api', 0, 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_ban', 0, 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_warn', 0, 1);
 
