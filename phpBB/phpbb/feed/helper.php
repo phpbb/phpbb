@@ -142,6 +142,7 @@ class helper
 		{
 			$update_count = array();
 			parse_attachments($forum_id, $content, $post_attachments, $update_count);
+			$content .= implode('<br />', $post_attachments);
 		}
 
 		// Remove Comments from inline attachments [ia]
