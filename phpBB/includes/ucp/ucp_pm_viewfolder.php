@@ -393,7 +393,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $config, $auth, $phpbb_root_path, $phpEx;
+	global $user, $db, $template, $config, $auth, $phpbb_container, $phpbb_root_path, $phpEx;
 
 	$start = request_var('start', 0);
 
@@ -401,6 +401,8 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$sort_days	= request_var('st', 0);
 	$sort_key	= request_var('sk', 't');
 	$sort_dir	= request_var('sd', 'd');
+
+	$pagination = $phpbb_container->get('pagination');
 
 	// PM ordering options
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
@@ -452,10 +454,11 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param");
-	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
+	$start = $pagination->validate_start($start, $config['topics_per_page'], $pm_count);
+	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
 
 	$template->assign_vars(array(
-		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $pm_count, $config['topics_per_page'], $start),
+		'PAGE_NUMBER'		=> $pagination->on_page($base_url, $pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> $user->lang('VIEW_PM_MESSAGES', (int) $pm_count),
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'POST_PM_LOCKED') : $user->img('button_pm_new', 'POST_NEW_PM'),
@@ -481,14 +484,10 @@ function get_pm_from($folder_id, $folder, $user_id)
 	{
 		$store_reverse = true;
 
-		if ($start + $config['topics_per_page'] > $pm_count)
-		{
-			$sql_limit = min($config['topics_per_page'], max(1, $pm_count - $start));
-		}
-
 		// Select the sort order
 		$direction = ($sort_dir == 'd') ? 'ASC' : 'DESC';
-		$sql_start = max(0, $pm_count - $sql_limit - $start);
+		$sql_limit = $pagination->reverse_limit($start, $sql_limit, $pm_count);
+		$sql_start = $pagination->reverse_start($start, $sql_limit, $pm_count);
 	}
 	else
 	{

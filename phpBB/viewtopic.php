@@ -43,6 +43,8 @@ $sort_dir	= request_var('sd', $default_sort_dir);
 
 $update		= request_var('update', false);
 
+$pagination = $phpbb_container->get('pagination');
+
 $s_can_vote = false;
 /**
 * @todo normalize?
@@ -434,10 +436,7 @@ if ($hilit_words)
 }
 
 // Make sure $start is set to the last page if it exceeds the amount
-if ($start < 0 || $start >= $total_posts)
-{
-	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
-}
+$start = $pagination->validate_start($start, $config['posts_per_page'], $total_posts);
 
 // General Viewtopic URL for return links
 $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
@@ -591,7 +590,7 @@ if (!empty($_EXTRA_URL))
 
 // If we've got a hightlight set pass it on to pagination.
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
-phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
+$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
 // Send vars to template
 $template->assign_vars(array(
@@ -606,7 +605,7 @@ $template->assign_vars(array(
 	'TOPIC_AUTHOR_COLOUR'	=> get_username_string('colour', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
 	'TOPIC_AUTHOR'			=> get_username_string('username', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
 
-	'PAGE_NUMBER' 	=> phpbb_on_page($template, $user, $base_url, $total_posts, $config['posts_per_page'], $start),
+	'PAGE_NUMBER' 	=> $pagination->on_page($base_url, $total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> $user->lang('VIEW_TOPIC_POSTS', (int) $total_posts),
 	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, $user->session_id) : '',
 	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]) : '',
@@ -910,14 +909,11 @@ if ($start > $total_posts / 2)
 {
 	$store_reverse = true;
 
-	if ($start + $config['posts_per_page'] > $total_posts)
-	{
-		$sql_limit = min($config['posts_per_page'], max(1, $total_posts - $start));
-	}
-
 	// Select the sort order
 	$direction = (($sort_dir == 'd') ? 'ASC' : 'DESC');
-	$sql_start = max(0, $total_posts - $sql_limit - $start);
+
+	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $total_posts);
+	$sql_start = $pagination->reverse_start($start, $sql_limit, $total_posts);
 }
 else
 {
@@ -1909,7 +1905,7 @@ if (!request_var('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
-$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], $pagination->get_on_page($config['topics_per_page'], $start)) : '');
 
 /**
 * You can use this event to modify the page title of the viewtopic page

@@ -39,6 +39,8 @@ if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
 }
 
+$pagination = $phpbb_container->get('pagination');
+
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
 $sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
 
@@ -419,15 +421,16 @@ $db->sql_freeresult($result);
 // Refreshing the page every 60 seconds...
 meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
 
+$start = $pagination->validate_start($start, $config['topics_per_page'], $counter);
 $base_url = append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir");
-phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
+$pagination->generate_template_pagination($base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
 
 // Send data to template
 $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> $user->lang('REG_USERS_ONLINE', (int) $logged_visible_online, $user->lang('HIDDEN_USERS_ONLINE', (int) $logged_hidden_online)),
 	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
-	'PAGE_NUMBER'					=> phpbb_on_page($template, $user, $base_url, $counter, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'					=> $pagination->on_page($base_url, $counter, $config['topics_per_page'], $start),
 
 	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),

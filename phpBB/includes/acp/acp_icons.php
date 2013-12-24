@@ -27,7 +27,7 @@ class acp_icons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request;
+		global $request, $phpbb_container;
 
 		$user->add_lang('acp/posting');
 
@@ -893,6 +893,7 @@ class acp_icons
 		);
 
 		$spacer = false;
+		$pagination = $phpbb_container->get('pagination');
 		$pagination_start = request_var('start', 0);
 
 		$item_count = $this->item_count($table);
@@ -927,7 +928,7 @@ class acp_icons
 		}
 		$db->sql_freeresult($result);
 
-		phpbb_generate_template_pagination($template, $this->u_action, 'pagination', 'start', $item_count, $config['smilies_per_page'], $pagination_start);
+		$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $item_count, $config['smilies_per_page'], $pagination_start);
 	}
 
 	/**
