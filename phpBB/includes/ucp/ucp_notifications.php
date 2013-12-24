@@ -31,6 +31,7 @@ class ucp_notifications
 		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		$pagination = $phpbb_container->get('pagination');
 
 		switch ($mode)
 		{
@@ -137,10 +138,11 @@ class ucp_notifications
 				}
 
 				$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=ucp_notifications&amp;mode=notification_list");
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
+				$start = $pagination->validate_start($start, $config['topics_per_page'], $notifications['total_count']);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
-					'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $notifications['total_count'], $config['topics_per_page'], $start),
+					'PAGE_NUMBER'	=> $pagination->on_page($base_url, $notifications['total_count'], $config['topics_per_page'], $start),
 					'TOTAL_COUNT'	=> $notifications['total_count'],
 					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
 				));

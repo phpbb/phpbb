@@ -1096,6 +1096,7 @@ class acp_users
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= request_var('mark', array(0));
 				$message	= utf8_normalize_nfc(request_var('message', '', true));
+				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_days	= request_var('st', 0);
@@ -1166,11 +1167,11 @@ class acp_users
 				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+					'S_ON_PAGE'		=> $pagination->on_page($base_url, $log_count, $config['topics_per_page'], $start),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -1998,6 +1999,7 @@ class acp_users
 				$start		= request_var('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$marked		= request_var('mark', array(0));
+				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_key	= request_var('sk', 'a');
@@ -2134,11 +2136,11 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
+					'S_ON_PAGE'			=> $pagination->on_page($base_url, $num_attachments, $config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
 				));

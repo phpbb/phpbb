@@ -337,6 +337,7 @@ class mcp_queue
 
 				$topic_id = $request->variable('t', 0);
 				$forum_info = array();
+				$pagination = $phpbb_container->get('pagination');
 
 				if ($topic_id)
 				{
@@ -532,7 +533,7 @@ class mcp_queue
 				unset($rowset, $forum_names);
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -546,7 +547,7 @@ class mcp_queue
 					'S_TOPICS'				=> $is_topics,
 					'S_RESTORE'				=> $is_restore,
 
-					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $user->lang(((!$is_topics) ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));
