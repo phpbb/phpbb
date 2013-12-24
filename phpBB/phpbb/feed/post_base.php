@@ -60,8 +60,6 @@ abstract class post_base extends \phpbb\feed\base
 
 	function fetch_attachments()
 	{
-		global $db;
-
 		$sql_array = array(
 						'SELECT'	=> 'a.*',
 						'FROM'		=> array(
@@ -86,14 +84,14 @@ abstract class post_base extends \phpbb\feed\base
 			$sql_array['WHERE'] .= 'AND t.forum_id = ' . (int) $this->forum_id;
 		}
 
-		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query($sql);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql);
 
 		// Set attachments in feed items
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->attachments[$row['post_msg_id']][] = $row;
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
 }
