@@ -81,6 +81,14 @@ class helper
 
 	/**
 	* Generate text content
+	*
+	* @param string $content is feed text content
+	* @param string $uid is bbcode_uid
+	* @param string $bitfield is bbcode bitfield
+	* @param int $options bbcode flag options
+	* @param int $forum_id is the forum id
+	* @param array $post_attachments is an array containing the attachments and their respective info
+	* @return string the html content to be printed for the feed
 	*/
 	public function generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 	{
@@ -130,7 +138,7 @@ class helper
 		$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
 		// Parse inline images to display with the feed
-		if (count($post_attachments) > 0)
+		if (!empty($post_attachments))
 		{
 			$update_count = array();
 			parse_attachments($forum_id, $content, $post_attachments, $update_count);
