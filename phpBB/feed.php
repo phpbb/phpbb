@@ -275,6 +275,14 @@ function feed_format_date($time)
 
 /**
 * Generate text content
+*
+* @param string $content is feed text content
+* @param string $uid is bbcode_uid
+* @param string $bitfield is bbcode bitfield
+* @param int $options bbcode flag options
+* @param int $forum_id is the forum id
+* @param array $post_attachments is an array containing the attachments and their respective info
+* @return string the html content to be printed for the feed
 **/
 function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 {
