@@ -326,7 +326,7 @@ function feed_generate_content($content, $uid, $bitfield, $options, $forum_id, $
 	$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
 	// Parse inline images to display with the feed
-	if (count($post_attachments) > 0)
+	if (!empty($post_attachments))
 	{
 		$update_count = array();
 		parse_attachments($forum_id, $content, $post_attachments, $update_count);
@@ -713,13 +713,13 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		global $db;
 
 		$sql_array = array(
-						'SELECT'	=> 'a.*',
-						'FROM'		=> array(
-							ATTACHMENTS_TABLE	=>	'a'
-						),			    
-						'WHERE'		=> 'a.in_message = 0 ',
-						'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC'
-					);
+			'SELECT'	=> 'a.*',
+			'FROM'		=> array(
+				ATTACHMENTS_TABLE	=>	'a'
+			),
+			'WHERE'		=> 'a.in_message = 0 ',
+			'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC',
+		);
 
 		if (isset($this->topic_id))
 		{
@@ -728,11 +728,11 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		else if (isset($this->forum_id))
 		{
 			$sql_array['LEFT_JOIN'] = array(
-											array(
-												'FROM'  => array(TOPICS_TABLE => 't'),
-												'ON'    => 'a.topic_id = t.topic_id'
-											)
-										);
+				array(
+					'FROM'  => array(TOPICS_TABLE => 't'),
+					'ON'    => 'a.topic_id = t.topic_id',
+				)
+			);
 			$sql_array['WHERE'] .= 'AND t.forum_id = ' . (int) $this->forum_id;
 		}
 
