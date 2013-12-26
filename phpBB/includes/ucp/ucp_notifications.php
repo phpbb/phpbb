@@ -27,9 +27,11 @@ class ucp_notifications
 		add_form_key('ucp_notification');
 
 		$start = $request->variable('start', 0);
-		$form_time = min($request->variable('form_time', 0), time());
+		$form_time = $request->variable('form_time', 0);
+		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		$pagination = $phpbb_container->get('pagination');
 
 		switch ($mode)
 		{
@@ -78,9 +80,9 @@ class ucp_notifications
 					trigger_error($message);
 				}
 
-				$this->output_notification_methods('notification_methods', $phpbb_notifications, $template, $user);
+				$this->output_notification_methods($phpbb_notifications, $template, $user, 'notification_methods');
 
-				$this->output_notification_types($subscriptions, 'notification_types', $phpbb_notifications, $template, $user);
+				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, 'notification_types');
 
 				$this->tpl_name = 'ucp_notifications';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
@@ -136,11 +138,12 @@ class ucp_notifications
 				}
 
 				$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=ucp_notifications&amp;mode=notification_list");
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
+				$start = $pagination->validate_start($start, $config['topics_per_page'], $notifications['total_count']);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
-					'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $notifications['total_count'], $config['topics_per_page'], $start),
-					'TOTAL_COUNT'	=> $user->lang('NOTIFICATIONS_COUNT', $notifications['total_count']),
+					'PAGE_NUMBER'	=> $pagination->on_page($base_url, $notifications['total_count'], $config['topics_per_page'], $start),
+					'TOTAL_COUNT'	=> $notifications['total_count'],
 					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
 				));
 
@@ -162,12 +165,13 @@ class ucp_notifications
 	/**
 	* Output all the notification types to the template
 	*
-	* @param string $block
+	* @param array $subscriptions Array containing global subscriptions
 	* @param \phpbb\notification\manager $phpbb_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
+	* @param string $block
 	*/
-	public function output_notification_types($subscriptions, $block = 'notification_types', \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user)
+	public function output_notification_types($subscriptions, \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_types')
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
@@ -209,12 +213,12 @@ class ucp_notifications
 	/**
 	* Output all the notification methods to the template
 	*
-	* @param string $block
 	* @param \phpbb\notification\manager $phpbb_notifications
 	* @param \phpbb\template\template $template
 	* @param \phpbb\user $user
+	* @param string $block
 	*/
-	public function output_notification_methods($block = 'notification_methods', \phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user)
+	public function output_notification_methods(\phpbb\notification\manager $phpbb_notifications, \phpbb\template\template $template, \phpbb\user $user, $block = 'notification_methods')
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 

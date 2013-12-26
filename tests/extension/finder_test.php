@@ -18,15 +18,15 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
 			array(
-				'foo' => array(
-					'ext_name' => 'foo',
+				'vendor2/foo' => array(
+					'ext_name' => 'vendor2/foo',
 					'ext_active' => '1',
-					'ext_path' => 'ext/foo/',
+					'ext_path' => 'ext/vendor2/foo/',
 				),
-				'bar' => array(
-					'ext_name' => 'bar',
+				'vendor3/bar' => array(
+					'ext_name' => 'vendor3/bar',
 					'ext_active' => '1',
-					'ext_path' => 'ext/bar/',
+					'ext_path' => 'ext/vendor3/bar/',
 				),
 			));
 
@@ -43,10 +43,10 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\bar\my\hidden_class',
-				'\foo\a_class',
-				'\foo\b_class',
 				'\phpbb\default\implementation',
+				'\vendor2\foo\a_class',
+				'\vendor2\foo\b_class',
+				'\vendor3\bar\my\hidden_class',
 			),
 			$classes
 		);
@@ -60,7 +60,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($dirs);
 		$this->assertEquals(array(
-			dirname(__FILE__) . '/ext/foo/type/',
+			dirname(__FILE__) . '/ext/vendor2/foo/type/',
 		), $dirs);
 	}
 
@@ -72,9 +72,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 		sort($dirs);
 		$this->assertEquals(array(
-			dirname(__FILE__) . '/ext/foo/sub/type/',
-			dirname(__FILE__) . '/ext/foo/type/',
-			dirname(__FILE__) . '/ext/foo/typewrong/',
+			dirname(__FILE__) . '/ext/vendor2/foo/sub/type/',
+			dirname(__FILE__) . '/ext/vendor2/foo/type/',
+			dirname(__FILE__) . '/ext/vendor2/foo/typewrong/',
 		), $dirs);
 	}
 
@@ -88,8 +88,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\bar\my\hidden_class',
 				'\phpbb\default\implementation',
+				'\vendor3\bar\my\hidden_class',
 			),
 			$classes
 		);
@@ -105,9 +105,9 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\foo\sub\type\alternative',
-				'\foo\type\alternative',
 				'\phpbb\default\implementation',
+				'\vendor2\foo\sub\type\alternative',
+				'\vendor2\foo\type\alternative',
 			),
 			$classes
 		);
@@ -122,7 +122,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\foo\type\alternative',
+				'\vendor2\foo\type\alternative',
 			),
 			$classes
 		);
@@ -137,7 +137,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\foo\sub\type\alternative',
+				'\vendor2\foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -152,7 +152,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\foo\sub\type\alternative',
+				'\vendor2\foo\sub\type\alternative',
 			),
 			$classes
 		);
@@ -162,14 +162,14 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	{
 		$files = $this->finder
 			->extension_directory('/type')
-			->find_from_extension('foo', dirname(__FILE__) . '/ext/foo/');
+			->find_from_extension('vendor2/foo', dirname(__FILE__) . '/ext/vendor2/foo/');
 		$classes = $this->finder->get_classes_from_files($files);
 
 		sort($classes);
 		$this->assertEquals(
 			array(
-				'\foo\type\alternative',
-				'\foo\type\dummy\empty',
+				'\vendor2\foo\type\alternative',
+				'\vendor2\foo\type\dummy\empty',
 			),
 			$classes
 		);

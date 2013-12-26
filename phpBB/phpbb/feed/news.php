@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * News feed
 *
 * This will give you {$this->num_items} first posts

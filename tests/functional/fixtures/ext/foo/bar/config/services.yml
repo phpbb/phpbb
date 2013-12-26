@@ -4,3 +4,12 @@ services:
         arguments:
             - @controller.helper
             - @template
+    foo_bar.listener.permission:
+        class: foo\bar\event\permission
+        tags:
+            - { name: event.listener }
+    foo_bar.listener.user_setup:
+        class: foo\bar\event\user_setup
+        tags:
+            - { name: event.listener }
+

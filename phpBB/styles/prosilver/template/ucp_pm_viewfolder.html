@@ -53,7 +53,7 @@
 				</dl>
 			</li>
 		</ul>
-		<ul class="topiclist cplist pmlist <!-- IF S_SHOW_RECIPIENTS -->missing-column<!-- ELSE -->two-columns<!-- ENDIF -->">
+		<ul class="topiclist cplist pmlist responsive-show-all <!-- IF S_SHOW_RECIPIENTS -->missing-column<!-- ELSE -->two-columns<!-- ENDIF -->">
 
 		<!-- BEGIN messagerow -->
 			<li class="row<!-- IF messagerow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF messagerow.PM_CLASS --> {messagerow.PM_CLASS}<!-- ENDIF -->">
@@ -126,7 +126,8 @@
 		<!-- IF U_NEXT_PAGE --><a href="{U_NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
-		<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
+		<label>{S_SELECT_SORT_DIR}</label>
+		<input type="submit" name="sort" value="{L_GO}" class="button2" />
 		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 	</fieldset>
 	<!-- ENDIF -->

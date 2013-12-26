@@ -7,19 +7,13 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\auth\provider\oauth\service;
 
 /**
 * OAuth service exception class
 *
 * @package auth
 */
-class phpbb_auth_provider_oauth_service_exception extends RuntimeException
+class exception extends \RuntimeException
 {
 }

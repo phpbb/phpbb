@@ -31,7 +31,7 @@
 			<!-- ENDIF -->
 			<!-- IF not S_EDIT_POST -->
 			<dl class="pmlist">
-				<dt><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></dt>
+				<dt><label>{L_TO}{L_COLON}<textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
 				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
 				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" tabindex="1" /></dd>
 				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" tabindex="1" /></dd>
@@ -86,6 +86,8 @@
 	</dl>
 	<!-- ENDIF -->
 
+	<!-- EVENT posting_editor_subject_before -->
+
 	<!-- IF S_POST_ACTION or S_PRIVMSGS or S_EDIT_DRAFT -->
 	<dl style="clear: left;">
 		<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
@@ -96,6 +98,8 @@
 		<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 	<!-- ENDIF -->
 	<!-- ENDIF -->
+
+	<!-- EVENT posting_editor_subject_after -->
 
 	<!-- INCLUDE posting_buttons.html -->
 
@@ -111,14 +115,16 @@
 		<!-- ENDIF -->
 
 		<!-- IF BBCODE_STATUS -->
-		<!-- IF .smiley --><hr /><!-- ENDIF -->
-		{BBCODE_STATUS}<br />
-		<!-- IF S_BBCODE_ALLOWED -->
-			{IMG_STATUS}<br />
-			{FLASH_STATUS}<br />
-			{URL_STATUS}<br />
-		<!-- ENDIF -->
-		{SMILIES_STATUS}
+		<div class="bbcode-status">
+			<!-- IF .smiley --><hr /><!-- ENDIF -->
+			{BBCODE_STATUS}<br />
+			<!-- IF S_BBCODE_ALLOWED -->
+				{IMG_STATUS}<br />
+				{FLASH_STATUS}<br />
+				{URL_STATUS}<br />
+			<!-- ENDIF -->
+			{SMILIES_STATUS}
+		</div>
 		<!-- ENDIF -->
 		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
 			<!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->
@@ -127,9 +133,13 @@
 		<!-- ENDIF -->
 	</div>
 
+	<!-- EVENT posting_editor_message_before -->
+
 	<div id="message-box">
 		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 	</div>
+
+	<!-- EVENT posting_editor_message_after -->
 </fieldset>
 
 <!-- IF $EXTRA_POSTING_OPTIONS eq 1 -->

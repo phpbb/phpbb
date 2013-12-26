@@ -134,10 +134,11 @@ class mcp_warn
 	*/
 	function mcp_warn_list_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config;
+		global $phpEx, $phpbb_root_path, $config, $phpbb_container;
 		global $template, $db, $user, $auth;
 
 		$user->add_lang('memberlist');
+		$pagination = $phpbb_container->get('pagination');
 
 		$start	= request_var('start', 0);
 		$st		= request_var('st', 0);
@@ -176,7 +177,7 @@ class mcp_warn
 		}
 
 		$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd");
-		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $user_count, $config['topics_per_page'], $start);
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $user_count, $config['topics_per_page'], $start);
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
@@ -185,7 +186,7 @@ class mcp_warn
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
-			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $user_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> $pagination->on_page($base_url, $user_count, $config['topics_per_page'], $start),
 			'TOTAL_USERS'		=> $user->lang('LIST_USERS', (int) $user_count),
 		));
 	}

@@ -10,14 +10,6 @@
 namespace phpbb;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Session class
 * @package phpBB3
 */
@@ -1234,7 +1226,6 @@ class session
 			{
 				$this->session_create(ANONYMOUS);
 			}
-
 
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';

@@ -17,7 +17,40 @@
 <div id="post-{MESSAGE_ID}" class="post pm<!-- IF S_POST_UNAPPROVED or S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF S_ONLINE --> online<!-- ENDIF -->">
 <div class="inner">
 
+	<dl class="postprofile" id="profile{MESSAGE_ID}">
+		<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF -->"><!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->{MESSAGE_AUTHOR_FULL}</dt>
+
+		<!-- IF RANK_TITLE or RANK_IMG --><dd class="profile-rank">{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
+
+		<dd><strong>{L_POSTS}{L_COLON}</strong> {AUTHOR_POSTS}</dd>
+		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
+		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}{L_COLON}</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
+
+		<!-- EVENT ucp_pm_viewmessage_custom_fields_before -->
+		<!-- BEGIN custom_fields -->
+			<dd><strong>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
+		<!-- END custom_fields -->
+		<!-- EVENT ucp_pm_viewmessage_custom_fields_after -->
+
+
+		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->
+		<dd>
+			<ul class="profile-icons">
+			<!-- IF U_PM --><li class="pm-icon"><a href="{U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
+			<!-- IF U_EMAIL --><li class="email-icon"><a href="{U_EMAIL}" title="{L_SEND_EMAIL_USER} {MESSAGE_AUTHOR}"><span>{L_SEND_EMAIL_USER} {MESSAGE_AUTHOR}</span></a></li><!-- ENDIF -->
+			<!-- IF U_WWW --><li class="web-icon"><a href="{U_WWW}" title="{L_VISIT_WEBSITE}{L_COLON} {U_WWW}"><span>{L_WEBSITE}</span></a></li><!-- ENDIF -->
+			<!-- IF U_MSN --><li class="msnm-icon"><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false;" title="{L_MSNM}"><span>{L_MSNM}</span></a></li><!-- ENDIF -->
+			<!-- IF U_ICQ --><li class="icq-icon"><a href="{U_ICQ}" onclick="popup(this.href, 550, 320); return false;" title="{L_ICQ}"><span>{L_ICQ}</span></a></li><!-- ENDIF -->
+			<!-- IF U_YIM --><li class="yahoo-icon"><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false;" title="{L_YIM}"><span>{L_YIM}</span></a></li><!-- ENDIF -->
+			<!-- IF U_AIM --><li class="aim-icon"><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false;" title="{L_AIM}"><span>{L_AIM}</span></a></li><!-- ENDIF -->
+			<!-- IF U_JABBER --><li class="jabber-icon"><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span>{L_JABBER}</span></a></li><!-- ENDIF -->
+			</ul>
+		</dd>
+		<!-- ENDIF -->
+	</dl>
+
 	<div class="postbody">
+		<h3 class="first">{SUBJECT}</h3>
 
 		<!-- IF U_DELETE or U_EDIT or U_QUOTE or U_REPORT -->
 		<ul class="profile-icons">
@@ -27,8 +60,6 @@
 			<!-- IF U_QUOTE --><li class="quote-icon"><a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}"><span>{L_POST_QUOTE_PM}</span></a></li><!-- ENDIF -->
 		</ul>
 		<!-- ENDIF -->
-
-		<h3 class="first">{SUBJECT}</h3>
 
 		<p class="author">
 			<strong>{L_SENT_AT}{L_COLON}</strong> {SENT_DATE}
@@ -75,38 +106,6 @@
 			<div id="sig{MESSAGE_ID}" class="signature">{SIGNATURE}</div>
 		<!-- ENDIF -->
 	</div>
-
-	<dl class="postprofile" id="profile{MESSAGE_ID}">
-		<dt><!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}">{AUTHOR_AVATAR}</a><br /><!-- ENDIF -->{MESSAGE_AUTHOR_FULL}</dt>
-		<!-- IF RANK_TITLE --><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-		<!-- IF RANK_IMG --><dd>{RANK_IMG}</dd><!-- ENDIF -->
-		<dd>&nbsp;</dd>
-		<dd><strong>{L_POSTS}{L_COLON}</strong> {AUTHOR_POSTS}</dd>
-		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
-		<!-- IF AUTHOR_FROM --><dd><strong>{L_LOCATION}{L_COLON}</strong> {AUTHOR_FROM}</dd><!-- ENDIF -->
-
-		<!-- EVENT ucp_pm_viewmessage_custom_fields_before -->
-		<!-- BEGIN custom_fields -->
-			<dd><strong>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
-		<!-- END custom_fields -->
-		<!-- EVENT ucp_pm_viewmessage_custom_fields_after -->
-
-
-		<!-- IF U_PM or U_EMAIL or U_WWW or U_MSN or U_ICQ or U_YIM or U_AIM or U_JABBER -->
-		<dd>
-			<ul class="profile-icons">
-			<!-- IF U_PM --><li class="pm-icon"><a href="{U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
-			<!-- IF U_EMAIL --><li class="email-icon"><a href="{U_EMAIL}" title="{L_SEND_EMAIL_USER} {MESSAGE_AUTHOR}"><span>{L_SEND_EMAIL_USER} {MESSAGE_AUTHOR}</span></a></li><!-- ENDIF -->
-			<!-- IF U_WWW --><li class="web-icon"><a href="{U_WWW}" title="{L_VISIT_WEBSITE}{L_COLON} {U_WWW}"><span>{L_WEBSITE}</span></a></li><!-- ENDIF -->
-			<!-- IF U_MSN --><li class="msnm-icon"><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false;" title="{L_MSNM}"><span>{L_MSNM}</span></a></li><!-- ENDIF -->
-			<!-- IF U_ICQ --><li class="icq-icon"><a href="{U_ICQ}" onclick="popup(this.href, 550, 320); return false;" title="{L_ICQ}"><span>{L_ICQ}</span></a></li><!-- ENDIF -->
-			<!-- IF U_YIM --><li class="yahoo-icon"><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false;" title="{L_YIM}"><span>{L_YIM}</span></a></li><!-- ENDIF -->
-			<!-- IF U_AIM --><li class="aim-icon"><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false;" title="{L_AIM}"><span>{L_AIM}</span></a></li><!-- ENDIF -->
-			<!-- IF U_JABBER --><li class="jabber-icon"><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span>{L_JABBER}</span></a></li><!-- ENDIF -->
-			</ul>
-		</dd>
-		<!-- ENDIF -->
-	</dl>
 
 	<div class="back2top"><a href="#top" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 

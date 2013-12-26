@@ -9,14 +9,6 @@
 
 namespace phpbb\di;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

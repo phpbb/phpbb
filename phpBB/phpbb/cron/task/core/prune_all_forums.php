@@ -10,14 +10,6 @@
 namespace phpbb\cron\task\core;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Prune all forums cron task.
 *
 * It is intended to be invoked from system cron.

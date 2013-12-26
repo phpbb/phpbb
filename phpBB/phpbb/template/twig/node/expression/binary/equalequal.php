@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig\node\expression\binary;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 
 class equalequal extends \Twig_Node_Expression_Binary
 {

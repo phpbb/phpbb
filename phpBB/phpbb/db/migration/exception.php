@@ -10,14 +10,6 @@
 namespace phpbb\db\migration;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The migrator is responsible for applying new migrations in the correct order.
 *
 * @package db

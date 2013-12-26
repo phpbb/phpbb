@@ -1318,18 +1318,12 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 			$tz_dates .= '<option value="' . $timezone['offest'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offest'] . ' - ' . $timezone['current'] . '</option>';
 		}
 
-		if (isset($user->lang['timezones'][$timezone['tz']]))
+		$label = $timezone['tz'];
+		if (isset($user->lang['timezones'][$label]))
 		{
-			$title = $label = $user->lang['timezones'][$timezone['tz']];
+			$label = $user->lang['timezones'][$label];
 		}
-		else
-		{
-			// No label, we'll figure one out
-			$bits = explode('/', str_replace('_', ' ', $timezone['tz']));
-
-			$label = implode(' - ', $bits);
-			$title = $timezone['offest'] . ' - ' . $label;
-		}
+		$title = $timezone['offest'] . ' - ' . $label;
 
 		if ($truncate)
 		{
@@ -1478,7 +1472,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND mark_time < $post_time
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
@@ -2212,225 +2205,6 @@ function tracking_unserialize($string, $max_depth = 3)
 	return $level;
 }
 
-// Pagination functions
-/**
-* Generate a pagination link based on the url and the page information
-*
-* @param string $base_url is url prepended to all links generated within the function
-*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
-*							for the page. Also be sure to specify the pagination path information into the start_name argument
-* @param string $on_page is the page for which we want to generate the link
-* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
-*							If you use page numbers inside your controller route, start name should be the string
-*							that should be removed for the first page (example: /page/%d)
-* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
-* @return URL for the requested page
-*/
-function phpbb_generate_page_link($base_url, $on_page, $start_name, $per_page)
-{
-
-	if (strpos($start_name, '%d') !== false)
-	{
-		return ($on_page > 1) ? sprintf($base_url, (int) $on_page) : str_replace($start_name, '', $base_url);
-	}
-	else
-	{
-		$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-		return ($on_page > 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 1) * $per_page) : $base_url;
-	}
-}
-
-/**
-* Generate template rendered pagination
-* Allows full control of rendering of pagination with the template
-*
-* @param object $template the template object
-* @param string $base_url is url prepended to all links generated within the function
-*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
-*							for the page. Also be sure to specify the pagination path information into the start_name argument
-* @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
-* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
-*							If you use page numbers inside your controller route, start name should be the string
-*							that should be removed for the first page (example: /page/%d)
-* @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
-* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
-* @param int $start_item the item which should be considered currently active, used to determine the page we're on
-* @param bool $reverse_count determines whether we weight display of the list towards the start (false) or end (true) of the list
-* @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
-* @return null
-*/
-function phpbb_generate_template_pagination($template, $base_url, $block_var_name, $start_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
-{
-	// Make sure $per_page is a valid value
-	$per_page = ($per_page <= 0) ? 1 : $per_page;
-	$total_pages = ceil($num_items / $per_page);
-
-	if ($total_pages == 1 || !$num_items)
-	{
-		return;
-	}
-
-	$on_page = floor($start_item / $per_page) + 1;
-
-	if ($reverse_count)
-	{
-		$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
-		$end_page = $total_pages;
-	}
-	else
-	{
-		// What we're doing here is calculating what the "start" and "end" pages should be. We
-		// do this by assuming pagination is "centered" around the currently active page with
-		// the three previous and three next page links displayed. Anything more than that and
-		// we display the ellipsis, likewise anything less.
-		//
-		// $start_page is the page at which we start creating the list. When we have five or less
-		// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
-		// and we calculate the start based on the active page. This is the min/max calculation.
-		// First (max) would we end up starting on a page less than 1? Next (min) would we end
-		// up starting so close to the end that we'd not display our minimum number of pages.
-		//
-		// $end_page is the last page in the list to display. Like $start_page we use a min/max to
-		// determine this number. Again at most five pages? Then just display them all. More than
-		// five and we first (min) determine whether we'd end up listing more pages than exist.
-		// We then (max) ensure we're displaying the minimum number of pages.
-		$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
-		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
-	}
-
-	$u_previous_page = $u_next_page = '';
-	if ($on_page != 1)
-	{
-		$u_previous_page = phpbb_generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
-
-		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $u_previous_page,
-			'S_IS_CURRENT'	=> false,
-			'S_IS_PREV'		=> true,
-			'S_IS_NEXT'		=> false,
-			'S_IS_ELLIPSIS'	=> false,
-		));
-	}
-
-	// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
-	// to display the first and last page in the list plus any ellipsis. We use this loop to jump
-	// around a little within the list depending on where we're starting (and ending).
-	$at_page = 1;
-	do
-	{
-		// We decide whether to display the ellipsis during the loop. The ellipsis is always
-		// displayed as either the second or penultimate item in the list. So are we at either
-		// of those points and of course do we even need to display it, i.e. is the list starting
-		// on at least page 3 and ending three pages before the final item.
-		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> $at_page,
-			'PAGE_URL'		=> phpbb_generate_page_link($base_url, $at_page, $start_name, $per_page),
-			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
-			'S_IS_NEXT'		=> false,
-			'S_IS_PREV'		=> false,
-			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
-		));
-
-		// We may need to jump around in the list depending on whether we have or need to display
-		// the ellipsis. Are we on page 2 and are we more than one page away from the start
-		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
-		// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
-		// page (so we can display the ellipsis next pass). Else, increment the counter and keep
-		// going
-		if ($at_page == 2 && $at_page < $start_page - 1)
-		{
-			$at_page = $start_page;
-		}
-		else if ($at_page == $end_page && $end_page < $total_pages - 1)
-		{
-			$at_page = $total_pages - 1;
-		}
-		else
-		{
-			$at_page++;
-		}
-	}
-	while ($at_page <= $total_pages);
-
-	if ($on_page != $total_pages)
-	{
-		$u_next_page = phpbb_generate_page_link($base_url, $on_page + 1, $start_name, $per_page);
-
-		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $u_next_page,
-			'S_IS_CURRENT'	=> false,
-			'S_IS_PREV'		=> false,
-			'S_IS_NEXT'		=> true,
-			'S_IS_ELLIPSIS'	=> false,
-		));
-	}
-
-	// If the block_var_name is a nested block, we will use the last (most
-	// inner) block as a prefix for the template variables. If the last block
-	// name is pagination, the prefix is empty. If the rest of the
-	// block_var_name is not empty, we will modify the last row of that block
-	// and add our pagination items.
-	$tpl_block_name = $tpl_prefix = '';
-	if (strrpos($block_var_name, '.') !== false)
-	{
-		$tpl_block_name = substr($block_var_name, 0, strrpos($block_var_name, '.'));
-		$tpl_prefix = strtoupper(substr($block_var_name, strrpos($block_var_name, '.') + 1));
-	}
-	else
-	{
-		$tpl_prefix = strtoupper($block_var_name);
-	}
-	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
-
-	$template_array = array(
-		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $u_previous_page : '',
-		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
-		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
-		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
-	);
-
-	if ($tpl_block_name)
-	{
-		$template->alter_block_array($tpl_block_name, $template_array, true, 'change');
-	}
-	else
-	{
-		$template->assign_vars($template_array);
-	}
-}
-
-/**
-* Return current page
-* This function also sets certain specific template variables
-*
-* @param object $template the template object
-* @param object $user the user object
-* @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
-* @param int $num_items the total number of items, posts, topics, etc.
-* @param int $per_page the number of items, posts, etc. per page
-* @param int $start the item which should be considered currently active, used to determine the page we're on
-* @return null
-*/
-function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $start)
-{
-	// Make sure $per_page is a valid value
-	$per_page = ($per_page <= 0) ? 1 : $per_page;
-
-	$on_page = floor($start / $per_page) + 1;
-
-	$template->assign_vars(array(
-		'PER_PAGE'		=> $per_page,
-		'ON_PAGE'		=> $on_page,
-		'BASE_URL'		=> $base_url,
-	));
-
-	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
-}
-
 // Server functions (building urls, redirecting...)
 
 /**
@@ -2866,7 +2640,7 @@ function build_url($strip_vars = false)
 	$url_parts = parse_url($page);
 
 	// URL
-	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
+	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 	{
 		$page = $phpbb_root_path . $page;
 	}
@@ -5124,7 +4898,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $adm_relative_path;
+	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5225,16 +4999,13 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$l_online_time = $user->lang('VIEW_ONLINE_TIMES', (int) $config['load_online_time']);
 	}
 
-	$l_privmsgs_text = $l_privmsgs_text_unread = '';
 	$s_privmsg_new = false;
 
-	// Obtain number of new private messages if user is logged in
+	// Check for new private messages if user is logged in
 	if (!empty($user->data['is_registered']))
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			$l_privmsgs_text = $user->lang('NEW_PMS', (int) $user->data['user_new_privmsg']);
-
 			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
@@ -5251,15 +5022,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 		else
 		{
-			$l_privmsgs_text = $user->lang('NEW_PMS', 0);
 			$s_privmsg_new = false;
-		}
-
-		$l_privmsgs_text_unread = '';
-
-		if ($user->data['user_unread_privmsg'] && $user->data['user_unread_privmsg'] != $user->data['user_new_privmsg'])
-		{
-			$l_privmsgs_text_unread = $user->lang('UNREAD_PMS', (int) $user->data['user_unread_privmsg']);
 		}
 	}
 
@@ -5350,12 +5113,11 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'TOTAL_USERS_ONLINE'			=> $l_online_users,
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
-		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
-		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
-		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $user->lang('NOTIFICATIONS_COUNT', $notifications['unread_count']) : '',
+		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
 		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
@@ -5377,7 +5139,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
@@ -5405,7 +5166,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> (!empty($user->data['is_registered'])) ? true : false,
 		'S_IS_BOT'				=> (!empty($user->data['is_bot'])) ? true : false,
-		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
@@ -5423,7 +5183,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
 
-		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_root_path}{$adm_relative_path}index.$phpEx", false, true, $user->session_id)),
+		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> build_hidden_fields(array('redirect' => build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
@@ -5451,8 +5211,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_JQUERY_LINK'			=> ($config['load_jquery_cdn'] && !empty($config['load_jquery_url'])) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
-		'S_JQUERY_FALLBACK'		=> ($config['load_jquery_cdn']) ? true : false,
+		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
+		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -5609,14 +5369,14 @@ function garbage_collection()
 	global $cache, $db;
 	global $phpbb_dispatcher;
 
-	/**
-	* Unload some objects, to free some memory, before we finish our task
-	*
-	* @event core.garbage_collection
-	* @since 3.1-A1
-	*/
 	if (!empty($phpbb_dispatcher))
 	{
+		/**
+		* Unload some objects, to free some memory, before we finish our task
+		*
+		* @event core.garbage_collection
+		* @since 3.1-A1
+		*/
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}
 

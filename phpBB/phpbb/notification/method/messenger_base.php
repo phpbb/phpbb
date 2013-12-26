@@ -10,14 +10,6 @@
 namespace phpbb\notification\method;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Abstract notification method handling email and jabber notifications
 * using the phpBB messenger.
 *

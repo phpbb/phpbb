@@ -6,7 +6,7 @@
 
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 
-	<table cellspacing="1">
+	<table class="table1">
 		<col class="row1" ><col class="row2" ><col class="row2" >
 	<thead>
 		<tr>
@@ -18,17 +18,15 @@
 	<tbody>
 		<!-- IF .enabled -->
 		<tr>
-			<td class="row3" colspan="3">
-				<strong>{L_ENABLED} {L_EXTENSIONS}</strong>
-			</td>
+			<td class="row3" colspan="3"><strong>{L_EXTENSIONS_ENABLED}</strong></td>
 		</tr>
 		<!-- BEGIN enabled -->
 		<tr class="ext_enabled">
-			<td><strong>{enabled.META_DISPLAY_NAME}</strong></a></td>
+			<td><strong>{enabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{enabled.actions.U_ACTION}" alt="{enabled.actions.L_ACTION}">{enabled.actions.L_ACTION}</a>
+					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
 					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>
@@ -38,17 +36,17 @@
 
 		<!-- IF .disabled -->
 		<tr>
-			<td class="row3" colspan="3"><strong>{L_DISABLED} {L_EXTENSIONS}</strong></td>
+			<td class="row3" colspan="3"><strong>{L_EXTENSIONS_DISABLED}</strong></td>
 		</tr>
 		<!-- BEGIN disabled -->
 		<tr class="ext_disabled">
-			<td><strong>{disabled.META_DISPLAY_NAME}</strong></a></td>
+			<td><strong>{disabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF disabled.U_DETAILS --><a href="{disabled.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
 			</td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{disabled.actions.U_ACTION}" alt="{disabled.actions.L_ACTION}">{disabled.actions.L_ACTION}</a>
+					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
 					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>

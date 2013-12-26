@@ -10,14 +10,6 @@
 namespace phpbb\search\sphinx;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * \phpbb\search\sphinx\config
 * An object representing the sphinx configuration
 * Can read it from file and write it back out after modification

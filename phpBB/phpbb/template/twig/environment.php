@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class environment extends \Twig_Environment
 {
 	/** @var array */

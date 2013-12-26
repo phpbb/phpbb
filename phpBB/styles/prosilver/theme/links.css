@@ -43,6 +43,12 @@ a:active {
 	text-decoration: none;
 }
 
+/* Navigation bar links */
+ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
+	display: inline-block;
+	padding-left: 17px;
+}
+
 /* Links for forum/topic lists */
 a.forumtitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;

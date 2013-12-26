@@ -19,6 +19,8 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	static protected $fixtures = array(
 		'foo/bar/config/',
 		'foo/bar/controller/',
+		'foo/bar/event/',
+		'foo/bar/language/en/',
 		'foo/bar/styles/prosilver/template/',
 	);
 

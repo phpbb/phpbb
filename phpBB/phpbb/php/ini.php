@@ -10,14 +10,6 @@
 namespace phpbb\php;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Wrapper class for ini_get function.
 *
 * Provides easier handling of the different interpretations of ini values.

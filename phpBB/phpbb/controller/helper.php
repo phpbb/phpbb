@@ -9,14 +9,6 @@
 
 namespace phpbb\controller;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 use Symfony\Component\HttpFoundation\Response;
 
 /**

@@ -10,14 +10,6 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Topic disapproved notifications class
 * This class handles notifications for topics when they are disapproved (for authors)
 *

@@ -12,7 +12,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_notification_submit_post_base extends phpbb_database_test_case
+abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
@@ -118,7 +118,7 @@ class phpbb_notification_submit_post_base extends phpbb_database_test_case
 
 		// Notification Manager
 		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, array(),
-			$phpbb_container, $user_loader, $db, $cache, $user,
+			$phpbb_container, $user_loader, $config, $db, $cache, $user,
 			$phpbb_root_path, $phpEx,
 			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);

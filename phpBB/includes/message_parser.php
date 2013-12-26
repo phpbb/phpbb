@@ -103,6 +103,8 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_init($allow_custom_bbcode = true)
 	{
+		global $phpbb_dispatcher;
+		
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this
@@ -162,6 +164,21 @@ class bbcode_firstpass extends bbcode
 				'regexp'	=> array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
+
+		$bbcodes = $this->bbcodes;
+
+		/**
+		* Event to modify the bbcode data for later parsing
+		*
+		* @event core.modify_bbcode_init
+		* @var array	bbcodes		Array of bbcode data for use in parsing
+		* @var array	rowset		Array of bbcode data from the database
+		* @since 3.1.0-a3
+		*/
+		$vars = array('bbcodes', 'rowset');
+		extract($phpbb_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
+
+		$this->bbcodes = $bbcodes;
 	}
 
 	/**
@@ -1050,6 +1067,12 @@ class parse_message extends bbcode_firstpass
 	var $mode;
 
 	/**
+	* The plupload object used for dealing with attachments
+	* @var \phpbb\plupload\plupload
+	*/
+	protected $plupload;
+
+	/**
 	* Init - give message here or manually
 	*/
 	function parse_message($message = '')
@@ -1192,6 +1215,8 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
+		global $phpbb_dispatcher;
+
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
 		{
@@ -1219,6 +1244,28 @@ class parse_message extends bbcode_firstpass
 
 		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
+
+		$text = $this->message;
+		$uid = $this->bbcode_uid;
+
+		/**
+		* Event to modify the text after it is parsed
+		*
+		* @event core.modify_format_display_text_after
+		* @var string	text				The message text to parse
+		* @var string	uid					The bbcode uid
+		* @var bool		allow_bbcode		Do we allow bbcodes
+		* @var bool		allow_magic_url		Do we allow magic urls
+		* @var bool		allow_smilies		Do we allow smilies
+		* @var bool		update_this_message	Do we update the internal message
+		*									with the parsed result
+		* @since 3.1.0-a3
+		*/
+		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
+		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
+
+		$this->message = $text;
+		$this->bbcode_uid = $uid;
 
 		if (!$update_this_message)
 		{
@@ -1440,6 +1487,11 @@ class parse_message extends bbcode_firstpass
 
 		if ($preview || $refresh || sizeof($error))
 		{
+			if (isset($this->plupload) && $this->plupload->is_active())
+			{
+				$json_response = new \phpbb\json_response();
+			}
+
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
@@ -1484,13 +1536,17 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
+					if (isset($this->plupload) && $this->plupload->is_active())
+					{
+						$json_response->send($this->attachment_data);
+					}
 				}
 			}
 			else if (($add_file || $preview) && $upload_file)
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
+					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->plupload);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
@@ -1521,11 +1577,31 @@ class parse_message extends bbcode_firstpass
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
 						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 						$this->filename_data['filecomment'] = '';
+
+						if (isset($this->plupload) && $this->plupload->is_active())
+						{
+							// Send the client the attachment data to maintain state
+							$json_response->send($this->attachment_data);
+						}
 					}
 				}
 				else
 				{
 					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
+				}
+
+				if (!empty($error) && isset($this->plupload) && $this->plupload->is_active())
+				{
+					// If this is a plupload (and thus ajax) request, give the
+					// client the first error we have
+					$json_response->send(array(
+						'jsonrpc' => '2.0',
+						'id' => 'id',
+						'error' => array(
+							'code' => 105,
+							'message' => current($error),
+						),
+					));
 				}
 			}
 		}
@@ -1686,5 +1762,17 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
+	}
+
+	/**
+	* Setter function for passing the plupload object
+	*
+	* @param \phpbb\plupload\plupload $plupload The plupload object
+	*
+	* @return null
+	*/
+	public function set_plupload(\phpbb\plupload\plupload $plupload)
+	{
+		$this->plupload = $plupload;
 	}
 }

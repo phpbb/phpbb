@@ -10,14 +10,6 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * PM report closed notifications class
 * This class handles notifications for when reports are closed on PMs (for the one who reported the PM)
 *

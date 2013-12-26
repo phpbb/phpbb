@@ -9,14 +9,6 @@
 
 namespace phpbb\auth\provider\oauth;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 
 use OAuth\OAuth1\Token\StdOAuth1Token;
 use OAuth\Common\Token\TokenInterface;
@@ -78,7 +70,7 @@ class token_storage implements TokenStorageInterface
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken instanceOf TokenInterface)
+		if ($this->cachedToken instanceof TokenInterface)
 		{
 			return $this->cachedToken;
 		}
@@ -238,7 +230,7 @@ class token_storage implements TokenStorageInterface
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken instanceOf TokenInterface) {
+		if ($this->cachedToken instanceof TokenInterface) {
 			return $this->cachedToken;
 		}
 

@@ -46,7 +46,7 @@ class compress
 
 		if (is_file($phpbb_root_path . $src))
 		{
-			$this->data($src_path, file_get_contents("$phpbb_root_path$src"), false, stat("$phpbb_root_path$src"));
+			$this->data($src_path, file_get_contents("$phpbb_root_path$src"), stat("$phpbb_root_path$src"), false);
 		}
 		else if (is_dir($phpbb_root_path . $src))
 		{
@@ -86,7 +86,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), false, stat("$phpbb_root_path$src$path$file"));
+					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), stat("$phpbb_root_path$src$path$file"), false);
 				}
 			}
 		}
@@ -109,7 +109,7 @@ class compress
 			return false;
 		}
 
-		$this->data($filename, file_get_contents($src), false, stat($src));
+		$this->data($filename, file_get_contents($src), stat($src), false);
 		return true;
 	}
 
@@ -123,7 +123,7 @@ class compress
 		$stat[4] = $stat[5] = 0;
 		$stat[7] = strlen($src);
 		$stat[9] = time();
-		$this->data($name, $src, false, $stat);
+		$this->data($name, $src, $stat, false);
 		return true;
 	}
 
@@ -395,7 +395,7 @@ class compress_zip extends compress
 	/**
 	* Create the structures ... note we assume version made by is MSDOS
 	*/
-	function data($name, $data, $is_dir = false, $stat)
+	function data($name, $data, $stat, $is_dir = false)
 	{
 		$name = str_replace('\\', '/', $name);
 		$name = $this->unique_filename($name);
@@ -669,7 +669,7 @@ class compress_tar extends compress
 	/**
 	* Create the structures
 	*/
-	function data($name, $data, $is_dir = false, $stat)
+	function data($name, $data, $stat, $is_dir = false)
 	{
 		$name = $this->unique_filename($name);
 		$this->wrote = true;

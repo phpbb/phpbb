@@ -130,6 +130,10 @@ class config implements \phpbb\db\migration\tool\tool_interface
 
 			case 'remove':
 				$call = 'add';
+				if (sizeof($arguments) == 1)
+				{
+					$arguments[] = '';
+				}
 			break;
 
 			case 'update_if_equals':

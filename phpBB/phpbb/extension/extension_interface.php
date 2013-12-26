@@ -10,14 +10,6 @@
 namespace phpbb\extension;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The interface extension meta classes have to implement to run custom code
 * on enable/disable/purge.
 *

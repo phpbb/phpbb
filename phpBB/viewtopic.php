@@ -43,6 +43,8 @@ $sort_dir	= request_var('sd', $default_sort_dir);
 
 $update		= request_var('update', false);
 
+$pagination = $phpbb_container->get('pagination');
+
 $s_can_vote = false;
 /**
 * @todo normalize?
@@ -347,23 +349,10 @@ if ($topic_data['forum_password'])
 	login_forum_box($topic_data);
 }
 
-// Redirect to login or to the correct post upon emailed notification links
-if (isset($_GET['e']))
+// Redirect to login upon emailed notification links if user is not logged in.
+if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
 {
-	$jump_to = request_var('e', 0);
-
-	$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
-
-	if ($user->data['user_id'] == ANONYMOUS)
-	{
-		login_box($redirect_url . "&amp;p=$post_id&amp;e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
-	}
-
-	if ($jump_to > 0)
-	{
-		// We direct the already logged in user to the correct post...
-		redirect($redirect_url . ((!$post_id) ? "&amp;p=$jump_to" : "&amp;p=$post_id") . "#p$jump_to");
-	}
+	login_box(build_url('e') . '#unread', $user->lang['LOGIN_NOTIFY_TOPIC']);
 }
 
 // What is start equal to?
@@ -447,10 +436,7 @@ if ($hilit_words)
 }
 
 // Make sure $start is set to the last page if it exceeds the amount
-if ($start < 0 || $start >= $total_posts)
-{
-	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
-}
+$start = $pagination->validate_start($start, $config['posts_per_page'], $total_posts);
 
 // General Viewtopic URL for return links
 $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
@@ -497,11 +483,21 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
 		}
-		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']);
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
+		}
 	}
 	else
 	{
-		$message = $user->lang['BOOKMARK_ERR'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
+		$message = $user->lang['BOOKMARK_ERR'];
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
+		}
 	}
 	meta_refresh(3, $viewtopic_url);
 
@@ -594,7 +590,7 @@ if (!empty($_EXTRA_URL))
 
 // If we've got a hightlight set pass it on to pagination.
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
-phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
+$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
 // Send vars to template
 $template->assign_vars(array(
@@ -609,7 +605,7 @@ $template->assign_vars(array(
 	'TOPIC_AUTHOR_COLOUR'	=> get_username_string('colour', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
 	'TOPIC_AUTHOR'			=> get_username_string('username', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
 
-	'PAGE_NUMBER' 	=> phpbb_on_page($template, $user, $base_url, $total_posts, $config['posts_per_page'], $start),
+	'PAGE_NUMBER' 	=> $pagination->on_page($base_url, $total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> $user->lang('VIEW_TOPIC_POSTS', (int) $total_posts),
 	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start") . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, $user->session_id) : '',
 	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]) : '',
@@ -689,10 +685,12 @@ if (!empty($topic_data['poll_start']))
 		ORDER BY o.poll_option_id";
 	$result = $db->sql_query($sql);
 
-	$poll_info = array();
+	$poll_info = $vote_counts = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$poll_info[] = $row;
+		$option_id = (int) $row['poll_option_id'];
+		$vote_counts[$option_id] = (int) $row['poll_option_total'];
 	}
 	$db->sql_freeresult($result);
 
@@ -774,6 +772,8 @@ if (!empty($topic_data['poll_start']))
 					AND topic_id = ' . (int) $topic_id;
 			$db->sql_query($sql);
 
+			$vote_counts[$option]++;
+
 			if ($user->data['is_registered'])
 			{
 				$sql_ary = array(
@@ -798,6 +798,8 @@ if (!empty($topic_data['poll_start']))
 						AND topic_id = ' . (int) $topic_id;
 				$db->sql_query($sql);
 
+				$vote_counts[$option]--;
+
 				if ($user->data['is_registered'])
 				{
 					$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . '
@@ -821,9 +823,27 @@ if (!empty($topic_data['poll_start']))
 		$db->sql_query($sql);
 
 		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
+		$message = $user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+
+		if ($request->is_ajax())
+		{
+			// Filter out invalid options
+			$valid_user_votes = array_intersect(array_keys($vote_counts), $voted_id);
+
+			$data = array(
+				'NO_VOTES'			=> $user->lang['NO_VOTES'],
+				'success'			=> true,
+				'user_votes'		=> array_flip($valid_user_votes),
+				'vote_counts'		=> $vote_counts,
+				'total_votes'		=> array_sum($vote_counts),
+				'can_vote'			=> !sizeof($valid_user_votes) || ($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']),
+			);
+			$json_response = new \phpbb\json_response();
+			$json_response->send($data);
+		}
 
 		meta_refresh(5, $redirect_url);
-		trigger_error($user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>'));
+		trigger_error($message);
 	}
 
 	$poll_total = 0;
@@ -889,14 +909,11 @@ if ($start > $total_posts / 2)
 {
 	$store_reverse = true;
 
-	if ($start + $config['posts_per_page'] > $total_posts)
-	{
-		$sql_limit = min($config['posts_per_page'], max(1, $total_posts - $start));
-	}
-
 	// Select the sort order
 	$direction = (($sort_dir == 'd') ? 'ASC' : 'DESC');
-	$sql_start = max(0, $total_posts - $sql_limit - $start);
+
+	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $total_posts);
+	$sql_start = $pagination->reverse_start($start, $sql_limit, $total_posts);
 }
 else
 {
@@ -977,10 +994,19 @@ $sql_ary = array(
 * Event to modify the SQL query before the post and poster data is retrieved
 *
 * @event core.viewtopic_get_post_data
+* @var	int		forum_id	Forum ID
+* @var	int		topic_id	Topic ID
+* @var	array	topic_data	Array with topic data
+* @var	array	post_list	Array with post_ids we are going to retrieve
+* @var	int		sort_days	Display posts of previous x days
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_dir	Direction the posts are sorted by
+* @var	int		start		Pagination information
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
 * @since 3.1-A1
+* @change 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
 */
-$vars = array('sql_ary');
+$vars = array('forum_id', 'topic_id', 'topic_data', 'post_list', 'sort_days', 'sort_key', 'sort_dir', 'start', 'sql_ary');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
@@ -1354,15 +1380,16 @@ if (sizeof($attach_list))
 	}
 }
 
-$template->assign_vars(array(
-	'S_HAS_ATTACHMENTS' => $topic_data['topic_attachment'],
-));
-
 $methods = phpbb_gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);
 foreach ($methods as $method)
 {
 	$template->assign_block_vars('dl_method', $method);
 }
+
+$template->assign_vars(array(
+	'S_HAS_ATTACHMENTS'				=> $topic_data['topic_attachment'],
+	'U_DOWNLOAD_ALL_ATTACHMENTS'	=> $methods[0]['LINK'],
+));
 
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
@@ -1669,18 +1696,27 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	$user_poster_data = $user_cache[$poster_id];
 
+	$current_row_number = $i;
+
 	/**
 	* Modify the posts template block
 	*
 	* @event core.viewtopic_modify_post_row
+	* @var	int		start				Start item of this page
+	* @var	int		current_row_number	Number of the post on this page
+	* @var	int		end					Number of posts on this page
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @since 3.1-A1
+	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	*/
-	$vars = array('row', 'cp_row', 'user_poster_data', 'post_row');
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
+
+	$i = $current_row_number;
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
 	{
@@ -1714,6 +1750,27 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$template->assign_block_vars('postrow.dl_method', $method);
 		}
 	}
+
+	$current_row_number = $i;
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event core.viewtopic_post_row_after
+	* @var	int		start				Start item of this page
+	* @var	int		current_row_number	Number of the post on this page
+	* @var	int		end					Number of posts on this page
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
+	* @var	array	attachments			List of attachments
+	* @var	array	user_poster_data	Poster's data from user cache
+	* @var	array	post_row			Template block array of the post
+	* @since 3.1.0-a3
+	*/
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_row_after', compact($vars)));
+
+	$i = $current_row_number;
 
 	$prev_post_id = $row['post_id'];
 
@@ -1848,7 +1905,7 @@ if (!request_var('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
-$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['posts_per_page']) + 1) : '');
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], $pagination->get_on_page($config['topics_per_page'], $start)) : '');
 
 /**
 * You can use this event to modify the page title of the viewtopic page

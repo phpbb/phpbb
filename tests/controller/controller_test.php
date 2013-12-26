@@ -34,10 +34,17 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$provider = new \phpbb\controller\provider;
 		$routes = $provider
 			->import_paths_from_finder($this->extension_manager->get_finder())
-			->find('./tests/controller/');
+			->find(__DIR__);
 
 		// This will need to be updated if any new routes are defined
-		$this->assertEquals(2, sizeof($routes));
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('core_controller'));
+		$this->assertEquals('/core_foo', $routes->get('core_controller')->getPath());
+
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller1'));
+		$this->assertEquals('/foo', $routes->get('controller1')->getPath());
+
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller2'));
+		$this->assertEquals('/foo/bar', $routes->get('controller2')->getPath());
 	}
 
 	public function test_controller_resolver()

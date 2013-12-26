@@ -10,14 +10,6 @@
 namespace phpbb\cron\task;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Cron task base class. Provides sensible defaults for cron tasks
 * and partially implements cron task interface, making writing cron tasks easier.
 *

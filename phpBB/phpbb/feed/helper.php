@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Class with some helpful functions used in feeds
 * @package phpBB3
 */

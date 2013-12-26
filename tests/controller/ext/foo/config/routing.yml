@@ -1,3 +1,7 @@
 controller1:
     pattern: /foo
     defaults: { _controller: foo.controller:handle }
+
+include_controller2:
+    resource: "routing_2.yml"
+    prefix:   /foo

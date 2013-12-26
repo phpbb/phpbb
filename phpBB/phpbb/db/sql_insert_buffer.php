@@ -10,14 +10,6 @@
 namespace phpbb\db;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Collects rows for insert into a database until the buffer size is reached.
 * Then flushes the buffer to the database and starts over again.
 *

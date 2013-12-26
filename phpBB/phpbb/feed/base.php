@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Base class with some generic functions and settings.
 *
 * @package phpBB3
@@ -150,7 +142,7 @@ abstract class base
 	*/
 	function get($key)
 	{
-		return (isset($this->keys[$key])) ? $this->keys[$key] : NULL;
+		return (isset($this->keys[$key])) ? $this->keys[$key] : null;
 	}
 
 	function get_readable_forums()

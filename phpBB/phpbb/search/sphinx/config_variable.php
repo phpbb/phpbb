@@ -10,14 +10,6 @@
 namespace phpbb\search\sphinx;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * \phpbb\search\sphinx\config_variable
 * Represents a single variable inside the sphinx configuration
 */

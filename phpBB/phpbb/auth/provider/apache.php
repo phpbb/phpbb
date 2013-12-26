@@ -10,14 +10,6 @@
 namespace phpbb\auth\provider;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
  * Apache authentication provider for phpBB3
  *
  * @package auth

@@ -10,14 +10,6 @@
 namespace phpbb\log;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The interface for the log-system.
 *
 * @package \phpbb\log\log

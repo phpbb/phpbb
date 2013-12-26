@@ -10,14 +10,6 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Post quoting notifications class
 * This class handles notifying users when they have been quoted in a post
 *

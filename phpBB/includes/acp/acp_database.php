@@ -94,29 +94,29 @@ class acp_database
 							case 'mysqli':
 							case 'mysql4':
 							case 'mysql':
-								$extractor = new mysql_extractor($download, $store, $format, $filename, $time);
+								$extractor = new mysql_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'sqlite':
-								$extractor = new sqlite_extractor($download, $store, $format, $filename, $time);
+								$extractor = new sqlite_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'postgres':
-								$extractor = new postgres_extractor($download, $store, $format, $filename, $time);
+								$extractor = new postgres_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'oracle':
-								$extractor = new oracle_extractor($download, $store, $format, $filename, $time);
+								$extractor = new oracle_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'mssql':
 							case 'mssql_odbc':
 							case 'mssqlnative':
-								$extractor = new mssql_extractor($download, $store, $format, $filename, $time);
+								$extractor = new mssql_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'firebird':
-								$extractor = new firebird_extractor($download, $store, $format, $filename, $time);
+								$extractor = new firebird_extractor($format, $filename, $time, $download, $store);
 							break;
 						}
 
@@ -488,7 +488,7 @@ class base_extractor
 	var $format;
 	var $run_comp = false;
 
-	function base_extractor($download = false, $store = false, $format, $filename, $time)
+	function base_extractor($format, $filename, $time, $download = false, $store = false)
 	{
 		global $request;
 
@@ -1607,16 +1607,17 @@ class mssql_extractor extends base_extractor
 			return;
 		}
 
-		$sql = "SELECT * FROM $table_name";
-		$result_fields = $db->sql_query_limit($sql, 1);
+		$sql = "SELECT COLUMN_NAME, DATA_TYPE
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME = '" . $db->sql_escape($table_name) . "'";
+		$result_fields = $db->sql_query($sql);
 
-		$row = new result_mssqlnative($result_fields);
-		$i_num_fields = $row->num_fields();
-
-		for ($i = 0; $i < $i_num_fields; $i++)
+		$i_num_fields = 0;
+		while ($row = $db->sql_fetchrow($result_fields))
 		{
-			$ary_type[$i] = $row->field_type($i);
-			$ary_name[$i] = $row->field_name($i);
+			$ary_type[$i_num_fields] = $row['DATA_TYPE'];
+			$ary_name[$i_num_fields] = $row['COLUMN_NAME'];
+			$i_num_fields++;
 		}
 		$db->sql_freeresult($result_fields);
 
