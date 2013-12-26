@@ -19,7 +19,7 @@ class delete extends command
 	{
 		$this
 			->setName('config:delete')
-			->setDescription("Deletes a configuration option")
+			->setDescription('Deletes a configuration option')
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

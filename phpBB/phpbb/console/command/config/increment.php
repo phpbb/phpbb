@@ -19,7 +19,7 @@ class increment extends command
 	{
 		$this
 			->setName('config:increment')
-			->setDescription("Increment a configuration option's value")
+			->setDescription("Increments a configuration option's value")
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

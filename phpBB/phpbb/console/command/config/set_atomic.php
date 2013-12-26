@@ -19,7 +19,7 @@ class set_atomic extends command
 	{
 		$this
 			->setName('config:set-atomic')
-			->setDescription("Sets a configuration option's value only if the old_value matches the current configuration value or the configuration value does not exist yet.")
+			->setDescription("Sets a configuration option's value only if the old matches the current value.")
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
