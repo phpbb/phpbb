@@ -24,6 +24,9 @@ class helper
 	/** @var string */
 	protected $phpbb_root_path;
 
+	/** @var string */
+	protected $phpEx;
+
 	/**
 	* Constructor
 	*
@@ -32,11 +35,12 @@ class helper
 	* @param	string	$phpbb_root_path	Root path
 	* @return	null
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
 	}
 
 	/**
@@ -145,7 +149,7 @@ class helper
 			$post_attachments = implode('<br />', $post_attachments);
 
 			// Convert attachments' relative path to absolute path
-			$post_attachments = str_replace($this->phpbb_root_path . 'download', $this->get_board_url() . '/download', $post_attachments);
+			$post_attachments = str_replace($this->phpbb_root_path . 'download/file.' . $this->phpEx, $this->get_board_url() . '/download/file.' . $this->phpEx, $post_attachments);
 
 			$content .= $post_attachments;
 		}
