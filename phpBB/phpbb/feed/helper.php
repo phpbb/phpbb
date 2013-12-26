@@ -142,7 +142,12 @@ class helper
 		{
 			$update_count = array();
 			parse_attachments($forum_id, $content, $post_attachments, $update_count);
-			$content .= implode('<br />', $post_attachments);
+			$post_attachments = implode('<br />', $post_attachments);
+
+			// Convert attachments' relative path to absolute path
+			$post_attachments = str_replace($this->phpbb_root_path . 'download', $this->get_board_url() . '/download', $post_attachments);
+
+			$content .= $post_attachments;
 		}
 
 		// Remove Comments from inline attachments [ia]
@@ -163,9 +168,6 @@ class helper
 
 		// Other control characters
 		$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
-
-		// Convert attachments' relative path to absolute path
-		$content = str_replace($this->phpbb_root_path . 'download', $this->get_board_url() . '/download', $content);
 
 		return $content;
 	}
