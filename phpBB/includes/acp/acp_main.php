@@ -620,6 +620,22 @@ class acp_main
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
+		// Warn if no search index is created
+		if ($config['num_posts'] && class_exists($config['search_type']))
+		{
+			$error = false;
+			$search_type = $config['search_type'];
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+
+			if (!$search->index_created())
+			{
+				$template->assign_vars(array(
+					'S_SEARCH_INDEX_MISSING'	=> true,
+					'L_NO_SEARCH_INDEX'			=> $user->lang('NO_SEARCH_INDEX', $search->get_name(), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=acp_search&amp;mode=index') . '">', '</a>'),
+				));
+			}
+		}
+
 		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
 			// World-Writable? (000x)
