@@ -3,6 +3,7 @@ services:
         class: foo\bar\controller\controller
         arguments:
             - @controller.helper
+            - @path_helper
             - @template
             - %core.root_path%
             - %core.php_ext%

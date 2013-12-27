@@ -134,7 +134,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 			$redirect = $crawler->filter('#redirect_' . $row_num)->text();
 			$redirect = substr($redirect, 0, strpos($redirect, 'sid') - 1);
-			$this->assertContains($crawler->filter('#redirect_expected_' .  $row_num)->text(), $redirect);
+			$this->assertEquals($crawler->filter('#redirect_expected_' .  $row_num)->text(), $redirect);
 		}
 
 		$this->phpbb_extension_manager->purge('foo/bar');

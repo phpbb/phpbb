@@ -8,10 +8,11 @@ class controller
 {
 	protected $template;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\template\template $template, $root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\path_helper $path_helper, \phpbb\template\template $template, $root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->helper = $helper;
+		$this->path_helper = $path_helper;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -40,6 +41,7 @@ class controller
 
 	public function redirect()
 	{
+		$url_root = generate_board_url();
 		$redirects = array(
 			array(
 				append_sid($this->root_path . 'index.' . $this->php_ext),
@@ -47,7 +49,7 @@ class controller
 			),
 			array(
 				append_sid($this->root_path . '../index.' . $this->php_ext),
-				'index.php',
+				'../index.php',
 			),
 			array(
 				append_sid($this->root_path . 'tests/index.' . $this->php_ext),
@@ -55,7 +57,7 @@ class controller
 			),
 			array(
 				append_sid($this->root_path . '../tests/index.' . $this->php_ext),
-				'tests/index.php',
+				'../tests/index.php',
 			),
 			array(
 				$this->helper->url('index'),
@@ -63,11 +65,11 @@ class controller
 			),
 			array(
 				$this->helper->url('../index'),
-				'app.php/index',
+				'index',
 			),
 			array(
 				$this->helper->url('../../index'),
-				'app.php/index',
+				'../index',
 			),
 			array(
 				$this->helper->url('tests/index'),
@@ -75,15 +77,19 @@ class controller
 			),
 			array(
 				$this->helper->url('../tests/index'),
-				'app.php/tests/index',
+				'tests/index',
 			),
 			array(
 				$this->helper->url('../../tests/index'),
-				'app.php/tests/index',
+				'../tests/index',
 			),
 			array(
 				$this->helper->url('../tests/../index'),
-				'app.php/tests/index',
+				'index',
+			),
+			array(
+				$this->helper->url('tests/../index'),
+				'app.php/index',
 			),
 		);
 
@@ -94,7 +100,7 @@ class controller
 			));
 
 			$this->template->assign_block_vars('redirects_expected', array(
-				'URL'		=> $redirect[1],
+				'URL'		=> $this->path_helper->clean_url($url_root . '/' . $redirect[1]),
 			));
 		}
 
