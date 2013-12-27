@@ -116,9 +116,12 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		$phpbb_path_helper = $this->path_helper;
 
 		$temp_phpbb_root_path = $phpbb_root_path;
-		// We need to hack phpbb_root_path here, so it matches the actual fileinfo of the testing script.
+		$temp_page_dir = $user->page['page_dir'];
+		// We need to hack phpbb_root_path and the user's page_dir here
+		// so it matches the actual fileinfo of the testing script.
 		// Otherwise the paths are returned incorrectly.
 		$phpbb_root_path = '';
+		$user->page['page_dir'] = '';
 
 		if ($expected_error !== false)
 		{
@@ -133,5 +136,6 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			$this->assertEquals($expected_result, $result);
 		}
 		$phpbb_root_path = $temp_phpbb_root_path;
+		$user->page['page_dir'] = $temp_page_dir;
 	}
 }

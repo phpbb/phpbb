@@ -2708,7 +2708,14 @@ function redirect($url, $return = false, $disable_cd_check = false)
 			}
 		}
 
-		$url = generate_board_url() . '/' . $phpbb_path_helper->remove_web_root_path($url);
+		$url = $phpbb_path_helper->remove_web_root_path($url);
+
+		if ($user->page['page_dir'])
+		{
+			$url = $user->page['page_dir'] . '/' . $url;
+		}
+
+		$url = generate_board_url() . '/' . $url;
 	}
 
 	// Clean URL and check if we go outside the forum directory
