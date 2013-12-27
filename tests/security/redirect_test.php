@@ -13,8 +13,13 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_security_redirect_test extends phpbb_security_test_base
 {
+	protected $path_helper;
+
+	protected $controller_helper;
+
 	public function provider()
 	{
+		$this->controller_helper = $this->get_controller_helper();
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(
 			array('data://x', false, false, 'http://localhost/phpBB'),
@@ -26,13 +31,15 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array('http://localhost/phpBB/app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
 			array('./app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
 			array('app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
-			array('./../app.php/foobar', false, false, 'http://localhost/phpBB/app.php/foobar'),
-			array('./../app.php/foobar', true, false, 'http://../../../foobar'),
-			array('./../app.php/foo/bar', false, false, 'http://localhost/phpBB/app.php/foo/bar'),
-			array('./../app.php/foo/bar', true, false, 'http://../../../bar'),
-			array('./../foo/bar', false, false, 'http://localhost/phpBB/foo/bar'),
-			array('./../foo/bar', true, false, 'http://../../../bar'),
+			array('./../app.php/foobar', false, false, 'http://localhost/app.php/foobar'),
+			array('./../app.php/foobar', true, false, 'http://localhost/app.php/foobar'),
+			array('./../app.php/foo/bar', false, false, 'http://localhost/app.php/foo/bar'),
+			array('./../app.php/foo/bar', true, false, 'http://localhost/app.php/foo/bar'),
+			array('./../foo/bar', false, false, 'http://localhost/foo/bar'),
+			array('./../foo/bar', true, false, 'http://localhost/foo/bar'),
 			array('app.php/', false, false, 'http://localhost/phpBB/app.php/'),
+			array($this->controller_helper->url('a'), false, false, 'http://localhost/phpBB/app.php/a'),
+			array($this->controller_helper->url(''), false, false, 'http://localhost/phpBB/app.php/'),
 			array('./app.php/', false, false, 'http://localhost/phpBB/app.php/'),
 			array('foobar', false, false, 'http://localhost/phpBB/foobar'),
 			array('./foobar', false, false, 'http://localhost/phpBB/foobar'),
@@ -46,6 +53,47 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		);
 	}
 
+	protected function get_path_helper()
+	{
+		if (!($this->path_helper instanceof \phpbb\path_helper))
+		{
+			$this->path_helper = new \phpbb\path_helper(
+				new \phpbb\symfony_request(
+					new phpbb_mock_request()
+				),
+				new \phpbb\filesystem(),
+				$this->phpbb_root_path,
+				'php'
+			);
+		}
+		return $this->path_helper;
+	}
+
+	protected function get_controller_helper()
+	{
+		if (!($this->controller_helper instanceof \phpbb\controller\helper))
+		{
+			global $phpbb_dispatcher;
+
+			$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+			$this->user = $this->getMock('\phpbb\user');
+			$phpbb_path_helper = new \phpbb\path_helper(
+				new \phpbb\symfony_request(
+					new phpbb_mock_request()
+				),
+				new \phpbb\filesystem(),
+				$phpbb_root_path,
+				$phpEx
+			);
+			$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $this->user, new \phpbb\template\context());
+
+			// We don't use mod_rewrite in these tests
+			$config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
+			$this->controller_helper = new \phpbb\controller\helper($this->template, $this->user, $config, '', 'php');
+		}
+		return $this->controller_helper;
+	}
+
 	protected function setUp()
 	{
 		parent::setUp();
@@ -54,14 +102,8 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			'force_server_vars'	=> '0',
 		);
 
-		$this->path_helper = new \phpbb\path_helper(
-			new \phpbb\symfony_request(
-				new phpbb_mock_request()
-			),
-			new \phpbb\filesystem(),
-			$this->phpbb_root_path,
-			'php'
-		);
+		$this->path_helper = $this->get_path_helper();
+		$this->controller_helper = $this->get_controller_helper();
 	}
 
 	/**
