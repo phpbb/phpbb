@@ -36,7 +36,7 @@ class apache extends \phpbb\auth\provider\base
 	 *
 	 * @param 	\phpbb\db\driver\driver 	$db
 	 * @param 	\phpbb\config\config 		$config
-	  * @param	\phpbb\passwords\manager	$passwords_manager
+	 * @param	\phpbb\passwords\manager	$passwords_manager
 	 * @param 	\phpbb\request\request 		$request
 	 * @param 	\phpbb\user 			$user
 	 * @param 	string 				$phpbb_root_path

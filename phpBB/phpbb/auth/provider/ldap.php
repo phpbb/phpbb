@@ -38,7 +38,7 @@ class ldap extends \phpbb\auth\provider\base
 	 *
 	 * @param 	\phpbb\db\driver\driver		$db
 	 * @param 	\phpbb\config\config		$config
-	  * @param	\phpbb\passwords\manager	$passwords_manager
+	 * @param	\phpbb\passwords\manager	$passwords_manager
 	 * @param 	\phpbb\user			$user
 	 */
 	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\user $user)
