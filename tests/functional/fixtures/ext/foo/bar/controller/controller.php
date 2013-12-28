@@ -55,16 +55,12 @@ class controller
 				'index.php',
 			),
 			array(
-				append_sid($this->root_path . '../index.' . $this->php_ext),
-				'../index.php',
+				append_sid($this->root_path . 'foo/bar/index.' . $this->php_ext),
+				'foo/bar/index.php',
 			),
 			array(
 				append_sid($this->root_path . 'tests/index.' . $this->php_ext),
 				'tests/index.php',
-			),
-			array(
-				append_sid($this->root_path . '../tests/index.' . $this->php_ext),
-				'../tests/index.php',
 			),
 			array(
 				$this->helper->url('index'),
