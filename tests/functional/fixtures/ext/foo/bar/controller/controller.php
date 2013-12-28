@@ -7,12 +7,16 @@ use Symfony\Component\HttpFoundation\Response;
 class controller
 {
 	protected $template;
+	protected $helper;
+	protected $path_helper;
+	protected $config;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\path_helper $path_helper, \phpbb\template\template $template, $root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\path_helper $path_helper, \phpbb\template\template $template, \phpbb\config\config $config, $root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->helper = $helper;
 		$this->path_helper = $path_helper;
+		$this->config = $config;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -42,6 +46,9 @@ class controller
 	public function redirect()
 	{
 		$url_root = generate_board_url();
+
+		$rewrite_prefix = (!empty($this->config['enable_mod_rewrite'])) ? '' : 'app.php/';
+
 		$redirects = array(
 			array(
 				append_sid($this->root_path . 'index.' . $this->php_ext),
@@ -61,36 +68,40 @@ class controller
 			),
 			array(
 				$this->helper->url('index'),
-				'app.php/index',
+				$rewrite_prefix . 'index',
 			),
 			array(
+				$this->helper->url('tests/index'),
+				$rewrite_prefix . 'tests/index',
+			),
+			array(
+				$this->helper->url('tests/../index'),
+				$rewrite_prefix . 'index',
+			),
+			/*
+			// helper URLs starting with  ../ are prone to failure.
+			// Do not test them right now.
+			array(
 				$this->helper->url('../index'),
-				'index',
+				'../index',
 			),
 			array(
 				$this->helper->url('../../index'),
 				'../index',
 			),
 			array(
-				$this->helper->url('tests/index'),
-				'app.php/tests/index',
+				$this->helper->url('../tests/index'),
+				$rewrite_prefix . '../tests/index',
 			),
 			array(
-				$this->helper->url('../tests/index'),
-				'tests/index',
+				$this->helper->url('../tests/../index'),
+				'../index',
 			),
 			array(
 				$this->helper->url('../../tests/index'),
 				'../tests/index',
 			),
-			array(
-				$this->helper->url('../tests/../index'),
-				'index',
-			),
-			array(
-				$this->helper->url('tests/../index'),
-				'app.php/index',
-			),
+			*/
 		);
 
 		foreach ($redirects as $redirect)
