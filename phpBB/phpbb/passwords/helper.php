@@ -41,6 +41,8 @@ class helper
 	*/
 	protected function get_combined_hash_settings($hash)
 	{
+		$output = array();
+
 		preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match);
 		$hash_settings = substr($hash, strpos($hash, $match[1]) + strlen($match[1]) + 1);
 		$matches = explode('\\', $match[1]);
