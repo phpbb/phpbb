@@ -374,7 +374,7 @@ function still_on_time($extra_time = 15)
 *
 * @param string $password Password to be hashed
 *
-* @return string Password hash or false if something went wrong during hashing
+* @return string|bool Password hash or false if something went wrong during hashing
 */
 function phpbb_hash($password)
 {
