@@ -10,14 +10,6 @@
 namespace phpbb\passwords\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package passwords
 */
 class phpass extends \phpbb\passwords\driver\salted_md5

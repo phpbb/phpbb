@@ -10,14 +10,6 @@
 namespace phpbb\passwords\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package passwords
 */
 class bcrypt_2y extends \phpbb\passwords\driver\bcrypt

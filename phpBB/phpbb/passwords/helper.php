@@ -10,14 +10,6 @@
 namespace phpbb\passwords;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package passwords
 */
 class helper

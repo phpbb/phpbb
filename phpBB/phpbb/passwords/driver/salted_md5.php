@@ -10,14 +10,6 @@
 namespace phpbb\passwords\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 *
 * @version Version 0.1 / slightly modified for phpBB 3.1.x (using $H$ as hash type identifier)
 *

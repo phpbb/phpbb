@@ -10,14 +10,6 @@
 namespace phpbb\passwords\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * @package passwords
 */
 abstract class base implements \phpbb\passwords\driver\driver_interface
