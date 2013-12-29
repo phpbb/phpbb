@@ -29,8 +29,9 @@ class bcrypt extends base
 	*/
 	public function hash($password, $salt = '')
 	{
-		// Get prefix of this driver
-		$prefix = $this->get_prefix();
+		// The 2x and 2y prefixes of bcrypt might not be supported
+		// Revert to 2a if this is the case
+		$prefix = (!$this->is_supported()) ? '$2a$' : $this->get_prefix();
 
 		// Do not support 8-bit characters with $2a$ bcrypt
 		// Also see http://www.php.net/security/crypt_blowfish.php
