@@ -24,7 +24,7 @@ class helper
 	*
 	* @param phpbb\passwords\manager $manager Passwords manager object
 	*/
-	public function set_manager(\phpbb\passwords\manager $manager)
+	public function set_manager(manager $manager)
 	{
 		$this->manager = $manager;
 	}
