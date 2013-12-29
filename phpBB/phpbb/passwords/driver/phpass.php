@@ -12,7 +12,7 @@ namespace phpbb\passwords\driver;
 /**
 * @package passwords
 */
-class phpass extends \phpbb\passwords\driver\salted_md5
+class phpass extends salted_md5
 {
 	const PREFIX = '$P$';
 

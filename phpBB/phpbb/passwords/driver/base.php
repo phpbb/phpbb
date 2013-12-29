@@ -12,7 +12,7 @@ namespace phpbb\passwords\driver;
 /**
 * @package passwords
 */
-abstract class base implements \phpbb\passwords\driver\driver_interface
+abstract class base implements driver_interface
 {
 	/** @var phpbb\config\config */
 	protected $config;

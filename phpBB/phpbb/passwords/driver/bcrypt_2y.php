@@ -12,7 +12,7 @@ namespace phpbb\passwords\driver;
 /**
 * @package passwords
 */
-class bcrypt_2y extends \phpbb\passwords\driver\bcrypt
+class bcrypt_2y extends bcrypt
 {
 	const PREFIX = '$2y$';
 

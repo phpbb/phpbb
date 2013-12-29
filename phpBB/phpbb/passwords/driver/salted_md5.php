@@ -40,7 +40,7 @@ namespace phpbb\passwords\driver;
 /**
 * @package passwords
 */
-class salted_md5 extends \phpbb\passwords\driver\base
+class salted_md5 extends base
 {
 	const PREFIX = '$H$';
 
