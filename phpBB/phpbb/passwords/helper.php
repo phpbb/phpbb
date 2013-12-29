@@ -26,10 +26,7 @@ class helper
 	*/
 	public function set_manager(\phpbb\passwords\manager $manager)
 	{
-		if ($this->manager === null)
-		{
-			$this->manager = $manager;
-		}
+		$this->manager = $manager;
 	}
 
 	/**

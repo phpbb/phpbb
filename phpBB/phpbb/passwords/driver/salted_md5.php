@@ -57,7 +57,7 @@ class salted_md5 extends base
 	*/
 	public function hash($password, $setting = '')
 	{
-		if ($setting != '')
+		if ($setting)
 		{
 			if (($settings = $this->get_hash_settings($setting)) === false)
 			{
@@ -95,14 +95,10 @@ class salted_md5 extends base
 	{
 		if (strlen($hash) !== 34)
 		{
-			return (md5($password) === $hash) ? true : false;
+			return md5($password) === $hash;
 		}
 
-		if ($hash === $this->hash($password, $hash))
-		{
-			return true;
-		}
-		return false;
+		return $hash === $this->hash($password, $hash);
 	}
 
 	/**
