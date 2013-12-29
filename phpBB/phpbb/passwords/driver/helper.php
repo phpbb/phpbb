@@ -86,7 +86,8 @@ class helper
 
 	/**
 	* Return unique id
-	* @param string $extra additional entropy
+	*
+	* @param string $extra Additional entropy
 	*
 	* @return string Unique id
 	*/
@@ -113,6 +114,8 @@ class helper
 	*
 	* @param int $length Salt length
 	* @param string $rand_seed Seed for random data (optional). For tests.
+	*
+	* @return string Random salt with specified length
 	*/
 	public function get_random_salt($length, $rand_seed = '/dev/urandom')
 	{

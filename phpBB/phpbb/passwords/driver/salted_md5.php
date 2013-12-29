@@ -122,8 +122,11 @@ class salted_md5 extends base
 	/**
 	* Get hash settings
 	*
-	* @return array Array containing the count_log2, salt, and full hash
-	*		settings string
+	* @param string $hash The hash that contains the settings
+	*
+	* @return bool|array Array containing the count_log2, salt, and full
+	*		hash settings string or false if supplied hash is empty
+	*		or contains incorrect settings
 	*/
 	public function get_hash_settings($hash)
 	{
@@ -131,6 +134,7 @@ class salted_md5 extends base
 		{
 			return false;
 		}
+
 		$count_log2 = strpos($this->helper->itoa64, $hash[3]);
 		$salt = substr($hash, 4, 8);
 

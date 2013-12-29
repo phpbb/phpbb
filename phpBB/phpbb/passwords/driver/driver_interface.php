@@ -20,6 +20,7 @@ interface driver_interface
 	* @return bool		True if supported, false if not
 	*/
 	public function is_supported();
+
 	/**
 	* Returns the hash prefix
 	*
@@ -30,7 +31,10 @@ interface driver_interface
 	/**
 	* Hash the password
 	*
-	* @return string	Password hash
+	* @param string $password The password that should be hashed
+	*
+	* @return bool|string	Password hash or false if something went wrong
+	*			during hashing
 	*/
 	public function hash($password);
 
@@ -39,6 +43,7 @@ interface driver_interface
 	*
 	* @param string		$password The password to check
 	* @param string		$hash The password hash to check against
+	*
 	* @return bool		True if password is correct, else false
 	*/
 	public function check($password, $hash);

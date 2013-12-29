@@ -37,7 +37,7 @@ class manager
 	public $convert_flag = false;
 
 	/**
-	* Crypto helper
+	* Passwords helper
 	* @var phpbb\passwords\helper
 	*/
 	protected $helper;
@@ -125,7 +125,8 @@ class manager
 	*
 	* @param string $prefix Password hash prefix
 	*
-	* @return object The hash type object
+	* @return object|bool The hash type object or false if prefix is not
+	*			supported
 	*/
 	protected function get_algorithm($prefix)
 	{

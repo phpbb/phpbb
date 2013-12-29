@@ -26,7 +26,8 @@ abstract class base implements driver_interface
 	/**
 	* Constructor of passwords driver object
 	*
-	* @return string	Hash prefix
+	* @param \phpbb\config\config $config phpBB config
+	* @param \phpbb\passwords\driver\helper $helper Password driver helper
 	*/
 	public function __construct(\phpbb\config\config $config, \phpbb\passwords\driver\helper $helper)
 	{

@@ -22,7 +22,7 @@ class helper
 	/**
 	* Set the passwords manager instance
 	*
-	* @param phpbb\passwords\manager $manager Crypto manager object
+	* @param phpbb\passwords\manager $manager Passwords manager object
 	*/
 	public function set_manager(\phpbb\passwords\manager $manager)
 	{
@@ -35,8 +35,9 @@ class helper
 	* @param string $hash Password hash of combined hash
 	*
 	* @return array An array containing the hash settings for the hash
-	*		types in successive order as described by the comined
-	*		password hash
+	*		types in successive order as described by the combined
+	*		password hash or an empty array if hash does not
+	*		properly fit the combined hash format
 	*/
 	protected function get_combined_hash_settings($hash)
 	{
@@ -134,7 +135,7 @@ class helper
 	* @param string $type Data type of the supplied value
 	* @param string $value Value that should be put into the data array
 	*
-	* @return string|none Return complete combined hash if type is neither
+	* @return string|null Return complete combined hash if type is neither
 	*			'prefix' nor 'settings', nothing if it is
 	*/
 	protected function combine_hash_output(&$data, $type, $value)
