@@ -10,14 +10,6 @@
 namespace phpbb\avatar\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Handles avatars uploaded to the board
 * @package phpBB3
 */
@@ -29,7 +21,7 @@ class upload extends \phpbb\avatar\driver\driver
 	public function get_data($row, $ignore_config = false)
 	{
 		return array(
-			'src' => $this->phpbb_root_path . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'src' => $this->path_helper->get_web_root_path() . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
@@ -173,6 +165,14 @@ class upload extends \phpbb\avatar\driver\driver
 		}
 
 		return true;
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_upload.html';
 	}
 
 	/**

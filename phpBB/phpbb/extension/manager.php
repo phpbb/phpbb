@@ -9,14 +9,6 @@
 
 namespace phpbb\extension;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -234,7 +226,9 @@ class manager
 	*/
 	public function enable($name)
 	{
+		// @codingStandardsIgnoreStart
 		while ($this->enable_step($name));
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -311,7 +305,9 @@ class manager
 	*/
 	public function disable($name)
 	{
+		// @codingStandardsIgnoreStart
 		while ($this->disable_step($name));
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -388,7 +384,9 @@ class manager
 	*/
 	public function purge($name)
 	{
+		// @codingStandardsIgnoreStart
 		while ($this->purge_step($name));
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -413,8 +411,23 @@ class manager
 			if ($file_info->isFile() && $file_info->getFilename() == 'ext.' . $this->php_ext)
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
+				$composer_file = $iterator->getPath() . '/composer.json';
 
+				// Ignore the extension if there is no composer.json.
+				if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
+				{
+					continue;
+				}
+
+				$ext_info = json_decode($ext_info, true);
 				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
+
+				// Ignore the extension if directory depth is not correct or if the directory structure
+				// does not match the name value specified in composer.json.
+				if (substr_count($ext_name, '/') !== 1 || !isset($ext_info['name']) || $ext_name != $ext_info['name'])
+				{
+					continue;
+				}
 
 				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}

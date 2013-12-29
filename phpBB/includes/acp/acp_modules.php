@@ -565,7 +565,7 @@ class acp_modules
 		{
 			// Skip entries we do not need if we know the module we are
 			// looking for
-			if ($module && strpos(str_replace('\\', '_', $cur_module), $module) === false)
+			if ($module && strpos(str_replace('\\', '_', $cur_module), $module) === false && $module !== $cur_module)
 			{
 				continue;
 			}

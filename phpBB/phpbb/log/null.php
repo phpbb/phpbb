@@ -10,14 +10,6 @@
 namespace phpbb\log;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Null logger
 *
 * @package phpbb_log

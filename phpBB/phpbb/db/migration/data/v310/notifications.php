@@ -34,7 +34,7 @@ class notifications extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'notifications'		=> array(
 					'COLUMNS'			=> array(
-						'notification_id'  				=> array('UINT', NULL, 'auto_increment'),
+						'notification_id'  				=> array('UINT', null, 'auto_increment'),
 						'item_type'			   			=> array('VCHAR:255', ''),
 						'item_id'		  				=> array('UINT', 0),
 						'item_parent_id'   				=> array('UINT', 0),

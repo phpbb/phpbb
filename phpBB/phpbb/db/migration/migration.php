@@ -10,14 +10,6 @@
 namespace phpbb\db\migration;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Abstract base class for database migrations
 *
 * Each migration consists of a set of schema and data changes to be implemented

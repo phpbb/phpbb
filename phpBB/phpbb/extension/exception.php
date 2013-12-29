@@ -10,14 +10,6 @@
 namespace phpbb\extension;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
  * Exception class for metadata
  */
 class exception extends \UnexpectedValueException

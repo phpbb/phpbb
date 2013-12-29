@@ -10,14 +10,6 @@
 namespace phpbb\auth;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Permission/Auth class
 * @package phpBB3
 */

@@ -10,14 +10,6 @@
 namespace phpbb\cache;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Class for grabbing/handling cached entries
 * @package acm
 */

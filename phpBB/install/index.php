@@ -244,6 +244,8 @@ $config = new \phpbb\config\config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+$symfony_request = $phpbb_container->get('symfony_request');
+$phpbb_filesystem = $phpbb_container->get('filesystem');
 $phpbb_path_helper = $phpbb_container->get('path_helper');
 $template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context());
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
@@ -689,7 +691,7 @@ class module
 	/**
 	* Generate the relevant HTML for an input field and the associated label and explanatory text
 	*/
-	function input_field($name, $type, $value='', $options='')
+	function input_field($name, $type, $value = '', $options = '')
 	{
 		global $lang;
 		$tpl_type = explode(':', $type);

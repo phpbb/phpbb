@@ -10,14 +10,6 @@
 namespace phpbb\avatar\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Base class for avatar drivers
 * @package phpBB3
 */
@@ -48,6 +40,12 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	protected $php_ext;
 
 	/**
+	* Path Helper
+	* @var \phpbb\path_helper
+	*/
+	protected $path_helper;
+
+	/**
 	* Cache driver
 	* @var \phpbb\cache\driver\driver_interface
 	*/
@@ -75,13 +73,15 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	* @param \phpbb\request\request $request Request object
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
+	* @param \phpbb_path_helper $path_helper phpBB path helper
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->path_helper = $path_helper;
 		$this->cache = $cache;
 	}
 
@@ -107,17 +107,6 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	public function delete($row)
 	{
 		return true;
-	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_template_name()
-	{
-		$driver = preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this));
-		$template = "ucp_avatar_options_$driver.html";
-
-		return $template;
 	}
 
 	/**

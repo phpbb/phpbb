@@ -181,7 +181,7 @@ else
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
-$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
+$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE $sql_where";
 $result = $db->sql_query($sql);

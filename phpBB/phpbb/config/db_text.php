@@ -10,14 +10,6 @@
 namespace phpbb\config;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Manages configuration options with an arbitrary length value stored in a TEXT
 * column. In constrast to class \phpbb\config\db, values are never cached and
 * prefetched, but every get operation sends a query to the database.

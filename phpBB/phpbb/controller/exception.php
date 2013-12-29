@@ -10,14 +10,6 @@
 namespace phpbb\controller;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Controller exception class
 * @package phpBB3
 */

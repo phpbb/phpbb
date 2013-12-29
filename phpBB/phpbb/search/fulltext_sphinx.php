@@ -9,16 +9,6 @@
 
 namespace phpbb\search;
 
-/**
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* @ignore
-*/
 define('SPHINX_MAX_MATCHES', 20000);
 define('SPHINX_CONNECT_RETRIES', 3);
 define('SPHINX_CONNECT_WAIT_TIME', 300);

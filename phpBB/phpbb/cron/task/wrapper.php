@@ -10,14 +10,6 @@
 namespace phpbb\cron\task;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Cron task wrapper class.
 * Enhances cron tasks with convenience methods that work identically for all tasks.
 *

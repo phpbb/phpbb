@@ -18,22 +18,22 @@ class phpbb_functional_paging_test extends phpbb_functional_test_case
 		$this->login();
 
 		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
-		for ($post_id = 1; $post_id < 20; $post_id++)
+		for ($post_id = 1; $post_id <= 11; $post_id++)
 		{
 			$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test post no' . $post_id . ' posted by the testing framework.');
 		}
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 		$this->assertContains('post no9', $crawler->text());
-		$this->assertNotContains('post no19', $crawler->text());
+		$this->assertNotContains('post no11', $crawler->text());
 
 		$next_link = $crawler->filter('#viewtopic > fieldset > a.arrow-right')->attr('href');
 		$crawler = self::request('GET', $next_link);
-		$this->assertContains('post no19', $crawler->text());
+		$this->assertContains('post no11', $crawler->text());
 		$this->assertNotContains('post no9', $crawler->text());
 
 		$prev_link = $crawler->filter('#viewtopic > fieldset > a.arrow-left')->attr('href');
 		$crawler = self::request('GET', $prev_link);
 		$this->assertContains('post no9', $crawler->text());
-		$this->assertNotContains('post no19', $crawler->text());
+		$this->assertNotContains('post no11', $crawler->text());
 	}
 }

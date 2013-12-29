@@ -10,14 +10,6 @@
 namespace phpbb\extension;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Provides a set of items found in extensions.
 *
 * This abstract class is essentially a wrapper around item-specific

@@ -254,8 +254,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var	string	mode		Active module
 	* @var	int		folder_id	ID of the folder the message is in
 	* @var	int		msg_id		ID of the private message
-	* var	array	folder		Array with data of user's message folders
-	* @var	array	message_row		Array with message data
+	* @var	array	folder		Array with data of user's message folders
+	* @var	array	message_row	Array with message data
 	* @var	array	cp_row		Array with senders custom profile field data
 	* @var	array	msg_data	Template array with message data
 	* @since 3.1-A1

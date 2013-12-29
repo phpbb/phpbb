@@ -72,7 +72,7 @@ class mcp_notes
 	function mcp_notes_user_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config;
-		global $template, $db, $user, $auth;
+		global $template, $db, $user, $auth, $phpbb_container;
 
 		$user_id = request_var('u', 0);
 		$username = request_var('username', '', true);
@@ -80,6 +80,7 @@ class mcp_notes
 		$st	= request_var('st', 0);
 		$sk	= request_var('sk', 'b');
 		$sd	= request_var('sd', 'd');
+		$pagination = $phpbb_container->get('pagination');
 
 		add_form_key('mcp_notes');
 
@@ -216,7 +217,7 @@ class mcp_notes
 		}
 
 		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
-		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
@@ -228,7 +229,7 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> $pagination->on_page($base_url, $log_count, $config['topics_per_page'], $start),
 			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,

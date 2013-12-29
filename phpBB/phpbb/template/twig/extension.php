@@ -9,14 +9,6 @@
 
 namespace phpbb\template\twig;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class extension extends \Twig_Extension
 {
 	/** @var \phpbb\template\context */
@@ -48,11 +40,11 @@ class extension extends \Twig_Extension
 		return 'phpbb';
 	}
 
-    /**
-     * Returns the token parser instance to add to the existing list.
-     *
-     * @return array An array of Twig_TokenParser instances
-     */
+	/**
+	* Returns the token parser instance to add to the existing list.
+	*
+	* @return array An array of Twig_TokenParser instances
+	*/
 	public function getTokenParsers()
 	{
 		return array(
@@ -66,36 +58,36 @@ class extension extends \Twig_Extension
 		);
 	}
 
-    /**
-     * Returns a list of filters to add to the existing list.
-     *
-     * @return array An array of filters
-     */
-    public function getFilters()
-    {
+	/**
+	* Returns a list of filters to add to the existing list.
+	*
+	* @return array An array of filters
+	*/
+	public function getFilters()
+	{
 		return array(
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
 			new \Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
-    }
+	}
 
-    /**
-     * Returns a list of global functions to add to the existing list.
-     *
-     * @return array An array of global functions
-     */
-    public function getFunctions()
-    {
+	/**
+	* Returns a list of global functions to add to the existing list.
+	*
+	* @return array An array of global functions
+	*/
+	public function getFunctions()
+	{
 		return array(
 			new \Twig_SimpleFunction('lang', array($this, 'lang')),
 		);
 	}
 
-    /**
-     * Returns a list of operators to add to the existing list.
-     *
-     * @return array An array of operators
-     */
+	/**
+	* Returns a list of operators to add to the existing list.
+	*
+	* @return array An array of operators
+	*/
 	public function getOperators()
 	{
 		return array(
@@ -126,19 +118,19 @@ class extension extends \Twig_Extension
 				'mod' => array('precedence' => 60, 'class' => 'Twig_Node_Expression_Binary_Mod', 'associativity' => \Twig_ExpressionParser::OPERATOR_LEFT),
 			),
 		);
-    }
+	}
 
 	/**
-	 * Grabs a subset of a loop
-	 *
-	 * @param Twig_Environment $env          A Twig_Environment instance
-	 * @param mixed            $item         A variable
-	 * @param integer          $start        Start of the subset
-	 * @param integer          $end   	     End of the subset
-	 * @param Boolean          $preserveKeys Whether to preserve key or not (when the input is an array)
-	 *
-	 * @return mixed The sliced variable
-	 */
+	* Grabs a subset of a loop
+	*
+	* @param Twig_Environment $env          A Twig_Environment instance
+	* @param mixed            $item         A variable
+	* @param integer          $start        Start of the subset
+	* @param integer          $end   	     End of the subset
+	* @param Boolean          $preserveKeys Whether to preserve key or not (when the input is an array)
+	*
+	* @return mixed The sliced variable
+	*/
 	function loop_subset(\Twig_Environment $env, $item, $start, $end = null, $preserveKeys = false)
 	{
 		// We do almost the same thing as Twig's slice (array_slice), except when $end is positive

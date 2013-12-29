@@ -20,35 +20,24 @@ class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 
 	public function test_add()
 	{
-		try
-		{
-			$this->tool->add('foo', 'bar');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+		$this->tool->add('foo', 'bar');
+		$this->assertEquals('bar', $this->config['foo']);
+	}
+
+	public function test_add_twice()
+	{
+		$this->tool->add('foo', 'bar');
 		$this->assertEquals('bar', $this->config['foo']);
 
-		try
-		{
-			$this->tool->add('foo', 'bar');
-			$this->fail('Exception not thrown');
-		}
-		catch (Exception $e) {}
+		$this->tool->add('foo', 'bar2');
+		$this->assertEquals('bar', $this->config['foo']);
 	}
 
 	public function test_update()
 	{
 		$this->config->set('foo', 'bar');
-		try
-		{
-			$this->tool->update('foo', 'bar2');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+
+		$this->tool->update('foo', 'bar2');
 		$this->assertEquals('bar2', $this->config['foo']);
 	}
 
@@ -56,24 +45,10 @@ class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 	{
 		$this->config->set('foo', 'bar');
 
-		try
-		{
-			$this->tool->update_if_equals('', 'foo', 'bar2');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+		$this->tool->update_if_equals('', 'foo', 'bar2');
 		$this->assertEquals('bar', $this->config['foo']);
 
-		try
-		{
-			$this->tool->update_if_equals('bar', 'foo', 'bar2');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+		$this->tool->update_if_equals('bar', 'foo', 'bar2');
 		$this->assertEquals('bar2', $this->config['foo']);
 	}
 
@@ -81,41 +56,31 @@ class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 	{
 		$this->config->set('foo', 'bar');
 
-		try
-		{
-			$this->tool->remove('foo');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+		$this->tool->remove('foo');
 		$this->assertFalse(isset($this->config['foo']));
 	}
 
-	public function test_reverse()
+	public function test_reverse_add()
 	{
 		$this->config->set('foo', 'bar');
 
-		try
-		{
-			$this->tool->reverse('add', 'foo');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+		$this->tool->reverse('add', 'foo');
 		$this->assertFalse(isset($this->config['foo']));
+	}
 
+	public function test_reverse_remove()
+	{
+		$this->config->delete('foo');
+
+		$this->tool->reverse('remove', 'foo');
+		$this->assertEquals('', $this->config['foo']);
+	}
+
+	public function test_reverse_update_if_equals()
+	{
 		$this->config->set('foo', 'bar');
 
-		try
-		{
-			$this->tool->reverse('update_if_equals', 'test', 'foo', 'bar');
-		}
-		catch (Exception $e)
-		{
-			$this->fail($e);
-		}
+		$this->tool->reverse('update_if_equals', 'test', 'foo', 'bar');
 		$this->assertEquals('test', $this->config['foo']);
 	}
 }

@@ -10,14 +10,6 @@
 namespace phpbb\extension;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The extension metadata manager validates and gets meta-data for extensions
 *
 * @package extension
@@ -147,7 +139,7 @@ class metadata_manager
 
 		if (!file_exists($this->metadata_file))
 		{
-    		throw new \phpbb\extension\exception('The required file does not exist: ' . $this->metadata_file);
+			throw new \phpbb\extension\exception('The required file does not exist: ' . $this->metadata_file);
 		}
 	}
 
@@ -166,12 +158,12 @@ class metadata_manager
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-    			throw new \phpbb\extension\exception('file_get_contents failed on ' . $this->metadata_file);
+				throw new \phpbb\extension\exception('file_get_contents failed on ' . $this->metadata_file);
 			}
 
-			if (($metadata = json_decode($file_contents, true)) === NULL)
+			if (($metadata = json_decode($file_contents, true)) === null)
 			{
-    			throw new \phpbb\extension\exception('json_decode failed on ' . $this->metadata_file);
+				throw new \phpbb\extension\exception('json_decode failed on ' . $this->metadata_file);
 			}
 
 			$this->metadata = $metadata;
@@ -199,50 +191,50 @@ class metadata_manager
 	* @return Bool True if valid, throws an exception if invalid
 	*/
 	public function validate($name = 'display')
-    {
-    	// Basic fields
-    	$fields = array(
-    		'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-    		'type'		=> '#^phpbb3-extension$#',
-    		'licence'	=> '#.+#',
-    		'version'	=> '#.+#',
-    	);
+	{
+		// Basic fields
+		$fields = array(
+			'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
+			'type'		=> '#^phpbb-extension$#',
+			'licence'	=> '#.+#',
+			'version'	=> '#.+#',
+		);
 
-    	switch ($name)
-    	{
-    		case 'all':
-    			$this->validate('display');
+		switch ($name)
+		{
+			case 'all':
+				$this->validate('display');
 
 				$this->validate_enable();
-    		break;
+			break;
 
-    		case 'display':
-    			foreach ($fields as $field => $data)
+			case 'display':
+				foreach ($fields as $field => $data)
 				{
 					$this->validate($field);
 				}
 
 				$this->validate_authors();
-    		break;
+			break;
 
-    		default:
-    			if (isset($fields[$name]))
-    			{
-    				if (!isset($this->metadata[$name]))
-    				{
-    					throw new \phpbb\extension\exception("Required meta field '$name' has not been set.");
+			default:
+				if (isset($fields[$name]))
+				{
+					if (!isset($this->metadata[$name]))
+					{
+						throw new \phpbb\extension\exception("Required meta field '$name' has not been set.");
 					}
 
 					if (!preg_match($fields[$name], $this->metadata[$name]))
 					{
-    					throw new \phpbb\extension\exception("Meta field '$name' is invalid.");
+						throw new \phpbb\extension\exception("Meta field '$name' is invalid.");
 					}
 				}
 			break;
 		}
 
 		return true;
-    }
+	}
 
 	/**
 	 * Validates the contents of the authors field
@@ -253,14 +245,14 @@ class metadata_manager
 	{
 		if (empty($this->metadata['authors']))
 		{
-    		throw new \phpbb\extension\exception("Required meta field 'authors' has not been set.");
+			throw new \phpbb\extension\exception("Required meta field 'authors' has not been set.");
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-    			throw new \phpbb\extension\exception("Required meta field 'author name' has not been set.");
+				throw new \phpbb\extension\exception("Required meta field 'author name' has not been set.");
 			}
 		}
 
@@ -274,13 +266,23 @@ class metadata_manager
 	 */
 	public function validate_enable()
 	{
-		// Check for phpBB, PHP versions
-		if (!$this->validate_require_phpbb() || !$this->validate_require_php())
+		// Check for valid directory & phpBB, PHP versions
+		if (!$this->validate_dir() || !$this->validate_require_phpbb() || !$this->validate_require_php())
 		{
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validates the most basic directory structure to ensure it follows <vendor>/<ext> convention.
+	 *
+	 * @return boolean True when passes validation
+	 */
+	public function validate_dir()
+	{
+		return (substr_count($this->ext_name, '/') === 1 && $this->ext_name == $this->get_metadata('name'));
 	}
 
 
@@ -291,12 +293,12 @@ class metadata_manager
 	 */
 	public function validate_require_phpbb()
 	{
-		if (!isset($this->metadata['require']['phpbb']))
+		if (!isset($this->metadata['require']['phpbb/phpbb']))
 		{
-			return true;
+			return false;
 		}
 
-		return $this->_validate_version($this->metadata['require']['phpbb'], $this->config['version']);
+		return true;
 	}
 
 	/**
@@ -308,10 +310,10 @@ class metadata_manager
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
-			return true;
+			return false;
 		}
 
-		return $this->_validate_version($this->metadata['require']['php'], phpversion());
+		return true;
 	}
 
 	/**
@@ -354,7 +356,7 @@ class metadata_manager
 			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
 			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
 
-			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb']) : '',
+			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb/phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb/phpbb']) : '',
 			'META_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
 
 			'META_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',

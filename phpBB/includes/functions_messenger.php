@@ -1414,7 +1414,7 @@ class smtp_class
 		$result = false;
 		$stream_meta = stream_get_meta_data($this->socket);
 
-		if (socket_set_blocking($this->socket, 1));
+		if (socket_set_blocking($this->socket, 1))
 		{
 			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);

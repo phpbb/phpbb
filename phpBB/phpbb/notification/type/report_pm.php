@@ -10,15 +10,7 @@
 namespace phpbb\notification\type;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-* Private message reproted notifications class
+* Private message reported notifications class
 * This class handles notifications for private messages when they are reported
 *
 * @package notifications

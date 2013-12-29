@@ -10,14 +10,6 @@
 namespace phpbb;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * A class with various functions that are related to paths, files and the filesystem
 * @package phpBB3
 */
@@ -89,26 +81,24 @@ class path_helper
 	}
 
 	/**
-	* Update a path to the correct relative root path
+	* Update a web path to the correct relative root path
 	*
 	* This replaces $phpbb_root_path . some_url with
-	*	get_web_root_path() . some_url OR if $phpbb_root_path
-	*	is not at the beginning of $path, just prepends the
-	*	web root path
+	*	get_web_root_path() . some_url
 	*
 	* @param string $path The path to be updated
 	* @return string
 	*/
 	public function update_web_root_path($path)
 	{
-		$web_root_path = $this->get_web_root_path($this->symfony_request);
-
 		if (strpos($path, $this->phpbb_root_path) === 0)
 		{
 			$path = substr($path, strlen($this->phpbb_root_path));
+
+			return $this->get_web_root_path() . $path;
 		}
 
-		return $web_root_path . $path;
+		return $path;
 	}
 
 	/**

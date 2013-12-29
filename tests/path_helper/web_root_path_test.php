@@ -53,12 +53,17 @@ class phpbb_path_helper_web_root_path_test extends phpbb_test_case
 
 		return array(
 			array(
+				'http://www.test.com/test.php',
+				'http://www.test.com/test.php',
+				'/',
+			),
+			array(
 				$this->phpbb_root_path . 'test.php',
 				$this->phpbb_root_path . 'test.php',
 			),
 			array(
 				'test.php',
-				$this->phpbb_root_path . 'test.php',
+				'test.php',
 			),
 			array(
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',

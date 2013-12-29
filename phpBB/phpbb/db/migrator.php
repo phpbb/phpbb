@@ -10,14 +10,6 @@
 namespace phpbb\db;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * The migrator is responsible for applying new migrations in the correct order.
 *
 * @package db
@@ -192,6 +184,11 @@ class migrator
 
 		foreach ($state['migration_depends_on'] as $depend)
 		{
+			if ($this->unfulfillable($depend) !== false)
+			{
+				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $depend);
+			}
+
 			if (!isset($this->migration_state[$depend]) ||
 				!$this->migration_state[$depend]['migration_schema_done'] ||
 				!$this->migration_state[$depend]['migration_data_done'])
@@ -204,6 +201,7 @@ class migrator
 			'name'	=> $name,
 			'class'	=> $migration,
 			'state'	=> $state,
+			'task'	=> '',
 		);
 
 		if (!isset($this->migration_state[$name]))
@@ -231,6 +229,7 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
+			$this->last_run_migration['task'] = 'apply_schema_changes';
 			$this->apply_schema_changes($migration->update_schema());
 			$state['migration_schema_done'] = true;
 		}
@@ -238,6 +237,7 @@ class migrator
 		{
 			try
 			{
+				$this->last_run_migration['task'] = 'process_data_step';
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
 
 				$state['migration_data_state'] = ($result === true) ? '' : $result;
@@ -308,6 +308,7 @@ class migrator
 		$this->last_run_migration = array(
 			'name'	=> $name,
 			'class'	=> $migration,
+			'task'	=> '',
 		);
 
 		if ($state['migration_data_done'])
@@ -374,7 +375,7 @@ class migrator
 
 		foreach ($steps as $step_identifier => $step)
 		{
-			$last_result = false;
+			$last_result = 0;
 			if ($state)
 			{
 				// Continue until we reach the step that matches the last step called
@@ -435,7 +436,7 @@ class migrator
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return null
 	*/
-	protected function run_step($step, $last_result = false, $reverse = false)
+	protected function run_step($step, $last_result = 0, $reverse = false)
 	{
 		$callable_and_parameters = $this->get_callable_from_step($step, $last_result, $reverse);
 
@@ -458,7 +459,7 @@ class migrator
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
 	*/
-	protected function get_callable_from_step(array $step, $last_result = false, $reverse = false)
+	protected function get_callable_from_step(array $step, $last_result = 0, $reverse = false)
 	{
 		$type = $step[0];
 		$parameters = $step[1];
@@ -626,6 +627,7 @@ class migrator
 				{
 					continue;
 				}
+
 				return false;
 			}
 

@@ -10,14 +10,6 @@
 namespace phpbb\avatar\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Handles avatars selected from the board gallery
 * @package phpBB3
 */
@@ -29,7 +21,7 @@ class local extends \phpbb\avatar\driver\driver
 	public function get_data($row)
 	{
 		return array(
-			'src' => $this->phpbb_root_path . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
+			'src' => $this->path_helper->get_web_root_path() . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
@@ -140,6 +132,14 @@ class local extends \phpbb\avatar\driver\driver
 			'avatar_width' => $avatar_list[$category][urldecode($file)]['width'],
 			'avatar_height' => $avatar_list[$category][urldecode($file)]['height'],
 		);
+	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_local.html';
 	}
 
 	/**

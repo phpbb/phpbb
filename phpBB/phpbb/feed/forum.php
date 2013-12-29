@@ -10,14 +10,6 @@
 namespace phpbb\feed;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Forum feed
 *
 * This will give you the last {$this->num_items} posts made
@@ -36,7 +28,7 @@ class forum extends \phpbb\feed\post_base
 	* @param int	$forum_id			Forum ID
 	* @return	\phpbb\feed\forum
 	*/
-	public function set_forum_id($topic_id)
+	public function set_forum_id($forum_id)
 	{
 		$this->forum_id = (int) $forum_id;
 

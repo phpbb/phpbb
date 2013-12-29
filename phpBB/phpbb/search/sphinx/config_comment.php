@@ -10,14 +10,6 @@
 namespace phpbb\search\sphinx;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * \phpbb\search\sphinx\config_comment
 * Represents a comment inside the sphinx configuration
 */

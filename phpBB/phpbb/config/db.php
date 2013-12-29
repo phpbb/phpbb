@@ -10,14 +10,6 @@
 namespace phpbb\config;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * Configuration container class
 * @package phpBB3
 */

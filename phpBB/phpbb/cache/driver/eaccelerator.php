@@ -10,14 +10,6 @@
 namespace phpbb\cache\driver;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
 * ACM for eAccelerator
 * @package acm
 * @todo Missing locks from destroy() talk with David

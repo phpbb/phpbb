@@ -570,7 +570,7 @@ class ucp_profile
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = \phpbb\avatar\manager::clean_row($user->data);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user->data, 'user');
 
 					if ($submit)
 					{
@@ -606,7 +606,7 @@ class ucp_profile
 							}
 							else
 							{
-								if ($driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']))
+								if ($driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']))
 								{
 									$driver->delete($avatar_data);
 								}
@@ -661,10 +661,10 @@ class ucp_profile
 							));
 						}
 					}
-				}
 
-				// Replace "error" strings with their real, localised form
-				$error = $phpbb_avatar_manager->localize_errors($user, $error);
+					// Replace "error" strings with their real, localised form
+					$error = $phpbb_avatar_manager->localize_errors($user, $error);
+				}
 
 				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
 
