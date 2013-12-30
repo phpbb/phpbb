@@ -62,7 +62,7 @@
 
 	<form id="acp_bots" method="post" action="{U_ACTION}">
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_BOT_NAME}</th>
@@ -73,7 +73,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN bots -->
-		<!-- IF bots.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td style="width: 50%;">{bots.BOT_NAME}</td>
 			<td style="width: 15%; white-space: nowrap;" align="center">&nbsp;{bots.LAST_VISIT}&nbsp;</td>
 			<td style="text-align: center;">&nbsp;<a href="{bots.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{bots.L_ACTIVATE_DEACTIVATE}</a>&nbsp;</td>

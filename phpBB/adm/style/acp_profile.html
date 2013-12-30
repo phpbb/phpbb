@@ -185,7 +185,7 @@
 		</div>
 	<!-- ENDIF -->
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_FIELD_IDENT}</th>
@@ -195,8 +195,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN fields -->
-		<!-- IF fields.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
+	<tr>
 		<td>{fields.FIELD_IDENT}</td>
 		<td>{fields.FIELD_TYPE}</td>
 		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_TRANSLATE}" style="color: red;">{L_TRANSLATE}</a><!-- ENDIF --></td>

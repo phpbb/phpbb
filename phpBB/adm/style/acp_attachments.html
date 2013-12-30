@@ -331,7 +331,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_FILENAME}</th>
@@ -344,7 +344,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN orphan -->
-		<!-- IF orphan.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
@@ -389,7 +389,7 @@
 	<!-- ENDIF -->
 	</div>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_FILENAME}</th>
@@ -400,7 +400,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN attachments -->
-		<!-- IF attachments.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td>
 				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
 				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->

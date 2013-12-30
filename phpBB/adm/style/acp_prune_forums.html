@@ -8,7 +8,7 @@
 
 	<p>{L_PRUNE_SUCCESS}</p>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_FORUM}</th>
@@ -18,7 +18,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN pruned -->
-		<!-- IF pruned.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	<tr>
 		<td style="text-align: center;">{pruned.FORUM_NAME}</td>
 		<td style="text-align: center;">{pruned.NUM_TOPICS}</td>
 		<td style="text-align: center;">{pruned.NUM_POSTS}</td>
