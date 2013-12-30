@@ -363,6 +363,7 @@ class acp_permission_roles
 					WHERE role_id = $role_id";
 				$result = $db->sql_query($sql);
 				$order = $db->sql_fetchfield('role_order');
+				$db->sql_freeresult($result);
 
 				if ($order === false || ($order == 0 && $action == 'move_up'))
 				{

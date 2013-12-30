@@ -286,6 +286,7 @@ class acp_reasons
 					WHERE reason_id = $reason_id";
 				$result = $db->sql_query($sql);
 				$order = $db->sql_fetchfield('reason_order');
+				$db->sql_freeresult($result);
 
 				if ($order === false || ($order == 0 && $action == 'move_up'))
 				{
