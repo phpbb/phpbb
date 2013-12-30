@@ -216,6 +216,9 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('png', 'image/png', true),
 			array('tif', 'image/tif', true),
 			array('txt', 'text/plain', false),
+			array('jpg', 'application/octet-stream', false),
+			array('gif', 'application/octetstream', false),
+			array('png', 'application/mime', false),
 		);
 	}
 
@@ -226,6 +229,60 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
 		$this->assertEquals($expected, $filespec->is_image());
+	}
+
+	public function is_image_get_mimetype()
+	{
+		return array(
+			array('gif', 'image/gif', true),
+			array('jpg', 'image/jpg', true),
+			array('png', 'image/png', true),
+			array('tif', 'image/tif', true),
+			array('txt', 'text/plain', false),
+			array('jpg', 'application/octet-stream', true),
+			array('gif', 'application/octetstream', true),
+			array('png', 'application/mime', true),
+		);
+	}
+
+	/**
+	 * @dataProvider is_image_get_mimetype
+	 */
+	public function test_is_image_get_mimetype($filename, $mimetype, $expected)
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
+		$filespec->mimetype = $filespec->get_mimetype($this->path . $filename);
+		$this->assertEquals($expected, $filespec->is_image());
+	}
+
+	/**
+	* @expectedException Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException
+	*/
+	public function test_get_mimetype_wrong_path()
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . 'jpg', 'type' => 'application/octet-stream'));
+		$this->assertEquals(true, $filespec->get_mimetype($this->path . 'jpgg'));
+	}
+
+	public function data_get_mimetype()
+	{
+		return array(
+			array('gif', 'image/gif'),
+			array('jpg', 'image/jpeg'),
+			array('png', 'image/png'),
+			array('tif', 'image/tiff'),
+		);
+	}
+
+	/**
+	* @dataProvider data_get_mimetype
+	*/
+	public function test_get_mimetype($filename, $expected)
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => 'application/octet-stream'));
+		$this->assertEquals($expected, $filespec->get_mimetype($this->path . $filename));
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => ''));
+		$this->assertEquals($expected, $filespec->get_mimetype($this->path . $filename));
 	}
 
 	public function move_file_variables()

@@ -15,6 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
+
 /**
 * Responsible for holding all file relevant information, as well as doing file-specific operations.
 * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
@@ -42,6 +44,7 @@ class filespec
 	var $error = array();
 
 	var $upload = '';
+	var $guesser = false;
 
 	/**
 	 * The plupload object
@@ -67,6 +70,7 @@ class filespec
 		$name = trim(utf8_htmlspecialchars(utf8_basename($name)));
 		$this->realname = $this->uploadname = $name;
 		$this->mimetype = $upload_ary['type'];
+		$this->register_mimetype_guesser();
 
 		// Opera adds the name to the mime type
 		$this->mimetype	= (strpos($this->mimetype, '; name') !== false) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
@@ -154,6 +158,12 @@ class filespec
 	/**
 	* Check if file is an image (mimetype)
 	*
+	* @param string $file_path	Optional path of possible image. If supplied the path will be used
+	*				to acquire the mime type if the current type is set to
+	*				application/octet-stream or application/octetstream. Some browsers,
+	*				especially the current standard Android OS browser, do not supply
+	*				the correct image/jpeg type but rather a standard application type.
+	*
 	* @return true if it is an image, false if not
 	*/
 	function is_image()
@@ -212,24 +222,19 @@ class filespec
 	}
 
 	/**
-	* Get mimetype. Utilize mime_content_type if the function exist.
-	* Not used at the moment...
+	* Get mimetype using the  MimeTypeGuesser
+	*
+	* @param string $filename	Filename of the file that should be
+	*				checked by the MimeTypeGuesser
+	* @return string Mimetype of the specified file
 	*/
 	function get_mimetype($filename)
 	{
-		$mimetype = '';
-
-		if (function_exists('mime_content_type'))
-		{
-			$mimetype = mime_content_type($filename);
-		}
-
-		// Some browsers choke on a mimetype of application/octet-stream
-		if (!$mimetype || $mimetype == 'application/octet-stream')
+		$mimetype = $this->guesser->guess($filename);
+		if (!$mimetype)
 		{
 			$mimetype = 'application/octetstream';
 		}
-
 		return $mimetype;
 	}
 
@@ -366,6 +371,9 @@ class filespec
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
 
+		// Get mimetype of supplied file
+		$this->mimetype = $this->get_mimetype($this->destination_file);
+
 		if ($this->is_image() && !$skip_image_check)
 		{
 			$this->width = $this->height = 0;
@@ -450,6 +458,14 @@ class filespec
 		}
 
 		return true;
+	}
+
+	function register_mimetype_guesser()
+	{
+		if ($this->guesser === false)
+		{
+			$this->guesser = MimeTypeGuesser::getInstance();
+		}
 	}
 }
 
@@ -667,20 +683,7 @@ class fileupload
 		{
 			$upload['name'] = utf8_basename($source_file);
 			$upload['size'] = 0;
-			$mimetype = '';
-
-			if (function_exists('mime_content_type'))
-			{
-				$mimetype = mime_content_type($source_file);
-			}
-
-			// Some browsers choke on a mimetype of application/octet-stream
-			if (!$mimetype || $mimetype == 'application/octet-stream')
-			{
-				$mimetype = 'application/octetstream';
-			}
-
-			$upload['type'] = $mimetype;
+			$upload['type'] = '';
 		}
 		else
 		{
