@@ -334,7 +334,7 @@ class p_master
 	static function module_auth($module_auth, $forum_id)
 	{
 		global $auth, $config;
-		global $request;
+		global $request, $phpbb_extension_manager;
 
 		$module_auth = trim($module_auth);
 
@@ -358,6 +358,7 @@ class p_master
 			'aclf_([a-z0-9_]+)'				=> '(int) $auth->acl_getf_global(\'\\1\')',
 			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
 			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
+			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
 		);
 
 		$tokens = $match[0];
