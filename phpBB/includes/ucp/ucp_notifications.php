@@ -98,7 +98,19 @@ class ucp_notifications
 						$phpbb_notifications->mark_notifications_read(false, false, $user->data['user_id'], $form_time);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
+						
+						if ($request->is_ajax())
+						{
+							$json_response = new \phpbb\json_response();
+							$json_response->send(array(
+								'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+								'MESSAGE_TEXT'	=> $message,
+								'success'		=> true,
+							));
+						}
+						$message .= '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+
 						trigger_error($message);
 					}
 					else
