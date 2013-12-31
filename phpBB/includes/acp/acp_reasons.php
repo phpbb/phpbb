@@ -26,6 +26,7 @@ class acp_reasons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $request;
 
 		$user->add_lang(array('mcp', 'acp/posting'));
 
@@ -280,7 +281,18 @@ class acp_reasons
 			case 'move_up':
 			case 'move_down':
 
-				$order = request_var('order', 0);
+				$sql = 'SELECT reason_order
+					FROM ' . REPORTS_REASONS_TABLE . "
+					WHERE reason_id = $reason_id";
+				$result = $db->sql_query($sql);
+				$order = $db->sql_fetchfield('reason_order');
+				$db->sql_freeresult($result);
+
+				if ($order === false || ($order == 0 && $action == 'move_up'))
+				{
+					break;
+				}
+				$order = (int) $order;
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . '
@@ -288,6 +300,13 @@ class acp_reasons
 					WHERE reason_order IN (' . $order . ', ' . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
 
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> (bool) $db->sql_affectedrows(),
+					));
+				}
 			break;
 		}
 
@@ -363,8 +382,8 @@ class acp_reasons
 
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['reason_id'],
 				'U_DELETE'		=> (!$other_reason) ? $this->u_action . '&amp;action=delete&amp;id=' . $row['reason_id'] : '',
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;order=' . $row['reason_order'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['reason_order'])
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row['reason_id'],
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row['reason_id'])
 			);
 		}
 		$db->sql_freeresult($result);

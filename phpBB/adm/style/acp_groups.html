@@ -155,7 +155,7 @@
 		<a href="{U_DEFAULT_ALL}">&raquo; {L_MAKE_DEFAULT_FOR_ALL}</a>
 	</fieldset>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_USERNAME}</th>
@@ -170,7 +170,7 @@
 		<td class="row3" colspan="5"><strong>{L_GROUP_LEAD}</strong></td>
 	</tr>
 	<!-- BEGIN leader -->
-		<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td><!-- IF leader.USERNAME_COLOUR --><a href="{leader.U_USER_EDIT}" style="color: #{leader.USERNAME_COLOUR};" class="username-coloured">{leader.USERNAME}</a><!-- ELSE --><a href="{leader.U_USER_EDIT}">{leader.USERNAME}</a><!-- ENDIF --></td>
 			<td style="text-align: center;"><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{leader.JOINED}</td>
@@ -179,7 +179,7 @@
 		</tr>
 	<!-- BEGINELSE -->
 		<tr>
-			<td class="row1" colspan="5" style="text-align: center;">{L_GROUPS_NO_MODS}</td>
+			<td colspan="5" style="text-align: center;">{L_GROUPS_NO_MODS}</td>
 		</tr>
 	<!-- END leader -->
 	<tr>
@@ -191,7 +191,7 @@
 			<td class="row3" colspan="5"><strong>{L_GROUP_PENDING}</strong></td>
 		</tr>
 		<!-- ELSE -->
-			<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td><!-- IF member.USERNAME_COLOUR --><a href="{member.U_USER_EDIT}" style="color: #{member.USERNAME_COLOUR};" class="username-coloured">{member.USERNAME}</a><!-- ELSE --><a href="{member.U_USER_EDIT}">{member.USERNAME}</a><!-- ENDIF --></td>
 			<td style="text-align: center;"><!-- IF member.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{member.JOINED}</td>
@@ -201,7 +201,7 @@
 		<!-- ENDIF -->
 	<!-- BEGINELSE -->
 		<tr>
-			<td class="row1" colspan="5" style="text-align: center;">{L_GROUPS_NO_MEMBERS}</td>
+			<td colspan="5" style="text-align: center;">{L_GROUPS_NO_MEMBERS}</td>
 		</tr>
 	<!-- END member -->
 	</tbody>

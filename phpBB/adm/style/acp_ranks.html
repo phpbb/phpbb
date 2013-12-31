@@ -65,7 +65,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_ACP_MANAGE_RANKS}</legend>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_RANK_IMAGE}</th>
@@ -76,7 +76,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN ranks -->
-		<!-- IF ranks.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	<tr>
 		<td style="text-align: center;"><!-- IF ranks.S_RANK_IMAGE --><img src="{ranks.RANK_IMAGE}" alt="{ranks.RANK_TITLE}" title="{ranks.RANK_TITLE}" /><!-- ELSE -->&nbsp; - &nbsp;<!-- ENDIF --></td>
 		<td style="text-align: center;">{ranks.RANK_TITLE}</td>
 		<td style="text-align: center;"><!-- IF ranks.S_SPECIAL_RANK -->&nbsp; - &nbsp;<!-- ELSE -->{ranks.MIN_POSTS}<!-- ENDIF --></td>

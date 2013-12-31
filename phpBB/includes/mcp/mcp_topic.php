@@ -26,6 +26,7 @@ function mcp_topic_view($id, $mode, $action)
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
 	$user->add_lang('viewtopic');
+	$pagination = $phpbb_container->get('pagination');
 
 	$topic_id = request_var('t', 0);
 	$topic_info = get_topic_data(array($topic_id), false, true);
@@ -129,12 +130,7 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		$start = 0;
 	}
-
-	// Make sure $start is set to the last page if it exceeds the amount
-	if ($start < 0 || $start >= $total)
-	{
-		$start = ($start < 0) ? 0 : floor(($total - 1) / $posts_per_page) * $posts_per_page;
-	}
+	$start = $pagination->validate_start($start, $posts_per_page, $total);
 
 	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -304,7 +300,7 @@ function mcp_topic_view($id, $mode, $action)
 	$base_url = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir");
 	if ($posts_per_page)
 	{
-		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $posts_per_page, $start);
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $posts_per_page, $start);
 	}
 
 	$template->assign_vars(array(
@@ -347,7 +343,7 @@ function mcp_topic_view($id, $mode, $action)
 		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
-		'PAGE_NUMBER'		=> phpbb_on_page($template, $user, $base_url, $total, $posts_per_page, $start),
+		'PAGE_NUMBER'		=> $pagination->on_page($base_url, $total, $posts_per_page, $start),
 		'TOTAL_POSTS'		=> $user->lang('VIEW_TOPIC_POSTS', (int) $total),
 	));
 }

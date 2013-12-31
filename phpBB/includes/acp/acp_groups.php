@@ -676,6 +676,7 @@ class acp_groups
 				}
 
 				$this->page_title = 'GROUP_MEMBERS';
+				$pagination = $phpbb_container->get('pagination');
 
 				// Grab the leaders - always, on every page...
 				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_colour, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
@@ -719,14 +720,14 @@ class acp_groups
 				}
 
 				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_members, $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
 					'S_LIST'			=> true,
 					'S_GROUP_SPECIAL'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 
-					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $total_members, $config['topics_per_page'], $start),
+					'S_ON_PAGE'		=> $pagination->on_page($base_url, $total_members, $config['topics_per_page'], $start),
 					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",

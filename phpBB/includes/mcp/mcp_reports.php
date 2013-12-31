@@ -315,6 +315,7 @@ class mcp_reports
 
 				$forum_list[] = 0;
 				$forum_data = array();
+				$pagination = $phpbb_container->get('pagination');
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
@@ -410,7 +411,7 @@ class mcp_reports
 				}
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -422,7 +423,7 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
@@ -615,23 +616,25 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 		unset($close_report_posts, $close_report_topics);
 
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 		foreach ($reports as $report)
 		{
 			if ($pm)
 			{
 				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
+				$phpbb_notifications->delete_notifications('report_pm', $report['pm_id']);
 			}
 			else
 			{
 				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+				$phpbb_notifications->delete_notifications('report_post', $report['post_id']);
 			}
 		}
 
 		// Notify reporters
 		if (sizeof($notify_reporters))
 		{
-			$phpbb_notifications = $phpbb_container->get('notification_manager');
-
 			foreach ($notify_reporters as $report_id => $reporter)
 			{
 				if ($reporter['user_id'] == ANONYMOUS)
@@ -648,8 +651,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						'closer_id'			=> $user->data['user_id'],
 						'from_user_id'		=> $post_info[$post_id]['author_id'],
 					)));
-
-					$phpbb_notifications->delete_notifications('report_pm', $post_id);
 				}
 				else
 				{
@@ -657,8 +658,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 					)));
-
-					$phpbb_notifications->delete_notifications('report_post', $post_id);
 				}
 			}
 		}

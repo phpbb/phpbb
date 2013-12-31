@@ -4,6 +4,7 @@ php:
   - 5.3
   - 5.4
   - 5.5
+  - hhvm
 
 env:
   - DB=mariadb
@@ -38,3 +39,7 @@ notifications:
       - dev-team@phpbb.com
     on_success: change
     on_failure: change
+
+matrix:
+  allow_failures:
+    - php: hhvm

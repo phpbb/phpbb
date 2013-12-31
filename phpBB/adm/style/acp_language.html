@@ -211,7 +211,7 @@
 
 	<p>{L_ACP_LANGUAGE_PACKS_EXPLAIN}</p>
 
-	<table class="table1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_LANGUAGE_PACK_NAME}</th>
@@ -226,7 +226,7 @@
 		<td class="row3" colspan="5"><strong>{L_INSTALLED_LANGUAGE_PACKS}</strong></td>
 	</tr>
 	<!-- BEGIN lang -->
-		<!-- IF lang.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	<tr>
 		<td><a href="{lang.U_DETAILS}">{lang.ENGLISH_NAME}</a> {lang.TAG}</td>
 		<td>{lang.LOCAL_NAME}</td>
 		<td style="text-align: center;"><strong>{lang.ISO}</strong></td>
@@ -240,7 +240,7 @@
 	</tr>
 	<!-- ENDIF -->
 	<!-- BEGIN notinst -->
-		<!-- IF notinst.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	<tr>
 		<td>{notinst.NAME}</td>
 		<td>{notinst.LOCAL_NAME}</td>
 		<td style="text-align: center;"><strong>{notinst.ISO}</strong></td>

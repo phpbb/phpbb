@@ -361,6 +361,7 @@ $lang = array_merge($lang, array(
 
 	'GZIP_COMPRESSION'	=> 'GZip compression',
 
+	'NO_SEARCH_INDEX'	=> 'The selected search backend does not have a search index.<br >Please create the index for “%1$s” in the %2$ssearch index%3$s section.',
 	'NOT_AVAILABLE'		=> 'Not available',
 	'NUMBER_FILES'		=> 'Number of attachments',
 	'NUMBER_POSTS'		=> 'Number of posts',
