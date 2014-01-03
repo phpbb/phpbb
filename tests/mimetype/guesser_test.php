@@ -35,7 +35,7 @@ class guesser_test extends \phpbb_test_case
 		);
 
 		// Check if any guesser except the extension_guesser is available
-		$this->fileinfo_supported = (bool) $guessers[0]->isSupported() | $guessers[1]->isSupported() | $guessers[3]->is_supported();
+		$this->fileinfo_supported = $guessers[0]->isSupported() | $guessers[1]->isSupported() | $guessers[3]->is_supported();
 
 		$this->guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->path = dirname(__FILE__);
