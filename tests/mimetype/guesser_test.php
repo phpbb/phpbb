@@ -19,7 +19,9 @@ function function_exists($name)
 
 class guesser_test extends \phpbb_test_case
 {
-	public static $function_exists = true;
+	public static $function_exists = false;
+
+	protected $fileinfo_supported = false;
 
 	public function setUp()
 	{
@@ -28,7 +30,13 @@ class guesser_test extends \phpbb_test_case
 		$guessers = array(
 			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
 			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
+			new \phpbb\mimetype\extension_guesser,
+			new \phpbb\mimetype\content_guesser,
 		);
+
+		// Check if any guesser except the extension_guesser is available
+		$this->fileinfo_supported = (bool) $guessers[0]->isSupported() | $guessers[1]->isSupported() | $guessers[3]->is_supported();
+
 		$this->guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->path = dirname(__FILE__);
 		$this->jpg_file = $this->path . '/fixtures/jpg';
@@ -52,6 +60,12 @@ class guesser_test extends \phpbb_test_case
 	*/
 	public function test_guess_files($expected, $file)
 	{
+		// We will always get application/octet-stream as mimetype if only the
+		// extension guesser is supported
+		if ($expected && !$this->fileinfo_supported)
+		{
+			$expected = 'application/octet-stream';
+		}
 		$this->assertEquals($expected, $this->guesser->guess($this->path . '/../upload/fixture/' . $file));
 	}
 
@@ -129,6 +143,11 @@ class guesser_test extends \phpbb_test_case
 	{
 		$supported = false;
 		self::$function_exists = !$overload;
+
+		if (!\function_exists('mime_content_type'))
+		{
+			$this->markTestSkipped('Emulating supported mime_content_type() when it is not supported will cause a fatal error');
+		}
 
 		// Cover possible LogicExceptions
 		foreach ($guessers as $cur_guesser)
