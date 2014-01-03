@@ -37,6 +37,9 @@ class guesser_test extends \phpbb_test_case
 		// Check if any guesser except the extension_guesser is available
 		$this->fileinfo_supported = $guessers[0]->isSupported() | $guessers[1]->isSupported() | $guessers[3]->is_supported();
 
+		// Also create a guesser that emulates not having fileinfo available
+		$this->guesser_no_fileinfo = new \phpbb\mimetype\guesser(array($guessers[2]));
+
 		$this->guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->path = dirname(__FILE__);
 		$this->jpg_file = $this->path . '/fixtures/jpg';
@@ -62,11 +65,28 @@ class guesser_test extends \phpbb_test_case
 	{
 		// We will always get application/octet-stream as mimetype if only the
 		// extension guesser is supported
-		if ($expected && !$this->fileinfo_supported)
+		if (!$this->fileinfo_supported)
 		{
-			$expected = 'application/octet-stream';
+			$this->markTestSkipped('Unable to run tests depending on fileinfo if it is not available');
 		}
 		$this->assertEquals($expected, $this->guesser->guess($this->path . '/../upload/fixture/' . $file));
+	}
+
+	public function data_guess_files_no_fileinfo()
+	{
+		return array(
+			array('application/octet-stream', 'gif'),
+			array('application/octet-stream', 'txt'),
+			array(false, 'foobar'),
+		);
+	}
+
+	/**
+	* @dataProvider data_guess_files_no_fileinfo
+	*/
+	public function test_guess_files_no_fileinfo($expected, $file)
+	{
+		$this->assertEquals($expected, $this->guesser_no_fileinfo->guess($this->path . '/../upload/fixture/' . $file));
 	}
 
 	public function test_file_not_readable()
