@@ -111,4 +111,32 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->assert_response_html(404);
 		$this->assertContains('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
 	}
+
+	/**
+	* Check the output of a controller using the template system
+	*/
+	public function test_redirect()
+	{
+		$filesystem = new \phpbb\filesystem();
+		$this->phpbb_extension_manager->enable('foo/bar');
+		$crawler = self::request('GET', 'app.php/foo/redirect');
+
+		$nodes = $crawler->filter('div')->extract(array('id'));
+
+		foreach ($nodes as $redirect)
+		{
+			if (strpos($redirect, 'redirect_expected') !== 0)
+			{
+				continue;
+			}
+
+			$row_num = str_replace('redirect_expected_', '', $redirect);
+
+			$redirect = $crawler->filter('#redirect_' . $row_num)->text();
+			$redirect = substr($redirect, 0, strpos($redirect, 'sid') - 1);
+			$this->assertEquals($crawler->filter('#redirect_expected_' .  $row_num)->text(), $redirect);
+		}
+
+		$this->phpbb_extension_manager->purge('foo/bar');
+	}
 }

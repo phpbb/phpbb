@@ -2434,7 +2434,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path;
+	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx;
 
 	$failover_flag = false;
 
@@ -2477,78 +2477,34 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		if (!$disable_cd_check && !file_exists($pathinfo['dirname'] . '/'))
+		// Is the uri pointing to the current directory?
+		if ($pathinfo['dirname'] == '.')
 		{
-			$url = str_replace('../', '', $url);
-			$pathinfo = pathinfo($url);
+			$url = str_replace('./', '', $url);
 
-			if (!file_exists($pathinfo['dirname'] . '/'))
+			// Strip / from the beginning
+			if ($url && substr($url, 0, 1) == '/')
 			{
-				// fallback to "last known user page"
-				// at least this way we know the user does not leave the phpBB root
-				$url = generate_board_url() . '/' . $user->page['page'];
-				$failover_flag = true;
+				$url = substr($url, 1);
 			}
 		}
 
-		if (!$failover_flag)
+		$url = $phpbb_path_helper->remove_web_root_path($url);
+
+		if ($user->page['page_dir'])
 		{
-			// Is the uri pointing to the current directory?
-			if ($pathinfo['dirname'] == '.')
-			{
-				$url = str_replace('./', '', $url);
-
-				// Strip / from the beginning
-				if ($url && substr($url, 0, 1) == '/')
-				{
-					$url = substr($url, 1);
-				}
-
-				if ($user->page['page_dir'])
-				{
-					$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
-				}
-				else
-				{
-					$url = generate_board_url() . '/' . $url;
-				}
-			}
-			else
-			{
-				// Used ./ before, but $phpbb_root_path is working better with urls within another root path
-				$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
-				$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
-				$intersection = array_intersect_assoc($root_dirs, $page_dirs);
-
-				$root_dirs = array_diff_assoc($root_dirs, $intersection);
-				$page_dirs = array_diff_assoc($page_dirs, $intersection);
-
-				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
-
-				// Strip / from the end
-				if ($dir && substr($dir, -1, 1) == '/')
-				{
-					$dir = substr($dir, 0, -1);
-				}
-
-				// Strip / from the beginning
-				if ($dir && substr($dir, 0, 1) == '/')
-				{
-					$dir = substr($dir, 1);
-				}
-
-				$url = str_replace($pathinfo['dirname'] . '/', '', $url);
-
-				// Strip / from the beginning
-				if (substr($url, 0, 1) == '/')
-				{
-					$url = substr($url, 1);
-				}
-
-				$url = (!empty($dir) ? $dir . '/' : '') . $url;
-				$url = generate_board_url() . '/' . $url;
-			}
+			$url = $user->page['page_dir'] . '/' . $url;
 		}
+
+		$url = generate_board_url() . '/' . $url;
+	}
+
+	// Clean URL and check if we go outside the forum directory
+	$url = $phpbb_path_helper->clean_url($url);
+
+	if (!$disable_cd_check && strpos($url, generate_board_url(true)) === false)
+	{
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
