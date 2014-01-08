@@ -34,7 +34,7 @@ class get extends command
 
 		if (isset($this->config[$key]))
 		{
-			$output->writeln("<info>{$this->config[$key]}</info>");
+			$output->writeln($this->config[$key]);
 		}
 		else
 		{
