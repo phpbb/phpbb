@@ -32,8 +32,15 @@ class delete extends command
 	{
 		$key = $input->getArgument('key');
 
-		$this->config->delete($key);
+		if (isset($this->config[$key]))
+		{
+			$this->config->delete($key);
 
-		$output->writeln("<info>Successfully deleted config $key</info>");
+			$output->writeln("<info>Successfully deleted config $key</info>");
+		}
+		else
+		{
+			$output->writeln("<error>Config $key does not exist</error>");
+		}
 	}
 }
