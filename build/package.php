@@ -175,10 +175,10 @@ if (sizeof($package->old_packages))
 		}
 
 		/**
-		* When we create the update packages, we try to make them as small as possible.
-		* However sometimes we need to include additional files, that are not included
-		* in the diff, in order to able to correctly include the relative referenced
-		* files from the same or subsequent directories.
+		* We try to keep the update packages as small as possible while creating them.
+		* However, we sometimes need to include additional files that are not included
+		* in the diff in order to be able to correctly include the relatively
+		* referenced files from the same or subsequent directories.
 		*/
 		$copy_relative_directories = array(
 			'adm/style/admin.css'	=> array(
@@ -236,7 +236,7 @@ if (sizeof($package->old_packages))
 				{
 					foreach ($data['copy'] as $source_dir_files => $destination_dir)
 					{
-						// Create Directories along the way?
+						// Create directories along the way?
 						$directories = explode('/', $destination_dir);
 
 						chdir($dest_filename_dir . '/install/update/new');
