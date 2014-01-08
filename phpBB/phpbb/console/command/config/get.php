@@ -25,6 +25,12 @@ class get extends command
 				InputArgument::REQUIRED,
 				"The configuration option's name"
 			)
+			->addOption(
+				'no-newline',
+				null,
+				InputOption::VALUE_NONE,
+				'Set this option if the value should be printed without a new line at the end.'
+			)
 		;
 	}
 
@@ -32,7 +38,11 @@ class get extends command
 	{
 		$key = $input->getArgument('key');
 
-		if (isset($this->config[$key]))
+		if (isset($this->config[$key]) && $input->getOption('no-newline'))
+		{
+			$output->write($this->config[$key]);
+		}
+		elseif (isset($this->config[$key]))
 		{
 			$output->writeln($this->config[$key]);
 		}
