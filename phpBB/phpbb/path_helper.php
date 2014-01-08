@@ -102,6 +102,27 @@ class path_helper
 	}
 
 	/**
+	* Strips away the web root path and prepends the normal root path
+	*
+	* This replaces get_web_root_path() . some_url with
+	*	$phpbb_root_path . some_url
+	*
+	* @param string $path The path to be updated
+	* @return string
+	*/
+	public function remove_web_root_path($path)
+	{
+		if (strpos($path, $this->get_web_root_path()) === 0)
+		{
+			$path = substr($path, strlen($this->get_web_root_path()));
+
+			return $this->phpbb_root_path . $path;
+		}
+
+		return $path;
+	}
+
+	/**
 	* Get a relative root path from the current URL
 	*
 	* @return string
@@ -161,5 +182,28 @@ class path_helper
 		*	the URL)
 		*/
 		return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $corrections - 1);
+	}
+
+	/**
+	* Eliminates useless . and .. components from specified URL
+	*
+	* @param string $url URL to clean
+	*
+	* @return string Cleaned URL
+	*/
+	public function clean_url($url)
+	{
+		$delimiter_position = strpos($url, '://');
+		// URL should contain :// but it shouldn't start with it.
+		// Do not clean URLs that do not fit these constraints.
+		if (empty($delimiter_position))
+		{
+			return $url;
+		}
+		$scheme = substr($url, 0, $delimiter_position) . '://';
+		// Add length of URL delimiter to position
+		$path = substr($url, $delimiter_position + 3);
+
+		return $scheme . $this->filesystem->clean_path($path);
 	}
 }
