@@ -562,7 +562,6 @@ if (sizeof($shadow_topic_list))
 		'FROM'		=> array(
 			TOPICS_TABLE		=> 't'
 		),
-		'LEFT_JOIN'	=> array(),
 
 		'WHERE'		=> $db->sql_in_set('t.topic_id', array_keys($shadow_topic_list)),
 	);
