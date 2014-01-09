@@ -19,6 +19,32 @@ namespace phpbb\avatar\driver;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
+	* @var \phpbb\mimetype\guesser
+	*/
+	protected $mimetype_guesser;
+
+	/**
+	* Construct a driver object
+	*
+	* @param \phpbb\config\config $config phpBB configuration
+	* @param \phpbb\request\request $request Request object
+	* @param string $phpbb_root_path Path to the phpBB root
+	* @param string $php_ext PHP file extension
+	* @param \phpbb_path_helper $path_helper phpBB path helper
+	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
+	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
+	*/
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\cache\driver\driver_interface $cache = null)
+	{
+		$this->config = $config;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+		$this->path_helper = $path_helper;
+		$this->mimetype_guesser = $mimetype_guesser;
+		$this->cache = $cache;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_data($row, $ignore_config = false)
@@ -70,7 +96,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		if (!empty($upload_file['name']))
 		{
-			$file = $upload->form_upload('avatar_upload_file');
+			$file = $upload->form_upload('avatar_upload_file', $this->mimetype_guesser);
 		}
 		else if (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
@@ -100,7 +126,7 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			$file = $upload->remote_upload($url);
+			$file = $upload->remote_upload($url, $this->mimetype_guesser);
 		}
 		else
 		{

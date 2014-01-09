@@ -42,6 +42,14 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 			$phpEx
 		);
 
+		$guessers = array(
+			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
+			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
+			new \phpbb\mimetype\extension_guesser,
+			new \phpbb\mimetype\content_guesser,
+		);
+		$guesser = new \phpbb\mimetype\guesser($guessers);
+
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 		$this->avatar_foobar->expects($this->any())
@@ -56,7 +64,14 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 
 		foreach ($this->avatar_drivers() as $driver)
 		{
-			$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+			if ($driver !== 'upload')
+			{
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+			}
+			else
+			{
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
+			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
 				->will($this->returnValue('avatar.driver.' . $driver));
