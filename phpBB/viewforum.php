@@ -569,7 +569,7 @@ if (sizeof($shadow_topic_list))
 	* Event to modify the SQL query before the shadowtopic data is retrieved
 	*
 	* @event core.viewforum_get_shadowtopic_data
-	* @var	string	sql		The SQL string to get the data of any shadowtopics
+	* @var	array	sql_array		SQL array to get the data of any shadowtopics
 	* @since 3.1-A1
 	*/
 	$vars = array('sql_array');
