@@ -18,19 +18,30 @@ class admin extends profilefields
 	var $vars = array();
 
 	/**
+	*
+	*/
+	public function __construct($auth, $config, $db, $request, $template, $user)
+	{
+		$this->auth = $auth;
+		$this->config = $config;
+		$this->db = $db;
+		$this->request = $request;
+		$this->template = $template;
+		$this->user = $user;
+	}
+
+	/**
 	* Return possible validation options
 	*/
 	function validate_options()
 	{
-		global $user;
-
 		$validate_ary = array('CHARS_ANY' => '.*', 'NUMBERS_ONLY' => '[0-9]+', 'ALPHA_ONLY' => '[\w]+', 'ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
 
 		$validate_options = '';
 		foreach ($validate_ary as $lang => $value)
 		{
 			$selected = ($this->vars['field_validation'] == $value) ? ' selected="selected"' : '';
-			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $this->user->lang[$lang] . '</option>';
 		}
 
 		return $validate_options;
@@ -39,15 +50,13 @@ class admin extends profilefields
 	/**
 	* Get string options for second step in ACP
 	*/
-	function get_string_options()
+	function get_string_options($lang_defs)
 	{
-		global $user;
-
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
-			1 => array('TITLE' => $user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
-			2 => array('TITLE' => $user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
+			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
+			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
+			3 => array('TITLE' => $this->user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
 		);
 
 		return $options;
@@ -56,15 +65,13 @@ class admin extends profilefields
 	/**
 	* Get text options for second step in ACP
 	*/
-	function get_text_options()
+	function get_text_options($lang_defs)
 	{
-		global $user;
-
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="rows" size="5" value="' . $this->vars['rows'] . '" /> ' . $user->lang['ROWS'] . '</dd><dd><input type="number" min="0" max="99999" name="columns" size="5" value="' . $this->vars['columns'] . '" /> ' . $user->lang['COLUMNS'] . ' <input type="hidden" name="field_length" value="' . $this->vars['field_length'] . '" />'),
-			1 => array('TITLE' => $user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_minlen" size="10" value="' . $this->vars['field_minlen'] . '" />'),
-			2 => array('TITLE' => $user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_maxlen" size="10" value="' . $this->vars['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
+			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="rows" size="5" value="' . $this->vars['rows'] . '" /> ' . $user->lang['ROWS'] . '</dd><dd><input type="number" min="0" max="99999" name="columns" size="5" value="' . $this->vars['columns'] . '" /> ' . $user->lang['COLUMNS'] . ' <input type="hidden" name="field_length" value="' . $this->vars['field_length'] . '" />'),
+			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_minlen" size="10" value="' . $this->vars['field_minlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_maxlen" size="10" value="' . $this->vars['field_maxlen'] . '" />'),
+			3 => array('TITLE' => $this->user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
 		);
 
 		return $options;
@@ -73,15 +80,13 @@ class admin extends profilefields
 	/**
 	* Get int options for second step in ACP
 	*/
-	function get_int_options()
+	function get_int_options($lang_defs)
 	{
-		global $user;
-
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
-			1 => array('TITLE' => $user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
-			2 => array('TITLE' => $user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $this->vars['field_default_value'] . '" />')
+			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
+			1 => array('TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
+			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $this->vars['field_default_value'] . '" />')
 		);
 
 		return $options;
@@ -90,11 +95,9 @@ class admin extends profilefields
 	/**
 	* Get bool options for second step in ACP
 	*/
-	function get_bool_options()
+	function get_bool_options($lang_defs)
 	{
-		global $user, $config, $lang_defs;
-
-		$default_lang_id = $lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = $lang_defs['iso'][$this->config['default_lang']];
 
 		$profile_row = array(
 			'var_name'				=> 'field_default_value',
@@ -110,8 +113,8 @@ class admin extends profilefields
 		);
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_TYPE'], 'EXPLAIN' => $user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($this->vars['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($this->vars['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['CHECKBOX'] . '</label>'),
-			1 => array('TITLE' => $user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row))
+			0 => array('TITLE' => $this->user->lang['FIELD_TYPE'], 'EXPLAIN' => $this->user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($this->vars['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($this->vars['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['CHECKBOX'] . '</label>'),
+			1 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row))
 		);
 
 		return $options;
@@ -120,11 +123,9 @@ class admin extends profilefields
 	/**
 	* Get dropdown options for second step in ACP
 	*/
-	function get_dropdown_options()
+	function get_dropdown_options($lang_defs)
 	{
-		global $user, $config, $lang_defs;
-
-		$default_lang_id = $lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = $lang_defs['iso'][$this->config['default_lang']];
 
 		$profile_row[0] = array(
 			'var_name'				=> 'field_default_value',
@@ -144,8 +145,8 @@ class admin extends profilefields
 		$profile_row[1]['field_default_value']	= $this->vars['field_novalue'];
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
-			1 => array('TITLE' => $user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->process_field_row('preview', $profile_row[1]))
+			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
+			1 => array('TITLE' => $this->user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $this->user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->process_field_row('preview', $profile_row[1]))
 		);
 
 		return $options;
@@ -154,11 +155,9 @@ class admin extends profilefields
 	/**
 	* Get date options for second step in ACP
 	*/
-	function get_date_options()
+	function get_date_options($lang_defs)
 	{
-		global $user, $config, $lang_defs;
-
-		$default_lang_id = $lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = $lang_defs['iso'][$this->config['default_lang']];
 
 		$profile_row = array(
 			'var_name'				=> 'field_default_value',
@@ -182,8 +181,8 @@ class admin extends profilefields
 		}
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
-			1 => array('TITLE' => $user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['NO'] . '</label>'),
+			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
+			1 => array('TITLE' => $this->user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['NO'] . '</label>'),
 		);
 
 		return $options;

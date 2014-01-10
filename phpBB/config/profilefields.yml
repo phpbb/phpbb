@@ -12,6 +12,7 @@ services:
         class: \phpbb\profilefields\admin
         arguments:
             - @auth
+            - @config
             - @dbal.conn
             - @request
             - @template

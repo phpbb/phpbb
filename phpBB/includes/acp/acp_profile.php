@@ -849,7 +849,7 @@ class acp_profile
 
 						// Build options based on profile type
 						$function = 'get_' . $cp->profile_types[$field_type] . '_options';
-						$options = $cp->$function();
+						$options = $cp->$function($this->lang_defs);
 
 						foreach ($options as $num => $option_ary)
 						{
