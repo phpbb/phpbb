@@ -361,6 +361,20 @@ class p_master
 			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
 		);
 
+		/**
+		* Alter tokens for module authorisation check
+		*
+		* @event core.module_auth
+		* @var	array	valid_tokens		Valid tokens and their auth check
+		*									replacements
+		* @var	string	module_auth			The module_auth of the current
+		* 									module
+		* @var	int		forum_id			The current forum_id
+		* @since 3.1-A3
+		*/
+		$vars = array('valid_tokens', 'module_auth', 'forum_id');
+		extract($phpbb_dispatcher->trigger_event('core.module_auth', compact($vars)));
+
 		$tokens = $match[0];
 		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
 		{
