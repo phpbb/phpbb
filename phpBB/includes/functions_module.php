@@ -405,7 +405,7 @@ class p_master
 
 		$module_auth = preg_replace(
 			// Array keys with # prepended/appended
-			array_map(function($value){
+			array_map(function($value) {
 				return '#' . $value . '#';
 			}, array_keys($valid_tokens)),
 			array_values($valid_tokens),
