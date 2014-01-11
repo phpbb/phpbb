@@ -8,17 +8,47 @@ services:
             - @template
             - @user
 
-    profilefields.admin:
-        class: \phpbb\profilefields\admin
+    profilefields.type.bool:
+        class: \phpbb\profilefields\type\type_bool
         arguments:
-            - @auth
-            - @config
-            - @dbal.conn
-            - @request
-            - @template
+            - @profilefields
             - @user
+        tags:
+            - { name: profilefield.type }
 
-    #migrator.tool.permission1:
-    #    class: \phpbb\profilefields\profilefields
-    #    tags:
-    #        - { name: ffoobar.tool }
+    profilefields.type.date:
+        class: \phpbb\profilefields\type\type_date
+        arguments:
+            - @profilefields
+            - @user
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.dropdown:
+        class: \phpbb\profilefields\type\type_dropdown
+        arguments:
+            - @profilefields
+            - @user
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.int:
+        class: \phpbb\profilefields\type\type_int
+        arguments:
+            - @user
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.string:
+        class: \phpbb\profilefields\type\type_string
+        arguments:
+            - @user
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.text:
+        class: \phpbb\profilefields\type\type_text
+        arguments:
+            - @user
+        tags:
+            - { name: profilefield.type }

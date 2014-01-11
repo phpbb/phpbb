@@ -49,17 +49,7 @@ class acp_profile
 			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		// Define some default values for each field type
-		$default_values = array(
-			FIELD_STRING	=> array('field_length' => 10, 'field_minlen' => 0, 'field_maxlen' => 20, 'field_validation' => '.*', 'field_novalue' => '', 'field_default_value' => ''),
-			FIELD_TEXT		=> array('field_length' => '5|80', 'field_minlen' => 0, 'field_maxlen' => 1000, 'field_validation' => '.*', 'field_novalue' => '', 'field_default_value' => ''),
-			FIELD_INT		=> array('field_length' => 5, 'field_minlen' => 0, 'field_maxlen' => 100, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
-			FIELD_DATE		=> array('field_length' => 10, 'field_minlen' => 10, 'field_maxlen' => 10, 'field_validation' => '', 'field_novalue' => ' 0- 0-   0', 'field_default_value' => ' 0- 0-   0'),
-			FIELD_BOOL		=> array('field_length' => 1, 'field_minlen' => 0, 'field_maxlen' => 0, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
-			FIELD_DROPDOWN	=> array('field_length' => 0, 'field_minlen' => 0, 'field_maxlen' => 5, 'field_validation' => '', 'field_novalue' => 0, 'field_default_value' => 0),
-		);
-
-		$cp = $phpbb_container->get('profilefields.admin');
+		$cp = $phpbb_container->get('profilefields');
 
 		// Build Language array
 		// Based on this, we decide which elements need to be edited later and which language items are missing
@@ -93,10 +83,10 @@ class acp_profile
 		// Have some fields been defined?
 		if (isset($this->lang_defs['entry']))
 		{
-			foreach ($this->lang_defs['entry'] as $field_id => $field_ary)
+			foreach ($this->lang_defs['entry'] as $field_ident => $field_ary)
 			{
 				// Fill an array with the languages that are missing for each field
-				$this->lang_defs['diff'][$field_id] = array_diff(array_values($this->lang_defs['iso']), $field_ary);
+				$this->lang_defs['diff'][$field_ident] = array_diff(array_values($this->lang_defs['iso']), $field_ary);
 			}
 		}
 
@@ -381,7 +371,8 @@ class acp_profile
 						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$field_row = array_merge($default_values[$field_type], array(
+					$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
+					$field_row = array_merge($profile_field->get_default_values(), array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string(request_var('field_ident', '', true))),
 						'field_required'	=> 0,
 						'field_show_novalue'=> 0,
@@ -848,8 +839,8 @@ class acp_profile
 						);
 
 						// Build options based on profile type
-						$function = 'get_' . $cp->profile_types[$field_type] . '_options';
-						$options = $cp->$function($this->lang_defs);
+						$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
+						$options = $profile_field->get_options($this->lang_defs, $cp->vars);
 
 						foreach ($options as $num => $option_ary)
 						{
