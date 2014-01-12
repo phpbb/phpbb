@@ -174,6 +174,27 @@ if (sizeof($package->old_packages))
 			$package->run_command('cp ' . $source_filename . ' ' . $dest_filename);
 		}
 
+		/**
+		* We try to keep the update packages as small as possible while creating them.
+		* However, we sometimes need to include additional files that are not included
+		* in the diff in order to be able to correctly include the relatively
+		* referenced files from the same or subsequent directories.
+		*/
+		$copy_relative_directories = array(
+			'adm/style/admin.css'	=> array(
+				'copied'	=> false,
+				'copy'		=> array(
+					'adm/images/*' => 'adm/images',
+				),
+			),
+			'config/'	=> array(
+				'copied'	=> false,
+				'copy'		=> array(
+					'config/*.yml' => 'config',
+				),
+			),
+		);
+
 		// Then fill the 'new' directory
 		foreach ($file_contents['all'] as $file)
 		{
@@ -184,6 +205,8 @@ if (sizeof($package->old_packages))
 			{
 				continue;
 			}
+
+			$filename = $file;
 
 			// Create Directories along the way?
 			$file = explode('/', $file);
@@ -205,6 +228,37 @@ if (sizeof($package->old_packages))
 			}
 
 			$package->run_command('cp ' . $source_filename . ' ' . $dest_filename);
+
+			foreach ($copy_relative_directories as $reference => $data)
+			{
+				// Copy all relative referenced files if needed
+				if (strpos($filename, $reference) === 0 && !$data['copied'])
+				{
+					foreach ($data['copy'] as $source_dir_files => $destination_dir)
+					{
+						// Create directories along the way?
+						$directories = explode('/', $destination_dir);
+
+						chdir($dest_filename_dir . '/install/update/new');
+						foreach ($directories as $dir)
+						{
+							$dir = trim($dir);
+							if ($dir)
+							{
+								if (!file_exists('./' . $dir))
+								{
+									$package->run_command('mkdir ' . $dir);
+								}
+								chdir('./' . $dir);
+							}
+						}
+						$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_dir_files;
+						$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
+						$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+					}
+					$copy_relative_directories[$reference]['copied'] = true;
+				}
+			}
 		}
 
 		// Build index.php file for holding the file structure
