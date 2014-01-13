@@ -22,10 +22,11 @@ class profilefields
 	/**
 	*
 	*/
-	public function __construct($auth, $db, $request, $template, $user)
+	public function __construct($auth, $db, /** @todo: */ $phpbb_container, $request, $template, $user)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
+		$this->container = $phpbb_container;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
@@ -300,7 +301,8 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$cp_data['pf_' . $row['field_ident']] = $this->get_profile_field($row);
+			$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_profile_field($row);
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
 			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
@@ -362,7 +364,7 @@ class profilefields
 			return;
 		}
 
-		switch ($db->sql_layer)
+		switch ($this->db->sql_layer)
 		{
 			case 'oracle':
 			case 'firebird':
@@ -899,76 +901,5 @@ class profilefields
 		$this->db->sql_freeresult($result);
 
 		return $cp_data;
-	}
-
-	/**
-	* Get profile field value on submit
-	* @access private
-	*/
-	function get_profile_field($profile_row)
-	{
-		$var_name = 'pf_' . $profile_row['field_ident'];
-
-		switch ($profile_row['field_type'])
-		{
-			case FIELD_DATE:
-
-				if (!isset($_REQUEST[$var_name . '_day']))
-				{
-					if ($profile_row['field_default_value'] == 'now')
-					{
-						$now = getdate();
-						$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
-					}
-					list($day, $month, $year) = explode('-', $profile_row['field_default_value']);
-				}
-				else
-				{
-					$day = request_var($var_name . '_day', 0);
-					$month = request_var($var_name . '_month', 0);
-					$year = request_var($var_name . '_year', 0);
-				}
-
-				$var = sprintf('%2d-%2d-%4d', $day, $month, $year);
-			break;
-
-			case FIELD_BOOL:
-				// Checkbox
-				if ($profile_row['field_length'] == 2)
-				{
-					$var = (isset($_REQUEST[$var_name])) ? 1 : 0;
-				}
-				else
-				{
-					$var = request_var($var_name, (int) $profile_row['field_default_value']);
-				}
-			break;
-
-			case FIELD_STRING:
-			case FIELD_TEXT:
-				$var = utf8_normalize_nfc(request_var($var_name, (string) $profile_row['field_default_value'], true));
-			break;
-
-			case FIELD_INT:
-				if (isset($_REQUEST[$var_name]) && $this->request->variable($var_name, '') === '')
-				{
-					$var = NULL;
-				}
-				else
-				{
-					$var = request_var($var_name, (int) $profile_row['field_default_value']);
-				}
-			break;
-
-			case FIELD_DROPDOWN:
-				$var = request_var($var_name, (int) $profile_row['field_default_value']);
-			break;
-
-			default:
-				$var = request_var($var_name, $profile_row['field_default_value']);
-			break;
-		}
-
-		return $var;
 	}
 }

@@ -4,6 +4,7 @@ services:
         arguments:
             - @auth
             - @dbal.conn
+            - @service_container
             - @request
             - @template
             - @user
@@ -12,6 +13,7 @@ services:
         class: \phpbb\profilefields\type\type_bool
         arguments:
             - @profilefields
+            - @request
             - @user
         tags:
             - { name: profilefield.type }
@@ -20,6 +22,7 @@ services:
         class: \phpbb\profilefields\type\type_date
         arguments:
             - @profilefields
+            - @request
             - @user
         tags:
             - { name: profilefield.type }
@@ -28,6 +31,7 @@ services:
         class: \phpbb\profilefields\type\type_dropdown
         arguments:
             - @profilefields
+            - @request
             - @user
         tags:
             - { name: profilefield.type }
@@ -35,6 +39,7 @@ services:
     profilefields.type.int:
         class: \phpbb\profilefields\type\type_int
         arguments:
+            - @request
             - @user
         tags:
             - { name: profilefield.type }
@@ -42,6 +47,7 @@ services:
     profilefields.type.string:
         class: \phpbb\profilefields\type\type_string
         arguments:
+            - @request
             - @user
         tags:
             - { name: profilefield.type }
@@ -49,6 +55,7 @@ services:
     profilefields.type.text:
         class: \phpbb\profilefields\type\type_text
         arguments:
+            - @request
             - @user
         tags:
             - { name: profilefield.type }

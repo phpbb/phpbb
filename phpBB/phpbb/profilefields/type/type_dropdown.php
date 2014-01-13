@@ -14,9 +14,10 @@ class type_dropdown implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\user $user)
 	{
 		$this->profilefields = $profilefields;
+		$this->request = $request;
 		$this->user = $user;
 	}
 
@@ -63,5 +64,14 @@ class type_dropdown implements type_interface
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
 		);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_field($profile_row)
+	{
+		$var_name = 'pf_' . $profile_row['field_ident'];
+		return $this->request->variable($var_name, (int) $profile_row['field_default_value']);
 	}
 }

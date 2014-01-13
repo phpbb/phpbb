@@ -36,4 +36,12 @@ interface type_interface
 	* @return array with values like default field size and more
 	*/
 	public function get_default_values();
+
+	/**
+	* Get profile field value on submit
+	*
+	* @param array	$profile_row			Array with data for this field
+	* @return mixed		Submitted value of the profile field
+	*/
+	public function get_profile_field($profile_row);
 }

@@ -14,8 +14,9 @@ class type_int implements type_interface
 	/**
 	*
 	*/
-	public function __construct($user)
+	public function __construct(\phpbb\request\request $request, \phpbb\user $user)
 	{
+		$this->request = $request;
 		$this->user = $user;
 	}
 
@@ -47,5 +48,21 @@ class type_int implements type_interface
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
 		);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_field($profile_row)
+	{
+		$var_name = 'pf_' . $profile_row['field_ident'];
+		if ($this->request->is_set($var_name) && $this->request->variable($var_name, '') === '')
+		{
+			return null;
+		}
+		else
+		{
+			return $this->request->variable($var_name, (int) $profile_row['field_default_value']);
+		}
 	}
 }

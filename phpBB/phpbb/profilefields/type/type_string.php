@@ -14,8 +14,9 @@ class type_string extends type_string_common implements type_interface
 	/**
 	*
 	*/
-	public function __construct($user)
+	public function __construct(\phpbb\request\request $request, \phpbb\user $user)
 	{
+		$this->request = $request;
 		$this->user = $user;
 	}
 
@@ -47,5 +48,14 @@ class type_string extends type_string_common implements type_interface
 			'field_novalue'		=> '',
 			'field_default_value'	=> '',
 		);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_field($profile_row)
+	{
+		$var_name = 'pf_' . $profile_row['field_ident'];
+		return $this->request->variable($var_name, (string) $profile_row['field_default_value'], true);
 	}
 }

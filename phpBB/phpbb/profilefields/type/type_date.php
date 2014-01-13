@@ -14,9 +14,10 @@ class type_date implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\user $user)
 	{
 		$this->profilefields = $profilefields;
+		$this->request = $request;
 		$this->user = $user;
 	}
 
@@ -67,5 +68,31 @@ class type_date implements type_interface
 			'field_novalue'		=> ' 0- 0-   0',
 			'field_default_value'	=> ' 0- 0-   0',
 		);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_field($profile_row)
+	{
+		$var_name = 'pf_' . $profile_row['field_ident'];
+
+		if (!$this->request->is_set($var_name . '_day'))
+		{
+			if ($profile_row['field_default_value'] == 'now')
+			{
+				$now = getdate();
+				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+			}
+			list($day, $month, $year) = explode('-', $profile_row['field_default_value']);
+		}
+		else
+		{
+			$day = $this->request->variable($var_name . '_day', 0);
+			$month = $this->request->variable($var_name . '_month', 0);
+			$year = $this->request->variable($var_name . '_year', 0);
+		}
+
+		return sprintf('%2d-%2d-%4d', $day, $month, $year);
 	}
 }
