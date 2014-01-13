@@ -66,22 +66,20 @@ $lang = array_merge($lang, array(
 
 	'EXTENSION_NAME'			=> 'Extension Name',
 	'EXTENSION_ACTIONS'			=> 'Actions',
-	'EXTENSION_ACTIONS_EXPLAIN'	=> 'In order to completly remove an extension from your board, you need to perform the following 3 steps:</p>
-		<ol>
-			<li>Disable the extension</li>
-			<li>Delete the extension’s data</li>
-			<li>Delete the extension’s files from the filesystem</li>
-		</ol><br />
-		<p>In order to update an extension from your board, you need to perform the following 6 steps:</p>
-		<ol>
+	'EXTENSION_OPTIONS'			=> 'Options',
+	'EXTENSION_UPDATE_HEADLINE'	=> 'Updating an extension',
+	'EXTENSION_UPDATE_EXPLAIN'	=> '<ol>
 			<li>Disable the extension</li>
 			<li>Delete the extension’s files from the filesystem</li>
 			<li>Upload the new files</li>
-			<li>Disable the board (optional but recommended)</li>
-			<li>Enable the extension</li>
-			<li>Enable the board</li>
-		</ol><p>',
-	'EXTENSION_OPTIONS'			=> 'Options',
+			<li>Enable the extension, note that the board will be automatically disabled for this step</li>
+		</ol>',
+	'EXTENSION_REMOVE_HEADLINE'	=> 'Completly removing an extension from your board',
+	'EXTENSION_REMOVE_EXPLAIN'	=> '<ol>
+			<li>Disable the extension</li>
+			<li>Delete the extension’s data</li>
+			<li>Delete the extension’s files from the filesystem</li>
+		</ol>',
 
 	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
