@@ -14,9 +14,10 @@ class type_text extends type_string_common implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\user $user)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->request = $request;
+		$this->template = $template;
 		$this->user = $user;
 	}
 
@@ -65,5 +66,22 @@ class type_text extends type_string_common implements type_interface
 	public function validate_profile_field(&$field_value, $field_data)
 	{
 		return $this->validate_string_profile_field('text', $field_value, $field_data);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function generate_field($profile_row, $preview = false)
+	{
+		$field_length = explode('|', $profile_row['field_length']);
+		$profile_row['field_rows'] = $field_length[0];
+		$profile_row['field_cols'] = $field_length[1];
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['lang_default_value'];
+
+		$profile_row['field_value'] = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value, true) : ((!isset($this->user->profile_fields[$field_ident]) || $preview) ? $default_value : $this->user->profile_fields[$field_ident]);
+
+		$this->template->assign_block_vars('text', array_change_key_case($profile_row, CASE_UPPER));
 	}
 }

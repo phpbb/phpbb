@@ -14,9 +14,10 @@ class type_int implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\user $user)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->request = $request;
+		$this->template = $template;
 		$this->user = $user;
 	}
 
@@ -100,5 +101,39 @@ class type_int implements type_interface
 			return null;
 		}
 		return (int) $field_value;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function generate_field($profile_row, $preview = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['lang_default_value'];
+
+		if ($this->request->is_set($field_ident))
+		{
+			$value = ($this->request->variable($field_ident, '') === '') ? null : $this->request->variable($field_ident, $default_value);
+		}
+		else
+		{
+			if (!$preview && array_key_exists($field_ident, $this->user->profile_fields) && is_null($this->user->profile_fields[$field_ident]))
+			{
+				$value = null;
+			}
+			else if (!isset($this->user->profile_fields[$field_ident]) || $preview)
+			{
+				$value = $default_value;
+			}
+			else
+			{
+				$value = $this->user->profile_fields[$field_ident];
+			}
+		}
+
+		$profile_row['field_value'] = (is_null($value) || $value === '') ? '' : (int) $value;
+
+		$this->template->assign_block_vars('int', array_change_key_case($profile_row, CASE_UPPER));
 	}
 }

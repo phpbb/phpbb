@@ -14,10 +14,11 @@ class type_bool implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->profilefields = $profilefields;
 		$this->request = $request;
+		$this->template = $template;
 		$this->user = $user;
 	}
 
@@ -124,6 +125,47 @@ class type_bool implements type_interface
 		else
 		{
 			return $this->profilefields->options_lang[$field_id][$lang_id][(int) ($field_value) + 1];
+		}
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function generate_field($profile_row, $preview = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['lang_default_value'];
+
+		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
+		// checkbox - set the value to "true" if it has been set to 1
+		if ($profile_row['field_length'] == 2)
+		{
+			$value = ($this->request->is_set($field_ident) && $this->request->variable($field_ident, $default_value) == 1) ? true : ((!isset($this->user->profile_fields[$field_ident]) || $preview) ? $default_value : $this->user->profile_fields[$field_ident]);
+		}
+		else
+		{
+			$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) : ((!isset($this->user->profile_fields[$field_ident]) || $preview) ? $default_value : $this->user->profile_fields[$field_ident]);
+		}
+
+		$profile_row['field_value'] = (int) $value;
+		$this->template->assign_block_vars('bool', array_change_key_case($profile_row, CASE_UPPER));
+
+		if ($profile_row['field_length'] == 1)
+		{
+			if (!isset($this->profilefields->options_lang[$profile_row['field_id']][$profile_row['lang_id']]) || !sizeof($this->profilefields->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
+			{
+				$this->profilefields->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_BOOL, $preview);
+			}
+
+			foreach ($this->profilefields->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
+			{
+				$this->template->assign_block_vars('bool.options', array(
+					'OPTION_ID'	=> $option_id,
+					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
+					'VALUE'		=> $option_value)
+				);
+			}
 		}
 	}
 }

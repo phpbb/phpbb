@@ -62,4 +62,13 @@ interface type_interface
 	* @return mixed		Field value to display
 	*/
 	public function get_profile_value($field_value, $field_data);
+
+	/**
+	* Generate the input field for display
+	*
+	* @param array	$profile_row	Array with data for this field
+	* @param bool	$preview		Do we preview the form
+	* @return null
+	*/
+	public function generate_field($profile_row, $preview = false);
 }

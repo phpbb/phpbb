@@ -14,10 +14,11 @@ class type_date implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->profilefields = $profilefields;
 		$this->request = $request;
+		$this->template = $template;
 		$this->user = $user;
 	}
 
@@ -154,5 +155,59 @@ class type_date implements type_interface
 		}
 
 		return $field_value;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function generate_field($profile_row, $preview = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+
+		$now = getdate();
+
+		if (!$this->request->is_set($profile_row['field_ident'] . '_day'))
+		{
+			if ($profile_row['field_default_value'] == 'now')
+			{
+				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+			}
+			list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $this->user->profile_fields[$user_ident]));
+		}
+		else
+		{
+			if ($preview && $profile_row['field_default_value'] == 'now')
+			{
+				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+				list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $this->user->profile_fields[$user_ident]));
+			}
+			else
+			{
+				$day = $this->request->variable($profile_row['field_ident'] . '_day', 0);
+				$month = $this->request->variable($profile_row['field_ident'] . '_month', 0);
+				$year = $this->request->variable($profile_row['field_ident'] . '_year', 0);
+			}
+		}
+
+		$profile_row['s_day_options'] = '<option value="0"' . ((!$day) ? ' selected="selected"' : '') . '>--</option>';
+		for ($i = 1; $i < 32; $i++)
+		{
+			$profile_row['s_day_options'] .= '<option value="' . $i . '"' . (($i == $day) ? ' selected="selected"' : '') . ">$i</option>";
+		}
+
+		$profile_row['s_month_options'] = '<option value="0"' . ((!$month) ? ' selected="selected"' : '') . '>--</option>';
+		for ($i = 1; $i < 13; $i++)
+		{
+			$profile_row['s_month_options'] .= '<option value="' . $i . '"' . (($i == $month) ? ' selected="selected"' : '') . ">$i</option>";
+		}
+
+		$profile_row['s_year_options'] = '<option value="0"' . ((!$year) ? ' selected="selected"' : '') . '>--</option>';
+		for ($i = $now['year'] - 100; $i <= $now['year'] + 100; $i++)
+		{
+			$profile_row['s_year_options'] .= '<option value="' . $i . '"' . (($i == $year) ? ' selected="selected"' : '') . ">$i</option>";
+		}
+
+		$profile_row['field_value'] = 0;
+		$this->template->assign_block_vars('date', array_change_key_case($profile_row, CASE_UPPER));
 	}
 }

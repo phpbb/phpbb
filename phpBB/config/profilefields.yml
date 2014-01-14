@@ -14,6 +14,7 @@ services:
         arguments:
             - @profilefields
             - @request
+            - @template
             - @user
         tags:
             - { name: profilefield.type }
@@ -23,6 +24,7 @@ services:
         arguments:
             - @profilefields
             - @request
+            - @template
             - @user
         tags:
             - { name: profilefield.type }
@@ -32,6 +34,7 @@ services:
         arguments:
             - @profilefields
             - @request
+            - @template
             - @user
         tags:
             - { name: profilefield.type }
@@ -40,6 +43,7 @@ services:
         class: \phpbb\profilefields\type\type_int
         arguments:
             - @request
+            - @template
             - @user
         tags:
             - { name: profilefield.type }
@@ -48,6 +52,7 @@ services:
         class: \phpbb\profilefields\type\type_string
         arguments:
             - @request
+            - @template
             - @user
         tags:
             - { name: profilefield.type }
@@ -56,6 +61,7 @@ services:
         class: \phpbb\profilefields\type\type_text
         arguments:
             - @request
+            - @template
             - @user
         tags:
             - { name: profilefield.type }
