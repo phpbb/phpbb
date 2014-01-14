@@ -190,48 +190,8 @@ class profilefields
 
 			if (($cp_result = $profile_field->validate_profile_field($check_value, $row)) !== false)
 			{
-				// If not and only showing common error messages, use this one
-				$error = '';
-				switch ($cp_result)
-				{
-					case 'FIELD_INVALID_DATE':
-					case 'FIELD_INVALID_VALUE':
-					case 'FIELD_REQUIRED':
-						$error = $this->user->lang($cp_result, $row['lang_name']);
-					break;
-
-					case 'FIELD_TOO_SHORT':
-					case 'FIELD_TOO_SMALL':
-						$error = $this->user->lang($cp_result, (int) $row['field_minlen'], $row['lang_name']);
-					break;
-
-					case 'FIELD_TOO_LONG':
-					case 'FIELD_TOO_LARGE':
-						$error = $this->user->lang($cp_result, (int) $row['field_maxlen'], $row['lang_name']);
-					break;
-
-					case 'FIELD_INVALID_CHARS':
-						switch ($row['field_validation'])
-						{
-							case '[0-9]+':
-								$error = $this->user->lang($cp_result . '_NUMBERS_ONLY', $row['lang_name']);
-							break;
-
-							case '[\w]+':
-								$error = $this->user->lang($cp_result . '_ALPHA_ONLY', $row['lang_name']);
-							break;
-
-							case '[\w_\+\. \-\[\]]+':
-								$error = $this->user->lang($cp_result . '_SPACERS_ONLY', $row['lang_name']);
-							break;
-						}
-					break;
-				}
-
-				if ($error != '')
-				{
-					$cp_error[] = $error;
-				}
+				// If the result is not false, it's an error message
+				$cp_error[] = $cp_result;
 			}
 		}
 		$this->db->sql_freeresult($result);

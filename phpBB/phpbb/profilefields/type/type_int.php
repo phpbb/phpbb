@@ -80,11 +80,11 @@ class type_int implements type_interface
 
 		if ($field_value < $field_data['field_minlen'])
 		{
-			return 'FIELD_TOO_SMALL';
+			return $this->user->lang('FIELD_TOO_SMALL', (int) $row['field_minlen'], $row['lang_name']);
 		}
 		else if ($field_value > $field_data['field_maxlen'])
 		{
-			return 'FIELD_TOO_LARGE';
+			return $this->user->lang('FIELD_TOO_LARGE', (int) $row['field_maxlen'], $row['lang_name']);
 		}
 
 		return false;

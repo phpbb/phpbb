@@ -89,7 +89,7 @@ class type_bool implements type_interface
 
 		if (!$field_value && $field_data['field_required'])
 		{
-			return 'FIELD_REQUIRED';
+			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
 		}
 
 		return false;

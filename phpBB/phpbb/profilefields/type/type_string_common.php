@@ -44,16 +44,16 @@ abstract class type_string_common
 		}
 		else if (trim($field_value) === '' && $field_data['field_required'])
 		{
-			return 'FIELD_REQUIRED';
+			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
 		}
 
 		if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])
 		{
-			return 'FIELD_TOO_SHORT';
+			return $this->user->lang('FIELD_TOO_SHORT', (int) $row['field_minlen'], $row['lang_name']);
 		}
 		else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
 		{
-			return 'FIELD_TOO_LONG';
+			return $this->user->lang('FIELD_TOO_LONG', (int) $row['field_maxlen'], $row['lang_name']);
 		}
 
 		if (!empty($field_data['field_validation']) && $field_data['field_validation'] != '.*')
@@ -61,7 +61,17 @@ abstract class type_string_common
 			$field_validate = ($field_type != 'text') ? $field_value : bbcode_nl2br($field_value);
 			if (!preg_match('#^' . str_replace('\\\\', '\\', $field_data['field_validation']) . '$#i', $field_validate))
 			{
-				return 'FIELD_INVALID_CHARS';
+				switch ($row['field_validation'])
+				{
+					case '[0-9]+':
+						return $this->user->lang('FIELD_INVALID_CHARS_NUMBERS_ONLY', $row['lang_name']);
+
+					case '[\w]+':
+						return $this->user->lang('FIELD_INVALID_CHARS_ALPHA_ONLY', $row['lang_name']);
+
+					case '[\w_\+\. \-\[\]]+':
+						return $this->user->lang('FIELD_INVALID_CHARS_SPACERS_ONLY', $row['lang_name']);
+				}
 			}
 		}
 

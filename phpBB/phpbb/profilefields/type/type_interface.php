@@ -50,7 +50,7 @@ interface type_interface
 	*
 	* @param mixed	$field_value		Field value to validate
 	* @param array	$field_data			Array with requirements of the field
-	* @return mixed		String with key of the error language string, false otherwise
+	* @return mixed		String with the error message
 	*/
 	public function validate_profile_field(&$field_value, $field_data);
 

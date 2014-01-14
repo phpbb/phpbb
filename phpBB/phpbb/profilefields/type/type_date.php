@@ -114,17 +114,17 @@ class type_date implements type_interface
 
 		if ((!$day || !$month || !$year) && $field_data['field_required'])
 		{
-			return 'FIELD_REQUIRED';
+			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
 		}
 
 		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()) + 50)
 		{
-			return 'FIELD_INVALID_DATE';
+			return $this->user->lang('FIELD_INVALID_DATE', $field_data['lang_name']);
 		}
 
 		if (checkdate($month, $day, $year) === false)
 		{
-			return 'FIELD_INVALID_DATE';
+			return $this->user->lang('FIELD_INVALID_DATE', $field_data['lang_name']);
 		}
 
 		return false;

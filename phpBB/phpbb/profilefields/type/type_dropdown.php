@@ -90,12 +90,12 @@ class type_dropdown implements type_interface
 
 		if (!isset($this->profilefields->options_lang[$field_data['field_id']][$field_data['lang_id']][$field_value]))
 		{
-			return 'FIELD_INVALID_VALUE';
+			return $this->user->lang('FIELD_INVALID_VALUE', $field_data['lang_name']);
 		}
 
 		if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 		{
-			return 'FIELD_REQUIRED';
+			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
 		}
 
 		return false;
