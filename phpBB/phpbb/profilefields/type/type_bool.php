@@ -51,7 +51,7 @@ class type_bool implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_default_values()
+	public function get_default_option_values()
 	{
 		return array(
 			'field_length'		=> 1,
@@ -61,6 +61,14 @@ class type_bool implements type_interface
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
 		);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_default_field_value($field_data)
+	{
+		return $field_data['field_default_value'];
 	}
 
 	/**

@@ -408,18 +408,8 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if ($row['field_default_value'] == 'now' && $row['field_type'] == FIELD_DATE)
-			{
-				$now = getdate();
-				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
-			}
-			else if ($row['field_default_value'] === '' && $row['field_type'] == FIELD_INT)
-			{
-				// We cannot insert an empty string into an integer column.
-				$row['field_default_value'] = NULL;
-			}
-
-			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
+			$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_default_field_value($row);
 		}
 		$this->db->sql_freeresult($result);
 

@@ -59,7 +59,7 @@ class type_date implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_default_values()
+	public function get_default_option_values()
 	{
 		return array(
 			'field_length'		=> 10,
@@ -69,6 +69,20 @@ class type_date implements type_interface
 			'field_novalue'		=> ' 0- 0-   0',
 			'field_default_value'	=> ' 0- 0-   0',
 		);
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_default_field_value($field_data)
+	{
+		if ($field_data['field_default_value'] == 'now')
+		{
+			$now = getdate();
+			$field_data['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+		}
+
+		return $field_data['field_default_value'];
 	}
 
 	/**

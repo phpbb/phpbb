@@ -39,7 +39,7 @@ class type_text extends type_string_common implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_default_values()
+	public function get_default_option_values()
 	{
 		return array(
 			'field_length'		=> '5|80',

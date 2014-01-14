@@ -31,11 +31,19 @@ interface type_interface
 	public function get_options($default_lang_id, $field_data);
 
 	/**
-	* Get default values for this type
+	* Get default values for the options of this type
 	*
 	* @return array with values like default field size and more
 	*/
-	public function get_default_values();
+	public function get_default_option_values();
+
+	/**
+	* Get default value for this type
+	*
+	* @param array	$field_data			Array with data for this field
+	* @return mixed default value for new users when no value is given
+	*/
+	public function get_default_field_value($field_data);
 
 	/**
 	* Get profile field value on submit

@@ -29,6 +29,14 @@ abstract class type_string_common
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function get_default_field_value($field_data)
+	{
+		return $field_data['lang_default_value'];
+	}
+
+	/**
 	* Validate entered profile field data
 	*
 	* @param string	$field_type			Field type (string or text)

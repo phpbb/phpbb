@@ -372,7 +372,7 @@ class acp_profile
 					}
 
 					$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
-					$field_row = array_merge($profile_field->get_default_values(), array(
+					$field_row = array_merge($profile_field->get_default_option_values(), array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string(request_var('field_ident', '', true))),
 						'field_required'	=> 0,
 						'field_show_novalue'=> 0,
