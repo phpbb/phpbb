@@ -35,9 +35,8 @@ class profilefields
 	/**
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
 	* Called by ucp_profile and ucp_register
-	* @access public
 	*/
-	function generate_profile_fields($mode, $lang_id)
+	public function generate_profile_fields($mode, $lang_id)
 	{
 		$sql_where = '';
 		switch ($mode)
@@ -90,9 +89,8 @@ class profilefields
 
 	/**
 	* Build profile cache, used for display
-	* @access private
 	*/
-	function build_cache()
+	protected function build_cache()
 	{
 		$this->profile_cache = array();
 
@@ -117,7 +115,7 @@ class profilefields
 	/**
 	* Get language entries for options and store them here for later use
 	*/
-	function get_option_lang($field_id, $lang_id, $field_type, $preview)
+	public function get_option_lang($field_id, $lang_id, $field_type, $preview)
 	{
 		if ($preview)
 		{
@@ -148,9 +146,8 @@ class profilefields
 
 	/**
 	* Submit profile field for validation
-	* @access public
 	*/
-	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
+	public function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
 	{
 		$sql_where = '';
 		switch ($mode)
@@ -200,7 +197,7 @@ class profilefields
 	/**
 	* Update profile field data directly
 	*/
-	function update_profile_field_data($user_id, &$cp_data)
+	public function update_profile_field_data($user_id, &$cp_data)
 	{
 		if (!sizeof($cp_data))
 		{
@@ -259,9 +256,8 @@ class profilefields
 	/**
 	* Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
 	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
-	* @access public
 	*/
-	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
+	public function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
 	{
 		if ($mode == 'grab')
 		{
@@ -363,9 +359,8 @@ class profilefields
 	/**
 	* Return Templated value/field. Possible values for $mode are:
 	* change == user is able to set/enter profile values; preview == just show the value
-	* @access private
 	*/
-	function process_field_row($mode, $profile_row)
+	protected function process_field_row($mode, $profile_row)
 	{
 		$preview = ($mode == 'preview') ? true : false;
 
@@ -391,7 +386,7 @@ class profilefields
 	/**
 	* Build Array for user insertion into custom profile fields table
 	*/
-	function build_insert_sql_array($cp_data)
+	public function build_insert_sql_array($cp_data)
 	{
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
