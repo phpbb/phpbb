@@ -64,6 +64,6 @@ class type_text extends type_string_common implements type_interface
 	*/
 	public function validate_profile_field(&$field_value, $field_data)
 	{
-		return $this->validate_string_profile_field('text', &$field_value, $field_data);
+		return $this->validate_string_profile_field('text', $field_value, $field_data);
 	}
 }
