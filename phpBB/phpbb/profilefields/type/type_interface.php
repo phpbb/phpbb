@@ -79,4 +79,15 @@ interface type_interface
 	* @return null
 	*/
 	public function generate_field($profile_row, $preview = false);
+
+	/**
+	* Get the ident of the field
+	*
+	* Some types are multivalue, we can't give them a field_id
+	* as we would not know which to pick.
+	*
+	* @param array	$field_data		Array with data for this field
+	* @return string ident of the field
+	*/
+	public function get_field_ident($field_data);
 }

@@ -150,4 +150,12 @@ class type_int implements type_interface
 
 		$this->template->assign_block_vars('int', array_change_key_case($profile_row, CASE_UPPER));
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_field_ident($field_data)
+	{
+		return 'pf_' . $field_data['field_ident'];
+	}
 }

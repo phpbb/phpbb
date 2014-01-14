@@ -173,4 +173,12 @@ class type_dropdown implements type_interface
 			);
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_field_ident($field_data)
+	{
+		return 'pf_' . $field_data['field_ident'];
+	}
 }

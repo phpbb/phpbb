@@ -224,4 +224,12 @@ class type_date implements type_interface
 		$profile_row['field_value'] = 0;
 		$this->template->assign_block_vars('date', array_change_key_case($profile_row, CASE_UPPER));
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_field_ident($field_data)
+	{
+		return '';
+	}
 }

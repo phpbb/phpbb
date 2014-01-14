@@ -176,4 +176,12 @@ class type_bool implements type_interface
 			}
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_field_ident($field_data)
+	{
+		return ($field_data['field_length'] == '1') ? '' : 'pf_' . $field_data['field_ident'];
+	}
 }

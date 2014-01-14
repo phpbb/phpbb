@@ -101,4 +101,12 @@ abstract class type_string_common
 		$field_value = bbcode_nl2br($field_value);
 		return $field_value;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_field_ident($field_data)
+	{
+		return 'pf_' . $field_data['field_ident'];
+	}
 }
