@@ -129,4 +129,30 @@ class type_date implements type_interface
 
 		return false;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_value($field_value, $field_data)
+	{
+		$date = explode('-', $field_value);
+		$day = (isset($date[0])) ? (int) $date[0] : 0;
+		$month = (isset($date[1])) ? (int) $date[1] : 0;
+		$year = (isset($date[2])) ? (int) $date[2] : 0;
+
+		if (!$day && !$month && !$year && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+		else if ($day && $month && $year)
+		{
+			// Date should display as the same date for every user regardless of timezone
+			return $this->user->create_datetime()
+				->setDate($year, $month, $day)
+				->setTime(0, 0, 0)
+				->format($user->lang['DATE_FORMAT'], true);
+		}
+
+		return $field_value;
+	}
 }

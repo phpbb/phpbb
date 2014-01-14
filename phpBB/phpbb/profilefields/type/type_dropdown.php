@@ -100,4 +100,39 @@ class type_dropdown implements type_interface
 
 		return false;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_value($field_value, $field_data)
+	{
+		$field_id = $field_data['field_id'];
+		$lang_id = $field_data['lang_id'];
+		if (!isset($this->profilefields->options_lang[$field_id][$lang_id]))
+		{
+			$this->profilefields->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
+		}
+
+		if ($field_value == $field_data['field_novalue'] && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+
+		$field_value = (int) $field_value;
+
+		// User not having a value assigned
+		if (!isset($this->profilefields->options_lang[$field_id][$lang_id][$field_value]))
+		{
+			if ($field_data['field_show_novalue'])
+			{
+				$field_value = $field_data['field_novalue'];
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		return $this->profilefields->options_lang[$field_id][$lang_id][$field_value];
+	}
 }

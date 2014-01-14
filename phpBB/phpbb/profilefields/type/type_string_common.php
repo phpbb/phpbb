@@ -67,4 +67,20 @@ abstract class type_string_common
 
 		return false;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_value($field_value, $field_data)
+	{
+		if (!$field_value && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+
+		$field_value = make_clickable($field_value);
+		$field_value = censor_text($field_value);
+		$field_value = bbcode_nl2br($field_value);
+		return $field_value;
+	}
 }

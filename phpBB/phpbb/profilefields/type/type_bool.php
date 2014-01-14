@@ -94,4 +94,36 @@ class type_bool implements type_interface
 
 		return false;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_value($field_value, $field_data)
+	{
+		$field_id = $field_data['field_id'];
+		$lang_id = $field_data['lang_id'];
+
+		if (!isset($this->profilefields->options_lang[$field_id][$lang_id]))
+		{
+			$this->profilefields->get_option_lang($field_id, $lang_id, FIELD_BOOL, false);
+		}
+
+		if (!$field_value && $field_data['field_show_novalue'])
+		{
+			$field_value = $field_data['field_default_value'];
+		}
+
+		if ($field_data['field_length'] == 1)
+		{
+			return (isset($this->profilefields->options_lang[$field_id][$lang_id][(int) $field_value])) ? $this->options_lang[$field_id][$lang_id][(int) $field_value] : null;
+		}
+		else if (!$field_value)
+		{
+			return null;
+		}
+		else
+		{
+			return $this->profilefields->options_lang[$field_id][$lang_id][(int) ($field_value) + 1];
+		}
+	}
 }

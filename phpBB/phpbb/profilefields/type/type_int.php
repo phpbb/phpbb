@@ -89,4 +89,16 @@ class type_int implements type_interface
 
 		return false;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_value($field_value, $field_data)
+	{
+		if ($field_value === '' && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+		return (int) $field_value;
+	}
 }

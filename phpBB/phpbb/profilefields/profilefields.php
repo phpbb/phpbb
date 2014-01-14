@@ -365,7 +365,8 @@ class profilefields
 
 			foreach ($profile_row as $ident => $ident_ary)
 			{
-				$value = $this->get_profile_value($ident_ary);
+				$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+				$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
 
 				if ($value === NULL)
 				{
@@ -396,124 +397,6 @@ class profilefields
 		else
 		{
 			trigger_error('Wrong mode for custom profile', E_USER_ERROR);
-		}
-	}
-
-	/**
-	* Get Profile Value for display
-	*/
-	function get_profile_value($ident_ary)
-	{
-		$value = $ident_ary['value'];
-		$field_type = $ident_ary['data']['field_type'];
-
-		switch ($this->profile_types[$field_type])
-		{
-			case 'int':
-				if ($value === '' && !$ident_ary['data']['field_show_novalue'])
-				{
-					return NULL;
-				}
-				return (int) $value;
-			break;
-
-			case 'string':
-			case 'text':
-				if (!$value && !$ident_ary['data']['field_show_novalue'])
-				{
-					return NULL;
-				}
-
-				$value = make_clickable($value);
-				$value = censor_text($value);
-				$value = bbcode_nl2br($value);
-				return $value;
-			break;
-
-			// case 'datetime':
-			case 'date':
-				$date = explode('-', $value);
-				$day = (isset($date[0])) ? (int) $date[0] : 0;
-				$month = (isset($date[1])) ? (int) $date[1] : 0;
-				$year = (isset($date[2])) ? (int) $date[2] : 0;
-
-				if (!$day && !$month && !$year && !$ident_ary['data']['field_show_novalue'])
-				{
-					return NULL;
-				}
-				else if ($day && $month && $year)
-				{
-					// Date should display as the same date for every user regardless of timezone
-					return $this->user->create_datetime()
-						->setDate($year, $month, $day)
-						->setTime(0, 0, 0)
-						->format($user->lang['DATE_FORMAT'], true);
-				}
-
-				return $value;
-			break;
-
-			case 'dropdown':
-				$field_id = $ident_ary['data']['field_id'];
-				$lang_id = $ident_ary['data']['lang_id'];
-				if (!isset($this->options_lang[$field_id][$lang_id]))
-				{
-					$this->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
-				}
-
-				if ($value == $ident_ary['data']['field_novalue'] && !$ident_ary['data']['field_show_novalue'])
-				{
-					return NULL;
-				}
-
-				$value = (int) $value;
-
-				// User not having a value assigned
-				if (!isset($this->options_lang[$field_id][$lang_id][$value]))
-				{
-					if ($ident_ary['data']['field_show_novalue'])
-					{
-						$value = $ident_ary['data']['field_novalue'];
-					}
-					else
-					{
-						return NULL;
-					}
-				}
-
-				return $this->options_lang[$field_id][$lang_id][$value];
-			break;
-
-			case 'bool':
-				$field_id = $ident_ary['data']['field_id'];
-				$lang_id = $ident_ary['data']['lang_id'];
-				if (!isset($this->options_lang[$field_id][$lang_id]))
-				{
-					$this->get_option_lang($field_id, $lang_id, FIELD_BOOL, false);
-				}
-
-				if (!$value && $ident_ary['data']['field_show_novalue'])
-				{
-					$value = $ident_ary['data']['field_default_value'];
-				}
-
-				if ($ident_ary['data']['field_length'] == 1)
-				{
-					return (isset($this->options_lang[$field_id][$lang_id][(int) $value])) ? $this->options_lang[$field_id][$lang_id][(int) $value] : NULL;
-				}
-				else if (!$value)
-				{
-					return NULL;
-				}
-				else
-				{
-					return $this->options_lang[$field_id][$lang_id][(int) ($value) + 1];
-				}
-			break;
-
-			default:
-				trigger_error('Unknown profile type', E_USER_ERROR);
-			break;
 		}
 	}
 

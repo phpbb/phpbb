@@ -53,4 +53,13 @@ interface type_interface
 	* @return mixed		String with key of the error language string, false otherwise
 	*/
 	public function validate_profile_field(&$field_value, $field_data);
+
+	/**
+	* Get Profile Value for display
+	*
+	* @param mixed	$field_value		Field value as stored in the database
+	* @param array	$field_data			Array with requirements of the field
+	* @return mixed		Field value to display
+	*/
+	public function get_profile_value($field_value, $field_data);
 }
