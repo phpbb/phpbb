@@ -89,123 +89,6 @@ class profilefields
 	}
 
 	/**
-	* Validate entered profile field data
-	* @access public
-	*/
-	function validate_profile_field($field_type, &$field_value, $field_data)
-	{
-		switch ($field_type)
-		{
-			case FIELD_DATE:
-				$field_validate = explode('-', $field_value);
-
-				$day = (isset($field_validate[0])) ? (int) $field_validate[0] : 0;
-				$month = (isset($field_validate[1])) ? (int) $field_validate[1] : 0;
-				$year = (isset($field_validate[2])) ? (int) $field_validate[2] : 0;
-
-				if ((!$day || !$month || !$year) && !$field_data['field_required'])
-				{
-					return false;
-				}
-
-				if ((!$day || !$month || !$year) && $field_data['field_required'])
-				{
-					return 'FIELD_REQUIRED';
-				}
-
-				if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()) + 50)
-				{
-					return 'FIELD_INVALID_DATE';
-				}
-
-				if (checkdate($month, $day, $year) === false)
-				{
-					return 'FIELD_INVALID_DATE';
-				}
-			break;
-
-			case FIELD_BOOL:
-				$field_value = (bool) $field_value;
-
-				if (!$field_value && $field_data['field_required'])
-				{
-					return 'FIELD_REQUIRED';
-				}
-			break;
-
-			case FIELD_INT:
-				if (trim($field_value) === '' && !$field_data['field_required'])
-				{
-					return false;
-				}
-
-				$field_value = (int) $field_value;
-
-				if ($field_value < $field_data['field_minlen'])
-				{
-					return 'FIELD_TOO_SMALL';
-				}
-				else if ($field_value > $field_data['field_maxlen'])
-				{
-					return 'FIELD_TOO_LARGE';
-				}
-			break;
-
-			case FIELD_DROPDOWN:
-				$field_value = (int) $field_value;
-
-				// retrieve option lang data if necessary
-				if (!isset($this->options_lang[$field_data['field_id']]) || !isset($this->options_lang[$field_data['field_id']][$field_data['lang_id']]) || !sizeof($this->options_lang[$file_data['field_id']][$field_data['lang_id']]))
-				{
-					$this->get_option_lang($field_data['field_id'], $field_data['lang_id'], FIELD_DROPDOWN, false);
-				}
-
-				if (!isset($this->options_lang[$field_data['field_id']][$field_data['lang_id']][$field_value]))
-				{
-					return 'FIELD_INVALID_VALUE';
-				}
-
-				if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
-				{
-					return 'FIELD_REQUIRED';
-				}
-			break;
-
-			case FIELD_STRING:
-			case FIELD_TEXT:
-				if (trim($field_value) === '' && !$field_data['field_required'])
-				{
-					return false;
-				}
-				else if (trim($field_value) === '' && $field_data['field_required'])
-				{
-					return 'FIELD_REQUIRED';
-				}
-
-				if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])
-				{
-					return 'FIELD_TOO_SHORT';
-				}
-				else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
-				{
-					return 'FIELD_TOO_LONG';
-				}
-
-				if (!empty($field_data['field_validation']) && $field_data['field_validation'] != '.*')
-				{
-					$field_validate = ($field_type == FIELD_STRING) ? $field_value : bbcode_nl2br($field_value);
-					if (!preg_match('#^' . str_replace('\\\\', '\\', $field_data['field_validation']) . '$#i', $field_validate))
-					{
-						return 'FIELD_INVALID_CHARS';
-					}
-				}
-			break;
-		}
-
-		return false;
-	}
-
-	/**
 	* Build profile cache, used for display
 	* @access private
 	*/
@@ -305,7 +188,7 @@ class profilefields
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_profile_field($row);
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
-			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
+			if (($cp_result = $profile_field->validate_profile_field($check_value, $row)) !== false)
 			{
 				// If not and only showing common error messages, use this one
 				$error = '';

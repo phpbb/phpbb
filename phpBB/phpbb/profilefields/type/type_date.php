@@ -95,4 +95,38 @@ class type_date implements type_interface
 
 		return sprintf('%2d-%2d-%4d', $day, $month, $year);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_profile_field(&$field_value, $field_data)
+	{
+		$field_validate = explode('-', $field_value);
+
+		$day = (isset($field_validate[0])) ? (int) $field_validate[0] : 0;
+		$month = (isset($field_validate[1])) ? (int) $field_validate[1] : 0;
+		$year = (isset($field_validate[2])) ? (int) $field_validate[2] : 0;
+
+		if ((!$day || !$month || !$year) && !$field_data['field_required'])
+		{
+			return false;
+		}
+
+		if ((!$day || !$month || !$year) && $field_data['field_required'])
+		{
+			return 'FIELD_REQUIRED';
+		}
+
+		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()) + 50)
+		{
+			return 'FIELD_INVALID_DATE';
+		}
+
+		if (checkdate($month, $day, $year) === false)
+		{
+			return 'FIELD_INVALID_DATE';
+		}
+
+		return false;
+	}
 }

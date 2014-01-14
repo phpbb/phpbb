@@ -74,4 +74,30 @@ class type_dropdown implements type_interface
 		$var_name = 'pf_' . $profile_row['field_ident'];
 		return $this->request->variable($var_name, (int) $profile_row['field_default_value']);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_profile_field(&$field_value, $field_data)
+	{
+		$field_value = (int) $field_value;
+
+		// retrieve option lang data if necessary
+		if (!isset($this->profilefields->options_lang[$field_data['field_id']]) || !isset($this->profilefields->options_lang[$field_data['field_id']][$field_data['lang_id']]) || !sizeof($this->profilefields->options_lang[$file_data['field_id']][$field_data['lang_id']]))
+		{
+			$this->profilefields->get_option_lang($field_data['field_id'], $field_data['lang_id'], FIELD_DROPDOWN, false);
+		}
+
+		if (!isset($this->profilefields->options_lang[$field_data['field_id']][$field_data['lang_id']][$field_value]))
+		{
+			return 'FIELD_INVALID_VALUE';
+		}
+
+		if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
+		{
+			return 'FIELD_REQUIRED';
+		}
+
+		return false;
+	}
 }

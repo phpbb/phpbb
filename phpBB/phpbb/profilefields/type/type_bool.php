@@ -79,4 +79,19 @@ class type_bool implements type_interface
 			return $this->request->variable($var_name, (int) $profile_row['field_default_value']);
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_profile_field(&$field_value, $field_data)
+	{
+		$field_value = (bool) $field_value;
+
+		if (!$field_value && $field_data['field_required'])
+		{
+			return 'FIELD_REQUIRED';
+		}
+
+		return false;
+	}
 }

@@ -58,4 +58,12 @@ class type_text extends type_string_common implements type_interface
 		$var_name = 'pf_' . $profile_row['field_ident'];
 		return $this->request->variable($var_name, (string) $profile_row['field_default_value'], true);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_profile_field(&$field_value, $field_data)
+	{
+		return $this->validate_string_profile_field('text', &$field_value, $field_data);
+	}
 }

@@ -65,4 +65,28 @@ class type_int implements type_interface
 			return $this->request->variable($var_name, (int) $profile_row['field_default_value']);
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_profile_field(&$field_value, $field_data)
+	{
+		if (trim($field_value) === '' && !$field_data['field_required'])
+		{
+			return false;
+		}
+
+		$field_value = (int) $field_value;
+
+		if ($field_value < $field_data['field_minlen'])
+		{
+			return 'FIELD_TOO_SMALL';
+		}
+		else if ($field_value > $field_data['field_maxlen'])
+		{
+			return 'FIELD_TOO_LARGE';
+		}
+
+		return false;
+	}
 }

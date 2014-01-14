@@ -44,4 +44,13 @@ interface type_interface
 	* @return mixed		Submitted value of the profile field
 	*/
 	public function get_profile_field($profile_row);
+
+	/**
+	* Validate entered profile field data
+	*
+	* @param mixed	$field_value		Field value to validate
+	* @param array	$field_data			Array with requirements of the field
+	* @return mixed		String with key of the error language string, false otherwise
+	*/
+	public function validate_profile_field(&$field_value, $field_data);
 }
