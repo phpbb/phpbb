@@ -26,6 +26,7 @@ services:
         class: \phpbb\profilefields\type\type_bool
         arguments:
             - @profilefields.lang_helper
+            - @profilefields
             - @request
             - @template
             - @user
@@ -46,6 +47,7 @@ services:
         class: \phpbb\profilefields\type\type_dropdown
         arguments:
             - @profilefields.lang_helper
+            - @profilefields
             - @request
             - @template
             - @user

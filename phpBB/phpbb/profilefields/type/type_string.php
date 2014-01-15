@@ -78,7 +78,14 @@ class type_string extends type_string_common implements type_interface
 		$default_value = $profile_row['lang_default_value'];
 		$profile_row['field_value'] = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value, true) : ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $default_value : $this->user->profile_fields[$field_ident]);
 
-
 		$this->template->assign_block_vars('string', array_change_key_case($profile_row, CASE_UPPER));
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_database_column_type()
+	{
+		return 'VCHAR';
 	}
 }

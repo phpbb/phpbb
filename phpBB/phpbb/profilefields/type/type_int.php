@@ -158,4 +158,12 @@ class type_int implements type_interface
 	{
 		return 'pf_' . $field_data['field_ident'];
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_database_column_type()
+	{
+		return 'BINT';
+	}
 }

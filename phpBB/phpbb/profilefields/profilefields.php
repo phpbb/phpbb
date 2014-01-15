@@ -339,7 +339,7 @@ class profilefields
 	* Return Templated value/field. Possible values for $mode are:
 	* change == user is able to set/enter profile values; preview == just show the value
 	*/
-	protected function process_field_row($mode, $profile_row)
+	public function process_field_row($mode, $profile_row)
 	{
 		$preview_options = ($mode == 'preview') ? $this->vars['lang_options'] : false;
 

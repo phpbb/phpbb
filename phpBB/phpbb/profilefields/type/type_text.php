@@ -84,4 +84,12 @@ class type_text extends type_string_common implements type_interface
 
 		$this->template->assign_block_vars('text', array_change_key_case($profile_row, CASE_UPPER));
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_database_column_type()
+	{
+		return 'MTEXT';
+	}
 }

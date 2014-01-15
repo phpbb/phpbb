@@ -232,4 +232,12 @@ class type_date implements type_interface
 	{
 		return '';
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_database_column_type()
+	{
+		return 'VCHAR:10';
+	}
 }

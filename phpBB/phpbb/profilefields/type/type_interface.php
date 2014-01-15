@@ -90,4 +90,11 @@ interface type_interface
 	* @return string ident of the field
 	*/
 	public function get_field_ident($field_data);
+
+	/**
+	* Get the column type for the database
+	*
+	* @return string	Returns the database column type
+	*/
+	public function get_database_column_type();
 }

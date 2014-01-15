@@ -14,9 +14,10 @@ class type_bool implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->lang_helper = $lang_helper;
+		$this->profilefields = $profilefields;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
@@ -183,5 +184,13 @@ class type_bool implements type_interface
 	public function get_field_ident($field_data)
 	{
 		return ($field_data['field_length'] == '1') ? '' : 'pf_' . $field_data['field_ident'];
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_database_column_type()
+	{
+		return 'TINT:2';
 	}
 }
