@@ -4,11 +4,11 @@ services:
         arguments:
             - @auth
             - @dbal.conn
-            - @service_container
-            #- @profilefields.type_collection
             - @request
             - @template
             - @user
+        calls:
+            - [set_type_collection, [@profilefields.type_collection]]
 
     profilefields.lang_helper:
         class: \phpbb\profilefields\lang_helper

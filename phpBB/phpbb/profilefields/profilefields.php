@@ -21,14 +21,27 @@ class profilefields
 	/**
 	*
 	*/
-	public function __construct($auth, $db, /** @todo: */ $phpbb_container, $request, $template, $user)
+	public function __construct($auth, $db, $request, $template, $user)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
-		$this->container = $phpbb_container;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+	}
+
+	/**
+	* Setter for the type collection
+	*
+	* We need to set the type collection later,
+	* in order to avoid a circular dependency
+	*
+	* @param \phpbb\di\service_collection $type_collection
+	* @return null
+	*/
+	public function set_type_collection(\phpbb\di\service_collection $type_collection)
+	{
+		$this->type_collection = $type_collection;
 	}
 
 	/**
@@ -69,9 +82,10 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
+
 			// Return templated field
 			$tpl_snippet = $this->process_field_row('change', $row);
-			$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+			$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
 
 			$this->template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $row['lang_name'],
@@ -146,7 +160,7 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+			$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_profile_field($row);
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
@@ -286,7 +300,7 @@ class profilefields
 
 			foreach ($profile_row as $ident => $ident_ary)
 			{
-				$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+				$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
 				$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
 
 				if ($value === NULL)
@@ -341,7 +355,7 @@ class profilefields
 		}
 
 		// Assign template variables
-		$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$profile_row['field_type']]);
+		$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$profile_row['field_type']]];
 		$profile_field->generate_field($profile_row, $preview_options);
 
 		// Return templated data
@@ -368,7 +382,7 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$row['field_type']]);
+			$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_default_field_value($row);
 		}
 		$this->db->sql_freeresult($result);
