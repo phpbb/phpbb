@@ -79,16 +79,16 @@ class lang_helper
 	*/
 	public function is_set($field_id, $lang_id = null, $field_value = null)
 	{
-		$is_set = isset($this->lang_helper->options_lang[$field_id]);
+		$is_set = isset($this->options_lang[$field_id]);
 
 		if ($is_set && (!is_null($lang_id) || !is_null($field_value)))
 		{
-			$is_set = isset($this->lang_helper->options_lang[$field_id][$lang_id]);
+			$is_set = isset($this->options_lang[$field_id][$lang_id]);
 		}
 
 		if ($is_set && !is_null($field_value))
 		{
-			$is_set = isset($this->lang_helper->options_lang[$field_id][$lang_id][$field_value]);
+			$is_set = isset($this->options_lang[$field_id][$lang_id][$field_value]);
 		}
 
 		return $is_set;
@@ -106,9 +106,9 @@ class lang_helper
 	{
 		if (!is_null($field_value))
 		{
-			return $this->lang_helper->options_lang[$field_id][$lang_id];
+			return $this->options_lang[$field_id][$lang_id];
 		}
 
-		return $this->lang_helper->options_lang[$field_id][$lang_id][$field_value];
+		return $this->options_lang[$field_id][$lang_id][$field_value];
 	}
 }
