@@ -191,4 +191,22 @@ class type_dropdown implements type_interface
 	{
 		return 'UINT';
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_language_options($field_data)
+	{
+		$options = array(
+			'lang_name'		=> 'string',
+			'lang_options'	=> 'optionfield',
+		);
+
+		if ($field_data['lang_explain'])
+		{
+			$options['lang_explain'] = 'text';
+		}
+
+		return $options;
+	}
 }

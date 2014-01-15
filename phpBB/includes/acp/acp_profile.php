@@ -942,7 +942,7 @@ class acp_profile
 	*/
 	function build_language_options(&$cp, $field_type, $action = 'create')
 	{
-		global $user, $config, $db;
+		global $user, $config, $db, $phpbb_container;
 
 		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
 
@@ -959,31 +959,9 @@ class acp_profile
 		}
 		$db->sql_freeresult($result);
 
-		$options = array();
-		$options['lang_name'] = 'string';
-		if ($cp->vars['lang_explain'])
-		{
-			$options['lang_explain'] = 'text';
-		}
-
-		switch ($field_type)
-		{
-			case FIELD_BOOL:
-				$options['lang_options'] = 'two_options';
-			break;
-
-			case FIELD_DROPDOWN:
-				$options['lang_options'] = 'optionfield';
-			break;
-
-			case FIELD_TEXT:
-			case FIELD_STRING:
-				if (strlen($cp->vars['lang_default_value']))
-				{
-					$options['lang_default_value'] = ($field_type == FIELD_STRING) ? 'string' : 'text';
-				}
-			break;
-		}
+		$type_collection = $phpbb_container->get('profilefields.type_collection');
+		$profile_type = $type_collection['profilefields.type.' . $cp->profile_types[$field_type]];
+		$options = $profile_type->get_language_options($cp->vars);
 
 		$lang_options = array();
 

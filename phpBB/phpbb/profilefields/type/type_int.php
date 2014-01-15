@@ -166,4 +166,21 @@ class type_int implements type_interface
 	{
 		return 'BINT';
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_language_options($field_data)
+	{
+		$options = array(
+			'lang_name' => 'string',
+		);
+
+		if ($field_data['lang_explain'])
+		{
+			$options['lang_explain'] = 'text';
+		}
+
+		return $options;
+	}
 }

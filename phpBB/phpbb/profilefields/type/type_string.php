@@ -88,4 +88,26 @@ class type_string extends type_string_common implements type_interface
 	{
 		return 'VCHAR';
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_language_options($field_data)
+	{
+		$options = array(
+			'lang_name' => 'string',
+		);
+
+		if ($field_data['lang_explain'])
+		{
+			$options['lang_explain'] = 'text';
+		}
+
+		if (strlen($field_data['lang_default_value']))
+		{
+			$options['lang_default_value'] = 'string';
+		}
+
+		return $options;
+	}
 }

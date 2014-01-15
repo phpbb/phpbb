@@ -97,4 +97,12 @@ interface type_interface
 	* @return string	Returns the database column type
 	*/
 	public function get_database_column_type();
+
+	/**
+	* Get the options we need to display for the language input fields in the ACP
+	*
+	* @param array	$field_data		Array with data for this field
+	* @return array	Returns the language options we need to generate
+	*/
+	public function get_language_options($field_data);
 }

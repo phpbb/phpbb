@@ -193,4 +193,22 @@ class type_bool implements type_interface
 	{
 		return 'TINT:2';
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_language_options($field_data)
+	{
+		$options = array(
+			'lang_name'		=> 'string',
+			'lang_options'	=> 'two_options',
+		);
+
+		if ($field_data['lang_explain'])
+		{
+			$options['lang_explain'] = 'text';
+		}
+
+		return $options;
+	}
 }
