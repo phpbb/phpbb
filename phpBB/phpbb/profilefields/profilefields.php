@@ -17,7 +17,6 @@ class profilefields
 {
 	var $profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
 	var $profile_cache = array();
-	var $options_lang = array();
 
 	/**
 	*
@@ -108,38 +107,6 @@ class profilefields
 			$this->profile_cache[$row['field_ident']] = $row;
 		}
 		$this->db->sql_freeresult($result);
-	}
-
-	/**
-	* Get language entries for options and store them here for later use
-	*/
-	public function get_option_lang($field_id, $lang_id, $field_type, $preview)
-	{
-		if ($preview)
-		{
-			$lang_options = (!is_array($this->vars['lang_options'])) ? explode("\n", $this->vars['lang_options']) : $this->vars['lang_options'];
-
-			foreach ($lang_options as $num => $var)
-			{
-				$this->options_lang[$field_id][$lang_id][($num + 1)] = $var;
-			}
-		}
-		else
-		{
-			$sql = 'SELECT option_id, lang_value
-				FROM ' . PROFILE_FIELDS_LANG_TABLE . "
-					WHERE field_id = $field_id
-					AND lang_id = $lang_id
-					AND field_type = $field_type
-				ORDER BY option_id";
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
-			}
-			$this->db->sql_freeresult($result);
-		}
 	}
 
 	/**
@@ -360,7 +327,7 @@ class profilefields
 	*/
 	protected function process_field_row($mode, $profile_row)
 	{
-		$preview = ($mode == 'preview') ? true : false;
+		$preview_options = ($mode == 'preview') ? $this->vars['lang_options'] : false;
 
 		// set template filename
 		$this->template->set_filenames(array(
@@ -375,7 +342,7 @@ class profilefields
 
 		// Assign template variables
 		$profile_field = $this->container->get('profilefields.type.' . $this->profile_types[$profile_row['field_type']]);
-		$profile_field->generate_field($profile_row, $preview);
+		$profile_field->generate_field($profile_row, $preview_options);
 
 		// Return templated data
 		return $this->template->assign_display('cp_body');

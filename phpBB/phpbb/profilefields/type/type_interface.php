@@ -74,11 +74,11 @@ interface type_interface
 	/**
 	* Generate the input field for display
 	*
-	* @param array	$profile_row	Array with data for this field
-	* @param bool	$preview		Do we preview the form
+	* @param array	$profile_row		Array with data for this field
+	* @param mixed	$preview_options	When previewing we use different data
 	* @return null
 	*/
-	public function generate_field($profile_row, $preview = false);
+	public function generate_field($profile_row, $preview_options = false);
 
 	/**
 	* Get the ident of the field

@@ -35,7 +35,7 @@ class type_date implements type_interface
 			'field_default_value'	=> $field_data['field_default_value'],
 			'field_ident'			=> 'field_default_value',
 			'field_type'			=> FIELD_DATE,
-			'field_length'			=> $field_data['field_length']
+			'field_length'			=> $field_data['field_length'],
 		);
 
 		$always_now = request_var('always_now', -1);
@@ -174,7 +174,7 @@ class type_date implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function generate_field($profile_row, $preview = false)
+	public function generate_field($profile_row, $preview_options = false)
 	{
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 
@@ -186,14 +186,14 @@ class type_date implements type_interface
 			{
 				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
-			list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $this->user->profile_fields[$user_ident]));
+			list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$user_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$user_ident]));
 		}
 		else
 		{
-			if ($preview && $profile_row['field_default_value'] == 'now')
+			if ($preview_options !== false && $profile_row['field_default_value'] == 'now')
 			{
 				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
-				list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $this->user->profile_fields[$user_ident]));
+				list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$user_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$user_ident]));
 			}
 			else
 			{

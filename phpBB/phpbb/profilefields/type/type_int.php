@@ -30,7 +30,7 @@ class type_int implements type_interface
 			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" size="5" value="' . $field_data['field_length'] . '" />'),
 			1 => array('TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" size="5" value="' . $field_data['field_minlen'] . '" />'),
 			2 => array('TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" size="5" value="' . $field_data['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $field_data['field_default_value'] . '" />')
+			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'),
 		);
 
 		return $options;
@@ -120,7 +120,7 @@ class type_int implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function generate_field($profile_row, $preview = false)
+	public function generate_field($profile_row, $preview_options = false)
 	{
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$field_ident = $profile_row['field_ident'];
@@ -132,11 +132,11 @@ class type_int implements type_interface
 		}
 		else
 		{
-			if (!$preview && array_key_exists($field_ident, $this->user->profile_fields) && is_null($this->user->profile_fields[$field_ident]))
+			if ($preview_options === false && array_key_exists($field_ident, $this->user->profile_fields) && is_null($this->user->profile_fields[$field_ident]))
 			{
 				$value = null;
 			}
-			else if (!isset($this->user->profile_fields[$field_ident]) || $preview)
+			else if (!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false)
 			{
 				$value = $default_value;
 			}

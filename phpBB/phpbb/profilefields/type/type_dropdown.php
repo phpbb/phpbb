@@ -14,9 +14,9 @@ class type_dropdown implements type_interface
 	/**
 	*
 	*/
-	public function __construct(\phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
-		$this->profilefields = $profilefields;
+		$this->lang_helper = $lang_helper;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
@@ -36,7 +36,7 @@ class type_dropdown implements type_interface
 			'field_default_value'	=> $field_data['field_default_value'],
 			'field_ident'			=> 'field_default_value',
 			'field_type'			=> FIELD_DROPDOWN,
-			'lang_options'			=> $field_data['lang_options']
+			'lang_options'			=> $field_data['lang_options'],
 		);
 
 		$profile_row[1] = $profile_row[0];
@@ -46,7 +46,7 @@ class type_dropdown implements type_interface
 
 		$options = array(
 			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->profilefields->process_field_row('preview', $profile_row[0])),
-			1 => array('TITLE' => $this->user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $this->user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->profilefields->process_field_row('preview', $profile_row[1]))
+			1 => array('TITLE' => $this->user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $this->user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->profilefields->process_field_row('preview', $profile_row[1])),
 		);
 
 		return $options;
@@ -92,12 +92,12 @@ class type_dropdown implements type_interface
 		$field_value = (int) $field_value;
 
 		// retrieve option lang data if necessary
-		if (!isset($this->profilefields->options_lang[$field_data['field_id']]) || !isset($this->profilefields->options_lang[$field_data['field_id']][$field_data['lang_id']]) || !sizeof($this->profilefields->options_lang[$file_data['field_id']][$field_data['lang_id']]))
+		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], 1))
 		{
-			$this->profilefields->get_option_lang($field_data['field_id'], $field_data['lang_id'], FIELD_DROPDOWN, false);
+			$this->lang_helper->get_option_lang($field_data['field_id'], $field_data['lang_id'], FIELD_DROPDOWN, false);
 		}
 
-		if (!isset($this->profilefields->options_lang[$field_data['field_id']][$field_data['lang_id']][$field_value]))
+		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], $field_value))
 		{
 			return $this->user->lang('FIELD_INVALID_VALUE', $field_data['lang_name']);
 		}
@@ -117,9 +117,9 @@ class type_dropdown implements type_interface
 	{
 		$field_id = $field_data['field_id'];
 		$lang_id = $field_data['lang_id'];
-		if (!isset($this->profilefields->options_lang[$field_id][$lang_id]))
+		if (!$this->lang_helper->is_set($field_id, $lang_id))
 		{
-			$this->profilefields->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
+			$this->lang_helper->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
 		}
 
 		if ($field_value == $field_data['field_novalue'] && !$field_data['field_show_novalue'])
@@ -130,7 +130,7 @@ class type_dropdown implements type_interface
 		$field_value = (int) $field_value;
 
 		// User not having a value assigned
-		if (!isset($this->profilefields->options_lang[$field_id][$lang_id][$field_value]))
+		if (!$this->lang_helper->is_set($field_id, $lang_id, $field_value))
 		{
 			if ($field_data['field_show_novalue'])
 			{
@@ -142,29 +142,30 @@ class type_dropdown implements type_interface
 			}
 		}
 
-		return $this->profilefields->options_lang[$field_id][$lang_id][$field_value];
+		return $this->lang_helper->get($field_id, $lang_id, $field_value);
 	}
 
 	/**
 	* {@inheritDoc}
 	*/
-	public function generate_field($profile_row, $preview = false)
+	public function generate_field($profile_row, $preview_options = false)
 	{
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$field_ident = $profile_row['field_ident'];
 		$default_value = $profile_row['lang_default_value'];
 
-		$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) : ((!isset($this->user->profile_fields[$field_ident]) || $preview) ? $default_value : $this->user->profile_fields[$field_ident]);
+		$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) : ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $default_value : $this->user->profile_fields[$field_ident]);
 
-		if (!isset($this->profilefields->options_lang[$profile_row['field_id']]) || !isset($this->profilefields->options_lang[$profile_row['field_id']][$profile_row['lang_id']]) || !sizeof($this->profilefields->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
+		if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 		{
-			$this->profilefields->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_DROPDOWN, $preview);
+			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_DROPDOWN, $preview_options);
 		}
 
 		$profile_row['field_value'] = (int) $value;
 		$this->template->assign_block_vars('dropdown', array_change_key_case($profile_row, CASE_UPPER));
 
-		foreach ($this->profilefields->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
+		$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
+		foreach ($options as $option_id => $option_value)
 		{
 			$this->template->assign_block_vars('dropdown.options', array(
 				'OPTION_ID'	=> $option_id,

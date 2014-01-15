@@ -5,14 +5,27 @@ services:
             - @auth
             - @dbal.conn
             - @service_container
+            #- @profilefields.type_collection
             - @request
             - @template
             - @user
 
+    profilefields.lang_helper:
+        class: \phpbb\profilefields\lang_helper
+        arguments:
+            - @dbal.conn
+
+    profilefields.type_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: profilefield.type }
+
     profilefields.type.bool:
         class: \phpbb\profilefields\type\type_bool
         arguments:
-            - @profilefields
+            - @profilefields.lang_helper
             - @request
             - @template
             - @user
@@ -32,7 +45,7 @@ services:
     profilefields.type.dropdown:
         class: \phpbb\profilefields\type\type_dropdown
         arguments:
-            - @profilefields
+            - @profilefields.lang_helper
             - @request
             - @template
             - @user
