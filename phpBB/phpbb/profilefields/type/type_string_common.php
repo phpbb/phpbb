@@ -109,4 +109,17 @@ abstract class type_string_common
 	{
 		return 'pf_' . $field_data['field_ident'];
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_language_options_input($field_data)
+	{
+		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', array(0 => ''), true);
+		$field_data['l_lang_explain']			= $this->request->variable('l_lang_explain', array(0 => ''), true);
+		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', array(0 => ''), true);
+		$field_data['l_lang_options']			= $this->request->variable('l_lang_options', array(0 => ''), true);
+
+		return $field_data;
+	}
 }

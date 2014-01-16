@@ -102,7 +102,15 @@ interface type_interface
 	* Get the options we need to display for the language input fields in the ACP
 	*
 	* @param array	$field_data		Array with data for this field
-	* @return array	Returns the language options we need to generate
+	* @return array		Returns the language options we need to generate
 	*/
 	public function get_language_options($field_data);
+
+	/**
+	* Get the input for the supplied language options
+	*
+	* @param array	$field_data		Array with data for this field
+	* @return array		Returns the language options we need to generate
+	*/
+	public function get_language_options_input($field_data);
 }

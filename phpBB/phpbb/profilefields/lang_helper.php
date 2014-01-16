@@ -48,6 +48,14 @@ class lang_helper
 
 			foreach ($lang_options as $num => $var)
 			{
+				if (!isset($this->options_lang[$field_id]))
+				{
+					$this->options_lang[$field_id] = array();
+				}
+				if (!isset($this->options_lang[$field_id][$lang_id]))
+				{
+					$this->options_lang[$field_id][$lang_id] = array();
+				}
 				$this->options_lang[$field_id][$lang_id][($num + 1)] = $var;
 			}
 		}
@@ -104,7 +112,7 @@ class lang_helper
 	*/
 	public function get($field_id, $lang_id, $field_value = null)
 	{
-		if (!is_null($field_value))
+		if (is_null($field_value))
 		{
 			return $this->options_lang[$field_id][$lang_id];
 		}

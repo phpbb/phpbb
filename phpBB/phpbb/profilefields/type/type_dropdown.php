@@ -153,7 +153,7 @@ class type_dropdown implements type_interface
 	{
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$field_ident = $profile_row['field_ident'];
-		$default_value = $profile_row['lang_default_value'];
+		$default_value = $profile_row['field_default_value'];
 
 		$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) : ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $default_value : $this->user->profile_fields[$field_ident]);
 
@@ -208,5 +208,18 @@ class type_dropdown implements type_interface
 		}
 
 		return $options;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_language_options_input($field_data)
+	{
+		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', array(0 => ''), true);
+		$field_data['l_lang_explain']			= $this->request->variable('l_lang_explain', array(0 => ''), true);
+		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', array(0 => ''), true);
+		$field_data['l_lang_options']			= $this->request->variable('l_lang_options', array(0 => ''), true);
+
+		return $field_data;
 	}
 }

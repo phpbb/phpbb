@@ -840,7 +840,7 @@ class acp_profile
 
 						// Build options based on profile type
 						$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
-						$options = $profile_field->get_options($this->lang_defs, $cp->vars);
+						$options = $profile_field->get_options($this->lang_defs['iso'][$config['default_lang']], $cp->vars);
 
 						foreach ($options as $num => $option_ary)
 						{
@@ -1101,13 +1101,14 @@ class acp_profile
 			$db->sql_query($sql);
 		}
 
+		$type_collection = $phpbb_container->get('profilefields.type_collection');
+		$profile_type = $type_collection['profilefields.type.' . $cp->profile_types[$field_type]];
+
 		if ($action == 'create')
 		{
 			$field_ident = 'pf_' . $field_ident;
 
 			$db_tools = $phpbb_container->get('dbal.tools');
-			$type_collection = $phpbb_container->get('profilefields.type_collection');
-			$profile_type = $type_collection['profilefields.type.' . $cp->profile_types[$field_type]];
 
 			list($sql_type, $null) = $db_tools->get_column_type($profile_type->get_database_column_type());
 			$profile_sql[] = $this->add_field_ident($field_ident, $sql_type);
@@ -1164,23 +1165,7 @@ class acp_profile
 			}
 		}
 
-		// These are always arrays because the key is the language id...
-		$cp->vars['l_lang_name']			= utf8_normalize_nfc(request_var('l_lang_name', array(0 => ''), true));
-		$cp->vars['l_lang_explain']			= utf8_normalize_nfc(request_var('l_lang_explain', array(0 => ''), true));
-		$cp->vars['l_lang_default_value']	= utf8_normalize_nfc(request_var('l_lang_default_value', array(0 => ''), true));
-
-		if ($field_type != FIELD_BOOL)
-		{
-			$cp->vars['l_lang_options']			= utf8_normalize_nfc(request_var('l_lang_options', array(0 => ''), true));
-		}
-		else
-		{
-			/**
-			* @todo check if this line is correct...
-			$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => array('')), true);
-			*/
-			$cp->vars['l_lang_options']	= utf8_normalize_nfc(request_var('l_lang_options', array(0 => array('')), true));
-		}
+		$cp->vars = $profile_type->get_language_options_input($cp->vars);
 
 		if ($cp->vars['lang_options'])
 		{
