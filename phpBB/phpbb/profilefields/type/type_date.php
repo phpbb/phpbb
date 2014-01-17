@@ -271,4 +271,12 @@ class type_date implements type_interface
 
 		return $field_data;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function prepare_options_form(&$exclude_options, &$visibility_options)
+	{
+		return $this->request->variable('lang_options', '', true);
+	}
 }

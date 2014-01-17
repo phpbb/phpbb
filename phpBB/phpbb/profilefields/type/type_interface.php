@@ -113,4 +113,13 @@ interface type_interface
 	* @return array		Returns the language options we need to generate
 	*/
 	public function get_language_options_input($field_data);
+
+	/**
+	* Allows exclusion of options in single steps of the creation process
+	*
+	* @param array	$exclude_options		Array with options that should be excluded in the steps
+	* @param array	$visibility_options		Array with options responsible for the fields visibility
+	* @return mixed		Returns the provided language options
+	*/
+	public function prepare_options_form(&$exclude_options, &$visibility_options);
 }

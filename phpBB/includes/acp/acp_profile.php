@@ -341,6 +341,7 @@ class acp_profile
 						$this->edit_lang_id = $field_row['lang_id'];
 					}
 					$field_type = $field_row['field_type'];
+					$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
 
 					// Get language entries
 					$sql = 'SELECT *
@@ -397,23 +398,6 @@ class acp_profile
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
 
-				// Text-based fields require the lang_default_value to be excluded
-				if ($field_type == FIELD_STRING || $field_type == FIELD_TEXT)
-				{
-					$exclude[1][] = 'lang_default_value';
-				}
-
-				// option-specific fields require lang_options to be excluded
-				if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
-				{
-					$exclude[1][] = 'lang_options';
-				}
-
-				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string(request_var('field_ident', $field_row['field_ident'], true)) : request_var('field_ident', $field_row['field_ident']);
-				$cp->vars['lang_name']			= utf8_normalize_nfc(request_var('lang_name', $field_row['lang_name'], true));
-				$cp->vars['lang_explain']		= utf8_normalize_nfc(request_var('lang_explain', $field_row['lang_explain'], true));
-				$cp->vars['lang_default_value']	= utf8_normalize_nfc(request_var('lang_default_value', $field_row['lang_default_value'], true));
-
 				// Visibility Options...
 				$visibility_ary = array(
 					'field_required',
@@ -425,22 +409,19 @@ class acp_profile
 					'field_hide',
 				);
 
+				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
+
+				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string(request_var('field_ident', $field_row['field_ident'], true)) : request_var('field_ident', $field_row['field_ident']);
+				$cp->vars['lang_name']			= utf8_normalize_nfc(request_var('lang_name', $field_row['lang_name'], true));
+				$cp->vars['lang_explain']		= utf8_normalize_nfc(request_var('lang_explain', $field_row['lang_explain'], true));
+				$cp->vars['lang_default_value']	= utf8_normalize_nfc(request_var('lang_default_value', $field_row['lang_default_value'], true));
+
 				foreach ($visibility_ary as $val)
 				{
 					$cp->vars[$val] = ($submit || $save) ? request_var($val, 0) : $field_row[$val];
 				}
 
 				$cp->vars['field_no_view'] = request_var('field_no_view', (int) $field_row['field_no_view']);
-
-				// A boolean field expects an array as the lang options
-				if ($field_type == FIELD_BOOL)
-				{
-					$options = utf8_normalize_nfc(request_var('lang_options', array(''), true));
-				}
-				else
-				{
-					$options = utf8_normalize_nfc(request_var('lang_options', '', true));
-				}
 
 				// If the user has submitted a form with options (i.e. dropdown field)
 				if ($options)

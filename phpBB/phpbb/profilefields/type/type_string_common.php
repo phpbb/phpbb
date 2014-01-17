@@ -122,4 +122,14 @@ abstract class type_string_common
 
 		return $field_data;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function prepare_options_form(&$exclude_options, &$visibility_options)
+	{
+		$exclude_options[1][] = 'lang_default_value';
+
+		return $this->request->variable('lang_options', '', true);
+	}
 }
