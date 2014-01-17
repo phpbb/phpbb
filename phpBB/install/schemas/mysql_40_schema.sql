@@ -645,7 +645,7 @@ CREATE TABLE phpbb_privmsgs_to (
 CREATE TABLE phpbb_profile_fields (
 	field_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	field_name blob NOT NULL,
-	field_type tinyint(4) DEFAULT '0' NOT NULL,
+	field_type varbinary(100) DEFAULT '' NOT NULL,
 	field_ident varbinary(20) DEFAULT '' NOT NULL,
 	field_length varbinary(20) DEFAULT '' NOT NULL,
 	field_minlen varbinary(255) DEFAULT '' NOT NULL,
@@ -681,7 +681,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	lang_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	field_type tinyint(4) DEFAULT '0' NOT NULL,
+	field_type varbinary(100) DEFAULT '' NOT NULL,
 	lang_value blob NOT NULL,
 	PRIMARY KEY (field_id, lang_id, option_id)
 );
