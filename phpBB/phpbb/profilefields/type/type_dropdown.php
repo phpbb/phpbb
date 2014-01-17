@@ -26,6 +26,14 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return 'dropdown';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_options($default_lang_id, $field_data)
 	{
 		$profile_row[0] = array(
@@ -36,7 +44,7 @@ class type_dropdown extends type_base
 			'lang_id'				=> $default_lang_id,
 			'field_default_value'	=> $field_data['field_default_value'],
 			'field_ident'			=> 'field_default_value',
-			'field_type'			=> FIELD_DROPDOWN,
+			'field_type'			=> $this->get_service_name(),
 			'lang_options'			=> $field_data['lang_options'],
 		);
 
@@ -95,7 +103,7 @@ class type_dropdown extends type_base
 		// retrieve option lang data if necessary
 		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], 1))
 		{
-			$this->lang_helper->get_option_lang($field_data['field_id'], $field_data['lang_id'], FIELD_DROPDOWN, false);
+			$this->lang_helper->get_option_lang($field_data['field_id'], $field_data['lang_id'], $this->get_service_name(), false);
 		}
 
 		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], $field_value))
@@ -120,7 +128,7 @@ class type_dropdown extends type_base
 		$lang_id = $field_data['lang_id'];
 		if (!$this->lang_helper->is_set($field_id, $lang_id))
 		{
-			$this->lang_helper->get_option_lang($field_id, $lang_id, FIELD_DROPDOWN, false);
+			$this->lang_helper->get_option_lang($field_id, $lang_id, $this->get_service_name(), false);
 		}
 
 		if ($field_value == $field_data['field_novalue'] && !$field_data['field_show_novalue'])
@@ -159,7 +167,7 @@ class type_dropdown extends type_base
 
 		if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 		{
-			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_DROPDOWN, $preview_options);
+			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
 		}
 
 		$profile_row['field_value'] = (int) $value;

@@ -24,6 +24,14 @@ class type_text extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return 'text';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_options($default_lang_id, $field_data)
 	{
 		$options = array(

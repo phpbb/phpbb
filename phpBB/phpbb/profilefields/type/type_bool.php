@@ -26,6 +26,14 @@ class type_bool extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return 'bool';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_options($default_lang_id, $field_data)
 	{
 		$profile_row = array(
@@ -36,7 +44,7 @@ class type_bool extends type_base
 			'lang_id'				=> $default_lang_id,
 			'field_default_value'	=> $field_data['field_default_value'],
 			'field_ident'			=> 'field_default_value',
-			'field_type'			=> FIELD_BOOL,
+			'field_type'			=> $this->get_service_name(),
 			'field_length'			=> $field_data['field_length'],
 			'lang_options'			=> $field_data['lang_options']
 		);
@@ -163,7 +171,7 @@ class type_bool extends type_base
 		{
 			if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 			{
-				$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_BOOL, $preview_options);
+				$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
 			}
 
 			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);

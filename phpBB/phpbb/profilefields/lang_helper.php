@@ -65,7 +65,7 @@ class lang_helper
 				FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = $lang_id
-					AND field_type = $field_type
+					AND field_type = '" . $this->db->sql_escape($field_type) . "'
 				ORDER BY option_id";
 			$result = $this->db->sql_query($sql);
 

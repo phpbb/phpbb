@@ -24,6 +24,7 @@ class acp_profile
 
 	var $edit_lang_id;
 	var $lang_defs;
+	protected $type_collection;
 
 	function main($id, $mode)
 	{
@@ -50,6 +51,7 @@ class acp_profile
 		}
 
 		$cp = $phpbb_container->get('profilefields');
+		$this->type_collection = $phpbb_container->get('profilefields.type_collection');
 
 		// Build Language array
 		// Based on this, we decide which elements need to be edited later and which language items are missing
@@ -341,7 +343,7 @@ class acp_profile
 						$this->edit_lang_id = $field_row['lang_id'];
 					}
 					$field_type = $field_row['field_type'];
-					$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
+					$profile_field = $this->type_collection[$field_type];
 
 					// Get language entries
 					$sql = 'SELECT *
@@ -365,14 +367,14 @@ class acp_profile
 					// We are adding a new field, define basic params
 					$lang_options = $field_row = array();
 
-					$field_type = request_var('field_type', 0);
+					$field_type = request_var('field_type', '');
 
-					if (!$field_type)
+					if (!isset($this->type_collection[$field_type]))
 					{
 						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
+					$profile_field = $this->type_collection[$field_type];
 					$field_row = array_merge($profile_field->get_default_option_values(), array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string(request_var('field_ident', '', true))),
 						'field_required'	=> 0,
@@ -623,7 +625,7 @@ class acp_profile
 							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
 
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
-							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($cp->profile_types[$field_type])],
+							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($profile_field->get_name())],
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
 							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
@@ -707,9 +709,10 @@ class acp_profile
 				$s_one_need_edit = true;
 			}
 
+			$profile_field = $this->type_collection[$row['field_type']];
 			$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
-				'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($cp->profile_types[$row['field_type']])],
+				'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($profile_field->get_name())],
 
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
 				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
@@ -731,15 +734,15 @@ class acp_profile
 		}
 
 		$s_select_type = '';
-		foreach ($cp->profile_types as $key => $value)
+		foreach ($this->type_collection as $key => $profile_field)
 		{
-			$s_select_type .= '<option value="' . $key . '">' . $user->lang['FIELD_' . strtoupper($value)] . '</option>';
+			$s_select_type .= '<option value="' . $key . '">' . $user->lang['FIELD_' . strtoupper($profile_field->get_name())] . '</option>';
 		}
 
 		$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
-			'S_TYPE_OPTIONS'	=> $s_select_type)
-		);
+			'S_TYPE_OPTIONS'	=> $s_select_type,
+		));
 	}
 
 	/**
@@ -764,9 +767,8 @@ class acp_profile
 		}
 		$db->sql_freeresult($result);
 
-		$type_collection = $phpbb_container->get('profilefields.type_collection');
-		$profile_type = $type_collection['profilefields.type.' . $cp->profile_types[$field_type]];
-		$options = $profile_type->get_language_options($cp->vars);
+		$profile_field = $this->type_collection[$field_type];
+		$options = $profile_field->get_language_options($cp->vars);
 
 		$lang_options = array();
 
@@ -906,8 +908,7 @@ class acp_profile
 			$db->sql_query($sql);
 		}
 
-		$type_collection = $phpbb_container->get('profilefields.type_collection');
-		$profile_type = $type_collection['profilefields.type.' . $cp->profile_types[$field_type]];
+		$profile_field = $this->type_collection[$field_type];
 
 		if ($action == 'create')
 		{
@@ -915,7 +916,7 @@ class acp_profile
 
 			$db_tools = $phpbb_container->get('dbal.tools');
 
-			list($sql_type, $null) = $db_tools->get_column_type($profile_type->get_database_column_type());
+			list($sql_type, $null) = $db_tools->get_column_type($profile_field->get_database_column_type());
 			$profile_sql[] = $this->add_field_ident($field_ident, $sql_type);
 		}
 
@@ -990,7 +991,7 @@ class acp_profile
 			foreach ($cp->vars['lang_options'] as $option_id => $value)
 			{
 				$sql_ary = array(
-					'field_type'	=> (int) $field_type,
+					'field_type'	=> $field_type,
 					'lang_value'	=> $value
 				);
 
@@ -1045,7 +1046,7 @@ class acp_profile
 							'field_id'		=> (int) $field_id,
 							'lang_id'		=> (int) $lang_id,
 							'option_id'		=> (int) $option_id,
-							'field_type'	=> (int) $field_type,
+							'field_type'	=> $field_type,
 							'lang_value'	=> $value
 						);
 					}

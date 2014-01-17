@@ -24,6 +24,14 @@ class type_int extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return 'int';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_options($default_lang_id, $field_data)
 	{
 		$options = array(

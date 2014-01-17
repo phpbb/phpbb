@@ -24,6 +24,14 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_service_name()
+	{
+		return 'profilefields.type.' . $this->get_name();
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return 'pf_' . $field_data['field_ident'];

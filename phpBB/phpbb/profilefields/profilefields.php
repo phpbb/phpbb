@@ -82,10 +82,9 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-
 			// Return templated field
 			$tpl_snippet = $this->process_field_row('change', $row);
-			$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
+			$profile_field = $this->type_collection[$row['field_type']];
 
 			$this->template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $row['lang_name'],
@@ -160,7 +159,7 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
+			$profile_field = $this->type_collection[$row['field_type']];
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_profile_field($row);
 			$check_value = $cp_data['pf_' . $row['field_ident']];
 
@@ -300,7 +299,7 @@ class profilefields
 
 			foreach ($profile_row as $ident => $ident_ary)
 			{
-				$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
+				$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
 				$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
 
 				if ($value === NULL)
@@ -349,13 +348,13 @@ class profilefields
 		));
 
 		// empty previously filled blockvars
-		foreach ($this->profile_types as $field_case => $field_type)
+		foreach ($this->type_collection as $field_key => $field_type)
 		{
-			$this->template->destroy_block_vars($field_type);
+			$this->template->destroy_block_vars($field_type->get_name());
 		}
 
 		// Assign template variables
-		$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$profile_row['field_type']]];
+		$profile_field = $this->type_collection[$profile_row['field_type']];
 		$profile_field->generate_field($profile_row, $preview_options);
 
 		// Return templated data
@@ -382,7 +381,7 @@ class profilefields
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$profile_field = $this->type_collection['profilefields.type.' . $this->profile_types[$row['field_type']]];
+			$profile_field = $this->type_collection[$row['field_type']];
 			$cp_data['pf_' . $row['field_ident']] = $profile_field->get_default_field_value($row);
 		}
 		$this->db->sql_freeresult($result);

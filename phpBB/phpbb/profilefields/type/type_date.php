@@ -25,6 +25,14 @@ class type_date extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return 'date';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_options($default_lang_id, $field_data)
 	{
 		$profile_row = array(
@@ -34,7 +42,7 @@ class type_date extends type_base
 			'lang_id'				=> $default_lang_id,
 			'field_default_value'	=> $field_data['field_default_value'],
 			'field_ident'			=> 'field_default_value',
-			'field_type'			=> FIELD_DATE,
+			'field_type'			=> $this->get_service_name(),
 			'field_length'			=> $field_data['field_length'],
 		);
 
