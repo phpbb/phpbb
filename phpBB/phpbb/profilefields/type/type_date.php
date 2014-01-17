@@ -314,7 +314,7 @@ class type_date extends type_base
 			{
 				return 'now';
 			}
-			else if ($this->request->is_set'field_default_value_day'))
+			else if ($this->request->is_set('field_default_value_day'))
 			{
 				$field_data['field_default_value_day'] = $this->request->variable('field_default_value_day', 0);
 				$field_data['field_default_value_month'] = $this->request->variable('field_default_value_month', 0);

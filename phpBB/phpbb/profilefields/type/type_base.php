@@ -95,4 +95,12 @@ abstract class type_base implements type_interface
 			return $this->request->variable($key, '', true);
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function display_options(&$template_vars, &$field_data)
+	{
+		return;
+	}
 }

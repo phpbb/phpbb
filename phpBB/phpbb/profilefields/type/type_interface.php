@@ -11,16 +11,6 @@ namespace phpbb\profilefields\type;
 
 interface type_interface
 {
-	/*
-	public function validate(&$value, $validation);
-
-	public function prepare_for_storage($value);
-
-	public function prepare_for_display($value);
-
-	public function prepare_for_edit($value);
-	*/
-
 	/**
 	* Get dropdown options for second step in ACP
 	*
@@ -154,4 +144,13 @@ interface type_interface
 	* @return mixed		Final value of the option
 	*/
 	public function prepare_hidden_fields($step, $key, $action, &$field_data);
+
+	/**
+	* Allows assigning of additional template variables
+	*
+	* @param array	$template_vars	Template variables we are going to assign
+	* @param array	$field_data		Array with data for this field
+	* @return null
+	*/
+	public function display_options(&$template_vars, &$field_data);
 }

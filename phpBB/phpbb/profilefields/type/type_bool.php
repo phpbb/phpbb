@@ -326,4 +326,25 @@ class type_bool extends type_base
 			}
 		}
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function display_options(&$template_vars, &$field_data)
+	{
+		// Initialize these array elements if we are creating a new field
+		if (!sizeof($field_data['lang_options']))
+		{
+			// No options have been defined for a boolean field.
+			$field_data['lang_options'][0] = '';
+			$field_data['lang_options'][1] = '';
+		}
+
+		$template_vars = array_merge($template_vars, array(
+			'S_BOOL'					=> true,
+			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['BOOL_ENTRIES_EXPLAIN'],
+			'FIRST_LANG_OPTION'			=> $field_data['lang_options'][0],
+			'SECOND_LANG_OPTION'		=> $field_data['lang_options'][1],
+		));
+	}
 }

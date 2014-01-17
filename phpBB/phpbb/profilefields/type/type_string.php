@@ -110,4 +110,16 @@ class type_string extends type_string_common
 
 		return $options;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function display_options(&$template_vars, &$field_data)
+	{
+		$template_vars = array_merge($template_vars, array(
+			'S_STRING'					=> true,
+			'L_DEFAULT_VALUE_EXPLAIN'	=> $this->user->lang['STRING_DEFAULT_VALUE_EXPLAIN'],
+			'LANG_DEFAULT_VALUE'		=> $field_data['lang_default_value'],
+		));
+	}
 }

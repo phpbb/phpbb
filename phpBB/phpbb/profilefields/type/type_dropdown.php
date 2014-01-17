@@ -239,4 +239,23 @@ class type_dropdown extends type_base
 
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function display_options(&$template_vars, &$field_data)
+	{
+		// Initialize these array elements if we are creating a new field
+		if (!sizeof($field_data['lang_options']))
+		{
+			// No options have been defined for the dropdown menu
+			$field_data['lang_options'] = array();
+		}
+
+		$template_vars = array_merge($template_vars, array(
+			'S_DROPDOWN'				=> true,
+			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['DROPDOWN_ENTRIES_EXPLAIN'],
+			'LANG_OPTIONS'				=> implode("\n", $field_data['lang_options']),
+		));
+	}
 }

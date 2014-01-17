@@ -155,4 +155,16 @@ class type_text extends type_string_common
 
 		return parent::prepare_hidden_fields($step, $key, $action, $field_data);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function display_options(&$template_vars, &$field_data)
+	{
+		$template_vars = array_merge($template_vars, array(
+			'S_TEXT'					=> true,
+			'L_DEFAULT_VALUE_EXPLAIN'	=> $this->user->lang['TEXT_DEFAULT_VALUE_EXPLAIN'],
+			'LANG_DEFAULT_VALUE'		=> $field_data['lang_default_value'],
+		));
+	}
 }

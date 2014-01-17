@@ -611,9 +611,7 @@ class acp_profile
 				{
 					// Create basic options - only small differences between field types
 					case 1:
-
-						// Build common create options
-						$template->assign_vars(array(
+						$template_vars = array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
 							'S_FIELD_SHOW_NOVALUE'=> ($cp->vars['field_show_novalue']) ? true : false,
@@ -628,50 +626,15 @@ class acp_profile
 							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($cp->profile_types[$field_type])],
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
-							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'])
+							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
 						);
 
-						// String and Text needs to set default values here...
-						if ($field_type == FIELD_STRING || $field_type == FIELD_TEXT)
-						{
-							$template->assign_vars(array(
-								'S_TEXT'		=> ($field_type == FIELD_TEXT) ? true : false,
-								'S_STRING'		=> ($field_type == FIELD_STRING) ? true : false,
+						$field_data = $cp->vars;
+						$profile_field->display_options($template_vars, $field_data);
+						$cp->vars = $field_data;
 
-								'L_DEFAULT_VALUE_EXPLAIN'	=> $user->lang[strtoupper($cp->profile_types[$field_type]) . '_DEFAULT_VALUE_EXPLAIN'],
-								'LANG_DEFAULT_VALUE'		=> $cp->vars['lang_default_value'])
-							);
-						}
-
-						if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
-						{
-							// Initialize these array elements if we are creating a new field
-							if (!sizeof($cp->vars['lang_options']))
-							{
-								if ($field_type == FIELD_BOOL)
-								{
-									// No options have been defined for a boolean field.
-									$cp->vars['lang_options'][0] = '';
-									$cp->vars['lang_options'][1] = '';
-								}
-								else
-								{
-									// No options have been defined for the dropdown menu
-									$cp->vars['lang_options'] = array();
-								}
-							}
-
-							$template->assign_vars(array(
-								'S_BOOL'		=> ($field_type == FIELD_BOOL) ? true : false,
-								'S_DROPDOWN'	=> ($field_type == FIELD_DROPDOWN) ? true : false,
-
-								'L_LANG_OPTIONS_EXPLAIN'	=> $user->lang[strtoupper($cp->profile_types[$field_type]) . '_ENTRIES_EXPLAIN'],
-								'LANG_OPTIONS'				=> ($field_type == FIELD_DROPDOWN) ? implode("\n", $cp->vars['lang_options']) : '',
-								'FIRST_LANG_OPTION'			=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][0] : '',
-								'SECOND_LANG_OPTION'		=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][1] : '')
-							);
-						}
-
+						// Build common create options
+						$template->assign_vars($template_vars);
 					break;
 
 					case 2:
