@@ -9,7 +9,7 @@
 
 namespace phpbb\profilefields\type;
 
-class type_bool implements type_interface
+class type_bool extends type_base
 {
 	/**
 	*

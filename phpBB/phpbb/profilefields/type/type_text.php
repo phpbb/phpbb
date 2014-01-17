@@ -9,7 +9,7 @@
 
 namespace phpbb\profilefields\type;
 
-class type_text extends type_string_common implements type_interface
+class type_text extends type_string_common
 {
 	/**
 	*
