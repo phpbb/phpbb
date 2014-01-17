@@ -568,54 +568,16 @@ class acp_profile
 
 					$_new_key_ary = array();
 
+					$field_data = $cp->vars;
 					foreach ($key_ary as $key)
 					{
-						if ($field_type == FIELD_TEXT && $key == 'field_length' && isset($_REQUEST['rows']))
+						$var = $profile_field->prepare_hidden_fields($step, $key, $action, $field_data);
+						if (!is_null($var))
 						{
-							$cp->vars['rows'] = request_var('rows', 0);
-							$cp->vars['columns'] = request_var('columns', 0);
-							$_new_key_ary[$key] = $cp->vars['rows'] . '|' . $cp->vars['columns'];
-						}
-						else if ($field_type == FIELD_DATE && $key == 'field_default_value')
-						{
-							$always_now = request_var('always_now', 0);
-
-							if ($always_now)
-							{
-								$_new_key_ary[$key] = 'now';
-							}
-							else if (isset($_REQUEST['field_default_value_day']))
-							{
-								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
-								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
-								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$_new_key_ary[$key]  = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
-							}
-						}
-						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
-						{
-							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
-						}
-						else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
-						{
-							$_new_key_ary[$key] =  request_var($key, $cp->vars[$key]);
-						}
-						else
-						{
-							if (!isset($_REQUEST[$key]))
-							{
-								$var = false;
-							}
-							else if ($key == 'field_ident' && isset($cp->vars[$key]))
-							{
-								$_new_key_ary[$key]= $cp->vars[$key];
-							}
-							else
-							{
-								$_new_key_ary[$key] = ($field_type == FIELD_BOOL && $key == 'lang_options') ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
-							}
+							$_new_key_ary[$key] = $profile_field->prepare_hidden_fields($step, $key, $action, $field_data);
 						}
 					}
+					$cp->vars = $field_data;
 
 					$s_hidden_fields .= build_hidden_fields($_new_key_ary);
 				}

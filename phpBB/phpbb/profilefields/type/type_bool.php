@@ -296,4 +296,34 @@ class type_bool extends type_base
 
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function prepare_hidden_fields($step, $key, $action, &$field_data)
+	{
+		if ($key == 'l_lang_options' && $this->request->is_set('l_lang_options'))
+		{
+			return $this->request->variable($key, array(array('')), true);
+		}
+		else if ($key == 'field_default_value')
+		{
+			return $this->request->variable($key, $field_data[$key]);
+		}
+		else
+		{
+			if (!$this->request->is_set($key))
+			{
+				return false;
+			}
+			else if ($key == 'field_ident' && isset($field_data[$key]))
+			{
+				return $field_data[$key];
+			}
+			else
+			{
+				return ($key == 'lang_options') ? $this->request->variable($key, array(''), true) : $this->request->variable($key, '', true);
+			}
+		}
+	}
 }

@@ -140,4 +140,19 @@ class type_text extends type_string_common
 
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function prepare_hidden_fields($step, $key, $action, &$field_data)
+	{
+		if ($key == 'field_length' &&  $this->request->is_set('rows'))
+		{
+			$field_data['rows'] = $this->request->variable('rows', 0);
+			$field_data['columns'] = $this->request->variable('columns', 0);
+			return $field_data['rows'] . '|' . $field_data['columns'];
+		}
+
+		return parent::prepare_hidden_fields($step, $key, $action, $field_data);
+	}
 }

@@ -143,4 +143,15 @@ interface type_interface
 	* @return mixed		Final value of the option
 	*/
 	public function get_excluded_options($key, $action, $current_value, &$field_data, $step);
+
+	/**
+	* Allows manipulating the intended variables if needed
+	*
+	* @param string	$key			Name of the option
+	* @param int	$step			Step on which the option is hidden
+	* @param string	$action			Currently performed action (create|edit)
+	* @param array	$field_data		Array with data for this field
+	* @return mixed		Final value of the option
+	*/
+	public function prepare_hidden_fields($step, $key, $action, &$field_data);
 }

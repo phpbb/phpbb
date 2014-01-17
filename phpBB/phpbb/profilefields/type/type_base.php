@@ -75,4 +75,24 @@ abstract class type_base implements type_interface
 
 		return $current_value;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function prepare_hidden_fields($step, $key, $action, &$field_data)
+	{
+		if (!$this->request->is_set($key))
+		{
+			// Do not set this variable, we will use the default value
+			return null;
+		}
+		else if ($key == 'field_ident' && isset($field_data[$key]))
+		{
+			return $field_data[$key];
+		}
+		else
+		{
+			return $this->request->variable($key, '', true);
+		}
+	}
 }

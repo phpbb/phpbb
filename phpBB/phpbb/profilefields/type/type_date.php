@@ -300,4 +300,29 @@ class type_date extends type_base
 
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function prepare_hidden_fields($step, $key, $action, &$field_data)
+	{
+		if ($key == 'field_default_value')
+		{
+			$always_now = $this->request->variable('always_now', 0);
+
+			if ($always_now)
+			{
+				return 'now';
+			}
+			else if ($this->request->is_set'field_default_value_day'))
+			{
+				$field_data['field_default_value_day'] = $this->request->variable('field_default_value_day', 0);
+				$field_data['field_default_value_month'] = $this->request->variable('field_default_value_month', 0);
+				$field_data['field_default_value_year'] = $this->request->variable('field_default_value_year', 0);
+				return sprintf('%2d-%2d-%4d', $field_data['field_default_value_day'], $field_data['field_default_value_month'], $field_data['field_default_value_year']);
+			}
+		}
+
+		return parent::prepare_hidden_fields($step, $key, $action, $field_data);
+	}
 }
