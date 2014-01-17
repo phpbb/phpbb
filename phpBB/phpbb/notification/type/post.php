@@ -35,6 +35,13 @@ class post extends \phpbb\notification\type\base
 	protected $language_key = 'NOTIFICATION_POST';
 
 	/**
+	* Inherit notification read status from post.
+	*
+	* @var bool
+	*/
+	protected $inherit_read_status = true;
+
+	/**
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use it's default data
@@ -315,7 +322,7 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function pre_create_insert_array($post, $notify_users)
 	{
-		if (!sizeof($notify_users))
+		if (!sizeof($notify_users) || !$this->inherit_read_status)
 		{
 			return array();
 		}
@@ -360,7 +367,7 @@ class post extends \phpbb\notification\type\base
 
 		// Topics can be "read" before they are public (while awaiting approval).
 		// Make sure that if the user has read the topic, it's marked as read in the notification
-		if (isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->notification_time)
+		if ($this->inherit_read_status && isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->notification_time)
 		{
 			$this->notification_read = true;
 		}

@@ -35,6 +35,13 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	protected $language_key = 'NOTIFICATION_REPORT_POST';
 
 	/**
+	* Inherit notification read status from post.
+	*
+	* @var bool
+	*/
+	protected $inherit_read_status = false;
+
+	/**
 	* Permission to check for (in find_users_for_notification)
 	*
 	* @var string Permission name
