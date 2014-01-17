@@ -131,4 +131,16 @@ interface type_interface
 	* @return array		Array with error messages
 	*/
 	public function validate_options_on_submit($error, $field_data);
+
+	/**
+	* Allows manipulating the intended variables if needed
+	*
+	* @param string	$key			Name of the option
+	* @param string	$action			Currently performed action (create|edit)
+	* @param mixed	$current_value	Currently value of the option
+	* @param array	$field_data		Array with data for this field
+	* @param int	$step			Step on which the option is excluded
+	* @return mixed		Final value of the option
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step);
 }

@@ -450,93 +450,9 @@ class acp_profile
 				{
 					$var = utf8_normalize_nfc(request_var($key, $field_row[$key], true));
 
-					// Manipulate the intended variables a little bit if needed
-					if ($field_type == FIELD_DROPDOWN && $key == 'field_maxlen')
-					{
-						// Get the number of options if this key is 'field_maxlen'
-						$var = sizeof(explode("\n", utf8_normalize_nfc(request_var('lang_options', '', true))));
-					}
-					else if ($field_type == FIELD_TEXT && $key == 'field_length')
-					{
-						if (isset($_REQUEST['rows']))
-						{
-							$cp->vars['rows'] = request_var('rows', 0);
-							$cp->vars['columns'] = request_var('columns', 0);
-							$var = $cp->vars['rows'] . '|' . $cp->vars['columns'];
-						}
-						else
-						{
-							$row_col = explode('|', $var);
-							$cp->vars['rows'] = $row_col[0];
-							$cp->vars['columns'] = $row_col[1];
-						}
-					}
-					else if ($field_type == FIELD_DATE && $key == 'field_default_value')
-					{
-						$always_now = request_var('always_now', -1);
-
-						if ($always_now == 1 || ($always_now === -1 && $var == 'now'))
-						{
-							$now = getdate();
-
-							$cp->vars['field_default_value_day'] = $now['mday'];
-							$cp->vars['field_default_value_month'] = $now['mon'];
-							$cp->vars['field_default_value_year'] = $now['year'];
-							$var = 'now';
-							$request->overwrite('field_default_value', $var, \phpbb\request\request_interface::POST);
-						}
-						else
-						{
-							if (isset($_REQUEST['field_default_value_day']))
-							{
-								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
-								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
-								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$var = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
-								$request->overwrite('field_default_value', $var, \phpbb\request\request_interface::POST);
-							}
-							else
-							{
-								list($cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']) = explode('-', $var);
-							}
-						}
-					}
-					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
-					{
-						// 'field_length' == 1 defines radio buttons. Possible values are 1 or 2 only.
-						// 'field_length' == 2 defines checkbox. Possible values are 0 or 1 only.
-						// If we switch the type on step 2, we have to adjust field value.
-						// 1 is a common value for the checkbox and radio buttons.
-
-						// Adjust unchecked checkbox value.
-						// If we return or save settings from 2nd/3rd page
-						// and the checkbox is unchecked, set the value to 0.
-						if (isset($_REQUEST['step']) && !isset($_REQUEST[$key]))
-						{
-							$var = 0;
-						}
-
-						// If we switch to the checkbox type but former radio buttons value was 2,
-						// which is not the case for the checkbox, set it to 0 (unchecked).
-						if ($cp->vars['field_length'] == 2 && $var == 2)
-						{
-							$var = 0;
-						}
-						// If we switch to the radio buttons but the former checkbox value was 0,
-						// which is not the case for the radio buttons, set it to 0.
-						else if ($cp->vars['field_length'] == 1 && $var == 0)
-						{
-							$var = 2;
-						}
-					}
-					else if ($field_type == FIELD_INT && $key == 'field_default_value')
-					{
-						// Permit an empty string
-						if ($action == 'create' && request_var('field_default_value', '') === '')
-						{
-							$var = '';
-						}
-					}
+					$field_data = $cp->vars;
+					$var = $profile_field->get_excluded_options($key, $action, $var, $field_data, 2);
+					$cp->vars = $field_data;
 
 					$cp->vars[$key] = $var;
 				}
@@ -585,18 +501,10 @@ class acp_profile
 					{
 						$cp->vars[$key] = $$key;
 					}
-					else if ($key == 'l_lang_options' && $field_type == FIELD_BOOL)
-					{
-						$cp->vars[$key] = utf8_normalize_nfc(request_var($key, array(0 => array('')), true));
-					}
-					else if ($key == 'l_lang_options' && is_array($cp->vars[$key]))
-					{
-						foreach ($cp->vars[$key] as $lang_id => $options)
-						{
-							$cp->vars[$key][$lang_id] = explode("\n", $options);
-						}
 
-					}
+					$field_data = $cp->vars;
+					$var = $profile_field->get_excluded_options($key, $action, $var, $field_data, 3);
+					$cp->vars = $field_data;
 				}
 
 				// Check for general issues in every step
@@ -812,7 +720,6 @@ class acp_profile
 						);
 
 						// Build options based on profile type
-						$profile_field = $phpbb_container->get('profilefields.type.' . $cp->profile_types[$field_type]);
 						$options = $profile_field->get_options($this->lang_defs['iso'][$config['default_lang']], $cp->vars);
 
 						foreach ($options as $num => $option_ary)

@@ -57,4 +57,22 @@ abstract class type_base implements type_interface
 	{
 		return $error;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step)
+	{
+		if ($step == 3 && ($field_data[$key] || $action != 'edit') && $key == 'l_lang_options' && is_array($field_data[$key]))
+		{
+			foreach ($field_data[$key] as $lang_id => $options)
+			{
+				$field_data[$key][$lang_id] = explode("\n", $options);
+			}
+
+			return $current_value;
+		}
+
+		return $current_value;
+	}
 }

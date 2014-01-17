@@ -114,4 +114,30 @@ class type_text extends type_string_common
 
 		return $options;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step)
+	{
+		if ($step == 2 && $key == 'field_length')
+		{
+			if ($this->request->is_set('rows'))
+			{
+				$field_data['rows'] = $this->request->variable('rows', 0);
+				$field_data['columns'] = $this->request->variable('columns', 0);
+				$current_value = $field_data['rows'] . '|' . $field_data['columns'];
+			}
+			else
+			{
+				$row_col = explode('|', $current_value);
+				$field_data['rows'] = $row_col[0];
+				$field_data['columns'] = $row_col[1];
+			}
+
+			return $current_value;
+		}
+
+		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
+	}
 }

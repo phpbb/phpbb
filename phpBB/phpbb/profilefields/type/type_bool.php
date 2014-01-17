@@ -252,4 +252,48 @@ class type_bool extends type_base
 
 		return $error;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step)
+	{
+		if ($step == 2 && $key == 'field_default_value')
+		{
+			// 'field_length' == 1 defines radio buttons. Possible values are 1 or 2 only.
+			// 'field_length' == 2 defines checkbox. Possible values are 0 or 1 only.
+			// If we switch the type on step 2, we have to adjust field value.
+			// 1 is a common value for the checkbox and radio buttons.
+
+			// Adjust unchecked checkbox value.
+			// If we return or save settings from 2nd/3rd page
+			// and the checkbox is unchecked, set the value to 0.
+			if ($this->request->is_set('step') && !$this->request->is_set($key))
+			{
+				return 0;
+			}
+
+			// If we switch to the checkbox type but former radio buttons value was 2,
+			// which is not the case for the checkbox, set it to 0 (unchecked).
+			if ($field_data['field_length'] == 2 && $current_value == 2)
+			{
+				return 0;
+			}
+			// If we switch to the radio buttons but the former checkbox value was 0,
+			// which is not the case for the radio buttons, set it to 0.
+			else if ($field_data['field_length'] == 1 && $current_value == 0)
+			{
+				return 2;
+			}
+		}
+
+		if ($step == 3 && ($field_data[$key] || $action != 'edit') && $key == 'l_lang_options')
+		{
+			$field_data[$key] = $this->request->variable($key, array(0 => array('')), true);
+
+			return $current_value;
+		}
+
+		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
+	}
 }

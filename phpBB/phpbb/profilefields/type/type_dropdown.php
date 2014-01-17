@@ -224,4 +224,19 @@ class type_dropdown extends type_base
 
 		return $error;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step)
+	{
+		if ($step == 2 && $key == 'field_maxlen')
+		{
+			// Get the number of options if this key is 'field_maxlen'
+			return sizeof(explode("\n", $this->request->variable('lang_options', '', true)));
+		}
+
+
+		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
+	}
 }

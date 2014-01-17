@@ -258,4 +258,46 @@ class type_date extends type_base
 
 		return $options;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step)
+	{
+		if ($step == 2 && $key == 'field_default_value')
+		{
+			$always_now = $this->request->variable('always_now', -1);
+
+			if ($always_now == 1 || ($always_now === -1 && $current_value == 'now'))
+			{
+				$now = getdate();
+
+				$field_data['field_default_value_day'] = $now['mday'];
+				$field_data['field_default_value_month'] = $now['mon'];
+				$field_data['field_default_value_year'] = $now['year'];
+				$current_value = 'now';
+				$this->request->overwrite('field_default_value', $current_value, \phpbb\request\request_interface::POST);
+			}
+			else
+			{
+				if ($this->request->is_set('field_default_value_day'))
+				{
+					$field_data['field_default_value_day'] = $this->request->variable('field_default_value_day', 0);
+					$field_data['field_default_value_month'] = $this->request->variable('field_default_value_month', 0);
+					$field_data['field_default_value_year'] = $this->request->variable('field_default_value_year', 0);
+					$current_value = sprintf('%2d-%2d-%4d', $field_data['field_default_value_day'], $field_data['field_default_value_month'], $field_data['field_default_value_year']);
+					$this->request->overwrite('field_default_value', $current_value, \phpbb\request\request_interface::POST);
+				}
+				else
+				{
+					list($field_data['field_default_value_day'], $field_data['field_default_value_month'], $field_data['field_default_value_year']) = explode('-', $current_value);
+				}
+			}
+
+			return $current_value;
+		}
+
+
+		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
+	}
 }

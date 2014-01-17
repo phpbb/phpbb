@@ -183,4 +183,21 @@ class type_int extends type_base
 
 		return $options;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_excluded_options($key, $action, $current_value, &$field_data, $step)
+	{
+		if ($step == 2 && $key == 'field_default_value')
+		{
+			// Permit an empty string
+			if ($action == 'create' && $this->request->variable('field_default_value', '') === '')
+			{
+				return '';
+			}
+		}
+
+		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
+	}
 }
