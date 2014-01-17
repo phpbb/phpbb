@@ -50,10 +50,20 @@ class phpbb_profile_custom_test extends phpbb_database_test_case
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
+		$request = $this->getMock('\phpbb\request\request');
+		$template = $this->getMock('\phpbb\template\template');
+
 		$cp = new \phpbb\profilefields\type\type_dropdown(
 			new \phpbb\profilefields\lang_helper($db),
-			$this->getMock('\phpbb\request\request'),
-			$this->getMock('\phpbb\template\template'),
+			new \phpbb\profilefields\profilefields(
+				$this->getMock('\phpbb\auth\auth'),
+				$db,
+				$request,
+				$template,
+				$user
+			),
+			$request,
+			$template,
 			$user
 		);
 		$result = $cp->validate_profile_field($field_value, $field_data);
