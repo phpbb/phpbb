@@ -239,4 +239,17 @@ class type_bool extends type_base
 
 		return $this->request->variable('lang_options', array(''), true);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_options_on_submit($error, $field_data)
+	{
+		if (empty($field_data['lang_options'][0]) || empty($field_data['lang_options'][1]))
+		{
+			$error[] = $this->user->lang['NO_FIELD_ENTRIES'];
+		}
+
+		return $error;
+	}
 }

@@ -211,4 +211,17 @@ class type_dropdown extends type_base
 
 		return $this->request->variable('lang_options', '', true);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_options_on_submit($error, $field_data)
+	{
+		if (!sizeof($field_data['lang_options']))
+		{
+			$error[] = $this->user->lang['NO_FIELD_ENTRIES'];
+		}
+
+		return $error;
+	}
 }

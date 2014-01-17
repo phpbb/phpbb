@@ -122,4 +122,13 @@ interface type_interface
 	* @return mixed		Returns the provided language options
 	*/
 	public function prepare_options_form(&$exclude_options, &$visibility_options);
+
+	/**
+	* Allows exclusion of options in single steps of the creation process
+	*
+	* @param array	$error					Array with error messages
+	* @param array	$field_data		Array with data for this field
+	* @return array		Array with error messages
+	*/
+	public function validate_options_on_submit($error, $field_data);
 }

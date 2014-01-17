@@ -623,15 +623,7 @@ class acp_profile
 						$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
 					}
 
-					if ($field_type == FIELD_DROPDOWN && !sizeof($cp->vars['lang_options']))
-					{
-						$error[] = $user->lang['NO_FIELD_ENTRIES'];
-					}
-
-					if ($field_type == FIELD_BOOL && (empty($cp->vars['lang_options'][0]) || empty($cp->vars['lang_options'][1])))
-					{
-						$error[] = $user->lang['NO_FIELD_ENTRIES'];
-					}
+					$error = $profile_field->validate_options_on_submit($error, $cp->vars);
 
 					// Check for already existing field ident
 					if ($action != 'edit')

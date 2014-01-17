@@ -49,4 +49,12 @@ abstract class type_base implements type_interface
 	{
 		return $this->request->variable('lang_options', '', true);
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function validate_options_on_submit($error, $field_data)
+	{
+		return $error;
+	}
 }
