@@ -34,6 +34,7 @@ class config extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
+		if(isset($config)){}
 		require($this->config_file);
 
 		$container->setParameter('core.adm_relative_path', (isset($phpbb_adm_relative_path) ? $phpbb_adm_relative_path : 'adm/'));

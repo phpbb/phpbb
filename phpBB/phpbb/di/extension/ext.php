@@ -39,6 +39,7 @@ class ext extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
+		if(isset($config)){}
 		foreach ($this->paths as $path)
 		{
 			if (file_exists($path . '/config/services.yml'))
