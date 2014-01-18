@@ -178,56 +178,25 @@ class profilefields
 	/**
 	* Update profile field data directly
 	*/
-	public function update_profile_field_data($user_id, &$cp_data)
+	public function update_profile_field_data($user_id, $cp_data)
 	{
 		if (!sizeof($cp_data))
 		{
 			return;
 		}
 
-		switch ($this->db->sql_layer)
-		{
-			case 'oracle':
-			case 'firebird':
-			case 'postgres':
-				$right_delim = $left_delim = '"';
-			break;
-
-			case 'sqlite':
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'mssqlnative':
-				$right_delim = ']';
-				$left_delim = '[';
-			break;
-
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$right_delim = $left_delim = '`';
-			break;
-		}
-
-		// use new array for the UPDATE; changes in the key do not affect the original array
-		$cp_data_sql = array();
-		foreach ($cp_data as $key => $value)
-		{
-			// Firebird is case sensitive with delimiter
-			$cp_data_sql[$left_delim . (($this->db->sql_layer == 'firebird' || $this->db->sql_layer == 'oracle') ? strtoupper($key) : $key) . $right_delim] = $value;
-		}
-
 		$sql = 'UPDATE ' . $this->fields_data_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $cp_data_sql) . '
+			SET ' . $this->db->sql_build_array('UPDATE', $cp_data) . '
 			WHERE user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
 
 		if (!$this->db->sql_affectedrows())
 		{
-			$cp_data_sql['user_id'] = (int) $user_id;
+			$cp_data['user_id'] = (int) $user_id;
 
 			$this->db->sql_return_on_error(true);
 
-			$sql = 'INSERT INTO ' . $this->fields_data_table . ' ' . $this->db->sql_build_array('INSERT', $cp_data_sql);
+			$sql = 'INSERT INTO ' . $this->fields_data_table . ' ' . $this->db->sql_build_array('INSERT', $cp_data);
 			$this->db->sql_query($sql);
 
 			$this->db->sql_return_on_error(false);
