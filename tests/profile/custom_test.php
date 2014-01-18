@@ -35,7 +35,7 @@ class phpbb_profile_custom_test extends phpbb_database_test_case
 	*/
 	public function test_dropdown_validate($field_required, $field_value, $expected, $description)
 	{
-		global $db;
+		global $db, $table_prefix;
 		$db = $this->new_dbal();
 
 		$field_data = array(
@@ -54,13 +54,16 @@ class phpbb_profile_custom_test extends phpbb_database_test_case
 		$template = $this->getMock('\phpbb\template\template');
 
 		$cp = new \phpbb\profilefields\type\type_dropdown(
-			new \phpbb\profilefields\lang_helper($db),
+			new \phpbb\profilefields\lang_helper($db, $table_prefix . 'profile_fields_lang'),
 			new \phpbb\profilefields\profilefields(
 				$this->getMock('\phpbb\auth\auth'),
 				$db,
 				$request,
 				$template,
-				$user
+				$user,
+				$table_prefix . 'profile_fields',
+				$table_prefix . 'profile_lang',
+				$table_prefix . 'profile_fields_data'
 			),
 			$request,
 			$template,
