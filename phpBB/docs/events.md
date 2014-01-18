@@ -211,6 +211,7 @@ overall_header_navigation_append
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links after the navigation links in the header
 
@@ -218,6 +219,7 @@ overall_header_navigation_prepend
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
 
