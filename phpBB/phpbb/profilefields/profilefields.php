@@ -15,8 +15,7 @@ namespace phpbb\profilefields;
 */
 class profilefields
 {
-	var $profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
-	var $profile_cache = array();
+	protected $profile_cache = array();
 
 	/**
 	*
