@@ -625,7 +625,7 @@ class acp_profile
 							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
 
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
-							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($profile_field->get_name())],
+							'FIELD_TYPE'		=> $profile_field->get_name(),
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
 							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
@@ -712,7 +712,7 @@ class acp_profile
 			$profile_field = $this->type_collection[$row['field_type']];
 			$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
-				'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($profile_field->get_name())],
+				'FIELD_TYPE'		=> $profile_field->get_name(),
 
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
 				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
@@ -736,7 +736,7 @@ class acp_profile
 		$s_select_type = '';
 		foreach ($this->type_collection as $key => $profile_field)
 		{
-			$s_select_type .= '<option value="' . $key . '">' . $user->lang['FIELD_' . strtoupper($profile_field->get_name())] . '</option>';
+			$s_select_type .= '<option value="' . $key . '">' . $profile_field->get_name() . '</option>';
 		}
 
 		$template->assign_vars(array(

@@ -47,7 +47,7 @@ class type_string extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_name()
+	public function get_name_short()
 	{
 		return 'string';
 	}

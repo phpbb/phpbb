@@ -47,9 +47,17 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return $this->user->lang('FIELD_' . strtoupper($this->get_name_short()));
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_service_name()
 	{
-		return 'profilefields.type.' . $this->get_name();
+		return 'profilefields.type.' . $this->get_name_short();
 	}
 
 	/**

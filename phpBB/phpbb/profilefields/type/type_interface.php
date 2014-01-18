@@ -12,11 +12,18 @@ namespace phpbb\profilefields\type;
 interface type_interface
 {
 	/**
-	* Get the name of the type, used for error messages and template loops
+	* Get the translated name of the type
+	*
+	* @return string Translated name of the field type
+	*/
+	public function get_name();
+
+	/**
+	* Get the short name of the type, used for error messages and template loops
 	*
 	* @return string lowercase version of the fields type
 	*/
-	public function get_name();
+	public function get_name_short();
 
 	/**
 	* Get the name of service representing the type

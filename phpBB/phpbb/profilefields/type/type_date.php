@@ -55,7 +55,7 @@ class type_date extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_name()
+	public function get_name_short()
 	{
 		return 'date';
 	}

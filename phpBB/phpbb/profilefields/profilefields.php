@@ -322,7 +322,7 @@ class profilefields
 		// empty previously filled blockvars
 		foreach ($this->type_collection as $field_key => $field_type)
 		{
-			$this->template->destroy_block_vars($field_type->get_name());
+			$this->template->destroy_block_vars($field_type->get_name_short());
 		}
 
 		// Assign template variables
