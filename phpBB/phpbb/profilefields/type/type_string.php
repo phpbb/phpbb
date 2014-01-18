@@ -12,7 +12,30 @@ namespace phpbb\profilefields\type;
 class type_string extends type_string_common
 {
 	/**
+	* Request object
+	* @var \phpbb\request\request
+	*/
+	protected $request;
+
+	/**
+	* Template object
+	* @var \phpbb\template\template
+	*/
+	protected $template;
+
+	/**
+	* User object
+	* @var \phpbb\user
+	*/
+	protected $user;
+
+	/**
+	* Construct
 	*
+	* @param	\phpbb\request\request		$request	Request object
+	* @param	\phpbb\template\template	$template	Template object
+	* @param	\phpbb\user					$user		User object
+	* @param	string		$language_table		Table where the language strings are stored
 	*/
 	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{

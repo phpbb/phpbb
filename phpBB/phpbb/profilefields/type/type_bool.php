@@ -12,7 +12,44 @@ namespace phpbb\profilefields\type;
 class type_bool extends type_base
 {
 	/**
+	* Profile fields language helper
+	* @var \phpbb\profilefields\lang_helper
+	*/
+	protected $lang_helper;
+
+	/**
+	* Profile fields object
+	* @var \phpbb\profilefields\profilefields
+	*/
+	protected $profilefields;
+
+	/**
+	* Request object
+	* @var \phpbb\request\request
+	*/
+	protected $request;
+
+	/**
+	* Template object
+	* @var \phpbb\template\template
+	*/
+	protected $template;
+
+	/**
+	* User object
+	* @var \phpbb\user
+	*/
+	protected $user;
+
+	/**
+	* Construct
 	*
+	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
+	* @param	\phpbb\profilefields\profilefields		$profilefields	Profile fields object
+	* @param	\phpbb\request\request		$request	Request object
+	* @param	\phpbb\template\template	$template	Template object
+	* @param	\phpbb\user					$user		User object
+	* @param	string		$language_table		Table where the language strings are stored
 	*/
 	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\profilefields\profilefields $profilefields, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
