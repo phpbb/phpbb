@@ -179,8 +179,8 @@ class type_dropdown extends type_base
 			$this->template->assign_block_vars('dropdown.options', array(
 				'OPTION_ID'	=> $option_id,
 				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
-				'VALUE'		=> $option_value)
-			);
+				'VALUE'		=> $option_value,
+			));
 		}
 	}
 

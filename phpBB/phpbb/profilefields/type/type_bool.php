@@ -46,7 +46,7 @@ class type_bool extends type_base
 			'field_ident'			=> 'field_default_value',
 			'field_type'			=> $this->get_service_name(),
 			'field_length'			=> $field_data['field_length'],
-			'lang_options'			=> $field_data['lang_options']
+			'lang_options'			=> $field_data['lang_options'],
 		);
 
 		$options = array(
@@ -180,8 +180,8 @@ class type_bool extends type_base
 				$this->template->assign_block_vars('bool.options', array(
 					'OPTION_ID'	=> $option_id,
 					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
-					'VALUE'		=> $option_value)
-				);
+					'VALUE'		=> $option_value,
+				));
 			}
 		}
 	}
@@ -226,7 +226,7 @@ class type_bool extends type_base
 	public function get_language_options_input($field_data)
 	{
 		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', array(0 => ''), true);
-		$field_data['l_lang_explain']			= $this->request->variable('l_lang_explain', array(0 => ''), true);
+		$field_data['l_lang_explain']		= $this->request->variable('l_lang_explain', array(0 => ''), true);
 		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', array(0 => ''), true);
 
 		/**
