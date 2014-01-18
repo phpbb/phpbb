@@ -499,6 +499,10 @@ fieldset.display-actions {
 	margin: 0 25px;
 }
 
+.attach-comment dfn {
+	width: 100%;
+}
+
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
 {
 	p.responsive-center {
@@ -525,5 +529,10 @@ fieldset.display-actions {
 	.display-options > label:nth-child(1) {
 		display: block;
 		margin-bottom: 5px;
+	}
+
+	.attach-controls {
+		margin-top: 5px;
+		width: 100%;
 	}
 }

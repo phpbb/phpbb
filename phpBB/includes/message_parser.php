@@ -1461,6 +1461,7 @@ class parse_message extends bbcode_firstpass
 						'is_orphan'		=> 1,
 						'real_filename'	=> $filedata['real_filename'],
 						'attach_comment'=> $this->filename_data['filecomment'],
+						'filesize'		=> $filedata['filesize'],
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
@@ -1572,6 +1573,7 @@ class parse_message extends bbcode_firstpass
 							'is_orphan'		=> 1,
 							'real_filename'	=> $filedata['real_filename'],
 							'attach_comment'=> $this->filename_data['filecomment'],
+							'filesize'		=> $filedata['filesize'],
 						);
 
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
@@ -1580,8 +1582,10 @@ class parse_message extends bbcode_firstpass
 
 						if (isset($this->plupload) && $this->plupload->is_active())
 						{
+							$download_url = append_sid("{$phpbb_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
+
 							// Send the client the attachment data to maintain state
-							$json_response->send($this->attachment_data);
+							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));
 						}
 					}
 				}
@@ -1649,7 +1653,7 @@ class parse_message extends bbcode_firstpass
 		if (sizeof($not_orphan))
 		{
 			// Get the attachment data, based on the poster id...
-			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
+			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('attach_id', array_keys($not_orphan)) . '
 					AND poster_id = ' . $check_user_id;
@@ -1674,7 +1678,7 @@ class parse_message extends bbcode_firstpass
 		// Regenerate newly uploaded attachments
 		if (sizeof($orphan))
 		{
-			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
+			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan)) . '
 					AND poster_id = ' . $user->data['user_id'] . '

@@ -149,34 +149,6 @@
 	</div>
 	<!-- ENDIF -->
 
-	<!-- IF S_HAS_ATTACHMENTS -->
-		<div class="panel bg2">
-			<div class="inner">
-			<h3>{L_POSTED_ATTACHMENTS}</h3>
-
-			<fieldset class="fields2">
-
-			<!-- BEGIN attach_row -->
-			<dl>
-
-				<dt><label for="comment_list_{attach_row.ASSOC_INDEX}">{L_FILE_COMMENT}{L_COLON}</label></dt>
-				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list_{attach_row.ASSOC_INDEX}" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
-				<dd><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></dd>
-				<dd style="margin-top: 5px;">
-					<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" onclick="attach_inline({attach_row.ASSOC_INDEX}, '{attach_row.A_FILENAME}');" class="button2" />&nbsp; <!-- ENDIF -->
-					<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button2" />
-				</dd>
-			</dl>
-			{attach_row.S_HIDDEN}
-				<!-- IF not attach_row.S_LAST_ROW --><hr class="dashed" /><!-- ENDIF -->
-			<!-- END attach_row -->
-
-			</fieldset>
-
-			</div>
-		</div>
-	<!-- ENDIF -->
-
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg2">
 		<div class="inner">
@@ -198,7 +170,15 @@
 		<div id="tabs" class="sub-panels" data-show-panel="options-panel">
 			<ul>
 				<li id="options-panel-tab" class="activetab"><a href="#tabs" data-subpanel="options-panel"><span>{L_OPTIONS}</span></a></li>
-				<!-- IF S_SHOW_ATTACH_BOX --><li id="attach-panel-tab"><a href="#tabs" data-subpanel="attach-panel"><span>{L_ADD_ATTACHMENT}</span></a></li><!-- ENDIF -->
+				<!-- IF S_SHOW_ATTACH_BOX -->
+					<li id="attach-panel-tab">
+						<a href="#tabs" data-subpanel="attach-panel">
+							<span>
+								{L_ATTACHMENTS} <strong id="file-total-progress"><strong id="file-total-progress-bar"></strong></strong>
+							</span>
+						</a>
+					</li>				
+				<!-- ENDIF -->
 				<!-- IF S_SHOW_POLL_BOX || S_POLL_DELETE --><li id="poll-panel-tab"><a href="#tabs" data-subpanel="poll-panel"><span>{L_ADD_POLL}</span></a></li><!-- ENDIF -->
 			</ul>
 		</div>
