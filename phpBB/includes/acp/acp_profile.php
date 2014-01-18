@@ -971,7 +971,7 @@ class acp_profile
 			}
 		}
 
-		$cp->vars = $profile_type->get_language_options_input($cp->vars);
+		$cp->vars = $profile_field->get_language_options_input($cp->vars);
 
 		if ($cp->vars['lang_options'])
 		{

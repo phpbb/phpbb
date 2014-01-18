@@ -203,7 +203,7 @@ class type_date extends type_base
 			return $this->user->create_datetime()
 				->setDate($year, $month, $day)
 				->setTime(0, 0, 0)
-				->format($user->lang['DATE_FORMAT'], true);
+				->format($this->user->lang['DATE_FORMAT'], true);
 		}
 
 		return $field_value;
