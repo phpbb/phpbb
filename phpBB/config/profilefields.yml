@@ -7,6 +7,9 @@ services:
             - @request
             - @template
             - @user
+            - %tables.profile_fields%
+            - %tables.profile_fields_language%
+            - %tables.profile_fields_data%
         calls:
             - [set_type_collection, [@profilefields.type_collection]]
 
@@ -14,6 +17,7 @@ services:
         class: \phpbb\profilefields\lang_helper
         arguments:
             - @dbal.conn
+            - %tables.profile_fields_options_language%
 
     profilefields.type_collection:
         class: phpbb\di\service_collection

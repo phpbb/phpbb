@@ -28,13 +28,21 @@ class lang_helper
 	protected $db;
 
 	/**
+	* Table where the language strings are stored
+	* @var string
+	*/
+	protected $language_table;
+
+	/**
 	* Construct
 	*
 	* @param	\phpbb\db\driver\driver	$db		Database object
+	* @param	string		$language_table		Table where the language strings are stored
 	*/
-	public function __construct($db)
+	public function __construct($db, $language_table)
 	{
 		$this->db = $db;
+		$this->language_table = $language_table;
 	}
 
 	/**
@@ -62,7 +70,7 @@ class lang_helper
 		else
 		{
 			$sql = 'SELECT option_id, lang_value
-				FROM ' . PROFILE_FIELDS_LANG_TABLE . "
+				FROM ' . $this->language_table . "
 					WHERE field_id = $field_id
 					AND lang_id = $lang_id
 					AND field_type = '" . $this->db->sql_escape($field_type) . "'

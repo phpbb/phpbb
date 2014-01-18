@@ -21,13 +21,17 @@ class profilefields
 	/**
 	*
 	*/
-	public function __construct($auth, $db, $request, $template, $user)
+	public function __construct($auth, $db, $request, $template, $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+
+		$this->fields_table = $fields_table;
+		$this->fields_language_table = $fields_language_table;
+		$this->fields_data_table = $fields_data_table;
 	}
 
 	/**
@@ -72,7 +76,7 @@ class profilefields
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f
+			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . " f
 			WHERE f.field_active = 1
 				$sql_where
 				AND l.lang_id = $lang_id
@@ -106,7 +110,7 @@ class profilefields
 
 		// Display hidden/no_view fields for admin/moderator
 		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
+			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
 			WHERE l.lang_id = ' . $this->user->get_iso_lang_id() . '
 				AND f.field_active = 1 ' .
 				((!$this->auth->acl_gets('a_', 'm_') && !$this->auth->acl_getf_global('m_')) ? '	AND f.field_hide = 0 ' : '') . '
@@ -149,7 +153,7 @@ class profilefields
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f
+			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . " f
 			WHERE l.lang_id = $lang_id
 				AND f.field_active = 1
 				$sql_where
@@ -213,7 +217,7 @@ class profilefields
 			$cp_data_sql[$left_delim . (($this->db->sql_layer == 'firebird' || $this->db->sql_layer == 'oracle') ? strtoupper($key) : $key) . $right_delim] = $value;
 		}
 
-		$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
+		$sql = 'UPDATE ' . $this->fields_data_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $cp_data_sql) . "
 			WHERE user_id = $user_id";
 		$this->db->sql_query($sql);
@@ -224,7 +228,7 @@ class profilefields
 
 			$this->db->sql_return_on_error(true);
 
-			$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $this->db->sql_build_array('INSERT', $cp_data_sql);
+			$sql = 'INSERT INTO ' . $this->fields_data_table . ' ' . $this->db->sql_build_array('INSERT', $cp_data_sql);
 			$this->db->sql_query($sql);
 
 			$this->db->sql_return_on_error(false);
@@ -255,7 +259,7 @@ class profilefields
 			}
 
 			$sql = 'SELECT *
-				FROM ' . PROFILE_FIELDS_DATA_TABLE . '
+				FROM ' . $this->fields_data_table . '
 				WHERE ' . $this->db->sql_in_set('user_id', array_map('intval', $user_id));
 			$result = $this->db->sql_query($sql);
 
@@ -373,7 +377,7 @@ class profilefields
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
+			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
 			WHERE l.lang_id = ' . $this->user->get_iso_lang_id() . '
 				' . ((sizeof($sql_not_in)) ? ' AND ' . $this->db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
