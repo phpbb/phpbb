@@ -220,7 +220,7 @@ li {
 }
 
 .rtl #main {
-	float: right;
+	float: left;
 	margin: 0 -210px 0 0;
 }
 
@@ -352,7 +352,7 @@ li {
 	position: relative;
 }
 
-.rtl #tabs a {
+.rtl #tabs li {
 	float: right;
 }
 

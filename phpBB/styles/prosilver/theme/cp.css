@@ -102,12 +102,6 @@ ul.cplist {
 	margin-bottom: 0px;
 }
 
-.tabs-container #minitabs {
-	float: right;
-	margin-top: 19px;
-	max-width: 50%;
-}
-
 .tabs-container:after {
 	display: block;
 	clear: both;
@@ -191,6 +185,12 @@ ul.cplist {
 #minitabs {
 	line-height: normal;
 	margin: -20px 7px 0 0;
+}
+
+.tabs-container #minitabs {
+	float: right;
+	margin-top: 19px;
+	max-width: 50%;
 }
 
 #minitabs ul {
