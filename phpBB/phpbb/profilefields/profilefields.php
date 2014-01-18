@@ -79,9 +79,9 @@ class profilefields
 			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . " f
 			WHERE f.field_active = 1
 				$sql_where
-				AND l.lang_id = $lang_id
+				AND l.lang_id = " . (int) $lang_id . '
 				AND l.field_id = f.field_id
-			ORDER BY f.field_order";
+			ORDER BY f.field_order';
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
@@ -153,8 +153,8 @@ class profilefields
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . " f
-			WHERE l.lang_id = $lang_id
+			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
+			WHERE l.lang_id = ' . (int) $lang_id . "
 				AND f.field_active = 1
 				$sql_where
 				AND l.field_id = f.field_id
@@ -218,8 +218,8 @@ class profilefields
 		}
 
 		$sql = 'UPDATE ' . $this->fields_data_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $cp_data_sql) . "
-			WHERE user_id = $user_id";
+			SET ' . $this->db->sql_build_array('UPDATE', $cp_data_sql) . '
+			WHERE user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
 
 		if (!$this->db->sql_affectedrows())

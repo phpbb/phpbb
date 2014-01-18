@@ -70,9 +70,9 @@ class lang_helper
 		else
 		{
 			$sql = 'SELECT option_id, lang_value
-				FROM ' . $this->language_table . "
-					WHERE field_id = $field_id
-					AND lang_id = $lang_id
+				FROM ' . $this->language_table . '
+					WHERE field_id = ' . (int) $field_id . '
+					AND lang_id = ' . (int) $lang_id . "
 					AND field_type = '" . $this->db->sql_escape($field_type) . "'
 				ORDER BY option_id";
 			$result = $this->db->sql_query($sql);
