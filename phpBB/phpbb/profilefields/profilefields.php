@@ -285,7 +285,7 @@ class profilefields
 					'PROFILE_' . strtoupper($ident) . '_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
 					'PROFILE_' . strtoupper($ident) . '_EXPLAIN'=> $this->user->lang($ident_ary['data']['lang_explain']),
 
-					'S_PROFILE_' . strtoupper($ident)			=> true
+					'S_PROFILE_' . strtoupper($ident)			=> true,
 				);
 
 				$tpl_fields['blockrow'][] = array(
@@ -294,7 +294,7 @@ class profilefields
 					'PROFILE_FIELD_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
 					'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($ident_ary['data']['lang_explain']),
 
-					'S_PROFILE_' . strtoupper($ident)		=> true
+					'S_PROFILE_' . strtoupper($ident)		=> true,
 				);
 			}
 
