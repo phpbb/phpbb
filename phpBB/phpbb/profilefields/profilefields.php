@@ -135,8 +135,8 @@ class profilefields
 			$profile_field = $this->type_collection[$row['field_type']];
 
 			$this->template->assign_block_vars('profile_fields', array(
-				'LANG_NAME'		=> $row['lang_name'],
-				'LANG_EXPLAIN'	=> $row['lang_explain'],
+				'LANG_NAME'		=> $this->user->lang($row['lang_name']),
+				'LANG_EXPLAIN'	=> $this->user->lang($row['lang_explain']),
 				'FIELD'			=> $tpl_snippet,
 				'FIELD_ID'		=> $profile_field->get_field_ident($row),
 				'S_REQUIRED'	=> ($row['field_required']) ? true : false,
