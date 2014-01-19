@@ -198,12 +198,14 @@ function marklist(id, name, state)
 				<!-- IF S_BOARD_DISABLED and S_USER_LOGGED_IN --> &nbsp;<span class="error">{L_BOARD_DISABLED}</span><!-- ENDIF -->
 			</td>
 			<td class="genmed" align="{S_CONTENT_FLOW_END}">
+				<!-- EVENT overall_header_navigation_prepend -->
 				<a href="{U_FAQ}"><img src="{T_THEME_PATH}/images/icon_mini_faq.gif" width="12" height="13" alt="*" /> {L_FAQ}</a>
 				<!-- IF S_DISPLAY_SEARCH -->&nbsp; &nbsp;<a href="{U_SEARCH}"><img src="{T_THEME_PATH}/images/icon_mini_search.gif" width="12" height="13" alt="*" /> {L_SEARCH}</a><!-- ENDIF -->
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_DISPLAY_MEMBERLIST -->&nbsp; &nbsp;<a href="{U_MEMBERLIST}"><img src="{T_THEME_PATH}/images/icon_mini_members.gif" width="12" height="13" alt="*" /> {L_MEMBERLIST}</a><!-- ENDIF -->
 					<!-- IF S_USER_LOGGED_IN -->&nbsp; &nbsp;<a href="{U_PROFILE}"><img src="{T_THEME_PATH}/images/icon_mini_profile.gif" width="12" height="13" alt="*" /> {L_PROFILE}</a><!-- ENDIF -->
 				<!-- ENDIF -->
+				<!-- EVENT overall_header_navigation_append -->
 			</td>
 		</tr>
 		</table>

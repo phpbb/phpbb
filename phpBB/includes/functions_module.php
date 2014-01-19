@@ -334,7 +334,7 @@ class p_master
 	static function module_auth($module_auth, $forum_id)
 	{
 		global $auth, $config;
-		global $request;
+		global $request, $phpbb_extension_manager, $phpbb_dispatcher;
 
 		$module_auth = trim($module_auth);
 
@@ -351,6 +351,30 @@ class p_master
 			[(),]                                  |
 			[^\s(),]+)/x', $module_auth, $match);
 
+		// Valid tokens for auth and their replacements
+		$valid_tokens = array(
+			'acl_([a-z0-9_]+)(,\$id)?'		=> '(int) $auth->acl_get(\'\\1\'\\2)',
+			'\$id'							=> '(int) $forum_id',
+			'aclf_([a-z0-9_]+)'				=> '(int) $auth->acl_getf_global(\'\\1\')',
+			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
+			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
+			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
+		);
+
+		/**
+		* Alter tokens for module authorisation check
+		*
+		* @event core.module_auth
+		* @var	array	valid_tokens		Valid tokens and their auth check
+		*									replacements
+		* @var	string	module_auth			The module_auth of the current
+		* 									module
+		* @var	int		forum_id			The current forum_id
+		* @since 3.1-A3
+		*/
+		$vars = array('valid_tokens', 'module_auth', 'forum_id');
+		extract($phpbb_dispatcher->trigger_event('core.module_auth', compact($vars)));
+
 		$tokens = $match[0];
 		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
 		{
@@ -366,7 +390,7 @@ class p_master
 				break;
 
 				default:
-					if (!preg_match('#(?:acl_([a-z0-9_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z0-9_]+))|(?:cfg_([a-z0-9_]+))|(?:request_([a-zA-Z0-9_]+))#', $token))
+					if (!preg_match('#(?:' . implode(array_keys($valid_tokens), ')|(?:') . ')#', $token))
 					{
 						$token = '';
 					}
@@ -379,8 +403,17 @@ class p_master
 		// Make sure $id separation is working fine
 		$module_auth = str_replace(' , ', ',', $module_auth);
 
+		$module_auth = preg_replace(
+			// Array keys with # prepended/appended
+			array_map(function($value) {
+				return '#' . $value . '#';
+			}, array_keys($valid_tokens)),
+			array_values($valid_tokens),
+			$module_auth
+		);
+
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '$request->variable(\'\\1\', false)'), $module_auth) . ');');
+		eval('$is_auth = (int) (' .	$module_auth . ');');
 
 		return $is_auth;
 	}

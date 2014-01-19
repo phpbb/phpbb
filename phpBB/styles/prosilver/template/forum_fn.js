@@ -747,7 +747,7 @@ function parse_document(container)
 	/**
 	* Hide empty responsive tables
 	*/
-	container.find('table.responsive > tbody').each(function() {
+	container.find('table.responsive > tbody').not('.responsive-skip-empty').each(function() {
 		var items = $(this).children('tr');
 		if (items.length == 0)
 		{

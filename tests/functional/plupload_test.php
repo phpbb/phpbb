@@ -107,7 +107,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			else
 			{
 				$response = json_decode(self::$client->getResponse()->getContent(), true);
-				$this->assertEquals('valid.jpg', $response[0]['real_filename']);
+				$this->assertEquals('valid.jpg', $response['data'][0]['real_filename']);
 			}
 
 			unlink($this->path . 'chunk');
@@ -144,6 +144,6 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		);
 
 		$response = json_decode(self::$client->getResponse()->getContent(), true);
-		$this->assertEquals('valid.jpg', $response[0]['real_filename']);
+		$this->assertEquals('valid.jpg', $response['data'][0]['real_filename']);
 	}
 }

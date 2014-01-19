@@ -556,20 +556,26 @@ if (sizeof($topic_list))
 // If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
 {
-	$sql = 'SELECT *
-		FROM ' . TOPICS_TABLE . '
-		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+	// SQL array for obtaining shadow topics
+	$sql_array = array(
+		'SELECT'	=> 't.*',
+		'FROM'		=> array(
+			TOPICS_TABLE		=> 't'
+		),
+		'WHERE'		=> $db->sql_in_set('t.topic_id', array_keys($shadow_topic_list)),
+	);
 
 	/**
 	* Event to modify the SQL query before the shadowtopic data is retrieved
 	*
 	* @event core.viewforum_get_shadowtopic_data
-	* @var	string	sql		The SQL string to get the data of any shadowtopics
+	* @var	array	sql_array		SQL array to get the data of any shadowtopics
 	* @since 3.1-A1
 	*/
-	$vars = array('sql');
+	$vars = array('sql_array');
 	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
 
+	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

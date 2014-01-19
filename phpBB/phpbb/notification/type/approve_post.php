@@ -35,6 +35,13 @@ class approve_post extends \phpbb\notification\type\post
 	protected $language_key = 'NOTIFICATION_POST_APPROVED';
 
 	/**
+	* Inherit notification read status from post.
+	*
+	* @var bool
+	*/
+	protected $inherit_read_status = false;
+
+	/**
 	* Notification option data (for outputting to the user)
 	*
 	* @var bool|array False if the service should use it's default data

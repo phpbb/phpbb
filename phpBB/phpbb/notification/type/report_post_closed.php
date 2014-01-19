@@ -41,6 +41,13 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	protected $language_key = 'NOTIFICATION_REPORT_CLOSED';
 
+	/**
+	* Inherit notification read status from post.
+	*
+	* @var bool
+	*/
+	protected $inherit_read_status = false;
+
 	public function is_available()
 	{
 		return false;

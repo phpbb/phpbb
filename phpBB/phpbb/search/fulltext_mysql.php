@@ -216,7 +216,7 @@ class fulltext_mysql extends \phpbb\search\base
 		// We limit the number of allowed keywords to minimize load on the database
 		if ($this->config['max_num_search_keywords'] && sizeof($this->split_words) > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', $this->config['max_num_search_keywords'], sizeof($this->split_words)));
+			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], sizeof($this->split_words)));
 		}
 
 		// to allow phrase search, we need to concatenate quoted words

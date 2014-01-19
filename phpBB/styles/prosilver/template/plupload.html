@@ -1,5 +1,3 @@
-<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/plupload.full.min.js?assets_version={T_ASSETS_VERSION}"></script>
-<script type="text/javascript" src="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/jquery.plupload.queue.min.js?assets_version={T_ASSETS_VERSION}"></script>
 <script type="text/javascript">
 //<![CDATA[
 phpbb.plupload = {
@@ -37,7 +35,6 @@ phpbb.plupload = {
 		'Status': '{LA_PLUPLOAD_STATUS}',
 		'Stop Upload': '{LA_PLUPLOAD_STOP_UPLOAD}',
 		'Stop current upload': '{LA_PLUPLOAD_STOP_CURRENT_UPLOAD}',
-		'Upload element accepts only %d file(s) at a time. Extra files were stripped.': '{LA_PLUPLOAD_ERR_UPLOAD_LIMIT}',
 		"Upload URL might be wrong or doesn't exist.": '{LA_PLUPLOAD_ERR_UPLOAD_URL}',
 		'Uploaded %d/%d files': '{LA_PLUPLOAD_UPLOADED}',
 		'%d files queued': '{LA_PLUPLOAD_FILES_QUEUED}',
@@ -51,14 +48,22 @@ phpbb.plupload = {
 		unique_names: true,
 		filters: [{FILTERS}],
 		{S_RESIZE}
-		headers: {'X-PHPBB-USING-PLUPLOAD': '1'},
+		headers: {'X-PHPBB-USING-PLUPLOAD': '1', 'X-Requested-With': 'XMLHttpRequest'},
 		file_data_name: 'fileupload',
 		multipart_params: {'add_file': '{LA_ADD_FILE}'},
-		img_path: '{T_ASSETS_PATH}/plupload/jquery.plupload.queue/img',
-		element_hook: '#attach-panel .inner',
-		form_hook: '#postform'
-	}
-};
+		form_hook: '#postform',
+		browse_button: 'add_files',
+		drop_element : 'message',
+	},
+	lang: {
+		ERROR: '{LA_ERROR}',
+		TOO_MANY_ATTACHMENTS: '{LA_TOO_MANY_ATTACHMENTS}',
+	},
+	order: '{ATTACH_ORDER}',
+	maxFiles: {MAX_ATTACHMENTS},
+	data: {S_ATTACH_DATA},
+}
 //]]>
 </script>
-<script type="text/javascript" src="{T_ASSETS_PATH}/javascript/plupload.js"></script>
+<!-- INCLUDEJS {T_ASSETS_PATH}/plupload/plupload.full.min.js -->
+<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/plupload.js -->
