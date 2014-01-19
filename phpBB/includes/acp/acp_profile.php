@@ -574,7 +574,7 @@ class acp_profile
 					foreach ($key_ary as $key)
 					{
 						$var = $profile_field->prepare_hidden_fields($step, $key, $action, $field_data);
-						if (!is_null($var))
+						if ($var !== null)
 						{
 							$_new_key_ary[$key] = $profile_field->prepare_hidden_fields($step, $key, $action, $field_data);
 						}
