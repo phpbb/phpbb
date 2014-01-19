@@ -15,12 +15,57 @@ namespace phpbb\profilefields;
 */
 class profilefields
 {
+	/**
+	* Auth object
+	* @var \phpbb\auth\auth
+	*/
+	protected $auth;
+
+	/**
+	* Database object
+	* @var \phpbb\db\driver\driver
+	*/
+	protected $db;
+
+	/**
+	* Request object
+	* @var \phpbb\request\request
+	*/
+	protected $request;
+
+	/**
+	* Template object
+	* @var \phpbb\template\template
+	*/
+	protected $template;
+
+	/**
+	* User object
+	* @var \phpbb\user
+	*/
+	protected $user;
+
+	protected $fields_table;
+
+	protected $fields_language_table;
+
+	protected $fields_data_table;
+
 	protected $profile_cache = array();
 
 	/**
+	* Construct
 	*
+	* @param	\phpbb\auth\auth			$auth		Auth object
+	* @param	\phpbb\db\driver\driver		$db			Database object
+	* @param	\phpbb\request\request		$request	Request object
+	* @param	\phpbb\template\template	$template	Template object
+	* @param	\phpbb\user					$user		User object
+	* @param	string				$fields_table
+	* @param	string				$fields_language_table
+	* @param	string				$fields_data_table
 	*/
-	public function __construct($auth, $db, $request, $template, $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
