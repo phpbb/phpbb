@@ -31,6 +31,9 @@
 		<fieldset class="quick-login">
 			<label for="username"><span>{L_USERNAME}{L_COLON}</span> <input type="text" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" /></label>
 			<label for="password"><span>{L_PASSWORD}{L_COLON}</span> <input type="password" name="password" id="password" size="10" class="inputbox" title="{L_PASSWORD}" /></label>
+			<!-- IF U_SEND_PASSWORD -->
+	 +      	<a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a>
+	 +      <!-- ENDIF -->
 			<!-- IF S_AUTOLOGIN_ENABLED -->
 				<span class="responsive-hide">|</span> <label for="autologin">{L_LOG_ME_IN} <input type="checkbox" name="autologin" id="autologin" /></label>
 			<!-- ENDIF -->
