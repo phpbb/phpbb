@@ -11,25 +11,30 @@ phpbb.plupload.ids = [];
  * @return undefined
  */
 phpbb.plupload.initialize = function() {
-	phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
-	phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
-
-	// Hide the basic upload panel and remove the attach row template.
-	$('#attach-row-tpl, #attach-panel-basic').remove();
-	// Show multi-file upload options.
-	$('#attach-panel-multi').show();
-
-	// Set attachment data.
-	phpbb.plupload.setData(phpbb.plupload.data);
-	phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
-
 	// Initialize the Plupload uploader.
 	uploader.init();
 
-	// Point out the drag-and-drop zone if it's supported.
-	if (!uploader.features.dragdrop) {
-		$('#drag-n-drop-message').show();
-	}
+	// Only execute if Plupload initialized successfully.
+	uploader.bind('Init', function() {
+		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
+		phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
+
+		// Hide the basic upload panel and remove the attach row template.
+		$('#attach-row-tpl, #attach-panel-basic').remove();
+		// Show multi-file upload options.
+		$('#attach-panel-multi').show();
+
+		// Set attachment data.
+		phpbb.plupload.setData(phpbb.plupload.data);
+		phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
+	});
+
+	uploader.bind('PostInit', function() {
+		// Point out the drag-and-drop zone if it's supported.
+		if (!!uploader.features.dragdrop) {
+			$('#drag-n-drop-message').show();
+		}	
+	});
 };
 
 /**
