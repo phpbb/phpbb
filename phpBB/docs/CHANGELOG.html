@@ -91,6 +91,112 @@
 
 	<a name="v310a2"></a><h3>1.i. Changes since 3.1.0-a2</h3>
 
+<h4>Bug</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10810">PHPBB3-10810</a>] - Manage group in ucp requires access to adm/</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11246">PHPBB3-11246</a>] - Misleading Message in New User Pruning Feature</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11484">PHPBB3-11484</a>] - Topic Reply Notification email links not requiring user to log in</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11507">PHPBB3-11507</a>] - Impossible to prune users by group only</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11672">PHPBB3-11672</a>] - AJAX alerts contain unnecessary messages/links</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11709">PHPBB3-11709</a>] - Bulletin points in navigation menu are misaligned in RTL languages</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11842">PHPBB3-11842</a>] - Avatar driver error thrown when creating group</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11856">PHPBB3-11856</a>] - Require composer.json for extensions</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11859">PHPBB3-11859</a>] - Avatar drivers should return template filename</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11869">PHPBB3-11869</a>] - Strict debug message when registering with profile fields displayed</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11911">PHPBB3-11911</a>] - ACP should warn if there is no search index created for the selected search engine</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11912">PHPBB3-11912</a>] - &quot;Unable to guess the mime type as no guessers are available&quot; when uploading files</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11914">PHPBB3-11914</a>] - plupload should be updated to 2.0.x</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11915">PHPBB3-11915</a>] - plupload should be restyled to match the design of prosilver better</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11959">PHPBB3-11959</a>] - List of users in notifications should be trimmed</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11963">PHPBB3-11963</a>] - Stale MCP notifications get left behind</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11984">PHPBB3-11984</a>] - Ticket for more bugs/improvements for responsive design for both prosilver and ACP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11988">PHPBB3-11988</a>] - Active tab in ACP should not have hover effect</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11997">PHPBB3-11997</a>] - redirect() does not work for app.php/xyz pages</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12001">PHPBB3-12001</a>] - User input is ignored in AJAX confirmation forms</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12006">PHPBB3-12006</a>] - Disabled Extensions with Modules can break the ACP/UCP/MCP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12009">PHPBB3-12009</a>] - Incorrectly installed extensions should be ignored</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12011">PHPBB3-12011</a>] - RTL languages have style bugs in prosilver/ACP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12015">PHPBB3-12015</a>] - Enhance events in viewtopic to increase their usability</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12026">PHPBB3-12026</a>] - Unable to find template - in MCP/UCP, which are added via extensions</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12027">PHPBB3-12027</a>] - Redis tests failing</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12028">PHPBB3-12028</a>] - Don't use L_COLON in a JavaScript context</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12030">PHPBB3-12030</a>] - Include config directory completely in update packages when one file is being updated</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12032">PHPBB3-12032</a>] - Certain notifications incorrectly inherit read status from post/topic</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12036">PHPBB3-12036</a>] - Module Management items have 2 move down buttons and no up</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12038">PHPBB3-12038</a>] - Move up/down buttons are not AJAXified in various ACP pages.</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12040">PHPBB3-12040</a>] - ACP tabs flicker when AJAX background appears</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12042">PHPBB3-12042</a>] - Several strings of plupload are not being translated</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12045">PHPBB3-12045</a>] - Several HTML markup issues in adm/style/acp_prune_users.html</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12049">PHPBB3-12049</a>] - PLUPLOAD_ERR_UPLOAD_LIMIT should be using plurals</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12050">PHPBB3-12050</a>] - phpbb_notification_submit_post_base should be abstract</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12055">PHPBB3-12055</a>] - ACP BBCodes/Smilies Row Color Changes Needed After AJAX operations</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12058">PHPBB3-12058</a>] - Updating database fails in migration v310/avatar_types.php</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12059">PHPBB3-12059</a>] - ACP INCLUDECSS not working, missing {$STYLESHEETS}</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12062">PHPBB3-12062</a>] - INCLUDEJS broken for extension events in the ACP</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12063">PHPBB3-12063</a>] - &lt;tr&gt; tags use invalid valign attribute</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12077">PHPBB3-12077</a>] - General Error thrown when submitting ACP language pack editor </li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12079">PHPBB3-12079</a>] - request.untrimmed_variable() $multibyte param does not have default value</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12091">PHPBB3-12091</a>] - Plupload - File upload does not work in Internet Explorer 11</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12092">PHPBB3-12092</a>] - Plupload - File info missing for several uploaded files</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12095">PHPBB3-12095</a>] - IE11 JavaScript plupload error</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12096">PHPBB3-12096</a>] - Not using plurals correctly in search.php MAX_NUM_SEARCH_KEYWORDS_REFINE</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12100">PHPBB3-12100</a>] - ACP Template files not purged during Extension Enable/Disable</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12107">PHPBB3-12107</a>] - Log table name is hard-coded in log.get_logs()</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12110">PHPBB3-12110</a>] - Update Plupload to 2.1.1</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12123">PHPBB3-12123</a>] - No category specified for soft-delete permission</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12124">PHPBB3-12124</a>] - Plupload broken on IE8</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12125">PHPBB3-12125</a>] - Topic rows are missing background in IE8</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12131">PHPBB3-12131</a>] - prosilver viewtopic print view has invalid imageset var</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12140">PHPBB3-12140</a>] - Avoid endless loop in build script</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12141">PHPBB3-12141</a>] - Travis tests fail on 5.5</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12151">PHPBB3-12151</a>] - Class 'phpbb\profilefields\profilefields' not found</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12154">PHPBB3-12154</a>] - DB Schema not built with develop script</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12156">PHPBB3-12156</a>] - Passwords Manager ~ Bug with OAuth</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12159">PHPBB3-12159</a>] - Fix code sniffer complaints after profilefields and passwords merge</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12161">PHPBB3-12161</a>] - build/save directories are no longer created</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12162">PHPBB3-12162</a>] - Binary files missing from update packages</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12163">PHPBB3-12163</a>] - Page number in viewtopic page title is incorrect</li>
+</ul>
+<h4>Improvement</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10910">PHPBB3-10910</a>] - function build_cfg_template() allow $size for $tpl_type = select</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11346">PHPBB3-11346</a>] - Do not show &quot;Mark topics as read&quot; when there are no topics</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11849">PHPBB3-11849</a>] - Move pagination from functions.php into class</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11950">PHPBB3-11950</a>] - Add 'I forgot my password' link to index page login form</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11961">PHPBB3-11961</a>] - Plupload is not updating uploaded files panel</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11966">PHPBB3-11966</a>] - Add Template Event overall_header_navigation_prepend/append to Subsilver2</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11969">PHPBB3-11969</a>] - Link topic title to unread post instead of first post</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11979">PHPBB3-11979</a>] - Add basic dropdown menu framework to prosilver</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12005">PHPBB3-12005</a>] - Remove code responsible for PM popup completely</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12010">PHPBB3-12010</a>] - Navbar icons should be clickable</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12014">PHPBB3-12014</a>] - Add template event &quot;index_body_forumlist_before&quot;</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12024">PHPBB3-12024</a>] - Add Template Event overall_header_content_before and overall_footer_content_after</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12034">PHPBB3-12034</a>] - AJAXify notifications popup</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12054">PHPBB3-12054</a>] - Improve Index Body Template Events</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12060">PHPBB3-12060</a>] - Add BBCode system core and template events</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12069">PHPBB3-12069</a>] - Add PHP event core.submit_post_modify_return_url in submit_post()</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12104">PHPBB3-12104</a>] - Shadowtopics SQL used in core event should use the SQL builder</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12135">PHPBB3-12135</a>] - editor.js function bbfontstyle()</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12146">PHPBB3-12146</a>] - Add color demo when editing a group from the UCP</li>
+</ul>
+<h4>New Feature</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12039">PHPBB3-12039</a>] - Add config functionality to CLI</li>
+</ul>
+<h4>Sub-task</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11241">PHPBB3-11241</a>] - Improve user interface for mass attachment downloader (all posts, all topics)</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12111">PHPBB3-12111</a>] - Extract profile field types to individual classes</li>
+</ul>
+<h4>Task</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11432">PHPBB3-11432</a>] - Travis should complain when CRLF files are added.</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11509">PHPBB3-11509</a>] - Travis should check commit message format</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11985">PHPBB3-11985</a>] - Enable APC module on Travis to run APC Cache tests</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12064">PHPBB3-12064</a>] - Remove obsolete viewsource.html from adm/style folder</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12147">PHPBB3-12147</a>] - Remove Travis CI notification configuration</li>
+</ul>
+
 	<a name="v310a1"></a><h3>1.ii. Changes since 3.1.0-a1</h3>
 
 <h4>Bug</h4>
