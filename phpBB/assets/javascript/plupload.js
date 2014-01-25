@@ -31,9 +31,9 @@ phpbb.plupload.initialize = function() {
 
 	uploader.bind('PostInit', function() {
 		// Point out the drag-and-drop zone if it's supported.
-		if (!!uploader.features.dragdrop) {
+		if (uploader.features.dragdrop) {
 			$('#drag-n-drop-message').show();
-		}	
+		}
 	});
 };
 
