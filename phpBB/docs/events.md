@@ -401,6 +401,7 @@ viewtopic_print_head_append
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_print.html
+    + styles/subsilver2/template/viewtopic_print.html
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
 
