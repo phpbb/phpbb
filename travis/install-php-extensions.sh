@@ -13,6 +13,13 @@ function find_php_ini
 
 # $1 - PHP extension name
 # $2 - PHP ini file path
+function register_php_extension
+{
+	echo "extension=$1.so" >> "$2"
+}
+
+# $1 - PHP extension name
+# $2 - PHP ini file path
 function install_php_extension
 {
 	echo "Installing $1 PHP extension"
@@ -25,10 +32,15 @@ function install_php_extension
 	make install
 	cd ..
 
-	echo "extension=$1.so" >> "$2"
+	register_php_extension "$1" "$2"
 }
 
 php_ini_file=$(find_php_ini)
+
+# apc
+echo 'Enabling APC PHP extension'
+register_php_extension 'apc' "$php_ini_file"
+echo 'apc.enable_cli=1' >> "$php_ini_file"
 
 # redis
 git clone git://github.com/nicolasff/phpredis.git redis
