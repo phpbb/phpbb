@@ -94,7 +94,7 @@ class twig extends \phpbb\template\base
 
 		$this->twig = new \phpbb\template\twig\environment(
 			$this->config,
-			($this->extension_manager) ? $this->extension_manager->all_enabled() : array(),
+			$this->extension_manager,
 			$this->path_helper,
 			$loader,
 			array(
