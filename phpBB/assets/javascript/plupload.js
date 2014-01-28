@@ -313,7 +313,7 @@ phpbb.plupload.hideEmptyList = function() {
  * @return undefined
  */
 phpbb.plupload.updateBbcode = function(action, index) {
-	var	textarea = $(phpbb.plupload.form).find('textarea[name="message"]'),
+	var	textarea = $('#message', phpbb.plupload.form),
 		text = textarea.val(),
 		removal = (action === 'removal');
 
