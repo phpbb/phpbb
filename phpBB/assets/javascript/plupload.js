@@ -14,6 +14,10 @@ phpbb.plupload.initialize = function() {
 	// Initialize the Plupload uploader.
 	uploader.init();
 
+	// Set attachment data.
+	phpbb.plupload.setData(phpbb.plupload.data);
+	phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
+
 	// Only execute if Plupload initialized successfully.
 	uploader.bind('Init', function() {
 		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
@@ -23,10 +27,6 @@ phpbb.plupload.initialize = function() {
 		$('#attach-row-tpl, #attach-panel-basic').remove();
 		// Show multi-file upload options.
 		$('#attach-panel-multi').show();
-
-		// Set attachment data.
-		phpbb.plupload.setData(phpbb.plupload.data);
-		phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 	});
 
 	uploader.bind('PostInit', function() {
