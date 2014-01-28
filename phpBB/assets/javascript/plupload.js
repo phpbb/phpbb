@@ -97,7 +97,7 @@ phpbb.plupload.getSerializedData = function() {
  * @return int	Returns the index of the file if it exists.
  */
 phpbb.plupload.getIndex = function(attach_id) {
-	var index = phpbb.plupload.ids.indexOf(Number(attach_id));
+	var index = $.inArray(Number(attach_id), phpbb.plupload.ids);
 	return (index !== -1) ? index : false;
 };
 
