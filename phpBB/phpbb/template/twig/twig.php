@@ -94,8 +94,8 @@ class twig extends \phpbb\template\base
 
 		$this->twig = new \phpbb\template\twig\environment(
 			$this->config,
-			$this->extension_manager,
 			$this->path_helper,
+			$this->extension_manager,
 			$loader,
 			array(
 				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
