@@ -10,6 +10,12 @@ acp_bbcodes_actions_prepend
 * Since: 3.1.0-a3
 * Purpose: Add actions to the BBCodes page, before edit/delete buttons
 
+acp_bbcodes_display_table_after
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add content after the table of custom BBCodes
+
 acp_bbcodes_edit_fieldsets_after
 ===
 * Location: adm/style/acp_bbcodes.html
