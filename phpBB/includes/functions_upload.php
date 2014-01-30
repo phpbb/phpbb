@@ -676,7 +676,7 @@ class fileupload
 		{
 			$upload['name'] = utf8_basename($source_file);
 			$upload['size'] = 0;
-			$mimetype = '';
+			$mimetype = 'application/octet-stream';
 		}
 		else
 		{
