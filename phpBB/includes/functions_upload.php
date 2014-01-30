@@ -224,6 +224,8 @@ class filespec
 	/**
 	* Get mimetype
 	*
+	* @param string $filename Filename that needs to be checked
+	* @return string Mimetype of supplied filename
 	*/
 	function get_mimetype($filename)
 	{
