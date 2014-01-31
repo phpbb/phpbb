@@ -543,6 +543,10 @@ CREATE TABLE phpbb_forums (
 	prune_days number(8) DEFAULT '0' NOT NULL,
 	prune_viewed number(8) DEFAULT '0' NOT NULL,
 	prune_freq number(8) DEFAULT '0' NOT NULL,
+	enable_shadow_topic_prune number(1) DEFAULT '0' NOT NULL,
+	prune_shadow_topic_next number(11) DEFAULT '0' NOT NULL,
+	prune_shadow_topic_days number(8) DEFAULT '0' NOT NULL,
+	prune_shadow_topic_freq number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_forums PRIMARY KEY (forum_id)
 )
 /

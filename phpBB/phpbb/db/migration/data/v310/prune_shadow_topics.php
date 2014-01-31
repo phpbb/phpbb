@@ -24,6 +24,7 @@ class prune_shadow_topics extends \phpbb\db\migration\migration
 					'enable_shadow_topic_prune'	=> array('BOOL', 0, 'after' => 'prune_freq'),
 					'prune_shadow_topic_days'	=> array('UINT', 7, 'after' => 'enable_shadow_topic_prune'),
 					'prune_shadow_topic_freq'	=> array('UINT', 1, 'after' => 'prune_shadow_topic_freq'),
+					'prune_shadow_topic_next'	=> array('INT:11', 0, 'after' => 'prune_shadow_topic_freq'),
 				),
 			),
 		);
