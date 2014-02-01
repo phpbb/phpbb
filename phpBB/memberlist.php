@@ -55,7 +55,7 @@ switch ($mode)
 	break;
 }
 
-$start	= request_var('start', 0);
+$start	= max(request_var('start', 0), 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
 $default_key = 'c';
@@ -1279,6 +1279,8 @@ switch ($mode)
 		{
 			$total_users = $config['num_users'];
 		}
+
+		$start = phpbb_get_last_page_index($total_users, $config['topics_per_page'], $start);
 
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
