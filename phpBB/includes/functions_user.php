@@ -3231,7 +3231,7 @@ function get_group_name($group_id)
 		return '';
 	}
 
-	return ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+	return ($user->lang['G_' . $row['group_name']]) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 }
 
 /**

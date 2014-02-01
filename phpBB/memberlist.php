@@ -114,7 +114,7 @@ switch ($mode)
 			}
 			else
 			{
-				$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$row['group_name'] = (isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
@@ -481,15 +481,13 @@ switch ($mode)
 		$group_data = $group_sort = array();
 		foreach ($profile_groups as $row)
 		{
-			if ($row['group_type'] == GROUP_SPECIAL)
+			// Lookup group name in language dictionary
+			if (isset($user->lang['G_' . $row['group_name']]))
 			{
-				// Lookup group name in language dictionary
-				if (isset($user->lang['G_' . $row['group_name']]))
-				{
-					$row['group_name'] = $user->lang['G_' . $row['group_name']];
-				}
+				$row['group_name'] = $user->lang['G_' . $row['group_name']];
 			}
-			else if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
+
+			if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
 			{
 				// Skip over hidden groups the user cannot see
 				continue;
@@ -1244,7 +1242,7 @@ switch ($mode)
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
-				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
+				'GROUP_NAME'	=> (isset($user->lang['G_' . $group_row['group_name']])) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
 				'GROUP_RANK'	=> $rank_title,
@@ -1423,7 +1421,7 @@ switch ($mode)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$group_ids[] = $row['group_id'];
-				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . ((isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 

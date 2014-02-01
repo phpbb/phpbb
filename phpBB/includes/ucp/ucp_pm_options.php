@@ -792,7 +792,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 				$sql .= 'WHERE';
 			}
 			
-			$sql .= " (g.group_name NOT IN ('GUESTS', 'BOTS') OR g.group_type <> " . GROUP_SPECIAL . ')	
+			$sql .= " (g.group_name NOT IN ('GUESTS', 'BOTS') OR g.group_type <> " . GROUP_SPECIAL . ')
 				ORDER BY g.group_type DESC, g.group_name ASC';
 			
 			$result = $db->sql_query($sql);
@@ -802,13 +802,13 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			{
 				if ($rule_group_id && ($row['group_id'] == $rule_group_id))
 				{
-					$rule_string = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
+					$rule_string = ((isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
 				}
 
 				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '';
 				$s_selected	= ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
-				
-				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+
+				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . ((isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 
