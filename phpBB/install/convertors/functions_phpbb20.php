@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -14,7 +13,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Helper functions for phpBB 2.0.x to phpBB 3.0.x conversion
+* Helper functions for phpBB 2.0.x to phpBB 3.1.x conversion
 */
 
 /**
@@ -244,9 +243,12 @@ function phpbb_insert_forums()
 			'forum_rules_options'		=> 7,
 			'forum_rules_uid'			=> '',
 			'forum_topics_per_page'		=> 0,
-			'forum_posts'				=> 0,
-			'forum_topics'				=> 0,
-			'forum_topics_real'			=> 0,
+			'forum_posts_approved'		=> 0,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 0,
+			'forum_topics_approved'		=> 0,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> 0,
 			'forum_last_poster_id'		=> 0,
 			'forum_last_post_subject'	=> '',
@@ -458,7 +460,7 @@ function phpbb_get_birthday($birthday = '')
 	{
 		$birthday = (int) $birthday;
 
-		if (!$birthday || $birthday == 999999 || ((version_compare(PHP_VERSION, '5.1.0') < 0) && $birthday < 0))
+		if (!$birthday || $birthday == 999999)
 		{
 			return ' 0- 0-   0';
 		}
@@ -536,6 +538,15 @@ function phpbb_user_id($user_id)
 	// Therefore, we return the user id "as is".
 
 	return (int) $user_id;
+}
+
+/**
+* Return correct user id value
+* Everyone's id will be one higher to allow the guest/anonymous user to have a positive id as well
+*/
+function phpbb_topic_replies_to_posts($num_replies)
+{
+	return (int) $num_replies + 1;
 }
 
 /* Copy additional table fields from old forum to new forum if user wants this (for Mod compatibility for example)
@@ -1404,6 +1415,55 @@ function phpbb_attachment_category($cat_id)
 }
 
 /**
+* Convert the attachment extension names
+* This is only used if the Attachment MOD was installed
+*/
+function phpbb_attachment_extension_group_name()
+{
+	global $db, $phpbb_root_path, $phpEx;
+
+	// Update file extension group names to use language strings.
+	$sql = 'SELECT lang_dir
+		FROM ' . LANG_TABLE;
+	$result = $db->sql_query($sql);
+
+	$extension_groups_updated = array();
+	while ($lang_dir = $db->sql_fetchfield('lang_dir'))
+	{
+		$lang_dir = basename($lang_dir);
+		$lang_file = $phpbb_root_path . 'language/' . $lang_dir . '/acp/attachments.' . $phpEx;
+
+		if (!file_exists($lang_file))
+		{
+			continue;
+		}
+
+		$lang = array();
+		include($lang_file);
+
+		foreach ($lang as $lang_key => $lang_val)
+		{
+			if (isset($extension_groups_updated[$lang_key]) || strpos($lang_key, 'EXT_GROUP_') !== 0)
+			{
+				continue;
+			}
+
+			$sql_ary = array(
+				'group_name'	=> substr($lang_key, 10), // Strip off 'EXT_GROUP_'
+			);
+
+			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE group_name = '" . $db->sql_escape($lang_val) . "'";
+			$db->sql_query($sql);
+
+			$extension_groups_updated[$lang_key] = true;
+		}
+	}
+	$db->sql_freeresult($result);
+}
+
+/**
 * Obtain list of forums in which different attachment categories can be used
 */
 function phpbb_attachment_forum_perms($forum_permissions)
@@ -1867,4 +1927,49 @@ function phpbb_check_username_collisions()
 	$db->sql_query($drop_sql);
 }
 
-?>
+function phpbb_convert_timezone($timezone)
+{
+	global $config, $db, $phpbb_root_path, $phpEx, $table_prefix;
+	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, new \phpbb\db\tools($db), $phpbb_root_path, $phpEx, $table_prefix);
+	return $timezone_migration->convert_phpbb30_timezone($timezone, 0);
+}
+
+function phpbb_add_notification_options($user_notify_pm)
+{
+	global $convert_row, $db;
+
+	$user_id = phpbb_user_id($convert_row['user_id']);
+	if ($user_id == ANONYMOUS)
+	{
+		return;
+	}
+
+	$rows = array();
+
+	$rows[] = array(
+		'item_type'		=> 'post',
+		'item_id'		=> 0,
+		'user_id'		=> (int) $user_id,
+		'notify'		=> 1,
+		'method'		=> 'email',
+	);
+	$rows[] = array(
+		'item_type'		=> 'topic',
+		'item_id'		=> 0,
+		'user_id'		=> (int) $user_id,
+		'notify'		=> 1,
+		'method'		=> 'email',
+	);
+	if ($user_notify_pm)
+	{
+		$rows[] = array(
+			'item_type'		=> 'pm',
+			'item_id'		=> 0,
+			'user_id'		=> (int) $user_id,
+			'notify'		=> 1,
+			'method'		=> 'email',
+		);
+	}
+
+	$sql = $db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
+}

@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -30,6 +29,7 @@ class acp_profile
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $request;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -39,10 +39,16 @@ class acp_profile
 		$this->tpl_name = 'acp_profile';
 		$this->page_title = 'ACP_CUSTOM_PROFILE_FIELDS';
 
+		$field_id = $request->variable('field_id', 0);
 		$action = (isset($_POST['create'])) ? 'create' : request_var('action', '');
 
 		$error = array();
 		$s_hidden_fields = '';
+
+		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
+		{
+			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		// Define some default values for each field type
 		$default_values = array(
@@ -98,12 +104,6 @@ class acp_profile
 		switch ($action)
 		{
 			case 'delete':
-				$field_id = request_var('field_id', 0);
-
-				if (!$field_id)
-				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
 
 				if (confirm_box(true))
 				{
@@ -210,12 +210,6 @@ class acp_profile
 			break;
 
 			case 'activate':
-				$field_id = request_var('field_id', 0);
-
-				if (!$field_id)
-				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
@@ -242,17 +236,20 @@ class acp_profile
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
+
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response();
+					$json_response->send(array(
+						'text'	=> $user->lang('DEACTIVATE'),
+					));
+				}
+
 				trigger_error($user->lang['PROFILE_FIELD_ACTIVATED'] . adm_back_link($this->u_action));
 
 			break;
 
 			case 'deactivate':
-				$field_id = request_var('field_id', 0);
-
-				if (!$field_id)
-				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 0
@@ -266,14 +263,35 @@ class acp_profile
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response();
+					$json_response->send(array(
+						'text'	=> $user->lang('ACTIVATE'),
+					));
+				}
+
 				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
+
 				trigger_error($user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
 
 			break;
 
 			case 'move_up':
 			case 'move_down':
-				$field_order = request_var('order', 0);
+
+				$sql = 'SELECT field_order
+					FROM ' . PROFILE_FIELDS_TABLE . "
+					WHERE field_id = $field_id";
+				$result = $db->sql_query($sql);
+				$field_order = $db->sql_fetchfield('field_order');
+				$db->sql_freeresult($result);
+
+				if ($field_order === false || ($field_order == 0 && $action == 'move_up'))
+				{
+					break;
+				}
+				$field_order = (int) $field_order;
 				$order_total = $field_order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
@@ -281,12 +299,19 @@ class acp_profile
 					WHERE field_order IN ($field_order, " . (($action == 'move_up') ? $field_order - 1 : $field_order + 1) . ')';
 				$db->sql_query($sql);
 
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> (bool) $db->sql_affectedrows(),
+					));
+				}
+
 			break;
 
 			case 'create':
 			case 'edit':
 
-				$field_id = request_var('field_id', 0);
 				$step = request_var('step', 1);
 
 				$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
@@ -298,11 +323,6 @@ class acp_profile
 				// We are editing... we need to grab basic things
 				if ($action == 'edit')
 				{
-					if (!$field_id)
-					{
-						trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
 					$sql = 'SELECT l.*, f.*
 						FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
 						WHERE l.lang_id = ' . $this->edit_lang_id . "
@@ -370,6 +390,7 @@ class acp_profile
 						'field_show_profile'=> 0,
 						'field_no_view'		=> 0,
 						'field_show_on_reg'	=> 0,
+						'field_show_on_pm'	=> 0,
 						'field_show_on_vt'	=> 0,
 						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
 						'lang_explain'		=> '',
@@ -381,7 +402,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_vt', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -408,6 +429,7 @@ class acp_profile
 					'field_required',
 					'field_show_novalue',
 					'field_show_on_reg',
+					'field_show_on_pm',
 					'field_show_on_vt',
 					'field_show_profile',
 					'field_hide',
@@ -489,7 +511,8 @@ class acp_profile
 							$cp->vars['field_default_value_day'] = $now['mday'];
 							$cp->vars['field_default_value_month'] = $now['mon'];
 							$cp->vars['field_default_value_year'] = $now['year'];
-							$var = $_POST['field_default_value'] = 'now';
+							$var = 'now';
+							$request->overwrite('field_default_value', $var, \phpbb\request\request_interface::POST);
 						}
 						else
 						{
@@ -498,7 +521,8 @@ class acp_profile
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
 								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$var = $_POST['field_default_value'] = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$var = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$request->overwrite('field_default_value', $var, \phpbb\request\request_interface::POST);
 							}
 							else
 							{
@@ -717,7 +741,7 @@ class acp_profile
 							}
 							else
 							{
-								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
+								$_new_key_ary[$key] = ($field_type == FIELD_BOOL && $key == 'lang_options') ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
 							}
 						}
 					}
@@ -761,6 +785,7 @@ class acp_profile
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
 							'S_FIELD_SHOW_NOVALUE'=> ($cp->vars['field_show_novalue']) ? true : false,
 							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
+							'S_SHOW_ON_PM'		=> ($cp->vars['field_show_on_pm']) ? true : false,
 							'S_SHOW_ON_VT'		=> ($cp->vars['field_show_on_vt']) ? true : false,
 							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
 							'S_SHOW_PROFILE'	=> ($cp->vars['field_show_profile']) ? true : false,
@@ -896,8 +921,8 @@ class acp_profile
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
 				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
 				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
-				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;order={$row['field_order']}",
-				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;order={$row['field_order']}",
+				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id",
+				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id",
 
 				'S_NEED_EDIT'				=> $s_need_edit)
 			);
@@ -1078,6 +1103,7 @@ class acp_profile
 			'field_required'		=> $cp->vars['field_required'],
 			'field_show_novalue'	=> $cp->vars['field_show_novalue'],
 			'field_show_on_reg'		=> $cp->vars['field_show_on_reg'],
+			'field_show_on_pm'		=> $cp->vars['field_show_on_pm'],
 			'field_show_on_vt'		=> $cp->vars['field_show_on_vt'],
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_show_profile'	=> $cp->vars['field_show_profile'],
@@ -1653,5 +1679,3 @@ class acp_profile
 		return $sql;
 	}
 }
-
-?>

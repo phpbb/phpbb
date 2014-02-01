@@ -13,7 +13,7 @@
 		<td class="row3" colspan="2"><span class="gensmall">{L_SEND_IM_EXPLAIN}</span></td>
 	</tr>
 	<tr>
-		<td class="row1"><b class="genmed">{L_IM_RECIPIENT}: </b></td>
+		<td class="row1"><b class="genmed">{L_IM_RECIPIENT}{L_COLON} </b></td>
 		<td class="row2"><span class="gen"><b>{USERNAME}</b><!-- IF S_SEND_ICQ or S_SEND_AIM or S_SEND_MSNM or S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --></span> <!-- IF PRESENCE_IMG -->{PRESENCE_IMG}<!-- ENDIF --></td>
 	</tr>
 
@@ -107,7 +107,7 @@
 
 	<!-- IF S_SEND_JABBER -->
 		<tr>
-			<td class="row1"><b class="genmed">{L_IM_MESSAGE}: </b></td>
+			<td class="row1"><b class="genmed">{L_IM_MESSAGE}{L_COLON} </b></td>
 			<td class="row2"><textarea class="post" name="message" rows="5" cols="45"></textarea></td>
 		</tr>
 		<tr>

@@ -9,8 +9,6 @@
 use Symfony\Component\BrowserKit\CookieJar;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
-require_once __DIR__ . '/../../phpBB/includes/acm/acm_file.php';
-require_once __DIR__ . '/../../phpBB/includes/cache.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
@@ -20,6 +18,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected $cache = null;
 	protected $db = null;
+	protected $extension_manager = null;
 
 	/**
 	* Session ID for current test's session (each test makes its own)
@@ -42,6 +41,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
 		self::$root_url = self::$config['phpbb_functional_url'];
+
+		// Important: this is used both for installation and by
+		// test cases for querying the tables.
+		// Therefore table prefix must be set before a board is
+		// installed, and also before each test case is run.
+		self::$config['table_prefix'] = 'phpbb_';
 
 		if (!isset(self::$config['phpbb_functional_url']))
 		{
@@ -132,18 +137,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 	}
 
+	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	{
+		parent::__construct($name, $data, $dataName);
+
+		$this->backupStaticAttributesBlacklist += array(
+			'phpbb_functional_test_case' => array('config', 'already_installed'),
+		);
+	}
+
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof dbal))
+		if (!($this->db instanceof \phpbb\db\driver\driver))
 		{
-			if (!class_exists('dbal_' . self::$config['dbms']))
-			{
-				include($phpbb_root_path . 'includes/db/' . self::$config['dbms'] . ".$phpEx");
-			}
-			$sql_db = 'dbal_' . self::$config['dbms'];
-			$this->db = new $sql_db();
+			$dbms = self::$config['dbms'];
+			$this->db = new $dbms();
 			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
 		return $this->db;
@@ -153,7 +163,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
-			$this->cache = new cache();
+			$this->cache = new \phpbb\cache\driver\file;
 		}
 
 		return $this->cache;
@@ -168,20 +178,45 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cache->load();
 	}
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	protected function get_extension_manager()
 	{
-		parent::__construct($name, $data, $dataName);
+		global $phpbb_root_path, $phpEx;
 
-		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_test_case' => array('config', 'already_installed'),
+		$config = new \phpbb\config\config(array());
+		$db = $this->get_db();
+		$db_tools = new \phpbb\db\tools($db);
+
+		$migrator = new \phpbb\db\migrator(
+			$config,
+			$db,
+			$db_tools,
+			self::$config['table_prefix'] . 'migrations',
+			$phpbb_root_path,
+			$php_ext,
+			self::$config['table_prefix'],
+			array()
 		);
+		$container = new phpbb_mock_container_builder();
+		$container->set('migrator', $migrator);
+
+		$extension_manager = new \phpbb\extension\manager(
+			$container,
+			$db,
+			$config,
+			new phpbb\filesystem(),
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			$php_ext,
+			$this->get_cache_driver()
+		);
+
+		return $extension_manager;
 	}
 
 	static protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
-		self::$config['table_prefix'] = 'phpbb_';
 		self::recreate_database(self::$config);
 
 		$config_file = $phpbb_root_path . "config.$phpEx";
@@ -230,7 +265,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('Database configuration', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form(array(
 			// Installer uses 3.0-style dbms name
-			'dbms'			=> str_replace('phpbb_db_driver_', '',  self::$config['dbms']),
+			'dbms'			=> str_replace('phpbb\db\driver\\', '',  self::$config['dbms']),
 			'dbhost'		=> self::$config['dbhost'],
 			'dbport'		=> self::$config['dbport'],
 			'dbname'		=> self::$config['dbname'],
@@ -252,8 +287,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'admin_name'	=> 'admin',
 			'admin_pass1'	=> 'adminadmin',
 			'admin_pass2'	=> 'adminadmin',
-			'board_email1'	=> 'nobody@example.com',
-			'board_email2'	=> 'nobody@example.com',
+			'board_email'	=> 'nobody@example.com',
 		));
 
 		// install/index.php?mode=install&sub=administrator
@@ -265,7 +299,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// because that step will create a config.php file if phpBB has the
 		// permission to do so. We have to create the config file on our own
 		// in order to get the DEBUG constants defined.
-		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], array(), true, true);
+		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true);
 		$config_created = file_put_contents($config_file, $config_php_data) !== false;
 		if (!$config_created)
 		{
@@ -336,51 +370,67 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $phpbb_root_path;
 
 		$db = $this->get_db();
-		$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'style_id' => $style_id,
-			'style_name' => $style_path,
-			'style_copyright' => '',
-			'style_active' => 1,
-			'template_id' => $style_id,
-			'theme_id' => $style_id,
-			'imageset_id' => $style_id,
-		));
-		$db->sql_query($sql);
-
-		$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'imageset_id' => $style_id,
-			'imageset_name' => $style_path,
-			'imageset_copyright' => '',
-			'imageset_path' => $style_path,
-		));
-		$db->sql_query($sql);
-
-		$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'template_id' => $style_id,
-			'template_name' => $style_path,
-			'template_copyright' => '',
-			'template_path' => $style_path,
-			'bbcode_bitfield' => 'kNg=',
-			'template_inherits_id' => $parent_style_id,
-			'template_inherit_path' => $parent_style_path,
-		));
-		$db->sql_query($sql);
-
-		$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'theme_id' => $style_id,
-			'theme_name' => $style_path,
-			'theme_copyright' => '',
-			'theme_path' => $style_path,
-			'theme_storedb' => 0,
-			'theme_mtime' => 0,
-			'theme_data' => '',
-		));
-		$db->sql_query($sql);
-
-		if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
 		{
-			@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
-			@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
+			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'style_id' => $style_id,
+				'style_name' => $style_path,
+				'style_copyright' => '',
+				'style_active' => 1,
+				'template_id' => $style_id,
+				'theme_id' => $style_id,
+				'imageset_id' => $style_id,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'imageset_id' => $style_id,
+				'imageset_name' => $style_path,
+				'imageset_copyright' => '',
+				'imageset_path' => $style_path,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'template_id' => $style_id,
+				'template_name' => $style_path,
+				'template_copyright' => '',
+				'template_path' => $style_path,
+				'bbcode_bitfield' => 'kNg=',
+				'template_inherits_id' => $parent_style_id,
+				'template_inherit_path' => $parent_style_path,
+			));
+			$db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'theme_id' => $style_id,
+				'theme_name' => $style_path,
+				'theme_copyright' => '',
+				'theme_path' => $style_path,
+				'theme_storedb' => 0,
+				'theme_mtime' => 0,
+				'theme_data' => '',
+			));
+			$db->sql_query($sql);
+
+			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			{
+				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
+				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
+			}
+		}
+		else
+		{
+			$db->sql_multi_insert(STYLES_TABLE, array(
+				'style_id' => $style_id,
+				'style_name' => $style_path,
+				'style_copyright' => '',
+				'style_active' => 1,
+				'style_path' => $style_path,
+				'bbcode_bitfield' => 'kNg=',
+				'style_parent_id' => $parent_style_id,
+				'style_parent_tree' => $parent_style_path,
+			));
 		}
 	}
 
@@ -396,14 +446,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
-		$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
-		$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
-		$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
-
-		if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
 		{
-			@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
-			@rmdir($phpbb_root_path . 'styles/' . $style_path);
+			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
+			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
+			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
+
+			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			{
+				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
+				@rmdir($phpbb_root_path . 'styles/' . $style_path);
+			}
 		}
 	}
 
@@ -418,22 +471,26 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Required by unique_id
 		global $config;
 
-		if (!is_array($config))
-		{
-			$config = array();
-		}
-
+		$config = new \phpbb\config\config(array());
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
 		// Required by user_add
-		global $db, $cache;
+		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
 		$db = $this->get_db();
 		if (!function_exists('phpbb_mock_null_cache'))
 		{
 			require_once(__DIR__ . '/../mock/null_cache.php');
 		}
 		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new \phpbb\cache\driver\null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
 
 		if (!function_exists('utf_clean_string'))
 		{
@@ -443,6 +500,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$user_row = array(
 			'username' => $username,
@@ -457,6 +517,87 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return user_add($user_row);
 	}
 
+	protected function remove_user_group($group_name, $usernames)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$config = new \phpbb\config\config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('\phpbb\user');
+		$auth = $this->getMock('\phpbb\auth\auth');
+
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new \phpbb\cache\driver\null();
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('cache.driver', $cache_driver);
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_del($group_id, false, $usernames, $group_name);
+	}
+
+	protected function add_user_group($group_name, $usernames, $default = false, $leader = false)
+	{
+		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$config = new \phpbb\config\config(array());
+		$config['coppa_enable'] = 0;
+
+		$db = $this->get_db();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$user = $this->getMock('\phpbb\user');
+		$auth = $this->getMock('\phpbb\auth\auth');
+
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$cache = new phpbb_mock_null_cache;
+
+		$cache_driver = new \phpbb\cache\driver\null();
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container
+			->expects($this->any())
+			->method('get')
+			->with('cache.driver')
+			->will($this->returnValue($cache_driver));
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('group_user_del'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		return group_user_add($group_id, false, $usernames, $group_name, $default, $leader);
+	}
+
 	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
@@ -466,7 +607,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assertContains($this->lang('LOGIN_REDIRECT'), $crawler->filter('html')->text());
+		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -478,6 +619,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$this->sid = $cookie->getValue();
 			}
 		}
+	}
+
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
+		unset($this->sid);
+
 	}
 
 	/**
@@ -505,7 +656,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assertContains($this->lang('LOGIN_ADMIN_SUCCESS'), $crawler->filter('html')->text());
+				$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 
 				$cookies = self::$cookieJar->all();
 
@@ -561,6 +712,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle Search string
+	 * @param string $haystack Search this
+	 * @param string $message Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/*
 	* Perform some basic assertions for the page
 	*
 	* Checks for debug/error output before the actual page content and the status code
@@ -581,6 +744,27 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 
+	/*
+	* Perform some basic assertions for an xml page
+	*
+	* Checks for debug/error output before the actual page content and the status code
+	*
+	* @param mixed $status_code		Expected status code, false to disable check
+	* @return null
+	*/
+	static public function assert_response_xml($status_code = 200)
+	{
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
+
+		// Any output before the xml opening means there was an error
+		$content = self::$client->getResponse()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
+		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
+	}
+
 	/**
 	* Heuristic function to check that the response is success.
 	*
@@ -595,6 +779,86 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
 	}
 
+	public function assert_filter($crawler, $expr, $msg = null)
+	{
+		$nodes = $crawler->filter($expr);
+		if ($msg)
+		{
+			$msg .= "\n";
+		}
+		else
+		{
+			$msg = '';
+		}
+		$msg .= "`$expr` not found in DOM.";
+		$this->assertGreaterThan(0, count($nodes), $msg);
+		return $nodes;
+	}
+
+	/**
+	* Asserts that exactly one checkbox with name $name exists within the scope
+	* of $crawler and that the checkbox is checked.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return null
+	*/
+	public function assert_checkbox_is_checked($crawler, $name, $message = '')
+	{
+		$this->assertSame(
+			'checked',
+			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
+			$message ?: "Failed asserting that checkbox $name is checked."
+		);
+	}
+
+	/**
+	* Asserts that exactly one checkbox with name $name exists within the scope
+	* of $crawler and that the checkbox is unchecked.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return null
+	*/
+	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
+	{
+		$this->assertSame(
+			'',
+			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
+			$message ?: "Failed asserting that checkbox $name is unchecked."
+		);
+	}
+
+	/**
+	* Searches for an input element of type checkbox with the name $name using
+	* $crawler. Contains an assertion that only one such checkbox exists within
+	* the scope of $crawler.
+	*
+	* @param Symfony\Component\DomCrawler\Crawler $crawler
+	* @param string $name
+	* @param string $message
+	*
+	* @return Symfony\Component\DomCrawler\Crawler
+	*/
+	public function assert_find_one_checkbox($crawler, $name, $message = '')
+	{
+		$query = sprintf('//input[@type="checkbox" and @name="%s"]', $name);
+		$result = $crawler->filterXPath($query);
+
+		$this->assertEquals(
+			1,
+			sizeof($result),
+			$message ?: 'Failed asserting that exactly one checkbox with name' .
+				" $name exists in crawler scope."
+		);
+
+		return $result;
+	}
+
 	/**
 	* Creates a topic
 	*
@@ -604,9 +868,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	public function create_topic($forum_id, $subject, $message, $additional_form_data = array())
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
 	{
 		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
 
@@ -616,7 +881,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+		return self::submit_post($posting_url, 'POST_TOPIC', $form_data, $expected);
 	}
 
 	/**
@@ -629,9 +894,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array())
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
 	{
 		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
 
@@ -641,7 +907,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+		return self::submit_post($posting_url, 'POST_REPLY', $form_data, $expected);
 	}
 
 	/**
@@ -650,9 +916,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $posting_url
 	* @param string $posting_contains
 	* @param array $form_data
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	protected function submit_post($posting_url, $posting_contains, $form_data)
+	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = 'POST_STORED')
 	{
 		$this->add_lang('posting');
 
@@ -681,7 +948,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
-		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+		$this->assertContainsLang($expected, $crawler->filter('html')->text());
+
+		if ($expected !== 'POST_STORED')
+		{
+			return;
+		}
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
 
 		return array(

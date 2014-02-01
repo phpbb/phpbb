@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,7 +24,7 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template, $cache, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
@@ -353,6 +352,14 @@ class acp_bots
 
 			break;
 		}
+		
+		if ($request->is_ajax() && ($action == 'activate' || $action == 'deactivate'))
+		{
+			$json_response = new \phpbb\json_response;
+			$json_response->send(array(
+				'text'	=> $user->lang['BOT_' . (($action == 'activate') ? 'DE' : '') . 'ACTIVATE'],
+			));
+		}
 
 		$s_options = '';
 		$_options = array('activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE');
@@ -414,5 +421,3 @@ class acp_bots
 		return ($row) ? false : true;
 	}
 }
-
-?>

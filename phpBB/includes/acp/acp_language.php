@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -34,6 +33,7 @@ class acp_language
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 		global $safe_mode, $file_uploads;
+		global $request;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -58,7 +58,7 @@ class acp_language
 		if (isset($_POST['missing_file']))
 		{
 			$missing_file = request_var('missing_file', array('' => 0));
-			list($_REQUEST['language_file'], ) = array_keys($missing_file);
+			$request->overwrite('language_file', array_shift(array_keys($missing_file)));
 		}
 
 		$selected_lang_file = request_var('language_file', '|common.' . $phpEx);
@@ -67,6 +67,23 @@ class acp_language
 
 		$this->language_directory = basename($this->language_directory);
 		$this->language_file = basename($this->language_file);
+
+		// detect language file type
+		if ($this->language_directory == 'email')
+		{
+			$language_file_type = 'email';
+			$request_default = '';
+		}
+		else if (strpos($this->language_file, 'help_') === 0)
+		{
+			$language_file_type = 'help';
+			$request_default = array(0 => array(0 => ''));
+		}
+		else
+		{
+			$language_file_type = 'normal';
+			$request_default = array('' => '');
+		}
 
 		$user->add_lang('acp/language');
 		$this->tpl_name = 'acp_language';
@@ -83,11 +100,25 @@ class acp_language
 			switch ($method)
 			{
 				case 'ftp':
-					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new ftp(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 				break;
 
 				case 'ftp_fsock':
-					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new ftp_fsock(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 				break;
 
 				default:
@@ -119,7 +150,7 @@ class acp_language
 						'DATA'		=> $data,
 						'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 						'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-						'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+						'DEFAULT'	=> $request->variable($data, (string) $default),
 					));
 				}
 
@@ -130,7 +161,7 @@ class acp_language
 					'method'		=> $method)
 				);
 
-				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
+				$hidden_data .= build_hidden_fields(array('entry' => $request->variable('entry', $request_default, true, \phpbb\request\request_interface::POST)));
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
@@ -187,12 +218,9 @@ class acp_language
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if (!$lang_id || empty($_POST['entry']))
-				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				$entry_value = $request->variable('entry', $request_default, true, \phpbb\request\request_interface::POST);
 
-				if ($this->language_directory != 'email' && !is_array($_POST['entry']))
+				if (!$lang_id || !$entry_value)
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -291,10 +319,10 @@ class acp_language
 					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 				}
 
-				if ($this->language_directory == 'email')
+				if ($language_file_type == 'email')
 				{
 					// Email Template
-					$entry = $this->prepare_lang_entry($_POST['entry'], false);
+					$entry = $this->prepare_lang_entry(htmlspecialchars_decode($entry_value), false);
 					fwrite($fp, $entry);
 				}
 				else
@@ -302,13 +330,13 @@ class acp_language
 					$name = (($this->language_directory) ? $this->language_directory . '_' : '') . $this->language_file;
 					$header = str_replace(array('{FILENAME}', '{LANG_NAME}', '{CHANGED}', '{AUTHOR}'), array($name, $row['lang_english_name'], date('Y-m-d', time()), $row['lang_author']), $this->language_file_header);
 
-					if (strpos($this->language_file, 'help_') === 0)
+					if ($language_file_type == 'help')
 					{
 						// Help File
 						$header .= '$help = array(' . "\n";
 						fwrite($fp, $header);
 
-						foreach ($_POST['entry'] as $key => $value)
+						foreach ($entry_value as $key => $value)
 						{
 							if (!is_array($value))
 							{
@@ -319,7 +347,7 @@ class acp_language
 
 							foreach ($value as $_key => $_value)
 							{
-								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
+								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry(htmlspecialchars_decode($_value)) . "',\n";
 							}
 
 							$entry .= "\t),\n";
@@ -329,15 +357,15 @@ class acp_language
 						$footer = ");\n\n?>";
 						fwrite($fp, $footer);
 					}
-					else
+					else if ($language_file_type == 'normal')
 					{
 						// Language File
 						$header .= $this->lang_header;
 						fwrite($fp, $header);
 
-						foreach ($_POST['entry'] as $key => $value)
+						foreach ($entry_value as $key => $value)
 						{
-							$entry = $this->format_lang_array($key, $value);
+							$entry = $this->format_lang_array(htmlspecialchars_decode($key), htmlspecialchars_decode($value));
 							fwrite($fp, $entry);
 						}
 
@@ -390,7 +418,14 @@ class acp_language
 						trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 					}
 
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					$transfer = new $method(
+						request_var('host', ''),
+						request_var('username', ''),
+						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
+						request_var('root_path', ''),
+						request_var('port', ''),
+						request_var('timeout', '')
+					);
 
 					if (($result = $transfer->open_session()) !== true)
 					{
@@ -782,11 +817,6 @@ class acp_language
 					$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
 					$db->sql_query($sql);
 
-					$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
-					$result = $db->sql_query($sql);
-
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-
 					add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
 					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
@@ -850,66 +880,6 @@ class acp_language
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$lang_id = $db->sql_nextid();
-
-				$valid_localized = array(
-					'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
-				);
-
-				$sql_ary = array();
-
-				$sql = 'SELECT *
-					FROM ' . STYLES_IMAGESET_TABLE;
-				$result = $db->sql_query($sql);
-				while ($imageset_row = $db->sql_fetchrow($result))
-				{
-					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg"))
-					{
-						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg");
-						foreach ($cfg_data_imageset_data as $image_name => $value)
-						{
-							if (strpos($value, '*') !== false)
-							{
-								if (substr($value, -1, 1) === '*')
-								{
-									list($image_filename, $image_height) = explode('*', $value);
-									$image_width = 0;
-								}
-								else
-								{
-									list($image_filename, $image_height, $image_width) = explode('*', $value);
-								}
-							}
-							else
-							{
-								$image_filename = $value;
-								$image_height = $image_width = 0;
-							}
-
-							if (strpos($image_name, 'img_') === 0 && $image_filename)
-							{
-								$image_name = substr($image_name, 4);
-								if (in_array($image_name, $valid_localized))
-								{
-									$sql_ary[] = array(
-										'image_name'		=> (string) $image_name,
-										'image_filename'	=> (string) $image_filename,
-										'image_height'		=> (int) $image_height,
-										'image_width'		=> (int) $image_width,
-										'imageset_id'		=> (int) $imageset_row['imageset_id'],
-										'image_lang'		=> (string) $lang_pack['iso'],
-									);
-								}
-							}
-						}
-					}
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($sql_ary))
-				{
-					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-				}
 
 				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
 				$sql = 'SELECT lang_id
@@ -1186,10 +1156,9 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @version $' . 'Id: ' . '$
 * @copyright (c) ' . date('Y') . ' phpBB Group
 * @author {CHANGED} - {AUTHOR}
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -1461,5 +1430,3 @@ $lang = array_merge($lang, array(
 		return $entry;
 	}
 }
-
-?>

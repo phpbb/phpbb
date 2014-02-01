@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 {
@@ -27,7 +26,7 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->tools = new phpbb_db_tools($this->db);
+		$this->tools = new \phpbb\db\tools($this->db);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(

@@ -1,0 +1,34 @@
+<!-- BEGIN oauth -->
+	<tr>
+		<th>{oauth.SERVICE_NAME}</th>
+	</tr>
+
+	<tr>
+		<td class="row1">
+			<form id="ucp" method="post" action="{S_UCP_ACTION}">
+				<table>
+					<!-- IF oauth.UNIQUE_ID -->
+						<tr>
+							<td class="row1">{L_UCP_AUTH_LINK_ID}{L_COLON}</td>
+							<td class="row1">{oauth.UNIQUE_ID}</td>
+						</tr>
+						<tr>
+							<td class="row1">&nbsp;</td>
+							<td class="row1"><input type="submit" name="submit" tabindex="6" value="{L_UCP_AUTH_LINK_UNLINK}" class="button1" /></td>
+						</tr>
+					<!-- ELSE -->
+						<tr>
+							<td class="row1">{L_UCP_AUTH_LINK_ASK}</td>
+						</tr>
+						<tr>
+							<td class="row1"><input type="submit" name="submit" tabindex="6" value="{L_UCP_AUTH_LINK_LINK}" class="button1" /></td>
+						</tr>
+					<!-- ENDIF -->
+				</table>
+				{oauth.HIDDEN_FIELDS}
+				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
+			</form>
+		</td>
+	</tr>
+<!-- END oauth -->

@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_REASON -->
 
@@ -29,7 +29,7 @@
 		<legend>{L_TITLE}</legend>
 		<p><!-- IF S_TRANSLATED -->{L_IS_TRANSLATED_EXPLAIN}<!-- ELSE -->{L_IS_NOT_TRANSLATED_EXPLAIN}<!-- ENDIF --></p>
 	<dl>
-		<dt><label for="reason_title">{L_REASON_TITLE}:</label></dt>
+		<dt><label for="reason_title">{L_REASON_TITLE}{L_COLON}</label></dt>
 		<dd><input name="reason_title" type="text" id="reason_title" value="{REASON_TITLE}" maxlength="255" /></dd>
 	</dl>
 	<!-- IF S_TRANSLATED -->
@@ -39,7 +39,7 @@
 	</dl>
 	<!-- ENDIF -->
 	<dl>
-		<dt><label for="reason_description">{L_REASON_DESCRIPTION}:</label></dt>
+		<dt><label for="reason_description">{L_REASON_DESCRIPTION}{L_COLON}</label></dt>
 		<dd><textarea name="reason_description" id="reason_description" rows="8" cols="80">{REASON_DESCRIPTION}</textarea></dd>
 	</dl>
 	<!-- IF S_TRANSLATED -->
@@ -68,7 +68,7 @@
 	<legend>{L_ACP_REASONS}</legend>
 
 	<!-- IF .reasons -->
-		<table cellspacing="1">
+		<table class="table1">
 			<col class="row1" /><col class="row1" /><col class="row2" />
 		<thead>
 		<tr>
@@ -86,20 +86,14 @@
 					<br /><span>{reasons.REASON_DESCRIPTION}</span>
 				</td>
 				<td style="width: 100px;">{reasons.REASON_COUNT}</td>
-				<td style="width: 80px; text-align: right; white-space: nowrap;">
-					<!-- IF reasons.S_FIRST_ROW && not reasons.S_LAST_ROW -->
-						{ICON_MOVE_UP_DISABLED}
-						<a href="{reasons.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-					<!-- ELSEIF not reasons.S_FIRST_ROW && not reasons.S_LAST_ROW-->
-						<a href="{reasons.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-						<a href="{reasons.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-					<!-- ELSEIF reasons.S_LAST_ROW && not reasons.S_FIRST_ROW -->
-						<a href="{reasons.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
-						{ICON_MOVE_DOWN_DISABLED}
-					<!-- ENDIF -->
+				<td class="actions" style="width: 80px;">
+					<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="up"><a href="{reasons.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
+					<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+					<span class="down"><a href="{reasons.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
 					<a href="{reasons.U_EDIT}">{ICON_EDIT}</a> 
 					<!-- IF reasons.U_DELETE -->
-						<a href="{reasons.U_DELETE}">{ICON_DELETE}</a>
+						<a href="{reasons.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 					<!-- ELSE -->
 						{ICON_DELETE_DISABLED}
 					<!-- ENDIF -->

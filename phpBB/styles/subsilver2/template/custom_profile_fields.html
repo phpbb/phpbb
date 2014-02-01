@@ -21,11 +21,11 @@
 <!-- END bool -->
 
 <!-- BEGIN int -->
-	<input type="text" class="post" name="{int.FIELD_IDENT}" size="{int.FIELD_LENGTH}" value="{int.FIELD_VALUE}" />
+	<input type="number" min="{int.FIELD_MINLEN}" max="{int.FIELD_MAXLEN}" class="post" name="{int.FIELD_IDENT}" size="{int.FIELD_LENGTH}" value="{int.FIELD_VALUE}" />
 <!-- END int -->
 
 <!-- BEGIN date -->
-	<span class="genmed">{L_DAY}:</span> <select name="{date.FIELD_IDENT}_day">{date.S_DAY_OPTIONS}</select>
-	<span class="genmed">{L_MONTH}:</span> <select name="{date.FIELD_IDENT}_month">{date.S_MONTH_OPTIONS}</select>
-	<span class="genmed">{L_YEAR}:</span> <select name="{date.FIELD_IDENT}_year">{date.S_YEAR_OPTIONS}</select>
+	<span class="genmed">{L_DAY}{L_COLON}</span> <select name="{date.FIELD_IDENT}_day">{date.S_DAY_OPTIONS}</select>
+	<span class="genmed">{L_MONTH}{L_COLON}</span> <select name="{date.FIELD_IDENT}_month">{date.S_MONTH_OPTIONS}</select>
+	<span class="genmed">{L_YEAR}{L_COLON}</span> <select name="{date.FIELD_IDENT}_year">{date.S_YEAR_OPTIONS}</select>
 <!-- END date -->

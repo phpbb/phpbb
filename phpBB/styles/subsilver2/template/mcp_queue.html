@@ -7,7 +7,7 @@
 	<th colspan="4" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 </tr>
 <tr>
-	<td colspan="4" class="cat" align="center"><span class="gensmall">{L_DISPLAY_ITEMS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+	<td colspan="4" class="cat" align="center"><span class="gensmall">{L_DISPLAY_ITEMS}{L_COLON}</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
 </tr>
 <tr> 
 	<th>&nbsp;<!-- IF S_TOPICS -->{L_TOPIC}<!-- ELSE -->{L_POST}<!-- ENDIF -->&nbsp;</th>
@@ -18,20 +18,42 @@
 <!-- BEGIN postrow -->
 
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWPOST}">{postrow.POST_SUBJECT}</a></p>
-			<span class="gensmall"><!-- IF postrow.U_VIEWFORUM -->{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span></td>
+		<td style="padding: 4px;"><p class="topictitle">{postrow.ATTACH_ICON_IMG} <a href="{postrow.U_VIEWPOST}">{postrow.POST_SUBJECT}</a></p>
+			<span class="gensmall"><!-- IF postrow.U_VIEWFORUM -->{L_FORUM}{L_COLON} <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span></td>
 		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap"><span class="gen">{postrow.POST_AUTHOR_FULL}</span><br />
 			<span class="gensmall">[ <a href="{postrow.U_VIEW_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
 		<td class="postdetails" style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap">{postrow.POST_TIME}</td>
-		<td align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{postrow.POST_ID}" /></td>
+		<td align="center">
+			<!-- IF S_TOPICS -->
+				<input type="checkbox" class="radio" name="topic_id_list[]" value="{postrow.TOPIC_ID}" />
+			<!-- ELSE -->
+				<input type="checkbox" class="radio" name="post_id_list[]" value="{postrow.POST_ID}" />
+			<!-- ENDIF -->
+		</td>
 	</tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="4" height="30" align="center" valign="middle"><span class="gen"><!-- IF S_TOPICS -->{L_NO_TOPICS_QUEUE}<!-- ELSE -->{L_UNAPPROVED_POSTS_ZERO_TOTAL}<!-- ENDIF --></span></td>
+		<td class="row1" colspan="4" height="30" align="center" valign="middle">
+			<span class="gen">
+				<!-- IF S_RESTORE -->
+					<!-- IF S_TOPICS -->{L_NO_TOPICS_DELETED}<!-- ELSE -->{L_NO_POSTS_DELETED}<!-- ENDIF -->
+				<!-- ELSE -->
+					<!-- IF S_TOPICS -->{L_NO_TOPICS_QUEUE}<!-- ELSE -->{L_NO_POSTS_QUEUE}<!-- ENDIF -->
+				<!-- ENDIF -->
+			</span>
+		</td>
 	</tr>
 <!-- END postrow -->
 <tr>
-	<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" /></td>
+	<td class="cat" colspan="4" align="center">
+		<!-- IF S_RESTORE -->
+			<input class="btnlite" type="submit" name="action[delete]" value="{L_DELETE}" />&nbsp;&nbsp;
+			<input class="btnmain" type="submit" name="action[restore]" value="{L_RESTORE}" />
+		<!-- ELSE -->
+			<input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;
+			<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" />
+		<!-- ENDIF -->
+	</td>
 </tr>
 </table>
 {S_FORM_TOKEN}
@@ -39,7 +61,15 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 <tr>
-	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="gensmall"><a href="#" onclick="marklist('mcp', '', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', '', false); return false;">{L_UNMARK_ALL}</a></b></td>
+	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">
+		<b class="gensmall">
+			<!-- IF S_TOPICS -->
+				<a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a>
+			<!-- ELSE -->
+				<a href="#" onclick="marklist('mcp', 'post_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'post_id_list', false); return false;">{L_UNMARK_ALL}</a>
+			<!-- ENDIF -->
+		</b>
+	</td>
 </tr>
 </table>
 

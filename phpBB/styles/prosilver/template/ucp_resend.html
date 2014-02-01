@@ -4,19 +4,19 @@
 <form action="{S_PROFILE_ACTION}" method="post" id="resend">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<div class="content">
 		<h2>{L_UCP_RESEND}</h2>
 
 		<fieldset>
 		<dl>
-			<dt><label for="username">{L_USERNAME}:</label></dt>
+			<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
 			<dd><input class="inputbox narrow" type="text" name="username" id="username" size="25" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="email">{L_EMAIL_ADDRESS}:</label><br /><span>{L_EMAIL_REMIND}</span></dt>
-			<dd><input class="inputbox narrow" type="text" name="email" id="email" size="25" maxlength="100" /></dd>
+			<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label><br /><span>{L_EMAIL_REMIND}</span></dt>
+			<dd><input class="inputbox narrow" type="email" name="email" id="email" size="25" maxlength="100" /></dd>
 		</dl>
 		<dl>
 			<dt>&nbsp;</dt>
@@ -25,7 +25,7 @@
 		</fieldset>
 	</div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 </form>
 

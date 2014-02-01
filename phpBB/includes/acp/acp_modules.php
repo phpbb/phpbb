@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -37,7 +36,7 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $module;
+		global $db, $user, $auth, $template, $module, $request;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
@@ -111,7 +110,7 @@ class acp_modules
 				}
 
 			break;
-			
+
 			case 'enable':
 			case 'disable':
 				if (!$module_id)
@@ -170,7 +169,15 @@ class acp_modules
 					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
 					$this->remove_cache_file();
 				}
-		
+
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> ($move_module_name !== false),
+					));
+				}
+
 			break;
 
 			case 'quickadd':
@@ -207,7 +214,7 @@ class acp_modules
 						if (!sizeof($errors))
 						{
 							$this->remove_cache_file();
-	
+
 							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 						}
 					}
@@ -231,7 +238,7 @@ class acp_modules
 				{
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-				
+
 				$module_row = $this->get_module_row($module_id);
 
 			// no break
@@ -250,7 +257,7 @@ class acp_modules
 						'module_auth'		=> '',
 					);
 				}
-				
+
 				$module_data = array();
 
 				$module_data['module_basename'] = request_var('module_basename', (string) $module_row['module_basename']);
@@ -295,7 +302,7 @@ class acp_modules
 					if (!sizeof($errors))
 					{
 						$this->remove_cache_file();
-	
+
 						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
@@ -316,7 +323,7 @@ class acp_modules
 					}
 
 					// Name options
-					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
+					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $option . ']</option>';
 
 					$template->assign_block_vars('m_names', array('NAME' => $option, 'A_NAME' => addslashes($option)));
 
@@ -327,7 +334,7 @@ class acp_modules
 						{
 							$s_mode_options .= '<option value="' . $m_mode . '"' . (($m_mode == $module_data['module_mode']) ? ' selected="selected"' : '') . '>' . $this->lang_name($m_values['title']) . '</option>';
 						}
-						
+
 						$template->assign_block_vars('m_names.modes', array(
 							'OPTION'		=> $m_mode,
 							'VALUE'			=> $this->lang_name($m_values['title']),
@@ -336,7 +343,7 @@ class acp_modules
 						);
 					}
 				}
-				
+
 				$s_cat_option = '<option value="0"' . (($module_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . $user->lang['NO_PARENT'] . '</option>';
 
 				$template->assign_vars(array_merge(array(
@@ -349,7 +356,7 @@ class acp_modules
 					'U_EDIT_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 
 					'L_TITLE'			=> $user->lang[strtoupper($action) . '_MODULE'],
-					
+
 					'MODULENAME'		=> $this->lang_name($module_data['module_langname']),
 					'ACTION'			=> $action,
 					'MODULE_ID'			=> $module_id,
@@ -374,6 +381,16 @@ class acp_modules
 		// Default management page
 		if (sizeof($errors))
 		{
+			if ($request->is_ajax())
+			{
+				$json_response = new \phpbb\json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
+					'MESSAGE_TEXT'	=> implode('<br />', $errors),
+					'SUCCESS'	=> false,
+				));
+			}
+
 			$template->assign_vars(array(
 				'S_ERROR'	=> true,
 				'ERROR_MSG'	=> implode('<br />', $errors))
@@ -480,7 +497,7 @@ class acp_modules
 		foreach ($module_infos as $option => $values)
 		{
 			// Name options
-			$s_install_options .= '<optgroup label="' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']">';
+			$s_install_options .= '<optgroup label="' . $this->lang_name($values['title']) . ' [' . $option . ']">';
 
 			// Build module modes
 			foreach ($values['modes'] as $m_mode => $m_values)
@@ -516,7 +533,7 @@ class acp_modules
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-		
+
 		if (!$row)
 		{
 			trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
@@ -524,72 +541,79 @@ class acp_modules
 
 		return $row;
 	}
-	
+
 	/**
 	* Get available module information from module files
+	*
+	* @param string $module
+	* @param bool|string $module_class
+	* @param bool $use_all_available Use all available instead of just all
+	* 						enabled extensions
+	* @return array
 	*/
-	function get_module_infos($module = '', $module_class = false)
+	function get_module_infos($module = '', $module_class = false, $use_all_available = false)
 	{
-		global $phpbb_root_path, $phpEx;
-		
+		global $phpbb_extension_manager, $phpbb_root_path, $phpEx;
+
 		$module_class = ($module_class === false) ? $this->module_class : $module_class;
 
 		$directory = $phpbb_root_path . 'includes/' . $module_class . '/info/';
 		$fileinfo = array();
 
-		if (!$module)
-		{
-			$dh = @opendir($directory);
+		$finder = $phpbb_extension_manager->get_finder();
 
-			if (!$dh)
+		$modules = $finder
+			->extension_suffix('_module')
+			->extension_directory("/$module_class")
+			->core_path("includes/$module_class/info/")
+			->core_prefix($module_class . '_')
+			->get_classes(true, $use_all_available);
+
+		foreach ($modules as $cur_module)
+		{
+			// Skip entries we do not need if we know the module we are
+			// looking for
+			if ($module && strpos(str_replace('\\', '_', $cur_module), $module) === false && $module !== $cur_module)
 			{
-				return $fileinfo;
+				continue;
 			}
 
-			while (($file = readdir($dh)) !== false)
+			$info_class = preg_replace('/_module$/', '_info', $cur_module);
+
+			// If the class does not exist it might be following the old
+			// format. phpbb_acp_info_acp_foo needs to be turned into
+			// acp_foo_info and the respective file has to be included
+			// manually because it does not support auto loading
+			$old_info_class_file = str_replace("phpbb_{$module_class}_info_", '', $cur_module);
+			$old_info_class = $old_info_class_file . '_info';
+
+			if (class_exists($old_info_class))
 			{
-				// Is module?
-				if (preg_match('/^' . $module_class . '_.+\.' . $phpEx . '$/', $file))
+				$info_class = $old_info_class;
+			}
+			else if (!class_exists($info_class))
+			{
+				$info_class = $old_info_class;
+				// need to check class exists again because previous checks triggered autoloading
+				if (!class_exists($info_class) && file_exists($directory . $old_info_class_file . '.' . $phpEx))
 				{
-					$class = str_replace(".$phpEx", '', $file) . '_info';
-
-					if (!class_exists($class))
-					{
-						include($directory . $file);
-					}
-
-					// Get module title tag
-					if (class_exists($class))
-					{
-						$c_class = new $class();
-						$module_info = $c_class->module();
-						$fileinfo[str_replace($module_class . '_', '', $module_info['filename'])] = $module_info;
-					}
+					include($directory . $old_info_class_file . '.' . $phpEx);
 				}
 			}
-			closedir($dh);
 
-			ksort($fileinfo);
-		}
-		else
-		{
-			$filename = $module_class . '_' . basename($module);
-			$class = $module_class . '_' . basename($module) . '_info';
-
-			if (!class_exists($class))
+			if (class_exists($info_class))
 			{
-				include($directory . $filename . '.' . $phpEx);
-			}
+				$info = new $info_class();
+				$module_info = $info->module();
 
-			// Get module title tag
-			if (class_exists($class))
-			{
-				$c_class = new $class();
-				$module_info = $c_class->module();
-				$fileinfo[str_replace($module_class . '_', '', $module_info['filename'])] = $module_info;
+				$main_class = (isset($module_info['filename'])) ? $module_info['filename'] : $cur_module;
+
+				$fileinfo[$main_class] = $module_info;
 			}
 		}
-		
+
+		ksort($fileinfo);
+
 		return $fileinfo;
 	}
 
@@ -717,15 +741,15 @@ class acp_modules
 	*/
 	function remove_cache_file()
 	{
-		global $cache;
+		global $phpbb_container;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$p_class = str_replace(array('.', '/', '\\'), '', basename($this->module_class));
-		
-		$cache->destroy('_modules_' . $p_class);
+
+		$phpbb_container->get('cache.driver')->destroy('_modules_' . $p_class);
 
 		// Additionally remove sql cache
-		$cache->destroy('sql', MODULES_TABLE);
+		$phpbb_container->get('cache.driver')->destroy('sql', MODULES_TABLE);
 	}
 
 	/**
@@ -1061,5 +1085,3 @@ class acp_modules
 		return $this->lang_name($target['module_langname']);
 	}
 }
-
-?>

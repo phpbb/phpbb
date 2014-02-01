@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -26,7 +25,6 @@ class captcha
 {
 	var $width = 360;
 	var $height = 96;
-
 
 	/**
 	* Create the image containing $code with a seed of $seed
@@ -70,7 +68,6 @@ class captcha
 			$bounding_boxes[$i] = $box;
 		}
 
- 
 		// Redistribute leftover x-space
 		$offset = array();
 		for ($i = 0; $i < $code_len; ++$i)
@@ -100,12 +97,12 @@ class captcha
 				imagedashedline($img, mt_rand($x -3, $x + 3), mt_rand(0, 4), mt_rand($x -3, $x + 3), mt_rand($this->height - 5, $this->height), $current_colour);
 			}
 		}
+
 		if ($config['captcha_gd_wave'] && ($config['captcha_gd_y_grid'] || $config['captcha_gd_y_grid']))
 		{
 			$this->wave($img);
 		}
-		
-		
+
 		if ($config['captcha_gd_3d_noise'])
 		{
 			$xoffset = mt_rand(0,9);
@@ -123,11 +120,12 @@ class captcha
 				$dimm = $bounding_boxes[$i];
 				$xoffset += ($offset[$i] - $dimm[0]);
 				$yoffset = mt_rand(-$dimm[1], $this->height - $dimm[3]);
-	 
+
 				$noise[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 				$xoffset += $dimm[2];
 			}
 		}
+
 		$xoffset = 5;
 		for ($i = 0; $i < $code_len; ++$i)
 		{
@@ -138,14 +136,17 @@ class captcha
 			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 			$xoffset += $dimm[2];
 		}
+
 		if ($config['captcha_gd_wave'])
 		{
 			$this->wave($img);
 		}
+
 		if ($config['captcha_gd_foreground_noise'])
 		{
 			$this->noise_line($img, 0, 0, $this->width, $this->height, $colour->get_resource('background'), $scheme, $bg_colours);
 		}
+
 		// Send image
 		header('Content-Type: image/png');
 		header('Cache-control: no-cache, no-store');
@@ -234,7 +235,6 @@ class captcha
 		imagesetthickness($img, 1);
 	}
 
-
 	function captcha_noise_bg_bitmaps()
 	{		
 		return array(
@@ -293,7 +293,7 @@ class captcha
 			),
 		));
 	}
-	
+
 	/**
 	* Return bitmaps
 	*/
@@ -2636,5 +2636,3 @@ class colour_manager
 		}
 	}
 }
-
-?>

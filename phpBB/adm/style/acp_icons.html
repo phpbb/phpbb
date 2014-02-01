@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT -->
 
@@ -22,7 +22,7 @@
 			{
 				var use_element = smiley[newimage];
 
-				document.getElementById('add_image_src').src = '{PHPBB_ROOT_PATH}{IMG_PATH}/' + encodeURI(newimage);
+				document.getElementById('add_image_src').src = '{ROOT_PATH}{IMG_PATH}/' + encodeURI(newimage);
 				document.getElementById('add_code').value = use_element['code'];
 				document.getElementById('add_emotion').value = use_element['emotion'];
 				document.getElementById('add_width').value = use_element['width'];
@@ -74,7 +74,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<table cellspacing="1" id="smilies">
+	<table class="table1 zebra-table" id="smilies">
 	<thead>
 	<tr>
 		<th colspan="{COLSPAN}">{L_CONFIG}</th>
@@ -100,7 +100,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN items -->
-		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 	
 		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="" title="" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
 		<td style="vertical-align: top;">[{items.IMG}]</td>
@@ -108,8 +108,8 @@
 			<td><input class="text post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" maxlength="50" /></td>
 			<td><input class="text post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="10" maxlength="50" /></td>
 		<!-- ENDIF -->
-		<td><input class="text post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
-		<td><input class="text post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
+		<td><input class="text post" type="number" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
+		<td><input class="text post" type="number" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
 		<td>
 			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.A_IMG}', this.checked, '{items.S_ROW_COUNT}');"/>
 			<!-- IF items.S_ID -->
@@ -136,8 +136,8 @@
 		<td style="vertical-align: top;"><img src="{IMG_SRC}" id="add_image_src" alt="" title="" /></td>
 		<td><input class="text post" type="text" name="add_code" id="add_code" value="{CODE}" size="10" maxlength="50" /></td>
 		<td><input class="text post" type="text" name="add_emotion" id="add_emotion" value="{EMOTION}" size="10" maxlength="50" /></td>
-		<td><input class="text post" type="text" size="3" name="add_width" id="add_width" value="{WIDTH}" /></td>
-		<td><input class="text post" type="text" size="3" name="add_height" id="add_height" value="{HEIGHT}" /></td>
+		<td><input class="text post" type="number" size="3" name="add_width" id="add_width" value="{WIDTH}" /></td>
+		<td><input class="text post" type="number" size="3" name="add_height" id="add_height" value="{HEIGHT}" /></td>
 		<td><input type="checkbox" class="radio" name="add_display_on_posting" checked="checked" onclick="toggle_select('add', this.checked, 'add_order');"/></td>
  		<td><select id="order_add_order" name="add_order">
 				<optgroup id="order_disp_add_order" label="{L_DISPLAY_POSTING}">{S_ADD_ORDER_LIST_DISPLAY}</optgroup>
@@ -218,7 +218,7 @@
 
 	<legend>{L_TITLE}</legend>
 
-	<table cellspacing="1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_TITLE}</th>
@@ -236,16 +236,18 @@
 				<td class="row3" colspan="{COLSPAN}" style="text-align: center;">{L_NOT_DISPLAYED}</td>
 			</tr>
 		<!-- ENDIF -->
-		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td style="width: 85%; text-align: center;"><img src="{items.IMG_SRC}" width="{items.WIDTH}" height="{items.HEIGHT}" alt="{items.ALT_TEXT}" title="{items.ALT_TEXT}" /></td>
 			<!-- IF S_SMILIES -->
 				<td style="text-align: center;">{items.CODE}</td>
 				<td style="text-align: center;">{items.EMOTION}</td>
 			<!-- ENDIF -->
-			<td style="text-align: right; white-space: nowrap;">
-				<!-- IF items.S_FIRST_ROW and not PREVIOUS_PAGE -->{ICON_MOVE_UP_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_UP}">{ICON_MOVE_UP}</a><!-- ENDIF -->&nbsp;
-				<!-- IF items.S_LAST_ROW and not NEXT_PAGE -->{ICON_MOVE_DOWN_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a><!-- ENDIF -->
-				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}">{ICON_DELETE}</a>
+			<td class="actions" style="text-align: right;">
+				<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+				<span class="up"><a href="{items.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
+				<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+				<span class="down"><a href="{items.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
+				<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 			</td>
 		</tr>
 	<!-- BEGINELSE -->
@@ -255,7 +257,11 @@
 	<!-- END items -->
 	</tbody>
 	</table>
-	<div>{PAGINATION}</div>
+	<div class="pagination">
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->	
+	<!-- ENDIF -->
+	</div>
 	<p class="quick">
 		<input class="button2" name="add" type="submit" value="{L_ICON_ADD}" />&nbsp; &nbsp;<input class="button2" type="submit" name="edit" value="{L_ICON_EDIT}" />
 	</p>

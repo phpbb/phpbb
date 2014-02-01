@@ -1,0 +1,39 @@
+<table class="tablebg" width="100%" cellspacing="1">
+	<!-- IF .avatar_local_cats -->
+	<tr> 
+		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}{L_COLON} </span><select name="avatar_local_cat" id="category">
+			<option value="">{L_NO_AVATAR_CATEGORY}</option>
+			<!-- BEGIN avatar_local_cats -->
+			<option value="{avatar_local_cats.NAME}"<!-- IF avatar_local_cats.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_local_cats.NAME}</option>
+			<!-- END avatar_local_cats -->
+			</select>&nbsp; <input class="btnlite" tabindex="0" type="submit" value="{L_GO}" name="avatar_local_go" />
+		</td>
+	</tr>
+	<tr> 
+		<td class="row1" colspan="2" align="center">
+			<table cellspacing="1" cellpadding="4" border="0">
+			<!-- BEGIN avatar_local_row -->
+			<tr> 
+				<!-- BEGIN avatar_local_col -->
+					<td class="row1" align="center"><img src="{avatar_local_col.avatar_local_col.AVATAR_IMAGE}" alt="{avatar_local_col.avatar_local_col.AVATAR_NAME}" title="{avatar_local_col.avatar_local_col.AVATAR_NAME}" /></td>
+				<!-- END avatar_local_col -->
+			</tr>
+			<tr>
+				<!-- BEGIN avatar_local_option -->
+					<td class="row2" align="center"><input type="radio" class="radio" name="avatar_local_file" value="{avatar_local_col.avatar_local_option.S_OPTIONS_AVATAR}" /></td>
+				<!-- END avatar_local_option -->
+			</tr>
+			<!-- BEGINELSE -->
+			<tr>
+				<td class="row1" colspan="2">{L_NO_AVATAR_CATEGORY}</td>
+			</tr>
+			<!-- END avatar_local_col -->
+			</table>
+		</td>
+	</tr>
+	<!-- ELSE -->
+	<tr>
+		<td class="row1" colspan="2"><strong>{L_NO_AVATARS}</strong></td>
+	</tr>
+	<!-- ENDIF -->
+</table>

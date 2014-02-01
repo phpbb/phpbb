@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -30,7 +29,6 @@ class bbcode
 	var $bbcodes = array();
 
 	var $template_bitfield;
-	var $template_filename = '';
 
 	/**
 	* Constructor
@@ -128,28 +126,16 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $template, $user;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager, $phpbb_path_helper;
 
 		if (empty($this->template_filename))
 		{
-			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
-			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
+			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			if (!@file_exists($this->template_filename))
-			{
-				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
-				{
-					$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template/bbcode.html';
-					if (!@file_exists($this->template_filename))
-					{
-						trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
-					}
-				}
-				else
-				{
-					trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
-				}
-			}
+			$template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new phpbb\template\context(), $phpbb_extension_manager);
+			$template->set_style();
+			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
+			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');
 		}
 
 		$bbcode_ids = $rowset = $sql = array();
@@ -605,5 +591,3 @@ class bbcode
 		return $code;
 	}
 }
-
-?>

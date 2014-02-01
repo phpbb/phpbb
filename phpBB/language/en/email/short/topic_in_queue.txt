@@ -1,0 +1,13 @@
+Subject: Topic moderation notification - "{TOPIC_TITLE}"
+
+Hello {USERNAME},
+
+You are receiving this notification because the topic "{TOPIC_TITLE}" at "{SITENAME}" needs approval.
+
+If you want to view the topic, click the following link:
+{U_VIEW_TOPIC}
+
+If you want to view the forum, click the following link:
+{U_FORUM}
+
+{EMAIL_SIG}

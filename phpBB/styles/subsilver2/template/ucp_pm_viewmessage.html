@@ -8,23 +8,23 @@
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="4">
 
 <tr class="row1">
-	<td class="genmed" nowrap="nowrap" width="150"><b>{L_PM_SUBJECT}:</b></td>
+	<td class="genmed" nowrap="nowrap" width="150"><b>{L_PM_SUBJECT}{L_COLON}</b></td>
 	<td class="gen">{SUBJECT}</td>
 </tr>
 
 <tr class="row1">
-	<td class="genmed" nowrap="nowrap" width="150"><b>{L_PM_FROM}:</b></td>
+	<td class="genmed" nowrap="nowrap" width="150"><b>{L_PM_FROM}{L_COLON}</b></td>
 	<td class="gen">{MESSAGE_AUTHOR_FULL}</td>
 </tr>
 
 <tr class="row1">
-	<td class="genmed" nowrap="nowrap" width="150"><b>{L_SENT_AT}:</b></td>
+	<td class="genmed" nowrap="nowrap" width="150"><b>{L_SENT_AT}{L_COLON}</b></td>
 	<td class="gen">{SENT_DATE}</td>
 </tr>
 
 <!-- IF S_TO_RECIPIENT -->
 	<tr class="row1">
-		<td class="genmed" nowrap="nowrap" width="150"><b>{L_TO}:</b></td>
+		<td class="genmed" nowrap="nowrap" width="150"><b>{L_TO}{L_COLON}</b></td>
 		<td class="gen">
 		<!-- BEGIN to_recipient -->
 			<!-- IF to_recipient.IS_GROUP --><span class="sep"><a href="{to_recipient.U_VIEW}">{to_recipient.NAME}</a></span><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
@@ -35,7 +35,7 @@
 
 <!-- IF S_BCC_RECIPIENT -->
 	<tr class="row1">
-		<td class="genmed" nowrap="nowrap" width="150"><b>{L_BCC}:</b></td>
+		<td class="genmed" nowrap="nowrap" width="150"><b>{L_BCC}{L_COLON}</b></td>
 		<td class="gen">
 		<!-- BEGIN bcc_recipient -->
 			<!-- IF bcc_recipient.IS_GROUP --><span class="sep"><a href="{bcc_recipient.U_VIEW}">{bcc_recipient.NAME}</a></span><!-- ELSE -->{bcc_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
@@ -69,7 +69,7 @@
 							
 					<table class="tablebg" width="100%" cellspacing="1">
 					<tr>
-						<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+						<td class="row3"><b class="genmed">{L_ATTACHMENTS}{L_COLON} </b></td>
 					</tr>
 					<!-- BEGIN attachment -->
 						<tr>
@@ -93,7 +93,7 @@
 
 				<table width="100%" cellspacing="0">
 				<tr valign="middle">
-					<td class="gensmall" align="{S_CONTENT_FLOW_END}"> <!-- IF U_REPORT --><a href="{U_REPORT}">{REPORT_IMG}</a> <!-- ENDIF --><!-- IF U_DELETE --><a href="{U_DELETE}">{DELETE_IMG}</a> <!-- ENDIF --></td>
+					<td class="gensmall" align="{S_CONTENT_FLOW_END}"> <!-- IF U_REPORT --><a href="{U_REPORT}" class="imageset">{REPORT_IMG}</a> <!-- ENDIF --><!-- IF U_DELETE --><a href="{U_DELETE}" class="imageset">{DELETE_IMG}</a> <!-- ENDIF --></td>
 				</tr>
 				</table>
 
@@ -104,7 +104,7 @@
 </tr>
 
 <tr class="row1">
-	<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF U_MESSAGE_AUTHOR --><a href="{U_MESSAGE_AUTHOR}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF U_EDIT --><a href="{U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF --> <!-- IF U_QUOTE --><a href="{U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF U_POST_REPLY_PM --><a href="{U_POST_REPLY_PM}">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
+	<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF U_MESSAGE_AUTHOR --><a href="{U_MESSAGE_AUTHOR}" class="imageset">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF U_EMAIL --><a href="{U_EMAIL}" class="imageset">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF U_EDIT --><a href="{U_EDIT}" class="imageset">{EDIT_IMG}</a> <!-- ENDIF --> <!-- IF U_QUOTE --><a href="{U_QUOTE}" class="imageset">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF U_POST_REPLY_PM --><a href="{U_POST_REPLY_PM}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
 </tr>
 
 <tr>

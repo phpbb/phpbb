@@ -4,9 +4,8 @@
 * acp_users [English]
 *
 * @package language
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -55,7 +54,7 @@ $lang = array_merge($lang, array(
 	'CANNOT_REMOVE_YOURSELF'		=> 'You are not allowed to remove your own user account.',
 	'CANNOT_SET_FOUNDER_IGNORED'	=> 'You are not able to promote ignored users to be founders.',
 	'CANNOT_SET_FOUNDER_INACTIVE'	=> 'You need to activate users before you promote them to founders, only activated users are able to be promoted.',
-	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users e-mail address.',
+	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users email address.',
 
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',
@@ -94,8 +93,8 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
 	'USER_ADMIN_ACTIVATED'			=> 'User activated successfully.',
 	'USER_ADMIN_AVATAR_REMOVED'		=> 'Successfully removed avatar from user account.',
-	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by e-mail',
-	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'E-mail address banned via user management',
+	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by email',
+	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management',
 	'USER_ADMIN_BAN_IP'				=> 'Ban by IP',
 	'USER_ADMIN_BAN_IP_REASON'		=> 'IP banned via user management',
 	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management',
@@ -139,5 +138,3 @@ $lang = array_merge($lang, array(
 	'USER_WARNING_LOG_DELETED'		=> 'No information available. Possibly the log entry has been deleted.',
 	'USER_TOOLS'					=> 'Basic tools',
 ));
-
-?>

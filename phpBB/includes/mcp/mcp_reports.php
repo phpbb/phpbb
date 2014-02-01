@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -34,7 +33,7 @@ class mcp_reports
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $cache;
-		global $config, $phpbb_root_path, $phpEx, $action;
+		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -72,7 +71,7 @@ class mcp_reports
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
+				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, r.reported_post_uid, r.reported_post_bitfield, r.reported_post_enable_magic_url, r.reported_post_enable_smilies, r.reported_post_enable_bbcode, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
@@ -88,6 +87,10 @@ class mcp_reports
 					trigger_error('NO_REPORT');
 				}
 
+				$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
+
 				if (!$report_id && $report['report_closed'])
 				{
 					trigger_error('REPORT_CLOSED');
@@ -95,6 +98,10 @@ class mcp_reports
 
 				$post_id = $report['post_id'];
 				$report_id = $report['report_id'];
+				
+				$parse_post_flags = $report['reported_post_enable_bbcode'] ? OPTION_FLAG_BBCODE : 0;
+				$parse_post_flags += $report['reported_post_enable_smilies'] ? OPTION_FLAG_SMILIES : 0;
+				$parse_post_flags += $report['reported_post_enable_magic_url'] ? OPTION_FLAG_LINKS : 0; 
 
 				$post_info = get_post_data(array($post_id), 'm_report', true);
 
@@ -117,8 +124,9 @@ class mcp_reports
 					$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
 						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
-						'TOPIC_TITLE'		=> $post_info['topic_title'])
-					);
+						'TOPIC_TITLE'		=> $post_info['topic_title'],
+						'REPORTED_POST_ID'	=> $post_id,
+					));
 				}
 
 				$topic_tracking_info = $extensions = $attachments = array();
@@ -136,18 +144,7 @@ class mcp_reports
 
 				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
-				// Process message, leave it uncensored
-				$message = $post_info['post_text'];
 
-				if ($post_info['bbcode_bitfield'])
-				{
-					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-					$bbcode = new bbcode($post_info['bbcode_bitfield']);
-					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
-				}
-
-				$message = bbcode_nl2br($message);
-				$message = smiley_text($message);
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
@@ -168,7 +165,7 @@ class mcp_reports
 					if (sizeof($attachments))
 					{
 						$update_count = array();
-						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
+						parse_attachments($post_info['forum_id'], $report['reported_post_text'], $attachments, $update_count);
 					}
 
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
@@ -190,7 +187,7 @@ class mcp_reports
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
+					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED),
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_REPORT_CLOSED'		=> $report['report_closed'],
 					'S_USER_NOTES'			=> true,
@@ -228,7 +225,7 @@ class mcp_reports
 					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
-					'POST_PREVIEW'			=> $message,
+					'POST_PREVIEW'			=> generate_text_for_display($report['reported_post_text'], $report['reported_post_uid'], $report['reported_post_bitfield'], $parse_post_flags, false),
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
@@ -296,11 +293,11 @@ class mcp_reports
 
 					$global_id = $forum_list[0];
 
-					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
+					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 					$result = $db->sql_query($sql);
-					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
+					$forum_info['forum_topics_approved'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
 				}
 				else
@@ -314,11 +311,11 @@ class mcp_reports
 
 					$forum_info = $forum_info[$forum_id];
 					$forum_list = array($forum_id);
-					$global_id = $forum_id;
 				}
 
 				$forum_list[] = 0;
 				$forum_data = array();
+				$pagination = $phpbb_container->get('pagination');
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
@@ -333,7 +330,7 @@ class mcp_reports
 				$sort_by_sql = $sort_order_sql = array();
 				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
+				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				if ($mode == 'reports')
@@ -370,7 +367,7 @@ class mcp_reports
 
 				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -384,14 +381,8 @@ class mcp_reports
 					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$global_topic = ($row['forum_id']) ? false : true;
-						if ($global_topic)
-						{
-							$row['forum_id'] = $global_id;
-						}
-
 						$template->assign_block_vars('postrow', array(
-							'U_VIEWFORUM'				=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
 							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
 
@@ -405,18 +396,22 @@ class mcp_reports
 							'REPORTER'				=> get_username_string('username', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 							'U_REPORTER'			=> get_username_string('profile', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 
-							'FORUM_NAME'	=> (!$global_topic) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+							'FORUM_NAME'	=> $forum_data[$row['forum_id']]['forum_name'],
 							'POST_ID'		=> $row['post_id'],
 							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 							'POST_TIME'		=> $user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
-							'TOPIC_TITLE'	=> $row['topic_title'])
-						);
+							'TOPIC_TITLE'	=> $row['topic_title'],
+							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						));
 					}
 					$db->sql_freeresult($result);
 					unset($report_ids, $row);
 				}
+
+				$base_url = $this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -428,11 +423,10 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),
+					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
 					)
 				);
 
@@ -448,7 +442,7 @@ class mcp_reports
 function close_report($report_id_list, $mode, $action, $pm = false)
 {
 	global $db, $template, $user, $config, $auth;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_container;
 
 	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';
 	$id_column = ($pm) ? 'pm_id' : 'post_id';
@@ -622,19 +616,21 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 		unset($close_report_posts, $close_report_topics);
 
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
 		foreach ($reports as $report)
 		{
 			if ($pm)
 			{
 				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
+				$phpbb_notifications->delete_notifications('report_pm', $report['pm_id']);
 			}
 			else
 			{
 				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+				$phpbb_notifications->delete_notifications('report_post', $report['post_id']);
 			}
 		}
-
-		$messenger = new messenger();
 
 		// Notify reporters
 		if (sizeof($notify_reporters))
@@ -648,30 +644,21 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 				$post_id = $reporter[$id_column];
 
-				$messenger->template((($pm) ? 'pm_report_' : 'report_') . $action . 'd', $reporter['user_lang']);
-
-				$messenger->to($reporter['user_email'], $reporter['username']);
-				$messenger->im($reporter['user_jabber'], $reporter['username']);
-
 				if ($pm)
 				{
-					$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
-						'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
-						'PM_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['message_subject'])),
-					));
+					$phpbb_notifications->add_notifications('report_pm_closed', array_merge($post_info[$post_id], array(
+						'reporter'			=> $reporter['user_id'],
+						'closer_id'			=> $user->data['user_id'],
+						'from_user_id'		=> $post_info[$post_id]['author_id'],
+					)));
 				}
 				else
 				{
-					$messenger->assign_vars(array(
-						'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
-						'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
-						'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
-						'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
-					);
+					$phpbb_notifications->add_notifications('report_post_closed', array_merge($post_info[$post_id], array(
+						'reporter'			=> $reporter['user_id'],
+						'closer_id'			=> $user->data['user_id'],
+					)));
 				}
-
-				$messenger->send($reporter['user_notify_type']);
 			}
 		}
 
@@ -685,8 +672,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 
 		unset($notify_reporters, $post_info, $reports);
-
-		$messenger->save_queue();
 
 		$success_msg = (sizeof($report_id_list) == 1) ? "{$pm_prefix}REPORT_" . strtoupper($action) . 'D_SUCCESS' : "{$pm_prefix}REPORTS_" . strtoupper($action) . 'D_SUCCESS';
 	}
@@ -725,5 +710,3 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
-
-?>

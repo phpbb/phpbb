@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -20,7 +19,7 @@ class acp_language_info
 			'title'		=> 'ACP_LANGUAGE',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'lang_packs'		=> array('title' => 'ACP_LANGUAGE_PACKS', 'auth' => 'acl_a_language', 'cat' => array('ACP_GENERAL_TASKS')),
+				'lang_packs'		=> array('title' => 'ACP_LANGUAGE_PACKS', 'auth' => 'acl_a_language', 'cat' => array('ACP_LANGUAGE')),
 			),
 		);
 	}
@@ -33,5 +32,3 @@ class acp_language_info
 	{
 	}
 }
-
-?>

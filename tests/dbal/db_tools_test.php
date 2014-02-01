@@ -8,7 +8,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 {
@@ -27,7 +26,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->tools = new phpbb_db_tools($this->db);
+		$this->tools = new \phpbb\db\tools($this->db);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(
@@ -255,7 +254,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_peform_schema_changes_drop_tables()
 	{
-		$db_tools = $this->getMock('phpbb_db_tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools', array(
 			'sql_table_exists',
 			'sql_table_drop',
 		), array(&$this->db));
@@ -281,7 +280,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_peform_schema_changes_drop_columns()
 	{
-		$db_tools = $this->getMock('phpbb_db_tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools', array(
 			'sql_column_exists',
 			'sql_column_remove',
 		), array(&$this->db));

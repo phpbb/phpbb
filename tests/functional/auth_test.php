@@ -39,10 +39,19 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 
 		// logout
 		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('LOGOUT_REDIRECT'), $crawler->filter('#message')->text());
 
 		// look for a register link, which should be visible only when logged out
 		$crawler = self::request('GET', 'index.php');
 		$this->assertContains($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
+	}
+
+	public function test_acp_login()
+	{
+		$this->login();
+		$this->admin_login();
+
+		// check that we are logged in
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 	}
 }

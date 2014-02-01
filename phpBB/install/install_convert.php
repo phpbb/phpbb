@@ -2,9 +2,8 @@
 /**
 *
 * @package install
-* @version $Id$
 * @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -91,12 +90,20 @@ class install_convert extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language, $table_prefix;
-		global $convert;
+		global $convert, $request, $phpbb_container;
 
 		$this->tpl_name = 'install_convert';
 		$this->mode = $mode;
 
 		$convert = new convert($this->p_master);
+
+		// Enable super globals to prevent issues with the new \phpbb\request\request object
+		$request->enable_super_globals();
+		// Create a normal container now
+		$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+
+		// Create cache
+		$cache = $phpbb_container->get('cache');
 
 		switch ($sub)
 		{
@@ -122,24 +129,18 @@ class install_convert extends module
 
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
-				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$db = new $sql_db();
+				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
 				// We need to fill the config to let internal functions correctly work
-				$sql = 'SELECT *
-					FROM ' . CONFIG_TABLE;
-				$result = $db->sql_query($sql);
-
-				$config = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$config[$row['config_name']] = $row['config_value'];
-				}
-				$db->sql_freeresult($result);
+				$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+				set_config(null, null, null, $config);
+				set_config_count(null, null, null, $config);
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
@@ -217,10 +218,11 @@ class install_convert extends module
 
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
-				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$db = new $sql_db();
+				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
@@ -340,26 +342,20 @@ class install_convert extends module
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$db = new $sql_db();
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
 		$this->page_title = $lang['STAGE_SETTINGS'];
 
 		// We need to fill the config to let internal functions correctly work
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		$convertor_tag = request_var('tag', '');
 
@@ -430,6 +426,7 @@ class install_convert extends module
 			{
 				$error[] = sprintf($lang['TABLE_PREFIX_SAME'], $src_table_prefix);
 			}
+			$src_dbms  = phpbb_convert_30_dbms_to_31($src_dbms);
 
 			// Check table prefix
 			if (!sizeof($error))
@@ -440,8 +437,7 @@ class install_convert extends module
 
 				if ($src_dbms != $dbms || $src_dbhost != $dbhost || $src_dbport != $dbport || $src_dbname != $dbname || $src_dbuser != $dbuser)
 				{
-					$sql_db = 'dbal_' . $src_dbms;
-					$src_db = new $sql_db();
+					$src_db = new $src_dbms();
 					$src_db->sql_connect($src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, false, true);
 					$same_db = false;
 				}
@@ -584,28 +580,24 @@ class install_convert extends module
 	*/
 	function convert_data($sub)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
+		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
+		global $request;
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$db = new $sql_db();
+		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+
+		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
+		// We need to fill the config to let internal functions correctly work
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		set_config(null, null, null, $config);
+		set_config_count(null, null, null, $config);
 
 		// Override a couple of config variables for the duration
 		$config['max_quote_depth'] = 0;
@@ -659,12 +651,8 @@ class install_convert extends module
 		$src_db = $same_db = null;
 		if ($convert->src_dbms != $dbms || $convert->src_dbhost != $dbhost || $convert->src_dbport != $dbport || $convert->src_dbname != $dbname || $convert->src_dbuser != $dbuser)
 		{
-			if ($convert->src_dbms != $dbms)
-			{
-				require($phpbb_root_path . 'includes/db/' . $convert->src_dbms . '.' . $phpEx);
-			}
-			$sql_db = 'dbal_' . $convert->src_dbms;
-			$src_db = new $sql_db();
+			$dbms = $convert->src_dbms;
+			$src_db = new $dbms();
 			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, htmlspecialchars_decode($convert->src_dbpasswd), $convert->src_dbname, $convert->src_dbport, false, true);
 			$same_db = false;
 		}
@@ -755,24 +743,22 @@ class install_convert extends module
 			$this->p_master->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
-		$search_type = basename(trim($config['search_type']));
+		$search_type = $config['search_type'];
 
 		// For conversions we are a bit less strict and set to a search backend we know exist...
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
-			$search_type = 'fulltext_native';
+			$search_type = '\phpbb\search\fulltext_native';
 			set_config('search_type', $search_type);
 		}
 
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!class_exists($search_type))
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		require($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
-
 		$error = false;
-		$convert->fulltext_search = new $search_type($error);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
 
 		if ($error)
 		{
@@ -812,7 +798,7 @@ class install_convert extends module
 
 		if (!$current_table && !$skip_rows)
 		{
-			if (empty($_REQUEST['confirm']))
+			if (!$request->variable('confirm', false))
 			{
 				// If avatars / ranks / smilies folders are specified make sure they are writable
 				$bad_folders = array();
@@ -955,7 +941,7 @@ class install_convert extends module
 				}
 				else if (sizeof($missing_tables))
 				{
-					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode(', ', $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
+					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode($user->lang['COMMA_SEPARATOR'], $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
 				}
 
 				$url = $this->save_convert_progress('&amp;confirm=1');
@@ -973,7 +959,7 @@ class install_convert extends module
 				));
 
 				return;
-			} // if (empty($_REQUEST['confirm']))
+			} // if (!$request->variable('confirm', false)))
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'		=> true,
@@ -1218,7 +1204,7 @@ class install_convert extends module
 
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> "skip_rows = $skip_rows",
-					'RESULT'	=> $rows . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
+					'RESULT'	=> $rows . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] : ''),
 				));
 
 				$mtime = explode(' ', microtime());
@@ -1402,7 +1388,7 @@ class install_convert extends module
 			}
 
 			// When we reach this point, either the current table has been processed or we're running out of time.
-			if (still_on_time() && $counting < $convert->batch_size/* && !defined('DEBUG_EXTRA')*/)
+			if (still_on_time() && $counting < $convert->batch_size/* && !defined('DEBUG')*/)
 			{
 				$skip_rows = 0;
 				$current_table++;
@@ -1487,11 +1473,10 @@ class install_convert extends module
 			$end = ($sync_batch + $batch_size - 1);
 
 			// Sync all topics in batch mode...
-			sync('topic_approved', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, false);
 			sync('topic', 'range', 'topic_id BETWEEN ' . $sync_batch . ' AND ' . $end, true, true);
 
 			$template->assign_block_vars('checks', array(
-				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
+				'TITLE'		=> sprintf($user->lang['SYNC_TOPIC_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' ' . $user->lang['KIB'] . ']' : ''),
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
@@ -1561,6 +1546,7 @@ class install_convert extends module
 	function finish_conversion()
 	{
 		global $db, $phpbb_root_path, $phpEx, $convert, $config, $language, $user, $template;
+		global $cache, $auth, $phpbb_container, $phpbb_log;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1570,9 +1556,10 @@ class install_convert extends module
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
 		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log
+		$phpbb_log = $phpbb_container->get('log');
 		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
 
 		$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final&amp;language=$language";
@@ -1779,7 +1766,7 @@ class install_convert extends module
 		global $convert;
 
 		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG_EXTRA')) ? 'IGNORE ' : '';
+		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
 		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();
@@ -2109,5 +2096,3 @@ class install_convert extends module
 		'refresh'			=> array('lang' => 'REFRESH_PAGE',	'type' => 'radio:yes_no', 'explain' => true),
 	);
 }
-
-?>
