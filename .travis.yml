@@ -24,10 +24,3 @@ before_script:
 
 script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration travis/phpunit-$DB-travis.xml; else phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml; fi"
-  
-notifications:
-  email:
-    recipients:
-      - dev-team@phpbb.com
-    on_success: change
-    on_failure: change
