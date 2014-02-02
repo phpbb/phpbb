@@ -55,16 +55,6 @@ class phpbb_profile_custom_test extends phpbb_database_test_case
 
 		$cp = new \phpbb\profilefields\type\type_dropdown(
 			new \phpbb\profilefields\lang_helper($db, $table_prefix . 'profile_fields_lang'),
-			new \phpbb\profilefields\profilefields(
-				$this->getMock('\phpbb\auth\auth'),
-				$db,
-				$request,
-				$template,
-				$user,
-				$table_prefix . 'profile_fields',
-				$table_prefix . 'profile_lang',
-				$table_prefix . 'profile_fields_data'
-			),
 			$request,
 			$template,
 			$user
