@@ -2277,7 +2277,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 
 	if ($prune_mode == 'shadow')
 	{
-		$sql_and .= ' AND topic_type = ' . ITEM_MOVED . "AND topic_last_post_time < $prune_date";
+		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
 	}
 
 	$sql = 'SELECT topic_id
