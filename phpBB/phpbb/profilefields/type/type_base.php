@@ -63,6 +63,14 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_template_filename()
+	{
+		return 'profilefields/' . $this->get_name_short() . '.html';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return 'pf_' . $field_data['field_ident'];
@@ -153,7 +161,7 @@ abstract class type_base implements type_interface
 
 		// set template filename
 		$this->template->set_filenames(array(
-			'cp_' . $this->get_name_short() . '_body'		=> 'custom_profile_fields.html',
+			'cp_body'		=> $this->get_template_filename(),
 		));
 
 		// empty previously filled blockvars
@@ -162,6 +170,6 @@ abstract class type_base implements type_interface
 		// Assign template variables
 		$this->generate_field($profile_row, $preview_options);
 
-		return $this->template->assign_display('cp_' . $this->get_name_short() . '_body');
+		return $this->template->assign_display('cp_body');
 	}
 }
