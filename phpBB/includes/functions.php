@@ -5194,6 +5194,31 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 }
 
 /**
+* Get groupname or translated groupname if it exists
+*
+* @param string $groupname the stored groupname
+* @return string groupname or tranlsated groupname if existing
+*
+* Here on purpose, function is used throughout most pages including acp
+*/
+function get_translated_groupname($groupname, $sepclass = '')
+{
+	global $user;
+
+	$prefix = '';
+	$suffix = '';
+
+	if(!empty($sepclass))
+	{
+		$prefix = '<span class="' . $sepclass . '">';
+		$suffix = '</span>';
+	}
+
+	return $prefix . (isset($user->lang['G_' . $groupname]) ? $user->lang['G_' . $groupname] : $groupname) . $suffix;
+}
+
+
+/**
 * Closing the cache object and the database
 * Cool function name, eh? We might want to add operations to it later
 */
