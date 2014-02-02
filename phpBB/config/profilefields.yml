@@ -1,6 +1,6 @@
 services:
-    profilefields:
-        class: \phpbb\profilefields\profilefields
+    profilefields.manager:
+        class: \phpbb\profilefields\manager
         arguments:
             - @auth
             - @dbal.conn
@@ -30,7 +30,7 @@ services:
         class: \phpbb\profilefields\type\type_bool
         arguments:
             - @profilefields.lang_helper
-            - @profilefields
+            - @profilefields.manager
             - @request
             - @template
             - @user
@@ -40,7 +40,7 @@ services:
     profilefields.type.date:
         class: \phpbb\profilefields\type\type_date
         arguments:
-            - @profilefields
+            - @profilefields.manager
             - @request
             - @template
             - @user
@@ -51,7 +51,7 @@ services:
         class: \phpbb\profilefields\type\type_dropdown
         arguments:
             - @profilefields.lang_helper
-            - @profilefields
+            - @profilefields.manager
             - @request
             - @template
             - @user

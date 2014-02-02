@@ -1344,7 +1344,7 @@ class acp_users
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-				$cp = $phpbb_container->get('profilefields');
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 

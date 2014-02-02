@@ -50,7 +50,7 @@ class acp_profile
 			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$cp = $phpbb_container->get('profilefields');
+		$cp = $phpbb_container->get('profilefields.manager');
 		$this->type_collection = $phpbb_container->get('profilefields.type_collection');
 
 		// Build Language array

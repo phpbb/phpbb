@@ -13,7 +13,7 @@ namespace phpbb\profilefields;
 * Custom Profile Fields
 * @package phpBB3
 */
-class profilefields
+class manager
 {
 	/**
 	* Auth object

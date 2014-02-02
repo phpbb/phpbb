@@ -256,7 +256,7 @@ class ucp_profile
 					trigger_error('NO_AUTH_PROFILEINFO');
 				}
 
-				$cp = $phpbb_container->get('profilefields');
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 

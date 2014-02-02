@@ -1265,7 +1265,7 @@ $db->sql_freeresult($result);
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
 {
-	$cp = $phpbb_container->get('profilefields');
+	$cp = $phpbb_container->get('profilefields.manager');
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
 	$profile_fields_tmp = $cp->generate_profile_fields_template('grab', $id_cache);

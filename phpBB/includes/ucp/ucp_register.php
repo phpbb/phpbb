@@ -76,7 +76,7 @@ class ucp_register
 			}
 		}
 
-		$cp = $phpbb_container->get('profilefields');
+		$cp = $phpbb_container->get('profilefields.manager');
 
 		$error = $cp_data = $cp_error = array();
 		$s_hidden_fields = array();

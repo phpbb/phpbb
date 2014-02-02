@@ -276,7 +276,7 @@ function user_add($user_row, $cp_data = false)
 	{
 		$cp_data['user_id'] = (int) $user_id;
 
-		$cp = $phpbb_container->get('profilefields');
+		$cp = $phpbb_container->get('profilefields.manager');
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
 			$db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 		$db->sql_query($sql);

@@ -61,7 +61,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Load the custom profile fields
 	if ($config['load_cpf_pm'])
 	{
-		$cp = $phpbb_container->get('profilefields');
+		$cp = $phpbb_container->get('profilefields.manager');
 
 		$profile_fields = $cp->generate_profile_fields_template('grab', $author_id);
 	}

@@ -617,7 +617,7 @@ switch ($mode)
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
-			$cp = $phpbb_container->get('profilefields');
+			$cp = $phpbb_container->get('profilefields.manager');
 			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
 		}
@@ -1554,7 +1554,7 @@ switch ($mode)
 			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
-				$cp = $phpbb_container->get('profilefields');
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
 				$profile_fields_cache = $cp->generate_profile_fields_template('grab', $user_list);
