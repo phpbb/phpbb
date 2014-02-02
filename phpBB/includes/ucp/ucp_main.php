@@ -195,7 +195,6 @@ class ucp_main
 					'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
 					'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
-					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
 //					'S_GROUP_OPTIONS'	=> $group_options,

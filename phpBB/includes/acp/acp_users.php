@@ -1368,7 +1368,6 @@ class acp_users
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
 					'website'		=> request_var('website', $user_row['user_website']),
 					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
-					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user_row['user_occ'], true)),
 					'interests'		=> utf8_normalize_nfc(request_var('interests', $user_row['user_interests'], true)),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
@@ -1402,7 +1401,6 @@ class acp_users
 							array('string', true, 12, 255),
 							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
 						'location'		=> array('string', true, 2, 100),
-						'occupation'	=> array('string', true, 2, 500),
 						'interests'		=> array('string', true, 2, 500),
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
@@ -1432,7 +1430,6 @@ class acp_users
 							'user_jabber'	=> $data['jabber'],
 							'user_website'	=> $data['website'],
 							'user_from'		=> $data['location'],
-							'user_occ'		=> $data['occupation'],
 							'user_interests'=> $data['interests'],
 							'user_birthday'	=> $data['user_birthday'],
 						);
@@ -1484,7 +1481,6 @@ class acp_users
 					'JABBER'		=> $data['jabber'],
 					'WEBSITE'		=> $data['website'],
 					'LOCATION'		=> $data['location'],
-					'OCCUPATION'	=> $data['occupation'],
 					'INTERESTS'		=> $data['interests'],
 
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,

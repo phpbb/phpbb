@@ -1153,7 +1153,8 @@ GO
 	Table: 'phpbb_profile_fields_data'
 */
 CREATE TABLE [phpbb_profile_fields_data] (
-	[user_id] [int] DEFAULT (0) NOT NULL 
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[pf_phpbb_occupation] [varchar] (4000) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1739,7 +1740,6 @@ CREATE TABLE [phpbb_users] (
 	[user_msnm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_jabber] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_website] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_newpasswd] [varchar] (40) DEFAULT ('') NOT NULL ,

@@ -954,6 +954,19 @@ if (!$get_info)
 
 				'where'			=> 'users.user_id <> -1',
 			),
+
+			array(
+				'target'		=> PROFILE_FIELDS_DATA_TABLE,
+				'primary'		=> 'users.user_id',
+				'query_first'	=> array(
+					array('target', $convert->truncate_statement . PROFILE_FIELDS_DATA_TABLE),
+				),
+
+				array('user_id',				'users.user_id',					'phpbb_user_id'),
+				array('pf_phpbb_occupation',	'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
+
+				'where'			=> 'users.user_id <> -1',
+			),
 		),
 	);
 }
