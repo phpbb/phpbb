@@ -137,12 +137,12 @@ class type_dropdown extends type_base
 
 		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], $field_value))
 		{
-			return $this->user->lang('FIELD_INVALID_VALUE', $field_data['lang_name']);
+			return $this->user->lang('FIELD_INVALID_VALUE', $this->get_field_name($field_data['lang_name']));
 		}
 
 		if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 		{
-			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
+			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
 		}
 
 		return false;

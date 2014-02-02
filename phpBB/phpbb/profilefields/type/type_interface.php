@@ -174,4 +174,13 @@ interface type_interface
 	* @return null
 	*/
 	public function display_options(&$template_vars, &$field_data);
+
+	/**
+	* Return templated value/field. Possible values for $mode are:
+	* change == user is able to set/enter profile values; preview == just show the value
+	* @param string	$mode			
+	* @param array	$profile_row	
+	* @return null
+	*/
+	public function process_field_row($mode, $profile_row);
 }

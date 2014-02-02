@@ -126,11 +126,11 @@ class type_int extends type_base
 
 		if ($field_value < $field_data['field_minlen'])
 		{
-			return $this->user->lang('FIELD_TOO_SMALL', (int) $row['field_minlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_SMALL', (int) $field_data['field_minlen'], $this->get_field_name($field_data['lang_name']));
 		}
 		else if ($field_value > $field_data['field_maxlen'])
 		{
-			return $this->user->lang('FIELD_TOO_LARGE', (int) $row['field_maxlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_LARGE', (int) $field_data['field_maxlen'], $this->get_field_name($field_data['lang_name']));
 		}
 
 		return false;
