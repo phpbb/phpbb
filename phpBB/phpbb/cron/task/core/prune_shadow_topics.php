@@ -75,7 +75,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 
 		if ($this->forum_data['prune_shadow_topic_days'])
 		{
-			auto_prune($this->forum_data['forum_id'], 'shadow', $this->forum_data['forum_flags'], $this->forum_data['prune_shadow_topic_days'], $this->forum_data['prune_shadow_topic_freq']);
+			$this->auto_prune_shadow_topics($this->forum_data['forum_id'], 'shadow', $this->forum_data['forum_flags'], $this->forum_data['prune_shadow_topic_days'], $this->forum_data['prune_shadow_topic_freq']);
 		}
 	}
 
