@@ -205,6 +205,13 @@ class manager
 			return false;
 		}
 
+		// Try to retrieve algorithm by service name if type doesn't
+		// start with dollar sign
+		if (!is_array($type) && strpos($type, '$') !== 0 && isset($this->algorithms[$type]))
+		{
+			$type = $this->algorithms[$type]->get_prefix();
+		}
+
 		$type = ($type === '') ? $this->type : $type;
 
 		if (is_array($type))
