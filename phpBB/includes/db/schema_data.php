@@ -758,7 +758,7 @@ $schema_data['phpbb_profile_fields'] = array(
 	'COLUMNS'		=> array(
 		'field_id'				=> array('UINT', NULL, 'auto_increment'),
 		'field_name'			=> array('VCHAR_UNI', ''),
-		'field_type'			=> array('TINT:4', 0),
+		'field_type'			=> array('VCHAR:100', ''),
 		'field_ident'			=> array('VCHAR:20', ''),
 		'field_length'			=> array('VCHAR:20', ''),
 		'field_minlen'			=> array('VCHAR', ''),
@@ -796,7 +796,7 @@ $schema_data['phpbb_profile_fields_lang'] = array(
 		'field_id'				=> array('UINT', 0),
 		'lang_id'				=> array('UINT', 0),
 		'option_id'				=> array('UINT', 0),
-		'field_type'			=> array('TINT:4', 0),
+		'field_type'			=> array('VCHAR:100', ''),
 		'lang_value'			=> array('VCHAR_UNI', ''),
 	),
 	'PRIMARY_KEY'	=> array('field_id', 'lang_id', 'option_id'),
