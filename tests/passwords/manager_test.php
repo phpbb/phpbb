@@ -198,6 +198,10 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 					array('passwords.driver.salted_md5'),
 					false,
 				),
+				array(
+					'$H$',
+					array('$2a$'),
+				),
 			);
 		}
 		else
@@ -228,6 +232,10 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 					'passwords.driver.bcrypt_2y',
 					array('passwords.driver.salted_md4'),
 					false,
+				),
+				array(
+					'$H$',
+					array('$2y$'),
 				),
 			);
 		}

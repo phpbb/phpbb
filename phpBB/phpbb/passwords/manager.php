@@ -60,9 +60,9 @@ class manager
 	public function __construct(\phpbb\config\config $config, $hashing_algorithms, helper $helper, $defaults)
 	{
 		$this->config = $config;
+		$this->helper = $helper;
 
 		$this->fill_type_map($hashing_algorithms);
-		$this->load_passwords_helper($helper);
 		$this->register_default_type($defaults);
 	}
 
@@ -100,20 +100,6 @@ class manager
 			}
 		}
 		$this->algorithms = $hashing_algorithms;
-	}
-
-	/**
-	* Load passwords helper class
-	*
-	* @param phpbb\passwords\helper $helper Passwords helper object
-	*/
-	protected function load_passwords_helper(\phpbb\passwords\helper $helper)
-	{
-		if ($this->helper === null)
-		{
-			$this->helper = $helper;
-			$this->helper->set_manager($this);
-		}
 	}
 
 	/**
@@ -216,7 +202,7 @@ class manager
 
 		if (is_array($type))
 		{
-			return $this->helper->combined_hash_password($password, $type);
+			return $this->combined_hash_password($password, $type);
 		}
 
 		if (isset($this->type_map[$type]))
@@ -258,7 +244,7 @@ class manager
 		// Multiple hash passes needed
 		if (is_array($stored_hash_type))
 		{
-			$correct = $this->helper->check_combined_hash($password, $stored_hash_type, $hash);
+			$correct = $this->check_combined_hash($password, $stored_hash_type, $hash);
 			$this->convert_flag = ($correct === true) ? true : false;
 			return $correct;
 		}
@@ -273,5 +259,83 @@ class manager
 		}
 
 		return $stored_hash_type->check($password, $hash);
+	}
+
+	/**
+	* Create combined hash from already hashed password
+	*
+	* @param string $password_hash Complete current password hash
+	* @param string $type Type of the hashing algorithm the password hash
+	*		should be combined with
+	* @return string|bool Combined password hash if combined hashing was
+	*		successful, else false
+	*/
+	public function combined_hash_password($password_hash, $type)
+	{
+		$data = array(
+			'prefix' => '$',
+			'settings' => '$',
+		);
+		$hash_settings = $this->helper->get_combined_hash_settings($password_hash);
+		$hash = $hash_settings[0];
+
+		// Put settings of current hash into data array
+		$stored_hash_type = $this->detect_algorithm($password_hash);
+		$this->helper->combine_hash_output($data, 'prefix', $stored_hash_type->get_prefix());
+		$this->helper->combine_hash_output($data, 'settings', $stored_hash_type->get_settings_only($password_hash));
+
+		// Hash current hash with the defined types
+		foreach ($type as $cur_type)
+		{
+			if (isset($this->algorithms[$cur_type]))
+			{
+				$new_hash_type = $this->algorithms[$cur_type];
+			}
+			else
+			{
+				$new_hash_type = $this->get_algorithm($cur_type);
+			}
+
+			if (!$new_hash_type)
+			{
+				return false;
+			}
+
+			$new_hash = $new_hash_type->hash(str_replace($stored_hash_type->get_settings_only($password_hash), '', $hash));
+			$this->helper->combine_hash_output($data, 'prefix', $new_hash_type->get_prefix());
+			$this->helper->combine_hash_output($data, 'settings', substr(str_replace('$', '\\', $new_hash_type->get_settings_only($new_hash, true)), 0));
+			$hash = str_replace($new_hash_type->get_settings_only($new_hash), '', $this->helper->obtain_hash_only($new_hash));
+		}
+		return $this->helper->combine_hash_output($data, 'hash', $hash);
+	}
+
+	/**
+	* Check combined password hash against the supplied password
+	*
+	* @param string $password Password entered by user
+	* @param array $stored_hash_type An array containing the hash types
+	*				as described by stored password hash
+	* @param string $hash Stored password hash
+	*
+	* @return bool True if password is correct, false if not
+	*/
+	public function check_combined_hash($password, $stored_hash_type, $hash)
+	{
+		$i = 0;
+		$data = array(
+			'prefix' => '$',
+			'settings' => '$',
+		);
+		$hash_settings = $this->helper->get_combined_hash_settings($hash);
+		foreach ($stored_hash_type as $key => $hash_type)
+		{
+			$rebuilt_hash = $this->helper->rebuild_hash($hash_type->get_prefix(), $hash_settings[$i]);
+			$this->helper->combine_hash_output($data, 'prefix', $key);
+			$this->helper->combine_hash_output($data, 'settings', $hash_settings[$i]);
+			$cur_hash = $hash_type->hash($password, $rebuilt_hash);
+			$password = str_replace($rebuilt_hash, '', $cur_hash);
+			$i++;
+		}
+		return ($hash === $this->helper->combine_hash_output($data, 'hash', $password));
 	}
 }
