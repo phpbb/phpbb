@@ -635,7 +635,6 @@ $base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((s
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
 
 $template->assign_vars(array(
-	'PAGE_NUMBER'	=> $pagination->on_page($base_url, $topics_count, $config['topics_per_page'], $start),
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
 ));
 

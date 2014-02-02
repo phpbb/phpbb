@@ -177,7 +177,6 @@ class mcp_logs
 		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
 
 		$template->assign_vars(array(
-			'PAGE_NUMBER'		=> $pagination->on_page($base_url, $log_count, $config['topics_per_page'], $start),
 			'TOTAL'				=> $user->lang('TOTAL_LOGS', (int) $log_count),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],

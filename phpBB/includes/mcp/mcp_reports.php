@@ -423,7 +423,6 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),

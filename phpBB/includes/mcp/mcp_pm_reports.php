@@ -309,7 +309,6 @@ class mcp_pm_reports
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_CLOSED'				=> ($mode == 'pm_reports_closed') ? true : false,
 
-					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
 					)

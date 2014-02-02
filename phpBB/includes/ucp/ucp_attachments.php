@@ -178,7 +178,6 @@ class ucp_attachments
 		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
 
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> $pagination->on_page($base_url, $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
