@@ -29,8 +29,7 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request;
-		global $phpbb_container;
+		global $request, $phpbb_container;
 
 		$user->add_lang('posting');
 
@@ -260,9 +259,7 @@ class ucp_profile
 					trigger_error('NO_AUTH_PROFILEINFO');
 				}
 
-				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-
-				$cp = new custom_profile();
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 

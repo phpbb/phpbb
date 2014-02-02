@@ -9,6 +9,7 @@ imports:
     - { resource: console.yml }
     - { resource: mimetype_guessers.yml }
     - { resource: passwords.yml }
+    - { resource: profilefields.yml }
 
 services:
     acl.permissions:

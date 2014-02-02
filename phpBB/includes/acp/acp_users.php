@@ -1346,9 +1346,8 @@ class acp_users
 			case 'profile':
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-				$cp = new custom_profile();
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 

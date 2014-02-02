@@ -1114,7 +1114,7 @@ GO
 CREATE TABLE [phpbb_profile_fields] (
 	[field_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[field_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[field_type] [int] DEFAULT (0) NOT NULL ,
+	[field_type] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[field_ident] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_length] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_minlen] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -1172,7 +1172,7 @@ CREATE TABLE [phpbb_profile_fields_lang] (
 	[field_id] [int] DEFAULT (0) NOT NULL ,
 	[lang_id] [int] DEFAULT (0) NOT NULL ,
 	[option_id] [int] DEFAULT (0) NOT NULL ,
-	[field_type] [int] DEFAULT (0) NOT NULL ,
+	[field_type] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[lang_value] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO

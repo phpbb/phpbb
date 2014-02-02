@@ -853,7 +853,7 @@ CREATE SEQUENCE phpbb_profile_fields_seq;
 CREATE TABLE phpbb_profile_fields (
 	field_id INT4 DEFAULT nextval('phpbb_profile_fields_seq'),
 	field_name varchar(255) DEFAULT '' NOT NULL,
-	field_type INT2 DEFAULT '0' NOT NULL,
+	field_type varchar(100) DEFAULT '' NOT NULL,
 	field_ident varchar(20) DEFAULT '' NOT NULL,
 	field_length varchar(20) DEFAULT '' NOT NULL,
 	field_minlen varchar(255) DEFAULT '' NOT NULL,
@@ -893,7 +893,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id INT4 DEFAULT '0' NOT NULL CHECK (field_id >= 0),
 	lang_id INT4 DEFAULT '0' NOT NULL CHECK (lang_id >= 0),
 	option_id INT4 DEFAULT '0' NOT NULL CHECK (option_id >= 0),
-	field_type INT2 DEFAULT '0' NOT NULL,
+	field_type varchar(100) DEFAULT '' NOT NULL,
 	lang_value varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id, lang_id, option_id)
 );

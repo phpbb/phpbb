@@ -35,8 +35,6 @@ class ucp_register
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
 
-		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-
 		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
 		$agreed			= $request->variable('agreed', false);
 		$submit			= $request->is_set_post('submit');
@@ -78,7 +76,7 @@ class ucp_register
 			}
 		}
 
-		$cp = new custom_profile();
+		$cp = $phpbb_container->get('profilefields.manager');
 
 		$error = $cp_data = $cp_error = array();
 		$s_hidden_fields = array();
