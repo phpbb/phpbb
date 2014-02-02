@@ -19,7 +19,7 @@ class profilefield_occupation extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v310\profilefield_types',
+			'\phpbb\db\migration\data\v310\profilefield_interests',
 		);
 	}
 
@@ -83,7 +83,7 @@ class profilefield_occupation extends \phpbb\db\migration\migration
 		$result = $this->db->sql_query($sql);
 		while ($lang_id = (int) $this->db->sql_fetchfield('lang_id'))
 		{
-			$insert_buffer->add(array(
+			$insert_buffer->insert(array(
 				'field_id'				=> $field_id,
 				'lang_id'				=> $lang_id,
 				'lang_name'				=> 'OCCUPATION',
@@ -120,7 +120,7 @@ class profilefield_occupation extends \phpbb\db\migration\migration
 				'pf_phpbb_occupation'		=> $row['user_occ'],
 			);
 
-			$sql = 'UPDATE ' . $this->fields_data_table . '
+			$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields_data
 				SET ' . $this->db->sql_build_array('UPDATE', $cp_data) . '
 				WHERE user_id = ' . (int) $row['user_id'];
 			$this->db->sql_query($sql);

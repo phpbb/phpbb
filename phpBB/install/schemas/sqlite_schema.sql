@@ -652,6 +652,7 @@ CREATE INDEX phpbb_profile_fields_fld_ordr ON phpbb_profile_fields (field_order)
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	pf_phpbb_interests text(65535) NOT NULL DEFAULT '',
 	pf_phpbb_occupation text(65535) NOT NULL DEFAULT '',
 	PRIMARY KEY (user_id)
 );
@@ -1004,7 +1005,6 @@ CREATE TABLE phpbb_users (
 	user_msnm varchar(255) NOT NULL DEFAULT '',
 	user_jabber varchar(255) NOT NULL DEFAULT '',
 	user_website varchar(200) NOT NULL DEFAULT '',
-	user_interests text(65535) NOT NULL DEFAULT '',
 	user_actkey varchar(32) NOT NULL DEFAULT '',
 	user_newpasswd varchar(40) NOT NULL DEFAULT '',
 	user_form_salt varchar(32) NOT NULL DEFAULT '',

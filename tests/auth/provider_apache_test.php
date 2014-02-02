@@ -200,8 +200,6 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_msnm' => '',
 			'user_jabber' => '',
 			'user_website' => '',
-			'user_occ' => '',
-			'user_interests' => '',
 			'user_actkey' => '',
 			'user_newpasswd' => '',
 			'user_form_salt' => '',

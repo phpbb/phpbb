@@ -1265,6 +1265,7 @@ END;
 */
 CREATE TABLE phpbb_profile_fields_data (
 	user_id number(8) DEFAULT '0' NOT NULL,
+	pf_phpbb_interests clob DEFAULT '' ,
 	pf_phpbb_occupation clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_data PRIMARY KEY (user_id)
 )
@@ -1857,7 +1858,6 @@ CREATE TABLE phpbb_users (
 	user_msnm varchar2(765) DEFAULT '' ,
 	user_jabber varchar2(765) DEFAULT '' ,
 	user_website varchar2(600) DEFAULT '' ,
-	user_interests clob DEFAULT '' ,
 	user_actkey varchar2(32) DEFAULT '' ,
 	user_newpasswd varchar2(120) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,

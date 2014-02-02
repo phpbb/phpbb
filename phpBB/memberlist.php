@@ -644,7 +644,6 @@ switch ($mode)
 			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
 			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
-			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
 			'SIGNATURE'		=> $member['user_sig'],
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 

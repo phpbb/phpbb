@@ -672,6 +672,7 @@ CREATE TABLE phpbb_profile_fields (
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	pf_phpbb_interests text NOT NULL,
 	pf_phpbb_occupation text NOT NULL,
 	PRIMARY KEY (user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -1033,7 +1034,6 @@ CREATE TABLE phpbb_users (
 	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
 	user_website varchar(200) DEFAULT '' NOT NULL,
-	user_interests text NOT NULL,
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,

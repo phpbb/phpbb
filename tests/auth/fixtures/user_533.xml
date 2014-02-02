@@ -12,8 +12,6 @@
 		<column>user_login_attempts</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value>foobar</value>
@@ -24,8 +22,6 @@
 			<value>example@example.com</value>
 			<value>0</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -39,8 +35,6 @@
 			<value>example@example.com</value>
 			<value>0</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

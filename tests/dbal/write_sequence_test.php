@@ -42,8 +42,6 @@ class phpbb_dbal_write_sequence_test extends phpbb_database_test_case
 			'username_clean'	=> $username,
 			'user_permissions'	=> '',
 			'user_sig'			=> '',
-			'user_occ'			=> '',
-			'user_interests'	=> '',
 		));
 		$db->sql_query($sql);
 

@@ -6,15 +6,11 @@
 		<column>username</column>
 		<column>username_clean</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value></value>
 			<value>Guest</value>
 			<value>guest</value>
-			<value></value>
-			<value></value>
 			<value></value>
 		</row>
 		<row>
@@ -23,16 +19,12 @@
 			<value>Admin</value>
 			<value>admin</value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>3</value>
 			<value></value>
 			<value>Test</value>
 			<value>test</value>
-			<value></value>
-			<value></value>
 			<value></value>
 		</row>
 	</table>
