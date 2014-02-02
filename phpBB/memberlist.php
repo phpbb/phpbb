@@ -107,7 +107,7 @@ switch ($mode)
 			}
 			else
 			{
-				$row['group_name'] = (isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$row['group_name'] = get_translated_groupname($row['group_name']);
 				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
@@ -1265,7 +1265,7 @@ switch ($mode)
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
-				'GROUP_NAME'	=> (isset($user->lang['G_' . $group_row['group_name']])) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
+				'GROUP_NAME'	=> get_translated_groupname($group_row['group_name']),
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
 				'GROUP_RANK'	=> $rank_title,
@@ -1448,7 +1448,7 @@ switch ($mode)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$group_ids[] = $row['group_id'];
-				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . ((isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . get_translated_groupname($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 

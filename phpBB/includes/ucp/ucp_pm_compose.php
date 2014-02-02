@@ -116,7 +116,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$group_options = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . ((isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . get_translated_groupname($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 		}

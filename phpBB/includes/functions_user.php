@@ -3226,19 +3226,19 @@ function get_group_name($group_id)
 {
 	global $db, $user;
 
-	$sql = 'SELECT group_name, group_type
+	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . '
 		WHERE group_id = ' . (int) $group_id;
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || ($row['group_type'] == GROUP_SPECIAL && empty($user->lang)))
+	if (!$row)
 	{
 		return '';
 	}
 
-	return ($user->lang['G_' . $row['group_name']]) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+	return get_translated_groupname($row['group_name']);
 }
 
 /**

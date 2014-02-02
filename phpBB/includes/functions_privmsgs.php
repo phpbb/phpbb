@@ -1461,7 +1461,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 				{
 					if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 					{
-						$address[] = (isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+						$address[] = get_translated_groupname($row['group_name']);
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1481,7 +1481,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 					{
 						if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 						{
-							$row['group_name'] = (isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+							$row['group_name'] = get_translated_groupname($row['group_name']);
 							$address['group'][$row['group_id']] = array('name' => $row['group_name'], 'colour' => $row['group_colour']);
 						}
 					}
@@ -2147,7 +2147,7 @@ function get_recipient_strings($pm_by_id)
 			{
 				if ($ug_type == 'g')
 				{
-					$row['name'] = (isset($user->lang['G_' . $row['name']])) ? $user->lang['G_' . $row['name']] : $row['name'];
+					$row['name'] = get_translated_groupname($row['name']);
 				}
 
 				$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
