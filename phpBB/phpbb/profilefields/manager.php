@@ -40,6 +40,12 @@ class manager
 	protected $template;
 
 	/**
+	* Service Collection object
+	* @var \phpbb\di\service_collection
+	*/
+	protected $type_collection;
+
+	/**
 	* User object
 	* @var \phpbb\user
 	*/
@@ -60,36 +66,24 @@ class manager
 	* @param	\phpbb\db\driver\driver		$db			Database object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
+	* @param	\phpbb\di\service_collection $type_collection
 	* @param	\phpbb\user					$user		User object
 	* @param	string				$fields_table
 	* @param	string				$fields_language_table
 	* @param	string				$fields_data_table
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->request = $request;
 		$this->template = $template;
+		$this->type_collection = $type_collection;
 		$this->user = $user;
 
 		$this->fields_table = $fields_table;
 		$this->fields_language_table = $fields_language_table;
 		$this->fields_data_table = $fields_data_table;
-	}
-
-	/**
-	* Setter for the type collection
-	*
-	* We need to set the type collection later,
-	* in order to avoid a circular dependency
-	*
-	* @param \phpbb\di\service_collection $type_collection
-	* @return null
-	*/
-	public function set_type_collection(\phpbb\di\service_collection $type_collection)
-	{
-		$this->type_collection = $type_collection;
 	}
 
 	/**
@@ -131,8 +125,8 @@ class manager
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Return templated field
-			$tpl_snippet = $this->process_field_row('change', $row);
 			$profile_field = $this->type_collection[$row['field_type']];
+			$tpl_snippet = $profile_field->process_field_row('change', $row);
 
 			$this->template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $this->user->lang($row['lang_name']),
@@ -349,33 +343,6 @@ class manager
 		{
 			trigger_error('Wrong mode for custom profile', E_USER_ERROR);
 		}
-	}
-
-	/**
-	* Return Templated value/field. Possible values for $mode are:
-	* change == user is able to set/enter profile values; preview == just show the value
-	*/
-	public function process_field_row($mode, $profile_row)
-	{
-		$preview_options = ($mode == 'preview') ? $this->vars['lang_options'] : false;
-
-		// set template filename
-		$this->template->set_filenames(array(
-			'cp_body'		=> 'custom_profile_fields.html',
-		));
-
-		// empty previously filled blockvars
-		foreach ($this->type_collection as $field_key => $field_type)
-		{
-			$this->template->destroy_block_vars($field_type->get_name_short());
-		}
-
-		// Assign template variables
-		$profile_field = $this->type_collection[$profile_row['field_type']];
-		$profile_field->generate_field($profile_row, $preview_options);
-
-		// Return templated data
-		return $this->template->assign_display('cp_body');
 	}
 
 	/**

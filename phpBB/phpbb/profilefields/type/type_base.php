@@ -142,4 +142,26 @@ abstract class type_base implements type_interface
 	{
 		return;
 	}
+
+	/**
+	* Return templated value/field. Possible values for $mode are:
+	* change == user is able to set/enter profile values; preview == just show the value
+	*/
+	public function process_field_row($mode, $profile_row)
+	{
+		$preview_options = ($mode == 'preview') ? $profile_row['lang_options'] : false;
+
+		// set template filename
+		$this->template->set_filenames(array(
+			'cp_' . $this->get_name_short() . '_body'		=> 'custom_profile_fields.html',
+		));
+
+		// empty previously filled blockvars
+		$this->template->destroy_block_vars($this->get_name_short());
+
+		// Assign template variables
+		$this->generate_field($profile_row, $preview_options);
+
+		return $this->template->assign_display('cp_' . $this->get_name_short() . '_body');
+	}
 }

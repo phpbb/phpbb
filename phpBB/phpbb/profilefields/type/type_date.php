@@ -12,12 +12,6 @@ namespace phpbb\profilefields\type;
 class type_date extends type_base
 {
 	/**
-	* Profile fields object
-	* @var \phpbb\profilefields\manager
-	*/
-	protected $manager;
-
-	/**
 	* Request object
 	* @var \phpbb\request\request
 	*/
@@ -38,15 +32,13 @@ class type_date extends type_base
 	/**
 	* Construct
 	*
-	* @param	\phpbb\profilefields\manager		$manager	Profile fields object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
 	* @param	string		$language_table		Table where the language strings are stored
 	*/
-	public function __construct(\phpbb\profilefields\manager $manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
-		$this->manager = $manager;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
@@ -87,7 +79,7 @@ class type_date extends type_base
 		}
 
 		$options = array(
-			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],	'FIELD' => $this->manager->process_field_row('preview', $profile_row)),
+			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
 			1 => array('TITLE' => $this->user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['NO'] . '</label>'),
 		);
 

@@ -18,12 +18,6 @@ class type_bool extends type_base
 	protected $lang_helper;
 
 	/**
-	* Profile fields object
-	* @var \phpbb\profilefields\manager
-	*/
-	protected $profilefields;
-
-	/**
 	* Request object
 	* @var \phpbb\request\request
 	*/
@@ -45,16 +39,14 @@ class type_bool extends type_base
 	* Construct
 	*
 	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
-	* @param	\phpbb\profilefields\manager		$manager	Profile fields object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
 	* @param	string		$language_table		Table where the language strings are stored
 	*/
-	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\profilefields\manager $manager, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->lang_helper = $lang_helper;
-		$this->manager = $manager;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
@@ -88,7 +80,7 @@ class type_bool extends type_base
 
 		$options = array(
 			0 => array('TITLE' => $this->user->lang['FIELD_TYPE'], 'EXPLAIN' => $this->user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($field_data['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($field_data['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['CHECKBOX'] . '</label>'),
-			1 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->manager->process_field_row('preview', $profile_row)),
+			1 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row)),
 		);
 
 		return $options;

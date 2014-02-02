@@ -1,20 +1,20 @@
 services:
     profilefields.manager:
-        class: \phpbb\profilefields\manager
+        class: phpbb\profilefields\manager
         arguments:
             - @auth
             - @dbal.conn
             - @request
             - @template
+            - @profilefields.type_collection
             - @user
             - %tables.profile_fields%
             - %tables.profile_fields_language%
             - %tables.profile_fields_data%
         calls:
-            - [set_type_collection, [@profilefields.type_collection]]
 
     profilefields.lang_helper:
-        class: \phpbb\profilefields\lang_helper
+        class: phpbb\profilefields\lang_helper
         arguments:
             - @dbal.conn
             - %tables.profile_fields_options_language%
@@ -27,10 +27,9 @@ services:
             - { name: service_collection, tag: profilefield.type }
 
     profilefields.type.bool:
-        class: \phpbb\profilefields\type\type_bool
+        class: phpbb\profilefields\type\type_bool
         arguments:
             - @profilefields.lang_helper
-            - @profilefields.manager
             - @request
             - @template
             - @user
@@ -38,9 +37,8 @@ services:
             - { name: profilefield.type }
 
     profilefields.type.date:
-        class: \phpbb\profilefields\type\type_date
+        class: phpbb\profilefields\type\type_date
         arguments:
-            - @profilefields.manager
             - @request
             - @template
             - @user
@@ -48,10 +46,9 @@ services:
             - { name: profilefield.type }
 
     profilefields.type.dropdown:
-        class: \phpbb\profilefields\type\type_dropdown
+        class: phpbb\profilefields\type\type_dropdown
         arguments:
             - @profilefields.lang_helper
-            - @profilefields.manager
             - @request
             - @template
             - @user
@@ -59,7 +56,7 @@ services:
             - { name: profilefield.type }
 
     profilefields.type.int:
-        class: \phpbb\profilefields\type\type_int
+        class: phpbb\profilefields\type\type_int
         arguments:
             - @request
             - @template
@@ -68,7 +65,7 @@ services:
             - { name: profilefield.type }
 
     profilefields.type.string:
-        class: \phpbb\profilefields\type\type_string
+        class: phpbb\profilefields\type\type_string
         arguments:
             - @request
             - @template
@@ -77,7 +74,7 @@ services:
             - { name: profilefield.type }
 
     profilefields.type.text:
-        class: \phpbb\profilefields\type\type_text
+        class: phpbb\profilefields\type\type_text
         arguments:
             - @request
             - @template
