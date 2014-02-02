@@ -8,6 +8,7 @@
 <fieldset>
 	<h1>{MESSAGE_TITLE}</h1>
 	<p>{MESSAGE_TEXT}</p>
+
 	<!-- IF S_CONFIRM_DELETE -->
 	<label><input type="checkbox" class="checkbox" name="confirm_delete_files" /> {L_DELETE_FROM_FS}</label>
 	<!-- ENDIF -->
@@ -27,6 +28,10 @@
 <!-- IF L_TITLE --><h1>{L_TITLE}</h1><!-- ENDIF -->
 
 <!-- IF L_EXPLAIN --><p>{L_EXPLAIN}</p><!-- ENDIF -->
+	<!-- IF not STYLES_LIST_HIDE_COUNT && S_OVERRIDE_USER_STYLE -->
+		<p style="color: #AA0000; font-weight: bold;">{L_OVERRIDE_USER_STYLE_WARNING}</p>
+	<!-- ENDIF -->
+
 
 <form id="acp_styles" method="post" action="{U_ACTION}">
 {S_HIDDEN_FIELDS}
@@ -83,7 +88,12 @@
 	<thead>
 	<tr>
 		<th>{L_STYLE_NAME}</th>
-		<!-- IF not STYLES_LIST_HIDE_COUNT --><th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_USED_BY}</th><!-- ENDIF -->
+		<!-- IF not STYLES_LIST_HIDE_COUNT -->
+			<!-- IF S_OVERRIDE_USER_STYLE -->
+				<th width="10%" style="white-space: nowrap; text-align: center;">{L_OVERRIDE_USER_STYLE}</th>
+			<!-- ENDIF -->
+			<th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_USED_BY}</th>
+		<!-- ENDIF -->
 		<th width="25%" style="white-space: nowrap; text-align: center;">{L_ACTIONS}</th>
 		{STYLES_LIST_EXTRA}
 		<th>&nbsp;</th>
@@ -117,6 +127,9 @@
 			<!-- ENDIF -->
 		</td>
 		<!-- IF not STYLES_LIST_HIDE_COUNT -->
+			<!-- IF styles_list.S_OVERRIDE_USER_STYLE -->
+				<td class="{$ROW_CLASS} users"><span style="color: #AA0000; font-weight: bold;"><!-- IF styles_list.STYLE_TOTAL -->{styles_list.STYLE_TOTAL}<!-- ENDIF --></span></td>
+			<!-- ENDIF -->
 			<td class="{$ROW_CLASS} users">{styles_list.USERS}</td>
 		<!-- ENDIF -->
 		<td class="{$ROW_CLASS} actions">

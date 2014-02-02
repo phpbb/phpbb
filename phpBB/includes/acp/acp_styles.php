@@ -28,6 +28,7 @@ class acp_styles
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 	protected $default_style = 0;
+	protected $override_user_style = 0;
 
 	protected $db;
 	protected $user;
@@ -53,6 +54,7 @@ class acp_styles
 		$this->php_ext = $phpEx;
 
 		$this->default_style = $config['default_style'];
+		$this->override_user_style = $config['override_user_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
 
 		$this->u_base_action = append_sid("{$phpbb_admin_path}index.{$this->php_ext}", "i={$id}");
@@ -577,27 +579,17 @@ class acp_styles
 		// Add users counter to rows
 		foreach ($styles as &$style)
 		{
-			if($this->config['override_user_style'])
-			{
-				if($style['style_id'] == $this->config['default_style'])
-				{
-					$style['_users'] = array_sum($users);
-				}
-				else
-				{
-					$style['_users'] = 0;
-				}
-			}
-			else
-			{
-				$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
-			}
+			$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
+			$style['_total'] = ($this->override_user_style && $style['style_id'] == $this->default_style) ? array_sum($users) : 0;
 		}
 
 		// Set up styles list variables
 		// Addons should increase this number and update template variable
-		$this->styles_list_cols = 4;
-		$this->template->assign_var('STYLES_LIST_COLS', $this->styles_list_cols);
+		$this->styles_list_cols = ($this->override_user_style) ? 5 : 4;
+		$this->template->assign_vars(array(
+			'STYLES_LIST_COLS' => $this->styles_list_cols,
+			'S_OVERRIDE_USER_STYLE'	=> $this->override_user_style,
+			));
 
 		// Show styles list
 		$this->show_styles_list($styles, 0, 0);
@@ -926,6 +918,8 @@ class acp_styles
 			'PADDING'		=> (4 + 16 * $level),
 			'SHOW_COPYRIGHT'	=> ($style['style_id']) ? false : true,
 			'STYLE_PATH_FULL'	=> htmlspecialchars($this->styles_path_absolute . '/' . $style['style_path']) . '/',
+			'S_OVERRIDE_USER_STYLE'	=> $this->override_user_style,
+			'STYLE_TOTAL'			=> $style['_total'],
 
 			// Comment to show below style
 			'COMMENT'		=> (isset($style['_note'])) ? $style['_note'] : '',
@@ -1156,6 +1150,7 @@ class acp_styles
 		$result = $this->db->sql_query($sql);
 
 		$rows = $this->db->sql_fetchrowset($result);
+
 		$this->db->sql_freeresult($result);
 
 		return $rows;
