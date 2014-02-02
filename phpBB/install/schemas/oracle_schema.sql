@@ -509,7 +509,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options number(11) DEFAULT '7' NOT NULL,
 	forum_desc_uid varchar2(8) DEFAULT '' ,
 	forum_link varchar2(765) DEFAULT '' ,
-	forum_password varchar2(120) DEFAULT '' ,
+	forum_password varchar2(255) DEFAULT '' ,
 	forum_style number(8) DEFAULT '0' NOT NULL,
 	forum_image varchar2(255) DEFAULT '' ,
 	forum_rules clob DEFAULT '' ,
@@ -986,7 +986,7 @@ CREATE TABLE phpbb_poll_votes (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
 	vote_user_id number(8) DEFAULT '0' NOT NULL,
-	vote_user_ip varchar2(40) DEFAULT '' 
+	vote_user_ip varchar2(40) DEFAULT ''
 )
 /
 
@@ -1798,7 +1798,7 @@ CREATE TABLE phpbb_users (
 	user_regdate number(11) DEFAULT '0' NOT NULL,
 	username varchar2(255) DEFAULT '' ,
 	username_clean varchar2(255) DEFAULT '' ,
-	user_password varchar2(120) DEFAULT '' ,
+	user_password varchar2(255) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
 	user_pass_convert number(1) DEFAULT '0' NOT NULL,
 	user_email varchar2(300) DEFAULT '' ,

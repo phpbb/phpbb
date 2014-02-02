@@ -294,9 +294,12 @@ class ucp_register
 					$user_inactive_time = 0;
 				}
 
+				// Instantiate passwords manager
+				$passwords_manager = $phpbb_container->get('passwords.manager');
+
 				$user_row = array(
 					'username'				=> $data['username'],
-					'user_password'			=> phpbb_hash($data['new_password']),
+					'user_password'			=> $passwords_manager->hash($data['new_password']),
 					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
 					'user_timezone'			=> $data['tz'],
