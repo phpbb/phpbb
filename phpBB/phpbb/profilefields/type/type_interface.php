@@ -33,6 +33,13 @@ interface type_interface
 	public function get_service_name();
 
 	/**
+	* Get the name of template file for this type
+	*
+	* @return string Returns the name of the template file
+	*/
+	public function get_template_filename();
+
+	/**
 	* Get dropdown options for second step in ACP
 	*
 	* @param string	$default_lang_id	ID of the default language
@@ -178,8 +185,9 @@ interface type_interface
 	/**
 	* Return templated value/field. Possible values for $mode are:
 	* change == user is able to set/enter profile values; preview == just show the value
-	* @param string	$mode			
-	* @param array	$profile_row	
+	*
+	* @param string	$mode			Mode for displaying the field (preview|change)
+	* @param array	$profile_row	Array with data for this field
 	* @return null
 	*/
 	public function process_field_row($mode, $profile_row);
