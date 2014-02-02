@@ -788,7 +788,7 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
 
 # Add default profile fields
-INSERT INTO phpbb_profile_fields ('field_name', 'field_type', 'field_ident', 'field_length', 'field_minlen', 'field_maxlen', 'field_novalue', 'field_default_value', 'field_validation', 'field_required', 'field_show_novalue', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_show_profile', 'field_hide', 'field_no_view', 'field_active', 'field_order') VALUES ('phpbb_occupation', 'profilefields.type.text', 'phpbb_occupation', '3|30', '2', '500', '', '', '.*', 0, 0, 0, 0, 0, 1, 0, 0, 1, 1);
+INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_profile, field_hide, field_no_view, field_active, field_order) VALUES ('phpbb_occupation', 'profilefields.type.text', 'phpbb_occupation', '3|30', '2', '500', '', '', '.*', 0, 0, 0, 0, 0, 1, 0, 0, 1, 1);
 
 # User Notification Options (for first user)
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, '');
