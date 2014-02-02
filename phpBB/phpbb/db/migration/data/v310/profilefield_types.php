@@ -80,7 +80,7 @@ class profilefield_types extends \phpbb\db\migration\migration
 	/**
 	* Determine the new field type for a given phpBB 3.0 field type
 	*
-	*	@param	$field_type	int		Field type in 3.0
+	*	@param	$field_type	string		Field type in 3.0
 	*	@return		string		Field new type which is used since 3.1
 	*/
 	public function convert_phpbb30_field_type($field_type)
