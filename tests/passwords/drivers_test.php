@@ -21,11 +21,6 @@ class phpbb_passwords_helper_test extends PHPUnit_Framework_TestCase
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 		);
-
-		foreach ($this->passwords_drivers as $key => $driver)
-		{
-			$driver->set_name($key);
-		}
 	}
 
 	public function data_helper_encode64()

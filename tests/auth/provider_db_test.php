@@ -44,11 +44,6 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
 		);
 
-		foreach ($passwords_drivers as $key => $driver)
-		{
-			$driver->set_name($key);
-		}
-
 		$passwords_helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
 		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));

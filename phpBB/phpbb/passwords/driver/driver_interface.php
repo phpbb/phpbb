@@ -57,11 +57,4 @@ interface driver_interface
 	* @return string	String containing the hash settings
 	*/
 	public function get_settings_only($hash, $full = false);
-
-	/**
-	* Get the driver name
-	*
-	* @return string	Driver name
-	*/
-	public function get_name();
 }

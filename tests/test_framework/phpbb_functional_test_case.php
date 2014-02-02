@@ -1017,11 +1017,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
 		);
 
-		foreach ($passwords_drivers as $key => $driver)
-		{
-			$driver->set_name($key);
-		}
-
 		$passwords_helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
 		$manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));

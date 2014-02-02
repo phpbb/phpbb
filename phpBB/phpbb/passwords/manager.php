@@ -79,7 +79,7 @@ class manager
 		{
 			if ($this->algorithms[$type]->is_supported())
 			{
-				$this->type = $type;
+				$this->type = $this->algorithms[$type]->get_prefix();
 				break;
 			}
 		}
@@ -94,16 +94,12 @@ class manager
 	{
 		foreach ($hashing_algorithms as $algorithm)
 		{
-			if (!isset($this->algorithms[$algorithm->get_name()]))
-			{
-				$this->algorithms[$algorithm->get_name()] = $algorithm;
-			}
-
 			if (!isset($this->type_map[$algorithm->get_prefix()]))
 			{
-				$this->type_map[$algorithm->get_prefix()] = $algorithm->get_name();
+				$this->type_map[$algorithm->get_prefix()] = $algorithm;
 			}
 		}
+		$this->algorithms = $hashing_algorithms;
 	}
 
 	/**
@@ -130,9 +126,9 @@ class manager
 	*/
 	protected function get_algorithm($prefix)
 	{
-		if (isset($this->type_map[$prefix]) && isset($this->algorithms[$this->type_map[$prefix]]))
+		if (isset($this->type_map[$prefix]))
 		{
-			return $this->algorithms[$this->type_map[$prefix]];
+			return $this->type_map[$prefix];
 		}
 		else
 		{
@@ -216,9 +212,9 @@ class manager
 			return $this->helper->combined_hash_password($password, $type);
 		}
 
-		if (isset($this->algorithms[$type]))
+		if (isset($this->type_map[$type]))
 		{
-			$hashing_algorithm = $this->algorithms[$type];
+			$hashing_algorithm = $this->type_map[$type];
 		}
 		else
 		{
@@ -260,7 +256,7 @@ class manager
 			return $correct;
 		}
 
-		if ($stored_hash_type->get_name() !== $this->type)
+		if ($stored_hash_type->get_prefix() !== $this->type)
 		{
 			$this->convert_flag = true;
 		}

@@ -42,22 +42,4 @@ abstract class base implements driver_interface
 	{
 		return true;
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_name()
-	{
-		return $this->name;
-	}
-
-	/**
-	* Set driver name
-	*
-	* @param string $name Driver name
-	*/
-	public function set_name($name)
-	{
-		$this->name = $name;
-	}
 }

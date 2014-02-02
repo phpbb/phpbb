@@ -28,11 +28,6 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 		);
 
-		foreach ($this->passwords_drivers as $key => $driver)
-		{
-			$driver->set_name($key);
-		}
-
 		$this->helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
 		$this->manager = new \phpbb\passwords\manager($config, $this->passwords_drivers, $this->helper, array_keys($this->passwords_drivers));
