@@ -11,14 +11,14 @@ namespace phpbb\template\twig;
 
 class environment extends \Twig_Environment
 {
-	/** @var array */
-	protected $phpbb_extensions;
-
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
 	/** @var \phpbb\path_helper */
 	protected $phpbb_path_helper;
+
+	/** @var \phpbb\extension\manager */
+	protected $extension_manager;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -33,18 +33,19 @@ class environment extends \Twig_Environment
 	* Constructor
 	*
 	* @param \phpbb\config\config $phpbb_config
-	* @param array $phpbb_extensions Array of enabled extensions (name => path)
 	* @param \phpbb\path_helper
+	* @param \phpbb\extension\manager
 	* @param string $phpbb_root_path
 	* @param Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, $phpbb_extensions, \phpbb\path_helper $path_helper, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
-		$this->phpbb_extensions = $phpbb_extensions;
 
 		$this->phpbb_path_helper = $path_helper;
+		$this->extension_manager = $extension_manager;
+
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 
@@ -60,7 +61,7 @@ class environment extends \Twig_Environment
 	*/
 	public function get_phpbb_extensions()
 	{
-		return $this->phpbb_extensions;
+		return ($this->extension_manager) ? $this->extension_manager->all_enabled() : array();
 	}
 
 	/**
