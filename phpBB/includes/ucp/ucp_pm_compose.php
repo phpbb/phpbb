@@ -950,7 +950,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				{
 					if ($type == 'g')
 					{
-						$row['name'] = (isset($user->lang['G_' . $row['name']])) ?  : $row['name'];
+						$row['name'] = get_translated_groupname($row['group_name']);
 					}
 
 					${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
