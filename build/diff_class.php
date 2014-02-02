@@ -116,6 +116,8 @@ class _WikiDiffEngine
 
 		while ($x < $n_from || $y < $n_to)
 		{
+			$progress_validation = array($x, $n_from, $y, $n_to);
+
 			// Skip matching "snake".
 			$x0 = $x;
 			$ncopy = 0;
@@ -156,6 +158,13 @@ class _WikiDiffEngine
 				}
 				$this->edits[] = $adds;
 			}
+
+			if ($progress_validation === array($x, $n_from, $y, $n_to))
+			{
+				echo 'Aborted infinite loop while creating the diff.' . "\n";
+				break;
+			}
+			
 		}
 
 		if (!empty($endskip))
