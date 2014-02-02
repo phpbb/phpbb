@@ -201,7 +201,7 @@ class pagination
 			'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
 			$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 			$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
-			$tpl_prefix . 'PAGE_NUMBER'		=> $this->on_page($base_url, $num_items, $per_page, $start),
+			$tpl_prefix . 'PAGE_NUMBER'		=> $this->on_page($num_items, $per_page, $start),
 		);
 
 		if ($tpl_block_name)
@@ -228,24 +228,15 @@ class pagination
 
 	/**
 	* Return current page
-	* This function also sets certain specific template variables
 	*
-	* @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
 	* @param int $num_items the total number of items, posts, topics, etc.
 	* @param int $per_page the number of items, posts, etc. per page
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
 	* @return string Descriptive pagination string (e.g. "page 1 of 10")
 	*/
-	public function on_page($base_url, $num_items, $per_page, $start)
+	public function on_page($num_items, $per_page, $start)
 	{
 		$on_page = $this->get_on_page($per_page, $start);
-
-		$this->template->assign_vars(array(
-			'PER_PAGE'		=> $per_page,
-			'ON_PAGE'		=> $on_page,
-			'BASE_URL'		=> $base_url,
-		));
-
 		return $this->user->lang('PAGE_OF', $on_page, max(ceil($num_items / $per_page), 1));
 	}
 
