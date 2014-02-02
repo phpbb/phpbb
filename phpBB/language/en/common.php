@@ -299,7 +299,6 @@ $lang = array_merge($lang, array(
 	),
 	'G_ADMINISTRATORS'			=> 'Administrators',
 	'G_BOTS'					=> 'Bots',
-	'G_FORUM_OWNER'				=> 'Forum Owner',
 	'G_GUESTS'					=> 'Guests',
 	'G_REGISTERED'				=> 'Registered users',
 	'G_REGISTERED_COPPA'		=> 'Registered COPPA users',
