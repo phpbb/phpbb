@@ -30,6 +30,7 @@ before_script:
 script:
   - cd build
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysql' ]; then ../phpBB/vendor/bin/phing sniff; fi"
+  - sh -c "if [ '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh $TRAVIS_COMMIT_RANGE; fi"
   - cd ..
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
 
