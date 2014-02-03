@@ -83,6 +83,8 @@ class migrator
 			$this->tools[$tool->get_name()] = $tool;
 		}
 
+		$this->tools['dbtools'] = $this->db_tools;
+
 		$this->load_migration_state();
 	}
 
@@ -229,9 +231,12 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
-			$this->last_run_migration['task'] = 'apply_schema_changes';
-			$this->apply_schema_changes($migration->update_schema());
-			$state['migration_schema_done'] = true;
+			$this->last_run_migration['task'] = 'process_schema_step';
+			$steps = self::get_schema_steps($migration->update_schema());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_schema_done'] = ($result === true);
 		}
 		else if (!$state['migration_data_done'])
 		{
@@ -329,30 +334,25 @@ class migrator
 
 			$this->set_migration_state($name, $state);
 		}
-		else
+		else if ($state['migration_schema_done'])
 		{
-			$this->apply_schema_changes($migration->revert_schema());
+			$steps = self::get_schema_steps($migration->revert_schema());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
-			$sql = 'DELETE FROM ' . $this->migrations_table . "
-				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-			$this->db->sql_query($sql);
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_schema_done'] = ($result === true) ? false : true;
 
-			unset($this->migration_state[$name]);
+			if (!$state['migration_schema_done'])
+			{
+				$sql = 'DELETE FROM ' . $this->migrations_table . "
+					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+				$this->db->sql_query($sql);
+
+				unset($this->migration_state[$name]);
+			}
 		}
 
 		return true;
-	}
-
-	/**
-	* Apply schema changes from a migration
-	*
-	* Just calls db_tools->perform_schema_changes
-	*
-	* @param array $schema_changes from migration
-	*/
-	protected function apply_schema_changes($schema_changes)
-	{
-		$this->db_tools->perform_schema_changes($schema_changes);
 	}
 
 	/**
@@ -498,6 +498,7 @@ class migrator
 
 				return $this->get_callable_from_step($step);
 			break;
+
 			case 'custom':
 				if (!is_callable($parameters[0]))
 				{
@@ -748,5 +749,69 @@ class migrator
 		}
 
 		return $this->migrations;
+	}
+
+	/**
+	 * Get the schema steps from an array of schema changes
+	 *
+	 * This splits up $schema_changes into individual changes so that the
+	 * changes can be chunked
+	 *
+	 * @param array $schema_changes from migration
+	 * @return array
+	 */
+	static public function get_schema_steps($schema_changes)
+	{
+		$steps = array();
+
+		// Nested level of data (only supports 1/2 currently)
+		$nested_level = array(
+			'drop_tables'		=> 1,
+			'add_tables'		=> 1,
+			'change_columns'	=> 2,
+			'add_columns'		=> 2,
+			'drop_keys'			=> 2,
+			'drop_columns'		=> 2,
+			'add_primary_keys'	=> 2, // perform_schema_changes only uses one level, but second is in the function
+			'add_unique_index'	=> 2,
+			'add_index'			=> 2,
+		);
+
+		foreach ($nested_level as $change_type => $data_depth)
+		{
+			if (!empty($schema_changes[$change_type]))
+			{
+				foreach ($schema_changes[$change_type] as $key => $value)
+				{
+					if ($data_depth === 1)
+					{
+						$steps[] = array(
+							'dbtools.perform_schema_changes', array(array(
+									$change_type	=> array(
+									$value,
+								),
+							)),
+						);
+					}
+					else if ($data_depth === 2)
+					{
+						foreach ($value as $key2 => $value2)
+						{
+							$steps[] = array(
+								'dbtools.perform_schema_changes', array(array(
+									$change_type	=> array(
+										$key => array(
+											$key2	=> $value2,
+										),
+									),
+								)),
+							);
+						}
+					}
+				}
+			}
+		}
+
+		return $steps;
 	}
 }
