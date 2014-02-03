@@ -239,7 +239,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options INTEGER UNSIGNED NOT NULL DEFAULT '7',
 	forum_desc_uid varchar(8) NOT NULL DEFAULT '',
 	forum_link varchar(255) NOT NULL DEFAULT '',
-	forum_password varchar(40) NOT NULL DEFAULT '',
+	forum_password varchar(255) NOT NULL DEFAULT '',
 	forum_style INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_image varchar(255) NOT NULL DEFAULT '',
 	forum_rules text(65535) NOT NULL DEFAULT '',
@@ -626,7 +626,7 @@ CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to (user_id, folde
 CREATE TABLE phpbb_profile_fields (
 	field_id INTEGER PRIMARY KEY NOT NULL ,
 	field_name varchar(255) NOT NULL DEFAULT '',
-	field_type tinyint(4) NOT NULL DEFAULT '0',
+	field_type varchar(100) NOT NULL DEFAULT '',
 	field_ident varchar(20) NOT NULL DEFAULT '',
 	field_length varchar(20) NOT NULL DEFAULT '',
 	field_minlen varchar(255) NOT NULL DEFAULT '',
@@ -661,7 +661,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	lang_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	option_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	field_type tinyint(4) NOT NULL DEFAULT '0',
+	field_type varchar(100) NOT NULL DEFAULT '',
 	lang_value varchar(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (field_id, lang_id, option_id)
 );
@@ -945,7 +945,7 @@ CREATE TABLE phpbb_users (
 	user_regdate INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	username varchar(255) NOT NULL DEFAULT '',
 	username_clean varchar(255) NOT NULL DEFAULT '',
-	user_password varchar(40) NOT NULL DEFAULT '',
+	user_password varchar(255) NOT NULL DEFAULT '',
 	user_passchg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_pass_convert INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_email varchar(100) NOT NULL DEFAULT '',

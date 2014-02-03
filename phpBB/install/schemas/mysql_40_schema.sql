@@ -246,7 +246,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options int(11) UNSIGNED DEFAULT '7' NOT NULL,
 	forum_desc_uid varbinary(8) DEFAULT '' NOT NULL,
 	forum_link blob NOT NULL,
-	forum_password varbinary(120) DEFAULT '' NOT NULL,
+	forum_password blob NOT NULL,
 	forum_style mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_image varbinary(255) DEFAULT '' NOT NULL,
 	forum_rules blob NOT NULL,
@@ -645,7 +645,7 @@ CREATE TABLE phpbb_privmsgs_to (
 CREATE TABLE phpbb_profile_fields (
 	field_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	field_name blob NOT NULL,
-	field_type tinyint(4) DEFAULT '0' NOT NULL,
+	field_type varbinary(100) DEFAULT '' NOT NULL,
 	field_ident varbinary(20) DEFAULT '' NOT NULL,
 	field_length varbinary(20) DEFAULT '' NOT NULL,
 	field_minlen varbinary(255) DEFAULT '' NOT NULL,
@@ -681,7 +681,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	lang_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	field_type tinyint(4) DEFAULT '0' NOT NULL,
+	field_type varbinary(100) DEFAULT '' NOT NULL,
 	lang_value blob NOT NULL,
 	PRIMARY KEY (field_id, lang_id, option_id)
 );
@@ -974,7 +974,7 @@ CREATE TABLE phpbb_users (
 	user_regdate int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	username blob NOT NULL,
 	username_clean blob NOT NULL,
-	user_password varbinary(120) DEFAULT '' NOT NULL,
+	user_password blob NOT NULL,
 	user_passchg int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	user_pass_convert tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	user_email blob NOT NULL,

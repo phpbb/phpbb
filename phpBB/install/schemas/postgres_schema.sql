@@ -384,7 +384,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options INT4 DEFAULT '7' NOT NULL CHECK (forum_desc_options >= 0),
 	forum_desc_uid varchar(8) DEFAULT '' NOT NULL,
 	forum_link varchar(255) DEFAULT '' NOT NULL,
-	forum_password varchar(40) DEFAULT '' NOT NULL,
+	forum_password varchar(255) DEFAULT '' NOT NULL,
 	forum_style INT4 DEFAULT '0' NOT NULL CHECK (forum_style >= 0),
 	forum_image varchar(255) DEFAULT '' NOT NULL,
 	forum_rules varchar(4000) DEFAULT '' NOT NULL,
@@ -853,7 +853,7 @@ CREATE SEQUENCE phpbb_profile_fields_seq;
 CREATE TABLE phpbb_profile_fields (
 	field_id INT4 DEFAULT nextval('phpbb_profile_fields_seq'),
 	field_name varchar(255) DEFAULT '' NOT NULL,
-	field_type INT2 DEFAULT '0' NOT NULL,
+	field_type varchar(100) DEFAULT '' NOT NULL,
 	field_ident varchar(20) DEFAULT '' NOT NULL,
 	field_length varchar(20) DEFAULT '' NOT NULL,
 	field_minlen varchar(255) DEFAULT '' NOT NULL,
@@ -893,7 +893,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id INT4 DEFAULT '0' NOT NULL CHECK (field_id >= 0),
 	lang_id INT4 DEFAULT '0' NOT NULL CHECK (lang_id >= 0),
 	option_id INT4 DEFAULT '0' NOT NULL CHECK (option_id >= 0),
-	field_type INT2 DEFAULT '0' NOT NULL,
+	field_type varchar(100) DEFAULT '' NOT NULL,
 	lang_value varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id, lang_id, option_id)
 );
@@ -1246,7 +1246,7 @@ CREATE TABLE phpbb_users (
 	user_regdate INT4 DEFAULT '0' NOT NULL CHECK (user_regdate >= 0),
 	username varchar_ci DEFAULT '' NOT NULL,
 	username_clean varchar_ci DEFAULT '' NOT NULL,
-	user_password varchar(40) DEFAULT '' NOT NULL,
+	user_password varchar(255) DEFAULT '' NOT NULL,
 	user_passchg INT4 DEFAULT '0' NOT NULL CHECK (user_passchg >= 0),
 	user_pass_convert INT2 DEFAULT '0' NOT NULL CHECK (user_pass_convert >= 0),
 	user_email varchar(100) DEFAULT '' NOT NULL,

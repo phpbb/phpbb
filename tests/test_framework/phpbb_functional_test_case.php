@@ -503,6 +503,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$passwords_manager = $this->get_passwords_manager();
 
 		$user_row = array(
 			'username' => $username,
@@ -512,7 +513,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_lang' => 'en',
 			'user_timezone' => 0,
 			'user_dateformat' => '',
-			'user_password' => phpbb_hash($username . $username),
+			'user_password' => $passwords_manager->hash($username . $username),
 		);
 		return user_add($user_row);
 	}
@@ -996,5 +997,30 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 		return null;
+	}
+
+	/**
+	* Return a passwords manager instance
+	*
+	* @return phpbb\passwords\manager
+	*/
+	public function get_passwords_manager()
+	{
+		// Prepare dependencies for manager and driver
+		$config = new \phpbb\config\config(array());
+		$driver_helper = new \phpbb\passwords\driver\helper($config);
+
+		$passwords_drivers = array(
+			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
+			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
+			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $driver_helper),
+			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
+		);
+
+		$passwords_helper = new \phpbb\passwords\helper;
+		// Set up passwords manager
+		$manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
+
+		return $manager;
 	}
 }

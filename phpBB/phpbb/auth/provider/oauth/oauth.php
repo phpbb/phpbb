@@ -34,6 +34,13 @@ class oauth extends \phpbb\auth\provider\base
 	protected $config;
 
 	/**
+	* phpBB passwords manager
+	*
+	* @var \phpbb\passwords\manager
+	*/
+	protected $passwords_manager;
+
+	/**
 	* phpBB request object
 	*
 	* @var \phpbb\request\request_interface
@@ -101,6 +108,7 @@ class oauth extends \phpbb\auth\provider\base
 	*
 	* @param	\phpbb\db\driver\driver	$db
 	* @param	\phpbb\config\config	$config
+	* @param	\phpbb\passwords\manager	$passwords_manager
 	* @param	\phpbb\request\request_interface	$request
 	* @param	\phpbb\user		$user
 	* @param	string			$auth_provider_oauth_token_storage_table
@@ -110,10 +118,11 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	string			$phpbb_root_path
 	* @param	string			$php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
+		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->user = $user;
 		$this->auth_provider_oauth_token_storage_table = $auth_provider_oauth_token_storage_table;
@@ -150,7 +159,7 @@ class oauth extends \phpbb\auth\provider\base
 		// Temporary workaround for only having one authentication provider available
 		if (!$this->request->is_set('oauth_service'))
 		{
-			$provider = new \phpbb\auth\provider\db($this->db, $this->config, $this->request, $this->user, $this->phpbb_root_path, $this->php_ext);
+			$provider = new \phpbb\auth\provider\db($this->db, $this->config, $this->passwords_manager, $this->request, $this->user, $this->phpbb_root_path, $this->php_ext);
 			return $provider->login($username, $password);
 		}
 

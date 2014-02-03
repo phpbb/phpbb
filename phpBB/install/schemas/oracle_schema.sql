@@ -509,7 +509,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options number(11) DEFAULT '7' NOT NULL,
 	forum_desc_uid varchar2(8) DEFAULT '' ,
 	forum_link varchar2(765) DEFAULT '' ,
-	forum_password varchar2(120) DEFAULT '' ,
+	forum_password varchar2(765) DEFAULT '' ,
 	forum_style number(8) DEFAULT '0' NOT NULL,
 	forum_image varchar2(255) DEFAULT '' ,
 	forum_rules clob DEFAULT '' ,
@@ -1217,7 +1217,7 @@ CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to (user_id, folde
 CREATE TABLE phpbb_profile_fields (
 	field_id number(8) NOT NULL,
 	field_name varchar2(765) DEFAULT '' ,
-	field_type number(4) DEFAULT '0' NOT NULL,
+	field_type varchar2(100) DEFAULT '' ,
 	field_ident varchar2(20) DEFAULT '' ,
 	field_length varchar2(20) DEFAULT '' ,
 	field_minlen varchar2(255) DEFAULT '' ,
@@ -1277,7 +1277,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id number(8) DEFAULT '0' NOT NULL,
 	lang_id number(8) DEFAULT '0' NOT NULL,
 	option_id number(8) DEFAULT '0' NOT NULL,
-	field_type number(4) DEFAULT '0' NOT NULL,
+	field_type varchar2(100) DEFAULT '' ,
 	lang_value varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_lang PRIMARY KEY (field_id, lang_id, option_id)
 )
@@ -1798,7 +1798,7 @@ CREATE TABLE phpbb_users (
 	user_regdate number(11) DEFAULT '0' NOT NULL,
 	username varchar2(255) DEFAULT '' ,
 	username_clean varchar2(255) DEFAULT '' ,
-	user_password varchar2(120) DEFAULT '' ,
+	user_password varchar2(765) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
 	user_pass_convert number(1) DEFAULT '0' NOT NULL,
 	user_email varchar2(300) DEFAULT '' ,

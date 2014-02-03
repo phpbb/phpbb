@@ -29,8 +29,7 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request;
-		global $phpbb_container;
+		global $request, $phpbb_container;
 
 		$user->add_lang('posting');
 
@@ -82,13 +81,16 @@ class ucp_profile
 						$error[] = ($data['password_confirm']) ? 'NEW_PASSWORD_ERROR' : 'NEW_PASSWORD_CONFIRM_EMPTY';
 					}
 
+					// Instantiate passwords manager
+					$passwords_manager = $phpbb_container->get('passwords.manager');
+
 					// Only check the new password against the previous password if there have been no errors
-					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && phpbb_check_hash($data['new_password'], $user->data['user_password']))
+					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && $passwords_manager->check($data['new_password'], $user->data['user_password']))
 					{
 						$error[] = 'SAME_PASSWORD_ERROR';
 					}
 
-					if (!phpbb_check_hash($data['cur_password'], $user->data['user_password']))
+					if (!$passwords_manager->check($data['cur_password'], $user->data['user_password']))
 					{
 						$error[] = ($data['cur_password']) ? 'CUR_PASSWORD_ERROR' : 'CUR_PASSWORD_EMPTY';
 					}
@@ -105,7 +107,7 @@ class ucp_profile
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'],
 							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? phpbb_email_hash($data['email']) : $user->data['user_email_hash'],
-							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? phpbb_hash($data['new_password']) : $user->data['user_password'],
+							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? $passwords_manager->hash($data['new_password']) : $user->data['user_password'],
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
 
@@ -114,7 +116,7 @@ class ucp_profile
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $data['username']);
 						}
 
-						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && !phpbb_check_hash($data['new_password'], $user->data['user_password']))
+						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && !$passwords_manager->check($data['new_password'], $user->data['user_password']))
 						{
 							$user->reset_login_keys();
 							add_log('user', $user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $data['username']);
@@ -257,9 +259,7 @@ class ucp_profile
 					trigger_error('NO_AUTH_PROFILEINFO');
 				}
 
-				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-
-				$cp = new custom_profile();
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 

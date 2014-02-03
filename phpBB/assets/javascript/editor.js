@@ -78,14 +78,13 @@ function bbfontstyle(bbopen, bbclose) {
 		if (theSelection) {
 			// Add tags around selection
 			document.selection.createRange().text = bbopen + theSelection + bbclose;
-			document.forms[form_name].elements[text_name].focus();
+			textarea.focus();
 			theSelection = '';
 			return;
 		}
-	} else if (document.forms[form_name].elements[text_name].selectionEnd
-			&& (document.forms[form_name].elements[text_name].selectionEnd - document.forms[form_name].elements[text_name].selectionStart > 0)) {
-		mozWrap(document.forms[form_name].elements[text_name], bbopen, bbclose);
-		document.forms[form_name].elements[text_name].focus();
+	} else if (textarea.selectionEnd && (textarea.selectionEnd - textarea.selectionStart > 0)) {
+		mozWrap(textarea, bbopen, bbclose);
+		textarea.focus();
 		theSelection = '';
 		return;
 	}

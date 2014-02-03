@@ -32,13 +32,7 @@ script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysql' ]; then ../phpBB/vendor/bin/phing sniff; fi"
   - cd ..
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
-  
-notifications:
-  email:
-    recipients:
-      - dev-team@phpbb.com
-    on_success: change
-    on_failure: change
+  - sh -c "if [ '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh $TRAVIS_COMMIT_RANGE; fi"
 
 matrix:
   allow_failures:

@@ -20,7 +20,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
-	global $user, $template, $auth, $db, $cache;
+	global $user, $template, $auth, $db, $cache, $phpbb_container;
 	global $phpbb_root_path, $request, $phpEx, $config, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
@@ -61,11 +61,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Load the custom profile fields
 	if ($config['load_cpf_pm'])
 	{
-		if (!class_exists('custom_profile'))
-		{
-			include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-		}
-		$cp = new custom_profile();
+		$cp = $phpbb_container->get('profilefields.manager');
 
 		$profile_fields = $cp->generate_profile_fields_template('grab', $author_id);
 	}

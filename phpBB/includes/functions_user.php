@@ -162,7 +162,7 @@ function user_update_name($old_name, $new_name)
 function user_add($user_row, $cp_data = false)
 {
 	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $phpbb_container;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
@@ -276,12 +276,7 @@ function user_add($user_row, $cp_data = false)
 	{
 		$cp_data['user_id'] = (int) $user_id;
 
-		if (!class_exists('custom_profile'))
-		{
-			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-		}
-
-		$cp = new custom_profile();
+		$cp = $phpbb_container->get('profilefields.manager');
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
 			$db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 		$db->sql_query($sql);

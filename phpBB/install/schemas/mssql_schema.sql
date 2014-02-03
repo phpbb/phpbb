@@ -448,7 +448,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_desc_options] [int] DEFAULT (7) NOT NULL ,
 	[forum_desc_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[forum_link] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[forum_password] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[forum_password] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_style] [int] DEFAULT (0) NOT NULL ,
 	[forum_image] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_rules] [varchar] (4000) DEFAULT ('') NOT NULL ,
@@ -1114,7 +1114,7 @@ GO
 CREATE TABLE [phpbb_profile_fields] (
 	[field_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[field_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[field_type] [int] DEFAULT (0) NOT NULL ,
+	[field_type] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[field_ident] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_length] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_minlen] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -1172,7 +1172,7 @@ CREATE TABLE [phpbb_profile_fields_lang] (
 	[field_id] [int] DEFAULT (0) NOT NULL ,
 	[lang_id] [int] DEFAULT (0) NOT NULL ,
 	[option_id] [int] DEFAULT (0) NOT NULL ,
-	[field_type] [int] DEFAULT (0) NOT NULL ,
+	[field_type] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[lang_value] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -1681,7 +1681,7 @@ CREATE TABLE [phpbb_users] (
 	[user_regdate] [int] DEFAULT (0) NOT NULL ,
 	[username] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[username_clean] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_password] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[user_password] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_passchg] [int] DEFAULT (0) NOT NULL ,
 	[user_pass_convert] [int] DEFAULT (0) NOT NULL ,
 	[user_email] [varchar] (100) DEFAULT ('') NOT NULL ,

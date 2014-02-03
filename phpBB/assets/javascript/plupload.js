@@ -11,25 +11,30 @@ phpbb.plupload.ids = [];
  * @return undefined
  */
 phpbb.plupload.initialize = function() {
-	phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
-	phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
-
-	// Hide the basic upload panel and remove the attach row template.
-	$('#attach-row-tpl, #attach-panel-basic').remove();
-	// Show multi-file upload options.
-	$('#attach-panel-multi').show();
+	// Initialize the Plupload uploader.
+	uploader.init();
 
 	// Set attachment data.
 	phpbb.plupload.setData(phpbb.plupload.data);
 	phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 
-	// Initialize the Plupload uploader.
-	uploader.init();
+	// Only execute if Plupload initialized successfully.
+	uploader.bind('Init', function() {
+		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
+		phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
 
-	// Point out the drag-and-drop zone if it's supported.
-	if (!uploader.features.dragdrop) {
-		$('#drag-n-drop-message').show();
-	}
+		// Hide the basic upload panel and remove the attach row template.
+		$('#attach-row-tpl, #attach-panel-basic').remove();
+		// Show multi-file upload options.
+		$('#attach-panel-multi').show();
+	});
+
+	uploader.bind('PostInit', function() {
+		// Point out the drag-and-drop zone if it's supported.
+		if (uploader.features.dragdrop) {
+			$('#drag-n-drop-message').show();
+		}
+	});
 };
 
 /**
@@ -92,7 +97,7 @@ phpbb.plupload.getSerializedData = function() {
  * @return int	Returns the index of the file if it exists.
  */
 phpbb.plupload.getIndex = function(attach_id) {
-	var index = phpbb.plupload.ids.indexOf(Number(attach_id));
+	var index = $.inArray(Number(attach_id), phpbb.plupload.ids);
 	return (index !== -1) ? index : false;
 };
 
@@ -308,7 +313,7 @@ phpbb.plupload.hideEmptyList = function() {
  * @return undefined
  */
 phpbb.plupload.updateBbcode = function(action, index) {
-	var	textarea = $(phpbb.plupload.form).find('textarea[name="message"]'),
+	var	textarea = $('#message', phpbb.plupload.form),
 		text = textarea.val(),
 		removal = (action === 'removal');
 
