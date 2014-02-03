@@ -27,7 +27,7 @@ class ucp_remind
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template, $phpbb_container;;
+		global $db, $user, $auth, $template, $phpbb_container;
 
 		if (!$config['allow_password_reset'])
 		{

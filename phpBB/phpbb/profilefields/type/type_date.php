@@ -327,7 +327,6 @@ class type_date extends type_base
 			return $current_value;
 		}
 
-
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
 	}
 
