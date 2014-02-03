@@ -72,7 +72,7 @@ $lang = array_merge($lang, array(
 			<li>Disable the extension</li>
 			<li>Delete the extension’s files from the filesystem</li>
 			<li>Upload the new files</li>
-			<li>Enable the extension, note that the board will be automatically disabled for this step</li>
+			<li>Enable the extension</li>
 		</ol>',
 	'EXTENSION_REMOVE_HEADLINE'	=> 'Completly removing an extension from your board',
 	'EXTENSION_REMOVE_EXPLAIN'	=> '<ol>
