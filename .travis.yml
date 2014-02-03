@@ -24,4 +24,4 @@ before_script:
 
 script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration travis/phpunit-$DB-travis.xml; else phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml; fi"
-  - sh -c "if [ '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh $TRAVIS_COMMIT_RANGE; fi"
+  - sh -c "if [ '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh $TRAVIS_BRANCH...FETCH_HEAD; fi"
