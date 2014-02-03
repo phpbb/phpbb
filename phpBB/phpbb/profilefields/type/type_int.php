@@ -87,7 +87,7 @@ class type_int extends type_base
 	*/
 	public function get_default_field_value($field_data)
 	{
-		 if ($field_data['field_default_value'] === '')
+		if ($field_data['field_default_value'] === '')
 		{
 			// We cannot insert an empty string into an integer column.
 			return null;

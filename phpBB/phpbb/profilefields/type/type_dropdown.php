@@ -273,7 +273,6 @@ class type_dropdown extends type_base
 			return sizeof(explode("\n", $this->request->variable('lang_options', '', true)));
 		}
 
-
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
 	}
 
