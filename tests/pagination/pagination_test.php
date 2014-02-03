@@ -156,23 +156,38 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	{
 		return array(
 			array(
+				0,
+				0,
+				0,
+			),
+			array(
 				-1,
+				20,
+				0,
+			),
+			array(
+				20,
+				-30,
 				0,
 			),
 			array(
 				0,
+				20,
 				0,
 			),
 			array(
 				10,
+				20,
 				10,
 			),
 			array(
+				20,
 				20,
 				10,
 			),
 			array(
 				30,
+				20,
 				10,
 			),
 		);
@@ -181,9 +196,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	/**
 	* @dataProvider validate_start_data
 	*/
-	public function test_validate_start($start, $expect)
+	public function test_validate_start($start, $num_items, $expect)
 	{
-		$this->assertEquals($expect, $this->pagination->validate_start($start, 10, 20));
+		$this->assertEquals($expect, $this->pagination->validate_start($start, 10, $num_items));
 	}
 
 	public function reverse_start_data()
