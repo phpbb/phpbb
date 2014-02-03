@@ -37,6 +37,12 @@ function install_php_extension
 
 php_ini_file=$(find_php_ini)
 
+# disable broken opcache on PHP 5.5.7
+if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.5.8', '<');"` == "1" ]
+then
+	sed -i '/opcache.so/d' "$php_ini_file"
+fi
+
 # apc
 if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.5.0-dev', '<');"` == "1" ]
 then
