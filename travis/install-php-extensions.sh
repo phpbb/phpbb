@@ -38,9 +38,12 @@ function install_php_extension
 php_ini_file=$(find_php_ini)
 
 # apc
-echo 'Enabling APC PHP extension'
-register_php_extension 'apc' "$php_ini_file"
-echo 'apc.enable_cli=1' >> "$php_ini_file"
+if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.5.0-dev', '<');"` == "1" ]
+then
+	echo 'Enabling APC PHP extension'
+	register_php_extension 'apc' "$php_ini_file"
+	echo 'apc.enable_cli=1' >> "$php_ini_file"
+fi
 
 # redis
 git clone git://github.com/nicolasff/phpredis.git redis
