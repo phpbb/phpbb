@@ -105,7 +105,7 @@
 			<property name="dir" value="build/old_versions/release-${version}" />
 		</phingcall>
 
-		<exec dir="build/old_versions" command="diff -crNEBwd release-${version} release-${newversion} >
+		<exec dir="build/old_versions" command="LC_ALL=C diff -crNEBwd release-${version} release-${newversion} >
 			../new_version/patches/phpBB-${version}_to_${newversion}.patch" escape="false" />
 	</target>
 
