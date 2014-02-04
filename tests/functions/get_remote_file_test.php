@@ -29,11 +29,11 @@ class phpbb_functions_get_remote_file extends phpbb_test_case
 		}
 
 		$errstr = $errno = null;
-		$file = get_remote_file($hostname, '/phpbb', '30x.txt', $errstr, $errno);
+		$info = get_remote_file($hostname, '/phpbb', 'versions.json', $errstr, $errno);
 
 		$this->assertNotEquals(
 			0,
-			strlen($file),
+			strlen($info),
 			'Failed asserting that the response is not empty.'
 		);
 
@@ -49,27 +49,27 @@ class phpbb_functions_get_remote_file extends phpbb_test_case
 			'Failed asserting that the error number is 0 (i.e. no error occurred).'
 		);
 
-		$lines = explode("\n", $file);
+		$info = json_decode($info);
 
 		$this->assertGreaterThanOrEqual(
 			2,
-			sizeof($lines),
+			sizeof($info),
 			'Failed asserting that the version file has at least two lines.'
 		);
 
 		$this->assertStringStartsWith(
 			'3.',
-			$lines[0],
+			$info['30x']['current'],
 			"Failed asserting that the first line of the version file starts with '3.'"
 		);
 
 		$this->assertNotSame(
 			false,
-			filter_var($lines[1], FILTER_VALIDATE_URL),
+			filter_var($info['30x']['announcement'], FILTER_VALIDATE_URL),
 			'Failed asserting that the second line of the version file is a valid URL.'
 		);
 
-		$this->assertContains('http', $lines[1]);
-		$this->assertContains('phpbb.com', $lines[1], '', true);
+		$this->assertContains('http', $info['30x']['announcement']);
+		$this->assertContains('phpbb.com', $info['30x']['announcement'], '', true);
 	}
 }
