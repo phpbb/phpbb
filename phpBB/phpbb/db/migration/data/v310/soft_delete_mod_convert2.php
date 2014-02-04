@@ -11,8 +11,10 @@ namespace phpbb\db\migration\data\v310;
 
 /**
  * Migration to convert the Soft Delete MOD for 3.0
+ *
+ * https://www.phpbb.com/customise/db/mod/soft_delete/
  */
-class soft_delete_convert2 extends \phpbb\db\migration\migration
+class soft_delete_mod_convert2 extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
