@@ -1023,7 +1023,7 @@ class SphinxClient
 					break;
 
 				default:
-					assert ( 0 && "internal error: unhandled filter type" );
+					assert ( 0, "internal error: unhandled filter type" );
 			}
 			$req .= pack ( "N", $filter["exclude"] );
 		}
