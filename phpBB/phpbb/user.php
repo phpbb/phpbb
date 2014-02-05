@@ -183,7 +183,7 @@ class user extends \phpbb\session
 		unset($lang_set_ext);
 
 		$style_request = request_var('style', 0);
-		if ($style_request && $auth->acl_get('a_styles') && !defined('ADMIN_START'))
+		if ($style_request && (!$config['override_user_style'] || $auth->acl_get('a_styles')) && !defined('ADMIN_START'))
 		{
 			global $SID, $_EXTRA_URL;
 
