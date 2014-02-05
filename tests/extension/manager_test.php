@@ -106,7 +106,8 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$phpbb_root_path,
 			$php_ext,
 			$table_prefix,
-			array()
+			array(),
+			new \phpbb\db\migration\helper()
 		);
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);

@@ -62,7 +62,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->phpbb_root_path,
 			'php',
 			$this->table_prefix,
-			array()
+			array(),
+			new \phpbb\db\migration\helper()
 		);
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
