@@ -25,6 +25,9 @@ class migrator
 	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
+	/** @var \phpbb\db\migration\helper */
+	protected $helper;
+
 	/** @var string */
 	protected $table_prefix;
 
@@ -65,11 +68,12 @@ class migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
+		$this->helper = $helper;
 
 		$this->migrations_table = $migrations_table;
 
@@ -232,7 +236,7 @@ class migrator
 		if (!$state['migration_schema_done'])
 		{
 			$this->last_run_migration['task'] = 'process_schema_step';
-			$steps = self::get_schema_steps($migration->update_schema());
+			$steps = $this->helper->get_schema_steps($migration->update_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
@@ -336,7 +340,7 @@ class migrator
 		}
 		else if ($state['migration_schema_done'])
 		{
-			$steps = self::get_schema_steps($migration->revert_schema());
+			$steps = $this->helper->get_schema_steps($migration->revert_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
@@ -749,69 +753,5 @@ class migrator
 		}
 
 		return $this->migrations;
-	}
-
-	/**
-	 * Get the schema steps from an array of schema changes
-	 *
-	 * This splits up $schema_changes into individual changes so that the
-	 * changes can be chunked
-	 *
-	 * @param array $schema_changes from migration
-	 * @return array
-	 */
-	static public function get_schema_steps($schema_changes)
-	{
-		$steps = array();
-
-		// Nested level of data (only supports 1/2 currently)
-		$nested_level = array(
-			'drop_tables'		=> 1,
-			'add_tables'		=> 1,
-			'change_columns'	=> 2,
-			'add_columns'		=> 2,
-			'drop_keys'			=> 2,
-			'drop_columns'		=> 2,
-			'add_primary_keys'	=> 2, // perform_schema_changes only uses one level, but second is in the function
-			'add_unique_index'	=> 2,
-			'add_index'			=> 2,
-		);
-
-		foreach ($nested_level as $change_type => $data_depth)
-		{
-			if (!empty($schema_changes[$change_type]))
-			{
-				foreach ($schema_changes[$change_type] as $key => $value)
-				{
-					if ($data_depth === 1)
-					{
-						$steps[] = array(
-							'dbtools.perform_schema_changes', array(array(
-									$change_type	=> array(
-									$value,
-								),
-							)),
-						);
-					}
-					else if ($data_depth === 2)
-					{
-						foreach ($value as $key2 => $value2)
-						{
-							$steps[] = array(
-								'dbtools.perform_schema_changes', array(array(
-									$change_type	=> array(
-										$key => array(
-											$key2	=> $value2,
-										),
-									),
-								)),
-							);
-						}
-					}
-				}
-			}
-		}
-
-		return $steps;
 	}
 }

@@ -50,7 +50,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
 			'phpbb_',
-			$tools
+			$tools,
+			new \phpbb\db\migration\helper()
 		);
 
 		$container = new phpbb_mock_container_builder();

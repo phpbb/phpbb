@@ -9,6 +9,13 @@
 
 class get_schema_steps_test extends phpbb_test_case
 {
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->helper = new \phpbb\db\migration\helper();
+	}
+
 	public function schema_provider()
 	{
 		return array(
@@ -158,6 +165,6 @@ class get_schema_steps_test extends phpbb_test_case
 	 */
 	public function test_get_schema_steps($schema_changes, $expected)
 	{
-		$this->assertEquals($expected, \phpbb\db\migrator::get_schema_steps($schema_changes));
+		$this->assertEquals($expected, $this->helper->get_schema_steps($schema_changes));
 	}
 }
