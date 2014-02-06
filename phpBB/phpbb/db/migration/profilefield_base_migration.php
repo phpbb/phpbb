@@ -68,7 +68,7 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
-		$field_id = (int) $this->db->sql_nextid(); 
+		$field_id = (int) $this->db->sql_nextid();
 
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, PROFILE_LANG_TABLE);
 
