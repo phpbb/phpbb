@@ -787,6 +787,7 @@ $schema_data['phpbb_profile_fields'] = array(
 $schema_data['phpbb_profile_fields_data'] = array(
 	'COLUMNS'		=> array(
 		'user_id'				=> array('UINT', 0),
+		'pf_phpbb_location'		=> array('VCHAR', ''),
 		'pf_phpbb_interests'	=> array('TEXT_UNI', ''),
 		'pf_phpbb_occupation'	=> array('TEXT_UNI', ''),
 	),
@@ -1165,7 +1166,6 @@ $schema_data['phpbb_users'] = array(
 		'user_sig'					=> array('MTEXT_UNI', ''),
 		'user_sig_bbcode_uid'		=> array('VCHAR:8', ''),
 		'user_sig_bbcode_bitfield'	=> array('VCHAR:255', ''),
-		'user_from'					=> array('VCHAR_UNI:100', ''),
 		'user_icq'					=> array('VCHAR:15', ''),
 		'user_aim'					=> array('VCHAR_UNI', ''),
 		'user_yim'					=> array('VCHAR_UNI', ''),

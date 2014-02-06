@@ -672,6 +672,7 @@ CREATE TABLE phpbb_profile_fields (
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	pf_phpbb_location varbinary(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests blob NOT NULL,
 	pf_phpbb_occupation blob NOT NULL,
 	PRIMARY KEY (user_id)
@@ -1027,7 +1028,6 @@ CREATE TABLE phpbb_users (
 	user_sig mediumblob NOT NULL,
 	user_sig_bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
-	user_from blob NOT NULL,
 	user_icq varbinary(15) DEFAULT '' NOT NULL,
 	user_aim blob NOT NULL,
 	user_yim blob NOT NULL,
