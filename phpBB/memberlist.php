@@ -982,37 +982,21 @@ switch ($mode)
 	break;
 	
 	case 'livesearch':
-		$q=request_var('q','');
+		$q=request_var('q', '', true);
 		$hint="";
-		// Get us some users :D
-		$sql = "SELECT u.user_id
-			FROM " . USERS_TABLE . " u
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")";
-			
-		$result = $db->sql_query($sql);
-		$user_list = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$user_list[] = (int) $row['user_id'];
-		}
-		$db->sql_freeresult($result);
-		$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', $user_list);
+		$sql = "SELECT username, user_id
+				FROM " . USERS_TABLE . " u
+				WHERE username LIKE '".$q."%' AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")";	
 		$result = $db->sql_query($sql);
 		$i=1;
-		while ($row = $db->sql_fetchrow($result))
-		{	$j=($i%2)+1;
-			if(stripos($row['username'],$q)===0)
-			{
-				$hint.="<tr class='bg".$j." row".$j."'><td><a href='" . 
-					$phpbb_root_path."memberlist.$phpEx". "?mode=viewprofile&u=" . $row['user_id'] . 
-					"' target='_blank'>" . 
-					$row['username'] . "</a></td></tr>";
-					$i++;
-			}
-			else
-				$hint.="";
+		while ($i<=10 && $row = $db->sql_fetchrow($result))
+		{	
+			$j=($i%2)+1;
+			$hint.="<tr class='bg".$j." row".$j."'><td><a href='" . 
+				$phpbb_root_path."memberlist.$phpEx". "?mode=viewprofile&u=" . $row['user_id'] . 
+				"' target='_blank'>" . 
+				$row['username'] . "</a></td></tr>";
+				$i++;
 		}
 		echo $hint;
 		exit();
