@@ -40,7 +40,7 @@ if ($mode == 'leaders')
 }
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team', 'livesearch')))
 {
 	trigger_error('NO_MODE');
 }
@@ -980,7 +980,44 @@ switch ($mode)
 		);
 
 	break;
-
+	
+	case 'livesearch':
+		$q=request_var('q','');
+		$hint="";
+		// Get us some users :D
+		$sql = "SELECT u.user_id
+			FROM " . USERS_TABLE . " u
+			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")";
+			
+		$result = $db->sql_query($sql);
+		$user_list = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_list[] = (int) $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+		$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', $user_list);
+		$result = $db->sql_query($sql);
+		$i=1;
+		while ($row = $db->sql_fetchrow($result))
+		{	$j=($i%2)+1;
+			if(stripos($row['username'],$q)===0)
+			{
+				$hint.="<tr class='bg".$j." row".$j."'><td><a href='" . 
+					$phpbb_root_path."memberlist.$phpEx". "?mode=viewprofile&u=" . $row['user_id'] . 
+					"' target='_blank'>" . 
+					$row['username'] . "</a></td></tr>";
+					$i++;
+			}
+			else
+				$hint.="";
+		}
+		echo $hint;
+		exit();
+	break;
+	
 	case 'group':
 	default:
 		// The basic memberlist
@@ -1456,7 +1493,8 @@ switch ($mode)
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS'	=> $s_find_active_time,
 				'S_GROUP_SELECT'		=> $s_group_select,
-				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
+				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"),
+				'S_LIVE_SEARCH_ACTION'  => append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=livesearch", $is_amp = false))
 			);
 		}
 

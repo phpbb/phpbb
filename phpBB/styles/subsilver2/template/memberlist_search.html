@@ -64,6 +64,41 @@
 	</script>
 <!-- ENDIF -->
 
+<script>
+	function showHint(str)
+	{ 
+		if (str.length==0)
+		  { 
+		  document.getElementById("livesearch").innerHTML="";
+		  document.getElementById("livesearch").style.border="0px";
+		  return;
+		  }
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+			document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
+			document.getElementById("livesearch").style.border="0px";
+			}
+		  }
+		xmlhttp.open("GET",'{S_LIVE_SEARCH_ACTION}'+"&q="+str,true);
+		xmlhttp.send();
+	}
+	
+	function clearSearch()
+	{	
+		document.getElementById("livesearch").innerHTML="";
+	}
+</script>
+
 <form method="post" action="{S_MODE_ACTION}" name="search">
 
 <table class="tablebg" width="100%" cellspacing="1">
@@ -75,7 +110,7 @@
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_USERNAME}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
+	<td class="row2"><input class="post" type="text" name="username" value="{USERNAME}" onkeyup="showHint(this.value)" onblur="clearSearch()" /> <table class="tablebg" id="livesearch"></table> </td>
 	<!-- IF S_EMAIL_SEARCH_ALLOWED -->
 		<td class="row1"><b class="genmed">{L_EMAIL}{L_COLON}</b></td>
 		<td class="row2"><input class="post" type="email" name="email" value="{EMAIL}" /></td>
