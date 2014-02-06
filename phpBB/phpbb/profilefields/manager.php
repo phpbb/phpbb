@@ -246,9 +246,35 @@ class manager
 	* Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
 	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
 	*/
-	public function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
+	public function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false, $restrict_option = false)
 	{
-		if ($mode == 'grab')
+		if ($mode == 'headlines')
+		{
+			if (!sizeof($this->profile_cache))
+			{
+				$this->build_cache();
+			}
+
+			// Go through the fields in correct order
+			foreach ($this->profile_cache as $field_ident => $field_data)
+			{
+				if ($restrict_option && !$field_data[$restrict_option])
+				{
+					continue;
+				}
+
+				$profile_field = $this->type_collection[$field_data['field_type']];
+
+				$tpl_fields[] = array(
+					'PROFILE_FIELD_TYPE'	=> $field_data['field_type'],
+					'PROFILE_FIELD_NAME'	=> $profile_field->get_field_name($field_data['lang_name']),
+					'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($field_data['lang_explain']),
+				);
+			}
+
+			return $tpl_fields;
+		}
+		else if ($mode == 'grab')
 		{
 			if (!is_array($user_id))
 			{
