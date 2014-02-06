@@ -1,3 +1,38 @@
+<script>
+	function showHint(str)
+	{ 
+		if (str.length==0)
+		  { 
+		  document.getElementById("livesearch").innerHTML="";
+		  document.getElementById("livesearch").style.border="0px";
+		  return;
+		  }
+		if (window.XMLHttpRequest)
+		  {// code for IE7+, Firefox, Chrome, Opera, Safari
+		  xmlhttp=new XMLHttpRequest();
+		  }
+		else
+		  {// code for IE6, IE5
+		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+			{
+			document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
+			document.getElementById("livesearch").style.border="0px";
+			}
+		  }
+		xmlhttp.open("GET",'{S_LIVE_SEARCH_ACTION}'+"&q="+str,true);
+		xmlhttp.send();
+	}
+	
+	function clearSearch()
+	{	
+		document.getElementById("livesearch").innerHTML="";
+	}
+</script>
+
 <h2 class="solo">{L_FIND_USERNAME}</h2>
 
 <form method="post" action="{S_MODE_ACTION}" id="search_memberlist">
@@ -9,7 +44,7 @@
 	<fieldset class="fields1 column1">
 	<dl>
 		<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
-		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" /></dd>
+		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" onkeyup="showHint(this.value)" onblur="clearSearch()" /> <table class="table1" id="livesearch"></table> </dd>
 	</dl>
 <!-- IF S_EMAIL_SEARCH_ALLOWED -->
 	<dl>
