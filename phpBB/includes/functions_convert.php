@@ -1027,7 +1027,6 @@ function set_user_options()
 		'attachsig'		=> array('bit' => 6, 'default' => 0),
 		'bbcode'		=> array('bit' => 8, 'default' => 1),
 		'smilies'		=> array('bit' => 9, 'default' => 1),
-		'popuppm'		=> array('bit' => 10, 'default' => 0),
 		'sig_bbcode'	=> array('bit' => 15, 'default' => 1),
 		'sig_smilies'	=> array('bit' => 16, 'default' => 1),
 		'sig_links'		=> array('bit' => 17, 'default' => 1),

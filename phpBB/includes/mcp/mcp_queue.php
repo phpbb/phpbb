@@ -337,6 +337,7 @@ class mcp_queue
 
 				$topic_id = $request->variable('t', 0);
 				$forum_info = array();
+				$pagination = $phpbb_container->get('pagination');
 
 				if ($topic_id)
 				{
@@ -532,7 +533,7 @@ class mcp_queue
 				unset($rowset, $forum_names);
 
 				$base_url = $this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total, $config['topics_per_page'], $start);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -546,7 +547,7 @@ class mcp_queue
 					'S_TOPICS'				=> $is_topics,
 					'S_RESTORE'				=> $is_restore,
 
-					'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $user->lang(((!$is_topics) ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));
@@ -576,6 +577,7 @@ class mcp_queue
 		}
 
 		$redirect = $request->variable('redirect', build_url(array('quickmod')));
+		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
 
@@ -652,6 +654,11 @@ class mcp_queue
 				// Handle notifications
 				foreach ($post_info as $post_id => $post_data)
 				{
+					// A single topic approval may also happen here, so handle deleting the respective notification.
+					if (!$post_data['topic_posts_approved'])
+					{
+						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+					}
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 					$phpbb_notifications->add_notifications(array(
@@ -678,6 +685,28 @@ class mcp_queue
 					}
 				}
 			}
+
+			meta_refresh(3, $redirect);
+			$message = $user->lang[$success_msg];
+
+			if ($request->is_ajax())
+			{
+				$json_response = new \phpbb\json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> true,
+				));
+			}
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+
+			// If approving one post, also give links back to post...
+			if (sizeof($post_info) == 1 && $post_url)
+			{
+				$message .= '<br /><br />' . $user->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>');
+			}
+			trigger_error($message);
 		}
 		else
 		{
@@ -707,39 +736,7 @@ class mcp_queue
 			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = $request->variable('redirect', "index.$phpEx");
-		$redirect = reapply_sid($redirect);
-
-		if (!$success_msg)
-		{
-			redirect($redirect);
-		}
-		else
-		{
-			meta_refresh(3, $redirect);
-
-			// If approving one post, also give links back to post...
-			$add_message = '';
-			if (sizeof($post_info) == 1 && $post_url)
-			{
-				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
-			}
-
-			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . $add_message;
-
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $message,
-					'REFRESH_DATA'		=> null,
-					'visible'			=> true,
-				));
-			}
-
-			trigger_error($message);
-		}
+		redirect($redirect);
 	}
 
 	/**
@@ -762,6 +759,7 @@ class mcp_queue
 		}
 
 		$redirect = $request->variable('redirect', build_url(array('quickmod')));
+		$redirect = reapply_sid($redirect);
 		$success_msg = $topic_url = '';
 		$approve_log = array();
 
@@ -780,9 +778,12 @@ class mcp_queue
 			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
 
 			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+			$first_post_ids = array();
+
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
 				$phpbb_content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '');
+				$first_post_ids[$topic_id] = (int) $topic_data['topic_first_post_id'];
 
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_data['forum_id']}&amp;t={$topic_id}");
 
@@ -806,26 +807,68 @@ class mcp_queue
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
+				// Grab the first post text as it's needed for the quote notification.
+				$sql = 'SELECT topic_id, post_text
+					FROM ' . POSTS_TABLE . '
+					WHERE ' . $db->sql_in_set('post_id', $first_post_ids);
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_info[$row['topic_id']]['post_text'] = $row['post_text'];
+				}
+				$db->sql_freeresult($result);
+
 				// Handle notifications
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				foreach ($topic_info as $topic_id => $topic_data)
 				{
-					$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+					$topic_data = array_merge($topic_data, array(
+						'post_id'		=> $topic_data['topic_first_post_id'],
+						'post_subject'	=> $topic_data['topic_title'],
+						'post_time'		=> $topic_data['topic_time'],
+						'poster_id'		=> $topic_data['topic_poster'],
+						'username'		=> $topic_data['topic_first_poster_name'],
+					));
+
+					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
 					$phpbb_notifications->add_notifications(array(
 						'quote',
 						'topic',
-					), $post_data);
+					), $topic_data);
 
-					$phpbb_notifications->mark_notifications_read('quote', $post_data['post_id'], $user->data['user_id']);
-					$phpbb_notifications->mark_notifications_read('topic', $post_data['topic_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('quote', $topic_data['post_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('topic', $topic_id, $user->data['user_id']);
 
 					if ($notify_poster)
 					{
-						$phpbb_notifications->add_notifications('approve_topic', $post_data);
+						$phpbb_notifications->add_notifications('approve_topic', $topic_data);
 					}
 				}
 			}
+
+			meta_refresh(3, $redirect);
+			$message = $user->lang[$success_msg];
+
+			if ($request->is_ajax())
+			{
+				$json_response = new \phpbb\json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> true,
+				));
+			}
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+
+			// If approving one topic, also give links back to topic...
+			if (sizeof($topic_info) == 1 && $topic_url)
+			{
+				$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $topic_url . '">', '</a>');
+			}
+			trigger_error($message);
 		}
 		else
 		{
@@ -855,39 +898,7 @@ class mcp_queue
 			confirm_box(false, strtoupper($action) . '_TOPIC' . ((sizeof($topic_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
-		$redirect = $request->variable('redirect', "index.$phpEx");
-		$redirect = reapply_sid($redirect);
-
-		if (!$success_msg)
-		{
-			redirect($redirect);
-		}
-		else
-		{
-			meta_refresh(3, $redirect);
-
-			// If approving one topic, also give links back to topic...
-			$add_message = '';
-			if (sizeof($topic_info) == 1 && $topic_url)
-			{
-				$add_message = '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $topic_url . '">', '</a>');
-			}
-
-			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . $add_message;
-
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $message,
-					'REFRESH_DATA'		=> null,
-					'visible'			=> true,
-				));
-			}
-
-			trigger_error($message);
-		}
+		redirect($redirect);
 	}
 
 	/**
@@ -909,6 +920,7 @@ class mcp_queue
 		}
 
 		$redirect = $request->variable('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
+		$redirect = reapply_sid($redirect);
 		$reason = $request->variable('reason', '', true);
 		$reason_id = $request->variable('reason_id', 0);
 		$success_msg = $additional_msg = '';
@@ -1151,6 +1163,22 @@ class mcp_queue
 			{
 				$success_msg .= '_DELETED_SUCCESS';
 			}
+
+			meta_refresh(3, $redirect);
+			$message = $user->lang[$success_msg];
+
+			if ($request->is_ajax())
+			{
+				$json_response = new \phpbb\json_response;
+				$json_response->send(array(
+					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
+					'MESSAGE_TEXT'		=> $message,
+					'REFRESH_DATA'		=> null,
+					'visible'			=> false,
+				));
+			}
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+			trigger_error($message);
 		}
 		else
 		{
@@ -1199,30 +1227,6 @@ class mcp_queue
 			confirm_box(false, $l_confirm_msg, $s_hidden_fields, $confirm_template);
 		}
 
-		$redirect = $request->variable('redirect', "index.$phpEx");
-		$redirect = reapply_sid($redirect);
-
-		if (!$success_msg)
-		{
-			redirect($redirect);
-		}
-		else
-		{
-			$message = $user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
-
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $message,
-					'REFRESH_DATA'		=> null,
-					'visible'			=> false,
-				));
-			}
-
-			meta_refresh(3, $redirect);
-			trigger_error($message);
-		}
+		redirect($redirect);
 	}
 }

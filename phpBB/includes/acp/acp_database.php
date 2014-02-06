@@ -1607,16 +1607,17 @@ class mssql_extractor extends base_extractor
 			return;
 		}
 
-		$sql = "SELECT * FROM $table_name";
-		$result_fields = $db->sql_query_limit($sql, 1);
+		$sql = "SELECT COLUMN_NAME, DATA_TYPE
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME = '" . $db->sql_escape($table_name) . "'";
+		$result_fields = $db->sql_query($sql);
 
-		$row = new result_mssqlnative($result_fields);
-		$i_num_fields = $row->num_fields();
-
-		for ($i = 0; $i < $i_num_fields; $i++)
+		$i_num_fields = 0;
+		while ($row = $db->sql_fetchrow($result_fields))
 		{
-			$ary_type[$i] = $row->field_type($i);
-			$ary_name[$i] = $row->field_name($i);
+			$ary_type[$i_num_fields] = $row['DATA_TYPE'];
+			$ary_name[$i_num_fields] = $row['COLUMN_NAME'];
+			$i_num_fields++;
 		}
 		$db->sql_freeresult($result_fields);
 

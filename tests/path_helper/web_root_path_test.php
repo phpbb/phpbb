@@ -146,4 +146,27 @@ class phpbb_path_helper_web_root_path_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $path_helper->update_web_root_path($input, $symfony_request));
 	}
+
+	public function clean_url_data()
+	{
+		return array(
+			array('', ''),
+			array('://', '://'),
+			array('http://', 'http://'),
+			array('http://one/two/three', 'http://one/two/three'),
+			array('http://../one/two', 'http://../one/two'),
+			array('http://one/../two/three', 'http://two/three'),
+			array('http://one/two/../three', 'http://one/three'),
+			array('http://one/two/../../three', 'http://three'),
+			array('http://one/two/../../../three', 'http://../three'),
+		);
+	}
+
+	/**
+	* @dataProvider clean_url_data
+	*/
+	public function test_clean_url($input, $expected)
+	{
+		$this->assertEquals($expected, $this->path_helper->clean_url($input));
+	}
 }

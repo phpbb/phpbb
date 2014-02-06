@@ -368,72 +368,26 @@ function still_on_time($extra_time = 15)
 }
 
 /**
-*
-* @version Version 0.1 / slightly modified for phpBB 3.1.x (using $H$ as hash type identifier)
-*
-* Portable PHP password hashing framework.
-*
-* Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
-* the public domain.
-*
-* There's absolutely no warranty.
-*
-* The homepage URL for this framework is:
-*
-*	http://www.openwall.com/phpass/
-*
-* Please be sure to update the Version line if you edit this file in any way.
-* It is suggested that you leave the main version number intact, but indicate
-* your project name (after the slash) and add your own revision information.
-*
-* Please do not change the "private" password hashing method implemented in
-* here, thereby making your hashes incompatible.  However, if you must, please
-* change the hash type identifier (the "$P$") to something different.
-*
-* Obviously, since this code is in the public domain, the above are not
-* requirements (there can be none), but merely suggestions.
-*
-*
 * Hash the password
+*
+* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+*
+* @param string $password Password to be hashed
+*
+* @return string|bool Password hash or false if something went wrong during hashing
 */
 function phpbb_hash($password)
 {
-	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	global $phpbb_container;
 
-	$random_state = unique_id();
-	$random = '';
-	$count = 6;
-
-	if (($fh = @fopen('/dev/urandom', 'rb')))
-	{
-		$random = fread($fh, $count);
-		fclose($fh);
-	}
-
-	if (strlen($random) < $count)
-	{
-		$random = '';
-
-		for ($i = 0; $i < $count; $i += 16)
-		{
-			$random_state = md5(unique_id() . $random_state);
-			$random .= pack('H*', md5($random_state));
-		}
-		$random = substr($random, 0, $count);
-	}
-
-	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
-
-	if (strlen($hash) == 34)
-	{
-		return $hash;
-	}
-
-	return md5($password);
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->hash($password);
 }
 
 /**
 * Check for correct password
+*
+* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
 *
 * @param string $password The password in plain text
 * @param string $hash The stored password hash
@@ -442,130 +396,10 @@ function phpbb_hash($password)
 */
 function phpbb_check_hash($password, $hash)
 {
-	if (strlen($password) > 4096)
-	{
-		// If the password is too huge, we will simply reject it
-		// and not let the server try to hash it.
-		return false;
-	}
+	global $phpbb_container;
 
-	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-	if (strlen($hash) == 34)
-	{
-		return (_hash_crypt_private($password, $hash, $itoa64) === $hash) ? true : false;
-	}
-
-	return (md5($password) === $hash) ? true : false;
-}
-
-/**
-* Generate salt for hash generation
-*/
-function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
-{
-	if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31)
-	{
-		$iteration_count_log2 = 8;
-	}
-
-	$output = '$H$';
-	$output .= $itoa64[min($iteration_count_log2 + 5, 30)];
-	$output .= _hash_encode64($input, 6, $itoa64);
-
-	return $output;
-}
-
-/**
-* Encode hash
-*/
-function _hash_encode64($input, $count, &$itoa64)
-{
-	$output = '';
-	$i = 0;
-
-	do
-	{
-		$value = ord($input[$i++]);
-		$output .= $itoa64[$value & 0x3f];
-
-		if ($i < $count)
-		{
-			$value |= ord($input[$i]) << 8;
-		}
-
-		$output .= $itoa64[($value >> 6) & 0x3f];
-
-		if ($i++ >= $count)
-		{
-			break;
-		}
-
-		if ($i < $count)
-		{
-			$value |= ord($input[$i]) << 16;
-		}
-
-		$output .= $itoa64[($value >> 12) & 0x3f];
-
-		if ($i++ >= $count)
-		{
-			break;
-		}
-
-		$output .= $itoa64[($value >> 18) & 0x3f];
-	}
-	while ($i < $count);
-
-	return $output;
-}
-
-/**
-* The crypt function/replacement
-*/
-function _hash_crypt_private($password, $setting, &$itoa64)
-{
-	$output = '*';
-
-	// Check for correct hash
-	if (substr($setting, 0, 3) != '$H$' && substr($setting, 0, 3) != '$P$')
-	{
-		return $output;
-	}
-
-	$count_log2 = strpos($itoa64, $setting[3]);
-
-	if ($count_log2 < 7 || $count_log2 > 30)
-	{
-		return $output;
-	}
-
-	$count = 1 << $count_log2;
-	$salt = substr($setting, 4, 8);
-
-	if (strlen($salt) != 8)
-	{
-		return $output;
-	}
-
-	/**
-	* We're kind of forced to use MD5 here since it's the only
-	* cryptographic primitive available in all versions of PHP
-	* currently in use.  To implement our own low-level crypto
-	* in PHP would result in much worse performance and
-	* consequently in lower iteration counts and hashes that are
-	* quicker to crack (by non-PHP code).
-	*/
-	$hash = md5($salt . $password, true);
-	do
-	{
-		$hash = md5($hash . $password, true);
-	}
-	while (--$count);
-
-	$output = substr($setting, 0, 12);
-	$output .= _hash_encode64($hash, 16, $itoa64);
-
-	return $output;
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->check($password, $hash);
 }
 
 /**
@@ -2205,225 +2039,6 @@ function tracking_unserialize($string, $max_depth = 3)
 	return $level;
 }
 
-// Pagination functions
-/**
-* Generate a pagination link based on the url and the page information
-*
-* @param string $base_url is url prepended to all links generated within the function
-*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
-*							for the page. Also be sure to specify the pagination path information into the start_name argument
-* @param string $on_page is the page for which we want to generate the link
-* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
-*							If you use page numbers inside your controller route, start name should be the string
-*							that should be removed for the first page (example: /page/%d)
-* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
-* @return URL for the requested page
-*/
-function phpbb_generate_page_link($base_url, $on_page, $start_name, $per_page)
-{
-
-	if (strpos($start_name, '%d') !== false)
-	{
-		return ($on_page > 1) ? sprintf($base_url, (int) $on_page) : str_replace($start_name, '', $base_url);
-	}
-	else
-	{
-		$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
-		return ($on_page > 1) ? $base_url . $url_delim . $start_name . '=' . (($on_page - 1) * $per_page) : $base_url;
-	}
-}
-
-/**
-* Generate template rendered pagination
-* Allows full control of rendering of pagination with the template
-*
-* @param object $template the template object
-* @param string $base_url is url prepended to all links generated within the function
-*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
-*							for the page. Also be sure to specify the pagination path information into the start_name argument
-* @param string $block_var_name is the name assigned to the pagination data block within the template (example: <!-- BEGIN pagination -->)
-* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
-*							If you use page numbers inside your controller route, start name should be the string
-*							that should be removed for the first page (example: /page/%d)
-* @param int $num_items the total number of items, posts, etc., used to determine the number of pages to produce
-* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
-* @param int $start_item the item which should be considered currently active, used to determine the page we're on
-* @param bool $reverse_count determines whether we weight display of the list towards the start (false) or end (true) of the list
-* @param bool $ignore_on_page decides whether we enable an active (unlinked) item, used primarily for embedded lists
-* @return null
-*/
-function phpbb_generate_template_pagination($template, $base_url, $block_var_name, $start_name, $num_items, $per_page, $start_item = 1, $reverse_count = false, $ignore_on_page = false)
-{
-	// Make sure $per_page is a valid value
-	$per_page = ($per_page <= 0) ? 1 : $per_page;
-	$total_pages = ceil($num_items / $per_page);
-
-	if ($total_pages == 1 || !$num_items)
-	{
-		return;
-	}
-
-	$on_page = floor($start_item / $per_page) + 1;
-
-	if ($reverse_count)
-	{
-		$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
-		$end_page = $total_pages;
-	}
-	else
-	{
-		// What we're doing here is calculating what the "start" and "end" pages should be. We
-		// do this by assuming pagination is "centered" around the currently active page with
-		// the three previous and three next page links displayed. Anything more than that and
-		// we display the ellipsis, likewise anything less.
-		//
-		// $start_page is the page at which we start creating the list. When we have five or less
-		// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
-		// and we calculate the start based on the active page. This is the min/max calculation.
-		// First (max) would we end up starting on a page less than 1? Next (min) would we end
-		// up starting so close to the end that we'd not display our minimum number of pages.
-		//
-		// $end_page is the last page in the list to display. Like $start_page we use a min/max to
-		// determine this number. Again at most five pages? Then just display them all. More than
-		// five and we first (min) determine whether we'd end up listing more pages than exist.
-		// We then (max) ensure we're displaying the minimum number of pages.
-		$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
-		$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
-	}
-
-	$u_previous_page = $u_next_page = '';
-	if ($on_page != 1)
-	{
-		$u_previous_page = phpbb_generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
-
-		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $u_previous_page,
-			'S_IS_CURRENT'	=> false,
-			'S_IS_PREV'		=> true,
-			'S_IS_NEXT'		=> false,
-			'S_IS_ELLIPSIS'	=> false,
-		));
-	}
-
-	// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
-	// to display the first and last page in the list plus any ellipsis. We use this loop to jump
-	// around a little within the list depending on where we're starting (and ending).
-	$at_page = 1;
-	do
-	{
-		// We decide whether to display the ellipsis during the loop. The ellipsis is always
-		// displayed as either the second or penultimate item in the list. So are we at either
-		// of those points and of course do we even need to display it, i.e. is the list starting
-		// on at least page 3 and ending three pages before the final item.
-		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> $at_page,
-			'PAGE_URL'		=> phpbb_generate_page_link($base_url, $at_page, $start_name, $per_page),
-			'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
-			'S_IS_NEXT'		=> false,
-			'S_IS_PREV'		=> false,
-			'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
-		));
-
-		// We may need to jump around in the list depending on whether we have or need to display
-		// the ellipsis. Are we on page 2 and are we more than one page away from the start
-		// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
-		// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
-		// page (so we can display the ellipsis next pass). Else, increment the counter and keep
-		// going
-		if ($at_page == 2 && $at_page < $start_page - 1)
-		{
-			$at_page = $start_page;
-		}
-		else if ($at_page == $end_page && $end_page < $total_pages - 1)
-		{
-			$at_page = $total_pages - 1;
-		}
-		else
-		{
-			$at_page++;
-		}
-	}
-	while ($at_page <= $total_pages);
-
-	if ($on_page != $total_pages)
-	{
-		$u_next_page = phpbb_generate_page_link($base_url, $on_page + 1, $start_name, $per_page);
-
-		$template->assign_block_vars($block_var_name, array(
-			'PAGE_NUMBER'	=> '',
-			'PAGE_URL'		=> $u_next_page,
-			'S_IS_CURRENT'	=> false,
-			'S_IS_PREV'		=> false,
-			'S_IS_NEXT'		=> true,
-			'S_IS_ELLIPSIS'	=> false,
-		));
-	}
-
-	// If the block_var_name is a nested block, we will use the last (most
-	// inner) block as a prefix for the template variables. If the last block
-	// name is pagination, the prefix is empty. If the rest of the
-	// block_var_name is not empty, we will modify the last row of that block
-	// and add our pagination items.
-	$tpl_block_name = $tpl_prefix = '';
-	if (strrpos($block_var_name, '.') !== false)
-	{
-		$tpl_block_name = substr($block_var_name, 0, strrpos($block_var_name, '.'));
-		$tpl_prefix = strtoupper(substr($block_var_name, strrpos($block_var_name, '.') + 1));
-	}
-	else
-	{
-		$tpl_prefix = strtoupper($block_var_name);
-	}
-	$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
-
-	$template_array = array(
-		$tpl_prefix . 'BASE_URL'		=> $base_url,
-		$tpl_prefix . 'PER_PAGE'		=> $per_page,
-		'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $u_previous_page : '',
-		'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
-		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
-		$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
-	);
-
-	if ($tpl_block_name)
-	{
-		$template->alter_block_array($tpl_block_name, $template_array, true, 'change');
-	}
-	else
-	{
-		$template->assign_vars($template_array);
-	}
-}
-
-/**
-* Return current page
-* This function also sets certain specific template variables
-*
-* @param object $template the template object
-* @param object $user the user object
-* @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
-* @param int $num_items the total number of items, posts, topics, etc.
-* @param int $per_page the number of items, posts, etc. per page
-* @param int $start the item which should be considered currently active, used to determine the page we're on
-* @return null
-*/
-function phpbb_on_page($template, $user, $base_url, $num_items, $per_page, $start)
-{
-	// Make sure $per_page is a valid value
-	$per_page = ($per_page <= 0) ? 1 : $per_page;
-
-	$on_page = floor($start / $per_page) + 1;
-
-	$template->assign_vars(array(
-		'PER_PAGE'		=> $per_page,
-		'ON_PAGE'		=> $on_page,
-		'BASE_URL'		=> $base_url,
-	));
-
-	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
-}
-
 // Server functions (building urls, redirecting...)
 
 /**
@@ -2653,7 +2268,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path;
+	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx;
 
 	$failover_flag = false;
 
@@ -2696,78 +2311,34 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
-		if (!$disable_cd_check && !file_exists($pathinfo['dirname'] . '/'))
+		// Is the uri pointing to the current directory?
+		if ($pathinfo['dirname'] == '.')
 		{
-			$url = str_replace('../', '', $url);
-			$pathinfo = pathinfo($url);
+			$url = str_replace('./', '', $url);
 
-			if (!file_exists($pathinfo['dirname'] . '/'))
+			// Strip / from the beginning
+			if ($url && substr($url, 0, 1) == '/')
 			{
-				// fallback to "last known user page"
-				// at least this way we know the user does not leave the phpBB root
-				$url = generate_board_url() . '/' . $user->page['page'];
-				$failover_flag = true;
+				$url = substr($url, 1);
 			}
 		}
 
-		if (!$failover_flag)
+		$url = $phpbb_path_helper->remove_web_root_path($url);
+
+		if ($user->page['page_dir'])
 		{
-			// Is the uri pointing to the current directory?
-			if ($pathinfo['dirname'] == '.')
-			{
-				$url = str_replace('./', '', $url);
-
-				// Strip / from the beginning
-				if ($url && substr($url, 0, 1) == '/')
-				{
-					$url = substr($url, 1);
-				}
-
-				if ($user->page['page_dir'])
-				{
-					$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
-				}
-				else
-				{
-					$url = generate_board_url() . '/' . $url;
-				}
-			}
-			else
-			{
-				// Used ./ before, but $phpbb_root_path is working better with urls within another root path
-				$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
-				$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
-				$intersection = array_intersect_assoc($root_dirs, $page_dirs);
-
-				$root_dirs = array_diff_assoc($root_dirs, $intersection);
-				$page_dirs = array_diff_assoc($page_dirs, $intersection);
-
-				$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
-
-				// Strip / from the end
-				if ($dir && substr($dir, -1, 1) == '/')
-				{
-					$dir = substr($dir, 0, -1);
-				}
-
-				// Strip / from the beginning
-				if ($dir && substr($dir, 0, 1) == '/')
-				{
-					$dir = substr($dir, 1);
-				}
-
-				$url = str_replace($pathinfo['dirname'] . '/', '', $url);
-
-				// Strip / from the beginning
-				if (substr($url, 0, 1) == '/')
-				{
-					$url = substr($url, 1);
-				}
-
-				$url = (!empty($dir) ? $dir . '/' : '') . $url;
-				$url = generate_board_url() . '/' . $url;
-			}
+			$url = $user->page['page_dir'] . '/' . $url;
 		}
+
+		$url = generate_board_url() . '/' . $url;
+	}
+
+	// Clean URL and check if we go outside the forum directory
+	$url = $phpbb_path_helper->clean_url($url);
+
+	if (!$disable_cd_check && strpos($url, generate_board_url(true)) === false)
+	{
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
@@ -3469,9 +3040,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $config, $user, $template, $phpEx;
+	global $db, $phpbb_container, $request, $template, $user;
 
-	$password = request_var('password', '', true);
+	$password = $request->variable('password', '', true);
 
 	$sql = 'SELECT forum_id
 		FROM ' . FORUMS_ACCESS_TABLE . '
@@ -3512,7 +3083,9 @@ function login_forum_box($forum_data)
 		}
 		$db->sql_freeresult($result);
 
-		if (phpbb_check_hash($password, $forum_data['forum_password']))
+		$passwords_manager = $phpbb_container->get('passwords.manager');
+
+		if ($passwords_manager->check($password, $forum_data['forum_password']))
 		{
 			$sql_ary = array(
 				'forum_id'		=> (int) $forum_data['forum_id'],
@@ -5318,7 +4891,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	}
 
 	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
-
+	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
@@ -5338,6 +4911,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
+		'U_MARK_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_list&amp;mark=all&amp;token=' . $notification_mark_hash),
 		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 
@@ -5358,7 +4932,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
@@ -5386,7 +4959,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> (!empty($user->data['is_registered'])) ? true : false,
 		'S_IS_BOT'				=> (!empty($user->data['is_bot'])) ? true : false,
-		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],

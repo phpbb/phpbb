@@ -35,8 +35,6 @@ class ucp_register
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
 
-		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-
 		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
 		$agreed			= $request->variable('agreed', false);
 		$submit			= $request->is_set_post('submit');
@@ -78,7 +76,7 @@ class ucp_register
 			}
 		}
 
-		$cp = new custom_profile();
+		$cp = $phpbb_container->get('profilefields.manager');
 
 		$error = $cp_data = $cp_error = array();
 		$s_hidden_fields = array();
@@ -294,9 +292,12 @@ class ucp_register
 					$user_inactive_time = 0;
 				}
 
+				// Instantiate passwords manager
+				$passwords_manager = $phpbb_container->get('passwords.manager');
+
 				$user_row = array(
 					'username'				=> $data['username'],
-					'user_password'			=> phpbb_hash($data['new_password']),
+					'user_password'			=> $passwords_manager->hash($data['new_password']),
 					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
 					'user_timezone'			=> $data['tz'],

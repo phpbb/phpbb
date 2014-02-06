@@ -33,6 +33,8 @@ $sort_days	= request_var('st', $default_sort_days);
 $sort_key	= request_var('sk', $default_sort_key);
 $sort_dir	= request_var('sd', $default_sort_dir);
 
+$pagination = $phpbb_container->get('pagination');
+
 // Check if the user has actually sent a forum ID with his/her request
 // If not give them a nice error page.
 if (!$forum_id)
@@ -140,8 +142,13 @@ else
 	}
 }
 
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 // Dump out the page header and load viewforum template
-page_header($forum_data['forum_name'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], floor($start / $config['topics_per_page']) + 1) : ''), true, $forum_id);
+$topics_count = $phpbb_content_visibility->get_count('forum_topics', $forum_data, $forum_id);
+$start = $pagination->validate_start($start, $config['topics_per_page'], $topics_count);
+
+page_header($forum_data['forum_name'] . ($start ? ' - ' . $user->lang('PAGE_TITLE_NUMBER', $pagination->get_on_page($config['topics_per_page'], $start)) : ''), true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html')
@@ -246,8 +253,6 @@ $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_po
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
-$phpbb_content_visibility = $phpbb_container->get('content.visibility');
-
 // Limit topics to certain time frame, obtain correct topic count
 if ($sort_days)
 {
@@ -275,14 +280,7 @@ if ($sort_days)
 }
 else
 {
-	$topics_count = $phpbb_content_visibility->get_count('forum_topics', $forum_data, $forum_id);
 	$sql_limit_time = '';
-}
-
-// Make sure $start is set to the last page if it exceeds the amount
-if ($start < 0 || $start > $topics_count)
-{
-	$start = ($start < 0) ? 0 : floor(($topics_count - 1) / $config['topics_per_page']) * $config['topics_per_page'];
 }
 
 // Basic pagewide vars
@@ -480,14 +478,11 @@ if ($start > $topics_count / 2)
 {
 	$store_reverse = true;
 
-	if ($start + $config['topics_per_page'] > $topics_count)
-	{
-		$sql_limit = min($config['topics_per_page'], max(1, $topics_count - $start));
-	}
-
 	// Select the sort order
 	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
-	$sql_start = max(0, $topics_count - $sql_limit - $start);
+
+	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $topics_count);
+	$sql_start = $pagination->reverse_start($start, $sql_limit, $topics_count);
 }
 else
 {
@@ -561,20 +556,26 @@ if (sizeof($topic_list))
 // If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
 {
-	$sql = 'SELECT *
-		FROM ' . TOPICS_TABLE . '
-		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+	// SQL array for obtaining shadow topics
+	$sql_array = array(
+		'SELECT'	=> 't.*',
+		'FROM'		=> array(
+			TOPICS_TABLE		=> 't'
+		),
+		'WHERE'		=> $db->sql_in_set('t.topic_id', array_keys($shadow_topic_list)),
+	);
 
 	/**
 	* Event to modify the SQL query before the shadowtopic data is retrieved
 	*
 	* @event core.viewforum_get_shadowtopic_data
-	* @var	string	sql		The SQL string to get the data of any shadowtopics
+	* @var	array	sql_array		SQL array to get the data of any shadowtopics
 	* @since 3.1-A1
 	*/
-	$vars = array('sql');
+	$vars = array('sql_array');
 	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
 
+	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -631,10 +632,10 @@ if ($s_display_active)
 $total_topic_count = $topics_count - sizeof($global_announce_forums);
 
 $base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
-phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
+$pagination->generate_template_pagination($base_url, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
 
 $template->assign_vars(array(
-	'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $base_url, $topics_count, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'	=> $pagination->on_page($base_url, $topics_count, $config['topics_per_page'], $start),
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
 ));
 
@@ -802,7 +803,7 @@ if (sizeof($topic_list))
 
 		$template->assign_block_vars('topicrow', $topic_row);
 
-		phpbb_generate_template_pagination($template, $view_topic_url, 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
+		$pagination->generate_template_pagination($view_topic_url, 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 

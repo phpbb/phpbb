@@ -824,9 +824,12 @@ class acp_users
 						$error[] = 'FORM_INVALID';
 					}
 
+					// Instantiate passwords manager
+					$passwords_manager = $phpbb_container->get('passwords.manager');
+
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['new_password'] && !phpbb_check_hash($data['new_password'], $user_row['user_password'])) ? true : false;
+					$update_password = $data['new_password'] && !$passwords_manager->check($data['new_password'], $user_row['user_password']);
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -910,7 +913,7 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password'		=> phpbb_hash($data['new_password']),
+								'user_password'		=> $passwords_manager->hash($data['new_password']),
 								'user_passchg'		=> time(),
 								'user_pass_convert'	=> 0,
 							);
@@ -1096,6 +1099,7 @@ class acp_users
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= request_var('mark', array(0));
 				$message	= utf8_normalize_nfc(request_var('message', '', true));
+				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_days	= request_var('st', 0);
@@ -1166,11 +1170,11 @@ class acp_users
 				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+					'S_ON_PAGE'		=> $pagination->on_page($base_url, $log_count, $config['topics_per_page'], $start),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -1342,9 +1346,8 @@ class acp_users
 			case 'profile':
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-				$cp = new custom_profile();
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 
@@ -1512,7 +1515,6 @@ class acp_users
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
 					'notifymethod'		=> request_var('notifymethod', $user_row['user_notify_type']),
 					'notifypm'			=> request_var('notifypm', $user_row['user_notify_pm']),
-					'popuppm'			=> request_var('popuppm', $this->optionget($user_row, 'popuppm')),
 					'allowpm'			=> request_var('allowpm', $user_row['user_allow_pm']),
 
 					'topic_sk'			=> request_var('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
@@ -1556,7 +1558,6 @@ class acp_users
 
 					if (!sizeof($error))
 					{
-						$this->optionset($user_row, 'popuppm', $data['popuppm']);
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
 						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
@@ -1699,7 +1700,6 @@ class acp_users
 					'NOTIFY_IM'			=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
-					'POPUP_PM'			=> $data['popuppm'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
@@ -1745,7 +1745,7 @@ class acp_users
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix
-					$avatar_data = \phpbb\avatar\manager::clean_row($user_row);
+					$avatar_data = \phpbb\avatar\manager::clean_row($user_row, 'user');
 
 					if ($submit)
 					{
@@ -1778,7 +1778,7 @@ class acp_users
 							}
 							else
 							{
-								$driver = $phpbb_avatar_manager->get_driver($user->data['user_avatar_type']);
+								$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
 								if ($driver)
 								{
 									$driver->delete($avatar_data);
@@ -2001,6 +2001,7 @@ class acp_users
 				$start		= request_var('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$marked		= request_var('mark', array(0));
+				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_key	= request_var('sk', 'a');
@@ -2137,11 +2138,11 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_attachments, $config['topics_per_page'], $start),
+					'S_ON_PAGE'			=> $pagination->on_page($base_url, $num_attachments, $config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
 				));

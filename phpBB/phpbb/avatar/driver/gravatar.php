@@ -147,6 +147,14 @@ class gravatar extends \phpbb\avatar\driver\driver
 	}
 
 	/**
+	* @inheritdoc
+	*/
+	public function get_template_name()
+	{
+		return 'ucp_avatar_options_gravatar.html';
+	}
+
+	/**
 	* Build gravatar URL for output on page
 	*
 	* @return string Gravatar URL

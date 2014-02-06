@@ -194,7 +194,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$phpbb_root_path,
 			$php_ext,
 			self::$config['table_prefix'],
-			array()
+			array(),
+			new \phpbb\db\migration\helper()
 		);
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
@@ -503,6 +504,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$passwords_manager = $this->get_passwords_manager();
 
 		$user_row = array(
 			'username' => $username,
@@ -512,7 +514,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_lang' => 'en',
 			'user_timezone' => 0,
 			'user_dateformat' => '',
-			'user_password' => phpbb_hash($username . $username),
+			'user_password' => $passwords_manager->hash($username . $username),
 		);
 		return user_add($user_row);
 	}
@@ -868,9 +870,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	public function create_topic($forum_id, $subject, $message, $additional_form_data = array())
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
 	{
 		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
 
@@ -880,7 +883,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return self::submit_post($posting_url, 'POST_TOPIC', $form_data);
+		return self::submit_post($posting_url, 'POST_TOPIC', $form_data, $expected);
 	}
 
 	/**
@@ -893,9 +896,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $subject
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array())
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
 	{
 		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
 
@@ -905,7 +909,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'post'			=> true,
 		), $additional_form_data);
 
-		return self::submit_post($posting_url, 'POST_REPLY', $form_data);
+		return self::submit_post($posting_url, 'POST_REPLY', $form_data, $expected);
 	}
 
 	/**
@@ -914,9 +918,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $posting_url
 	* @param string $posting_contains
 	* @param array $form_data
-	* @return array post_id, topic_id
+	* @param string $expected Lang var of expected message after posting
+	* @return array|null post_id, topic_id if message is 'POST_STORED'
 	*/
-	protected function submit_post($posting_url, $posting_contains, $form_data)
+	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = 'POST_STORED')
 	{
 		$this->add_lang('posting');
 
@@ -945,11 +950,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
+		$this->assertContainsLang($expected, $crawler->filter('html')->text());
 
-		// If we are editing a post, we want to check for the correct language
-		// string on the success page.
-		$assertLang = (stripos($posting_url, 'mode=edit') !== false) ? 'POST_EDITED' : 'POST_STORED';
-		$this->assertContains($this->lang($assertLang), $crawler->filter('html')->text());
+		if ($expected !== 'POST_STORED')
+		{
+			return;
+		}
 		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
 
 		return array(
@@ -992,5 +998,30 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 		return null;
+	}
+
+	/**
+	* Return a passwords manager instance
+	*
+	* @return phpbb\passwords\manager
+	*/
+	public function get_passwords_manager()
+	{
+		// Prepare dependencies for manager and driver
+		$config = new \phpbb\config\config(array());
+		$driver_helper = new \phpbb\passwords\driver\helper($config);
+
+		$passwords_drivers = array(
+			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
+			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $driver_helper),
+			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $driver_helper),
+			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $driver_helper),
+		);
+
+		$passwords_helper = new \phpbb\passwords\helper;
+		// Set up passwords manager
+		$manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
+
+		return $manager;
 	}
 }

@@ -36,7 +36,6 @@
 <!-- ENDIF -->
 
 <!-- IF S_PLUPLOAD -->
-	<link href="{T_ASSETS_PATH}/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 	<link href="{T_THEME_PATH}/plupload.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen, projection" />
 <!-- ENDIF -->
 
@@ -84,7 +83,7 @@
 
 			<ul class="linklist navlinks">
 				<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
-				<li class="icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF -->
+				<li class="small-icon icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF -->
 					<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a></span> 
 					<!-- BEGIN navlinks --> <span class="crumb"><strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span><!-- END navlinks -->
 					<!-- EVENT overall_header_breadcrumb_append -->
@@ -100,14 +99,19 @@
 			<ul class="linklist bulletin">
 			<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
 				<!-- IF S_NOTIFICATIONS_DISPLAY -->
-				<li class="icon-notification" data-skip-responsive="true">
+				<li class="small-icon icon-notification" data-skip-responsive="true">
 					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
 					<div id="notification_list" class="dropdown notification_list">
 						<div class="pointer"><div class="pointer-inner"></div></div>
 						<div class="dropdown-contents">
 							<div class="header">
 								{L_NOTIFICATIONS}
-								<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
+								<span class="header_settings">
+									<a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a>
+									<!-- IF NOTIFICATIONS_COUNT -->
+										<span id="mark_all_notifications"> &bull; <a href="{U_MARK_ALL_NOTIFICATIONS}" data-ajax="notification.mark_all_read">{L_MARK_ALL_READ}</a></span>
+									<!-- ENDIF -->
+								</span>
 							</div>
 
 							<ul>
@@ -118,17 +122,18 @@
 								<!-- ENDIF -->
 								<!-- BEGIN notifications -->
 									<li class="<!-- IF notifications.UNREAD --> bg2<!-- ENDIF -->">
-										<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
+										<!-- IF notifications.URL -->
+											<a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}" data-real-url="{notifications.URL}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->">
+										<!-- ENDIF -->
 											<!-- IF notifications.AVATAR -->{notifications.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
 											<div class="notification_text">
 												<p>{notifications.FORMATTED_TITLE}</p>
 												<p>&raquo; {notifications.TIME}</p>
-
-												<!-- IF not notifications.URL and notifications.U_MARK_READ -->
-													<p><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a></p>
-												<!-- ENDIF -->
 											</div>
 										<!-- IF notifications.URL --></a><!-- ENDIF -->
+										<!-- IF notifications.UNREAD -->
+											<a href="{notifications.U_MARK_READ}" class="mark_read icon-mark" data-ajax="notification.mark_read" title="{L_MARK_READ}"></a>
+										<!-- ENDIF -->
 									</li>
 					   			<!-- END notifications -->
 							</ul>
@@ -141,11 +146,11 @@
 				</li>
 				<!-- ENDIF -->
 				<!-- IF S_DISPLAY_PM -->
-					<li class="icon-pm">
+					<li class="small-icon icon-pm">
 						<a href="{U_PRIVATEMSGS}"><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></a>
 					</li>
 				<!-- ENDIF -->
-				<li class="icon-ucp">
+				<li class="small-icon icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
 				</li>
 				<!-- IF S_DISPLAY_SEARCH -->
@@ -158,11 +163,11 @@
 
 				<!-- EVENT overall_header_navigation_append -->
 				<!-- IF not S_IS_BOT -->
-					<li class="icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
-					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
-					<!-- IF S_DISPLAY_MEMBERLIST --><li class="icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
+					<li class="small-icon icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
+					<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="small-icon icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
+					<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
 				<!-- ENDIF -->
-				<li class="icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
+				<li class="small-icon icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
 				<!-- EVENT overall_header_navigation_prepend -->
 			</ul>
 
@@ -180,3 +185,5 @@
 			</div>
 		</div>
 		<!-- ENDIF -->
+
+		<!-- EVENT overall_header_content_before -->

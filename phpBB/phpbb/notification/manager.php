@@ -27,6 +27,9 @@ class manager
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
@@ -58,6 +61,7 @@ class manager
 	* @param array $notification_methods
 	* @param ContainerBuilder $phpbb_container
 	* @param \phpbb\user_loader $user_loader
+	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver $db
 	* @param \phpbb\user $user
 	* @param string $phpbb_root_path
@@ -67,13 +71,14 @@ class manager
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\db\driver\driver $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
 		$this->phpbb_container = $phpbb_container;
 
 		$this->user_loader = $user_loader;
+		$this->config = $config;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
@@ -797,6 +802,8 @@ class manager
 			WHERE notification_time < ' . (int) $timestamp .
 				(($only_read) ? ' AND notification_read = 1' : '');
 		$this->db->sql_query($sql);
+
+		$this->config->set('read_notification_last_gc', time(), false);
 	}
 
 	/**

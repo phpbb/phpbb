@@ -409,7 +409,6 @@ $lang = array_merge($lang, array(
 	'PM_SUBJECT'				=> 'Message subject',
 	'PM_TO'						=> 'Send to',
 	'PM_USERS_REMOVED_NO_PM'	=> 'Some users couldn’t be added as they have disabled private message receipt.',
-	'POPUP_ON_PM'				=> 'Pop up window on new private message',
 	'POST_EDIT_PM'				=> 'Edit message',
 	'POST_FORWARD_PM'			=> 'Forward message',
 	'POST_NEW_PM'				=> 'Compose message',
@@ -521,8 +520,6 @@ $lang = array_merge($lang, array(
 	'UCP_PM_COMPOSE'			=> 'Compose message',
 	'UCP_PM_DRAFTS'				=> 'Manage PM drafts',
 	'UCP_PM_OPTIONS'			=> 'Rules, folders &amp; settings',
-	'UCP_PM_POPUP'				=> 'Private messages',
-	'UCP_PM_POPUP_TITLE'		=> 'Private message popup',
 	'UCP_PM_UNREAD'				=> 'Unread messages',
 	'UCP_PM_VIEW'				=> 'View messages',
 

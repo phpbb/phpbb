@@ -219,7 +219,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
@@ -256,6 +256,7 @@ function lock_unlock($action, $ids)
 	unset($orig_ids);
 
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$redirect = reapply_sid($redirect);
 
 	$s_hidden_fields = build_hidden_fields(array(
 		$sql_id . '_list'	=> $ids,
@@ -279,24 +280,22 @@ function lock_unlock($action, $ids)
 		}
 
 		$success_msg = $l_prefix . ((sizeof($ids) == 1) ? '' : 'S') . '_' . (($action == 'lock' || $action == 'lock_post') ? 'LOCKED' : 'UNLOCKED') . '_SUCCESS';
+
+		meta_refresh(2, $redirect);
+		$message = $user->lang[$success_msg];
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+		}
+		trigger_error($message);
 	}
 	else
 	{
 		confirm_box(false, strtoupper($action) . '_' . $l_prefix . ((sizeof($ids) == 1) ? '' : 'S'), $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
-	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
-	}
+	redirect($redirect);
 }
 
 /**
@@ -304,7 +303,7 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
 
 	switch ($action)
 	{
@@ -341,6 +340,7 @@ function change_topic_type($action, $topic_ids)
 	}
 
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$redirect = reapply_sid($redirect);
 
 	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
@@ -381,24 +381,22 @@ function change_topic_type($action, $topic_ids)
 				add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
 			}
 		}
+
+		meta_refresh(2, $redirect);
+		$message = $user->lang[$success_msg];
+
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
+		}
+		trigger_error($message);
 	}
 	else
 	{
 		confirm_box(false, $l_new_type, build_hidden_fields($s_hidden_fields));
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
-	$redirect = reapply_sid($redirect);
-
-	if (!$success_msg)
-	{
-		redirect($redirect);
-	}
-	else
-	{
-		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
-	}
+	redirect($redirect);
 }
 
 /**

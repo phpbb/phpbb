@@ -103,6 +103,8 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_init($allow_custom_bbcode = true)
 	{
+		global $phpbb_dispatcher;
+		
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this
@@ -162,6 +164,21 @@ class bbcode_firstpass extends bbcode
 				'regexp'	=> array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
+
+		$bbcodes = $this->bbcodes;
+
+		/**
+		* Event to modify the bbcode data for later parsing
+		*
+		* @event core.modify_bbcode_init
+		* @var array	bbcodes		Array of bbcode data for use in parsing
+		* @var array	rowset		Array of bbcode data from the database
+		* @since 3.1.0-a3
+		*/
+		$vars = array('bbcodes', 'rowset');
+		extract($phpbb_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
+
+		$this->bbcodes = $bbcodes;
 	}
 
 	/**
@@ -1198,6 +1215,8 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
+		global $phpbb_dispatcher;
+
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
 		{
@@ -1225,6 +1244,28 @@ class parse_message extends bbcode_firstpass
 
 		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
+
+		$text = $this->message;
+		$uid = $this->bbcode_uid;
+
+		/**
+		* Event to modify the text after it is parsed
+		*
+		* @event core.modify_format_display_text_after
+		* @var string	text				The message text to parse
+		* @var string	uid					The bbcode uid
+		* @var bool		allow_bbcode		Do we allow bbcodes
+		* @var bool		allow_magic_url		Do we allow magic urls
+		* @var bool		allow_smilies		Do we allow smilies
+		* @var bool		update_this_message	Do we update the internal message
+		*									with the parsed result
+		* @since 3.1.0-a3
+		*/
+		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
+		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
+
+		$this->message = $text;
+		$this->bbcode_uid = $uid;
 
 		if (!$update_this_message)
 		{
@@ -1420,6 +1461,7 @@ class parse_message extends bbcode_firstpass
 						'is_orphan'		=> 1,
 						'real_filename'	=> $filedata['real_filename'],
 						'attach_comment'=> $this->filename_data['filecomment'],
+						'filesize'		=> $filedata['filesize'],
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
@@ -1531,6 +1573,7 @@ class parse_message extends bbcode_firstpass
 							'is_orphan'		=> 1,
 							'real_filename'	=> $filedata['real_filename'],
 							'attach_comment'=> $this->filename_data['filecomment'],
+							'filesize'		=> $filedata['filesize'],
 						);
 
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
@@ -1539,8 +1582,10 @@ class parse_message extends bbcode_firstpass
 
 						if (isset($this->plupload) && $this->plupload->is_active())
 						{
+							$download_url = append_sid("{$phpbb_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
+
 							// Send the client the attachment data to maintain state
-							$json_response->send($this->attachment_data);
+							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));
 						}
 					}
 				}
@@ -1608,7 +1653,7 @@ class parse_message extends bbcode_firstpass
 		if (sizeof($not_orphan))
 		{
 			// Get the attachment data, based on the poster id...
-			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
+			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('attach_id', array_keys($not_orphan)) . '
 					AND poster_id = ' . $check_user_id;
@@ -1633,7 +1678,7 @@ class parse_message extends bbcode_firstpass
 		// Regenerate newly uploaded attachments
 		if (sizeof($orphan))
 		{
-			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
+			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan)) . '
 					AND poster_id = ' . $user->data['user_id'] . '

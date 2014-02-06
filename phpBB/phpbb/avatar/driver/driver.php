@@ -112,17 +112,6 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	/**
 	* @inheritdoc
 	*/
-	public function get_template_name()
-	{
-		$driver = preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this));
-		$template = "ucp_avatar_options_$driver.html";
-
-		return $template;
-	}
-
-	/**
-	* @inheritdoc
-	*/
 	public function get_name()
 	{
 		return $this->name;

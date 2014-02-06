@@ -27,24 +27,44 @@ $user->setup('viewforum');
 // Mark notifications read
 if (($mark_notification = $request->variable('mark_notification', 0)))
 {
-	$phpbb_notifications = $phpbb_container->get('notification_manager');
-
-	$notification = $phpbb_notifications->load_notifications(array(
-		'notification_id'	=> $mark_notification
-	));
-
-	if (isset($notification['notifications'][$mark_notification]))
+	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		$notification = $notification['notifications'][$mark_notification];
-
-		$notification->mark_read();
-
-		if (($redirect = $request->variable('redirect', '')))
+		if ($request->is_ajax())
 		{
-			redirect(append_sid($phpbb_root_path . $redirect));
+			trigger_error('LOGIN_REQUIRED');
 		}
+		login_box('', $user->lang['LOGIN_REQUIRED']);
+	}
 
-		redirect($notification->get_url());
+	if (check_link_hash($request->variable('hash', ''), 'mark_notification_read'))
+	{
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		$notification = $phpbb_notifications->load_notifications(array(
+			'notification_id'	=> $mark_notification,
+		));
+
+		if (isset($notification['notifications'][$mark_notification]))
+		{
+			$notification = $notification['notifications'][$mark_notification];
+
+			$notification->mark_read();
+
+			if ($request->is_ajax())
+			{
+				$json_response = new \phpbb\json_response();
+				$json_response->send(array(
+					'success'	=> true,
+				));
+			}
+
+			if (($redirect = $request->variable('redirect', '')))
+			{
+				redirect(append_sid($phpbb_root_path . $redirect));
+			}
+
+			redirect($notification->get_url());
+		}
 	}
 }
 
@@ -153,6 +173,7 @@ $template->assign_vars(array(
 	'FORUM_UNREAD_LOCKED_IMG'	=> $user->img('forum_unread_locked', 'UNREAD_POSTS_LOCKED'),
 
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
+	'U_SEND_PASSWORD'           => ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',

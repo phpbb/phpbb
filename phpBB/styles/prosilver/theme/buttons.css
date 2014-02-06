@@ -11,13 +11,13 @@
 }
 
 /* Rollover state */
-.buttons div {
+.buttons div, .dropdown-select {
 	float: left;
 	margin: 0 5px 0 0;
 }
 
 /* Rolloff state */
-.buttons div a {
+.buttons div a, .dropdown-select {
 	display: inline-block;
 	line-height: 17.5px;
 	height: 18px;
@@ -38,7 +38,7 @@
 
 .buttons div span { display: none; }
 
-.buttons div a:after {
+.buttons div a:after, .dropdown-select:after {
 	content: '';
 	display: block;
 	position: absolute;
@@ -54,6 +54,35 @@
 	background-position: 0 -20px;
 }
 
+.dropdown-select {
+	cursor: pointer;
+	font-family: inherit;
+	font-size: 1em;
+	font-weight: normal;
+}
+
+.dropdown-select:after {
+	background-position: -103px 10px;
+	border-left: 1px solid;
+	margin-top: 0;
+	top: 0;
+	right: 0;
+	height: 21px;
+	width: 15px;
+}
+
+.dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
+	background-position: -103px -10px;
+}
+
+.dropdown-select-icon:before {
+	content: '';
+	display: block;
+	float: left;
+	margin-right: 4px;
+	margin-top: 2px;
+}
+
 /* Big button images */
 .buttons div.reply-icon a:after, .buttons div.pmreply-icon a:after { background-position: -20px 0; }
 .buttons div.reply-icon a:hover:after, .buttons div.pmreply-icon a:hover:after	{ background-position: -20px -20px; }
@@ -66,6 +95,11 @@
 
 .buttons div.forwardpm-icon a:after	{ background-position: -40px 0; }
 .buttons div.forwardpm-icon a:hover:after	{ background-position: -40px -20px; }
+
+.dropdown-select.tools-icon:before { background-position: -80px 0; height: 16px; width: 16px; }
+
+.dropdown-visible .dropdown-select.tools-icon:before,
+.nojs .dropdown-container:hover .dropdown-select.tools-icon:before { background-position: -80px -20px; }
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
@@ -90,23 +124,19 @@ a.sendemail {
 
 /* Icon images
 ---------------------------------------- */
-.sitehome, .icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout,
-.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .icon-notification, .icon-pm {
+.small-icon {
 	background-position: 0 50%;
 	background-repeat: no-repeat;
 	background-image: none;
 	padding: 1px 0 0 17px;
 }
 
-ul.linklist.bulletin li.icon-home:before, ul.linklist.bulletin li.icon-ucp:before, ul.linklist.bulletin li.icon-notification:before, ul.linklist.bulletin li.icon-pm:before,
-ul.linklist.bulletin li.icon-bookmark:before, ul.linklist.bulletin li.icon-bump:before, ul.linklist.bulletin li.icon-subscribe:before, ul.linklist.bulletin li.icon-unsubscribe:before {
-	display: none;
+ul.linklist li.small-icon {
+	padding-left: 0;
 }
 
-.icon-home > span:first-child > a, .icon-notification > a, .icon-pm > a {
-	display: inline-block;
-	margin-left: -17px;
-	padding-left: 17px;
+ul.linklist.bulletin li.small-icon:before {
+	display: none;
 }
 
 /* Poster profile icons

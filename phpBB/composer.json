@@ -3,6 +3,7 @@
 	"require": {
 		"lusitanian/oauth": "0.2.*",
 		"symfony/config": "2.3.*",
+		"symfony/console": "2.3.*",
 		"symfony/dependency-injection": "2.3.*",
 		"symfony/event-dispatcher": "2.3.*",
 		"symfony/http-kernel": "2.3.*",

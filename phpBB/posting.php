@@ -255,8 +255,18 @@ if (!$auth->acl_get('f_read', $forum_id))
 	{
 		trigger_error('USER_CANNOT_READ');
 	}
+	$message = $user->lang['LOGIN_EXPLAIN_POST'];
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_POST']);
+	if ($request->is_ajax())
+	{
+		$json = new phpbb\json_response();
+		$json->send(array(
+			'title'		=> $user->lang['INFORMATION'],
+			'message'	=> $message,
+		));
+	}
+
+	login_box('', $message);
 }
 
 // Permission to do the action asked?
@@ -330,8 +340,18 @@ if (!$is_authed)
 	{
 		trigger_error('USER_CANNOT_' . strtoupper($check_auth));
 	}
+	$message = $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)];
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
+	if ($request->is_ajax())
+	{
+		$json = new phpbb\json_response();
+		$json->send(array(
+			'title'		=> $user->lang['INFORMATION'],
+			'message'	=> $message,
+		));
+	}
+
+	login_box('', $message);
 }
 
 // Is the user able to post within this forum?
@@ -384,9 +404,13 @@ if ($mode == 'bump')
 	{
 		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
+		$message = $user->lang['TOPIC_BUMPED'];
 
-		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . $user->lang('VIEW_MESSAGE', '<a href="' . $meta_url . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('VIEW_MESSAGE', '<a href="' . $meta_url . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		}
 
 		trigger_error($message);
 	}
@@ -500,7 +524,7 @@ $message_parser->get_submitted_attachment_data($post_data['poster_id']);
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
 	// Do not change to SELECT *
-	$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
+	$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename, filesize
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
@@ -1485,6 +1509,7 @@ $template->assign_vars(array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
 	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
+	'L_TOO_MANY_ATTACHMENTS'	=> $user->lang('TOO_MANY_ATTACHMENTS', (int) $config['max_attachments']),
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
@@ -1508,6 +1533,8 @@ $template->assign_vars(array(
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
 	'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup")),
+	'ATTACH_ORDER'			=> ($config['display_order']) ? 'asc' : 'desc',
+	'MAX_ATTACHMENTS'		=> ($auth->acl_get('a_') || $auth->acl_get('m_', $forum_id)) ? 0 : (int) $config['max_attachments'],
 
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
@@ -1548,8 +1575,9 @@ $template->assign_vars(array(
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
 	'S_POST_ACTION'			=> $s_action,
-	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-);
+	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+	'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
+));
 
 /**
 * This event allows you to modify template variables for the posting screen
@@ -1643,7 +1671,7 @@ function upload_popup($forum_style = 0)
 */
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $soft_delete_reason = '')
 {
-	global $user, $db, $auth, $config;
+	global $user, $db, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
 
 	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
@@ -1689,11 +1717,19 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), $post_data['post_subject'], $post_username);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
-				$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>');
+				$message = $user->lang['POST_DELETED'];
+
+				if (!$request->is_ajax())
+				{
+					$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $meta_info . '">', '</a>');
+				}
 			}
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+			if (!$request->is_ajax())
+			{
+				$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+			}
 			trigger_error($message);
 		}
 		else

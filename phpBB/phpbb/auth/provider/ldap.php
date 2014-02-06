@@ -19,16 +19,25 @@ namespace phpbb\auth\provider;
 class ldap extends \phpbb\auth\provider\base
 {
 	/**
+	* phpBB passwords manager
+	*
+	* @var \phpbb\passwords\manager
+	*/
+	protected $passwords_manager;
+
+	/**
 	 * LDAP Authentication Constructor
 	 *
-	 * @param 	\phpbb\db\driver\driver	$db
-	 * @param 	\phpbb\config\config	$config
-	 * @param 	\phpbb\user		$user
+	 * @param 	\phpbb\db\driver\driver		$db
+	 * @param 	\phpbb\config\config		$config
+	 * @param	\phpbb\passwords\manager	$passwords_manager
+	 * @param 	\phpbb\user			$user
 	 */
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\user $user)
 	{
 		$this->db = $db;
 		$this->config = $config;
+		$this->passwords_manager = $passwords_manager;
 		$this->user = $user;
 	}
 
@@ -235,7 +244,7 @@ class ldap extends \phpbb\auth\provider\base
 					// generate user account data
 					$ldap_user_row = array(
 						'username'		=> $username,
-						'user_password'	=> phpbb_hash($password),
+						'user_password'	=> $this->passwords_manager->hash($password),
 						'user_email'	=> (!empty($this->config['ldap_email'])) ? utf8_htmlspecialchars($ldap_result[0][htmlspecialchars_decode($this->config['ldap_email'])][0]) : '',
 						'group_id'		=> (int) $row['group_id'],
 						'user_type'		=> USER_NORMAL,

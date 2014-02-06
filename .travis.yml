@@ -4,16 +4,20 @@ php:
   - 5.3
   - 5.4
   - 5.5
+  - hhvm
 
 env:
   - DB=mariadb
   - DB=mysql
   - DB=postgres
 
+services:
+  - redis-server
+
 install:
   - sh -c "if [ '$DB' = 'mariadb' ]; then travis/setup-mariadb.sh; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != 'hhvm' ]; then travis/setup-php-extensions.sh; fi"
   - sh -c "if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` = "1" ]; then travis/setup-webserver.sh; fi"
-  - travis/install-php-extensions.sh
   - cd phpBB
   - php ../composer.phar install --dev --no-interaction --prefer-source
   - cd ..
@@ -28,10 +32,8 @@ script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysql' ]; then ../phpBB/vendor/bin/phing sniff; fi"
   - cd ..
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
-  
-notifications:
-  email:
-    recipients:
-      - dev-team@phpbb.com
-    on_success: change
-    on_failure: change
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysql' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH...FETCH_HEAD; fi"
+
+matrix:
+  allow_failures:
+    - php: hhvm

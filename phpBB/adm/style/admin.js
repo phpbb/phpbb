@@ -133,6 +133,9 @@ function parse_document(container)
 				column += colspan;
 			});
 		});
+
+		// Remove <dfn> in disabled extensions list
+		$this.find('tr.ext_disabled > .empty:nth-child(2) + .empty').siblings(':first-child').children('dfn').remove();
 	});
 
 	/**

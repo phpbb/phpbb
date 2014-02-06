@@ -617,8 +617,7 @@ switch ($mode)
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
-			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-			$cp = new custom_profile();
+			$cp = $phpbb_container->get('profilefields.manager');
 			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
 		}
@@ -998,6 +997,7 @@ switch ($mode)
 		// The basic memberlist
 		$page_title = $user->lang['MEMBERLIST'];
 		$template_html = 'memberlist_body.html';
+		$pagination = $phpbb_container->get('pagination');
 
 		// Sorting
 		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
@@ -1487,6 +1487,8 @@ switch ($mode)
 			);
 		}
 
+		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
+
 		// Get us some users :D
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
@@ -1552,8 +1554,7 @@ switch ($mode)
 			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
-				include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-				$cp = new custom_profile();
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
 				$profile_fields_cache = $cp->generate_profile_fields_template('grab', $user_list);
@@ -1607,11 +1608,11 @@ switch ($mode)
 			}
 		}
 
-		phpbb_generate_template_pagination($template, $pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
+		$pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
 
 		// Generate page
 		$template->assign_vars(array(
-			'PAGE_NUMBER'	=> phpbb_on_page($template, $user, $pagination_url, $total_users, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'	=> $pagination->on_page($pagination_url, $total_users, $config['topics_per_page'], $start),
 			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),

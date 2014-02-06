@@ -27,7 +27,7 @@ class acp_icons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request;
+		global $request, $phpbb_container;
 
 		$user->add_lang('acp/posting');
 
@@ -832,9 +832,10 @@ class acp_icons
 					WHERE {$fields}_order = $switch_order_id
 						AND {$fields}_id <> $icon_id";
 				$db->sql_query($sql);
+				$move_executed = (bool) $db->sql_affectedrows();
 
 				// Only update the other entry too if the previous entry got updated
-				if ($db->sql_affectedrows())
+				if ($move_executed)
 				{
 					$sql = "UPDATE $table
 						SET {$fields}_order = $switch_order_id
@@ -845,6 +846,14 @@ class acp_icons
 
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
+
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> $move_executed,
+					));
+				}
 
 			break;
 		}
@@ -893,6 +902,7 @@ class acp_icons
 		);
 
 		$spacer = false;
+		$pagination = $phpbb_container->get('pagination');
 		$pagination_start = request_var('start', 0);
 
 		$item_count = $this->item_count($table);
@@ -927,7 +937,7 @@ class acp_icons
 		}
 		$db->sql_freeresult($result);
 
-		phpbb_generate_template_pagination($template, $this->u_action, 'pagination', 'start', $item_count, $config['smilies_per_page'], $pagination_start);
+		$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $item_count, $config['smilies_per_page'], $pagination_start);
 	}
 
 	/**

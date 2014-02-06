@@ -24,7 +24,7 @@ class acp_logs
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request;
 
@@ -46,6 +46,7 @@ class acp_logs
 
 		$this->tpl_name = 'acp_logs';
 		$this->log_type = constant('LOG_' . strtoupper($mode));
+		$pagination = $phpbb_container->get('pagination');
 
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -130,14 +131,14 @@ class acp_logs
 		$start = view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $keywords);
 
 		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
-		phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
 
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
 
-			'S_ON_PAGE'		=> phpbb_on_page($template, $user, $base_url, $log_count, $config['topics_per_page'], $start),
+			'S_ON_PAGE'		=> $pagination->on_page($base_url, $log_count, $config['topics_per_page'], $start),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,

@@ -277,7 +277,7 @@ class fulltext_native extends \phpbb\search\base
 		// We limit the number of allowed keywords to minimize load on the database
 		if ($this->config['max_num_search_keywords'] && $num_keywords > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', $this->config['max_num_search_keywords'], $num_keywords));
+			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], $num_keywords));
 		}
 
 		// $keywords input format: each word separated by a space, words in a bracket are not separated

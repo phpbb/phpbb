@@ -5,7 +5,7 @@
 		<column>ext_active</column>
 		<column>ext_state</column>
 		<row>
-			<value>foo</value>
+			<value>vendor2/foo</value>
 			<value>1</value>
 			<value></value>
 		</row>

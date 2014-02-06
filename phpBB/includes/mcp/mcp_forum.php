@@ -73,6 +73,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		break;
 	}
 
+	$pagination = $phpbb_container->get('pagination');
+
 	$selected_ids = '';
 	if (sizeof($post_id_list) && $action != 'merge_topics')
 	{
@@ -102,7 +104,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	$base_url = $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : '');
-	phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
+	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $forum_topics, $topics_per_page, $start);
 
 	$template->assign_vars(array(
 		'ACTION'				=> $action,
@@ -133,7 +135,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;forum_action=$action&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
 
-		'PAGE_NUMBER'			=> phpbb_on_page($template, $user, $base_url, $forum_topics, $topics_per_page, $start),
+		'PAGE_NUMBER'			=> $pagination->on_page($base_url, $forum_topics, $topics_per_page, $start),
 		'TOTAL_TOPICS'			=> $user->lang('VIEW_FORUM_TOPICS', (int) $forum_topics),
 	));
 

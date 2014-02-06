@@ -251,6 +251,7 @@ class permissions
 		'f_reply'		=> array('lang' => 'ACL_F_REPLY', 'cat' => 'post'),
 		'f_edit'		=> array('lang' => 'ACL_F_EDIT', 'cat' => 'post'),
 		'f_delete'		=> array('lang' => 'ACL_F_DELETE', 'cat' => 'post'),
+		'f_softdelete'	=> array('lang' => 'ACL_F_SOFTDELETE', 'cat' => 'post'),
 		'f_ignoreflood' => array('lang' => 'ACL_F_IGNOREFLOOD', 'cat' => 'post'),
 		'f_postcount'	=> array('lang' => 'ACL_F_POSTCOUNT', 'cat' => 'post'),
 		'f_noapprove'	=> array('lang' => 'ACL_F_NOAPPROVE', 'cat' => 'post'),

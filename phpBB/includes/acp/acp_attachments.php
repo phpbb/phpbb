@@ -25,7 +25,7 @@ class acp_attachments
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
@@ -1166,10 +1166,9 @@ class acp_attachments
 				}
 
 				// Make sure $start is set to the last page if it exceeds the amount
-				if ($start < 0 || $start > $num_files)
-				{
-					$start = ($start < 0) ? 0 : floor(($num_files - 1) / $attachments_per_page) * $attachments_per_page;
-				}
+
+				$pagination = $phpbb_container->get('pagination');
+				$start = $pagination->validate_start($start, $attachments_per_page, $num_files);
 
 				// If the user is trying to reach the second half of the attachments list, fetch it starting from the end
 				$store_reverse = false;
@@ -1179,15 +1178,11 @@ class acp_attachments
 				{
 					$store_reverse = true;
 
-					if ($start + $attachments_per_page > $num_files)
-					{
-						$sql_limit = min($attachments_per_page, max(1, $num_files - $start));
-					}
-
 					// Select the sort order. Add time sort anchor for non-time sorting cases
 					$sql_sort_anchor = ($sort_key != 't') ? ', a.filetime ' . (($sort_dir == 'd') ? 'ASC' : 'DESC') : '';
 					$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC') . $sql_sort_anchor;
-					$sql_start = max(0, $num_files - $sql_limit - $start);
+					$sql_limit = $pagination->reverse_limit($start, $sql_limit, $num_files);
+					$sql_start = $pagination->reverse_start($start, $sql_limit, $num_files);
 				}
 				else
 				{
@@ -1195,7 +1190,6 @@ class acp_attachments
 					$sql_sort_anchor = ($sort_key != 't') ? ', a.filetime ' . (($sort_dir == 'd') ? 'DESC' : 'ASC') : '';
 					$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC') . $sql_sort_anchor;
 					$sql_start = $start;
-
 				}
 
 				$attachments_list = array();
@@ -1222,13 +1216,13 @@ class acp_attachments
 				$db->sql_freeresult($result);
 
 				$base_url = $this->u_action . "&amp;$u_sort_param";
-				phpbb_generate_template_pagination($template, $base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_files, $attachments_per_page, $start);
 
 				$template->assign_vars(array(
 					'TOTAL_FILES'		=> $num_files,
 					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
 
-					'S_ON_PAGE'			=> phpbb_on_page($template, $user, $base_url, $num_files, $attachments_per_page, $start),
+					'S_ON_PAGE'			=> $pagination->on_page($base_url, $num_files, $attachments_per_page, $start),
 					'S_LIMIT_DAYS'		=> $s_limit_days,
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir)

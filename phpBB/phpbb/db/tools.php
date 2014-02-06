@@ -1474,52 +1474,7 @@ class tools
 		}
 
 		// Get type
-		if (strpos($column_data[0], ':') !== false)
-		{
-			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
-			if (!is_array($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']))
-			{
-				$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'], $column_length);
-			}
-			else
-			{
-				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule']))
-				{
-					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][0])
-					{
-						case 'div':
-							$column_length /= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][1];
-							$column_length = ceil($column_length);
-							$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
-						break;
-					}
-				}
-
-				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit']))
-				{
-					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][0])
-					{
-						case 'mult':
-							$column_length *= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][1];
-							if ($column_length > $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][2])
-							{
-								$column_type = $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][3];
-							}
-							else
-							{
-								$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
-							}
-						break;
-					}
-				}
-			}
-			$orig_column_type .= ':';
-		}
-		else
-		{
-			$orig_column_type = $column_data[0];
-			$column_type = $this->dbms_type_map[$this->sql_layer][$column_data[0]];
-		}
+		list($column_type, $orig_column_type) = $this->get_column_type($column_data[0]);
 
 		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
@@ -1692,6 +1647,65 @@ class tools
 		$return_array['column_type_sql'] = $sql;
 
 		return $return_array;
+	}
+
+	/**
+	* Get the column's database type from the type map
+	*
+	* @param string $column_map_type
+	* @return array		column type for this database
+	*					and map type without length
+	*/
+	function get_column_type($column_map_type)
+	{
+		if (strpos($column_map_type, ':') !== false)
+		{
+			list($orig_column_type, $column_length) = explode(':', $column_map_type);
+			if (!is_array($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']))
+			{
+				$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'], $column_length);
+			}
+			else
+			{
+				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule']))
+				{
+					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][0])
+					{
+						case 'div':
+							$column_length /= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][1];
+							$column_length = ceil($column_length);
+							$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
+						break;
+					}
+				}
+
+				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit']))
+				{
+					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][0])
+					{
+						case 'mult':
+							$column_length *= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][1];
+							if ($column_length > $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][2])
+							{
+								$column_type = $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][3];
+							}
+							else
+							{
+								$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
+							}
+						break;
+					}
+				}
+			}
+			$orig_column_type .= ':';
+		}
+		else
+		{
+			$orig_column_type = $column_map_type;
+			$column_type = $this->dbms_type_map[$this->sql_layer][$column_map_type];
+		}
+
+		return array($column_type, $orig_column_type);
 	}
 
 	/**

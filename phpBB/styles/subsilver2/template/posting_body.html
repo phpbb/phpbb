@@ -25,8 +25,8 @@
 		<!-- IF MODERATORS -->
 			<p class="moderators">{L_MODERATORS}{L_COLON} {MODERATORS}</p>
 		<!-- ENDIF -->
-		<!-- IF U_MCP -->
-			<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+		<!-- IF U_MCP or U_ACP -->
+			<p class="linkmcp">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p>
 		<!-- ENDIF -->
 	</div>
 
@@ -163,11 +163,12 @@
 	</tr>
 	<!-- ENDIF -->
 <!-- ENDIF -->
-
+<!-- EVENT posting_editor_subject_before -->
 <tr>
 	<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}{L_COLON}</b></td>
 	<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}" /></td>
 </tr>
+<!-- EVENT posting_editor_subject_after -->
 <tr>
 	<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}{L_COLON}</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}&nbsp;</span><br /><br />
 	<!-- IF S_SMILIES_ALLOWED -->
@@ -202,18 +203,15 @@
 
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 		<!-- INCLUDE posting_buttons.html -->
+		<!-- EVENT posting_editor_message_before -->
 		<tr>
 			<td valign="top" style="width: 100%;"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" style="width: 700px; height: 270px; min-width: 98%; max-width: 98%;">{MESSAGE}</textarea></td>
 			<!-- IF S_BBCODE_ALLOWED -->
-			<td width="80" align="center" valign="top">
-				<script type="text/javascript">
-				// <![CDATA[
-					colorPalette('v', 7, 6)
-				// ]]>
-				</script>
+			<td width="80" align="center" valign="top" id="color_palette_placeholder" data-orientation="v" data-width="11" data-height="10" data-bbcode="true">
 			</td>
 			<!-- ENDIF -->
 	 	</tr>
+	 	<!-- EVENT posting_editor_message_after -->
 		</table>
 	</td>
 </tr>

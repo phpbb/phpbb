@@ -25,6 +25,9 @@ class migrator
 	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
+	/** @var \phpbb\db\migration\helper */
+	protected $helper;
+
 	/** @var string */
 	protected $table_prefix;
 
@@ -65,11 +68,12 @@ class migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
+		$this->helper = $helper;
 
 		$this->migrations_table = $migrations_table;
 
@@ -82,6 +86,8 @@ class migrator
 		{
 			$this->tools[$tool->get_name()] = $tool;
 		}
+
+		$this->tools['dbtools'] = $this->db_tools;
 
 		$this->load_migration_state();
 	}
@@ -229,9 +235,12 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
-			$this->last_run_migration['task'] = 'apply_schema_changes';
-			$this->apply_schema_changes($migration->update_schema());
-			$state['migration_schema_done'] = true;
+			$this->last_run_migration['task'] = 'process_schema_step';
+			$steps = $this->helper->get_schema_steps($migration->update_schema());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_schema_done'] = ($result === true);
 		}
 		else if (!$state['migration_data_done'])
 		{
@@ -329,30 +338,25 @@ class migrator
 
 			$this->set_migration_state($name, $state);
 		}
-		else
+		else if ($state['migration_schema_done'])
 		{
-			$this->apply_schema_changes($migration->revert_schema());
+			$steps = $this->helper->get_schema_steps($migration->revert_schema());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
-			$sql = 'DELETE FROM ' . $this->migrations_table . "
-				WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
-			$this->db->sql_query($sql);
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_schema_done'] = ($result === true) ? false : true;
 
-			unset($this->migration_state[$name]);
+			if (!$state['migration_schema_done'])
+			{
+				$sql = 'DELETE FROM ' . $this->migrations_table . "
+					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
+				$this->db->sql_query($sql);
+
+				unset($this->migration_state[$name]);
+			}
 		}
 
 		return true;
-	}
-
-	/**
-	* Apply schema changes from a migration
-	*
-	* Just calls db_tools->perform_schema_changes
-	*
-	* @param array $schema_changes from migration
-	*/
-	protected function apply_schema_changes($schema_changes)
-	{
-		$this->db_tools->perform_schema_changes($schema_changes);
 	}
 
 	/**
@@ -375,7 +379,7 @@ class migrator
 
 		foreach ($steps as $step_identifier => $step)
 		{
-			$last_result = false;
+			$last_result = 0;
 			if ($state)
 			{
 				// Continue until we reach the step that matches the last step called
@@ -436,7 +440,7 @@ class migrator
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return null
 	*/
-	protected function run_step($step, $last_result = false, $reverse = false)
+	protected function run_step($step, $last_result = 0, $reverse = false)
 	{
 		$callable_and_parameters = $this->get_callable_from_step($step, $last_result, $reverse);
 
@@ -459,7 +463,7 @@ class migrator
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
 	*/
-	protected function get_callable_from_step(array $step, $last_result = false, $reverse = false)
+	protected function get_callable_from_step(array $step, $last_result = 0, $reverse = false)
 	{
 		$type = $step[0];
 		$parameters = $step[1];
@@ -498,6 +502,7 @@ class migrator
 
 				return $this->get_callable_from_step($step);
 			break;
+
 			case 'custom':
 				if (!is_callable($parameters[0]))
 				{

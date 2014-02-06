@@ -1,3 +1,21 @@
+acp_bbcodes_actions_append
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add actions to the BBCodes page, after edit/delete buttons
+
+acp_bbcodes_actions_prepend
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add actions to the BBCodes page, before edit/delete buttons
+
+acp_bbcodes_edit_fieldsets_after
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Purpose: Add settings to BBCode add/edit form
+
 acp_forums_normal_settings_append
 ===
 * Location: adm/style/acp_forums.html
@@ -46,6 +64,20 @@ acp_users_overview_options_append
 * Since: 3.1.0-a1
 * Purpose: Add options and settings on user overview page
 
+acp_users_signature_editor_buttons_after
+===
+* Locations:
+    + adm/style/acp_users_signature.html
+* Since: 3.1.0-a3
+* Purpose: Add content after BBCode posting buttons in the ACP user signature
+
+acp_users_signature_editor_buttons_before
+===
+* Locations:
+    + adm/style/acp_users_signature.html
+* Since: 3.1.0-a3
+* Purpose: Add content before BBCode posting buttons in the ACP user signature
+
 forumlist_body_last_post_title_prepend
 ====
 * Locations:
@@ -53,6 +85,22 @@ forumlist_body_last_post_title_prepend
     + styles/subsilver2/template/forumlist_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
+
+index_body_linklist_after
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-a3
+* Purpose: Add content after the linklist above the forum list on Board index
+
+index_body_linklist_before
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-a3
+* Purpose: Add content before the linklist above the forum list on Board index
 
 index_body_stat_blocks_before
 ===
@@ -111,6 +159,14 @@ overall_footer_breadcrumb_append
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the footer
 
+overall_footer_content_after
+===
+* Locations:
+    + styles/prosilver/template/overall_footer.html
+    + styles/subsilver2/template/overall_footer.html
+* Since: 3.1.0-a3
+* Purpose: Add content on all pages after the main content, before the footer
+
 overall_footer_copyright_append
 ===
 * Locations:
@@ -135,6 +191,14 @@ overall_header_breadcrumb_append
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the header
 
+overall_header_content_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.0-a3
+* Purpose: Add content on all pages before the main content, after the header
+
 overall_header_head_append
 ===
 * Locations:
@@ -147,6 +211,7 @@ overall_header_navigation_append
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links after the navigation links in the header
 
@@ -154,16 +219,65 @@ overall_header_navigation_prepend
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
+
+posting_editor_buttons_after
+===
+* Locations:
+    + styles/prosilver/template/posting_buttons.html
+    + styles/subsilver2/template/posting_buttons.html
+* Since: 3.1.0-a3
+* Purpose: Add content after the BBCode posting buttons
+
+posting_editor_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/posting_buttons.html
+    + styles/subsilver2/template/posting_buttons.html
+* Since: 3.1.0-a3
+* Purpose: Add content before the BBCode posting buttons
+
+posting_editor_message_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen after the message
+
+posting_editor_message_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen before the message
 
 posting_editor_options_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-    + styles/prosilver/template/posting_body.html
+    + styles/subsilver2/template/posting_body.html
 * Since: 3.1.0-a1
 * Purpose: Add posting options on the posting screen
+
+posting_editor_subject_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen after the subject
+
+posting_editor_subject_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.0-a2
+* Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
 simple_footer_after
 ===
@@ -343,3 +457,17 @@ viewtopic_topic_title_prepend
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly before the topic title link on the View topic screen
+
+viewtopic_topic_tools_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_topic_tools.html
+* Since: 3.1.0-a3
+* Purpose: Add a new topic tool after the rest of the existing ones
+
+viewtopic_topic_tools_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_topic_tools.html
+* Since: 3.1.0-a3
+* Purpose: Add a new topic tool before the rest of the existing ones

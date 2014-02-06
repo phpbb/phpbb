@@ -106,6 +106,47 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, update_topic_links) {
 	phpbb.closeDarkenWrapper(3000);
 });
 
+// This callback will mark all notifications read
+phpbb.addAjaxCallback('notification.mark_all_read', function(res) {
+	if (typeof res.success !== 'undefined') {
+		phpbb.markNotifications($('#notification_list li.bg2'), 0);
+		phpbb.closeDarkenWrapper(3000);
+	}
+});
+
+// This callback will mark a notification read
+phpbb.addAjaxCallback('notification.mark_read', function(res) {
+	if (typeof res.success !== 'undefined') {
+		var unreadCount = Number($('#notification_list_button strong').html()) - 1;
+		phpbb.markNotifications($(this).parent('li.bg2'), unreadCount);
+	}
+});
+
+/**
+ * Mark notification popup rows as read.
+ *
+ * @param {jQuery} el jQuery object(s) to mark read.
+ * @param {int} unreadCount The new unread notifications count.
+ */
+phpbb.markNotifications = function(el, unreadCount) {
+	// Remove the unread status.
+	el.removeClass('bg2');
+	el.find('a.mark_read').remove();
+
+	// Update the notification link to the real URL.
+	el.each(function() {
+		var link = $(this).find('a');
+		link.attr('href', link.attr('data-real-url'));
+	});
+
+	// Update the unread count.
+	$('#notification_list_button strong').html(unreadCount);
+	// Remove the Mark all read link if there are no unread notifications.
+	if (!unreadCount) {
+		$('#mark_all_notifications').remove();
+	}
+};
+
 // This callback finds the post from the delete link, and removes it.
 phpbb.addAjaxCallback('post_delete', function() {
 	var el = $(this),

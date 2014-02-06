@@ -1,5 +1,5 @@
 {
-	"name": "moo/example",
+	"name": "vendor/moo",
 	"type": "phpbb-extension",
 	"description": "An example/sample extension to be used for testing purposes in phpBB Development.",
 	"version": "1.0.0",

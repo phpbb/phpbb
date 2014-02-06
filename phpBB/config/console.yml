@@ -1,0 +1,70 @@
+services:
+    console.command.config.delete:
+        class: phpbb\console\command\config\delete
+        arguments:
+            - @config
+        tags:
+            - { name: console.command }
+
+    console.command.config.increment:
+        class: phpbb\console\command\config\increment
+        arguments:
+            - @config
+        tags:
+            - { name: console.command }
+
+    console.command.config.get:
+        class: phpbb\console\command\config\get
+        arguments:
+            - @config
+        tags:
+            - { name: console.command }
+
+    console.command.config.set:
+        class: phpbb\console\command\config\set
+        arguments:
+            - @config
+        tags:
+            - { name: console.command }
+
+    console.command.config.set_atomic:
+        class: phpbb\console\command\config\set_atomic
+        arguments:
+            - @config
+        tags:
+            - { name: console.command }
+
+    console.command.extension.disable:
+        class: phpbb\console\command\extension\disable
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.extension.enable:
+        class: phpbb\console\command\extension\enable
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.extension.purge:
+        class: phpbb\console\command\extension\purge
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.extension.show:
+        class: phpbb\console\command\extension\show
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
+    console.command.fixup.recalculate_email_hash:
+        class: phpbb\console\command\fixup\recalculate_email_hash
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: console.command }

@@ -16,6 +16,7 @@ require_once dirname(__FILE__) . '/migration/revert.php';
 require_once dirname(__FILE__) . '/migration/revert_with_dependency.php';
 require_once dirname(__FILE__) . '/migration/fail.php';
 require_once dirname(__FILE__) . '/migration/installed.php';
+require_once dirname(__FILE__) . '/migration/schema.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -49,7 +50,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
 			'phpbb_',
-			$tools
+			$tools,
+			new \phpbb\db\migration\helper()
 		);
 
 		$container = new phpbb_mock_container_builder();
@@ -266,5 +268,24 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		{
 			$this->fail('Installed test failed');
 		}
+	}
+
+	public function test_schema()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_schema'));
+
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
+
+		while ($this->migrator->migration_state('phpbb_dbal_migration_schema'))
+		{
+			$this->migrator->revert('phpbb_dbal_migration_schema');
+		}
+
+		$this->assertFalse($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
 	}
 }
