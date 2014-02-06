@@ -699,6 +699,14 @@ pre {
 	font-weight: bold;
 }
 
+#livesearch {
+	width: 35%;
+	margin: 0px;
+	position: absolute;
+	box-shadow: 1px 2px 5px rgb(175,167,167);
+	z-index: 999;
+	overflow: auto;
+}
 
 /* Former imageset */
 span.imageset {
