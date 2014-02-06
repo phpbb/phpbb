@@ -1901,7 +1901,7 @@ if (!request_var('t', 0) && !empty($topic_id))
 	$request->overwrite('t', $topic_id);
 }
 
-$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], $pagination->get_on_page($config['topics_per_page'], $start)) : '');
+$page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], $pagination->get_on_page($config['posts_per_page'], $start)) : '');
 
 /**
 * You can use this event to modify the page title of the viewtopic page

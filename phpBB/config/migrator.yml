@@ -10,6 +10,10 @@ services:
             - %core.php_ext%
             - %core.table_prefix%
             - @migrator.tool_collection
+            - @migrator.helper
+
+    migrator.helper:
+        class: phpbb\db\migration\helper
 
     migrator.tool_collection:
         class: phpbb\di\service_collection
