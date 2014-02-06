@@ -1,30 +1,18 @@
 <script>
 	function showHint(str)
 	{ 
-		if (str.length==0)
+		if (str.length<3)
 		  { 
 		  document.getElementById("livesearch").innerHTML="";
-		  document.getElementById("livesearch").style.border="0px";
 		  return;
 		  }
-		if (window.XMLHttpRequest)
-		  {// code for IE7+, Firefox, Chrome, Opera, Safari
-		  xmlhttp=new XMLHttpRequest();
-		  }
-		else
-		  {// code for IE6, IE5
-		  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-		  }
-		xmlhttp.onreadystatechange=function()
-		  {
-		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-			{
-			document.getElementById("livesearch").innerHTML=xmlhttp.responseText;
-			document.getElementById("livesearch").style.border="0px";
-			}
-		  }
-		xmlhttp.open("GET",'{S_LIVE_SEARCH_ACTION}'+"&q="+str,true);
-		xmlhttp.send();
+		
+		$.ajax({
+			url:'{S_LIVE_SEARCH_ACTION}'+"&q="+str,
+			success:function(result){
+					$("#livesearch").html(result);
+					}
+				});
 	}
 	
 	function clearSearch()
