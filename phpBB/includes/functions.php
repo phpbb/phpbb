@@ -2373,7 +2373,7 @@ function build_url($strip_vars = false)
 
 	if ($strip_vars !== false)
 	{
-		$redirect = $path_helper->strip_url_params($redirect, $strip_vars, '&');
+		$redirect = $path_helper->strip_url_params($redirect, $strip_vars, false);
 	}
 
 	return $redirect;

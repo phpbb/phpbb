@@ -238,11 +238,12 @@ class path_helper
 	* Get the base and parameters of a URL
 	*
 	* @param string $url URL to break apart
-	* @param string $separator Parameter separator. Defaults to &amp;
+	* @param bool $is_amp Is the parameter separator &amp;. Defaults to true.
 	* @return array Returns the base and parameters in the form of array('base' => string, 'params' => array(name => value))
 	*/
-	public function get_url_parts($url, $separator = '&amp;')
+	public function get_url_parts($url, $is_amp = true)
 	{
+		$separator = ($is_amp) ? '&amp;' : '&';
 		$params = array();
 
 		if (strpos($url, '?') !== false)
@@ -281,12 +282,12 @@ class path_helper
 	*
 	* @param string $url URL to strip parameters from
 	* @param array|string $strip Parameters to strip.
-	* @param string $separator Parameter separator. Defaults to &amp;
+	* @param bool $is_amp Is the parameter separator &amp;. Defaults to true.
 	* @return string Returns the new URL.
 	*/
-	public function strip_url_params($url, $strip, $separator = '&amp;')
+	public function strip_url_params($url, $strip, $is_amp = true)
 	{
-		$url_parts = $this->get_url_parts($url, $separator);
+		$url_parts = $this->get_url_parts($url, $is_amp);
 		$params = $url_parts['params'];
 
 		if (!is_array($strip))
@@ -314,12 +315,12 @@ class path_helper
 	*
 	* @param string $url URL to append parameters to
 	* @param array $new_params Parameters to add in the form of array(name => value)
-	* @param string $separator Parameter separator. Defaults to &amp;
+	* @param string $is_amp Is the parameter separator &amp;. Defaults to true.
 	* @return string Returns the new URL.
 	*/
-	public function append_url_params($url, $new_params, $separator = '&amp;')
+	public function append_url_params($url, $new_params, $is_amp = true)
 	{
-		$url_parts = $this->get_url_parts($url, $separator);
+		$url_parts = $this->get_url_parts($url, $is_amp);
 		$params = array_merge($url_parts['params'], $new_params);
 
 		// Move the sid to the end if it's set
