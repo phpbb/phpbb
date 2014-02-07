@@ -205,30 +205,22 @@ class post extends \phpbb\notification\type\base
 				$usernames[] = $this->user_loader->get_username($responder['poster_id'], 'no_profile');
 			}
 		}
-		$last_user = '';
-		$lang_key = $this->language_key;
 
 		if ($trimmed_responders_cnt)
 		{
-			$lang_key .= '_TRIMMED';
-			$lang_user_cnt = $trimmed_responders_cnt;
+			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
-		else
-		{
-			$lang_user_cnt = $responders_cnt;
 
-			if ($responders_cnt > 1)
-			{
-				$last_user = array_pop($usernames);
-			}
+		if (!function_exists('phpbb_gen_string_list'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ex);
 		}
 
 		return $this->user->lang(
-			$lang_key,
-			implode($this->user->lang['COMMA_SEPARATOR'], $usernames),
-			$last_user,
+			$this->language_key,
+			phpbb_gen_string_list($usernames, $this->user),
 			censor_text($this->get_data('topic_title')),
-			$lang_user_cnt
+			$responders_cnt
 		);
 	}
 
