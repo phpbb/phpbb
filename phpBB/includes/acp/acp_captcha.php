@@ -70,7 +70,9 @@ class acp_captcha
 			{
 				foreach ($config_vars as $config_var => $options)
 				{
-					set_config($config_var, request_var($config_var, $options['default']));
+					$request_config = request_var($config_var, $options['default']);
+					$request_config = ($options['default'] === 0 && $request_config < 0) ? 0 : $request_config;
+					set_config($config_var, $request_config);
 				}
 
 				if ($selected !== $config['captcha_plugin'])
