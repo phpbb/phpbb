@@ -1499,3 +1499,25 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 
 	return $links;
 }
+
+/**
+* Concatenate an array into a string list.
+*
+* @param array $items Array of items to concatenate
+* @param object $user The phpBB $user object.
+*
+* @return string String list. Examples: "A"; "A and B"; "A, B and C"
+*/
+function phpbb_gen_string_list($items, $user)
+{
+	$count = sizeof($items);
+	$last_item = '';
+
+	if ($count > 1)
+	{
+		$last_item = array_pop($items);
+	}
+	$list = implode($user->lang['COMMA_SEPARATOR'], $items);
+
+	return $user->lang('STRING_LIST', $list, $last_item, $count);
+}
