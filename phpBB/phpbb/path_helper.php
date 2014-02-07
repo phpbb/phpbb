@@ -330,6 +330,6 @@ class path_helper
 			$params['sid'] = $sid;
 		}
 
-		return $url_parts['base'] . '?' . $this->glue_url_params($params);
+		return $url_parts['base'] . (($params) ? '?' . $this->glue_url_params($params) : '');
 	}
 }
