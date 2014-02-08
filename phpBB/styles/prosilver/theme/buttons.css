@@ -131,6 +131,10 @@ a.sendemail {
 	padding: 1px 0 0 17px;
 }
 
+.no-small-icon {
+	padding: 1px 0 0 0;
+}
+
 ul.linklist li.small-icon {
 	padding-left: 0;
 }
