@@ -163,17 +163,17 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 if ($download_id)
 {
 	// Attachment id (only 1 attachment)
-	$sql_where = "attach_id = $download_id";
+	$sql_where = 'attach_id = ' . $download_id;
 }
 else if ($post_msg_id)
 {
 	// Post id or private message id (multiple attachments)
-	$sql_where = "post_msg_id = $post_msg_id AND is_orphan = 0";
+	$sql_where = 'is_orphan = 0 AND post_msg_id = ' . $post_msg_id;
 }
 else if ($topic_id)
 {
 	// Topic id (multiple attachments)
-	$sql_where = "topic_id = $topic_id AND is_orphan = 0";
+	$sql_where = 'is_orphan = 0 AND topic_id = ' . $topic_id;
 }
 else
 {
