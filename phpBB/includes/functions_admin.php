@@ -520,32 +520,13 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 			AND forum_id = ' . $forum_id;
 	$db->sql_query($sql);
 	
-	if ($affected_rows = $db->sql_affectedrows())
+	$affected_rows = $db->sql_affectedrows();
+	
+	if ($affected_rows)
 	{		
-		switch ($db->sql_layer)
-		{
-			case 'firebird':
-				// Precision must be from 1 to 18
-				$sql_update			= 'CAST(CAST(forum_topics as DECIMAL(18, 0)) - ' . (int) $affected_rows . ' as VARCHAR(255))';
-				$sql_update_real	= 'CAST(CAST(forum_topics_real as DECIMAL(18, 0)) - ' . (int) $affected_rows . ' as VARCHAR(255))';
-			break;
-	
-			case 'postgres':
-				// Need to cast to text first for PostgreSQL 7.x
-				$sql_update			= 'CAST(CAST(forum_topics::text as DECIMAL(255, 0)) - ' . (int) $affected_rows . ' as VARCHAR(255))';
-				$sql_update_real	= 'CAST(CAST(forum_topics_real::text as DECIMAL(255, 0)) - ' . (int) $affected_rows . ' as VARCHAR(255))';
-			break;
-	
-			// MySQL, SQlite, mssql, mssql_odbc, oracle
-			default:
-				$sql_update			= 'forum_topics - ' . (int) $affected_rows;
-				$sql_update_real	= 'forum_topics_real - ' . (int) $affected_rows;
-			break;
-		}
-		
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET forum_topics = ' . $sql_update . ',
-				forum_topics_real = ' . $sql_update_real . '
+			SET forum_topics = forum_topics - ' . (int) $affected_rows . ',
+				forum_topics_real = forum_topics_real - ' . (int) $affected_rows . '
 			WHERE forum_id = ' . (int) $forum_id;
 		$db->sql_query($sql);
 	}
