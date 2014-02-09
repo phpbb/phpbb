@@ -19,7 +19,6 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
-		$this->login();
 	}
 
 	public function tearDown()
@@ -63,25 +62,33 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function test_empty_file()
 	{
+		$this->login();
+
 		$crawler = $this->upload_file('empty.png', 'image/png');
 		$this->assertEquals($this->lang('EMPTY_FILEUPLOAD'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_invalid_extension()
 	{
+		$this->login();
+
 		$crawler = $this->upload_file('illegal-extension.bif', 'application/octet-stream');
 		$this->assertEquals($this->lang('DISALLOWED_EXTENSION', 'bif'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_too_large()
 	{
-		$this->markTestIncomplete('Functional tests use an admin account which ignores maximum upload size.');
+		$this->create_user('fileupload');
+		$this->login('fileupload');
+
 		$crawler = $this->upload_file('too-large.png', 'image/png');
 		$this->assertEquals($this->lang('WRONG_FILESIZE', '256', 'KiB'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_valid_file()
 	{
+		$this->login();
+
 		$crawler = $this->upload_file('valid.jpg', 'image/jpeg');
 
 		// Ensure there was no error message rendered
