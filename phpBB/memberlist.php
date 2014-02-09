@@ -982,21 +982,24 @@ switch ($mode)
 	break;
 	
 	case 'livesearch':
-		$q=request_var('q', '', true);
-		$hint="";
-		$sql = "SELECT username, user_id
-				FROM " . USERS_TABLE . " u
-				WHERE username LIKE '".$q."%' AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")";	
-		$result = $db->sql_query($sql);
-		$i=1;
-		while ($i<=10 && $row = $db->sql_fetchrow($result))
+		$username_chars = $request->variable('q', '', true);
+		$hint = "";
+		
+		$sql = 'SELECT username, user_id
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
+				AND username ' . $db->sql_like_expression($username_chars . $db->any_char);
+		$result = $db->sql_query_limit($sql, 10);
+		
+		$i = 1;
+		while ($row = $db->sql_fetchrow($result))
 		{	
-			$j=($i%2)+1;
-			$hint.="<tr class='bg".$j." row".$j."'><td><a href='" . 
+			$j = ($i%2)+1;
+			$hint.= "<tr class='bg".$j." row".$j."'><td><a href='" . 
 				$phpbb_root_path."memberlist.$phpEx". "?mode=viewprofile&u=" . $row['user_id'] . 
 				"' target='_blank'>" . 
 				$row['username'] . "</a></td></tr>";
-				$i++;
+			$i++;
 		}
 		echo $hint;
 		exit();
