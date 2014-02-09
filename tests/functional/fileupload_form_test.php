@@ -82,10 +82,12 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function test_valid_file()
 	{
-		$this->markTestIncomplete('Test fails intermittently.');
 		$crawler = $this->upload_file('valid.jpg', 'image/jpeg');
-		// ensure there was no error message rendered
+
+		// Ensure there was no error message rendered
 		$this->assertNotContains('<h2>' . $this->lang('INFORMATION') . '</h2>', $this->get_content());
-		$this->assertContains($this->lang('POSTED_ATTACHMENTS'), $crawler->filter('#postform h3')->eq(1)->text());
+
+		// Also the file name should be in the first row of the files table
+		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name')->eq(1)->text());
 	}
 }
