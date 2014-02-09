@@ -63,9 +63,8 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function test_empty_file()
 	{
-		$this->markTestIncomplete('Test fails intermittently.');
 		$crawler = $this->upload_file('empty.png', 'image/png');
-		$this->assertEquals($this->lang('ATTACHED_IMAGE_NOT_IMAGE'), $this->assert_filter($crawler, 'div#message p')->text());
+		$this->assertEquals($this->lang('EMPTY_FILEUPLOAD'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_invalid_extension()
