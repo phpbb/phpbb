@@ -1,23 +1,21 @@
 <script>
-	function showHint(str)
-	{ 
-		if (str.length<3)
-		  { 
+	function showHint(str) { 
+		if (str.length<3) { 
 		  document.getElementById("livesearch").innerHTML="";
 		  return;
-		  }
+		}
 		
 		$.ajax({
 			url:'{S_LIVE_SEARCH_ACTION}'+"&q="+str,
-			success:function(result){
+			success:function(result) {
 					$("#livesearch").html(result);
 					}
 				});
 	}
-	
-	function clearSearch()
-	{	
-		document.getElementById("livesearch").innerHTML="";
+	function clearSearch() {	
+		setTimeout(function () {
+        	document.getElementById("livesearch").innerHTML="";
+		}, 500);	
 	}
 </script>
 
@@ -32,7 +30,7 @@
 	<fieldset class="fields1 column1">
 	<dl>
 		<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
-		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" onkeyup="showHint(this.value)" onblur="clearSearch()" /> <table class="table1" id="livesearch"></table> </dd>
+		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" autocomplete="off" onkeyup="showHint(this.value)" onblur="clearSearch()" /> <table class="table1" id="livesearch"></table> </dd>
 	</dl>
 <!-- IF S_EMAIL_SEARCH_ALLOWED -->
 	<dl>
