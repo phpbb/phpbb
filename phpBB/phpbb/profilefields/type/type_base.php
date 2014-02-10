@@ -79,6 +79,14 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_field_name($field_name)
+	{
+		return isset($this->user->lang[$field_name]) ? $this->user->lang[$field_name] : $field_name;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_language_options_input($field_data)
 	{
 		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', array(0 => ''), true);

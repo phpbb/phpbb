@@ -159,17 +159,17 @@ class type_date extends type_base
 
 		if ((!$day || !$month || !$year) && $field_data['field_required'])
 		{
-			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
+			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
 		}
 
 		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()) + 50)
 		{
-			return $this->user->lang('FIELD_INVALID_DATE', $field_data['lang_name']);
+			return $this->user->lang('FIELD_INVALID_DATE', $this->get_field_name($field_data['lang_name']));
 		}
 
 		if (checkdate($month, $day, $year) === false)
 		{
-			return $this->user->lang('FIELD_INVALID_DATE', $field_data['lang_name']);
+			return $this->user->lang('FIELD_INVALID_DATE', $this->get_field_name($field_data['lang_name']));
 		}
 
 		return false;

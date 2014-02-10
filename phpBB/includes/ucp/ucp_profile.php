@@ -271,8 +271,6 @@ class ucp_profile
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user->data['user_jabber'], true)),
 					'website'		=> request_var('website', $user->data['user_website']),
 					'location'		=> utf8_normalize_nfc(request_var('location', $user->data['user_from'], true)),
-					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user->data['user_occ'], true)),
-					'interests'		=> utf8_normalize_nfc(request_var('interests', $user->data['user_interests'], true)),
 				);
 
 				if ($config['allow_birthdays'])
@@ -308,8 +306,6 @@ class ucp_profile
 							array('string', true, 12, 255),
 							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
 						'location'		=> array('string', true, 2, 100),
-						'occupation'	=> array('string', true, 2, 500),
-						'interests'		=> array('string', true, 2, 500),
 					);
 
 					if ($config['allow_birthdays'])
@@ -356,8 +352,6 @@ class ucp_profile
 							'user_jabber'	=> $data['jabber'],
 							'user_website'	=> $data['website'],
 							'user_from'		=> $data['location'],
-							'user_occ'		=> $data['occupation'],
-							'user_interests'=> $data['interests'],
 							'user_notify_type'	=> $data['notify'],
 						);
 
@@ -427,8 +421,6 @@ class ucp_profile
 					'JABBER'	=> $data['jabber'],
 					'WEBSITE'	=> $data['website'],
 					'LOCATION'	=> $data['location'],
-					'OCCUPATION'=> $data['occupation'],
-					'INTERESTS'	=> $data['interests'],
 				));
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'

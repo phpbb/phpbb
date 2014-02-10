@@ -109,13 +109,9 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>2</value>
 			<value>poster</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -124,14 +120,10 @@
 			<value>test</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>unauthorized</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -140,22 +132,16 @@
 			<value>notified</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>6</value>
 			<value>disabled</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>7</value>
 			<value>default</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

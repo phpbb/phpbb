@@ -6,14 +6,10 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>2</value>
 			<value>2</value>
 			<value>2</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -21,8 +17,6 @@
 			<value>3</value>
 			<value>3</value>
 			<value>3</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

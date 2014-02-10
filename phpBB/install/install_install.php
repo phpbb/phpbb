@@ -1718,6 +1718,7 @@ class install_install extends module
 			$this->error('Unable to access the language directory', __LINE__, __FILE__);
 		}
 
+		$installed_languages = array();
 		while (($file = readdir($dir)) !== false)
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
@@ -1741,6 +1742,7 @@ class install_install extends module
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $lang_pack));
 
+				$installed_languages[] = (int) $db->sql_nextid();
 				if ($db->sql_error_triggered)
 				{
 					$error = $db->sql_error($db->sql_error_sql);
@@ -1749,6 +1751,29 @@ class install_install extends module
 			}
 		}
 		closedir($dir);
+
+		$sql = 'SELECT *
+			FROM ' . PROFILE_FIELDS_TABLE;
+		$result = $db->sql_query($sql);
+
+		$profile_fields = array();
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($db, PROFILE_LANG_TABLE);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			foreach ($installed_languages as $lang_id)
+			{
+				$insert_buffer->insert(array(
+					'field_id'				=> $row['field_id'],
+					'lang_id'				=> $lang_id,
+					'lang_name'				=> strtoupper(substr($row['field_name'], 6)),// Remove phpbb_ from field name
+					'lang_explain'			=> '',
+					'lang_default_value'	=> '',
+				));
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$insert_buffer->flush();
 	}
 
 	/**

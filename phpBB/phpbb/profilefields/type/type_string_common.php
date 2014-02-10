@@ -52,16 +52,16 @@ abstract class type_string_common extends type_base
 		}
 		else if (trim($field_value) === '' && $field_data['field_required'])
 		{
-			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
+			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
 		}
 
 		if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])
 		{
-			return $this->user->lang('FIELD_TOO_SHORT', (int) $row['field_minlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_SHORT', (int) $field_data['field_minlen'], $this->get_field_name($field_data['lang_name']));
 		}
 		else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
 		{
-			return $this->user->lang('FIELD_TOO_LONG', (int) $row['field_maxlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_LONG', (int) $field_data['field_maxlen'], $this->get_field_name($field_data['lang_name']));
 		}
 
 		if (!empty($field_data['field_validation']) && $field_data['field_validation'] != '.*')
@@ -72,13 +72,13 @@ abstract class type_string_common extends type_base
 				switch ($row['field_validation'])
 				{
 					case '[0-9]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_NUMBERS_ONLY', $row['lang_name']);
+						return $this->user->lang('FIELD_INVALID_CHARS_NUMBERS_ONLY', $this->get_field_name($field_data['lang_name']));
 
 					case '[\w]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_ALPHA_ONLY', $row['lang_name']);
+						return $this->user->lang('FIELD_INVALID_CHARS_ALPHA_ONLY', $this->get_field_name($field_data['lang_name']));
 
 					case '[\w_\+\. \-\[\]]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_SPACERS_ONLY', $row['lang_name']);
+						return $this->user->lang('FIELD_INVALID_CHARS_SPACERS_ONLY', $this->get_field_name($field_data['lang_name']));
 				}
 			}
 		}
