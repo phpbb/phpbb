@@ -928,6 +928,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$crawler = self::request('GET', $posting_url);
 		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
 
+		if (!empty($form_data['upload_files']))
+		{
+			for ($i = 0; $i < $form_data['upload_files']; $i++)
+			{
+				$file = array(
+					'tmp_name'	=> __DIR__ . '/../functional/fixtures/files/valid.jpg',
+					'name'		=> 'valid.jpg',
+					'type'		=> 'image/jpeg',
+					'size'		=> filesize(__DIR__ . '/../functional/fixtures/files/valid.jpg'),
+					'error'		=> UPLOAD_ERR_OK,
+				);
+
+				$crawler = self::$client->request('POST', $posting_url, array('add_file' => $this->lang('ADD_FILE')), array('fileupload' => $file));
+			}
+			unset($form_data['upload_files']);
+		}
+
 		$hidden_fields = array(
 			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
 				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
