@@ -771,6 +771,7 @@ $schema_data['phpbb_profile_fields'] = array(
 		'field_show_on_reg'		=> array('BOOL', 0),
 		'field_show_on_pm'		=> array('BOOL', 0),
 		'field_show_on_vt'		=> array('BOOL', 0),
+		'field_show_on_ml'		=> array('BOOL', 0),
 		'field_show_profile'	=> array('BOOL', 0),
 		'field_hide'			=> array('BOOL', 0),
 		'field_no_view'			=> array('BOOL', 0),

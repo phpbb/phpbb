@@ -658,6 +658,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_on_ml tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_profile tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_hide tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,

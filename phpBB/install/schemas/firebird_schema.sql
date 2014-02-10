@@ -921,6 +921,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_show_on_reg INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_pm INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_vt INTEGER DEFAULT 0 NOT NULL,
+	field_show_on_ml INTEGER DEFAULT 0 NOT NULL,
 	field_show_profile INTEGER DEFAULT 0 NOT NULL,
 	field_hide INTEGER DEFAULT 0 NOT NULL,
 	field_no_view INTEGER DEFAULT 0 NOT NULL,

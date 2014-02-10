@@ -15,6 +15,7 @@ class profilefield_location extends \phpbb\db\migration\profilefield_base_migrat
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\profilefield_types',
+			'\phpbb\db\migration\data\v310\profilefield_on_memberlist',
 		);
 	}
 

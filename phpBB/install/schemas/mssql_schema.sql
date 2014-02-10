@@ -1127,6 +1127,7 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_show_on_reg] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_pm] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_vt] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_ml] [int] DEFAULT (0) NOT NULL ,
 	[field_show_profile] [int] DEFAULT (0) NOT NULL ,
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
 	[field_no_view] [int] DEFAULT (0) NOT NULL ,

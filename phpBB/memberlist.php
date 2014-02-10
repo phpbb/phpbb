@@ -1508,8 +1508,7 @@ switch ($mode)
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
 
-			// @todo: Add separate setting for this.
-			$cp_row = $cp->generate_profile_fields_template('headlines', false, false, 'field_show_on_pm');
+			$cp_row = $cp->generate_profile_fields_template('headlines', false, false, 'field_show_on_ml');
 			foreach ($cp_row as $profile_field)
 			{
 				$template->assign_block_vars('custom_fields', $profile_field);
@@ -1574,7 +1573,7 @@ switch ($mode)
 				{
 					foreach ($user_profile_fields as $field_ident => $profile_field)
 					{
-						if (!$profile_field['data']['field_show_on_pm'])
+						if (!$profile_field['data']['field_show_on_ml'])
 						{
 							unset($profile_fields_cache[$user_id][$field_ident]);
 						}
