@@ -1508,7 +1508,7 @@ switch ($mode)
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
 
-			$cp_row = $cp->generate_profile_fields_template('headlines', false, false, 'field_show_on_ml');
+			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
 			foreach ($cp_row as $profile_field)
 			{
 				$template->assign_block_vars('custom_fields', $profile_field);
