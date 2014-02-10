@@ -640,10 +640,14 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if ($row && ($row['topic_visibility'] == ITEM_APPROVED || $auth->acl_get('m_approve', $row['forum_id']))
-		&& $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	if ($row && $row['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 	{
-		if ($row && $row['forum_password'])
+		send_status_line(404, 'Not Found');
+		trigger_error('ERROR_NO_ATTACHMENT');
+	}
+	else if ($row && $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	{
+		if ($row['forum_password'])
 		{
 			// Do something else ... ?
 			login_forum_box($row);

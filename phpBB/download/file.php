@@ -257,7 +257,7 @@ else if ($download_id)
 			if (!$post_row || ($post_row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $post_row['forum_id'])))
 			{
 				// Attachment of a soft deleted post and the user is not allowed to see the post
-				send_status_line(403, 'Forbidden');
+				send_status_line(404, 'Not Found');
 				trigger_error('ERROR_NO_ATTACHMENT');
 			}
 		}
@@ -271,7 +271,7 @@ else if ($download_id)
 		$extensions = array();
 		if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
 		{
-			send_status_line(404, 'Forbidden');
+			send_status_line(403, 'Forbidden');
 			trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
 		}
 	}
@@ -454,12 +454,12 @@ else
 	{
 		// None of the attachments had a valid extension
 		$disallowed_extension = implode($user->lang['COMMA_SEPARATOR'], $disallowed_extension);
-		send_status_line(404, 'Forbidden');
+		send_status_line(403, 'Forbidden');
 		trigger_error($user->lang('EXTENSION_DISABLED_AFTER_POSTING', $disallowed_extension));
 	}
 	else if (!$files_added)
 	{
-		send_status_line(403, 'Forbidden');
+		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
