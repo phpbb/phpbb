@@ -7,9 +7,13 @@
  *
  */
 
+namespace phpbb\model\repository;
+
 /**
  * @ignore
  */
+use phpbb\model\exception\no_permission_exception;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -19,32 +23,32 @@ if (!defined('IN_PHPBB'))
  * Topic repository
  * @package phpBB3
  */
-class phpbb_model_repository_topic
+class topic
 {
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
 	/**
 	 * phpBB configuration
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_auth $auth
-	 * @param phpbb_config $config
-	 * @param phpbb_db_driver $db
-	 * @param phpbb_user $user
+	 * @param \phpbb\auth\auth $auth
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\db\driver\driver $db
+	 * @param \phpbb\user $user
 	 */
-	function __construct(phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db, phpbb_user $user)
+	function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\user $user)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -57,7 +61,7 @@ class phpbb_model_repository_topic
 	 * @param $topic_id int The topic to fetch
 	 * @param $page int the page
 	 * @param $user_id
-	 * @throws phpbb_model_exception_no_permission_exception
+	 * @throws \phpbb\model\exception\no_permission_exception
 	 * @return array An array of topics
 	 */
 	public function get($topic_id, $page, $user_id)
@@ -79,9 +83,9 @@ class phpbb_model_repository_topic
 		{
 			if (!$this->auth->acl_get('f_read', $row['forum_id']))
 			{
-				throw new phpbb_model_exception_no_permission_exception('User has no permission to read this forum', 403);
+				throw new no_permission_exception('User has no permission to read this forum', 403);
 			}
-			$posts[] = new phpbb_model_entity_post($row);
+			$posts[] = new \phpbb\model\entity\post($row);
 		}
 		$this->db->sql_freeresult($result);
 

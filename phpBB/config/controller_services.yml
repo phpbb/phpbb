@@ -1,14 +1,13 @@
 services:
     api.controller.forum:
-        class: phpbb_controller_api_forum
+        class: phpbb\controller\api\forum
         arguments:
             - @model.repository.forum
             - @config
             - @model.repository.auth
-            - @request
 
     api.controller.auth:
-        class: phpbb_controller_api_auth
+        class: phpbb\controller\api\auth
         arguments:
             - @model.repository.auth
             - @user
@@ -19,16 +18,15 @@ services:
             - @auth
 
     api.controller.topic:
-            class: phpbb_controller_api_topic
+            class: phpbb\controller\api\topic
             arguments:
                 - @model.repository.topic
                 - @model.repository.post
                 - @model.repository.auth
-                - @request
                 - @config
 
     api.controller.post:
-            class: phpbb_controller_api_post
+            class: phpbb\controller\api\post
             arguments:
                 - @model.repository.post
                 - @model.repository.auth

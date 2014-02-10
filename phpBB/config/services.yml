@@ -6,12 +6,9 @@ imports:
     - { resource: avatars.yml }
     - { resource: feed.yml }
     - { resource: auth_providers.yml }
-<<<<<<< HEAD
     - { resource: console.yml }
     - { resource: mimetype_guessers.yml }
-=======
     - { resource: controller_services.yml }
->>>>>>> [feature/api] Moved code to use controllers
 
 services:
     acl.permissions:
@@ -243,14 +240,15 @@ services:
             - %tables.log%
 
     model.repository.auth:
-        class: phpbb_model_repository_auth
+        class: phpbb\model\repository\auth
         arguments:
             - @config
             - @dbal.conn
             - @auth
+            - @request
 
     model.repository.forum:
-        class: phpbb_model_repository_forum
+        class: phpbb\model\repository\forum
         arguments:
             - @tree.nestedset_forum
             - @auth
@@ -258,7 +256,7 @@ services:
             - @dbal.conn
 
     model.repository.post:
-        class: phpbb_model_repository_post
+        class: phpbb\model\repository\post
         arguments:
             - @auth
             - @config
@@ -268,7 +266,7 @@ services:
             - %core.php_ext%
 
     model.repository.topic:
-        class: phpbb_model_repository_topic
+        class: phpbb\model\repository\topic
         arguments:
             - @auth
             - @config
@@ -341,7 +339,7 @@ services:
         class: phpbb\template\context
 
     tree.nestedset_forum:
-        class: phpbb_tree_nestedset_forum
+        class: phpbb\tree\nestedset_forum
         arguments:
             - @dbal.conn
             - @cron.lock_db

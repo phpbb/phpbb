@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\model\repository;
+
 /**
  * @ignore
  */
@@ -15,39 +17,50 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\HttpFoundation\Response;
+use phpbb\model\exception\api_exception;
+use phpbb\model\exception\invalid_request_exception;
+use phpbb\model\exception\no_permission_exception;
+use phpbb\model\exception\not_authed_exception;
 
 /**
  * This repository handles authentication
  * @package phpBB3
  */
-class phpbb_model_repository_auth
+class auth
 {
 
 	/**
 	 * phpBB configuration
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/**
+	 * Request object
+	 * @var \phpbb\request\request
+	 */
+	protected $request;
 
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_config $config
-	 * @param phpbb_db_driver $db
-	 * @param phpbb_auth $auth
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\db\driver\driver $db
+	 * @param \phpbb\auth\auth $auth
+	 * @param \phpbb\request\request $request
 	 */
-	function __construct(phpbb_config $config, phpbb_db_driver $db, phpbb_auth $auth)
+	function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\auth\auth $auth, \phpbb\request\request $request)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->auth = $auth;
+		$this->request = $request;
 	}
 
 	public function allow($auth_key, $sign_key, $user_id, $name)
@@ -64,22 +77,31 @@ class phpbb_model_repository_auth
 	/**
 	 * Verifies a request
 	 *
-	 * @param $request String The request url, for example api/forums/2....
-	 * @param string $auth_key
-	 * @param $serial
-	 * @param $hash
 	 * @param int $forum_id
-	 * @throws phpbb_model_exception_no_permission_exception
-	 * @throws phpbb_model_exception_api_exception
-	 * @throws phpbb_model_exception_invalid_request_exception
-	 * @throws phpbb_model_exception_not_authed_exception
+	 * @param null $request
+	 * @param null $auth_key
+	 * @param null $serial
+	 * @param null $hash
+	 * @throws \phpbb\model\exception\invalid_request_exception
+	 * @throws \phpbb\model\exception\no_permission_exception
+	 * @throws \phpbb\model\exception\not_authed_exception
+	 * @throws \phpbb\model\exception\api_exception
+	 * @internal param String $request The request url, for example api/forums/2....
+	 * @internal param string $auth_key
+	 * @internal param $serial
+	 * @internal param $hash
 	 * @return array|int
 	 */
-	public function auth($request = null, $auth_key = 'guest', $serial = null, $hash = null, $forum_id = 0)
+	public function auth($forum_id = 0, $request = null, $auth_key = null, $serial = null, $hash = null)
 	{
+		$request = (isset($request)) ? $request : $this->request->server("PATH_INFO");
+		$auth_key = (isset($auth_key)) ? $auth_key : $this->request->variable('auth_key', 'guest');
+		$serial = (isset($serial)) ? $serial : $this->request->variable('serial', -1);
+		$hash = (isset($hash)) ? $hash : $this->request->variable('hash', '');
+
 		if (!$this->config['allow_api'])
 		{
-			throw new phpbb_model_exception_api_exception('The API is not enabled on this board', 500);
+			throw new api_exception('The API is not enabled on this board', 500);
 		}
 
 		if ($auth_key != 'guest')
@@ -97,7 +119,7 @@ class phpbb_model_repository_auth
 
 			if (empty($sign_key))
 			{
-				throw new phpbb_model_exception_not_authed_exception('The user has not authenticated this application', 401);
+				throw new not_authed_exception('The user has not authenticated this application', 401);
 			}
 
 			if (is_array($request))
@@ -114,12 +136,12 @@ class phpbb_model_repository_auth
 
 			if ($hash != $test_hash)
 			{
-				throw new phpbb_model_exception_invalid_request_exception('Invalid hash', 400);
+				throw new invalid_request_exception('Invalid hash', 400);
 			}
 
 			if ($serial <= $dbserial)
 			{
-				throw new phpbb_model_exception_invalid_request_exception('Invalid serial', 400);
+				throw new invalid_request_exception('Invalid serial', 400);
 			}
 
 			$userdata = $this->auth->obtain_user_data($user_id);
@@ -131,7 +153,7 @@ class phpbb_model_repository_auth
 				{
 					if (!$this->auth->acl_get('f_read', $forum_id))
 					{
-						throw new phpbb_model_exception_no_permission_exception('User has no permission to read this forum', 403);
+						throw new no_permission_exception('User has no permission to read this forum', 403);
 					}
 				}
 
@@ -144,7 +166,7 @@ class phpbb_model_repository_auth
 			}
 			else
 			{
-				throw new phpbb_model_exception_no_permission_exception('User has no permission to use the API', 403);
+				throw new no_permission_exception('User has no permission to use the API', 403);
 			}
 		}
 		else
@@ -158,14 +180,14 @@ class phpbb_model_repository_auth
 				{
 					if (!$this->auth->acl_get('f_read', $forum_id))
 					{
-						throw new phpbb_model_exception_no_permission_exception('User has no permission to read this forum', 403);
+						throw new no_permission_exception('User has no permission to read this forum', 403);
 					}
 				}
 				return ANONYMOUS;
 			}
 			else
 			{
-				throw new phpbb_model_exception_no_permission_exception('User has no permission to use the API', 403);
+				throw new no_permission_exception('User has no permission to use the API', 403);
 
 			}
 		}

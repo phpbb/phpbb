@@ -6,6 +6,8 @@
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
+
+namespace phpbb\model\entity;
  
 /**
 * @ignore
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
 * Enitity base class
 * @package phpBB3
 */
-abstract class phpbb_model_entity
+abstract class entity
 {
 	protected $data = array();
 

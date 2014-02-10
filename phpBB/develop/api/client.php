@@ -13,19 +13,19 @@
 
 class client
 {
-	protected $api_url = 'http://localhost/phpBB/phpBB/app.php?controller=';
+	protected $api_url = 'http://localhost/phpBB/phpBB/app.php';
 	protected $key_store = 'keys.txt';
 
 	public function get_auth_link()
 	{
-		$json = file_get_contents($this->api_url . 'api/auth/generatekeys');
+		$json = file_get_contents($this->api_url . '/api/auth/generatekeys');
 		$response = json_decode($json);
 
 		$key_file = fopen($this->key_store, 'a');
-		fwrite($key_file, $response->data->auth_key . '|' . $response->data->sign_key . '|false|0');
+		fwrite($key_file, $response->data->auth_key . '|' . $response->data->sign_key . '|false|1');
 		fclose($key_file);
 
-		return $this->api_url . 'api/auth/' . $response->data->auth_key . '/' . $response->data->sign_key;
+		return $this->api_url . '/api/auth/' . $response->data->auth_key . '/' . $response->data->sign_key;
 	}
 
 	public function verify()
@@ -57,7 +57,7 @@ class client
 
 	public function request($method, $params)
 	{
-		$request = 'api/' . $method;
+		$request = '/api/' . $method;
 		foreach ($params as $param)
 		{
 			if (empty($param))
@@ -74,9 +74,11 @@ class client
 
 			$requesttohash = $request . 'auth_key=' . $keyarr[0] . '&serial=' . $keyarr[3];
 
+			echo "Client hashing:" . $requesttohash . "<br />";
+
 			$hash = hash_hmac('sha256', $requesttohash, $keyarr[1]);
 
-			$request .= '&auth_key=' . $keyarr[0] . '&serial=' . $keyarr[3];
+			$request .= '?auth_key=' . $keyarr[0] . '&serial=' . $keyarr[3];
 
 			$request .= '&hash=' . $hash;
 

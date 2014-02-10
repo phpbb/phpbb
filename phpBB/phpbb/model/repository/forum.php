@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\model\repository;
+
 /**
  * @ignore
  */
@@ -19,32 +21,32 @@ if (!defined('IN_PHPBB'))
  * Forum repository
  * @package phpBB3
  */
-class phpbb_model_repository_forum
+class forum
 {
-	/** @var phpbb_tree_nestedset_forum */
+	/** @var \phpbb\tree\nestedset_forum */
 	protected $nestedset_forum;
 
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
 	/**
 	 * phpBB configuration
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_tree_nestedset_forum $nestedset_forum
-	 * @param phpbb_auth $auth
-	 * @param phpbb_config $config
-	 * @param phpbb_db_driver $db
+	 * @param \phpbb\tree\nestedset_forum $nestedset_forum
+	 * @param \phpbb\auth\auth $auth
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\db\driver\driver $db
 	 */
-	function __construct(phpbb_tree_nestedset_forum $nestedset_forum, phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db)
+	function __construct(\phpbb\tree\nestedset_forum $nestedset_forum, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
 	{
 		$this->nestedset_forum = $nestedset_forum;
 		$this->auth = $auth;
@@ -69,7 +71,7 @@ class phpbb_model_repository_forum
 		$forums = array();
 		foreach ($result as $row)
 		{
-			$forum = new phpbb_model_entity_forum($row);
+			$forum = new \phpbb\model\entity\forum($row);
 
 			$fid = $forum->get('forum_id');
 			if (!$this->auth->acl_get('f_list', $fid))
@@ -109,7 +111,7 @@ class phpbb_model_repository_forum
 		$topics = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$topics[] = new phpbb_model_entity_topic($row);
+			$topics[] = new \phpbb\model\entity\topic($row);
 		}
 		$this->db->sql_freeresult($result);
 
@@ -135,7 +137,7 @@ class phpbb_model_repository_forum
 	/**
 	 * Adds subforums in the recursive structure. The forum entity currently being added is added to
 	 * the forum entity with the forum_id corresponding to the parent_id
-	 * @param $forum phpbb_model_entity_forum The forum entity to add
+	 * @param $forum \phpbb\model\entity\forum The forum entity to add
 	 * @param $forums array An array of forum entities
 	 * @return array The new array with subforums added
 	 */

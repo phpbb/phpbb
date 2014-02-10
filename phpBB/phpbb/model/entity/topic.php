@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\model\entity;
+
 /**
  * @ignore
  */
@@ -19,7 +21,7 @@ if (!defined('IN_PHPBB'))
  * Topic enitity
  * @package phpBB3
  */
-class phpbb_model_entity_topic extends phpbb_model_entity
+class topic extends entity
 {
 
 }

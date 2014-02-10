@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\controller\api;
+
 /**
  * @ignore
  */
@@ -15,6 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use phpbb\model\exception\api_exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -23,30 +26,30 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
  * Controller for the api of a topic
  * @package phpBB3
  */
-class phpbb_controller_api_post
+class post
 {
 
 	/**
 	 * API Model
-	 * @var phpbb_model_repository_post
+	 * @var \phpbb\model\repository\post
 	 */
 	protected $post_repository;
 
 	/**
 	 * Auth repository object
-	 * @var phpbb_model_repository_auth
+	 * @var \phpbb\model\repository\auth
 	 */
 	protected $auth_repository;
 
 	/**
 	 * Request object
-	 * @var phpbb_request
+	 * @var \phpbb\request\request
 	 */
 	protected $request;
 
 	/**
 	 * Config object
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
@@ -69,15 +72,15 @@ class phpbb_controller_api_post
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_model_repository_post $post_repository
-	 * @param phpbb_model_repository_auth $auth_repository
-	 * @param phpbb_request $request
-	 * @param phpbb_config $config
+	 * @param \phpbb\model\repository\post $post_repository
+	 * @param \phpbb\model\repository\auth $auth_repository
+	 * @param \phpbb\request\request $request
+	 * @param \phpbb\config\config $config
 	 * @param $phpbb_root_path
 	 * @param $php_ext
 	 */
-	function __construct(phpbb_model_repository_post $post_repository,
-						 phpbb_model_repository_auth $auth_repository, phpbb_request $request, phpbb_config $config,
+	function __construct(\phpbb\model\repository\post $post_repository,
+						 \phpbb\model\repository\auth $auth_repository, \phpbb\request\request $request, \phpbb\config\config $config,
 						 $phpbb_root_path, $php_ext)
 	{
 		$this->post_repository = $post_repository;
@@ -125,7 +128,7 @@ class phpbb_controller_api_post
 		}
 
 		try {
-			$user_id = $this->auth_repository->auth($request, $request['auth_key'], $request['serial'], $hash);
+			$user_id = $this->auth_repository->auth(0, $request, $request['auth_key'], $request['serial'], $hash);
 			$post = $this->post_repository->new_post($request, $user_id);
 
 			if(is_int($post['post_id']))
@@ -148,7 +151,7 @@ class phpbb_controller_api_post
 				);
 			}
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			$response = array(
 				'status' => $e->getCode(),

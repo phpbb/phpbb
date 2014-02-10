@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\model\normalizer;
+
 /**
  * @ignore
  */
@@ -21,7 +23,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  * Post enitity normalizer
  * @package phpBB3
  */
-class phpbb_model_normalizer_post implements NormalizerInterface
+class post implements NormalizerInterface
 {
 	public function normalize($post, $format = null)
 	{
@@ -51,6 +53,6 @@ class phpbb_model_normalizer_post implements NormalizerInterface
 
 	public function supportsNormalization($data, $format = null)
 	{
-		return $data instanceof phpbb_model_entity_post;
+		return $data instanceof \phpbb\model\entity\post;
 	}
 }

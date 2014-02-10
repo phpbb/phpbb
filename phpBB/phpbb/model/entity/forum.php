@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\model\entity;
+
 /**
  * @ignore
  */
@@ -20,7 +22,7 @@ if (!defined('IN_PHPBB'))
  * Forum enitity
  * @package phpBB3
  */
-class phpbb_model_entity_forum extends phpbb_model_entity
+class forum extends entity
 {
 	public function __construct($forum)
     {

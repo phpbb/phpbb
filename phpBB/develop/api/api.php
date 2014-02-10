@@ -24,7 +24,7 @@ if (!isset($_GET['mode']))
 
 		if ($keyarr[2] == 'false')
 		{
-			echo '<a href="?mode=verify" target="_blank">Please verify</a>';
+			echo '<a href="?mode=verify">Please verify</a>';
 		}
 		else
 		{

@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\controller\api;
+
 /**
  * @ignore
  */
@@ -15,6 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use phpbb\model\exception\api_exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -23,50 +26,39 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
  * Controller for the api of a topic
  * @package phpBB3
  */
-class phpbb_controller_api_topic
+class topic
 {
 	/**
 	 * API Model
-	 * @var phpbb_model_repository_topic
+	 * @var \phpbb\model\repository\topic
 	 */
 	protected $topic_repository;
 
 	/**
 	 * API Model
-	 * @var phpbb_model_repository_post
+	 * @var \phpbb\model\repository\post
 	 */
 	protected $post_repository;
 
 	/**
 	 * Auth repository object
-	 * @var phpbb_model_repository_auth
+	 * @var \phpbb\model\repository\auth
 	 */
 	protected $auth_repository;
 
 	/**
-	 * Request object
-	 * @var phpbb_request
-	 */
-	protected $request;
-
-
-
-
-	/**
 	 * Constructor
 	 *
-	 * @param phpbb_model_repository_topic $topic_repository
-	 * @param phpbb_model_repository_post $post_repository
-	 * @param phpbb_model_repository_auth $auth_repository
-	 * @param phpbb_request $request
+	 * @param \phpbb\model\repository\topic $topic_repository
+	 * @param \phpbb\model\repository\post $post_repository
+	 * @param \phpbb\model\repository\auth $auth_repository
 	 */
-	function __construct(phpbb_model_repository_topic $topic_repository, phpbb_model_repository_post $post_repository,
-						 phpbb_model_repository_auth $auth_repository, phpbb_request $request)
+	function __construct(\phpbb\model\repository\topic $topic_repository, \phpbb\model\repository\post $post_repository,
+						 \phpbb\model\repository\auth $auth_repository)
 	{
 		$this->topic_repository = $topic_repository;
 		$this->post_repository = $post_repository;
 		$this->auth_repository = $auth_repository;
-		$this->request = $request;
 	}
 
 	/**
@@ -81,19 +73,13 @@ class phpbb_controller_api_topic
 	 */
 	public function topic($topic_id, $page)
 	{
-		$auth_key = $this->request->variable('auth_key', 'guest');
-		$serial = $this->request->variable('serial', -1);
-		$hash = $this->request->variable('hash', '');
-
-
 
 		$serializer = new Serializer(array(
-			new phpbb_model_normalizer_post(),
+			new \phpbb\model\normalizer\post(),
 		), array(new JsonEncoder()));
 
 		try {
-			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/topic/' .
-			$topic_id . '/' . $page), $auth_key, $serial, $hash);
+			$user_id = $this->auth_repository->auth();
 
 			$posts = $this->topic_repository->get($topic_id, $page, $user_id);
 
@@ -106,7 +92,7 @@ class phpbb_controller_api_topic
 				'data' => $serializer->normalize($posts['posts']),
 			);
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			$response = array(
 				'status' => $e->getCode(),

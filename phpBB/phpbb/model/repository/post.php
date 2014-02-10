@@ -7,9 +7,13 @@
  *
  */
 
+namespace phpbb\model\repository;
+
 /**
  * @ignore
  */
+use phpbb\model\exception\no_permission_exception;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -19,21 +23,21 @@ if (!defined('IN_PHPBB'))
  * Topic repository
  * @package phpBB3
  */
-class phpbb_model_repository_post
+class post
 {
-	/** @var phpbb_auth */
+	/** @var \phpbb\auth\auth */
 	protected $auth;
 
 	/**
 	 * phpBB configuration
-	 * @var phpbb_config
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
-	/** @var phpbb_db_driver */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
-	/** @var phpbb_user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/**
@@ -54,14 +58,14 @@ class phpbb_model_repository_post
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_auth $auth
-	 * @param phpbb_config $config
-	 * @param phpbb_db_driver $db
-	 * @param phpbb_user $user
+	 * @param \phpbb\auth\auth $auth
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\db\driver\driver $db
+	 * @param \phpbb\user $user
 	 * @param $phpbb_root_path
 	 * @param $php_ext
 	 */
-	function __construct(phpbb_auth $auth, phpbb_config $config, phpbb_db_driver $db, phpbb_user $user,
+	function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\user $user,
 						 $phpbb_root_path, $php_ext)
 	{
 		$this->auth = $auth;
@@ -92,14 +96,14 @@ class phpbb_model_repository_post
 		{
 			if (!$this->auth->acl_get('f_post', $data['forum_id']))
 			{
-				throw new phpbb_model_exception_no_permission_exception('User has no permission to create a topic in this forum', 403);
+				throw new no_permission_exception('User has no permission to create a topic in this forum', 403);
 			}
 		}
 		else
 		{
 			if (!$this->auth->acl_get('f_reply', $data['forum_id']))
 			{
-				throw new phpbb_model_exception_no_permission_exception('User has no permission to reply to this post', 403);
+				throw new no_permission_exception('User has no permission to reply to this post', 403);
 			}
 		}
 

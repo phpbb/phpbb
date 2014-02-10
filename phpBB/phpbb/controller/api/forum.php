@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\controller\api;
+
 /**
  * @ignore
  */
@@ -15,6 +17,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use phpbb\model\exception\api_exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
@@ -23,47 +26,39 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
  * Controller for the api of a phpBB forum
  * @package phpBB3
  */
-class phpbb_controller_api_forum
+class forum
 {
 	/**
 	 * API Model
-	 * @var phpbb_model_repository_forum
+	 * @var \phpbb\model\repository\forum
 	 */
 	protected $forum_repository;
 
 	/**
 	 * Config object
-	 * @var phpbb_config_db
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
 	/**
 	 * Auth repository object
-	 * @var phpbb_model_repository_auth
+	 * @var \phpbb\model\repository\auth
 	 */
 	protected $auth_repository;
 
 	/**
-	 * Request object
-	 * @var phpbb_request
-	 */
-	protected $request;
-
-	/**
 	 * Constructor
 	 *
-	 * @param phpbb_model_repository_forum $forum_repository
-	 * @param phpbb_config_db $config
-	 * @param phpbb_model_repository_auth $auth_repository
-	 * @param phpbb_request $request
+	 * @param \phpbb\model\repository\forum $forum_repository
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\model\repository\auth $auth_repository
 	 */
-	function __construct(phpbb_model_repository_forum $forum_repository, phpbb_config_db $config,
-						 phpbb_model_repository_auth $auth_repository, phpbb_request $request)
+	function __construct(\phpbb\model\repository\forum $forum_repository, \phpbb\config\config $config,
+						 \phpbb\model\repository\auth $auth_repository)
 	{
 		$this->forum_repository = $forum_repository;
 		$this->config = $config;
 		$this->auth_repository = $auth_repository;
-		$this->request = $request;
 	}
 
 	/**
@@ -78,17 +73,12 @@ class phpbb_controller_api_forum
 	public function forums($forum_id)
 	{
 		$serializer = new Serializer(array(
-			new phpbb_model_normalizer_forum(),
+			new \phpbb\model\normalizer\forum(),
 		), array(new JsonEncoder()));
-
-		$auth_key = $this->request->variable('auth_key', 'guest');
-		$serial = $this->request->variable('serial', -1);
-		$hash = $this->request->variable('hash', '');
 
 		try
 		{
-			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
-				$forum_id), $auth_key, $serial, $hash, $forum_id);
+			$user_id = $this->auth_repository->auth($forum_id);
 
 			$forums = $this->forum_repository->get($forum_id, $user_id);
 
@@ -97,7 +87,7 @@ class phpbb_controller_api_forum
 				'data' => $serializer->normalize($forums),
 			);
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			$response = array(
 				'status' => $e->getCode(),
@@ -126,31 +116,27 @@ class phpbb_controller_api_forum
 	 */
 	public function topics($forum_id, $page)
 	{
-		$auth_key = $this->request->variable('auth_key', 'guest');
-		$serial = $this->request->variable('serial', -1);
-		$hash = $this->request->variable('hash', '');
+
 
 		$serializer = new Serializer(array(
-			new phpbb_model_normalizer_topic(),
+			new \phpbb\model\normalizer\topic(),
 		), array(new JsonEncoder()));
 
 		try {
+			$user_id = $this->auth_repository->auth($forum_id);
 
-			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/forums/' .
-				$forum_id . '/' . $page), $auth_key, $serial, $hash, $forum_id);
+			$topics = $this->forum_repository->get_topics($forum_id, $page);
 
-				$topics = $this->forum_repository->get_topics($forum_id, $page);
-
-				$response = array(
-					'status' => 200,
-					'total' => $topics['total'],
-					'per_page' => $topics['per_page'],
-					'page' => $topics['page'],
-					'last_page' => $topics['last_page'],
-					'data' => $serializer->normalize($topics['topics']),
-				);
+			$response = array(
+				'status' => 200,
+				'total' => $topics['total'],
+				'per_page' => $topics['per_page'],
+				'page' => $topics['page'],
+				'last_page' => $topics['last_page'],
+				'data' => $serializer->normalize($topics['topics']),
+			);
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			$response = array(
 				'status' => $e->getCode(),

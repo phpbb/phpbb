@@ -7,6 +7,8 @@
  *
  */
 
+namespace phpbb\controller\api;
+
 /**
  * @ignore
  */
@@ -18,69 +20,70 @@ if (!defined('IN_PHPBB'))
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use phpbb\model\exception\api_exception;
 
 /**
  * Controller for authentication
  * @package phpBB3
  */
-class phpbb_controller_api_auth
+class auth
 {
 	/**
 	 * API Model
-	 * @var phpbb_model_repository_auth
+	 * @var \phpbb\model\repository\auth
 	 */
 	protected $auth_repository;
 
 	/**
 	 * User object
-	 * @var phpbb_user
+	 * @var \phpbb\user
 	 */
 	protected $user;
 
 	/**
 	 * Controller helper object
-	 * @var phpbb_controller_helper
+	 * @var \phpbb\controller\helper
 	 */
 	protected $helper;
 
 	/**
 	 * Template object
-	 * @var phpbb_template
+	 * @var \phpbb\template\template
 	 */
 	protected $template;
 
 	/**
 	 * Template object
-	 * @var phpbb_request
+	 * @var \phpbb\request\request
 	 */
 	protected $request;
 
 	/**
 	 * Config object
-	 * @var phpbb_config_db
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
 	/**
 	 * Auth object
-	 * @var phpbb_auth
+	 * @var \phpbb\model\repository\auth
 	 */
 	protected $auth;
 
 	/**
 	 * Constructor
 	 *
-	 * @param phpbb_model_repository_auth $auth_repository
-	 * @param phpbb_user $user
-	 * @param phpbb_controller_helper $helper
-	 * @param phpbb_template $template
-	 * @param phpbb_request $request
-	 * @param phpbb_config_db $config
-	 * @param phpbb_auth $auth
+	 * @param \phpbb\model\repository\auth $auth_repository
+	 * @param \phpbb\user $user
+	 * @param \phpbb\controller\helper $helper
+	 * @param \phpbb\template\template $template
+	 * @param \phpbb\request\request $request
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\auth\auth $auth
 	 */
-	function __construct(phpbb_model_repository_auth $auth_repository, phpbb_user $user,
-						 phpbb_controller_helper $helper, phpbb_template $template, phpbb_request $request,
-						 phpbb_config_db $config, phpbb_auth $auth)
+	function __construct(\phpbb\model\repository\auth $auth_repository, \phpbb\user $user,
+						 \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\request\request $request,
+						 \phpbb\config\config $config, \phpbb\auth\auth $auth)
 	{
 		$this->auth_repository = $auth_repository;
 		$this->user = $user;
@@ -110,7 +113,7 @@ class phpbb_controller_api_auth
 				'data' => $keys,
 			);
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			$response = array(
 				'status' => $e->getCode(),
@@ -120,7 +123,6 @@ class phpbb_controller_api_auth
 				),
 			);
 		}
-
 
 		return new Response($serializer->serialize($response, 'json'), $response['status']);
 	}
@@ -133,7 +135,11 @@ class phpbb_controller_api_auth
 		}
 
 		try {
-			$user_id = $this->auth_repository->auth();
+
+			if (!$this->config['allow_api'])
+			{
+				throw new api_exception('The API is not enabled on this board', 500);
+			}
 
 			$url = $this->helper->url('api/auth/allow');
 
@@ -147,7 +153,7 @@ class phpbb_controller_api_auth
 
 			return $this->helper->render('api_auth.html', $this->user->lang['AUTH_TITLE']);
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
 		}
@@ -160,10 +166,12 @@ class phpbb_controller_api_auth
 			return $this->helper->error($this->user->lang('API_NO_PERMISSION'));
 		}
 
-		// This will either be a guests user id or a response array for errors
-		$user_id = $this->auth_repository->auth();
-
 		try {
+			if (!$this->config['allow_api'])
+			{
+				throw new api_exception('The API is not enabled on this board', 500);
+			}
+
 			if (!check_form_key('api_auth'))
 			{
 				return $this->helper->error($this->user->lang['AUTH_FORM_ERROR']);
@@ -198,7 +206,7 @@ class phpbb_controller_api_auth
 			/* @TODO: Add real response here */
 			return new Response();
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
 		}
@@ -208,13 +216,8 @@ class phpbb_controller_api_auth
 	{
 		$serializer = new Serializer(array(), array(new JsonEncoder()));
 
-		$auth_key = $this->request->variable('auth_key', 'guest');
-		$serial = $this->request->variable('serial', -1);
-		$hash = $this->request->variable('hash', '');
-
 		try {
-			$user_id = $this->auth_repository->auth($this->request->variable('controller', 'api/auth/verify'),
-				$auth_key, $serial, $hash);
+			$user_id = $this->auth_repository->auth();
 			if ($user_id == ANONYMOUS)
 			{
 				$response = array(
@@ -236,7 +239,7 @@ class phpbb_controller_api_auth
 				);
 			}
 		}
-		catch (phpbb_model_exception_api_exception $e)
+		catch (api_exception $e)
 		{
 			$response = array(
 				'status' => $e->getCode(),
