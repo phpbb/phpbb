@@ -1035,7 +1035,7 @@ CREATE TABLE phpbb_users (
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
 	user_website varchar(200) DEFAULT '' NOT NULL,
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
-	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
+	user_newpasswd varchar(255) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
 	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_reminded tinyint(4) DEFAULT '0' NOT NULL,

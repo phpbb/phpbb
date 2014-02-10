@@ -1859,7 +1859,7 @@ CREATE TABLE phpbb_users (
 	user_jabber varchar2(765) DEFAULT '' ,
 	user_website varchar2(600) DEFAULT '' ,
 	user_actkey varchar2(32) DEFAULT '' ,
-	user_newpasswd varchar2(120) DEFAULT '' ,
+	user_newpasswd varchar2(765) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
 	user_new number(1) DEFAULT '1' NOT NULL,
 	user_reminded number(4) DEFAULT '0' NOT NULL,
