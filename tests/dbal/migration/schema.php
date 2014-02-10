@@ -17,6 +17,14 @@ class phpbb_dbal_migration_schema extends \phpbb\db\migration\migration
 					'test_column1' => array('BOOL', 1),
 				),
 			),
+			'add_tables' => array(
+				$this->table_prefix . 'foobar' => array(
+					'COLUMNS' => array(
+						'module_id' => array('UINT:3', NULL, 'auto_increment'),
+					),
+					'PRIMARY_KEY'	=> 'module_id',
+				),
+			),
 		);
 	}
 
@@ -27,6 +35,9 @@ class phpbb_dbal_migration_schema extends \phpbb\db\migration\migration
 				$this->table_prefix . 'config' => array(
 					'test_column1',
 				),
+			),
+			'drop_tables'	=> array(
+				$this->table_prefix . 'foobar',
 			),
 		);
 	}

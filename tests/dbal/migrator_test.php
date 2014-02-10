@@ -280,6 +280,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		}
 
 		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
+		$this->assertTrue($this->db_tools->sql_table_exists('phpbb_foobar'));
 
 		while ($this->migrator->migration_state('phpbb_dbal_migration_schema'))
 		{
@@ -287,5 +288,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		}
 
 		$this->assertFalse($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
+		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar'));
 	}
 }

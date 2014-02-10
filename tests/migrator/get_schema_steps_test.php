@@ -21,7 +21,22 @@ class get_schema_steps_test extends phpbb_test_case
 		return array(
 			array(
 				array(
-					'add_tables'	=> array('table1', 'table2', 'table3'),
+					'add_tables'	=> array(
+						'foo'	=> array(
+							'COLUMNS'			=> array(
+								'foobar'			=> array('BOOL', 0),
+								'foobar2'			=> array('BOOL', 0),
+							),
+							'PRIMARY_KEY'		=> array('foobar'),
+						),
+						'bar'	=> array(
+							'COLUMNS'			=> array(
+								'barfoo'			=> array('BOOL', 0),
+								'barfoor2'			=> array('BOOL', 0),
+							),
+							'PRIMARY_KEY'		=> array('barfoo'),
+						),
+					),
 					'drop_tables'	=> array('table1', 'table2', 'table3'),
 					'add_index'	=> array(
 						'table1'	=> array(
@@ -73,9 +88,24 @@ class get_schema_steps_test extends phpbb_test_case
 					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table1')))),
 					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table2')))),
 					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table3')))),
-					array('dbtools.perform_schema_changes', array(array('add_tables'	=> array('table1')))),
-					array('dbtools.perform_schema_changes', array(array('add_tables'	=> array('table2')))),
-					array('dbtools.perform_schema_changes', array(array('add_tables'	=> array('table3')))),
+					array('dbtools.perform_schema_changes', array(array('add_tables'	=> array(
+						'foo'	=> array(
+							'COLUMNS'			=> array(
+								'foobar'			=> array('BOOL', 0),
+								'foobar2'			=> array('BOOL', 0),
+							),
+							'PRIMARY_KEY'		=> array('foobar'),
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('add_tables'	=> array(
+						'bar'	=> array(
+							'COLUMNS'			=> array(
+								'barfoo'			=> array('BOOL', 0),
+								'barfoor2'			=> array('BOOL', 0),
+							),
+							'PRIMARY_KEY'		=> array('barfoo'),
+						),
+					)))),
 					array('dbtools.perform_schema_changes', array(array('change_columns'	=> array(
 						'table1'	=> array(
 							'column1'	=> array('foo'),
