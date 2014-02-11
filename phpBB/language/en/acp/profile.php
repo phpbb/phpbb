@@ -100,6 +100,7 @@ $lang = array_merge($lang, array(
 	'FIELD_TEXT'				=> 'Textarea',
 	'FIELD_TYPE'				=> 'Field type',
 	'FIELD_TYPE_EXPLAIN'		=> 'You are not able to change the field type later.',
+	'FIELD_URL'					=> 'URL (Link)',
 	'FIELD_VALIDATION'			=> 'Field validation',
 	'FIRST_OPTION'				=> 'First option',
 
