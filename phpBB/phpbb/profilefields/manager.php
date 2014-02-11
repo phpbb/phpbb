@@ -255,6 +255,8 @@ class manager
 			$this->build_cache();
 		}
 
+		$tpl_fields = array();
+
 		// Go through the fields in correct order
 		foreach ($this->profile_cache as $field_ident => $field_data)
 		{
