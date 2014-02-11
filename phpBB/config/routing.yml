@@ -59,3 +59,9 @@ api_post_controller:
     defaults: { _controller: api.controller.post:new_post }
     requirements:
         _method: POST
+
+api_version_controller:
+    pattern: /api/version
+    defaults: { _controller: api.controller.version:version }
+    requirements:
+        _method: GET
