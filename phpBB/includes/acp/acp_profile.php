@@ -385,6 +385,7 @@ class acp_profile
 						'field_show_on_reg'	=> 0,
 						'field_show_on_pm'	=> 0,
 						'field_show_on_vt'	=> 0,
+						'field_show_on_ml'	=> 0,
 						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
 						'lang_explain'		=> '',
 						'lang_default_value'=> '')
@@ -395,7 +396,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_show_on_ml', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -407,6 +408,7 @@ class acp_profile
 					'field_show_on_reg',
 					'field_show_on_pm',
 					'field_show_on_vt',
+					'field_show_on_ml',
 					'field_show_profile',
 					'field_hide',
 				);
@@ -620,6 +622,7 @@ class acp_profile
 							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
 							'S_SHOW_ON_PM'		=> ($cp->vars['field_show_on_pm']) ? true : false,
 							'S_SHOW_ON_VT'		=> ($cp->vars['field_show_on_vt']) ? true : false,
+							'S_SHOW_ON_MEMBERLIST'=> ($cp->vars['field_show_on_ml']) ? true : false,
 							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
 							'S_SHOW_PROFILE'	=> ($cp->vars['field_show_profile']) ? true : false,
 							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
@@ -880,6 +883,7 @@ class acp_profile
 			'field_show_on_reg'		=> $cp->vars['field_show_on_reg'],
 			'field_show_on_pm'		=> $cp->vars['field_show_on_pm'],
 			'field_show_on_vt'		=> $cp->vars['field_show_on_vt'],
+			'field_show_on_ml'		=> $cp->vars['field_show_on_ml'],
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_show_profile'	=> $cp->vars['field_show_profile'],
 			'field_no_view'			=> $cp->vars['field_no_view']

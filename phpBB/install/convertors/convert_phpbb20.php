@@ -912,7 +912,6 @@ if (!$get_info)
 				array('user_yim',				'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
 				array('user_aim',				'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
 				array('user_icq',				'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
-				array('user_from',				'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 
@@ -963,6 +962,7 @@ if (!$get_info)
 				array('user_id',				'users.user_id',					'phpbb_user_id'),
 				array('pf_phpbb_occupation',	'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_interests',		'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_location',		'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 
 				'where'			=> 'users.user_id <> -1',
 			),

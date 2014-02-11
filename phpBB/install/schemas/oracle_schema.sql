@@ -1230,6 +1230,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
 	field_show_on_pm number(1) DEFAULT '0' NOT NULL,
 	field_show_on_vt number(1) DEFAULT '0' NOT NULL,
+	field_show_on_ml number(1) DEFAULT '0' NOT NULL,
 	field_show_profile number(1) DEFAULT '0' NOT NULL,
 	field_hide number(1) DEFAULT '0' NOT NULL,
 	field_no_view number(1) DEFAULT '0' NOT NULL,
@@ -1265,6 +1266,7 @@ END;
 */
 CREATE TABLE phpbb_profile_fields_data (
 	user_id number(8) DEFAULT '0' NOT NULL,
+	pf_phpbb_location varchar2(255) DEFAULT '' ,
 	pf_phpbb_interests clob DEFAULT '' ,
 	pf_phpbb_occupation clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_data PRIMARY KEY (user_id)
@@ -1851,7 +1853,6 @@ CREATE TABLE phpbb_users (
 	user_sig clob DEFAULT '' ,
 	user_sig_bbcode_uid varchar2(8) DEFAULT '' ,
 	user_sig_bbcode_bitfield varchar2(255) DEFAULT '' ,
-	user_from varchar2(300) DEFAULT '' ,
 	user_icq varchar2(15) DEFAULT '' ,
 	user_aim varchar2(765) DEFAULT '' ,
 	user_yim varchar2(765) DEFAULT '' ,

@@ -1367,7 +1367,6 @@ class acp_users
 					'yim'			=> request_var('yim', $user_row['user_yim']),
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
 					'website'		=> request_var('website', $user_row['user_website']),
-					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
@@ -1399,7 +1398,6 @@ class acp_users
 						'website'		=> array(
 							array('string', true, 12, 255),
 							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
-						'location'		=> array('string', true, 2, 100),
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
 						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
@@ -1427,7 +1425,6 @@ class acp_users
 							'user_yim'		=> $data['yim'],
 							'user_jabber'	=> $data['jabber'],
 							'user_website'	=> $data['website'],
-							'user_from'		=> $data['location'],
 							'user_birthday'	=> $data['user_birthday'],
 						);
 
@@ -1477,7 +1474,6 @@ class acp_users
 					'MSN'			=> $data['msn'],
 					'JABBER'		=> $data['jabber'],
 					'WEBSITE'		=> $data['website'],
-					'LOCATION'		=> $data['location'],
 
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
