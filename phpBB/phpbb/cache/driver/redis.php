@@ -157,4 +157,3 @@ class redis extends \phpbb\cache\driver\memory
 		return false;
 	}
 }
-
