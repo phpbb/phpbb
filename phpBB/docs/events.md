@@ -403,7 +403,7 @@ ucp_friend_list_before
 * Locations:
 	+ styles/prosilver/template/ucp_zebra_friends.html
 	+ styles/subsilver2/template/ucp_zebra_friends.html
-* Since: 3.1.0-a3
+* Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
 
 ucp_friend_list_after
@@ -411,7 +411,7 @@ ucp_friend_list_after
 * Locations:
 	+ styles/prosilver/template/ucp_zebra_friends.html
 	+ styles/subsilver2/template/ucp_zebra_friends.html
-* Since: 3.1.0-a3
+* Since: 3.1.0-a4
 * Purpose: Add optional elements after list of friends in UCP
 
 viewtopic_print_head_append
