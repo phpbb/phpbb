@@ -326,6 +326,7 @@ ucp_pm_viewmessage_print_head_append
 ===
 * Locations:
     + styles/prosilver/template/ucp_pm_viewmessage_print.html
+    + styles/subsilver2/template/ucp_pm_viewmessage_print.html
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
