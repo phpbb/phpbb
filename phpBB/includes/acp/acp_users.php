@@ -172,8 +172,7 @@ class acp_users
 
 				if ($submit)
 				{
-					// You can't delete the founder
-					if ($delete && $user_row['user_type'] != USER_FOUNDER)
+					if ($delete)
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
@@ -184,6 +183,12 @@ class acp_users
 						if ($user_id == ANONYMOUS)
 						{
 							trigger_error($user->lang['CANNOT_REMOVE_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
+
+						// Founders can not be deleted.
+						if ($user_row['user_type'] == USER_FOUNDER)
+						{
+							trigger_error($user->lang['CANNOT_REMOVE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						if ($user_id == $user->data['user_id'])
