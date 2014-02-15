@@ -21,8 +21,10 @@ if (!defined('IN_PHPBB'))
 function generate_smilies($mode, $forum_id)
 {
 	global $db, $user, $config, $template, $phpbb_dispatcher;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_container;
 
+	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
+	$pagination = $phpbb_container->get('pagination');
 	$start = request_var('start', 0);
 
 	if ($mode == 'window')
@@ -61,7 +63,8 @@ function generate_smilies($mode, $forum_id)
 			'body' => 'posting_smilies.html')
 		);
 
-		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);
+		$start = $pagination->validate_start($start, $config['smilies_per_page'], $smiley_count);
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $smiley_count, $config['smilies_per_page'], $start);
 	}
 
 	$display_link = false;
@@ -139,8 +142,8 @@ function generate_smilies($mode, $forum_id)
 	{
 		$template->assign_vars(array(
 			'S_SHOW_SMILEY_LINK' 	=> true,
-			'U_MORE_SMILIES' 		=> append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id))
-		);
+			'U_MORE_SMILIES' 		=> $base_url,
+		));
 	}
 
 	if ($mode == 'window')
