@@ -31,7 +31,7 @@ ul.topiclist dt, ul.topiclist dd {
 }
 
 ul.topiclist dt {
-	width: 100%;
+	width: 95%;
 	margin-right: -410px;
 	font-size: 1.1em;
 }
@@ -118,7 +118,7 @@ li.header dt, li.header dd {
 
 li.header dt {
 	font-weight: bold;
-	width: 100%;
+	width: 95%;
 	margin-right: -410px;
 }
 
@@ -163,7 +163,7 @@ dl.icon dt, dl.icon dd {
 }
 
 dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
-	width: 80px;
+	width: 100px;
 	text-align: center;
 	line-height: 2.2em;
 	font-size: 1.2em;
