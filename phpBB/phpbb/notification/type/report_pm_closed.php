@@ -114,7 +114,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function get_avatar()
 	{
-		return $this->get_user_avatar($this->get_data('closer_id'));
+		return $this->user_loader->get_avatar($this->get_data('closer_id'));
 	}
 
 	/**
