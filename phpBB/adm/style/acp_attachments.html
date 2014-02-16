@@ -394,8 +394,8 @@
 	<tr>
 		<th>{L_FILENAME}</th>
 		<th>{L_POSTED}</th>
-		<th>{L_FILESIZE}</th>
-		<th>{L_DELETE}</th>
+		<th class="centered-text">{L_FILESIZE}</th>
+		<th class="centered-text">{L_MARK}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -406,8 +406,8 @@
 				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
 			</td>
 			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
-			<td>{attachments.FILESIZE}</td>
-			<td><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
+			<td class="centered-text">{attachments.FILESIZE}</td>
+			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
 		</tr>
 	<!-- END attachments -->
 	<tr class="row4">

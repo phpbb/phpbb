@@ -102,6 +102,10 @@ hr {
 	height: 1px;
 }
 
+.centered-text {
+	text-align: center;
+}
+
 .small {
 	font-size: 0.85em;
 }
