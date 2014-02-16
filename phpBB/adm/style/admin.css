@@ -1361,6 +1361,10 @@ fieldset dt {
 	border-left: 1px solid #CCCCCC;
 }
 
+fieldset #color_palette_placeholder {
+	padding-top: 0;
+}
+
 fieldset dd {
 	margin: 0 0 0 45%;
 	padding: 0 0 0 5px;
@@ -1425,6 +1429,10 @@ input:focus, textarea:focus {
 		margin-right: 0;
 		float: none;
 		width: auto;
+	}
+
+	fieldset .responsive-columns dt {
+		float: left;
 	}
 
 	.ltr fieldset dd {
