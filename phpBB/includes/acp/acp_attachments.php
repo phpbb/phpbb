@@ -1105,9 +1105,26 @@ class acp_attachments
 					}
 				}
 
+				if ($action == 'stats')
+				{
+					$this->handle_stats_resync();
+				}
+
+				$stats_error = $this->check_stats_accuracy();
+
+				if ($stats_error)
+				{
+					$error[] = $stats_error;
+
+					// Show option to resync stats
+					$this->template->assign_vars(array(
+						'S_ACTION_OPTIONS'	=>	$auth->acl_get('a_board'),
+					));
+				}
+
 				$template->assign_vars(array(
-					'S_MANAGE'		=> true)
-				);
+					'S_MANAGE'		=> true,
+				));
 
 				$start		= request_var('start', 0);
 
@@ -1130,66 +1147,11 @@ class acp_attachments
 
 				$attachments_per_page = (int) $config['topics_per_page'];
 
-				// Handle files stats resync
-				$action = request_var('action', '');
-				$resync_files_stats = false;
-				if ($action && $action = 'stats')
-				{
-					if (!confirm_box(true))
-					{
-						confirm_box(false, $user->lang['RESYNC_FILES_STATS_CONFIRM'], build_hidden_fields(array(
-							'i'			=> $id,
-							'mode'		=> $mode,
-							'action'	=> $action,
-						)));
-					}
-					else
-					{
-						$resync_files_stats = true;
-						add_log('admin', 'LOG_RESYNC_FILES_STATS');
-					}
-				}
-
-				// Check if files stats are accurate
-				$sql = 'SELECT COUNT(attach_id) as num_files
-					FROM ' . ATTACHMENTS_TABLE . '
-					WHERE is_orphan = 0';
-				$result = $db->sql_query($sql, 600);
-				$num_files_real = (int) $db->sql_fetchfield('num_files');
-				if ($resync_files_stats === true)
-				{
-					set_config('num_files', $num_files_real, true);
-				}
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT SUM(filesize) as upload_dir_size
-					FROM ' . ATTACHMENTS_TABLE . '
-					WHERE is_orphan = 0';
-				$result = $db->sql_query($sql, 600);
-				$total_size_real = (float) $db->sql_fetchfield('upload_dir_size');
-				if ($resync_files_stats === true)
-				{
-					set_config('upload_dir_size', $total_size_real, true);
-				}
-				$db->sql_freeresult($result);
-
-				// Get current files stats
-				$num_files = (int) $config['num_files'];
-				$total_size = (float) $config['upload_dir_size'];
-
-				// Issue warning message if files stats are inaccurate
-				if (($num_files != $num_files_real) || ($total_size != $total_size_real))
-				{
-					$error[] = $user->lang('FILES_STATS_WRONG', (int) $num_files_real, get_formatted_filesize($total_size_real));
-
-					$template->assign_vars(array(
-						'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
-						'U_ACTION'			=> $this->u_action,)
-					);
-				}
+				$stats = $this->get_attachment_stats($limit_filetime);
+				$num_files = $stats['num_files'];
+				$total_size = $stats['upload_dir_size'];
 
 				// Make sure $start is set to the last page if it exceeds the amount
-
 				$pagination = $phpbb_container->get('pagination');
 				$start = $pagination->validate_start($start, $attachments_per_page, $num_files);
 
