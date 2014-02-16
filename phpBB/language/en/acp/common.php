@@ -242,7 +242,7 @@ $lang = array_merge($lang, array(
 	'EXPORT_STORE'			=> 'Store',
 
 	'FILES_GONE'			=> 'Some of the attachments you selected for deletion do not exist. They may have been already deleted. Attachments that did exist were deleted.',
-	'FILES_STATS_WRONG'		=> 'Your files statistics are probably inaccurate and need to be resynchronised. Actual values: number of attachments = %1$d, total size of attachments = %2$s.',
+	'FILES_STATS_WRONG'		=> 'Your file statistics are likely inaccurate and need to be resynchronised. Actual values: number of attachments = %1$d, total size of attachments = %2$s.',
 
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',
@@ -286,7 +286,7 @@ $lang = array_merge($lang, array(
 
 	'REMIND'							=> 'Remind',
 	'RESYNC'							=> 'Resynchronise',
-	'RESYNC_FILES_STATS'				=> 'Resynchronise files statistics',
+	'RESYNC_FILES_STATS'				=> 'Resynchronise file statistics',
 	'RESYNC_FILES_STATS_EXPLAIN'		=> 'Recalculates the total number and size of files attached to posts and private messages.',
 
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
@@ -388,7 +388,7 @@ $lang = array_merge($lang, array(
 	'RESET_ONLINE'					=> 'Reset most users ever online',
 	'RESET_ONLINE_CONFIRM'			=> 'Are you sure you wish to reset the most users ever online counter?',
 	'RESET_ONLINE_SUCCESS'				=> 'Most users ever online reset',
-	'RESYNC_FILES_STATS_CONFIRM'	=> 'Are you sure you wish to resynchronise files statistics?',
+	'RESYNC_FILES_STATS_CONFIRM'	=> 'Are you sure you wish to resynchronise file statistics?',
 	'RESYNC_POSTCOUNTS'				=> 'Resynchronise post counts',
 	'RESYNC_POSTCOUNTS_EXPLAIN'		=> 'Only existing posts will be taken into consideration. Pruned posts will not be counted.',
 	'RESYNC_POSTCOUNTS_CONFIRM'		=> 'Are you sure you wish to resynchronise post counts?',
@@ -696,7 +696,7 @@ $lang = array_merge($lang, array(
 	'LOG_REFERER_INVALID'		=> '<strong>Referer validation failed</strong><br />»Referer was “<em>%1$s</em>”. The request was rejected and the session killed.',
 	'LOG_RESET_DATE'			=> '<strong>Board start date reset</strong>',
 	'LOG_RESET_ONLINE'			=> '<strong>Most users online reset</strong>',
-	'LOG_RESYNC_FILES_STATS'	=> '<strong>Files statistics resynchronised</strong>',
+	'LOG_RESYNC_FILES_STATS'	=> '<strong>File statistics resynchronised</strong>',
 	'LOG_RESYNC_POSTCOUNTS'		=> '<strong>User post counts resynchronised</strong>',
 	'LOG_RESYNC_POST_MARKING'	=> '<strong>Dotted topics resynchronised</strong>',
 	'LOG_RESYNC_STATS'			=> '<strong>Post, topic and user statistics resynchronised</strong>',
