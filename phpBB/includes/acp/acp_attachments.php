@@ -20,13 +20,36 @@ if (!defined('IN_PHPBB'))
 */
 class acp_attachments
 {
-	var $u_action;
-	var $new_config;
+	/** @var \phpbb\db\driver\driver */
+	protected $db;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var ContainerBuilder */
+	protected $phpbb_container;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	public $id;
+	public $u_action;
+	protected $new_config;
 
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+
+		$this->id = $id;
+		$this->db = $db;
+		$this->config = $config;
+		$this->template = $template;
+		$this->user = $user;
+		$this->phpbb_container = $phpbb_container;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -1281,6 +1304,89 @@ class acp_attachments
 				'NOTIFY_MSG'	=> implode('<br />', $notify))
 			);
 		}
+	}
+
+	/**
+	* Get attachment file count and size of upload directory
+	*
+	* @param $limit string	Additional limit for WHERE clause to filter stats by.
+	* @return array Returns array with stats: num_files and upload_dir_size
+	*/
+	public function get_attachment_stats($limit = '')
+	{
+		$sql = 'SELECT COUNT(a.attach_id) AS num_files, SUM(a.filesize) AS upload_dir_size
+			FROM ' . ATTACHMENTS_TABLE . " a
+			WHERE a.is_orphan = 0
+				$limit";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return array(
+			'num_files'			=> (int) $row['num_files'],
+			'upload_dir_size'	=> (float) $row['upload_dir_size'],
+		);
+	}
+
+	/**
+	* Set config attachment stat values
+	*
+	* @param $stats array	Array of config key => value pairs to set.	
+	* @return null
+	*/
+	public function set_attachment_stats($stats)
+	{
+		foreach ($stats as $key => $value)
+		{
+			$this->config->set($key, $value, true);
+		}
+	}
+
+	/**
+	* Check accuracy of attachment statistics.
+	*
+	* @param $resync bool	Resync stats if they're incorrect.	
+	* @return bool|string	Returns false if stats are correct or error message
+	*	otherwise.
+	*/
+	public function check_stats_accuracy()
+	{
+		// Get fresh stats.
+		$stats = $this->get_attachment_stats();
+
+		// Get current files stats
+		$num_files = (int) $this->config['num_files'];
+		$total_size = (float) $this->config['upload_dir_size'];	
+
+		if (($num_files != $stats['num_files']) || ($total_size != $stats['upload_dir_size']))
+		{
+			return $this->user->lang('FILES_STATS_WRONG', (int) $stats['num_files'], get_formatted_filesize($stats['upload_dir_size']));
+		}
+		return false;
+	}
+
+	/**
+	* Handle stats resync.
+	*
+	* @return null
+	*/
+	public function handle_stats_resync()
+	{
+		if (!confirm_box(true))
+		{
+			confirm_box(false, $this->user->lang['RESYNC_FILES_STATS_CONFIRM'], build_hidden_fields(array(
+				'i'			=> $this->id,
+				'mode'		=> 'manage',
+				'action'	=> 'stats',
+			)));
+		}
+		else
+		{
+			$this->set_attachment_stats($this->get_attachment_stats());
+			$log = $this->phpbb_container->get('log');
+			$log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_RESYNC_FILES_STATS');
+		}
+
 	}
 
 	/**
