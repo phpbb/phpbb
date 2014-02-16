@@ -1671,10 +1671,10 @@ input.button1:focus, input.button2:focus {
 	width: auto;
 	text-align: right;
 	margin-top: 5px;
-	float: right;
 }
 
 .top-pagination {
+	float: right;
 	margin: 15px 0 2px 0;
 }
 
