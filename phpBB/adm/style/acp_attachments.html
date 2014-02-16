@@ -389,6 +389,7 @@
 	<!-- ENDIF -->
 	</div>
 
+<!-- IF .attachments -->
 	<table class="table1 zebra-table">
 	<thead>
 	<tr>
@@ -412,6 +413,11 @@
 	<!-- END attachments -->
 	</tbody>
 	</table>
+<!-- ELSE -->
+	<div class="errorbox">
+		<p>{L_NO_ATTACHMENTS}</p>
+	</div>
+<!-- ENDIF -->
 
 	<!-- IF TOTAL_FILES -->
 	<div class="pagination">
@@ -422,6 +428,7 @@
 			&bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
+	<!-- ENDIF -->
 
 	<fieldset class="display-options">
 		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
@@ -429,7 +436,6 @@
 	</fieldset>
 
 	<hr />
-	<!-- ENDIF -->
 
 <!-- IF .attachments -->
 	<fieldset class="quick">
