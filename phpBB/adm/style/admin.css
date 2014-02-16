@@ -1670,6 +1670,10 @@ input.button1:focus, input.button2:focus {
 	float: right;
 }
 
+.top-pagination {
+	margin: 15px 0 2px 0;
+}
+
 .rtl .pagination {
 	text-align: left;
 	float: left;
