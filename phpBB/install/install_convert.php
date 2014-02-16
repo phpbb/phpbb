@@ -79,6 +79,21 @@ class convert
 */
 class install_convert extends module
 {
+	/** @var array */
+	protected $lang;
+
+	/** @var string */
+	protected $language;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
+
 	/**
 	* Variables used while converting, they are accessible from the global variable $convert
 	*/
@@ -94,6 +109,16 @@ class install_convert extends module
 
 		$this->tpl_name = 'install_convert';
 		$this->mode = $mode;
+		$this->lang = $lang;
+		$this->language = $language;
+		$this->template = $template;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
+
+		if (!$this->check_phpbb_installed())
+		{
+			return;
+		}
 
 		$convert = new convert($this->p_master);
 
@@ -108,25 +133,6 @@ class install_convert extends module
 		switch ($sub)
 		{
 			case 'intro':
-				// Try opening config file
-				// @todo If phpBB is not installed, we need to do a cut-down installation here
-				// For now, we redirect to the installation script instead
-				if (@file_exists($phpbb_root_path . 'config.' . $phpEx))
-				{
-					include($phpbb_root_path . 'config.' . $phpEx);
-				}
-
-				if (!defined('PHPBB_INSTALLED'))
-				{
-					$template->assign_vars(array(
-						'S_NOT_INSTALLED'		=> true,
-						'TITLE'					=> $lang['BOARD_NOT_INSTALLED'],
-						'BODY'					=> sprintf($lang['BOARD_NOT_INSTALLED_EXPLAIN'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=install&amp;language=' . $language)),
-					));
-
-					return;
-				}
-
 				require($phpbb_root_path . 'config.' . $phpEx);
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
@@ -256,6 +262,30 @@ class install_convert extends module
 
 			break;
 		}
+	}
+
+	/**
+	* Check whether phpBB is installed.
+	* Assigns error template vars if not installed.
+	*
+	* @return bool Returns true if phpBB is installed.
+	*/
+	public function check_phpbb_installed()
+	{
+		if (phpbb_check_installation_exists($this->phpbb_root_path, $this->php_ext))
+		{
+			return true;
+		}
+
+		$this->page_title = 'BOARD_NOT_INSTALLED';
+		$install_url = append_sid($this->phpbb_root_path . 'install/index.' . $this->php_ext, 'mode=install&amp;language=' . $this->language);
+
+		$this->template->assign_vars(array(
+			'S_NOT_INSTALLED'		=> true,
+			'BODY'					=> sprintf($this->lang['BOARD_NOT_INSTALLED_EXPLAIN'], $install_url),
+		));
+
+		return false;
 	}
 
 	/**
