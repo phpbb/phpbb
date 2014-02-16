@@ -1045,6 +1045,14 @@ table.styles td.users, table td.mark {
 	table.responsive.styles td:first-child > dfn, table.responsive td.actions > dfn {
 		display: none !important;
 	}
+
+	.horizontal-palette td:nth-child(2n), .vertical-palette tr:nth-child(2n) {
+		display: none;
+	}
+
+	.colour-palette a {
+		display: inline-block !important;
+	}
 }
 
 /* General form styles
