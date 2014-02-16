@@ -410,21 +410,10 @@
 			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
 		</tr>
 	<!-- END attachments -->
-	<tr class="row4">
-		<td colspan="3">&nbsp;</td>
-		<td class="small"><a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a></td>
-	</tr>
 	</tbody>
 	</table>
 
 	<!-- IF TOTAL_FILES -->
-	<fieldset class="display-options">
-		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
-		<input class="button2" type="submit" value="{L_GO}" name="sort" />
-	</fieldset>
-
-	<hr />
-
 	<div class="pagination">
 		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
 		<!-- IF .pagination -->
@@ -433,12 +422,24 @@
 			&bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
+
+	<fieldset class="display-options">
+		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+
+	<hr />
 	<!-- ENDIF -->
 
-	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-	</p>
+<!-- IF .attachments -->
+	<fieldset class="quick">
+		<input class="button2" type="submit" name="submit" value="{L_DELETE_MARKED}" /><br />
+		<p class="small">
+			<a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> &bull;
+			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>		
+		</p>
+	</fieldset>
+<!-- ENDIF -->
 	{S_FORM_TOKEN}
 	</fieldset>
 	</form>
