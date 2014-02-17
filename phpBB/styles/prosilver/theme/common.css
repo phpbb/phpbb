@@ -747,7 +747,6 @@ dl.details dd {
 }
 
 .clearfix, fieldset dl, ul.topiclist dl, dl.polls {
-	height: 1%;
 	overflow: hidden;
 }
 
@@ -755,7 +754,6 @@ dl.details dd {
 /* Pagination
 ---------------------------------------- */
 .pagination {
-	height: 1%; /* IE tweak (holly hack) */
 	width: auto;
 	text-align: right;
 	margin-top: 5px;
