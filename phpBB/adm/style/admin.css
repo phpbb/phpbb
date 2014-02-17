@@ -1860,7 +1860,6 @@ li.pagination ul {
 }*/
 
 .clearfix, .row, #content, fieldset dl, #page-body {
-	height: 1%;
 	overflow: hidden;
 }
 
