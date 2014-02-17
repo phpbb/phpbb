@@ -230,6 +230,9 @@ phpbb.plupload.updateHiddenData = function(row, attach, index) {
 phpbb.plupload.deleteFile = function(row, attachId) {
 	// If there's no attach id, then the file hasn't been uploaded. Simply delete the row.
 	if (typeof attachId === 'undefined') {
+		var file = uploader.getFile(row.attr('id'));
+		uploader.removeFile(file);
+
 		row.slideUp(100, function() {
 			row.remove();
 			phpbb.plupload.hideEmptyList();
