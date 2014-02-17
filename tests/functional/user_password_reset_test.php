@@ -54,17 +54,17 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	public function data_activate_new_password()
 	{
 		return array(
-			array('WRONG_ACTIVATION', false, 'FOOBAR', false),
-			array('ALREADY_ACTIVATED', 2, 'FOOBAR', false),
-			array('PASSWORD_ACTIVATED', false, false, true),
-			array('ALREADY_ACTIVATED', false, false, false),
+			array('WRONG_ACTIVATION', false, 'FOOBAR'),
+			array('ALREADY_ACTIVATED', 2, 'FOOBAR'),
+			array('PASSWORD_ACTIVATED', false, false),
+			array('ALREADY_ACTIVATED', false, false),
 		);
 	}
 
 	/**
 	* @dataProvider data_activate_new_password
 	*/
-	public function test_activate_new_password($expected, $user_id, $act_key, $login_with_newpasswd)
+	public function test_activate_new_password($expected, $user_id, $act_key)
 	{
 		$this->add_lang('ucp');
 		$this->get_user_data();
@@ -73,17 +73,38 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 		$crawler = self::request('GET', "ucp.php?mode=activate&u=$user_id&k=$act_key&sid={$this->sid}");
 		$this->assertContainsLang($expected, $crawler->text());
+	}
 
-		// Can't use login method here
-		if ($login_with_newpasswd)
+	public function test_login()
+	{
+		$this->add_lang('ucp');
+		$crawler = self::request('GET', 'ucp.php');
+		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+		$crawler = self::submit($form, array('username' => 'reset-password-test-user', 'password' => 'reset-password-test-user'));
+		$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
+
+		$cookies = self::$cookieJar->all();
+
+		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+		foreach ($cookies as $cookie);
 		{
-			$crawler = self::request('GET', 'ucp.php');
-			$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
-
-			$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-			$crawler = self::submit($form, array('username' => 'reset-password-test-user', 'password' => 'reset-password-test-user'));
-			$this->assertNotContains($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
+			if (substr($cookie->getName(), -4) == '_sid')
+			{
+				$this->sid = $cookie->getValue();
+			}
 		}
+
+		$this->logout();
+
+		$crawler = self::request('GET', 'ucp.php');
+		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+		// Try logging in with the old password
+		$crawler = self::submit($form, array('username' => 'reset-password-test-user', 'password' => 'reset-password-test-userreset-password-test-user'));
+		$this->assertContains($this->lang('LOGIN_ERROR_PASSWORD', '', ''), $crawler->filter('html')->text());
 	}
 
 	protected function get_user_data()
