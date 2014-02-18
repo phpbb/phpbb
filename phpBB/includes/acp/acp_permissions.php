@@ -917,7 +917,7 @@ class acp_permissions
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . $user->lang['G_' . $row['name']] . '</span>' : $row['name']);
+			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . get_translated_groupname($row['name'], 'sep');
 		}
 		$db->sql_freeresult($result);
 
@@ -1013,7 +1013,7 @@ class acp_permissions
 		{
 			$groups[$row['group_id']] = array(
 				'auth_setting'		=> ACL_NO,
-				'group_name'		=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']
+				'group_name'		=> get_translated_groupname($group_row['group_name']),
 			);
 		}
 		$db->sql_freeresult($result);
@@ -1296,7 +1296,7 @@ class acp_permissions
 		$defined_group_ids = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (get_translated_groupname($row['group_name'])) . '</option>';
 			$defined_group_ids[] = $row['group_id'];
 		}
 		$db->sql_freeresult($result);
