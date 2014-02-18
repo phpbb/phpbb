@@ -251,7 +251,7 @@ class pagination
 	{
 		if ($start < 0 || $start >= $num_items)
 		{
-			return ($start < 0) ? 0 : floor(($num_items - 1) / $per_page) * $per_page;
+			return ($start < 0 || $num_items <= 0) ? 0 : floor(($num_items - 1) / $per_page) * $per_page;
 		}
 
 		return $start;
