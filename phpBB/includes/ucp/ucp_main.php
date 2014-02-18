@@ -671,7 +671,6 @@ class ucp_main
 			$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
 
 			$template->assign_vars(array(
-				'PAGE_NUMBER'	=> $pagination->on_page($this->u_action, $topics_count, $config['topics_per_page'], $start),
 				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
 			));
 		}

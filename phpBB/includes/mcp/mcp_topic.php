@@ -343,7 +343,6 @@ function mcp_topic_view($id, $mode, $action)
 		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
 		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
-		'PAGE_NUMBER'		=> $pagination->on_page($base_url, $total, $posts_per_page, $start),
 		'TOTAL_POSTS'		=> $user->lang('VIEW_TOPIC_POSTS', (int) $total),
 	));
 }

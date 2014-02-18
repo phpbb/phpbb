@@ -38,6 +38,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				10,
 				10,
 				'pagination
+				:per_page:10
+				:current_page:2
+				:base_url:page.php
 				:previous::page.php
 				:else:1:page.php
 				:current:2:page.php?start=10
@@ -57,6 +60,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				10,
 				20,
 				'pagination
+				:per_page:10
+				:current_page:3
+				:base_url:page.php
 				:previous::page.php?start=10
 				:else:1:page.php
 				:else:2:page.php?start=10
@@ -77,6 +83,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				10,
 				10,
 				'pagination
+				:per_page:10
+				:current_page:2
+				:base_url:test/page/%d
 				:previous::test
 				:else:1:test
 				:current:2:test/page/2
@@ -96,6 +105,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				10,
 				20,
 				'pagination
+				:per_page:10
+				:current_page:3
+				:base_url:test/page/%d
 				:previous::test/page/2
 				:else:1:test
 				:else:2:test/page/2
@@ -127,15 +139,10 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	{
 		return array(
 			array(
-				'page.php',
 				10,
 				10,
 				0,
 				'PAGE_OF-1-1',
-				'on_page
-				per_page:10
-				on_page:1
-				base_url:page.php',
 			),
 		);
 	}
@@ -143,13 +150,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	/**
 	* @dataProvider on_page_data
 	*/
-	public function test_on_page($base_url, $num_items, $per_page, $start_item, $expect_return, $expect)
+	public function test_on_page($num_items, $per_page, $start_item, $expect_return)
 	{
-		$this->assertEquals($expect_return, $this->pagination->on_page($base_url, $num_items, $per_page, $start_item));
-
-		$this->template->set_filenames(array('test' => 'on_page.html'));
-
-		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
+		$this->assertEquals($expect_return, $this->pagination->on_page($num_items, $per_page, $start_item));
 	}
 
 	public function validate_start_data()

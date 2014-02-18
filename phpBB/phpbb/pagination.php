@@ -76,107 +76,104 @@ class pagination
 	public function generate_template_pagination($base_url, $block_var_name, $start_name, $num_items, $per_page, $start = 1, $reverse_count = false, $ignore_on_page = false)
 	{
 		$total_pages = ceil($num_items / $per_page);
-
-		if ($total_pages == 1 || !$num_items)
-		{
-			return;
-		}
-
 		$on_page = $this->get_on_page($per_page, $start);
-
-		if ($reverse_count)
-		{
-			$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
-			$end_page = $total_pages;
-		}
-		else
-		{
-			// What we're doing here is calculating what the "start" and "end" pages should be. We
-			// do this by assuming pagination is "centered" around the currently active page with
-			// the three previous and three next page links displayed. Anything more than that and
-			// we display the ellipsis, likewise anything less.
-			//
-			// $start_page is the page at which we start creating the list. When we have five or less
-			// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
-			// and we calculate the start based on the active page. This is the min/max calculation.
-			// First (max) would we end up starting on a page less than 1? Next (min) would we end
-			// up starting so close to the end that we'd not display our minimum number of pages.
-			//
-			// $end_page is the last page in the list to display. Like $start_page we use a min/max to
-			// determine this number. Again at most five pages? Then just display them all. More than
-			// five and we first (min) determine whether we'd end up listing more pages than exist.
-			// We then (max) ensure we're displaying the minimum number of pages.
-			$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
-			$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
-		}
-
 		$u_previous_page = $u_next_page = '';
-		if ($on_page != 1)
+
+		if ($total_pages > 1)
 		{
-			$u_previous_page = $this->generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
-
-			$this->template->assign_block_vars($block_var_name, array(
-				'PAGE_NUMBER'	=> '',
-				'PAGE_URL'		=> $u_previous_page,
-				'S_IS_CURRENT'	=> false,
-				'S_IS_PREV'		=> true,
-				'S_IS_NEXT'		=> false,
-				'S_IS_ELLIPSIS'	=> false,
-			));
-		}
-
-		// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
-		// to display the first and last page in the list plus any ellipsis. We use this loop to jump
-		// around a little within the list depending on where we're starting (and ending).
-		$at_page = 1;
-		do
-		{
-			// We decide whether to display the ellipsis during the loop. The ellipsis is always
-			// displayed as either the second or penultimate item in the list. So are we at either
-			// of those points and of course do we even need to display it, i.e. is the list starting
-			// on at least page 3 and ending three pages before the final item.
-			$this->template->assign_block_vars($block_var_name, array(
-				'PAGE_NUMBER'	=> $at_page,
-				'PAGE_URL'		=> $this->generate_page_link($base_url, $at_page, $start_name, $per_page),
-				'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
-				'S_IS_NEXT'		=> false,
-				'S_IS_PREV'		=> false,
-				'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
-			));
-
-			// We may need to jump around in the list depending on whether we have or need to display
-			// the ellipsis. Are we on page 2 and are we more than one page away from the start
-			// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
-			// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
-			// page (so we can display the ellipsis next pass). Else, increment the counter and keep
-			// going
-			if ($at_page == 2 && $at_page < $start_page - 1)
+			if ($reverse_count)
 			{
-				$at_page = $start_page;
-			}
-			else if ($at_page == $end_page && $end_page < $total_pages - 1)
-			{
-				$at_page = $total_pages - 1;
+				$start_page = ($total_pages > 5) ? $total_pages - 4 : 1;
+				$end_page = $total_pages;
 			}
 			else
 			{
-				$at_page++;
+				// What we're doing here is calculating what the "start" and "end" pages should be. We
+				// do this by assuming pagination is "centered" around the currently active page with
+				// the three previous and three next page links displayed. Anything more than that and
+				// we display the ellipsis, likewise anything less.
+				//
+				// $start_page is the page at which we start creating the list. When we have five or less
+				// pages we start at page 1 since there will be no ellipsis displayed. Anymore than that
+				// and we calculate the start based on the active page. This is the min/max calculation.
+				// First (max) would we end up starting on a page less than 1? Next (min) would we end
+				// up starting so close to the end that we'd not display our minimum number of pages.
+				//
+				// $end_page is the last page in the list to display. Like $start_page we use a min/max to
+				// determine this number. Again at most five pages? Then just display them all. More than
+				// five and we first (min) determine whether we'd end up listing more pages than exist.
+				// We then (max) ensure we're displaying the minimum number of pages.
+				$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
+				$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 			}
-		}
-		while ($at_page <= $total_pages);
 
-		if ($on_page != $total_pages)
-		{
-			$u_next_page = $this->generate_page_link($base_url, $on_page + 1, $start_name, $per_page);
+			if ($on_page != 1)
+			{
+				$u_previous_page = $this->generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
 
-			$this->template->assign_block_vars($block_var_name, array(
-				'PAGE_NUMBER'	=> '',
-				'PAGE_URL'		=> $u_next_page,
-				'S_IS_CURRENT'	=> false,
-				'S_IS_PREV'		=> false,
-				'S_IS_NEXT'		=> true,
-				'S_IS_ELLIPSIS'	=> false,
-			));
+				$this->template->assign_block_vars($block_var_name, array(
+					'PAGE_NUMBER'	=> '',
+					'PAGE_URL'		=> $u_previous_page,
+					'S_IS_CURRENT'	=> false,
+					'S_IS_PREV'		=> true,
+					'S_IS_NEXT'		=> false,
+					'S_IS_ELLIPSIS'	=> false,
+				));
+			}
+
+			// This do...while exists purely to negate the need for start and end assign_block_vars, i.e.
+			// to display the first and last page in the list plus any ellipsis. We use this loop to jump
+			// around a little within the list depending on where we're starting (and ending).
+			$at_page = 1;
+			do
+			{
+				// We decide whether to display the ellipsis during the loop. The ellipsis is always
+				// displayed as either the second or penultimate item in the list. So are we at either
+				// of those points and of course do we even need to display it, i.e. is the list starting
+				// on at least page 3 and ending three pages before the final item.
+				$this->template->assign_block_vars($block_var_name, array(
+					'PAGE_NUMBER'	=> $at_page,
+					'PAGE_URL'		=> $this->generate_page_link($base_url, $at_page, $start_name, $per_page),
+					'S_IS_CURRENT'	=> (!$ignore_on_page && $at_page == $on_page),
+					'S_IS_NEXT'		=> false,
+					'S_IS_PREV'		=> false,
+					'S_IS_ELLIPSIS'	=> ($at_page == 2 && $start_page > 2) || ($at_page == $total_pages - 1 && $end_page < $total_pages - 1),
+				));
+
+				// We may need to jump around in the list depending on whether we have or need to display
+				// the ellipsis. Are we on page 2 and are we more than one page away from the start
+				// of the list? Yes? Then we jump to the start of the list. Likewise are we at the end of
+				// the list and are there more than two pages left in total? Yes? Then jump to the penultimate
+				// page (so we can display the ellipsis next pass). Else, increment the counter and keep
+				// going
+				if ($at_page == 2 && $at_page < $start_page - 1)
+				{
+					$at_page = $start_page;
+				}
+				else if ($at_page == $end_page && $end_page < $total_pages - 1)
+				{
+					$at_page = $total_pages - 1;
+				}
+				else
+				{
+					$at_page++;
+				}
+			}
+			while ($at_page <= $total_pages);
+
+			if ($on_page != $total_pages)
+			{
+				$u_next_page = $this->generate_page_link($base_url, $on_page + 1, $start_name, $per_page);
+
+				$this->template->assign_block_vars($block_var_name, array(
+					'PAGE_NUMBER'	=> '',
+					'PAGE_URL'		=> $u_next_page,
+					'S_IS_CURRENT'	=> false,
+					'S_IS_PREV'		=> false,
+					'S_IS_NEXT'		=> true,
+					'S_IS_ELLIPSIS'	=> false,
+				));
+			}
 		}
 
 		// If the block_var_name is a nested block, we will use the last (most
@@ -203,6 +200,7 @@ class pagination
 			'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
 			$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
 			$tpl_prefix . 'CURRENT_PAGE'	=> $on_page,
+			$tpl_prefix . 'PAGE_NUMBER'		=> $this->on_page($num_items, $per_page, $start),
 		);
 
 		if ($tpl_block_name)
@@ -229,24 +227,15 @@ class pagination
 
 	/**
 	* Return current page
-	* This function also sets certain specific template variables
 	*
-	* @param string $base_url the base url used to call this page, used by Javascript for popup jump to page
 	* @param int $num_items the total number of items, posts, topics, etc.
 	* @param int $per_page the number of items, posts, etc. per page
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
 	* @return string Descriptive pagination string (e.g. "page 1 of 10")
 	*/
-	public function on_page($base_url, $num_items, $per_page, $start)
+	public function on_page($num_items, $per_page, $start)
 	{
 		$on_page = $this->get_on_page($per_page, $start);
-
-		$this->template->assign_vars(array(
-			'PER_PAGE'		=> $per_page,
-			'ON_PAGE'		=> $on_page,
-			'BASE_URL'		=> $base_url,
-		));
-
 		return $this->user->lang('PAGE_OF', $on_page, max(ceil($num_items / $per_page), 1));
 	}
 
