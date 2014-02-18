@@ -107,7 +107,6 @@ class pagination
 				$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
 			}
 
-			$u_previous_page = $u_next_page = '';
 			if ($on_page != 1)
 			{
 				$u_previous_page = $this->generate_page_link($base_url, $on_page - 1, $start_name, $per_page);
