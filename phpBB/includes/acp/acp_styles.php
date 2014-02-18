@@ -1164,7 +1164,7 @@ class acp_styles
 		{
 			$style_count[$row['user_style']] = $row['style_count'];
 		}
-		$this->db->sql_freeresult($result);
+		$this->db->sql_freeresult($result); 
 
 		return $style_count;
 	}
