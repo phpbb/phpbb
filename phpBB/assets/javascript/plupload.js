@@ -162,7 +162,7 @@ phpbb.plupload.insertRow = function(file) {
 	var row = $(phpbb.plupload.rowTpl);
 
 	row.attr('id', file.id);
-	row.find('.file-name').html(file.name);
+	row.find('.file-name').html(plupload.xmlEncode(file.name));
 	row.find('.file-size').html(plupload.formatSize(file.size));
 
 	if (phpbb.plupload.order == 'desc') {
@@ -496,6 +496,8 @@ $('#file-list').on('click', '.file-error', function(e) {
  * Fires when an error occurs.
  */
 uploader.bind('Error', function(up, error) {
+	error.file.name = plupload.xmlEncode(error.file.name);
+
 	// The error message that Plupload provides for these is vague, so we'll be more specific.
 	if (error.code === plupload.FILE_EXTENSION_ERROR) {
 		error.message = plupload.translate('Invalid file extension:') + ' ' + error.file.name;
