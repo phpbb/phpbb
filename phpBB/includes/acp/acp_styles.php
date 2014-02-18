@@ -577,7 +577,21 @@ class acp_styles
 		// Add users counter to rows
 		foreach ($styles as &$style)
 		{
-			$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
+			if($this->config['override_user_style'])
+			{
+				if($style['style_id'] == $this->config['default_style'])
+				{
+					$style['_users'] = array_sum($users);
+				}
+				else
+				{
+					$style['_users'] = 0;
+				}
+			}
+			else
+			{
+				$style['_users'] = isset($users[$style['style_id']]) ? $users[$style['style_id']] : 0;
+			}
 		}
 
 		// Set up styles list variables
