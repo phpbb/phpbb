@@ -288,7 +288,7 @@ function mozWrap(txtarea, open, close) {
 * http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
 */
 function storeCaret(textEl) {
-	if (textEl.createTextRange) {
+	if (textEl.createTextRange && document.selection) {
 		textEl.caretPos = document.selection.createRange().duplicate();
 	}
 }
