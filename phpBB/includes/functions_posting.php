@@ -1479,6 +1479,22 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 {
 	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
 
+	/**
+	* Modify the data for post submitting
+	*
+	* @event core.modify_submit_post_data
+	* @var	string	mode				Variable containing posting mode value
+	* @var	string	subject				Variable containing post subject value
+	* @var	string	username			Variable containing post author name
+	* @var	int		topic_type			Variable containing topic type value
+	* @var	array	poll				Array with the poll data for the post
+	* @var	array	data				Array with the data for the post
+	* @var	bool	update_message		Flag indicating if the post will be updated
+	* @var	bool	update_search_index	Flag indicating if the search index will be updated
+	* @since 3.1.0-a4
+	*/
+	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact(array('mode', 'subject', 'username', 'topic_type', 'poll', 'data', 'update_message', 'update_search_index'))));
+
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
 	{
