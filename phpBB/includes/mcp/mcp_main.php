@@ -34,6 +34,7 @@ class mcp_main
 	{
 		global $auth, $db, $user, $template, $action;
 		global $config, $phpbb_root_path, $phpEx, $request;
+		global $phpbb_dispatcher;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
@@ -150,6 +151,16 @@ class mcp_main
 				}
 
 				mcp_restore_topic($topic_ids);
+			break;
+
+			default:
+				/**
+				* This event allows you to handle custom quickmod options
+				*
+				* @event core.modify_quickmod_actions
+				* @since 3.1.0-a4
+				*/
+				$phpbb_dispatcher->dispatch('core.modify_quickmod_actions');
 			break;
 		}
 
