@@ -34,6 +34,11 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$crawler = self::submit($form);
 		$this->assertContainsLang('PASSWORD_UPDATED', $crawler->text());
 
+		// Check if columns in database were updated for password reset
+		$this->get_user_data();
+		$this->assertNotNull($this->user_data['user_actkey']);
+		$this->assertNotNull($this->user_data['user_newpasswd']);
+
 		// Make sure we know the password
 		$db = $this->get_db();
 		$this->passwords_manager = $this->get_passwords_manager();
@@ -45,9 +50,6 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 	public function test_login_after_reset()
 	{
-		$this->get_user_data();
-		$this->assertNotNull($this->user_data['user_actkey']);
-		$this->assertNotNull($this->user_data['user_newpasswd']);
 		$this->login('reset-password-test-user');
 	}
 
