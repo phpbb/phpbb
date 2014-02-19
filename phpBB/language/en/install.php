@@ -490,6 +490,7 @@ $lang = array_merge($lang, array(
 	'PREVIOUS_VERSION'					=> 'Previous version',
 	'PROGRESS'							=> 'Progress',
 
+	'RELEASE_ANNOUNCEMENT'		=> 'Announcement',
 	'RESULT'					=> 'Result',
 	'RUN_DATABASE_SCRIPT'		=> 'Update my database now',
 
@@ -532,7 +533,7 @@ $lang = array_merge($lang, array(
 
 		<h1>Release announcement</h1>
 
-		<p>Please read <a href="%1$s" title="%1$s"><strong>the release announcement for the latest version</strong></a> before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
+		<p>Please read the release announcement for the latest version before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
 
 		<br />
 
@@ -547,16 +548,10 @@ $lang = array_merge($lang, array(
 		</ul>
 
 		<p>Once uploaded your board will be offline for normal users due to the install directory you uploaded now present.<br /><br />
-		<strong><a href="%2$s" title="%2$s">Now start the update process by pointing your browser to the install folder</a>.</strong><br />
+		<strong><a href="%1$s" title="%1$s">Now start the update process by pointing your browser to the install folder</a>.</strong><br />
 		<br />
 		You will then be guided through the update process. You will be notified once the update is complete.
 		</p>
-	',
-	'UPDATE_INSTRUCTIONS_INCOMPLETE'	=> '
-
-		<h1>Incomplete update detected</h1>
-
-		<p>phpBB detected an incomplete automatic update. Please make sure you followed every step within the automatic update tool. Below you will find the link again, or go directly to your install directory.</p>
 	',
 	'UPDATE_METHOD'					=> 'Update method',
 	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
@@ -567,7 +562,6 @@ $lang = array_merge($lang, array(
 	'UPDATING_DATA'					=> 'Updating data',
 	'UPDATING_TO_LATEST_STABLE'		=> 'Updating database to latest stable release',
 	'UPDATED_VERSION'				=> 'Updated version',
-	'UPGRADE_INSTRUCTIONS'			=> 'A new feature release <strong>%1$s</strong> is available. Please read <a href="%2$s" title="%2$s"><strong>the release announcement</strong></a> to learn about what it has to offer, and how to upgrade.',
 	'UPLOAD_METHOD'					=> 'Upload method',
 
 	'UPDATE_DB_SUCCESS'				=> 'Database update was successful.',

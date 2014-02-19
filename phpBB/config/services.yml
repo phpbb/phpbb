@@ -315,3 +315,10 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.users%
+
+    version_helper:
+        class: phpbb\version_helper
+        arguments:
+            - @cache
+            - @config
+            - @user

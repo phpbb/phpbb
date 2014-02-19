@@ -2925,72 +2925,6 @@ function get_database_size()
 }
 
 /**
-* Retrieve contents from remotely stored file
-*/
-function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
-{
-	global $user;
-
-	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
-	{
-		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
-		@fputs($fsock, "HOST: $host\r\n");
-		@fputs($fsock, "Connection: close\r\n\r\n");
-
-		$timer_stop = time() + $timeout;
-		stream_set_timeout($fsock, $timeout);
-
-		$file_info = '';
-		$get_info = false;
-
-		while (!@feof($fsock))
-		{
-			if ($get_info)
-			{
-				$file_info .= @fread($fsock, 1024);
-			}
-			else
-			{
-				$line = @fgets($fsock, 1024);
-				if ($line == "\r\n")
-				{
-					$get_info = true;
-				}
-				else if (stripos($line, '404 not found') !== false)
-				{
-					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
-					return false;
-				}
-			}
-
-			$stream_meta_data = stream_get_meta_data($fsock);
-
-			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
-			{
-				$errstr = $user->lang['FSOCK_TIMEOUT'];
-				return false;
-			}
-		}
-		@fclose($fsock);
-	}
-	else
-	{
-		if ($errstr)
-		{
-			$errstr = utf8_convert_message($errstr);
-			return false;
-		}
-		else
-		{
-			$errstr = $user->lang['FSOCK_DISABLED'];
-			return false;
-		}
-	}
-
-	return $file_info;
-}
-
-/**
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
 * The duration of a warning can be defined by the administrator
@@ -3097,45 +3031,6 @@ function add_permission_language()
 			$user->add_lang_ext($ext_name, $lang_file);
 		}
 	}
-}
-
-/**
- * Obtains the latest version information
- *
- * @param bool $force_update Ignores cached data. Defaults to false.
- * @param bool $warn_fail Trigger a warning if obtaining the latest version information fails. Defaults to false.
- * @param int $ttl Cache version information for $ttl seconds. Defaults to 86400 (24 hours).
- *
- * @return string | false Version info on success, false on failure.
- */
-function obtain_latest_version_info($force_update = false, $warn_fail = false, $ttl = 86400)
-{
-	global $cache;
-
-	$info = $cache->get('versioncheck');
-
-	if ($info === false || $force_update)
-	{
-		$errstr = '';
-		$errno = 0;
-
-		$info = get_remote_file('version.phpbb.com', '/phpbb',
-				((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
-
-		if (empty($info))
-		{
-			$cache->destroy('versioncheck');
-			if ($warn_fail)
-			{
-				trigger_error($errstr, E_USER_WARNING);
-			}
-			return false;
-		}
-
-		$cache->put('versioncheck', $info, $ttl);
-	}
-
-	return $info;
 }
 
 /**
