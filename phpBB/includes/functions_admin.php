@@ -3119,8 +3119,7 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 		$errstr = '';
 		$errno = 0;
 
-		$info = get_remote_file('version.phpbb.com', '/phpbb',
-				((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
+		$info = get_remote_file('version.phpbb.com', '/phpbb', 'versions.json', $errstr, $errno);
 
 		if (empty($info))
 		{
@@ -3132,10 +3131,15 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 			return false;
 		}
 
-		$cache->put('versioncheck', $info, $ttl);
+		$cache->put('versioncheck', json_decode($info), $ttl);
 	}
 
-	return $info;
+	$version = (defined('PHPBB_QA')) ? '30x_qa' : '30x';
+
+	return array(
+		$info[$version]['current'],
+		$info[$version]['announcement'],
+	);
 }
 
 /**

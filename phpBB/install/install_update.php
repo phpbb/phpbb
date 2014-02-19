@@ -1609,13 +1609,18 @@ class install_update extends module
 			case 'version_info':
 				global $phpbb_root_path, $phpEx;
 
-				$info = get_remote_file('version.phpbb.com', '/phpbb',
-						((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
+				$info = get_remote_file('version.phpbb.com', '/phpbb', 'versions.json', $errstr, $errno);
 
 				if ($info !== false)
 				{
-					$info = explode("\n", $info);
-					$info = trim($info[0]);
+					$info = json_decode($info);
+
+					$version = (defined('PHPBB_QA')) ? '30x_qa' : '30x';
+
+					$info = array(
+						$info[$version]['current'],
+						$info[$version]['announcement'],
+					);
 				}
 
 				if ($this->test_update !== false)
