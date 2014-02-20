@@ -9,7 +9,7 @@ set -e
 
 if [ "$#" -ne 1 ];
 then
-	echo "Expected one argument (commit range, e.g. eef1b586...1666476b)."
+	echo "Expected one argument (commit range, e.g. phpbb/develop..ticket/12345)."
 	exit
 fi
 
