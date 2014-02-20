@@ -20,6 +20,8 @@ COMMIT_RANGE="$1"
 
 for COMMIT_HASH in $(git rev-list --no-merges "$COMMIT_RANGE")
 do
+	echo "Inspecting commit message of commit $COMMIT_HASH"
+
 	# The git commit-msg hook takes a path to a file containing a commit
 	# message. So we have to extract the commit message into a file first,
 	# which then also needs to be deleted after our work is done.
