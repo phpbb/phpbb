@@ -107,12 +107,12 @@
 		{S_HIDDEN_FIELDS}
 	</div>
 
-
 	</form>
 	<hr />
 <!-- ENDIF -->
 
 <!-- BEGIN postrow -->
+	<!-- EVENT viewtopic_body_postrow_post_before -->
 	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF -->
 	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> online<!-- ENDIF -->">
 		<div class="inner">
@@ -271,6 +271,7 @@
 	</div>
 
 	<hr class="divider" />
+	<!-- EVENT viewtopic_body_postrow_post_after -->
 <!-- END postrow -->
 <!-- IF S_QUICK_REPLY -->
 	<!-- INCLUDE quickreply_editor.html -->
@@ -292,6 +293,7 @@
 	<hr />
 <!-- ENDIF -->
 
+<!-- EVENT viewtopic_body_topic_actions_before -->
 <div class="topic-actions">
 	<div class="buttons">
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
