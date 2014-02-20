@@ -484,6 +484,30 @@ viewtopic_body_postrow_custom_fields_before
 * Purpose: Add data before the custom fields on the user profile when viewing
 a post
 
+viewtopic_body_postrow_post_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-a4
+* Purpose: Add data after posts
+
+viewtopic_body_postrow_post_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-a4
+* Purpose: Add data before posts
+
+viewtopic_body_topic_actions_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-a4
+* Purpose: Add data before the topic actions buttons (after the posts sorting options)
+
 viewtopic_topic_title_prepend
 ===
 * Locations:
