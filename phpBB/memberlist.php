@@ -992,7 +992,6 @@ switch ($mode)
 	
 	case 'livesearch':
 		$username_chars = $request->variable('q', '', true);
-		$hint = "";
 		
 		$sql = 'SELECT username, user_id
 			FROM ' . USERS_TABLE . '
@@ -1000,17 +999,17 @@ switch ($mode)
 				AND username ' . $db->sql_like_expression($username_chars . $db->any_char);
 		$result = $db->sql_query_limit($sql, 10);
 		
+		$user_list = array(); 
 		$i = 1;
 		while ($row = $db->sql_fetchrow($result))
 		{	
 			$j = ($i%2)+1;
-			$hint.= "<tr class='bg".$j." row".$j."'><td><a href='" . 
-				$phpbb_root_path."memberlist.$phpEx". "?mode=viewprofile&u=" . $row['user_id'] . 
-				"' target='_blank'>" . 
-				$row['username'] . "</a></td></tr>";
+			$user_list[] = array("id" => $row['user_id'], "name" => $row['username']);
 			$i++;
 		}
-		echo $hint;
+		
+		$json_response = new \phpbb\json_response();
+		echo $json_response->send($user_list);
 		exit();
 	break;
 	
