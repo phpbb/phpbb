@@ -64,27 +64,6 @@
 	</script>
 <!-- ENDIF -->
 
-<script>
-	function showHint(str) { 
-		if (str.length<3) { 
-		  document.getElementById("livesearch").innerHTML="";
-		  return;
-		}
-		
-		$.ajax({
-			url:'{S_LIVE_SEARCH_ACTION}'+"&q="+str,
-			success:function(result) {
-					$("#livesearch").html(result);
-					}
-				});
-	}
-	function clearSearch() {	
-		setTimeout(function () {
-        	document.getElementById("livesearch").innerHTML="";
-		}, 500);		
-	}
-</script>
-
 <form method="post" action="{S_MODE_ACTION}" name="search">
 
 <table class="tablebg" width="100%" cellspacing="1">
@@ -96,7 +75,7 @@
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_USERNAME}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="username" value="{USERNAME}" autocomplete="off" onkeyup="showHint(this.value)" onblur="clearSearch()" /> <table class="tablebg" id="livesearch"></table> </td>
+	<td class="row2"><input class="post liveinput" type="text" name="username" value="{USERNAME}" autocomplete="off" /> <table class="tablebg" id="livesearch"></table></td>
 	<td class="row1"><b class="genmed">{L_ICQ}{L_COLON}</b></td>
 	<td class="row2"><input class="post" type="text" name="icq" value="{ICQ}" /></td>
 </tr>

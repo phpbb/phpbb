@@ -512,6 +512,32 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	}
 };
 
+// Listen live search box events
+$('.liveinput').keyup(function() {
+	var str = this.value;
+	var j = 0;
+	if (str.length < 3) { 
+		  $("#livesearch").innerHTML="";
+		  return;
+		}
+		
+	$.ajax({
+		url:'memberlist.php?mode=livesearch&'+"&q="+str,
+		success:function(result) {
+				$.each(result, function(idx, elem) {
+					j = (idx%2)+1;
+					$("#livesearch").append("<tr class='bg" + j + " row" + j + "'><td><a href='memberlist.php?mode=viewprofile&u=" + elem.id + "' target='_blank'>" + elem.name + "</a></td></tr>");
+				})
+				}
+	});
+});
+
+$('.liveinput').blur(function() {
+		setTimeout(function () {
+        	document.getElementById("livesearch").innerHTML="";
+		}, 500);	
+});
+
 // Toggle notification list
 $('#notification_list_button').click(function(e) {
 	$('#notification_list').toggle();
