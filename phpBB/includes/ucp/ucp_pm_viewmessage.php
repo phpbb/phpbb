@@ -274,7 +274,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
 	{
-		$methods = phpbb_gen_download_links('post_msg_id', $msg_id, $phpbb_root_path, $phpEx);
+		$methods = phpbb_gen_download_links('msg_id', $msg_id, $phpbb_root_path, $phpEx);
 		foreach ($methods as $method)
 		{
 			$template->assign_block_vars('dl_method', $method);
