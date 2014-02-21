@@ -602,7 +602,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'SEARCH_WORDS'		=> $keywords,
 		'SEARCHED_QUERY'	=> $search->get_search_query(),
 		'IGNORED_WORDS'		=> (sizeof($common_words)) ? implode(' ', $common_words) : '',
-		'PAGE_NUMBER'		=> $pagination->on_page($u_search, $total_match_count, $per_page, $start),
 
 		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
 
