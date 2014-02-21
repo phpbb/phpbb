@@ -1507,8 +1507,7 @@ switch ($mode)
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS'	=> $s_find_active_time,
 				'S_GROUP_SELECT'		=> $s_group_select,
-				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"),
-				'S_LIVE_SEARCH_ACTION'  => append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=livesearch", $is_amp = false))
+				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
 			);
 		}
 
