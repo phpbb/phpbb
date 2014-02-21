@@ -994,7 +994,8 @@ phpbb.colorPalette = function(dir, width, height) {
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	html += '<table style="width: auto;">';
+	var table_class = (dir == 'h') ? 'horizontal-palette' : 'vertical-palette';
+	html += '<table class="not-responsive colour-palette ' + table_class + '" style="width: auto;">';
 
 	for (r = 0; r < 5; r++) {
 		if (dir == 'h') {
