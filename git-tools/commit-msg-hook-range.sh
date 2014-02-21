@@ -5,7 +5,6 @@
 #
 # Calls the git commit-msg hook on all non-merge commits in a given commit range.
 #
-set -e
 
 if [ "$#" -ne 1 ];
 then
@@ -14,10 +13,12 @@ then
 fi
 
 DIR=$(dirname "$0")
-COMMIT_MSG_HOOK_PATH="$DIR/hooks/commit-msg"
-
 COMMIT_RANGE="$1"
+COMMIT_MSG_HOOK_PATH="$DIR/hooks/commit-msg"
+COMMIT_MSG_HOOK_FATAL=$(git config --bool phpbb.hooks.commit-msg.fatal 2> /dev/null)
+git config phpbb.hooks.commit-msg.fatal true
 
+EXIT_STATUS=0
 for COMMIT_HASH in $(git rev-list --no-merges "$COMMIT_RANGE")
 do
 	echo "Inspecting commit message of commit $COMMIT_HASH"
@@ -27,6 +28,24 @@ do
 	# which then also needs to be deleted after our work is done.
 	COMMIT_MESSAGE_PATH="$DIR/commit_msg.$COMMIT_HASH"
 	git log -n 1 --pretty=format:%B "$COMMIT_HASH" > "$COMMIT_MESSAGE_PATH"
+
+	# Invoke hook on commit message file.
 	"$COMMIT_MSG_HOOK_PATH" "$COMMIT_MESSAGE_PATH"
+
+	# If any commit message hook complains with a non-zero exit status, we
+	# will send a non-zero exit status upstream.
+	if [ $? -ne 0 ]
+	then
+		EXIT_STATUS=1
+	fi
+
 	rm "$COMMIT_MESSAGE_PATH"
 done
+
+# Restore phpbb.hooks.commit-msg.fatal config
+if [ -n "$COMMIT_MSG_HOOK_FATAL" ]
+then
+	git config phpbb.hooks.commit-msg.fatal "$COMMIT_MSG_HOOK_FATAL"
+fi
+
+exit $EXIT_STATUS
