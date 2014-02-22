@@ -75,7 +75,14 @@
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_USERNAME}{L_COLON}</b></td>
-	<td class="row2"><input class="post liveinput" type="text" name="username" value="{USERNAME}" autocomplete="off" /> <table class="tablebg" id="livesearch"></table></td>
+	<td class="row2">
+		<input class="post liveinput" type="text" name="username" value="{USERNAME}" autocomplete="off" /> 
+		<table class="tablebg" id="livesearch">
+			<tr id="user-search-row-tpl" style="display: none;">
+				<td><a class="user-search-link user-search-name" target='_blank'></a></td>
+			</tr>
+		</table>
+	</td>
 	<!-- IF S_EMAIL_SEARCH_ALLOWED -->
 		<td class="row1"><b class="genmed">{L_EMAIL}{L_COLON}</b></td>
 		<td class="row2"><input class="post" type="email" name="email" value="{EMAIL}" /></td>

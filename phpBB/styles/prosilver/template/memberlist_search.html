@@ -9,7 +9,13 @@
 	<fieldset class="fields1 column1">
 	<dl>
 		<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
-		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox liveinput" autocomplete="off" /> <table class="table1" id="livesearch"></table></dd>
+		<dd><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox liveinput" autocomplete="off" />
+			<table class="table1 zebra-list" id="livesearch">
+				<tr id="user-search-row-tpl" style="display: none;">
+					<td><a class="user-search-link user-search-name" target='_blank'></a></td>
+				</tr>
+			</table>
+		</dd>
 	</dl>
 <!-- IF S_EMAIL_SEARCH_ALLOWED -->
 	<dl>
