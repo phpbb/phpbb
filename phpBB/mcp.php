@@ -186,7 +186,7 @@ if ($quickmod)
 			// If needed, the flag can be set to true within event listener
 			// to indicate that the action was handled properly
 			// and to pass by the trigger_error() call below
-			$break = false;
+			$is_valid_action = false;
 
 			/**
 			* This event allows you to add custom quickmod options
@@ -194,12 +194,12 @@ if ($quickmod)
 			* @event core.modify_quickmod_options
 			* @var	object	module			Instance of module system class
 			* @var	string	action			Quickmod option
-			* @var	bool	break			Flag indicating if the action was handled properly
+			* @var	bool	is_valid_action	Flag indicating if the action was handled properly
 			* @since 3.1.0-a4
 			*/
-			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact(array('module', 'action', 'break'))));
+			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact(array('module', 'action', 'is_valid_action'))));
 
-			if (!$break)
+			if (!$is_valid_action)
 			{
 				trigger_error($user->lang('QUICKMOD_ACTION_NOT_ALLOWED', $action), E_USER_ERROR);
 			}
