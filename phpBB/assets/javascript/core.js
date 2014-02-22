@@ -515,26 +515,34 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 // Listen live search box events
 $('.liveinput').keyup(function() {
 	var str = this.value;
-	var j = 0;
 	if (str.length < 3) { 
-		  $("#livesearch").innerHTML="";
-		  return;
-		}
-		
+		return;
+	}
+	var link, name;	
+	var clone = $("#user-search-row-tpl").clone();
+	$("#livesearch").html("");
+	clone.appendTo("#livesearch");
 	$.ajax({
 		url:'memberlist.php?mode=livesearch&'+"&q="+str,
 		success:function(result) {
 				$.each(result, function(idx, elem) {
-					j = (idx%2)+1;
-					$("#livesearch").append("<tr class='bg" + j + " row" + j + "'><td><a href='memberlist.php?mode=viewprofile&u=" + elem.id + "' target='_blank'>" + elem.name + "</a></td></tr>");
-				})
-				}
+					link = "memberlist.php?mode=viewprofile&u=" + elem.id;
+					name = elem.name;
+					clone = $("#user-search-row-tpl").clone();
+					clone.find(".user-search-link").attr("href", link);
+					clone.find(".user-search-name").html(name);
+					clone.attr("style", "");
+					clone.appendTo("#livesearch");
+				});
+		}
 	});
 });
 
 $('.liveinput').blur(function() {
 		setTimeout(function () {
-        	document.getElementById("livesearch").innerHTML="";
+			var clone = $("#user-search-row-tpl").clone();
+        	$("#livesearch").html("");
+		    clone.appendTo("#livesearch");
 		}, 500);	
 });
 
