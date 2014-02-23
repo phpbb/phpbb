@@ -513,7 +513,7 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 };
 
 // Listen live search box events
-$('.liveinput').keyup(function() {
+$('.live-search-input').keyup(function() {
 	var str = this.value;
 	if (str.length < 3) { 
 		return;
@@ -538,7 +538,7 @@ $('.liveinput').keyup(function() {
 	});
 });
 
-$('.liveinput').blur(function() {
+$('.live-search-input').blur(function() {
 		setTimeout(function () {
 			var clone = $("#user-search-row-tpl").clone();
         	$("#livesearch").html("");
