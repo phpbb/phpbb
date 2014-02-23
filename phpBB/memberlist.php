@@ -992,17 +992,13 @@ switch ($mode)
 		$result = $db->sql_query_limit($sql, 10);
 		
 		$user_list = array(); 
-		$i = 1;
 		while ($row = $db->sql_fetchrow($result))
 		{	
-			$j = ($i%2)+1;
 			$user_list[] = array("id" => $row['user_id'], "name" => $row['username']);
-			$i++;
 		}
-		
+		$db->sql_freeresult($result);
 		$json_response = new \phpbb\json_response();
-		echo $json_response->send($user_list);
-		exit();
+		$json_response->send($user_list);
 	break;
 	
 	case 'group':
