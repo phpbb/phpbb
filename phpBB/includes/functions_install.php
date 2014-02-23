@@ -581,3 +581,22 @@ function phpbb_ignore_new_file_on_update($phpbb_root_path, $file)
 
 	return $ignore_new_file;
 }
+
+/**
+* Check whether phpBB is installed.
+*
+* @param string $phpbb_root_path	Path to the phpBB board root.
+* @param string $php_ext			PHP file extension.
+*
+* @return bool Returns true if phpBB is installed.
+*/
+function phpbb_check_installation_exists($phpbb_root_path, $php_ext)
+{
+	// Try opening config file
+	if (file_exists($phpbb_root_path . 'config.' . $php_ext))
+	{
+		include($phpbb_root_path . 'config.' . $php_ext);
+	}
+
+	return defined('PHPBB_INSTALLED');
+}
