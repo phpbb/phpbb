@@ -198,6 +198,22 @@ class context
 	}
 
 	/**
+	* Assign key variable pairs from an array to a whole specified block loop
+	*
+	* @param string $blockname Name of block to assign $block_vars_array to
+	* @param array $block_vars_array An array of hashes of variable name => value pairs
+	*/
+	public function assign_block_vars_array($blockname, array $block_vars_array)
+	{
+		foreach ($block_vars_array as $vararray)
+		{
+			$this->assign_block_vars($blockname, $vararray);
+		}
+
+		return true;
+	}
+
+	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
 	* An example of how to use this function:
