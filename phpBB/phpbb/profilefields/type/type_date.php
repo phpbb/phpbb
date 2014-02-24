@@ -66,6 +66,7 @@ class type_date extends type_base
 			'field_ident'			=> 'field_default_value',
 			'field_type'			=> $this->get_service_name(),
 			'field_length'			=> $field_data['field_length'],
+			'lang_options'			=> $field_data['lang_options'],
 		);
 
 		$always_now = request_var('always_now', -1);
