@@ -488,7 +488,7 @@ class messenger
 		{
 			if ($config['board_contact_name'])
 			{
-				$this->replyto = '"' . $config['board_contact_name'] . '" <' . $config['board_contact'] . '>';
+				$this->replyto = '"' . mail_encode($config['board_contact_name']) . '" <' . $config['board_contact'] . '>';
 			}
 			else
 			{
@@ -500,7 +500,7 @@ class messenger
 		{
 			if ($config['board_contact_name'])
 			{
-				$this->from = '"' . $config['board_contact_name'] . '" <' . $config['board_contact'] . '>';
+				$this->from = '"' . mail_encode($config['board_contact_name']) . '" <' . $config['board_contact'] . '>';
 			}
 			else
 			{
