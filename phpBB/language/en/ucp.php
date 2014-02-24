@@ -216,8 +216,8 @@ $lang = array_merge($lang, array(
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully.',
 	'FOLDER_ADDED'				=> 'Folder successfully added.',
 	'FOLDER_MESSAGE_STATUS'		=> array(
-		1	=> '%2$d from %1$d message stored',
-		2	=> '%2$d from %1$d messages stored',
+		1	=> '%2$d from %1$s stored',
+		2	=> '%2$d from %1$s stored',
 	),
 	'FOLDER_NAME_EMPTY'			=> 'You must enter a name for this folder.',
 	'FOLDER_NAME_EXIST'			=> 'Folder <strong>%s</strong> already exists.',
@@ -225,8 +225,8 @@ $lang = array_merge($lang, array(
 	'FOLDER_RENAMED'			=> 'Folder successfully renamed.',
 	'FOLDER_REMOVED'			=> 'Folder successfully removed.',
 	'FOLDER_STATUS_MSG'			=> array(
-		1	=> 'Folder is %3$d%% full (%2$d from %1$d message stored)',
-		2	=> 'Folder is %3$d%% full (%2$d from %1$d messages stored)',
+		1	=> 'Folder is %3$d%% full (%2$d from %1$s stored)',
+		2	=> 'Folder is %3$d%% full (%2$d from %1$s stored)',
 	),
 	'FORWARD_PM'				=> 'Forward PM',
 	'FORCE_PASSWORD_EXPLAIN'	=> 'Before you may continue browsing the board you are required to change your password.',
@@ -297,7 +297,8 @@ $lang = array_merge($lang, array(
 	'MOVE_DOWN'						=> 'Move down',
 	'MOVE_MARKED_TO_FOLDER'			=> 'Move marked to %s',
 	'MOVE_PM_ERROR'					=> array(
-		2	=> 'An error occurred while moving the messages to the new folder, only %2d from %1d messages were moved.',
+		1	=> 'An error occurred while moving the messages to the new folder, only %2$d from %1$s was moved.',
+		2	=> 'An error occurred while moving the messages to the new folder, only %2$d from %1$s were moved.',
 	),
 	'MOVE_TO_FOLDER'				=> 'Move to folder',
 	'MOVE_UP'						=> 'Move up',
