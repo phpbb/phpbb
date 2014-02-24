@@ -123,6 +123,7 @@ class guesser_test extends \phpbb_test_case
 	}
 
 	/**
+	* @requires function mime_content_type
 	* @dataProvider data_content_guesser
 	*/
 	public function test_content_guesser($expected, $guessers, $overload = false)
@@ -133,7 +134,7 @@ class guesser_test extends \phpbb_test_case
 		// Cover possible LogicExceptions
 		foreach ($guessers as $cur_guesser)
 		{
-			$supported += $cur_guesser->is_supported();
+			$supported |= $cur_guesser->is_supported();
 		}
 
 		if (!$supported)
