@@ -141,7 +141,7 @@ class type_int extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
-		if ($field_value === '' && !$field_data['field_show_novalue'])
+		if (($field_value === '' || $field_value === null) && !$field_data['field_show_novalue'])
 		{
 			return null;
 		}
