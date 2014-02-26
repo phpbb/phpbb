@@ -983,18 +983,18 @@ switch ($mode)
 	
 	case 'livesearch':
 		$username_chars = $request->variable('q', '', true);
-		$username_chars = strtolower($username_chars);
+		$username_chars = utf8_strtolower($username_chars);
 		
 		$sql = 'SELECT username, user_id
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
-				AND LOWER(username) ' . $db->sql_like_expression($username_chars . $db->any_char);
+				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->any_char);
 		$result = $db->sql_query_limit($sql, 10);
 		
 		$user_list = array(); 
 		while ($row = $db->sql_fetchrow($result))
 		{	
-			$user_list[] = array("id" => $row['user_id'], "name" => $row['username']);
+			$user_list[] = array('id' => $row['user_id'], 'name' => $row['username']);
 		}
 		$db->sql_freeresult($result);
 		$json_response = new \phpbb\json_response();
