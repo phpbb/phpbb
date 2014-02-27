@@ -81,9 +81,12 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 	*/
 	public function test_delete_user_pms($delete_user, $remaining_privmsgs, $remaining_privmsgs_to)
 	{
-		global $db;
+		global $db, $phpbb_container;
 
 		$db = $this->new_dbal();
+
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
 		phpbb_delete_user_pms($delete_user);
 

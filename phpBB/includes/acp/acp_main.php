@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,7 +24,7 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $config, $db, $cache, $user, $auth, $template, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Show restore permissions notice
@@ -64,9 +63,7 @@ class acp_main
 			if ($action === 'admlogout')
 			{
 				$user->unset_admin();
-				$redirect_url = append_sid("{$phpbb_root_path}index.$phpEx");
-				meta_refresh(3, $redirect_url);
-				trigger_error($user->lang['ADM_LOGGED_OUT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect_url . '">', '</a>'));
+				redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 			}
 
 			if (!confirm_box(true))
@@ -130,6 +127,11 @@ class acp_main
 						set_config('record_online_users', 1, true);
 						set_config('record_online_date', time(), true);
 						add_log('admin', 'LOG_RESET_ONLINE');
+
+						if ($request->is_ajax())
+						{
+							trigger_error('RESET_ONLINE_SUCCESS');
+						}
 					break;
 
 					case 'stats':
@@ -140,14 +142,14 @@ class acp_main
 
 						$sql = 'SELECT COUNT(post_id) AS stat
 							FROM ' . POSTS_TABLE . '
-							WHERE post_approved = 1';
+							WHERE post_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
 						set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(topic_id) AS stat
 							FROM ' . TOPICS_TABLE . '
-							WHERE topic_approved = 1';
+							WHERE topic_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
 						set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
@@ -180,6 +182,11 @@ class acp_main
 						update_last_username();
 
 						add_log('admin', 'LOG_RESYNC_STATS');
+
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_STATS_SUCCESS');
+						}
 					break;
 
 					case 'user':
@@ -223,7 +230,7 @@ class acp_main
 							$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
-									AND post_postcount = 1 AND post_approved = 1
+									AND post_postcount = 1 AND post_visibility = ' . ITEM_APPROVED . '
 								GROUP BY poster_id';
 							$result = $db->sql_query($sql);
 
@@ -243,6 +250,10 @@ class acp_main
 
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
 
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_POSTCOUNTS_SUCCESS');
+						}
 					break;
 
 					case 'date':
@@ -253,6 +264,11 @@ class acp_main
 
 						set_config('board_startdate', time() - 1);
 						add_log('admin', 'LOG_RESET_DATE');
+
+						if ($request->is_ajax())
+						{
+							trigger_error('RESET_DATE_SUCCESS');
+						}
 					break;
 
 					case 'db_track':
@@ -328,22 +344,27 @@ class acp_main
 						}
 
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');
+
+						if ($request->is_ajax())
+						{
+							trigger_error('RESYNC_POST_MARKING_SUCCESS');
+						}
 					break;
 
 					case 'purge_cache':
-						if ((int) $user->data['user_type'] !== USER_FOUNDER)
-						{
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
 						global $cache;
 						$cache->purge();
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
-						cache_moderators();
+						phpbb_cache_moderators($db, $cache, $auth);
 
 						add_log('admin', 'LOG_PURGE_CACHE');
+
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_CACHE_SUCCESS');
+						}
 					break;
 
 					case 'purge_sessions':
@@ -390,6 +411,11 @@ class acp_main
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_PURGE_SESSIONS');
+
+						if ($request->is_ajax())
+						{
+							trigger_error('PURGE_SESSIONS_SUCCESS');
+						}
 					break;
 				}
 			}
@@ -594,6 +620,22 @@ class acp_main
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
+		// Warn if no search index is created
+		if ($config['num_posts'] && class_exists($config['search_type']))
+		{
+			$error = false;
+			$search_type = $config['search_type'];
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+
+			if (!$search->index_created())
+			{
+				$template->assign_vars(array(
+					'S_SEARCH_INDEX_MISSING'	=> true,
+					'L_NO_SEARCH_INDEX'			=> $user->lang('NO_SEARCH_INDEX', $search->get_name(), '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=acp_search&amp;mode=index') . '">', '</a>'),
+				));
+			}
+		}
+
 		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
 			// World-Writable? (000x)
@@ -621,5 +663,3 @@ class acp_main
 		$this->page_title = 'ACP_MAIN';
 	}
 }
-
-?>

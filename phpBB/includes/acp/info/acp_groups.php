@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -21,6 +20,7 @@ class acp_groups_info
 			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'manage'		=> array('title' => 'ACP_GROUPS_MANAGE', 'auth' => 'acl_a_group', 'cat' => array('ACP_GROUPS')),
+				'position'		=> array('title' => 'ACP_GROUPS_POSITION', 'auth' => 'acl_a_group', 'cat' => array('ACP_GROUPS')),
 			),
 		);
 	}
@@ -33,5 +33,3 @@ class acp_groups_info
 	{
 	}
 }
-
-?>

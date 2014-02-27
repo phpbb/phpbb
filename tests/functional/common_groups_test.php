@@ -14,6 +14,28 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 {
 	abstract protected function get_url();
 
+	/**
+	* Get group_manage form
+	* @param int $group_id ID of the group that should be managed
+	*/
+	protected function get_group_manage_form($group_id = 5)
+	{
+		// Manage Administrators group
+		$crawler = self::request('GET', $this->get_url() . "&g=$group_id&sid=" . $this->sid);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		return $form;
+	}
+
+	/**
+	* Execute login calls and add_lang() calls for tests
+	*/
+	protected function group_manage_login()
+	{
+		$this->login();
+		$this->admin_login();
+		$this->add_lang(array('ucp', 'acp/groups'));
+	}
+
 	// Enable all avatars in the ACP
 	protected function enable_all_avatars()
 	{
@@ -21,7 +43,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 
 		$crawler = self::request('GET', 'adm/index.php?i=board&mode=avatar&sid=' . $this->sid);
 		// Check the default entries we should have
-		$this->assertContains($this->lang('ALLOW_REMOTE'), $crawler->text());
+		$this->assertContains($this->lang('ALLOW_REMOTE_UPLOAD'), $crawler->text());
 		$this->assertContains($this->lang('ALLOW_AVATARS'), $crawler->text());
 		$this->assertContains($this->lang('ALLOW_LOCAL'), $crawler->text());
 
@@ -50,13 +72,10 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 	*/
 	public function test_groups_manage($input, $expected)
 	{
-		$this->login();
-		$this->admin_login();
-		$this->add_lang(array('ucp', 'acp/groups'));
+		$this->group_manage_login();
 
 		// Manage Administrators group
-		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form = $this->get_group_manage_form();
 		$form['group_colour']->setValue($input);
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());
@@ -65,19 +84,19 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 	public function group_avatar_min_max_data()
 	{
 		return array(
-			array('uploadurl', 'foo', 'TOO_SHORT'),
-			array('uploadurl', 'foobar', 'AVATAR_URL_INVALID'),
-			array('uploadurl', str_repeat('f', 256), 'TOO_LONG'),
-			array('remotelink', 'foo', 'TOO_SHORT'),
-			array('remotelink', 'foobar', 'AVATAR_URL_INVALID'),
-			array('remotelink', str_repeat('f', 256), 'TOO_LONG'),
+			array('avatar_driver_upload', 'avatar_upload_url', 'foo', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_upload', 'avatar_upload_url', 'foobar', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_upload', 'avatar_upload_url', 'http://www.phpbb.com/' . str_repeat('f', 240) . '.png', 'TOO_LONG'),
+			array('avatar_driver_remote', 'avatar_remote_url', 'foo', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_remote', 'avatar_remote_url', 'foobar', 'AVATAR_URL_INVALID'),
+			array('avatar_driver_remote', 'avatar_remote_url', 'http://www.phpbb.com/' . str_repeat('f', 240) . '.png', 'TOO_LONG'),
 		);
 	}
 
 	/**
 	* @dataProvider group_avatar_min_max_data
 	*/
-	public function test_group_avatar_min_max($form_name, $input, $expected)
+	public function test_group_avatar_min_max($avatar_type, $form_name, $input, $expected)
 	{
 		$this->login();
 		$this->admin_login();
@@ -86,6 +105,7 @@ abstract class phpbb_functional_common_groups_test extends phpbb_functional_test
 
 		$crawler = self::request('GET', $this->get_url() . '&g=5&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$form['avatar_driver']->setValue($avatar_type);
 		$form[$form_name]->setValue($input);
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang($expected), $crawler->text());

@@ -1,21 +1,21 @@
-<!-- BEGIN loop -->
+<!-- BEGIN test_loop -->
 loop
 <!-- BEGINELSE -->
 noloop
-<!-- END loop -->
+<!-- END test_loop -->
 
-<!-- IF .loop -->
+<!-- IF .test_loop -->
 loop
 <!-- ELSE -->
 noloop
 <!-- ENDIF -->
 
-<!-- IF .loop == 2 -->
+<!-- IF .test_loop == 2 -->
 loop
 <!-- ENDIF -->
 
-<!-- BEGIN loop -->
+<!-- BEGIN test_loop -->
 <!-- BEGIN !block -->
-loop#{loop.S_ROW_COUNT}-block#{block.S_ROW_COUNT}
+loop#{test_loop.S_ROW_COUNT}-block#{block.S_ROW_COUNT}
 <!-- END !block -->
-<!-- END loop -->
+<!-- END test_loop -->

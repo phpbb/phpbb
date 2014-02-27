@@ -2,9 +2,8 @@
 /**
 *
 * @package mcp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -22,6 +21,8 @@ class mcp_queue_info
 			'modes'		=> array(
 				'unapproved_topics'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_TOPICS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
 				'unapproved_posts'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_POSTS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
+				'deleted_topics'	=> array('title' => 'MCP_QUEUE_DELETED_TOPICS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
+				'deleted_posts'		=> array('title' => 'MCP_QUEUE_DELETED_POSTS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
 				'approve_details'	=> array('title' => 'MCP_QUEUE_APPROVE_DETAILS', 'auth' => 'acl_m_approve,$id || (!$id && aclf_m_approve)', 'cat' => array('MCP_QUEUE')),
 			),
 		);
@@ -35,5 +36,3 @@ class mcp_queue_info
 	{
 	}
 }
-
-?>

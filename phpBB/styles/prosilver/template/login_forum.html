@@ -5,7 +5,7 @@
 <form id="login_forum" method="post" action="{S_LOGIN_ACTION}">
 {S_FORM_TOKEN}
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<div class="content">
 		<h2>{L_LOGIN}</h2>
@@ -21,7 +21,7 @@
 			<!-- ENDIF -->
 
 			<dl>
-				<dt><label for="password">{L_PASSWORD}:</label></dt>
+				<dt><label for="password">{L_PASSWORD}{L_COLON}</label></dt>
 				<dd><input type="password" tabindex="1" id="password" name="password" size="25" class="inputbox narrow" /></dd>
 			</dl>
 			{S_LOGIN_REDIRECT}
@@ -32,7 +32,7 @@
 		</fieldset>
 	</div>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 </form>

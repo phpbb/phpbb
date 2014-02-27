@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_PRUNED -->
 
@@ -8,7 +8,7 @@
 
 	<p>{L_PRUNE_SUCCESS}</p>
 
-	<table cellspacing="1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_FORUM}</th>
@@ -18,7 +18,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN pruned -->
-		<!-- IF pruned.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	<tr>
 		<td style="text-align: center;">{pruned.FORUM_NAME}</td>
 		<td style="text-align: center;">{pruned.NUM_TOPICS}</td>
 		<td style="text-align: center;">{pruned.NUM_POSTS}</td>
@@ -43,7 +43,7 @@
 		<legend>{L_SELECT_FORUM}</legend>
 		<p>{L_LOOK_UP_FORUMS_EXPLAIN}</p>
 	<dl>
-		<dt><label for="forum">{L_LOOK_UP_FORUM}:</label></dt>
+		<dt><label for="forum">{L_LOOK_UP_FORUM}{L_COLON}</label></dt>
 		<dd><select id="forum" name="f[]" multiple="multiple" size="10">{S_FORUM_OPTIONS}</select></dd>
 		<dd><label><input type="checkbox" class="radio" name="all_forums" value="1" /> {L_ALL_FORUMS}</label></dd>
 	</dl>
@@ -65,32 +65,32 @@
 
 	<h2>{L_FORUM}</h2>
 
-	<p>{L_SELECTED_FORUMS}: {FORUM_LIST}</p>
+	<p>{L_SELECTED_FORUMS}{L_COLON} {FORUM_LIST}</p>
 
 	<form id="acp_prune" method="post" action="{U_ACTION}">
 
 	<fieldset>
 		<legend>{L_FORUM_PRUNE}</legend>
 	<dl>
-		<dt><label for="prune_days">{L_PRUNE_NOT_POSTED}:</label></dt>
-		<dd><input type="text" id="prune_days" name="prune_days" /></dd>
+		<dt><label for="prune_days">{L_PRUNE_NOT_POSTED}{L_COLON}</label></dt>
+		<dd><input type="number" id="prune_days" name="prune_days" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="prune_vieweddays">{L_PRUNE_NOT_VIEWED}:</label></dt>
-		<dd><input type="text" id="prune_vieweddays" name="prune_vieweddays" /></dd>
+		<dt><label for="prune_vieweddays">{L_PRUNE_NOT_VIEWED}{L_COLON}</label></dt>
+		<dd><input type="number" id="prune_vieweddays" name="prune_vieweddays" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="polls">{L_PRUNE_OLD_POLLS}:</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
+		<dt><label for="polls">{L_PRUNE_OLD_POLLS}{L_COLON}</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" name="prune_old_polls" value="1" /> {L_YES}</label>
 			<label><input type="radio" class="radio" id="polls" name="prune_old_polls" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="announce">{L_PRUNE_ANNOUNCEMENTS}:</label></dt>
+		<dt><label for="announce">{L_PRUNE_ANNOUNCEMENTS}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="prune_announce" value="1" /> {L_YES}</label>
 			<label><input type="radio" class="radio" id="announce" name="prune_announce" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="sticky">{L_PRUNE_STICKY}:</label></dt>
+		<dt><label for="sticky">{L_PRUNE_STICKY}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="prune_sticky" value="1" /> {L_YES}</label>
 			<label><input type="radio" class="radio" id="sticky" name="prune_sticky" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>

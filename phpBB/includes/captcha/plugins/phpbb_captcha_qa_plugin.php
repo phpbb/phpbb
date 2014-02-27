@@ -2,9 +2,8 @@
 /**
 *
 * @package VC
-* @version $Id$
 * @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -87,7 +86,7 @@ class phpbb_captcha_qa
 			}
 			$db->sql_freeresult($result);
 		}
-	
+
 		// okay, if there is a confirm_id, we try to load that confirm's state. If not, we try to find one
 		if (!$this->load_answer() && (!$this->load_confirm_id() || !$this->load_answer()))
 		{
@@ -99,9 +98,9 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function &get_instance()
+	static public function get_instance()
 	{
-		$instance =& new phpbb_captcha_qa();
+		$instance = new phpbb_captcha_qa();
 
 		return $instance;
 	}
@@ -109,15 +108,11 @@ class phpbb_captcha_qa
 	/**
 	* See if the captcha has created its tables.
 	*/
-	function is_installed()
+	static public function is_installed()
 	{
-		global $db, $phpbb_root_path, $phpEx;
+		global $db;
 
-		if (!class_exists('phpbb_db_tools'))
-		{
-			include("$phpbb_root_path/includes/db/db_tools.$phpEx");
-		}
-		$db_tool = new phpbb_db_tools($db);
+		$db_tool = new \phpbb\db\tools($db);
 
 		return $db_tool->sql_table_exists(CAPTCHA_QUESTIONS_TABLE);
 	}
@@ -125,14 +120,14 @@ class phpbb_captcha_qa
 	/**
 	*  API function - for the captcha to be available, it must have installed itself and there has to be at least one question in the board's default lang
 	*/
-	function is_available()
+	static public function is_available()
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
 
-		if (!phpbb_captcha_qa::is_installed())
+		if (!self::is_installed())
 		{
 			return false;
 		}
@@ -158,7 +153,7 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}
@@ -298,13 +293,9 @@ class phpbb_captcha_qa
 	*/
 	function install()
 	{
-		global $db, $phpbb_root_path, $phpEx;
+		global $db;
 
-		if (!class_exists('phpbb_db_tools'))
-		{
-			include("$phpbb_root_path/includes/db/db_tools.$phpEx");
-		}
-		$db_tool = new phpbb_db_tools($db);
+		$db_tool = new \phpbb\db\tools($db);
 
 		$tables = array(CAPTCHA_QUESTIONS_TABLE, CAPTCHA_ANSWERS_TABLE, CAPTCHA_QA_CONFIRM_TABLE);
 
@@ -365,12 +356,12 @@ class phpbb_captcha_qa
 		global $config, $db, $user;
 
 		$error = '';
-		
+
 		if (!sizeof($this->question_ids))
 		{
 			return false;
 		}
-		
+
 		if (!$this->confirm_id)
 		{
 			$error = $user->lang['CONFIRM_QUESTION_WRONG'];
@@ -379,7 +370,6 @@ class phpbb_captcha_qa
 		{
 			if ($this->check_answer())
 			{
-				// $this->delete_code(); commented out to allow posting.php to repeat the question
 				$this->solved = true;
 			}
 			else
@@ -434,7 +424,7 @@ class phpbb_captcha_qa
 	function reselect_question()
 	{
 		global $db, $user;
-		
+
 		if (!sizeof($this->question_ids))
 		{
 			return false;
@@ -482,8 +472,8 @@ class phpbb_captcha_qa
 		global $db, $user;
 
 		$sql = 'SELECT confirm_id
-			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . " 
-			WHERE 
+			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . "
+			WHERE
 				session_id = '" . $db->sql_escape($user->session_id) . "'
 				AND lang_iso = '" . $db->sql_escape($this->question_lang) . "'
 				AND confirm_type = " . $this->type;
@@ -505,7 +495,7 @@ class phpbb_captcha_qa
 	function load_answer()
 	{
 		global $db, $user;
-		
+
 		if (!strlen($this->confirm_id) || !sizeof($this->question_ids))
 		{
 			return false;
@@ -567,20 +557,6 @@ class phpbb_captcha_qa
 	}
 
 	/**
-	*  API function - clean the entry
-	*/
-	function delete_code()
-	{
-		global $db, $user;
-
-		$sql = 'DELETE FROM ' . CAPTCHA_QA_CONFIRM_TABLE . "
-			WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND confirm_type = " . $this->type;
-		$db->sql_query($sql);
-	}
-
-	/**
 	*  API function
 	*/
 	function get_attempt_count()
@@ -628,7 +604,7 @@ class phpbb_captcha_qa
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
 
-		if (!$this->is_installed())
+		if (!self::is_installed())
 		{
 			$this->install();
 		}
@@ -990,9 +966,9 @@ class phpbb_captcha_qa
 
 		return $langs;
 	}
-	
-	
-	
+
+
+
 	/**
 	*  See if there is a question other than the one we have
 	*/
@@ -1018,5 +994,3 @@ class phpbb_captcha_qa
 		}
 	}
 }
-
-?>

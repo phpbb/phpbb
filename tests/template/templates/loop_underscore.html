@@ -1,0 +1,21 @@
+<!-- BEGIN _underscore_loop -->
+loop
+<!-- BEGINELSE -->
+noloop
+<!-- END _underscore_loop -->
+
+<!-- IF ._underscore_loop -->
+loop
+<!-- ELSE -->
+noloop
+<!-- ENDIF -->
+
+<!-- IF ._underscore_loop == 2 -->
+loop
+<!-- ENDIF -->
+
+<!-- BEGIN _underscore_loop -->
+<!-- BEGIN !block -->
+loop#{loop.S_ROW_COUNT}-block#{block.S_ROW_COUNT}
+<!-- END !block -->
+<!-- END _underscore_loop -->

@@ -72,5 +72,3 @@ $db->sql_query($sql);
 //$db->sql_query("DROP TABLE {$table_prefix}attach_temp");
 
 echo "<p><b>Done</b></p>\n";
- 
-?>

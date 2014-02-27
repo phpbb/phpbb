@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <h1>{L_ACP_JABBER_SETTINGS}</h1>
 
@@ -21,36 +21,36 @@
 	<p>{L_JAB_GTALK_NOTE}</p>
 <!-- ENDIF -->
 <dl>
-	<dt><label for="jab_enable">{L_JAB_ENABLE}:</label><br /><span>{L_JAB_ENABLE_EXPLAIN}</span></dt>
+	<dt><label for="jab_enable">{L_JAB_ENABLE}{L_COLON}</label><br /><span>{L_JAB_ENABLE_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" id="jab_enable" name="jab_enable" value="1"<!-- IF JAB_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
 		<label><input type="radio" class="radio" name="jab_enable" value="0"<!-- IF not JAB_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
 <dl>
-	<dt><label for="jab_host">{L_JAB_SERVER}:</label><br /><span>{L_JAB_SERVER_EXPLAIN}</span></dt>
+	<dt><label for="jab_host">{L_JAB_SERVER}{L_COLON}</label><br /><span>{L_JAB_SERVER_EXPLAIN}</span></dt>
 	<dd><input type="text" id="jab_host" name="jab_host" value="{JAB_HOST}" /></dd>
 </dl>
 <dl>
-	<dt><label for="jab_port">{L_JAB_PORT}:</label><br /><span>{L_JAB_PORT_EXPLAIN}</span></dt>
-	<dd><input type="text" id="jab_port" name="jab_port" value="{JAB_PORT}" maxlength="5" size="5" /></dd>
+	<dt><label for="jab_port">{L_JAB_PORT}{L_COLON}</label><br /><span>{L_JAB_PORT_EXPLAIN}</span></dt>
+	<dd><input type="number" id="jab_port" name="jab_port" value="{JAB_PORT}" maxlength="5" size="5" /></dd>
 </dl>
 <dl>
-	<dt><label for="jab_username">{L_JAB_USERNAME}:</label><br /><span>{L_JAB_USERNAME_EXPLAIN}</span></dt>
+	<dt><label for="jab_username">{L_JAB_USERNAME}{L_COLON}</label><br /><span>{L_JAB_USERNAME_EXPLAIN}</span></dt>
 	<dd><input type="text" id="jab_username" name="jab_username" value="{JAB_USERNAME}" /></dd>
 </dl>
 <dl>
-	<dt><label for="jab_password">{L_JAB_PASSWORD}:</label><br /><span>{L_JAB_PASSWORD_EXPLAIN}</span></dt>
+	<dt><label for="jab_password">{L_JAB_PASSWORD}{L_COLON}</label><br /><span>{L_JAB_PASSWORD_EXPLAIN}</span></dt>
 	<dd><input type="password" id="jab_password" name="jab_password" value="{JAB_PASSWORD}" /></dd>
 </dl>
 <!-- IF S_CAN_USE_SSL -->
 <dl>
-	<dt><label for="jab_use_ssl">{L_JAB_USE_SSL}:</label><br /><span>{L_JAB_USE_SSL_EXPLAIN}</span></dt>
+	<dt><label for="jab_use_ssl">{L_JAB_USE_SSL}{L_COLON}</label><br /><span>{L_JAB_USE_SSL_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" id="jab_use_ssl" name="jab_use_ssl" value="1"<!-- IF JAB_USE_SSL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 		<label><input type="radio" class="radio" name="jab_use_ssl" value="0"<!-- IF not JAB_USE_SSL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
 <!-- ENDIF -->
 <dl>
-	<dt><label for="jab_package_size">{L_JAB_PACKAGE_SIZE}:</label><br /><span>{L_JAB_PACKAGE_SIZE_EXPLAIN}</span></dt>
-	<dd><input type="text" id="jab_package_size" name="jab_package_size" value="{JAB_PACKAGE_SIZE}" maxlength="5" size="5" /></dd>
+	<dt><label for="jab_package_size">{L_JAB_PACKAGE_SIZE}{L_COLON}</label><br /><span>{L_JAB_PACKAGE_SIZE_EXPLAIN}</span></dt>
+	<dd><input type="number" id="jab_package_size" name="jab_package_size" value="{JAB_PACKAGE_SIZE}" maxlength="5" size="5" min="0" max="99999" /></dd>
 </dl>
 
 </fieldset>

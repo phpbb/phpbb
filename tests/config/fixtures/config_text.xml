@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_config_text">
+		<column>config_name</column>
+		<column>config_value</column>
+		<row>
+			<value>foo</value>
+			<value>23</value>
+		</row>
+		<row>
+			<value>bar</value>
+			<value>42</value>
+		</row>
+		<row>
+			<value>meh</value>
+			<value>string-de-ding</value>
+		</row>
+	</table>
+</dataset>

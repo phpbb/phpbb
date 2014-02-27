@@ -1,0 +1,15 @@
+pagination
+:per_page:{PER_PAGE}
+:current_page:{CURRENT_PAGE}
+:base_url:{BASE_URL}
+<!-- BEGIN pagination -->
+<!-- IF pagination.S_IS_PREV -->:previous:{pagination.PAGE_NUMBER}:{pagination.PAGE_URL}
+<!-- ELSEIF pagination.S_IS_CURRENT -->:current:{pagination.PAGE_NUMBER}:{pagination.PAGE_URL}
+<!-- ELSEIF pagination.S_IS_ELLIPSIS -->:ellipsis:{pagination.PAGE_NUMBER}:{pagination.PAGE_URL}
+<!-- ELSEIF pagination.S_IS_NEXT -->:next:{pagination.PAGE_NUMBER}:{pagination.PAGE_URL}
+<!-- ELSE -->:else:{pagination.PAGE_NUMBER}:{pagination.PAGE_URL}
+<!-- ENDIF -->
+<!-- END pagination -->
+<!-- IF U_PREVIOUS_PAGE -->:u_prev:{U_PREVIOUS_PAGE}<!-- ENDIF -->
+
+<!-- IF U_NEXT_PAGE -->:u_next:{U_NEXT_PAGE}<!-- ENDIF -->

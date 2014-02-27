@@ -5,13 +5,9 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value>anonymous</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -20,14 +16,10 @@
 			<value>foo</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>bar</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -37,17 +29,20 @@
 		<column>session_user_id</column>
 		<column>session_ip</column>
 		<column>session_browser</column>
+		<column>session_admin</column>
 		<row>
 			<value>anon_session00000000000000000000</value>
 			<value>1</value>
 			<value>127.0.0.1</value>
 			<value>anonymous user agent</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>bar_session000000000000000000000</value>
 			<value>4</value>
 			<value>127.0.0.1</value>
 			<value>user agent</value>
+			<value>1</value>
 		</row>
 	</table>
 </dataset>

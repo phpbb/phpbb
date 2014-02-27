@@ -1,8 +1,8 @@
 
 <!-- BEGIN role_mask -->
 
-	<table cellspacing="1">
-		<caption><!-- IF role_mask.FORUM_ID -->{L_FORUM}: <!-- ENDIF -->{role_mask.NAME}</caption>
+	<table class="table1">
+		<caption><!-- IF role_mask.FORUM_ID -->{L_FORUM}{L_COLON} <!-- ENDIF -->{role_mask.NAME}</caption>
 	<tbody>
 	<tr>
 		<th>{L_USERS}</th>
@@ -25,7 +25,7 @@
 				<a href="{role_mask.groups.U_PROFILE}">{role_mask.groups.GROUP_NAME}</a><!-- IF not role_mask.groups.S_LAST_ROW --> :: <!-- ENDIF -->
 			<!-- BEGINELSE -->
 				{L_GROUPS_NOT_ASSIGNED}
-			<!-- END users -->
+			<!-- END groups -->
 		</td>
 	</tr>
 	</tbody>

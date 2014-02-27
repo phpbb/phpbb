@@ -15,7 +15,7 @@
 	</tr>
 	<!-- IF not S_ALLOW_MASS_PM -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</td>
+		<td class="row1"><b class="genmed">{L_USERNAME}{L_COLON}</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	
 	<tr>
@@ -23,7 +23,7 @@
 	</tr>
 	<!-- ELSE -->
 		<tr>
-			<td class="row1"><b class="genmed">{L_USERNAMES}:</b></td>
+			<td class="row1"><b class="genmed">{L_USERNAMES}{L_COLON}</b></td>
 		</tr>
 		<tr>
 			<td class="row2"><textarea name="username_list" rows="5" cols="22" tabindex="1"></textarea><br />
@@ -33,7 +33,7 @@
 	<!-- ENDIF -->
 	<!-- IF S_GROUP_OPTIONS -->
 		<tr>
-			<td class="row1"><b class="genmed">{L_USERGROUPS}:</b></td>
+			<td class="row1"><b class="genmed">{L_USERGROUPS}{L_COLON}</b></td>
 		</tr>
 		<tr>
 			<td class="row2"><select name="group_list[]" multiple="multiple" size="5" style="width:150px">{S_GROUP_OPTIONS}</select></td>

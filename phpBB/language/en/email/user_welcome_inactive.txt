@@ -2,7 +2,7 @@ Subject: Welcome to "{SITENAME}"
 
 {WELCOME_MSG}
 
-Please keep this e-mail for your records. Your account information is as follows:
+Please keep this email for your records. Your account information is as follows:
 
 ----------------------------
 Username: {USERNAME}

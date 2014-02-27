@@ -157,6 +157,14 @@ CREATE TABLE phpbb_config (
 );
 
 
+# Table: 'phpbb_config_text'
+CREATE TABLE phpbb_config_text (
+	config_name varbinary(255) DEFAULT '' NOT NULL,
+	config_value mediumblob NOT NULL,
+	PRIMARY KEY (config_name)
+);
+
+
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
 	confirm_id binary(32) DEFAULT '' NOT NULL,
@@ -189,6 +197,15 @@ CREATE TABLE phpbb_drafts (
 	draft_message mediumblob NOT NULL,
 	PRIMARY KEY (draft_id),
 	KEY save_time (save_time)
+);
+
+
+# Table: 'phpbb_ext'
+CREATE TABLE phpbb_ext (
+	ext_name varbinary(255) DEFAULT '' NOT NULL,
+	ext_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	ext_state blob NOT NULL,
+	UNIQUE ext_name (ext_name)
 );
 
 
@@ -229,7 +246,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_options int(11) UNSIGNED DEFAULT '7' NOT NULL,
 	forum_desc_uid varbinary(8) DEFAULT '' NOT NULL,
 	forum_link blob NOT NULL,
-	forum_password varbinary(120) DEFAULT '' NOT NULL,
+	forum_password blob NOT NULL,
 	forum_style mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_image varbinary(255) DEFAULT '' NOT NULL,
 	forum_rules blob NOT NULL,
@@ -240,9 +257,12 @@ CREATE TABLE phpbb_forums (
 	forum_topics_per_page tinyint(4) DEFAULT '0' NOT NULL,
 	forum_type tinyint(4) DEFAULT '0' NOT NULL,
 	forum_status tinyint(4) DEFAULT '0' NOT NULL,
-	forum_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	forum_topics mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	forum_topics_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	forum_posts_approved mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	forum_posts_unapproved mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	forum_posts_softdeleted mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	forum_topics_approved mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	forum_topics_unapproved mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	forum_topics_softdeleted mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_post_subject blob NOT NULL,
@@ -308,7 +328,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varbinary(8) DEFAULT '' NOT NULL,
 	group_display tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_avatar varbinary(255) DEFAULT '' NOT NULL,
-	group_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
+	group_avatar_type varbinary(255) DEFAULT '' NOT NULL,
 	group_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	group_avatar_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	group_rank mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -317,7 +337,7 @@ CREATE TABLE phpbb_groups (
 	group_receive_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_max_recipients mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	group_legend tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	group_legend mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend_name (group_legend, group_name(255))
 );
@@ -363,6 +383,7 @@ CREATE TABLE phpbb_log (
 	log_data mediumblob NOT NULL,
 	PRIMARY KEY (log_id),
 	KEY log_type (log_type),
+	KEY log_time (log_time),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
@@ -399,6 +420,19 @@ CREATE TABLE phpbb_moderator_cache (
 );
 
 
+# Table: 'phpbb_migrations'
+CREATE TABLE phpbb_migrations (
+	migration_name varbinary(255) DEFAULT '' NOT NULL,
+	migration_depends_on blob NOT NULL,
+	migration_schema_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_done tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_data_state blob NOT NULL,
+	migration_start_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	migration_end_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (migration_name)
+);
+
+
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
 	module_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -416,6 +450,52 @@ CREATE TABLE phpbb_modules (
 	KEY left_right_id (left_id, right_id),
 	KEY module_enabled (module_enabled),
 	KEY class_left_id (module_class, left_id)
+);
+
+
+# Table: 'phpbb_notification_types'
+CREATE TABLE phpbb_notification_types (
+	notification_type_id smallint(4) UNSIGNED NOT NULL auto_increment,
+	notification_type_name varbinary(255) DEFAULT '' NOT NULL,
+	notification_type_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	PRIMARY KEY (notification_type_id),
+	UNIQUE type (notification_type_name)
+);
+
+
+# Table: 'phpbb_notifications'
+CREATE TABLE phpbb_notifications (
+	notification_id int(10) UNSIGNED NOT NULL auto_increment,
+	notification_type_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	notification_read tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	notification_time int(11) UNSIGNED DEFAULT '1' NOT NULL,
+	notification_data blob NOT NULL,
+	PRIMARY KEY (notification_id),
+	KEY item_ident (notification_type_id, item_id),
+	KEY user (user_id, notification_read)
+);
+
+
+# Table: 'phpbb_oauth_accounts'
+CREATE TABLE phpbb_oauth_accounts (
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	provider varbinary(255) DEFAULT '' NOT NULL,
+	oauth_provider_id blob NOT NULL,
+	PRIMARY KEY (user_id, provider)
+);
+
+
+# Table: 'phpbb_oauth_tokens'
+CREATE TABLE phpbb_oauth_tokens (
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	session_id binary(32) DEFAULT '' NOT NULL,
+	provider varbinary(255) DEFAULT '' NOT NULL,
+	oauth_token mediumblob NOT NULL,
+	KEY user_id (user_id),
+	KEY provider (provider)
 );
 
 
@@ -451,7 +531,7 @@ CREATE TABLE phpbb_posts (
 	icon_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	poster_ip varbinary(40) DEFAULT '' NOT NULL,
 	post_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	post_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	post_visibility tinyint(3) DEFAULT '0' NOT NULL,
 	post_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	enable_bbcode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
@@ -470,12 +550,15 @@ CREATE TABLE phpbb_posts (
 	post_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	post_delete_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	post_delete_reason blob NOT NULL,
+	post_delete_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (post_id),
 	KEY forum_id (forum_id),
 	KEY topic_id (topic_id),
 	KEY poster_ip (poster_ip),
 	KEY poster_id (poster_id),
-	KEY post_approved (post_approved),
+	KEY post_visibility (post_visibility),
 	KEY post_username (post_username(255)),
 	KEY tid_post_time (topic_id, post_time)
 );
@@ -562,7 +645,7 @@ CREATE TABLE phpbb_privmsgs_to (
 CREATE TABLE phpbb_profile_fields (
 	field_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	field_name blob NOT NULL,
-	field_type tinyint(4) DEFAULT '0' NOT NULL,
+	field_type varbinary(100) DEFAULT '' NOT NULL,
 	field_ident varbinary(20) DEFAULT '' NOT NULL,
 	field_length varbinary(20) DEFAULT '' NOT NULL,
 	field_minlen varbinary(255) DEFAULT '' NOT NULL,
@@ -573,7 +656,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_novalue tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_on_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_on_vt tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_show_on_ml tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_show_profile tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_hide tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -588,6 +673,9 @@ CREATE TABLE phpbb_profile_fields (
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	pf_phpbb_location varbinary(255) DEFAULT '' NOT NULL,
+	pf_phpbb_interests blob NOT NULL,
+	pf_phpbb_occupation blob NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
@@ -597,7 +685,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	lang_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	field_type tinyint(4) DEFAULT '0' NOT NULL,
+	field_type varbinary(100) DEFAULT '' NOT NULL,
 	lang_value blob NOT NULL,
 	PRIMARY KEY (field_id, lang_id, option_id)
 );
@@ -636,6 +724,12 @@ CREATE TABLE phpbb_reports (
 	report_closed tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
+	reported_post_text mediumblob NOT NULL,
+	reported_post_uid varbinary(8) DEFAULT '' NOT NULL,
+	reported_post_bitfield varbinary(255) DEFAULT '' NOT NULL,
+	reported_post_enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	reported_post_enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	reported_post_enable_bbcode tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (report_id),
 	KEY post_id (post_id),
 	KEY pm_id (pm_id)
@@ -749,80 +843,23 @@ CREATE TABLE phpbb_styles (
 	style_name blob NOT NULL,
 	style_copyright blob NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (style_id),
-	UNIQUE style_name (style_name(255)),
-	KEY template_id (template_id),
-	KEY theme_id (theme_id),
-	KEY imageset_id (imageset_id)
-);
-
-
-# Table: 'phpbb_styles_template'
-CREATE TABLE phpbb_styles_template (
-	template_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	template_name blob NOT NULL,
-	template_copyright blob NOT NULL,
-	template_path varbinary(100) DEFAULT '' NOT NULL,
+	style_path varbinary(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 'kNg=' NOT NULL,
-	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	template_inherits_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
-	template_inherit_path varbinary(255) DEFAULT '' NOT NULL,
-	PRIMARY KEY (template_id),
-	UNIQUE tmplte_nm (template_name(255))
+	style_parent_id int(4) UNSIGNED DEFAULT '0' NOT NULL,
+	style_parent_tree blob NOT NULL,
+	PRIMARY KEY (style_id),
+	UNIQUE style_name (style_name(255))
 );
 
 
-# Table: 'phpbb_styles_template_data'
-CREATE TABLE phpbb_styles_template_data (
-	template_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	template_filename varbinary(100) DEFAULT '' NOT NULL,
-	template_included blob NOT NULL,
-	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	template_data mediumblob NOT NULL,
-	KEY tid (template_id),
-	KEY tfn (template_filename)
-);
-
-
-# Table: 'phpbb_styles_theme'
-CREATE TABLE phpbb_styles_theme (
-	theme_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	theme_name blob NOT NULL,
-	theme_copyright blob NOT NULL,
-	theme_path varbinary(100) DEFAULT '' NOT NULL,
-	theme_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	theme_data mediumblob NOT NULL,
-	PRIMARY KEY (theme_id),
-	UNIQUE theme_name (theme_name(255))
-);
-
-
-# Table: 'phpbb_styles_imageset'
-CREATE TABLE phpbb_styles_imageset (
-	imageset_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	imageset_name blob NOT NULL,
-	imageset_copyright blob NOT NULL,
-	imageset_path varbinary(100) DEFAULT '' NOT NULL,
-	PRIMARY KEY (imageset_id),
-	UNIQUE imgset_nm (imageset_name(255))
-);
-
-
-# Table: 'phpbb_styles_imageset_data'
-CREATE TABLE phpbb_styles_imageset_data (
-	image_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	image_name varbinary(200) DEFAULT '' NOT NULL,
-	image_filename varbinary(200) DEFAULT '' NOT NULL,
-	image_lang varbinary(30) DEFAULT '' NOT NULL,
-	image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (image_id),
-	KEY i_d (imageset_id)
+# Table: 'phpbb_teampage'
+CREATE TABLE phpbb_teampage (
+	teampage_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_name blob NOT NULL,
+	teampage_position mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	teampage_parent mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (teampage_id)
 );
 
 
@@ -832,15 +869,16 @@ CREATE TABLE phpbb_topics (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	icon_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
+	topic_visibility tinyint(3) DEFAULT '0' NOT NULL,
 	topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_title blob NOT NULL,
 	topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time_limit int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_views mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_replies mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_replies_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_posts_approved mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_posts_unapproved mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_posts_softdeleted mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_status tinyint(3) DEFAULT '0' NOT NULL,
 	topic_type tinyint(3) DEFAULT '0' NOT NULL,
 	topic_first_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -862,12 +900,15 @@ CREATE TABLE phpbb_topics (
 	poll_max_options tinyint(4) DEFAULT '1' NOT NULL,
 	poll_last_vote int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_vote_change tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_delete_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_delete_reason blob NOT NULL,
+	topic_delete_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (topic_id),
 	KEY forum_id (forum_id),
 	KEY forum_id_type (forum_id, topic_type),
 	KEY last_post_time (topic_last_post_time),
-	KEY topic_approved (topic_approved),
-	KEY forum_appr_last (forum_id, topic_approved, topic_last_post_id),
+	KEY topic_visibility (topic_visibility),
+	KEY forum_appr_last (forum_id, topic_visibility, topic_last_post_id),
 	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
 );
 
@@ -904,6 +945,16 @@ CREATE TABLE phpbb_topics_watch (
 );
 
 
+# Table: 'phpbb_user_notifications'
+CREATE TABLE phpbb_user_notifications (
+	item_type varbinary(255) DEFAULT '' NOT NULL,
+	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	method varbinary(255) DEFAULT '' NOT NULL,
+	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL
+);
+
+
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
 	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -927,9 +978,11 @@ CREATE TABLE phpbb_users (
 	user_regdate int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	username blob NOT NULL,
 	username_clean blob NOT NULL,
-	user_password varbinary(120) DEFAULT '' NOT NULL,
+	user_password blob NOT NULL,
 	user_passchg int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	user_pass_convert tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	user_actkey varbinary(32) DEFAULT '' NOT NULL,
+	user_newpasswd blob NOT NULL,
 	user_email blob NOT NULL,
 	user_email_hash bigint(20) DEFAULT '0' NOT NULL,
 	user_birthday varbinary(10) DEFAULT '' NOT NULL,
@@ -946,8 +999,7 @@ CREATE TABLE phpbb_users (
 	user_inactive_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_lang varbinary(30) DEFAULT '' NOT NULL,
-	user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
-	user_dst tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	user_timezone varbinary(100) DEFAULT 'UTC' NOT NULL,
 	user_dateformat varbinary(90) DEFAULT 'd M Y H:i' NOT NULL,
 	user_style mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_rank mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -973,23 +1025,18 @@ CREATE TABLE phpbb_users (
 	user_allow_massemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_options int(11) UNSIGNED DEFAULT '230271' NOT NULL,
 	user_avatar varbinary(255) DEFAULT '' NOT NULL,
-	user_avatar_type tinyint(2) DEFAULT '0' NOT NULL,
+	user_avatar_type varbinary(255) DEFAULT '' NOT NULL,
 	user_avatar_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_avatar_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_sig mediumblob NOT NULL,
 	user_sig_bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
-	user_from blob NOT NULL,
 	user_icq varbinary(15) DEFAULT '' NOT NULL,
 	user_aim blob NOT NULL,
 	user_yim blob NOT NULL,
 	user_msnm blob NOT NULL,
 	user_jabber blob NOT NULL,
 	user_website blob NOT NULL,
-	user_occ blob NOT NULL,
-	user_interests blob NOT NULL,
-	user_actkey varbinary(32) DEFAULT '' NOT NULL,
-	user_newpasswd varbinary(120) DEFAULT '' NOT NULL,
 	user_form_salt varbinary(96) DEFAULT '' NOT NULL,
 	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_reminded tinyint(4) DEFAULT '0' NOT NULL,

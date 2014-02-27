@@ -25,7 +25,6 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/acp/acp_search.' . $phpEx);
-require($phpbb_root_path . 'includes/search/' . $class_name . '.' . $phpEx);
 
 $user->session_begin();
 $auth->acl($user->data);

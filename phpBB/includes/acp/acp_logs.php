@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -25,8 +24,9 @@ class acp_logs
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $request;
 
 		$user->add_lang('mcp');
 
@@ -35,8 +35,8 @@ class acp_logs
 		$forum_id	= request_var('f', 0);
 		$topic_id	= request_var('t', 0);
 		$start		= request_var('start', 0);
-		$deletemark = (!empty($_POST['delmarked'])) ? true : false;
-		$deleteall	= (!empty($_POST['delall'])) ? true : false;
+		$deletemark = $request->variable('delmarked', false, false, \phpbb\request\request_interface::POST);
+		$deleteall	= $request->variable('delall', false, false, \phpbb\request\request_interface::POST);
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys
@@ -46,6 +46,7 @@ class acp_logs
 
 		$this->tpl_name = 'acp_logs';
 		$this->log_type = constant('LOG_' . strtoupper($mode));
+		$pagination = $phpbb_container->get('pagination');
 
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -129,13 +130,13 @@ class acp_logs
 		$log_count = 0;
 		$start = view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $keywords);
 
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
-
-			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
@@ -172,5 +173,3 @@ class acp_logs
 		}
 	}
 }
-
-?>

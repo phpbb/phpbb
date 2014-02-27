@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_WORD -->
 
@@ -47,7 +47,7 @@
 		<input class="button2" name="add" type="submit" value="{L_ADD_WORD}" />
 	</p>
 
-	<table cellspacing="1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_WORD}</th>
@@ -57,10 +57,10 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN words -->
-		<!-- IF words.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	<tr>
 		<td style="text-align: center;">{words.WORD}</td>
 		<td style="text-align: center;">{words.REPLACEMENT}</td>
-		<td>&nbsp;<a href="{words.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{words.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
+		<td>&nbsp;<a href="{words.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{words.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>&nbsp;</td>
 	</tr>
 	<!-- BEGINELSE -->
 	<tr class="row3">

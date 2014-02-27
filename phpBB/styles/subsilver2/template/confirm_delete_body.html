@@ -1,0 +1,56 @@
+<!-- INCLUDE overall_header.html -->
+
+<div id="pagecontent">
+
+	<form name="confirm" action="{S_CONFIRM_ACTION}" method="post">
+	
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{MESSAGE_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center">
+			<br />
+			<p class="gen">{MESSAGE_TEXT}</p>
+			<br />
+
+			<!-- IF not S_SOFTDELETED and (S_DELETE_REASON or (S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE)) -->
+				<table border="0" width="90%" cellspacing="2" cellpadding="1">
+				<!-- IF S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+					<tr>
+						<td class="row1" width="22%"><b class="gen">{L_DELETE_PERMANENTLY}{L_COLON}</b></td>
+						<td class="row1" width="78%">
+							<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
+							<!-- IF S_TOPIC_MODE -->{L_DELETE_TOPIC_PERMANENTLY}<!-- ELSE -->{L_DELETE_POST_PERMANENTLY}<!-- ENDIF -->
+						</td>
+					</tr>
+				<!-- ENDIF -->
+				<!-- IF S_DELETE_REASON -->
+					<tr>
+						<td class="row1" valign="top"><span class="gen"><b>{L_DELETE_REASON}{L_COLON}</b></span><br /><span class="gensmall">{L_DELETE_REASON_EXPLAIN}</span></td>
+						<td class="row1"><input type="text" name="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></td>
+					</tr>
+				<!-- ENDIF -->
+				</table>
+				<br />
+			<!-- ENDIF -->
+			{S_HIDDEN_FIELDS}
+			<input type="submit" name="confirm" value="{L_YES}" class="btnmain" />&nbsp;&nbsp;
+			<input type="submit" name="cancel" value="{L_NO}" class="btnlite" />
+		</td>
+	</tr>
+	</table>
+	
+	</form>
+	
+</div>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
+
+<!-- INCLUDE overall_footer.html -->

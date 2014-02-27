@@ -1,8 +1,6 @@
 <!-- BEGIN outer -->
-	outer - {outer.S_ROW_COUNT}<!-- IF outer.VARIABLE --> - {outer.VARIABLE}<!-- ENDIF -->
-
-	<!-- BEGIN middle -->
-		middle - {middle.S_ROW_COUNT}<!-- IF middle.VARIABLE --> - {middle.VARIABLE}<!-- ENDIF -->
-
-	<!-- END middle -->
+outer - {outer.S_ROW_COUNT}<!-- IF outer.VARIABLE --> - {outer.VARIABLE}<!-- ENDIF --><!-- IF TEST_MORE -->[{outer.S_BLOCK_NAME}|{outer.S_NUM_ROWS}]<!-- ENDIF -->
+<!-- BEGIN middle -->
+middle - {outer.middle.S_ROW_COUNT}<!-- IF outer.middle.VARIABLE --> - {outer.middle.VARIABLE}<!-- ENDIF --><!-- IF TEST_MORE -->[{outer.middle.S_BLOCK_NAME}|{outer.middle.S_NUM_ROWS}]<!-- ENDIF -->
+<!-- END middle -->
 <!-- END outer -->

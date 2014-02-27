@@ -2,9 +2,8 @@
 /**
 *
 * @package acp
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -29,11 +28,7 @@ class acp_database
 		global $cache, $db, $user, $auth, $template, $table_prefix;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		if (!class_exists('phpbb_db_tools'))
-		{
-			require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
-		}
-		$this->db_tools = new phpbb_db_tools($db);
+		$this->db_tools = new \phpbb\db\tools($db);
 
 		$user->add_lang('acp/database');
 
@@ -99,29 +94,29 @@ class acp_database
 							case 'mysqli':
 							case 'mysql4':
 							case 'mysql':
-								$extractor = new mysql_extractor($download, $store, $format, $filename, $time);
+								$extractor = new mysql_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'sqlite':
-								$extractor = new sqlite_extractor($download, $store, $format, $filename, $time);
+								$extractor = new sqlite_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'postgres':
-								$extractor = new postgres_extractor($download, $store, $format, $filename, $time);
+								$extractor = new postgres_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'oracle':
-								$extractor = new oracle_extractor($download, $store, $format, $filename, $time);
+								$extractor = new oracle_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'mssql':
 							case 'mssql_odbc':
 							case 'mssqlnative':
-								$extractor = new mssql_extractor($download, $store, $format, $filename, $time);
+								$extractor = new mssql_extractor($format, $filename, $time, $download, $store);
 							break;
 
 							case 'firebird':
-								$extractor = new firebird_extractor($download, $store, $format, $filename, $time);
+								$extractor = new firebird_extractor($format, $filename, $time, $download, $store);
 							break;
 						}
 
@@ -493,8 +488,10 @@ class base_extractor
 	var $format;
 	var $run_comp = false;
 
-	function base_extractor($download = false, $store = false, $format, $filename, $time)
+	function base_extractor($format, $filename, $time, $download = false, $store = false)
 	{
+		global $request;
+
 		$this->download = $download;
 		$this->store = $store;
 		$this->time = $time;
@@ -539,7 +536,7 @@ class base_extractor
 				break;
 
 				case 'gzip':
-					if ((isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) && strpos(strtolower($_SERVER['HTTP_USER_AGENT']), 'msie') === false)
+					if (strpos($request->header('Accept-Encoding'), 'gzip') !== false && strpos(strtolower($request->header('User-Agent')), 'msie') === false)
 					{
 						ob_start('ob_gzhandler');
 					}
@@ -1016,43 +1013,8 @@ class sqlite_extractor extends base_extractor
 	function write_data($table_name)
 	{
 		global $db;
-		static $proper;
 
-		if (is_null($proper))
-		{
-			$proper = version_compare(PHP_VERSION, '5.1.3', '>=');
-		}
-
-		if ($proper)
-		{
-			$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
-		}
-		else
-		{
-			$sql = "SELECT sql
-				FROM sqlite_master
-				WHERE type = 'table'
-					AND name = '" . $table_name . "'";
-			$table_data = sqlite_single_query($db->db_connect_id, $sql);
-			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
-			$table_data = trim($table_data);
-
-			preg_match('#\((.*)\)#s', $table_data, $matches);
-
-			$table_cols = explode(',', trim($matches[1]));
-			foreach ($table_cols as $declaration)
-			{
-				$entities = preg_split('#\s+#', trim($declaration));
-				$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
-
-				// Hit a primary key, those are not what we need :D
-				if (empty($entities[1]) || (strtolower($entities[0]) === 'primary' && strtolower($entities[1]) === 'key'))
-				{
-					continue;
-				}
-				$col_types[$column_name] = $entities[1];
-			}
-		}
+		$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
 
 		$sql = "SELECT *
 			FROM $table_name";
@@ -1624,7 +1586,7 @@ class mssql_extractor extends base_extractor
 		}
 		$this->flush($sql_data);
 	}
-	
+
 	function write_data_mssqlnative($table_name)
 	{
 		global $db;
@@ -1645,16 +1607,17 @@ class mssql_extractor extends base_extractor
 			return;
 		}
 
-		$sql = "SELECT * FROM $table_name";
-		$result_fields = $db->sql_query_limit($sql, 1);
+		$sql = "SELECT COLUMN_NAME, DATA_TYPE
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE INFORMATION_SCHEMA.COLUMNS.TABLE_NAME = '" . $db->sql_escape($table_name) . "'";
+		$result_fields = $db->sql_query($sql);
 
-		$row = new result_mssqlnative($result_fields);
-		$i_num_fields = $row->num_fields();
-		
-		for ($i = 0; $i < $i_num_fields; $i++)
+		$i_num_fields = 0;
+		while ($row = $db->sql_fetchrow($result_fields))
 		{
-			$ary_type[$i] = $row->field_type($i);
-			$ary_name[$i] = $row->field_name($i);
+			$ary_type[$i_num_fields] = $row['DATA_TYPE'];
+			$ary_name[$i_num_fields] = $row['COLUMN_NAME'];
+			$i_num_fields++;
 		}
 		$db->sql_freeresult($result_fields);
 
@@ -1663,7 +1626,7 @@ class mssql_extractor extends base_extractor
 			WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 		$result2 = $db->sql_query($sql);
 		$row2 = $db->sql_fetchrow($result2);
-		
+
 		if (!empty($row2['has_identity']))
 		{
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
@@ -1727,8 +1690,8 @@ class mssql_extractor extends base_extractor
 			$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
 		}
 		$this->flush($sql_data);
-	}	
-	
+	}
+
 	function write_data_odbc($table_name)
 	{
 		global $db;
@@ -2464,5 +2427,3 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 
 	return false;
 }
-
-?>

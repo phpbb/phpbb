@@ -22,8 +22,8 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test topic posted by the testing framework.', $crawler->filter('html')->text());
 
-		// Test creating a reply
-		$post2 = $this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test post posted by the testing framework.');
+		// Test creating a reply with bbcode
+		$post2 = $this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', 'This is a test [b]post[/b] posted by the testing framework.');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 		$this->assertContains('This is a test post posted by the testing framework.', $crawler->filter('html')->text());

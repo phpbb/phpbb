@@ -1,5 +1,6 @@
 *~
 /phpunit.xml
+/phpBB/cache/twig/*
 /phpBB/cache/*.html
 /phpBB/cache/*.php
 /phpBB/cache/*.lock

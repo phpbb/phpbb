@@ -33,13 +33,15 @@ class phpbb_dbal_write_sequence_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
+		// dbal uses cache
+		global $cache;
+		$cache = new phpbb_mock_cache();
+
 		$sql = 'INSERT INTO phpbb_users ' . $db->sql_build_array('INSERT', array(
 			'username'			=> $username,
 			'username_clean'	=> $username,
 			'user_permissions'	=> '',
 			'user_sig'			=> '',
-			'user_occ'			=> '',
-			'user_interests'	=> '',
 		));
 		$db->sql_query($sql);
 

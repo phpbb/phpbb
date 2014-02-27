@@ -2,9 +2,8 @@
 /**
 *
 * @package phpBB3
-* @version $Id$
 * @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -104,6 +103,8 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_init($allow_custom_bbcode = true)
 	{
+		global $phpbb_dispatcher;
+		
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this
@@ -163,6 +164,21 @@ class bbcode_firstpass extends bbcode
 				'regexp'	=> array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
+
+		$bbcodes = $this->bbcodes;
+
+		/**
+		* Event to modify the bbcode data for later parsing
+		*
+		* @event core.modify_bbcode_init
+		* @var array	bbcodes		Array of bbcode data for use in parsing
+		* @var array	rowset		Array of bbcode data from the database
+		* @since 3.1.0-a3
+		*/
+		$vars = array('bbcodes', 'rowset');
+		extract($phpbb_dispatcher->trigger_event('core.modify_bbcode_init', compact($vars)));
+
+		$this->bbcodes = $bbcodes;
 	}
 
 	/**
@@ -210,7 +226,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
 		{
-			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+			$this->warn_msg[] = $user->lang('MAX_FONT_SIZE_EXCEEDED', (int) $config['max_' . $this->mode . '_font_size']);
 
 			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
@@ -319,13 +335,13 @@ class bbcode_firstpass extends bbcode
 				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 				}
 
 				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+					$this->warn_msg[] = $user->lang('MAX_IMG_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
@@ -374,13 +390,13 @@ class bbcode_firstpass extends bbcode
 			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 			}
 
 			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+				$this->warn_msg[] = $user->lang('MAX_FLASH_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
@@ -703,17 +719,6 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
-		/**
-		* If you change this code, make sure the cases described within the following reports are still working:
-		* #3572 - [quote="[test]test"]test [ test[/quote] - (correct: parsed)
-		* #14667 - [quote]test[/quote] test ] and [ test [quote]test[/quote] (correct: parsed)
-		* #14770 - [quote="["]test[/quote] (correct: parsed)
-		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
-		* [quote="[quote]test[/quote]"]test[/quote] (correct: parsed - Username displayed as [quote]test[/quote])
-		* #20735 - [quote]test[/[/b]quote] test [/quote][/quote] test - (correct: quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted)
-		* #40565 - [quote="a"]a[/quote][quote="a]a[/quote] (correct: first quote tag parsed, second quote tag unparsed)
-		*/
-
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
@@ -772,7 +777,7 @@ class bbcode_firstpass extends bbcode
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
-						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
+						$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
@@ -1062,6 +1067,12 @@ class parse_message extends bbcode_firstpass
 	var $mode;
 
 	/**
+	* The plupload object used for dealing with attachments
+	* @var \phpbb\plupload\plupload
+	*/
+	protected $plupload;
+
+	/**
 	* Init - give message here or manually
 	*/
 	function parse_message($message = '')
@@ -1117,7 +1128,7 @@ class parse_message extends bbcode_firstpass
 		// Maximum message length check. 0 disables this check completely.
 		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
 		{
-			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $message_length, (int) $config['max_' . $mode . '_chars']);
+			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length, (int) $config['max_' . $mode . '_chars']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1126,7 +1137,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_FEW_CHARS_LIMIT'], $message_length, (int) $config['min_post_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : $user->lang('TOO_FEW_CHARS_LIMIT', $message_length, (int) $config['min_post_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1204,6 +1215,8 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
+		global $phpbb_dispatcher;
+
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
 		{
@@ -1231,6 +1244,28 @@ class parse_message extends bbcode_firstpass
 
 		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
+
+		$text = $this->message;
+		$uid = $this->bbcode_uid;
+
+		/**
+		* Event to modify the text after it is parsed
+		*
+		* @event core.modify_format_display_text_after
+		* @var string	text				The message text to parse
+		* @var string	uid					The bbcode uid
+		* @var bool		allow_bbcode		Do we allow bbcodes
+		* @var bool		allow_magic_url		Do we allow magic urls
+		* @var bool		allow_smilies		Do we allow smilies
+		* @var bool		update_this_message	Do we update the internal message
+		*									with the parsed result
+		* @since 3.1.0-a3
+		*/
+		$vars = array('text', 'uid', 'allow_bbcode', 'allow_magic_url', 'allow_smilies', 'update_this_message');
+		extract($phpbb_dispatcher->trigger_event('core.modify_format_display_text_after', compact($vars)));
+
+		$this->message = $text;
+		$this->bbcode_uid = $uid;
 
 		if (!$update_this_message)
 		{
@@ -1364,13 +1399,14 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db;
+		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
 
 		$error = array();
 
 		$num_attachments = sizeof($this->attachment_data);
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
+		$upload = $request->file($form_name);
+		$upload_file = (!empty($upload) && $upload['name'] !== 'none' && trim($upload['name']));
 
 		$add_file		= (isset($_POST['add_file'])) ? true : false;
 		$delete_file	= (isset($_POST['delete_file'])) ? true : false;
@@ -1425,6 +1461,7 @@ class parse_message extends bbcode_firstpass
 						'is_orphan'		=> 1,
 						'real_filename'	=> $filedata['real_filename'],
 						'attach_comment'=> $this->filename_data['filecomment'],
+						'filesize'		=> $filedata['filesize'],
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
@@ -1445,12 +1482,17 @@ class parse_message extends bbcode_firstpass
 			}
 			else
 			{
-				$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+				$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
 			}
 		}
 
 		if ($preview || $refresh || sizeof($error))
 		{
+			if (isset($this->plupload) && $this->plupload->is_active())
+			{
+				$json_response = new \phpbb\json_response();
+			}
+
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
@@ -1495,13 +1537,17 @@ class parse_message extends bbcode_firstpass
 
 					// Reindex Array
 					$this->attachment_data = array_values($this->attachment_data);
+					if (isset($this->plupload) && $this->plupload->is_active())
+					{
+						$json_response->send($this->attachment_data);
+					}
 				}
 			}
 			else if (($add_file || $preview) && $upload_file)
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
+					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->plupload);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
@@ -1527,16 +1573,39 @@ class parse_message extends bbcode_firstpass
 							'is_orphan'		=> 1,
 							'real_filename'	=> $filedata['real_filename'],
 							'attach_comment'=> $this->filename_data['filecomment'],
+							'filesize'		=> $filedata['filesize'],
 						);
 
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
 						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
 						$this->filename_data['filecomment'] = '';
+
+						if (isset($this->plupload) && $this->plupload->is_active())
+						{
+							$download_url = append_sid("{$phpbb_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
+
+							// Send the client the attachment data to maintain state
+							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));
+						}
 					}
 				}
 				else
 				{
-					$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
+					$error[] = $user->lang('TOO_MANY_ATTACHMENTS', (int) $cfg['max_attachments']);
+				}
+
+				if (!empty($error) && isset($this->plupload) && $this->plupload->is_active())
+				{
+					// If this is a plupload (and thus ajax) request, give the
+					// client the first error we have
+					$json_response->send(array(
+						'jsonrpc' => '2.0',
+						'id' => 'id',
+						'error' => array(
+							'code' => 105,
+							'message' => current($error),
+						),
+					));
 				}
 			}
 		}
@@ -1553,9 +1622,10 @@ class parse_message extends bbcode_firstpass
 	function get_submitted_attachment_data($check_user_id = false)
 	{
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
+		global $request;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
+		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, \phpbb\request\request_interface::POST);
 		$this->attachment_data = array();
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;
@@ -1583,7 +1653,7 @@ class parse_message extends bbcode_firstpass
 		if (sizeof($not_orphan))
 		{
 			// Get the attachment data, based on the poster id...
-			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
+			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('attach_id', array_keys($not_orphan)) . '
 					AND poster_id = ' . $check_user_id;
@@ -1593,7 +1663,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$pos = $not_orphan[$row['attach_id']];
 				$this->attachment_data[$pos] = $row;
-				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
+				$this->attachment_data[$pos]['attach_comment'] = $attachment_data[$pos]['attach_comment'];
 
 				unset($not_orphan[$row['attach_id']]);
 			}
@@ -1608,7 +1678,7 @@ class parse_message extends bbcode_firstpass
 		// Regenerate newly uploaded attachments
 		if (sizeof($orphan))
 		{
-			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
+			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan)) . '
 					AND poster_id = ' . $user->data['user_id'] . '
@@ -1619,7 +1689,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$pos = $orphan[$row['attach_id']];
 				$this->attachment_data[$pos] = $row;
-				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
+				$this->attachment_data[$pos]['attach_comment'] = $attachment_data[$pos]['attach_comment'];
 
 				unset($orphan[$row['attach_id']]);
 			}
@@ -1697,6 +1767,16 @@ class parse_message extends bbcode_firstpass
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
 	}
-}
 
-?>
+	/**
+	* Setter function for passing the plupload object
+	*
+	* @param \phpbb\plupload\plupload $plupload The plupload object
+	*
+	* @return null
+	*/
+	public function set_plupload(\phpbb\plupload\plupload $plupload)
+	{
+		$this->plupload = $plupload;
+	}
+}

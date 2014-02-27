@@ -1,13 +1,13 @@
 	<form id="list" method="post" action="{U_ACTION}">
 
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<!-- IF .log -->
-	<table cellspacing="1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_REPORT_BY}</th>
@@ -19,8 +19,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN log -->
-		<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
+		<tr>
 			<td>{log.USERNAME}</td>
 			<td style="text-align: center;">{log.IP}</td>
 			<td style="text-align: center;">{log.DATE}</td>
@@ -40,15 +39,15 @@
 	<!-- ENDIF -->
 	
 	<fieldset class="display-options">
-		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
 		<input class="button2" type="submit" value="{L_GO}" name="sort" />
 	</fieldset>
 	<hr />
-	<!-- IF PAGINATION -->
 	<div class="pagination">
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-	</div>
+	<!-- IF .pagination -->
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
+	</div>
 
 	<!-- IF S_CLEARLOGS -->
 		<fieldset class="quick">

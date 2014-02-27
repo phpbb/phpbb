@@ -22,11 +22,11 @@
 		<th colspan="2" valign="middle">{L_OPTIONS}</th>
 	</tr>
 	<tr>
-		<td class="row1" width="35%">{L_DELIMITER}: </td>
+		<td class="row1" width="35%">{L_DELIMITER}{L_COLON} </td>
 		<td class="row2"><input class="post" type="text" name="delimiter" value="," /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="35%">{L_ENCLOSURE}: </td>
+		<td class="row1" width="35%">{L_ENCLOSURE}{L_COLON} </td>
 		<td class="row2"><input class="post" type="text" name="enclosure" value="&#034;" /></td>
 	</tr>
 	<tr>
@@ -82,7 +82,7 @@
 					<a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a>
 				<!-- ENDIF -->
 				<!-- IF messagerow.S_PM_REPORTED -->
-					<a href="{messagerow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
+					<a href="{messagerow.U_MCP_REPORT}" class="imageset">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
 				<!-- IF messagerow.S_AUTHOR_DELETED -->
 					<br /><em class="gensmall">{L_PM_FROM_REMOVED_AUTHOR}</em>

@@ -1,0 +1,10 @@
+Subject: Private Message report - "{TOPIC_TITLE}"
+
+Hello {USERNAME},
+
+You are receiving this notification because a Private Message titled "{SUBJECT}" by "{AUTHOR_NAME}" at "{SITENAME}" was reported.
+
+If you want to view the report, click the following link:
+{U_VIEW_REPORT}
+
+{EMAIL_SIG}
