@@ -15,6 +15,7 @@ class profilefield_interests extends \phpbb\db\migration\profilefield_base_migra
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\profilefield_types',
+			'\phpbb\db\migration\data\v310\profilefield_show_novalue',
 		);
 	}
 
