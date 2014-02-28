@@ -621,7 +621,6 @@ $template->assign_vars(array(
 	'PM_IMG' 			=> $user->img('icon_contact_pm', 'SEND_PRIVATE_MESSAGE'),
 	'EMAIL_IMG' 		=> $user->img('icon_contact_email', 'SEND_EMAIL'),
 	'WWW_IMG' 			=> $user->img('icon_contact_www', 'VISIT_WEBSITE'),
-	'ICQ_IMG' 			=> $user->img('icon_contact_icq', 'ICQ'),
 	'AIM_IMG' 			=> $user->img('icon_contact_aim', 'AIM'),
 	'MSN_IMG' 			=> $user->img('icon_contact_msnm', 'MSNM'),
 	'YIM_IMG' 			=> $user->img('icon_contact_yahoo', 'YIM'),
@@ -1118,8 +1117,6 @@ while ($row = $db->sql_fetchrow($result))
 				'pm'				=> '',
 				'email'				=> '',
 				'www'				=> '',
-				'icq_status_img'	=> '',
-				'icq'				=> '',
 				'aim'				=> '',
 				'msn'				=> '',
 				'yim'				=> '',
@@ -1222,17 +1219,6 @@ while ($row = $db->sql_fetchrow($result))
 			else
 			{
 				$user_cache[$poster_id]['email'] = '';
-			}
-
-			if (!empty($row['user_icq']))
-			{
-				$user_cache[$poster_id]['icq'] = 'http://www.icq.com/people/' . urlencode($row['user_icq']) . '/';
-				$user_cache[$poster_id]['icq_status_img'] = '<img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" alt="" />';
-			}
-			else
-			{
-				$user_cache[$poster_id]['icq_status_img'] = '';
-				$user_cache[$poster_id]['icq'] = '';
 			}
 
 			if ($config['allow_birthdays'] && !empty($row['user_birthday']))
@@ -1632,7 +1618,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_ICON_IMG'			=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['img'] : '',
 		'POST_ICON_IMG_WIDTH'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['width'] : '',
 		'POST_ICON_IMG_HEIGHT'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
-		'ICQ_STATUS_IMG'		=> $user_cache[$poster_id]['icq_status_img'],
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
@@ -1646,7 +1631,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_WWW'			=> $user_cache[$poster_id]['www'],
-		'U_ICQ'			=> $user_cache[$poster_id]['icq'],
 		'U_AIM'			=> $user_cache[$poster_id]['aim'],
 		'U_MSN'			=> $user_cache[$poster_id]['msn'],
 		'U_YIM'			=> $user_cache[$poster_id]['yim'],

@@ -1360,7 +1360,6 @@ class acp_users
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
 				$data = array(
-					'icq'			=> request_var('icq', $user_row['user_icq']),
 					'aim'			=> request_var('aim', $user_row['user_aim']),
 					'msn'			=> request_var('msn', $user_row['user_msnm']),
 					'yim'			=> request_var('yim', $user_row['user_yim']),
@@ -1385,9 +1384,6 @@ class acp_users
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'icq'			=> array(
-							array('string', true, 3, 15),
-							array('match', true, '#^[0-9]+$#i')),
 						'aim'			=> array('string', true, 3, 255),
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
@@ -1418,7 +1414,6 @@ class acp_users
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_icq'		=> $data['icq'],
 							'user_aim'		=> $data['aim'],
 							'user_msnm'		=> $data['msn'],
 							'user_yim'		=> $data['yim'],
@@ -1467,7 +1462,6 @@ class acp_users
 				unset($now);
 
 				$template->assign_vars(array(
-					'ICQ'			=> $data['icq'],
 					'YIM'			=> $data['yim'],
 					'AIM'			=> $data['aim'],
 					'MSN'			=> $data['msn'],

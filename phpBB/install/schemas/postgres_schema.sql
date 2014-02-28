@@ -889,6 +889,7 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_location varchar(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests varchar(4000) DEFAULT '' NOT NULL,
 	pf_phpbb_occupation varchar(4000) DEFAULT '' NOT NULL,
+	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
@@ -1306,7 +1307,6 @@ CREATE TABLE phpbb_users (
 	user_sig TEXT DEFAULT '' NOT NULL,
 	user_sig_bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
-	user_icq varchar(15) DEFAULT '' NOT NULL,
 	user_aim varchar(255) DEFAULT '' NOT NULL,
 	user_yim varchar(255) DEFAULT '' NOT NULL,
 	user_msnm varchar(255) DEFAULT '' NOT NULL,
