@@ -21,7 +21,7 @@ class phpbb_build_url_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$this->path_helper = new \phpbb\path_helper(
+		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
@@ -52,12 +52,12 @@ class phpbb_build_url_test extends phpbb_test_case
 			array(
 				'viewtopic.php?f=2&style=1&t=6',
 				array('f', 'style', 't'),
-				'phpBB/viewtopic.php',
+				'phpBB/viewtopic.php?',
 			),
 			array(
 				'http://test.phpbb.com/viewtopic.php?f=2&style=1&t=6',
 				array('f', 'style', 't'),
-				'http://test.phpbb.com/viewtopic.php',
+				'http://test.phpbb.com/viewtopic.php?',
 			),
 		);
 	}
