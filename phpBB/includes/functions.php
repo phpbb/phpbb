@@ -2376,7 +2376,7 @@ function build_url($strip_vars = false)
 		$redirect = $path_helper->strip_url_params($redirect, $strip_vars, false);
 	}
 
-	return $redirect;
+	return $redirect . ((strpos($redirect, '?') === false) ? '?' : '');
 }
 
 /**
