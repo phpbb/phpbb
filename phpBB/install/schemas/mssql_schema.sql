@@ -1132,7 +1132,10 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
 	[field_no_view] [int] DEFAULT (0) NOT NULL ,
 	[field_active] [int] DEFAULT (0) NOT NULL ,
-	[field_order] [int] DEFAULT (0) NOT NULL 
+	[field_order] [int] DEFAULT (0) NOT NULL ,
+	[field_is_contact] [int] DEFAULT (0) NOT NULL ,
+	[field_contact_desc] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL
 ) ON [PRIMARY]
 GO
 

@@ -777,6 +777,9 @@ $schema_data['phpbb_profile_fields'] = array(
 		'field_no_view'			=> array('BOOL', 0),
 		'field_active'			=> array('BOOL', 0),
 		'field_order'			=> array('UINT', 0),
+		'field_is_contact'		=> array('BOOL', 0),
+		'field_contact_desc'	=> array('VCHAR', ''),
+		'field_contact_url'		=> array('VCHAR', ''),
 	),
 	'PRIMARY_KEY'	=> 'field_id',
 	'KEYS'			=> array(

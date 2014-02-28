@@ -1236,6 +1236,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view number(1) DEFAULT '0' NOT NULL,
 	field_active number(1) DEFAULT '0' NOT NULL,
 	field_order number(8) DEFAULT '0' NOT NULL,
+	field_is_contact number(1) DEFAULT '0' NOT NULL,
+	field_contact_desc varchar2(255) DEFAULT '' ,
+	field_contact_url varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields PRIMARY KEY (field_id)
 )
 /

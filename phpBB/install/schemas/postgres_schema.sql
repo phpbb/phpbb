@@ -872,6 +872,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view INT2 DEFAULT '0' NOT NULL CHECK (field_no_view >= 0),
 	field_active INT2 DEFAULT '0' NOT NULL CHECK (field_active >= 0),
 	field_order INT4 DEFAULT '0' NOT NULL CHECK (field_order >= 0),
+	field_is_contact INT2 DEFAULT '0' NOT NULL CHECK (field_is_contact >= 0),
+	field_contact_desc varchar(255) DEFAULT '' NOT NULL,
+	field_contact_url varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id)
 );
 

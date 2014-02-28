@@ -664,6 +664,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	field_is_contact tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_contact_desc varbinary(255) DEFAULT '' NOT NULL,
+	field_contact_url varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id),
 	KEY fld_type (field_type),
 	KEY fld_ordr (field_order)
