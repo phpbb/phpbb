@@ -324,7 +324,8 @@ class path_helper
 		$params = array_merge($url_parts['params'], $new_params);
 
 		// Move the sid to the end if it's set
-		if (isset($params['sid'])) {
+		if (isset($params['sid']))
+		{
 			$sid = $params['sid'];
 			unset($params['sid']);
 			$params['sid'] = $sid;
