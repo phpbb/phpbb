@@ -30,7 +30,7 @@ $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'leaders')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'leaders', 'livesearch')))
 {
 	trigger_error('NO_MODE');
 }
@@ -989,7 +989,27 @@ switch ($mode)
 		);
 
 	break;
-
+	
+	case 'livesearch':
+		$username_chars = $request->variable('q', '', true);
+		$username_chars = utf8_strtolower($username_chars);
+		
+		$sql = 'SELECT username, user_id
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
+				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->any_char);
+		$result = $db->sql_query_limit($sql, 10);
+		
+		$user_list = array(); 
+		while ($row = $db->sql_fetchrow($result))
+		{	
+			$user_list[] = array('id' => $row['user_id'], 'name' => $row['username']);
+		}
+		$db->sql_freeresult($result);
+		$json_response = new \phpbb\json_response();
+		$json_response->send($user_list);
+	break;
+	
 	case 'group':
 	default:
 		// The basic memberlist

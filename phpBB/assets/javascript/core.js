@@ -512,6 +512,40 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	}
 };
 
+// Listen live search box events
+$('.live-search-input').keyup(function() {
+	var str = this.value;
+	if (str.length < 3) { 
+		return;
+	}
+	var link, name;	
+	var clone = $("#user-search-row-tpl").clone();
+	$("#livesearch").html("");
+	clone.appendTo("#livesearch");
+	$.ajax({
+		url:'memberlist.php?mode=livesearch&'+"&q="+str,
+		success:function(result) {
+				$.each(result, function(idx, elem) {
+					link = "memberlist.php?mode=viewprofile&u=" + elem.id;
+					name = elem.name;
+					clone = $("#user-search-row-tpl").clone();
+					clone.find(".user-search-link").attr("href", link);
+					clone.find(".user-search-name").html(name);
+					clone.attr("style", "");
+					clone.appendTo("#livesearch");
+				});
+		}
+	});
+});
+
+$('.live-search-input').blur(function() {
+		setTimeout(function () {
+			var clone = $("#user-search-row-tpl").clone();
+        	$("#livesearch").html("");
+		    clone.appendTo("#livesearch");
+		}, 500);	
+});
+
 // Toggle notification list
 $('#notification_list_button').click(function(e) {
 	$('#notification_list').toggle();
