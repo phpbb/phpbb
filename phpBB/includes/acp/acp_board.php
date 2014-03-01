@@ -456,7 +456,7 @@ class acp_board
 			break;
 		}
 		
-				/**
+		/**
 		* Event to add config
 		*
 		* @event core.acp_config_edit_add
