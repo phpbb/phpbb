@@ -155,11 +155,12 @@ class context
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
+			$s_num_rows = sizeof($str[$blocks[$blockcount]]);
 
 			// Set S_NUM_ROWS
 			foreach ($str[$blocks[$blockcount]] as &$mod_block)
 			{
-				$mod_block['S_NUM_ROWS'] = sizeof($str[$blocks[$blockcount]]);
+				$mod_block['S_NUM_ROWS'] = $s_num_rows;
 			}
 		}
 		else
@@ -186,11 +187,12 @@ class context
 
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->tpldata[$blockname][] = $vararray;
+			$s_num_rows = sizeof($this->tpldata[$blockname]);
 
 			// Set S_NUM_ROWS
 			foreach ($this->tpldata[$blockname] as &$mod_block)
 			{
-				$mod_block['S_NUM_ROWS'] = sizeof($this->tpldata[$blockname]);
+				$mod_block['S_NUM_ROWS'] = $s_num_rows;
 			}
 		}
 
