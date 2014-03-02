@@ -812,16 +812,15 @@ li.pagination ul {
 ---------------------------------------- */
 .phpbb_alert {
 	border: 1px solid transparent;
-	position: fixed;
 	display: none;
-	top: 150px;
-	left: 0;
-	right: 0;
-	max-width: 640px;
-	margin: 0 auto;
-	z-index: 50;
-	padding: 25px;
+	left: 0; 
 	padding: 0 25px 20px 25px;
+	position: fixed;
+	right: 0; 
+	top: 150px;
+	z-index: 50;
+	width: 620px;
+	margin: 0 auto; 
 }
 
 @media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
