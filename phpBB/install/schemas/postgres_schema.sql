@@ -91,7 +91,7 @@ CREATE SEQUENCE phpbb_attachments_seq;
 CREATE TABLE phpbb_attachments (
 	attach_id INT4 DEFAULT nextval('phpbb_attachments_seq'),
 	post_msg_id INT4 DEFAULT '0' NOT NULL CHECK (post_msg_id >= 0),
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	in_message INT2 DEFAULT '0' NOT NULL CHECK (in_message >= 0),
 	poster_id INT4 DEFAULT '0' NOT NULL CHECK (poster_id >= 0),
 	is_orphan INT2 DEFAULT '1' NOT NULL CHECK (is_orphan >= 0),
@@ -177,7 +177,7 @@ CREATE INDEX phpbb_acl_roles_data_ath_op_id ON phpbb_acl_roles_data (auth_option
 	Table: 'phpbb_acl_users'
 */
 CREATE TABLE phpbb_acl_users (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	auth_option_id INT4 DEFAULT '0' NOT NULL CHECK (auth_option_id >= 0),
 	auth_role_id INT4 DEFAULT '0' NOT NULL CHECK (auth_role_id >= 0),
@@ -234,8 +234,8 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes (display_on_posting)
 	Table: 'phpbb_bookmarks'
 */
 CREATE TABLE phpbb_bookmarks (
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
+	user_id INT4 DEFAULT '0' NOT NULL,
 	PRIMARY KEY (topic_id, user_id)
 );
 
@@ -249,7 +249,7 @@ CREATE TABLE phpbb_bots (
 	bot_id INT4 DEFAULT nextval('phpbb_bots_seq'),
 	bot_active INT2 DEFAULT '1' NOT NULL CHECK (bot_active >= 0),
 	bot_name varchar(255) DEFAULT '' NOT NULL,
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	bot_agent varchar(255) DEFAULT '' NOT NULL,
 	bot_ip varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (bot_id)
@@ -313,8 +313,8 @@ CREATE SEQUENCE phpbb_drafts_seq;
 
 CREATE TABLE phpbb_drafts (
 	draft_id INT4 DEFAULT nextval('phpbb_drafts_seq'),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	save_time INT4 DEFAULT '0' NOT NULL CHECK (save_time >= 0),
 	draft_subject varchar(255) DEFAULT '' NOT NULL,
@@ -429,7 +429,7 @@ CREATE INDEX phpbb_forums_forum_lastpost_id ON phpbb_forums (forum_last_post_id)
 */
 CREATE TABLE phpbb_forums_access (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' NOT NULL,
 	PRIMARY KEY (forum_id, user_id, session_id)
 );
@@ -439,7 +439,7 @@ CREATE TABLE phpbb_forums_access (
 	Table: 'phpbb_forums_track'
 */
 CREATE TABLE phpbb_forums_track (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	mark_time INT4 DEFAULT '0' NOT NULL CHECK (mark_time >= 0),
 	PRIMARY KEY (user_id, forum_id)
@@ -451,7 +451,7 @@ CREATE TABLE phpbb_forums_track (
 */
 CREATE TABLE phpbb_forums_watch (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	notify_status INT2 DEFAULT '0' NOT NULL CHECK (notify_status >= 0)
 );
 
@@ -533,9 +533,9 @@ CREATE SEQUENCE phpbb_log_seq;
 CREATE TABLE phpbb_log (
 	log_id INT4 DEFAULT nextval('phpbb_log_seq'),
 	log_type INT2 DEFAULT '0' NOT NULL,
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	reportee_id INT4 DEFAULT '0' NOT NULL CHECK (reportee_id >= 0),
 	log_ip varchar(40) DEFAULT '' NOT NULL,
 	log_time INT4 DEFAULT '0' NOT NULL CHECK (log_time >= 0),
@@ -559,7 +559,7 @@ CREATE TABLE phpbb_login_attempts (
 	attempt_browser varchar(150) DEFAULT '' NOT NULL,
 	attempt_forwarded_for varchar(255) DEFAULT '' NOT NULL,
 	attempt_time INT4 DEFAULT '0' NOT NULL CHECK (attempt_time >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	username varchar(255) DEFAULT '0' NOT NULL,
 	username_clean varchar_ci DEFAULT '0' NOT NULL
 );
@@ -574,7 +574,7 @@ CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 */
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	username varchar(255) DEFAULT '' NOT NULL,
 	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
 	group_name varchar(255) DEFAULT '' NOT NULL,
@@ -647,7 +647,7 @@ CREATE TABLE phpbb_notifications (
 	notification_type_id INT2 DEFAULT '0' NOT NULL CHECK (notification_type_id >= 0),
 	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
 	item_parent_id INT4 DEFAULT '0' NOT NULL CHECK (item_parent_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	notification_read INT2 DEFAULT '0' NOT NULL CHECK (notification_read >= 0),
 	notification_time INT4 DEFAULT '1' NOT NULL CHECK (notification_time >= 0),
 	notification_data varchar(4000) DEFAULT '' NOT NULL,
@@ -661,7 +661,7 @@ CREATE INDEX phpbb_notifications_user ON phpbb_notifications (user_id, notificat
 	Table: 'phpbb_oauth_accounts'
 */
 CREATE TABLE phpbb_oauth_accounts (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	provider varchar(255) DEFAULT '' NOT NULL,
 	oauth_provider_id varchar(4000) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id, provider)
@@ -672,7 +672,7 @@ CREATE TABLE phpbb_oauth_accounts (
 	Table: 'phpbb_oauth_tokens'
 */
 CREATE TABLE phpbb_oauth_tokens (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' NOT NULL,
 	provider varchar(255) DEFAULT '' NOT NULL,
 	oauth_token TEXT DEFAULT '' NOT NULL
@@ -686,7 +686,7 @@ CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens (provider);
 */
 CREATE TABLE phpbb_poll_options (
 	poll_option_id INT2 DEFAULT '0' NOT NULL,
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	poll_option_text varchar(4000) DEFAULT '' NOT NULL,
 	poll_option_total INT4 DEFAULT '0' NOT NULL CHECK (poll_option_total >= 0)
 );
@@ -698,7 +698,7 @@ CREATE INDEX phpbb_poll_options_topic_id ON phpbb_poll_options (topic_id);
 	Table: 'phpbb_poll_votes'
 */
 CREATE TABLE phpbb_poll_votes (
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	poll_option_id INT2 DEFAULT '0' NOT NULL,
 	vote_user_id INT4 DEFAULT '0' NOT NULL CHECK (vote_user_id >= 0),
 	vote_user_ip varchar(40) DEFAULT '' NOT NULL
@@ -715,7 +715,7 @@ CREATE SEQUENCE phpbb_posts_seq;
 
 CREATE TABLE phpbb_posts (
 	post_id INT4 DEFAULT nextval('phpbb_posts_seq'),
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	poster_id INT4 DEFAULT '0' NOT NULL CHECK (poster_id >= 0),
 	icon_id INT4 DEFAULT '0' NOT NULL CHECK (icon_id >= 0),
@@ -797,7 +797,7 @@ CREATE SEQUENCE phpbb_privmsgs_folder_seq;
 
 CREATE TABLE phpbb_privmsgs_folder (
 	folder_id INT4 DEFAULT nextval('phpbb_privmsgs_folder_seq'),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	folder_name varchar(255) DEFAULT '' NOT NULL,
 	pm_count INT4 DEFAULT '0' NOT NULL CHECK (pm_count >= 0),
 	PRIMARY KEY (folder_id)
@@ -812,7 +812,7 @@ CREATE SEQUENCE phpbb_privmsgs_rules_seq;
 
 CREATE TABLE phpbb_privmsgs_rules (
 	rule_id INT4 DEFAULT nextval('phpbb_privmsgs_rules_seq'),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	rule_check INT4 DEFAULT '0' NOT NULL CHECK (rule_check >= 0),
 	rule_connection INT4 DEFAULT '0' NOT NULL CHECK (rule_connection >= 0),
 	rule_string varchar(255) DEFAULT '' NOT NULL,
@@ -830,7 +830,7 @@ CREATE INDEX phpbb_privmsgs_rules_user_id ON phpbb_privmsgs_rules (user_id);
 */
 CREATE TABLE phpbb_privmsgs_to (
 	msg_id INT4 DEFAULT '0' NOT NULL CHECK (msg_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	author_id INT4 DEFAULT '0' NOT NULL CHECK (author_id >= 0),
 	pm_deleted INT2 DEFAULT '0' NOT NULL CHECK (pm_deleted >= 0),
 	pm_new INT2 DEFAULT '1' NOT NULL CHECK (pm_new >= 0),
@@ -882,7 +882,7 @@ CREATE INDEX phpbb_profile_fields_fld_ordr ON phpbb_profile_fields (field_order)
 	Table: 'phpbb_profile_fields_data'
 */
 CREATE TABLE phpbb_profile_fields_data (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	pf_phpbb_location varchar(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests varchar(4000) DEFAULT '' NOT NULL,
 	pf_phpbb_occupation varchar(4000) DEFAULT '' NOT NULL,
@@ -939,9 +939,9 @@ CREATE SEQUENCE phpbb_reports_seq;
 CREATE TABLE phpbb_reports (
 	report_id INT4 DEFAULT nextval('phpbb_reports_seq'),
 	reason_id INT2 DEFAULT '0' NOT NULL CHECK (reason_id >= 0),
-	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	post_id INT4 DEFAULT '0' NOT NULL,
 	pm_id INT4 DEFAULT '0' NOT NULL CHECK (pm_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	user_notify INT2 DEFAULT '0' NOT NULL CHECK (user_notify >= 0),
 	report_closed INT2 DEFAULT '0' NOT NULL CHECK (report_closed >= 0),
 	report_time INT4 DEFAULT '0' NOT NULL CHECK (report_time >= 0),
@@ -1004,7 +1004,7 @@ CREATE INDEX phpbb_search_wordlist_wrd_cnt ON phpbb_search_wordlist (word_count)
 	Table: 'phpbb_search_wordmatch'
 */
 CREATE TABLE phpbb_search_wordmatch (
-	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	post_id INT4 DEFAULT '0' NOT NULL,
 	word_id INT4 DEFAULT '0' NOT NULL CHECK (word_id >= 0),
 	title_match INT2 DEFAULT '0' NOT NULL CHECK (title_match >= 0)
 );
@@ -1042,7 +1042,7 @@ CREATE INDEX phpbb_sessions_session_fid ON phpbb_sessions (session_forum_id);
 */
 CREATE TABLE phpbb_sessions_keys (
 	key_id char(32) DEFAULT '' NOT NULL,
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	last_ip varchar(40) DEFAULT '' NOT NULL,
 	last_login INT4 DEFAULT '0' NOT NULL CHECK (last_login >= 0),
 	PRIMARY KEY (key_id, user_id)
@@ -1175,8 +1175,8 @@ CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_p
 	Table: 'phpbb_topics_track'
 */
 CREATE TABLE phpbb_topics_track (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	mark_time INT4 DEFAULT '0' NOT NULL CHECK (mark_time >= 0),
 	PRIMARY KEY (user_id, topic_id)
@@ -1189,8 +1189,8 @@ CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track (forum_id);
 	Table: 'phpbb_topics_posted'
 */
 CREATE TABLE phpbb_topics_posted (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
+	topic_id INT4 DEFAULT '0' NOT NULL,
 	topic_posted INT2 DEFAULT '0' NOT NULL CHECK (topic_posted >= 0),
 	PRIMARY KEY (user_id, topic_id)
 );
@@ -1200,8 +1200,8 @@ CREATE TABLE phpbb_topics_posted (
 	Table: 'phpbb_topics_watch'
 */
 CREATE TABLE phpbb_topics_watch (
-	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	topic_id INT4 DEFAULT '0' NOT NULL,
+	user_id INT4 DEFAULT '0' NOT NULL,
 	notify_status INT2 DEFAULT '0' NOT NULL CHECK (notify_status >= 0)
 );
 
@@ -1215,7 +1215,7 @@ CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status
 CREATE TABLE phpbb_user_notifications (
 	item_type varchar(255) DEFAULT '' NOT NULL,
 	item_id INT4 DEFAULT '0' NOT NULL CHECK (item_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	method varchar(255) DEFAULT '' NOT NULL,
 	notify INT2 DEFAULT '1' NOT NULL CHECK (notify >= 0)
 );
@@ -1226,7 +1226,7 @@ CREATE TABLE phpbb_user_notifications (
 */
 CREATE TABLE phpbb_user_group (
 	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	group_leader INT2 DEFAULT '0' NOT NULL CHECK (group_leader >= 0),
 	user_pending INT2 DEFAULT '1' NOT NULL CHECK (user_pending >= 0)
 );
@@ -1328,8 +1328,8 @@ CREATE SEQUENCE phpbb_warnings_seq;
 
 CREATE TABLE phpbb_warnings (
 	warning_id INT4 DEFAULT nextval('phpbb_warnings_seq'),
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
+	post_id INT4 DEFAULT '0' NOT NULL,
 	log_id INT4 DEFAULT '0' NOT NULL CHECK (log_id >= 0),
 	warning_time INT4 DEFAULT '0' NOT NULL CHECK (warning_time >= 0),
 	PRIMARY KEY (warning_id)
@@ -1353,7 +1353,7 @@ CREATE TABLE phpbb_words (
 	Table: 'phpbb_zebra'
 */
 CREATE TABLE phpbb_zebra (
-	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL,
 	zebra_id INT4 DEFAULT '0' NOT NULL CHECK (zebra_id >= 0),
 	friend INT2 DEFAULT '0' NOT NULL CHECK (friend >= 0),
 	foe INT2 DEFAULT '0' NOT NULL CHECK (foe >= 0),

@@ -7,7 +7,7 @@
 CREATE TABLE phpbb_attachments (
 	attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	post_msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	in_message tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	is_orphan tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE phpbb_acl_roles_data (
 
 # Table: 'phpbb_acl_users'
 CREATE TABLE phpbb_acl_users (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -128,8 +128,8 @@ CREATE TABLE phpbb_bbcodes (
 
 # Table: 'phpbb_bookmarks'
 CREATE TABLE phpbb_bookmarks (
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (topic_id, user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
@@ -139,7 +139,7 @@ CREATE TABLE phpbb_bots (
 	bot_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	bot_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	bot_name varchar(255) DEFAULT '' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	bot_agent varchar(255) DEFAULT '' NOT NULL,
 	bot_ip varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (bot_id),
@@ -189,8 +189,8 @@ CREATE TABLE phpbb_disallow (
 # Table: 'phpbb_drafts'
 CREATE TABLE phpbb_drafts (
 	draft_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	save_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	draft_subject varchar(255) DEFAULT '' NOT NULL,
@@ -289,7 +289,7 @@ CREATE TABLE phpbb_forums (
 # Table: 'phpbb_forums_access'
 CREATE TABLE phpbb_forums_access (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' NOT NULL,
 	PRIMARY KEY (forum_id, user_id, session_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -297,7 +297,7 @@ CREATE TABLE phpbb_forums_access (
 
 # Table: 'phpbb_forums_track'
 CREATE TABLE phpbb_forums_track (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	mark_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, forum_id)
@@ -307,7 +307,7 @@ CREATE TABLE phpbb_forums_track (
 # Table: 'phpbb_forums_watch'
 CREATE TABLE phpbb_forums_watch (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	notify_status tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY forum_id (forum_id),
 	KEY user_id (user_id),
@@ -373,9 +373,9 @@ CREATE TABLE phpbb_lang (
 CREATE TABLE phpbb_log (
 	log_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	log_type tinyint(4) DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	reportee_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	log_ip varchar(40) DEFAULT '' NOT NULL,
 	log_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -397,7 +397,7 @@ CREATE TABLE phpbb_login_attempts (
 	attempt_browser varchar(150) DEFAULT '' NOT NULL,
 	attempt_forwarded_for varchar(255) DEFAULT '' NOT NULL,
 	attempt_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	username varchar(255) DEFAULT '0' NOT NULL,
 	username_clean varchar(255) DEFAULT '0' NOT NULL,
 	KEY att_ip (attempt_ip, attempt_time),
@@ -410,7 +410,7 @@ CREATE TABLE phpbb_login_attempts (
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	username varchar(255) DEFAULT '' NOT NULL,
 	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name varchar(255) DEFAULT '' NOT NULL,
@@ -469,7 +469,7 @@ CREATE TABLE phpbb_notifications (
 	notification_type_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	item_parent_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	notification_read tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	notification_time int(11) UNSIGNED DEFAULT '1' NOT NULL,
 	notification_data text NOT NULL,
@@ -481,7 +481,7 @@ CREATE TABLE phpbb_notifications (
 
 # Table: 'phpbb_oauth_accounts'
 CREATE TABLE phpbb_oauth_accounts (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	provider varchar(255) DEFAULT '' NOT NULL,
 	oauth_provider_id text NOT NULL,
 	PRIMARY KEY (user_id, provider)
@@ -490,7 +490,7 @@ CREATE TABLE phpbb_oauth_accounts (
 
 # Table: 'phpbb_oauth_tokens'
 CREATE TABLE phpbb_oauth_tokens (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' NOT NULL,
 	provider varchar(255) DEFAULT '' NOT NULL,
 	oauth_token mediumtext NOT NULL,
@@ -502,7 +502,7 @@ CREATE TABLE phpbb_oauth_tokens (
 # Table: 'phpbb_poll_options'
 CREATE TABLE phpbb_poll_options (
 	poll_option_id tinyint(4) DEFAULT '0' NOT NULL,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_option_text text NOT NULL,
 	poll_option_total mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY poll_opt_id (poll_option_id),
@@ -512,7 +512,7 @@ CREATE TABLE phpbb_poll_options (
 
 # Table: 'phpbb_poll_votes'
 CREATE TABLE phpbb_poll_votes (
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_option_id tinyint(4) DEFAULT '0' NOT NULL,
 	vote_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	vote_user_ip varchar(40) DEFAULT '' NOT NULL,
@@ -524,8 +524,8 @@ CREATE TABLE phpbb_poll_votes (
 
 # Table: 'phpbb_posts'
 CREATE TABLE phpbb_posts (
-	post_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	post_id INT(10) UNSIGNED NOT NULL auto_increment,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	icon_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -599,7 +599,7 @@ CREATE TABLE phpbb_privmsgs (
 # Table: 'phpbb_privmsgs_folder'
 CREATE TABLE phpbb_privmsgs_folder (
 	folder_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	folder_name varchar(255) DEFAULT '' NOT NULL,
 	pm_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (folder_id),
@@ -610,7 +610,7 @@ CREATE TABLE phpbb_privmsgs_folder (
 # Table: 'phpbb_privmsgs_rules'
 CREATE TABLE phpbb_privmsgs_rules (
 	rule_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_check mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_connection mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_string varchar(255) DEFAULT '' NOT NULL,
@@ -626,7 +626,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 # Table: 'phpbb_privmsgs_to'
 CREATE TABLE phpbb_privmsgs_to (
 	msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	author_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_deleted tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
@@ -672,7 +672,7 @@ CREATE TABLE phpbb_profile_fields (
 
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	pf_phpbb_location varchar(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests text NOT NULL,
 	pf_phpbb_occupation text NOT NULL,
@@ -717,9 +717,9 @@ CREATE TABLE phpbb_ranks (
 CREATE TABLE phpbb_reports (
 	report_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	reason_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	post_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	user_notify tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_closed tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -770,7 +770,7 @@ CREATE TABLE phpbb_search_wordlist (
 
 # Table: 'phpbb_search_wordmatch'
 CREATE TABLE phpbb_search_wordmatch (
-	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	post_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	title_match tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	UNIQUE unq_mtch (word_id, post_id, title_match),
@@ -804,7 +804,7 @@ CREATE TABLE phpbb_sessions (
 # Table: 'phpbb_sessions_keys'
 CREATE TABLE phpbb_sessions_keys (
 	key_id char(32) DEFAULT '' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	last_ip varchar(40) DEFAULT '' NOT NULL,
 	last_login int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (key_id, user_id),
@@ -865,7 +865,7 @@ CREATE TABLE phpbb_teampage (
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
-	topic_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	topic_id INT(10) UNSIGNED NOT NULL auto_increment,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	icon_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -915,8 +915,8 @@ CREATE TABLE phpbb_topics (
 
 # Table: 'phpbb_topics_track'
 CREATE TABLE phpbb_topics_track (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	mark_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, topic_id),
@@ -927,8 +927,8 @@ CREATE TABLE phpbb_topics_track (
 
 # Table: 'phpbb_topics_posted'
 CREATE TABLE phpbb_topics_posted (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_posted tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, topic_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -936,8 +936,8 @@ CREATE TABLE phpbb_topics_posted (
 
 # Table: 'phpbb_topics_watch'
 CREATE TABLE phpbb_topics_watch (
-	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	topic_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	notify_status tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY topic_id (topic_id),
 	KEY user_id (user_id),
@@ -949,7 +949,7 @@ CREATE TABLE phpbb_topics_watch (
 CREATE TABLE phpbb_user_notifications (
 	item_type varchar(255) DEFAULT '' NOT NULL,
 	item_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	method varchar(255) DEFAULT '' NOT NULL,
 	notify tinyint(1) UNSIGNED DEFAULT '1' NOT NULL
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -958,7 +958,7 @@ CREATE TABLE phpbb_user_notifications (
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
 	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	group_leader tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	user_pending tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	KEY group_id (group_id),
@@ -969,7 +969,7 @@ CREATE TABLE phpbb_user_group (
 
 # Table: 'phpbb_users'
 CREATE TABLE phpbb_users (
-	user_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	user_id INT(10) UNSIGNED NOT NULL auto_increment,
 	user_type tinyint(2) DEFAULT '0' NOT NULL,
 	group_id mediumint(8) UNSIGNED DEFAULT '3' NOT NULL,
 	user_permissions mediumtext NOT NULL,
@@ -1052,8 +1052,8 @@ CREATE TABLE phpbb_users (
 # Table: 'phpbb_warnings'
 CREATE TABLE phpbb_warnings (
 	warning_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+	post_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	log_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	warning_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (warning_id)
@@ -1071,7 +1071,7 @@ CREATE TABLE phpbb_words (
 
 # Table: 'phpbb_zebra'
 CREATE TABLE phpbb_zebra (
-	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 	zebra_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	friend tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
