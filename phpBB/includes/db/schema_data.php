@@ -29,6 +29,7 @@ $schema_data = array();
 *	Column Types:
 *	INT:x		=> SIGNED int(x)
 *	BINT		=> BIGINT
+*	ULINT		=> UNSIGNED int(10)
 *	UINT		=> mediumint(8) UNSIGNED
 *	UINT:x		=> int(x) UNSIGNED
 *	TINT:x		=> tinyint(x)
@@ -53,7 +54,7 @@ $schema_data['phpbb_attachments'] = array(
 	'COLUMNS'		=> array(
 		'attach_id'			=> array('UINT', NULL, 'auto_increment'),
 		'post_msg_id'		=> array('UINT', 0),
-		'topic_id'			=> array('UINT:10', 0),
+		'topic_id'			=> array('ULINT', 0),
 		'in_message'		=> array('BOOL', 0),
 		'poster_id'			=> array('UINT', 0),
 		'is_orphan'			=> array('BOOL', 1),
@@ -135,7 +136,7 @@ $schema_data['phpbb_acl_roles_data'] = array(
 
 $schema_data['phpbb_acl_users'] = array(
 	'COLUMNS'		=> array(
-		'user_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
 		'forum_id'			=> array('UINT', 0),
 		'auth_option_id'	=> array('UINT', 0),
 		'auth_role_id'		=> array('UINT', 0),
@@ -190,8 +191,8 @@ $schema_data['phpbb_bbcodes'] = array(
 
 $schema_data['phpbb_bookmarks'] = array(
 	'COLUMNS'		=> array(
-		'topic_id'			=> array('UINT:10', 0),
-		'user_id'			=> array('UINT:10', 0),
+		'topic_id'			=> array('ULINT', 0),
+		'user_id'			=> array('ULINT', 0),
 	),
 	'PRIMARY_KEY'			=> array('topic_id', 'user_id'),
 );
@@ -201,7 +202,7 @@ $schema_data['phpbb_bots'] = array(
 		'bot_id'			=> array('UINT', NULL, 'auto_increment'),
 		'bot_active'		=> array('BOOL', 1),
 		'bot_name'			=> array('STEXT_UNI', ''),
-		'user_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
 		'bot_agent'			=> array('VCHAR', ''),
 		'bot_ip'			=> array('VCHAR', ''),
 	),
@@ -257,8 +258,8 @@ $schema_data['phpbb_disallow'] = array(
 $schema_data['phpbb_drafts'] = array(
 	'COLUMNS'		=> array(
 		'draft_id'			=> array('UINT', NULL, 'auto_increment'),
-		'user_id'			=> array('UINT:10', 0),
-		'topic_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
+		'topic_id'			=> array('ULINT', 0),
 		'forum_id'			=> array('UINT', 0),
 		'save_time'			=> array('TIMESTAMP', 0),
 		'draft_subject'		=> array('STEXT_UNI', ''),
@@ -363,7 +364,7 @@ $schema_data['phpbb_forums'] = array(
 $schema_data['phpbb_forums_access'] = array(
 	'COLUMNS'		=> array(
 		'forum_id'				=> array('UINT', 0),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'session_id'			=> array('CHAR:32', ''),
 	),
 	'PRIMARY_KEY'	=> array('forum_id', 'user_id', 'session_id'),
@@ -371,7 +372,7 @@ $schema_data['phpbb_forums_access'] = array(
 
 $schema_data['phpbb_forums_track'] = array(
 	'COLUMNS'		=> array(
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'forum_id'				=> array('UINT', 0),
 		'mark_time'				=> array('TIMESTAMP', 0),
 	),
@@ -381,7 +382,7 @@ $schema_data['phpbb_forums_track'] = array(
 $schema_data['phpbb_forums_watch'] = array(
 	'COLUMNS'		=> array(
 		'forum_id'				=> array('UINT', 0),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'notify_status'			=> array('BOOL', 0),
 	),
 	'KEYS'			=> array(
@@ -455,9 +456,9 @@ $schema_data['phpbb_log'] = array(
 	'COLUMNS'		=> array(
 		'log_id'				=> array('UINT', NULL, 'auto_increment'),
 		'log_type'				=> array('TINT:4', 0),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'forum_id'				=> array('UINT', 0),
-		'topic_id'				=> array('UINT:10', 0),
+		'topic_id'				=> array('ULINT', 0),
 		'reportee_id'			=> array('UINT', 0),
 		'log_ip'				=> array('VCHAR:40', ''),
 		'log_time'				=> array('TIMESTAMP', 0),
@@ -481,7 +482,7 @@ $schema_data['phpbb_login_attempts'] = array(
 		'attempt_browser'		=> array('VCHAR:150', ''),
 		'attempt_forwarded_for'	=> array('VCHAR:255', ''),
 		'attempt_time'			=> array('TIMESTAMP', 0),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'username'				=> array('VCHAR_UNI:255', 0),
 		'username_clean'		=> array('VCHAR_CI', 0),
 	),
@@ -496,7 +497,7 @@ $schema_data['phpbb_login_attempts'] = array(
 $schema_data['phpbb_moderator_cache'] = array(
 	'COLUMNS'		=> array(
 		'forum_id'				=> array('UINT', 0),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'username'				=> array('VCHAR_UNI:255', ''),
 		'group_id'				=> array('UINT', 0),
 		'group_name'			=> array('VCHAR_UNI', ''),
@@ -561,7 +562,7 @@ $schema_data['phpbb_notifications'] = array(
 		'notification_type_id'			=> array('USINT', 0),
 		'item_id'						=> array('UINT', 0),
 		'item_parent_id'				=> array('UINT', 0),
-		'user_id'						=> array('UINT:10', 0),
+		'user_id'						=> array('ULINT', 0),
 		'notification_read'				=> array('BOOL', 0),
 		'notification_time'				=> array('TIMESTAMP', 1),
 		'notification_data'				=> array('TEXT_UNI', ''),
@@ -575,7 +576,7 @@ $schema_data['phpbb_notifications'] = array(
 
 $schema_data['phpbb_oauth_accounts'] = array(
 	'COLUMNS' => array(
-		'user_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
 		'provider'			=> array('VCHAR', ''),
 		'oauth_provider_id'	=> array('TEXT_UNI', ''),
 	),
@@ -587,7 +588,7 @@ $schema_data['phpbb_oauth_accounts'] = array(
 
 $schema_data['phpbb_oauth_tokens'] = array(
 	'COLUMNS' => array(
-		'user_id'			=> array('UINT:10', 0), // phpbb_users.user_id
+		'user_id'			=> array('ULINT', 0), // phpbb_users.user_id
 		'session_id'		=> array('CHAR:32', ''), // phpbb_sessions.session_id used only when user_id not set
 		'provider'			=> array('VCHAR', ''), // Name of the OAuth provider
 		'oauth_token'		=> array('MTEXT', ''), // Serialized token
@@ -601,7 +602,7 @@ $schema_data['phpbb_oauth_tokens'] = array(
 $schema_data['phpbb_poll_options'] = array(
 	'COLUMNS'		=> array(
 		'poll_option_id'		=> array('TINT:4', 0),
-		'topic_id'				=> array('UINT:10', 0),
+		'topic_id'				=> array('ULINT', 0),
 		'poll_option_text'		=> array('TEXT_UNI', ''),
 		'poll_option_total'		=> array('UINT', 0),
 	),
@@ -613,7 +614,7 @@ $schema_data['phpbb_poll_options'] = array(
 
 $schema_data['phpbb_poll_votes'] = array(
 	'COLUMNS'		=> array(
-		'topic_id'				=> array('UINT:10', 0),
+		'topic_id'				=> array('ULINT', 0),
 		'poll_option_id'		=> array('TINT:4', 0),
 		'vote_user_id'			=> array('UINT', 0),
 		'vote_user_ip'			=> array('VCHAR:40', ''),
@@ -627,8 +628,8 @@ $schema_data['phpbb_poll_votes'] = array(
 
 $schema_data['phpbb_posts'] = array(
 	'COLUMNS'		=> array(
-		'post_id'				=> array('UINT:10', NULL, 'auto_increment'),
-		'topic_id'				=> array('UINT:10', 0),
+		'post_id'				=> array('ULINT', NULL, 'auto_increment'),
+		'topic_id'				=> array('ULINT', 0),
 		'forum_id'				=> array('UINT', 0),
 		'poster_id'				=> array('UINT', 0),
 		'icon_id'				=> array('UINT', 0),
@@ -706,7 +707,7 @@ $schema_data['phpbb_privmsgs'] = array(
 $schema_data['phpbb_privmsgs_folder'] = array(
 	'COLUMNS'		=> array(
 		'folder_id'				=> array('UINT', NULL, 'auto_increment'),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'folder_name'			=> array('VCHAR_UNI', ''),
 		'pm_count'				=> array('UINT', 0),
 	),
@@ -719,7 +720,7 @@ $schema_data['phpbb_privmsgs_folder'] = array(
 $schema_data['phpbb_privmsgs_rules'] = array(
 	'COLUMNS'		=> array(
 		'rule_id'				=> array('UINT', NULL, 'auto_increment'),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'rule_check'			=> array('UINT', 0),
 		'rule_connection'		=> array('UINT', 0),
 		'rule_string'			=> array('VCHAR_UNI', ''),
@@ -737,7 +738,7 @@ $schema_data['phpbb_privmsgs_rules'] = array(
 $schema_data['phpbb_privmsgs_to'] = array(
 	'COLUMNS'		=> array(
 		'msg_id'				=> array('UINT', 0),
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'author_id'				=> array('UINT', 0),
 		'pm_deleted'			=> array('BOOL', 0),
 		'pm_new'				=> array('BOOL', 1),
@@ -787,7 +788,7 @@ $schema_data['phpbb_profile_fields'] = array(
 
 $schema_data['phpbb_profile_fields_data'] = array(
 	'COLUMNS'		=> array(
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'pf_phpbb_location'		=> array('VCHAR', ''),
 		'pf_phpbb_interests'	=> array('TEXT_UNI', ''),
 		'pf_phpbb_occupation'	=> array('TEXT_UNI', ''),
@@ -832,9 +833,9 @@ $schema_data['phpbb_reports'] = array(
 	'COLUMNS'		=> array(
 		'report_id'							=> array('UINT', NULL, 'auto_increment'),
 		'reason_id'							=> array('USINT', 0),
-		'post_id'							=> array('UINT:10', 0),
+		'post_id'							=> array('ULINT', 0),
 		'pm_id'								=> array('UINT', 0),
-		'user_id'							=> array('UINT:10', 0),
+		'user_id'							=> array('ULINT', 0),
 		'user_notify'						=> array('BOOL', 0),
 		'report_closed'						=> array('BOOL', 0),
 		'report_time'						=> array('TIMESTAMP', 0),
@@ -889,7 +890,7 @@ $schema_data['phpbb_search_wordlist'] = array(
 
 $schema_data['phpbb_search_wordmatch'] = array(
 	'COLUMNS'		=> array(
-		'post_id'			=> array('UINT:10', 0),
+		'post_id'			=> array('ULINT', 0),
 		'word_id'			=> array('UINT', 0),
 		'title_match'		=> array('BOOL', 0),
 	),
@@ -927,7 +928,7 @@ $schema_data['phpbb_sessions'] = array(
 $schema_data['phpbb_sessions_keys'] = array(
 	'COLUMNS'		=> array(
 		'key_id'			=> array('CHAR:32', ''),
-		'user_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
 		'last_ip'			=> array('VCHAR:40', ''),
 		'last_login'		=> array('TIMESTAMP', 0),
 	),
@@ -995,7 +996,7 @@ $schema_data['phpbb_teampage'] = array(
 
 $schema_data['phpbb_topics'] = array(
 	'COLUMNS'		=> array(
-		'topic_id'					=> array('UINT:10', NULL, 'auto_increment'),
+		'topic_id'					=> array('ULINT', NULL, 'auto_increment'),
 		'forum_id'					=> array('UINT', 0),
 		'icon_id'					=> array('UINT', 0),
 		'topic_attachment'			=> array('BOOL', 0),
@@ -1047,8 +1048,8 @@ $schema_data['phpbb_topics'] = array(
 
 $schema_data['phpbb_topics_track'] = array(
 	'COLUMNS'		=> array(
-		'user_id'			=> array('UINT:10', 0),
-		'topic_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
+		'topic_id'			=> array('ULINT', 0),
 		'forum_id'			=> array('UINT', 0),
 		'mark_time'			=> array('TIMESTAMP', 0),
 	),
@@ -1061,8 +1062,8 @@ $schema_data['phpbb_topics_track'] = array(
 
 $schema_data['phpbb_topics_posted'] = array(
 	'COLUMNS'		=> array(
-		'user_id'			=> array('UINT:10', 0),
-		'topic_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
+		'topic_id'			=> array('ULINT', 0),
 		'topic_posted'		=> array('BOOL', 0),
 	),
 	'PRIMARY_KEY'	=> array('user_id', 'topic_id'),
@@ -1070,8 +1071,8 @@ $schema_data['phpbb_topics_posted'] = array(
 
 $schema_data['phpbb_topics_watch'] = array(
 	'COLUMNS'		=> array(
-		'topic_id'			=> array('UINT:10', 0),
-		'user_id'			=> array('UINT:10', 0),
+		'topic_id'			=> array('ULINT', 0),
+		'user_id'			=> array('ULINT', 0),
 		'notify_status'		=> array('BOOL', 0),
 	),
 	'KEYS'			=> array(
@@ -1085,7 +1086,7 @@ $schema_data['phpbb_user_notifications'] = array(
 	'COLUMNS'		=> array(
 		'item_type'			=> array('VCHAR:255', ''),
 		'item_id'			=> array('UINT', 0),
-		'user_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
 		'method'			=> array('VCHAR:255', ''),
 		'notify'			=> array('BOOL', 1),
 	),
@@ -1094,7 +1095,7 @@ $schema_data['phpbb_user_notifications'] = array(
 $schema_data['phpbb_user_group'] = array(
 	'COLUMNS'		=> array(
 		'group_id'			=> array('UINT', 0),
-		'user_id'			=> array('UINT:10', 0),
+		'user_id'			=> array('ULINT', 0),
 		'group_leader'		=> array('BOOL', 0),
 		'user_pending'		=> array('BOOL', 1),
 	),
@@ -1107,7 +1108,7 @@ $schema_data['phpbb_user_group'] = array(
 
 $schema_data['phpbb_users'] = array(
 	'COLUMNS'		=> array(
-		'user_id'					=> array('UINT:10', NULL, 'auto_increment'),
+		'user_id'					=> array('ULINT', NULL, 'auto_increment'),
 		'user_type'					=> array('TINT:2', 0),
 		'group_id'					=> array('UINT', 3),
 		'user_permissions'			=> array('MTEXT', ''),
@@ -1192,8 +1193,8 @@ $schema_data['phpbb_users'] = array(
 $schema_data['phpbb_warnings'] = array(
 	'COLUMNS'		=> array(
 		'warning_id'			=> array('UINT', NULL, 'auto_increment'),
-		'user_id'				=> array('UINT:10', 0),
-		'post_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
+		'post_id'				=> array('ULINT', 0),
 		'log_id'				=> array('UINT', 0),
 		'warning_time'			=> array('TIMESTAMP', 0),
 	),
@@ -1211,7 +1212,7 @@ $schema_data['phpbb_words'] = array(
 
 $schema_data['phpbb_zebra'] = array(
 	'COLUMNS'		=> array(
-		'user_id'				=> array('UINT:10', 0),
+		'user_id'				=> array('ULINT', 0),
 		'zebra_id'				=> array('UINT', 0),
 		'friend'				=> array('BOOL', 0),
 		'foe'					=> array('BOOL', 0),

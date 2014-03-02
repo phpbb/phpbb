@@ -44,6 +44,7 @@ class tools
 			'mysql_41'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
+				'ULINT'		=> 'INT(10) UNSIGNED',
 				'UINT'		=> 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
@@ -74,6 +75,7 @@ class tools
 			'mysql_40'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
+				'ULINT'		=> 'INT(10) UNSIGNED',
 				'UINT'		=> 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
@@ -104,6 +106,7 @@ class tools
 			'firebird'	=> array(
 				'INT:'		=> 'INTEGER',
 				'BINT'		=> 'DOUBLE PRECISION',
+				'ULINT'		=> 'INTEGER',
 				'UINT'		=> 'INTEGER',
 				'UINT:'		=> 'INTEGER',
 				'TINT:'		=> 'INTEGER',
@@ -134,6 +137,7 @@ class tools
 			'mssql'		=> array(
 				'INT:'		=> '[int]',
 				'BINT'		=> '[float]',
+				'ULINT'		=> '[int]',
 				'UINT'		=> '[int]',
 				'UINT:'		=> '[int]',
 				'TINT:'		=> '[int]',
@@ -164,6 +168,7 @@ class tools
 			'mssqlnative'	=> array(
 				'INT:'		=> '[int]',
 				'BINT'		=> '[float]',
+				'ULINT'		=> '[int]',
 				'UINT'		=> '[int]',
 				'UINT:'		=> '[int]',
 				'TINT:'		=> '[int]',
@@ -194,6 +199,7 @@ class tools
 			'oracle'	=> array(
 				'INT:'		=> 'number(%d)',
 				'BINT'		=> 'number(20)',
+				'ULINT'		=> 'number(10)',
 				'UINT'		=> 'number(8)',
 				'UINT:'		=> 'number(%d)',
 				'TINT:'		=> 'number(%d)',
@@ -224,7 +230,8 @@ class tools
 			'sqlite'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
-				'UINT'		=> 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
+				'ULINT'		=> 'INTEGER UNSIGNED', // 'int(10) UNSIGNED
+				'UINT'		=> 'INTEGER UNSIGNED', // 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
 				'USINT'		=> 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
@@ -254,6 +261,7 @@ class tools
 			'postgres'	=> array(
 				'INT:'		=> 'INT4',
 				'BINT'		=> 'INT8',
+				'ULINT'		=> 'INT4', // unsigned
 				'UINT'		=> 'INT4', // unsigned
 				'UINT:'		=> 'INT4', // unsigned
 				'USINT'		=> 'INT2', // unsigned
@@ -287,7 +295,7 @@ class tools
 	* A list of types being unsigned for better reference in some db's
 	* @var array
 	*/
-	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
+	var $unsigned_types = array('ULINT', 'UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 	/**
 	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
