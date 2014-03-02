@@ -819,6 +819,7 @@ li.pagination ul {
 	right: 25%; 
 	top: 150px;
 	z-index: 50;
+	width: 620px;
 }
 
 @media only screen and (max-height: 500px), only screen and (max-device-width: 500px)

@@ -496,7 +496,7 @@ fieldset.display-actions {
 
 .phpbb_alert {
 	left: 0;
-	max-width: none;
+	width: auto;
 	margin: 0 5px;
 	right: 0;
 }
