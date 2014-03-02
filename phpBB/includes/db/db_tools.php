@@ -452,9 +452,6 @@ class phpbb_db_tools
 		// Determine if we have created a PRIMARY KEY in the earliest
 		$primary_key_gen = false;
 
-		// Determine if the table must be created with TEXTIMAGE
-		$create_textimage = false;
-
 		// Determine if the table requires a sequence
 		$create_sequence = false;
 
@@ -501,12 +498,6 @@ class phpbb_db_tools
 				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
 			}
 
-			// create textimage DDL based off of the existance of certain column types
-			if (!$create_textimage)
-			{
-				$create_textimage = isset($prepared_column['textimage']) && $prepared_column['textimage'];
-			}
-
 			// create sequence DDL based off of the existance of auto incrementing columns
 			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
 			{
@@ -521,13 +512,9 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
-				$table_sql .= "\n);";
-				$statements[] = $table_sql;
-			break;
-
 			case 'mssql':
 			case 'mssqlnative':
-				$table_sql .= "\n) ON [PRIMARY]" . (($create_textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '');
+				$table_sql .= "\n);";
 				$statements[] = $table_sql;
 			break;
 		}
@@ -2038,7 +2025,7 @@ class phpbb_db_tools
 				$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
 				$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
 				$sql .= '[' . implode("],\n\t\t[", $column) . ']';
-				$sql .= ') ON [PRIMARY]';
+				$sql .= ')';
 
 				$statements[] = $sql;
 			break;
@@ -2136,7 +2123,7 @@ class phpbb_db_tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
+				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 		}
 
@@ -2189,7 +2176,7 @@ class phpbb_db_tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
+				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 		}
 
