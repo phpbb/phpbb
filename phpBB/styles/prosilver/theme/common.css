@@ -813,13 +813,14 @@ li.pagination ul {
 .phpbb_alert {
 	border: 1px solid transparent;
 	display: none;
-	left: 25%; 
+	left: 0; 
 	padding: 0 25px 20px 25px;
 	position: fixed;
-	right: 25%; 
+	right: 0; 
 	top: 150px;
 	z-index: 50;
 	width: 620px;
+	margin: 0 auto; 
 }
 
 @media only screen and (max-height: 500px), only screen and (max-device-width: 500px)

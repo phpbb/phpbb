@@ -1642,7 +1642,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	.phpbb_alert {
-		max-width: none;
+		width: auto;
 		margin: 0 25px;
 	}
 }
