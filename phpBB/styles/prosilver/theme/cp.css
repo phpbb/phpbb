@@ -358,7 +358,7 @@ ul.cplist {
 .cp-mini {
 	margin: 10px 15px 10px 5px;
 	max-height: 200px;
-	overflow-x: auto;
+	overflow-y: auto;
 	padding: 5px 10px;
 	border-radius: 7px;
 }
