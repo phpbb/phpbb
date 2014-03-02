@@ -388,7 +388,7 @@ class driver
 	* Build sql statement from array for insert/update/select statements
 	*
 	* Idea for this from Ikonboard
-	* Possible query values: INSERT, INSERT_SELECT, UPDATE, SELECT
+	* Possible query values: INSERT, INSERT_SELECT, UPDATE, SELECT, DELETE
 	*
 	*/
 	function sql_build_array($query, $assoc_ary = false)
@@ -423,7 +423,7 @@ class driver
 		{
 			trigger_error('The MULTI_INSERT query value is no longer supported. Please use sql_multi_insert() instead.', E_USER_ERROR);
 		}
-		else if ($query == 'UPDATE' || $query == 'SELECT')
+		else if ($query == 'UPDATE' || $query == 'SELECT' || $query == 'DELETE')
 		{
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
