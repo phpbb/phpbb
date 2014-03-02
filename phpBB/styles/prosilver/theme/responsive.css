@@ -495,8 +495,8 @@ fieldset.display-actions {
 }
 
 .phpbb_alert {
-	max-width: none;
-	margin: 0 25px;
+	width: auto;
+	margin: 0 5px;
 }
 
 .attach-comment dfn {
