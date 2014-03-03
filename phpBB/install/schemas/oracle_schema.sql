@@ -1273,6 +1273,7 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_interests clob DEFAULT '' ,
 	pf_phpbb_occupation clob DEFAULT '' ,
 	pf_phpbb_icq varchar2(255) DEFAULT '' ,
+	pf_phpbb_website varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_data PRIMARY KEY (user_id)
 )
 /

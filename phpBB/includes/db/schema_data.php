@@ -795,6 +795,7 @@ $schema_data['phpbb_profile_fields_data'] = array(
 		'pf_phpbb_interests'	=> array('TEXT_UNI', ''),
 		'pf_phpbb_occupation'	=> array('TEXT_UNI', ''),
 		'pf_phpbb_icq'			=> array('VCHAR', ''),
+		'pf_phpbb_website'		=> array('VCHAR', ''),
 	),
 	'PRIMARY_KEY'	=> 'user_id',
 );

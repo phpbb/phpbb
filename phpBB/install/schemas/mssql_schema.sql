@@ -1135,7 +1135,7 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_order] [int] DEFAULT (0) NOT NULL ,
 	[field_is_contact] [int] DEFAULT (0) NOT NULL ,
 	[field_contact_desc] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL
+	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1161,7 +1161,8 @@ CREATE TABLE [phpbb_profile_fields_data] (
 	[pf_phpbb_location] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_occupation] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[pf_phpbb_icq] [varchar] (255) DEFAULT ('') NOT NULL 
+	[pf_phpbb_icq] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_website] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

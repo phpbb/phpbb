@@ -890,6 +890,7 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_interests varchar(4000) DEFAULT '' NOT NULL,
 	pf_phpbb_occupation varchar(4000) DEFAULT '' NOT NULL,
 	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_website varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 

@@ -680,6 +680,7 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_interests text NOT NULL,
 	pf_phpbb_occupation text NOT NULL,
 	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_website varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 

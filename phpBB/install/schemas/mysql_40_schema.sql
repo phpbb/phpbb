@@ -680,6 +680,7 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_interests blob NOT NULL,
 	pf_phpbb_occupation blob NOT NULL,
 	pf_phpbb_icq varbinary(255) DEFAULT '' NOT NULL,
+	pf_phpbb_website varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
