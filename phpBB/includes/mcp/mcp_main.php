@@ -1184,6 +1184,7 @@ function mcp_fork_topic($topic_ids)
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
 
+<<<<<<< HEAD
 				if($row['post_postcount'])
 				{
 					// Re-adjust user post count
@@ -1192,6 +1193,13 @@ function mcp_fork_topic($topic_ids)
 						WHERE user_id = ' . (int) $row['poster_id'];
 					$db->sql_query($sql);
 				}
+=======
+				// Re-adjust user post count
+				$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = user_posts + 1
+				WHERE user_id = ' . (int) $row['poster_id'];
+				$db->sql_query($sql);
+>>>>>>> 366835d2bf8f2d6130ca8f55ec76e5b56db9348c
 
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
