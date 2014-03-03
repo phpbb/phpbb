@@ -753,6 +753,8 @@ dl.details dd {
 fieldset.fields1 ul.recipients {
 	list-style-type: none;
 	line-height: 1.8;
+	max-height: 150px;
+	overflow-y: auto;
 }
 
 fieldset.fields1 dd.recipients {
