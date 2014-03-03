@@ -57,7 +57,7 @@
 		<!-- IF S_BBCODE_FLASH -->
 			<input type="button" class="btnbbcode bbcode-flash" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" onmouseout="helpline('tip')" />
 		<!-- ENDIF -->
-		<span class="genmed nowrap">{L_FONT_SIZE}{L_COLON} <select class="gensmall bbcode-fontsize" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')" onmouseout="helpline('tip')">
+		<span class="genmed nowrap">{L_FONT_SIZE}{L_COLON} <select class="gensmall bbcode-size" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')" onmouseout="helpline('tip')">
 			<option value="50">{L_FONT_TINY}</option>
 			<option value="85">{L_FONT_SMALL}</option>
 			<option value="100" selected="selected">{L_FONT_NORMAL}</option>
@@ -78,7 +78,7 @@
 		<td colspan="2">
 		<div id="custom-bbcode-buttons">
 		<!-- BEGIN custom_tags -->
-			<input type="button" class="btnbbcode {custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
+			<input type="button" class="btnbbcode bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
 		<!-- END custom_tags -->
 		</div>
 		</td>
