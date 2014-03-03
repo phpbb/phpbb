@@ -23,7 +23,7 @@
 	<dd><input type="text" id="website" name="website" /></dd>
 </dl>
 <dl>
-	<dt><label for="joined">{L_JOINED}{L_COLON}</label><br /><span>{L_JOINED_EXPLAIN}</span></dt>
+	<dt><label for="joined_after">{L_JOINED}{L_COLON}</label><br /><span>{L_JOINED_EXPLAIN}</span></dt>
 	<dd>
 		<strong>{L_AFTER}</strong> <input type="text" id="joined_after" name="joined_after" />
 		<br /> <br /> <strong>{L_BEFORE}</strong> <input type="text" id="joined_before" name="joined_before" />
@@ -44,7 +44,7 @@
 <!-- IF S_GROUP_LIST -->
 <dl>
 	<dt><label for="group_id">{L_GROUP}{L_COLON}</label><br /><span>{L_PRUNE_USERS_GROUP_EXPLAIN}</span></dt>
-	<dd><select name="group_id">{S_GROUP_LIST}</select></dd>
+	<dd><select id="group_id" name="group_id">{S_GROUP_LIST}</select></dd>
 </dl>
 <!-- ENDIF -->
 </fieldset>
