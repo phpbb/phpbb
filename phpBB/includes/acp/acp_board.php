@@ -463,7 +463,7 @@ class acp_board
 		* @event core.acp_config_edit_add
 		* @since 3.1-A4
 		*/
-		$vars = array('display_vars', 'mode');
+		$vars = array('display_vars', 'mode', 'submit');
 		extract($phpbb_dispatcher->trigger_event('core.acp_config_edit_add', compact($vars)));
 
 
