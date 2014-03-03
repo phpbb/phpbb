@@ -143,6 +143,4 @@ $lang = array_merge($lang, array(
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VISITED'				=> 'Last visited',
-
-	'WWW'					=> 'Website',
 ));

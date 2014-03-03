@@ -285,7 +285,7 @@ span.imageset {
 	padding-left: 20px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_www {
+.imageset.icon_contact_www, .imageset.phpbb_website-icon {
 	background-image: url("./images/icon_contact_www.gif");
 	padding-left: 20px;
 	padding-top: 20px;

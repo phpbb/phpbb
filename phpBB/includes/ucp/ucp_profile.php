@@ -268,7 +268,6 @@ class ucp_profile
 					'msn'			=> request_var('msn', $user->data['user_msnm']),
 					'yim'			=> request_var('yim', $user->data['user_yim']),
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user->data['user_jabber'], true)),
-					'website'		=> request_var('website', $user->data['user_website']),
 				);
 
 				if ($config['allow_birthdays'])
@@ -297,9 +296,6 @@ class ucp_profile
 							array('string', true, 5, 255),
 							array('jabber')),
 						'yim'			=> array('string', true, 5, 255),
-						'website'		=> array(
-							array('string', true, 12, 255),
-							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
 					);
 
 					if ($config['allow_birthdays'])
@@ -343,7 +339,6 @@ class ucp_profile
 							'user_msnm'		=> $data['msn'],
 							'user_yim'		=> $data['yim'],
 							'user_jabber'	=> $data['jabber'],
-							'user_website'	=> $data['website'],
 							'user_notify_type'	=> $data['notify'],
 						);
 
@@ -410,7 +405,6 @@ class ucp_profile
 					'AIM'		=> $data['aim'],
 					'MSN'		=> $data['msn'],
 					'JABBER'	=> $data['jabber'],
-					'WEBSITE'	=> $data['website'],
 				));
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'

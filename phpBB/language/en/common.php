@@ -689,7 +689,6 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
 	'TOO_LONG_USERNAME'				=> 'The username you entered is too long.',
 	'TOO_LONG_EMAIL'				=> 'The email address you entered is too long.',
-	'TOO_LONG_WEBSITE'				=> 'The website address you entered is too long.',
 	'TOO_LONG_YIM'					=> 'The Yahoo! Messenger name you entered is too long.',
 
 	'TOO_MANY_VOTE_OPTIONS'			=> 'You have tried to vote for too many options.',
@@ -706,7 +705,6 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_USER_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_USERNAME'			=> 'The username you entered is too short.',
 	'TOO_SHORT_EMAIL'				=> 'The email address you entered is too short.',
-	'TOO_SHORT_WEBSITE'				=> 'The website address you entered is too short.',
 	'TOO_SHORT_YIM'					=> 'The Yahoo! Messenger name you entered is too short.',
 
 	'TOO_SMALL'						=> 'The value you entered is too small.',
@@ -825,7 +823,6 @@ $lang = array_merge($lang, array(
 	'WRONG_DATA_COLOUR'			=> 'The colour value you entered is invalid.',
 	'WRONG_DATA_JABBER'			=> 'The name you entered is not a valid Jabber account name.',
 	'WRONG_DATA_LANG'			=> 'The language you specified is not valid.',
-	'WRONG_DATA_WEBSITE'		=> 'The website address has to be a valid URL, including the protocol. For example http://www.example.com/.',
 	'WROTE'						=> 'wrote',
 
 	'YEAR'				=> 'Year',

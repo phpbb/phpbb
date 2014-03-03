@@ -388,7 +388,6 @@ class acp_prune
 		{
 			$username = request_var('username', '', true);
 			$email = request_var('email', '');
-			$website = request_var('website', '');
 
 			$active_select = request_var('active_select', 'lt');
 			$count_select = request_var('count_select', 'eq');
@@ -438,7 +437,6 @@ class acp_prune
 			$where_sql = '';
 			$where_sql .= ($username) ? ' AND username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
 			$where_sql .= ($email) ? ' AND user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
-			$where_sql .= ($website) ? ' AND user_website ' . $db->sql_like_expression(str_replace('*', $db->any_char, $website)) . ' ' : '';
 			$where_sql .= $joined_sql;
 			$where_sql .= ($count) ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
