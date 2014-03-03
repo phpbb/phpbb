@@ -483,6 +483,15 @@ class tools
 			break;
 		}
 
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
+		{
+			if (!isset($table_data['PRIMARY_KEY']))
+			{
+				$table_data['COLUMNS']['mssqlindex'] = array('UINT', NULL, 'auto_increment');
+				$table_data['PRIMARY_KEY'] = 'mssqlindex';
+			}
+		}
+
 		// Iterate through the columns to create a table
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
@@ -538,15 +547,6 @@ class tools
 		// this means that we can add the one we really wanted instead
 		if (!$primary_key_gen)
 		{
-			if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
-			{
-				if (!isset($table_data['PRIMARY_KEY']))
-				{
-					$table_data['COLUMNS']['mssqlindex'] = array('UINT', NULL, 'auto_increment');
-					$table_data['PRIMARY_KEY'] = 'mssqlindex';
-				}
-			}
-
 			// Write primary key
 			if (isset($table_data['PRIMARY_KEY']))
 			{
