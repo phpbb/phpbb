@@ -1361,7 +1361,6 @@ class acp_users
 
 				$data = array(
 					'aim'			=> request_var('aim', $user_row['user_aim']),
-					'msn'			=> request_var('msn', $user_row['user_msnm']),
 					'yim'			=> request_var('yim', $user_row['user_yim']),
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
 					'bday_day'		=> 0,
@@ -1384,7 +1383,6 @@ class acp_users
 				{
 					$error = validate_data($data, array(
 						'aim'			=> array('string', true, 3, 255),
-						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
 							array('jabber')),
@@ -1411,7 +1409,6 @@ class acp_users
 					{
 						$sql_ary = array(
 							'user_aim'		=> $data['aim'],
-							'user_msnm'		=> $data['msn'],
 							'user_yim'		=> $data['yim'],
 							'user_jabber'	=> $data['jabber'],
 							'user_birthday'	=> $data['user_birthday'],
@@ -1459,7 +1456,6 @@ class acp_users
 				$template->assign_vars(array(
 					'YIM'			=> $data['yim'],
 					'AIM'			=> $data['aim'],
-					'MSN'			=> $data['msn'],
 					'JABBER'		=> $data['jabber'],
 
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,

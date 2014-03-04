@@ -185,7 +185,6 @@ $lang = array_merge($lang, array(
 	'IMG_ICON_CONTACT_AIM'		=> 'AIM',
 	'IMG_ICON_CONTACT_EMAIL'	=> 'Send email',
 	'IMG_ICON_CONTACT_JABBER'	=> 'Jabber',
-	'IMG_ICON_CONTACT_MSNM'		=> 'WLM',
 	'IMG_ICON_CONTACT_PM'		=> 'Send message',
 	'IMG_ICON_CONTACT_YAHOO'	=> 'YIM',
 

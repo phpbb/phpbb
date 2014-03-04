@@ -119,10 +119,6 @@
 				</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_MSNM}{L_COLON} </td>
-				<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false" class="imageset">{MSN_IMG}</a><!-- ELSEIF USER_MSN -->{USER_MSN}<!-- ENDIF --></td>
-			</tr>
-			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_YIM}{L_COLON} </td>
 				<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false" class="imageset">{YIM_IMG}</a><!-- ELSEIF USER_YIM -->{USER_YIM}<!-- ENDIF --></td>
 			</tr>
@@ -138,7 +134,11 @@
 				<!-- IF custom_fields.S_PROFILE_CONTACT -->
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{custom_fields.PROFILE_FIELD_NAME}{L_COLON} </td>
-					<td><a href="{custom_fields.PROFILE_FIELD_CONTACT}"><span class="imageset {custom_fields.PROFILE_FIELD_IDENT}-icon">{custom_fields.PROFILE_FIELD_DESC}</span></a></td>
+					<!-- IF custom_fields.PROFILE_FIELD_CONTACT -->
+						<td><a href="{custom_fields.PROFILE_FIELD_CONTACT}"><span class="imageset {custom_fields.PROFILE_FIELD_IDENT}-icon">{custom_fields.PROFILE_FIELD_DESC}</span></a></td>
+					<!-- ELSE -->
+						<td><b class="genmed">{custom_fields.PROFILE_FIELD_VALUE}</b></td>
+					<!-- ENDIF -->
 				</tr>
 				<!-- ENDIF -->
 			<!-- END custom_fields -->

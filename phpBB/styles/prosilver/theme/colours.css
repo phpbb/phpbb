@@ -744,6 +744,7 @@ a.sendemail {
 .web-icon, .web-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
 .phpbb_website-icon, .phpbb_website-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
 .msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
+.phpbb_wlm-icon, .phpbb_wlm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
 .icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .phpbb_icq-icon, .phpbb_icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }

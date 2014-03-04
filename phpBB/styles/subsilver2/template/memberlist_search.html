@@ -94,16 +94,13 @@
 	<td class="row1"><b class="genmed">{L_YIM}{L_COLON}</b></td>
 	<td class="row2"><input class="post" type="text" name="yahoo" value="{YAHOO}" /></td>
 </tr>
-<tr>
 <!-- IF S_VIEWONLINE -->
+<tr>
 	<td class="row1"><b class="genmed">{L_LAST_ACTIVE}{L_COLON}</b></td>
 	<td class="row2"><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="post" type="text" name="active" value="{ACTIVE}" /></td>
-<!-- ELSE -->
 	<td colspan="2" class="row1">&nbsp;</td>
-<!-- ENDIF -->
-	<td class="row1"><b class="genmed">{L_MSNM}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="msn" value="{MSNM}" /></td>
 </tr>
+<!-- ENDIF -->
 <tr>
 	<td class="row1"><b class="genmed">{L_POSTS}{L_COLON}</b></td>
 	<td class="row2"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="number" min="0" name="count" value="{COUNT}" /></td>
