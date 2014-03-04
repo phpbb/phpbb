@@ -29,7 +29,7 @@
 	padding-left: 72px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_yahoo {
+.imageset.phpbb_yahoo-icon, .imageset.icon_contact_yahoo {
 	background-image: url("./icon_contact_yahoo.gif");
 	padding-left: 72px;
 	padding-top: 20px;

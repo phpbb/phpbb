@@ -194,7 +194,6 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_sig_bbcode_uid' => '',
 			'user_sig_bbcode_bitfield' => '',
 			'user_aim' => '',
-			'user_yim' => '',
 			'user_jabber' => '',
 			'user_actkey' => '',
 			'user_newpasswd' => '',

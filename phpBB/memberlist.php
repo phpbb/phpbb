@@ -644,7 +644,6 @@ switch ($mode)
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
@@ -988,8 +987,8 @@ switch ($mode)
 		$pagination = $phpbb_container->get('pagination');
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'h' => $user->lang['AIM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
-		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'h' => 'u.user_aim', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'h' => $user->lang['AIM'], 'k' => $user->lang['JABBER']);
+		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'h' => 'u.user_aim', 'k' => 'u.user_jabber');
 
 		if ($auth->acl_get('a_user'))
 		{
@@ -1032,7 +1031,7 @@ switch ($mode)
 		$select_single 	= request_var('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
-		$search_params = array('username', 'email', 'aim', 'yahoo', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		$search_params = array('username', 'email', 'aim', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -1042,7 +1041,6 @@ switch ($mode)
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
 			$aim		= request_var('aim', '');
-			$yahoo		= request_var('yahoo', '');
 			$jabber		= request_var('jabber', '');
 			$search_group_id	= request_var('search_group_id', 0);
 
@@ -1084,7 +1082,6 @@ switch ($mode)
 			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
 			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
 			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $aim)) . ' ' : '';
-			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $yahoo)) . ' ' : '';
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
@@ -1314,7 +1311,6 @@ switch ($mode)
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
 			'aim'			=> array('aim', ''),
-			'yahoo'			=> array('yahoo', ''),
 			'jabber'		=> array('jabber', ''),
 			'search_group_id'	=> array('search_group_id', 0),
 			'joined_select'	=> array('joined_select', 'lt'),
@@ -1444,7 +1440,6 @@ switch ($mode)
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
 				'AIM'		=> $aim,
-				'YAHOO'		=> $yahoo,
 				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
@@ -1621,7 +1616,6 @@ switch ($mode)
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
@@ -1632,7 +1626,6 @@ switch ($mode)
 			'U_SORT_POSTS'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_EMAIL'			=> $sort_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_AIM'			=> $sort_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_YIM'			=> $sort_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a') : '',
 			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1753,11 +1746,9 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
-		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
 		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
 
 		'USER_AIM'			=> $data['user_aim'],
-		'USER_YIM'			=> $data['user_yim'],
 		'USER_JABBER'		=> $data['user_jabber'],
 		'USER_JABBER_IMG'	=> ($data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
 

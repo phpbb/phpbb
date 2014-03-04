@@ -691,7 +691,6 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
 	'TOO_LONG_USERNAME'				=> 'The username you entered is too long.',
 	'TOO_LONG_EMAIL'				=> 'The email address you entered is too long.',
-	'TOO_LONG_YIM'					=> 'The Yahoo! Messenger name you entered is too long.',
 
 	'TOO_MANY_VOTE_OPTIONS'			=> 'You have tried to vote for too many options.',
 
@@ -706,7 +705,6 @@ $lang = array_merge($lang, array(
 	'TOO_SHORT_USER_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_USERNAME'			=> 'The username you entered is too short.',
 	'TOO_SHORT_EMAIL'				=> 'The email address you entered is too short.',
-	'TOO_SHORT_YIM'					=> 'The Yahoo! Messenger name you entered is too short.',
 
 	'TOO_SMALL'						=> 'The value you entered is too small.',
 	'TOO_SMALL_MAX_RECIPIENTS'		=> 'The value of <strong>Maximum number of allowed recipients per private message</strong> setting you entered is too small.',
@@ -830,7 +828,7 @@ $lang = array_merge($lang, array(
 	'YEAR'				=> 'Year',
 	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',
 	'YES'				=> 'Yes',
-	'YIM'				=> 'YIM',
+	'YIM'				=> 'Yahoo Messenger',
 	'YOU_LAST_VISIT'	=> 'Last visit was: %s',
 
 	'datetime'			=> array(

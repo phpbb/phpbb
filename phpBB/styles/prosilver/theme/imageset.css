@@ -290,7 +290,7 @@ span.imageset {
 	padding-left: 20px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_yahoo {
+.imageset.icon_contact_yahoo, .imageset.phpbb_yahoo-icon {
 	background-image: url("./images/icon_contact_yahoo.gif");
 	padding-left: 20px;
 	padding-top: 20px;

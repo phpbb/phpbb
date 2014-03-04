@@ -34,13 +34,12 @@
 		<!-- EVENT ucp_pm_viewmessage_custom_fields_after -->
 
 
-		<!-- IF U_PM or U_EMAIL or U_YIM or U_AIM or U_JABBER -->
+		<!-- IF U_PM or U_EMAIL or U_AIM or U_JABBER -->
 		<dd>
 			<ul class="profile-icons">
 			<!-- EVENT ucp_pm_viewmessage_contact_fields_before -->
 			<!-- IF U_PM --><li class="pm-icon"><a href="{U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
 			<!-- IF U_EMAIL --><li class="email-icon"><a href="{U_EMAIL}" title="{L_SEND_EMAIL_USER} {MESSAGE_AUTHOR}"><span>{L_SEND_EMAIL_USER} {MESSAGE_AUTHOR}</span></a></li><!-- ENDIF -->
-			<!-- IF U_YIM --><li class="yahoo-icon"><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false;" title="{L_YIM}"><span>{L_YIM}</span></a></li><!-- ENDIF -->
 			<!-- IF U_AIM --><li class="aim-icon"><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false;" title="{L_AIM}"><span>{L_AIM}</span></a></li><!-- ENDIF -->
 			<!-- IF U_JABBER --><li class="jabber-icon"><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span>{L_JABBER}</span></a></li><!-- ENDIF -->
 			<!-- BEGIN custom_fields -->
