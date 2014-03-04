@@ -337,12 +337,14 @@ class manager
 	}
 
 	/**
-	 * Assign the user's profile fields data to the template
-	 *
-	 * @param array	$profile_row Array with users profile field data
-	 * @return array
-	 */
-	public function generate_profile_fields_template_data($profile_row)
+	* Assign the user's profile fields data to the template
+	*
+	* @param array	$profile_row		Array with users profile field data
+	* @param bool	$use_contact_fields	Should we display contact fields as such?
+	*			This requires special treatments (links should not be parsed in the values, and more)
+	* @return array
+	*/
+	public function generate_profile_fields_template_data($profile_row, $use_contact_fields = true)
 	{
 		// $profile_row == $user_fields[$row['user_id']];
 		$tpl_fields = array();
@@ -358,15 +360,20 @@ class manager
 				continue;
 			}
 
-			$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
-			if (strpos($field_desc, '%s') !== false)
+			$field_desc = $contact_url = '';
+			if ($use_contact_fields)
 			{
-				$field_desc = sprintf($field_desc, $value);
-			}
-			$contact_url = '';
-			if (strpos($ident_ary['data']['field_contact_url'], '%s') !== false)
-			{
-				$contact_url = sprintf($ident_ary['data']['field_contact_url'], $value);
+				$value = $profile_field->get_profile_contact_value($ident_ary['value'], $ident_ary['data']);
+				$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
+				if (strpos($field_desc, '%s') !== false)
+				{
+					$field_desc = sprintf($field_desc, $value);
+				}
+				$contact_url = '';
+				if (strpos($ident_ary['data']['field_contact_url'], '%s') !== false)
+				{
+					$contact_url = sprintf($ident_ary['data']['field_contact_url'], $value);
+				}
 			}
 
 			$tpl_fields['row'] += array(

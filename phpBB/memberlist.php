@@ -1592,7 +1592,7 @@ switch ($mode)
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id]) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
 				$memberrow = array_merge(show_profile($row), array(

@@ -49,19 +49,6 @@ class type_url extends type_string
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public function get_profile_value($field_value, $field_data)
-	{
-		if (!$field_value && !$field_data['field_show_novalue'])
-		{
-			return null;
-		}
-
-		return $field_value;
-	}
-
-	/**
 	* {@inheritDoc}
 	*/
 	public function validate_profile_field(&$field_value, $field_data)

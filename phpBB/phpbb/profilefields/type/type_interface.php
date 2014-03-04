@@ -90,6 +90,17 @@ interface type_interface
 	public function get_profile_value($field_value, $field_data);
 
 	/**
+	* Get Profile Value for display
+	*
+	* When displaying a contact field, we don't want to have links already parsed and more
+	*
+	* @param mixed	$field_value		Field value as stored in the database
+	* @param array	$field_data			Array with requirements of the field
+	* @return mixed		Field value to display
+	*/
+	public function get_profile_contact_value($field_value, $field_data);
+
+	/**
 	* Generate the input field for display
 	*
 	* @param array	$profile_row		Array with data for this field
