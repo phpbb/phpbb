@@ -278,125 +278,125 @@ class manager
 	}
 
 	/**
-	* Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
-	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
+	* Grab the user specific profile fields data
+	*
+	* @param	int|array	$user_ids	Single user id or an array of ids
+	* @return array		Users profile fields data
 	*/
-	public function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
+	public function grab_profile_fields_data($user_ids = 0)
 	{
-		if ($mode == 'grab')
+		if (!is_array($user_ids))
 		{
-			if (!is_array($user_id))
+			$user_ids = array($user_ids);
+		}
+
+		if (!sizeof($this->profile_cache))
+		{
+			$this->build_cache();
+		}
+
+		if (!sizeof($user_ids))
+		{
+			return array();
+		}
+
+		$sql = 'SELECT *
+			FROM ' . $this->fields_data_table . '
+			WHERE ' . $this->db->sql_in_set('user_id', array_map('intval', $user_ids));
+		$result = $this->db->sql_query($sql);
+
+		$field_data = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$field_data[$row['user_id']] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		$user_fields = array();
+
+		// Go through the fields in correct order
+		foreach (array_keys($this->profile_cache) as $used_ident)
+		{
+			foreach ($field_data as $user_id => $row)
 			{
-				$user_id = array($user_id);
+				$user_fields[$user_id][$used_ident]['value'] = $row['pf_' . $used_ident];
+				$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 			}
 
-			if (!sizeof($this->profile_cache))
+			foreach ($user_ids as $user_id)
 			{
-				$this->build_cache();
-			}
-
-			if (!sizeof($user_id))
-			{
-				return array();
-			}
-
-			$sql = 'SELECT *
-				FROM ' . $this->fields_data_table . '
-				WHERE ' . $this->db->sql_in_set('user_id', array_map('intval', $user_id));
-			$result = $this->db->sql_query($sql);
-
-			$field_data = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$field_data[$row['user_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
-
-			$user_fields = array();
-
-			$user_ids = $user_id;
-
-			// Go through the fields in correct order
-			foreach (array_keys($this->profile_cache) as $used_ident)
-			{
-				foreach ($field_data as $user_id => $row)
+				if (!isset($user_fields[$user_id][$used_ident]) && $this->profile_cache[$used_ident]['field_show_novalue'])
 				{
-					$user_fields[$user_id][$used_ident]['value'] = $row['pf_' . $used_ident];
+					$user_fields[$user_id][$used_ident]['value'] = '';
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 				}
-
-				foreach ($user_ids as $user_id)
-				{
-					if (!isset($user_fields[$user_id][$used_ident]) && $this->profile_cache[$used_ident]['field_show_novalue'])
-					{
-						$user_fields[$user_id][$used_ident]['value'] = '';
-						$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
-					}
-				}
 			}
-
-			return $user_fields;
 		}
-		else if ($mode == 'show')
-		{
-			// $profile_row == $user_fields[$row['user_id']];
-			$tpl_fields = array();
-			$tpl_fields['row'] = $tpl_fields['blockrow'] = array();
 
-			foreach ($profile_row as $ident => $ident_ary)
+		return $user_fields;
+	}
+
+	/**
+	 * Assign the user's profile fields data to the template
+	 *
+	 * @param array	$profile_row Array with users profile field data
+	 * @return array
+	 */
+	public function generate_profile_fields_template_data($profile_row)
+	{
+		// $profile_row == $user_fields[$row['user_id']];
+		$tpl_fields = array();
+		$tpl_fields['row'] = $tpl_fields['blockrow'] = array();
+
+		foreach ($profile_row as $ident => $ident_ary)
+		{
+			$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
+			$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
+
+			if ($value === null)
 			{
-				$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
-				$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
-
-				if ($value === null)
-				{
-					continue;
-				}
-
-				$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
-				if (strpos($field_desc, '%s') !== false)
-				{
-					$field_desc = sprintf($field_desc, $value);
-				}
-				$contact_url = '';
-				if (strpos($ident_ary['data']['field_contact_url'], '%s') !== false)
-				{
-					$contact_url = sprintf($ident_ary['data']['field_contact_url'], $value);
-				}
-
-				$tpl_fields['row'] += array(
-					'PROFILE_' . strtoupper($ident) . '_IDENT'	=> $ident,
-					'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $value,
-					'PROFILE_' . strtoupper($ident) . '_CONTACT'=> $contact_url,
-					'PROFILE_' . strtoupper($ident) . '_DESC'	=> $field_desc,
-					'PROFILE_' . strtoupper($ident) . '_TYPE'	=> $ident_ary['data']['field_type'],
-					'PROFILE_' . strtoupper($ident) . '_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
-					'PROFILE_' . strtoupper($ident) . '_EXPLAIN'=> $this->user->lang($ident_ary['data']['lang_explain']),
-
-					'S_PROFILE_' . strtoupper($ident) . '_CONTACT'	=> $ident_ary['data']['field_is_contact'],
-					'S_PROFILE_' . strtoupper($ident)			=> true,
-				);
-
-				$tpl_fields['blockrow'][] = array(
-					'PROFILE_FIELD_IDENT'	=> $ident,
-					'PROFILE_FIELD_VALUE'	=> $value,
-					'PROFILE_FIELD_CONTACT'	=> $contact_url,
-					'PROFILE_FIELD_DESC'	=> $field_desc,
-					'PROFILE_FIELD_TYPE'	=> $ident_ary['data']['field_type'],
-					'PROFILE_FIELD_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
-					'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($ident_ary['data']['lang_explain']),
-
-					'S_PROFILE_CONTACT'						=> $ident_ary['data']['field_is_contact'],
-					'S_PROFILE_' . strtoupper($ident)		=> true,
-				);
+				continue;
 			}
 
-			return $tpl_fields;
+			$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
+			if (strpos($field_desc, '%s') !== false)
+			{
+				$field_desc = sprintf($field_desc, $value);
+			}
+			$contact_url = '';
+			if (strpos($ident_ary['data']['field_contact_url'], '%s') !== false)
+			{
+				$contact_url = sprintf($ident_ary['data']['field_contact_url'], $value);
+			}
+
+			$tpl_fields['row'] += array(
+				'PROFILE_' . strtoupper($ident) . '_IDENT'	=> $ident,
+				'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $value,
+				'PROFILE_' . strtoupper($ident) . '_CONTACT'=> $contact_url,
+				'PROFILE_' . strtoupper($ident) . '_DESC'	=> $field_desc,
+				'PROFILE_' . strtoupper($ident) . '_TYPE'	=> $ident_ary['data']['field_type'],
+				'PROFILE_' . strtoupper($ident) . '_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
+				'PROFILE_' . strtoupper($ident) . '_EXPLAIN'=> $this->user->lang($ident_ary['data']['lang_explain']),
+
+				'S_PROFILE_' . strtoupper($ident) . '_CONTACT'	=> $ident_ary['data']['field_is_contact'],
+				'S_PROFILE_' . strtoupper($ident)			=> true,
+			);
+
+			$tpl_fields['blockrow'][] = array(
+				'PROFILE_FIELD_IDENT'	=> $ident,
+				'PROFILE_FIELD_VALUE'	=> $value,
+				'PROFILE_FIELD_CONTACT'	=> $contact_url,
+				'PROFILE_FIELD_DESC'	=> $field_desc,
+				'PROFILE_FIELD_TYPE'	=> $ident_ary['data']['field_type'],
+				'PROFILE_FIELD_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
+				'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($ident_ary['data']['lang_explain']),
+
+				'S_PROFILE_CONTACT'						=> $ident_ary['data']['field_is_contact'],
+				'S_PROFILE_' . strtoupper($ident)		=> true,
+			);
 		}
-		else
-		{
-			trigger_error('Wrong mode for custom profile', E_USER_ERROR);
-		}
+
+		return $tpl_fields;
 	}
 
 	/**

@@ -1248,7 +1248,7 @@ if ($config['load_cpf_viewtopic'])
 	$cp = $phpbb_container->get('profilefields.manager');
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
-	$profile_fields_tmp = $cp->generate_profile_fields_template('grab', $id_cache);
+	$profile_fields_tmp = $cp->grab_profile_fields_data($id_cache);
 
 	// filter out fields not to be displayed on viewtopic. Yes, it's a hack, but this shouldn't break any MODs.
 	$profile_fields_cache = array();
@@ -1558,7 +1558,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	//
 	if ($config['load_cpf_viewtopic'])
 	{
-		$cp_row = (isset($profile_fields_cache[$poster_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$poster_id]) : array();
+		$cp_row = (isset($profile_fields_cache[$poster_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$poster_id]) : array();
 	}
 
 	$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;

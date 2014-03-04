@@ -63,7 +63,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 		$cp = $phpbb_container->get('profilefields.manager');
 
-		$profile_fields = $cp->generate_profile_fields_template('grab', $author_id);
+		$profile_fields = $cp->grab_profile_fields_data($author_id);
 	}
 
 	// Assign TO/BCC Addresses to template
@@ -173,7 +173,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		if (isset($profile_fields[$author_id]))
 		{
-			$cp_row = $cp->generate_profile_fields_template('show', false, $profile_fields[$author_id]);
+			$cp_row = $cp->generate_profile_fields_template_data($profile_fields[$author_id]);
 		}
 	}
 

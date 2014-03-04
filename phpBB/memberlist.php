@@ -618,8 +618,8 @@ switch ($mode)
 		if ($config['load_cpf_viewprofile'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
-			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
+			$profile_fields = $cp->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
 		}
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
@@ -1560,7 +1560,7 @@ switch ($mode)
 			if ($config['load_cpf_memberlist'])
 			{
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
-				$profile_fields_cache = $cp->generate_profile_fields_template('grab', $user_list);
+				$profile_fields_cache = $cp->grab_profile_fields_data($user_list);
 
 				// Filter the fields we don't want to show
 				foreach ($profile_fields_cache as $user_id => $user_profile_fields)
@@ -1592,7 +1592,7 @@ switch ($mode)
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$user_id]) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id]) : array();
 				}
 
 				$memberrow = array_merge(show_profile($row), array(
