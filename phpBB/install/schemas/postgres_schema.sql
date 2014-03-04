@@ -1312,7 +1312,6 @@ CREATE TABLE phpbb_users (
 	user_yim varchar(255) DEFAULT '' NOT NULL,
 	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
-	user_website varchar(200) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
 	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
 	user_reminded INT2 DEFAULT '0' NOT NULL,

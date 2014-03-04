@@ -1011,7 +1011,6 @@ CREATE TABLE phpbb_users (
 	user_yim varchar(255) NOT NULL DEFAULT '',
 	user_msnm varchar(255) NOT NULL DEFAULT '',
 	user_jabber varchar(255) NOT NULL DEFAULT '',
-	user_website varchar(200) NOT NULL DEFAULT '',
 	user_form_salt varchar(32) NOT NULL DEFAULT '',
 	user_new INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_reminded tinyint(4) NOT NULL DEFAULT '0',

@@ -1178,7 +1178,6 @@ $schema_data['phpbb_users'] = array(
 		'user_yim'					=> array('VCHAR_UNI', ''),
 		'user_msnm'					=> array('VCHAR_UNI', ''),
 		'user_jabber'				=> array('VCHAR_UNI', ''),
-		'user_website'				=> array('VCHAR_UNI:200', ''),
 		'user_form_salt'			=> array('VCHAR_UNI:32', ''),
 		'user_new'					=> array('BOOL', 1),
 		'user_reminded'				=> array('TINT:4', 0),

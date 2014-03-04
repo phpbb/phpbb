@@ -1040,7 +1040,6 @@ CREATE TABLE phpbb_users (
 	user_yim blob NOT NULL,
 	user_msnm blob NOT NULL,
 	user_jabber blob NOT NULL,
-	user_website blob NOT NULL,
 	user_form_salt varbinary(96) DEFAULT '' NOT NULL,
 	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_reminded tinyint(4) DEFAULT '0' NOT NULL,
