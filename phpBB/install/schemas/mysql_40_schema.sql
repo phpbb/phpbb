@@ -664,6 +664,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	field_is_contact tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_contact_desc varbinary(255) DEFAULT '' NOT NULL,
+	field_contact_url varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id),
 	KEY fld_type (field_type),
 	KEY fld_ordr (field_order)
@@ -676,6 +679,8 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_location varbinary(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests blob NOT NULL,
 	pf_phpbb_occupation blob NOT NULL,
+	pf_phpbb_icq varbinary(255) DEFAULT '' NOT NULL,
+	pf_phpbb_website varbinary(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
@@ -1031,12 +1036,10 @@ CREATE TABLE phpbb_users (
 	user_sig mediumblob NOT NULL,
 	user_sig_bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
-	user_icq varbinary(15) DEFAULT '' NOT NULL,
 	user_aim blob NOT NULL,
 	user_yim blob NOT NULL,
 	user_msnm blob NOT NULL,
 	user_jabber blob NOT NULL,
-	user_website blob NOT NULL,
 	user_form_salt varbinary(96) DEFAULT '' NOT NULL,
 	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_reminded tinyint(4) DEFAULT '0' NOT NULL,

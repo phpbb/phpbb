@@ -270,7 +270,7 @@ span.imageset {
 	padding-left: 20px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_icq {
+.imageset.icon_contact_icq, .imageset.phpbb_icq-icon {
 	background-image: url("./images/icon_contact_icq.gif");
 	padding-left: 20px;
 	padding-top: 20px;
@@ -280,12 +280,12 @@ span.imageset {
 	padding-left: 20px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_msnm {
+.imageset.phpbb_wlm-icon, .imageset.icon_contact_msnm {
 	background-image: url("./images/icon_contact_msnm.gif");
 	padding-left: 20px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_www {
+.imageset.icon_contact_www, .imageset.phpbb_website-icon {
 	background-image: url("./images/icon_contact_www.gif");
 	padding-left: 20px;
 	padding-top: 20px;

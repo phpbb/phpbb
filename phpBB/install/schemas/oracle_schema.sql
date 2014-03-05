@@ -1236,6 +1236,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view number(1) DEFAULT '0' NOT NULL,
 	field_active number(1) DEFAULT '0' NOT NULL,
 	field_order number(8) DEFAULT '0' NOT NULL,
+	field_is_contact number(1) DEFAULT '0' NOT NULL,
+	field_contact_desc varchar2(255) DEFAULT '' ,
+	field_contact_url varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields PRIMARY KEY (field_id)
 )
 /
@@ -1269,6 +1272,8 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_location varchar2(255) DEFAULT '' ,
 	pf_phpbb_interests clob DEFAULT '' ,
 	pf_phpbb_occupation clob DEFAULT '' ,
+	pf_phpbb_icq varchar2(255) DEFAULT '' ,
+	pf_phpbb_website varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_data PRIMARY KEY (user_id)
 )
 /
@@ -1855,12 +1860,10 @@ CREATE TABLE phpbb_users (
 	user_sig clob DEFAULT '' ,
 	user_sig_bbcode_uid varchar2(8) DEFAULT '' ,
 	user_sig_bbcode_bitfield varchar2(255) DEFAULT '' ,
-	user_icq varchar2(15) DEFAULT '' ,
 	user_aim varchar2(765) DEFAULT '' ,
 	user_yim varchar2(765) DEFAULT '' ,
 	user_msnm varchar2(765) DEFAULT '' ,
 	user_jabber varchar2(765) DEFAULT '' ,
-	user_website varchar2(600) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
 	user_new number(1) DEFAULT '1' NOT NULL,
 	user_reminded number(4) DEFAULT '0' NOT NULL,

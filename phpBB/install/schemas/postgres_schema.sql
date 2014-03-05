@@ -872,6 +872,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view INT2 DEFAULT '0' NOT NULL CHECK (field_no_view >= 0),
 	field_active INT2 DEFAULT '0' NOT NULL CHECK (field_active >= 0),
 	field_order INT4 DEFAULT '0' NOT NULL CHECK (field_order >= 0),
+	field_is_contact INT2 DEFAULT '0' NOT NULL CHECK (field_is_contact >= 0),
+	field_contact_desc varchar(255) DEFAULT '' NOT NULL,
+	field_contact_url varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id)
 );
 
@@ -886,6 +889,8 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_location varchar(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests varchar(4000) DEFAULT '' NOT NULL,
 	pf_phpbb_occupation varchar(4000) DEFAULT '' NOT NULL,
+	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_website varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
@@ -1303,12 +1308,10 @@ CREATE TABLE phpbb_users (
 	user_sig TEXT DEFAULT '' NOT NULL,
 	user_sig_bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
-	user_icq varchar(15) DEFAULT '' NOT NULL,
 	user_aim varchar(255) DEFAULT '' NOT NULL,
 	user_yim varchar(255) DEFAULT '' NOT NULL,
 	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
-	user_website varchar(200) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
 	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
 	user_reminded INT2 DEFAULT '0' NOT NULL,

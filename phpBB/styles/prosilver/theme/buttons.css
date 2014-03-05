@@ -240,8 +240,11 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 .aim-icon, .aim-icon a			{ background: none top left no-repeat; }
 .yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
 .web-icon, .web-icon a			{ background: none top left no-repeat; }
+.phpbb_website-icon, .phpbb_website-icon a	{ background: none top left no-repeat; }
 .msnm-icon, .msnm-icon a			{ background: none top left no-repeat; }
+.phpbb_wlm-icon, .phpbb_wlm-icon a			{ background: none top left no-repeat; }
 .icq-icon, .icq-icon a			{ background: none top left no-repeat; }
+.phpbb_icq-icon, .phpbb_icq-icon a			{ background: none top left no-repeat; }
 .jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
 .pm-icon, .pm-icon a				{ background: none top left no-repeat; }
 .quote-icon, .quote-icon a		{ background: none top left no-repeat; }
@@ -258,8 +261,11 @@ ul.profile-icons li.email-icon		{ width: 20px; height: 20px; }
 ul.profile-icons li.aim-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.yahoo-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.web-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.phpbb_website-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.msnm-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.phpbb_wlm-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.icq-icon	{ width: 20px; height: 20px; }
+ul.profile-icons li.phpbb_icq-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.jabber-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.pm-icon		{ width: 28px; height: 20px; }
 ul.profile-icons li.quote-icon	{ width: 54px; height: 20px; }

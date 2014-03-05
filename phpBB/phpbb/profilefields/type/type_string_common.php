@@ -105,6 +105,19 @@ abstract class type_string_common extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_profile_contact_value($field_value, $field_data)
+	{
+		if (!$field_value && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+
+		return $field_value;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function prepare_options_form(&$exclude_options, &$visibility_options)
 	{
 		$exclude_options[1][] = 'lang_default_value';

@@ -119,10 +119,6 @@
 				</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_MSNM}{L_COLON} </td>
-				<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup(this.href, 550, 320); return false" class="imageset">{MSN_IMG}</a><!-- ELSEIF USER_MSN -->{USER_MSN}<!-- ENDIF --></td>
-			</tr>
-			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_YIM}{L_COLON} </td>
 				<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup(this.href, 780, 550); return false" class="imageset">{YIM_IMG}</a><!-- ELSEIF USER_YIM -->{USER_YIM}<!-- ENDIF --></td>
 			</tr>
@@ -131,13 +127,21 @@
 				<td><!-- IF U_AIM --><a href="{U_AIM}" onclick="popup(this.href, 550, 320); return false" class="imageset">{AIM_IMG}</a><!-- ELSEIF USER_AIM -->{USER_AIM}<!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_ICQ}{L_COLON} </td>
-				<td><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="popup(this.href, 550, 320); return false" class="imageset">{ICQ_IMG}</a><!-- ELSEIF USER_ICQ -->{USER_ICQ}<!-- ENDIF --></td>
-			</tr>
-			<tr>
 				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_JABBER}{L_COLON} </td>
 				<td><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false" class="imageset">{JABBER_IMG}</a><!-- ELSEIF USER_JABBER -->{USER_JABBER_IMG}<!-- ENDIF --></td>
 			</tr>
+			<!-- BEGIN custom_fields -->
+				<!-- IF custom_fields.S_PROFILE_CONTACT -->
+				<tr>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{custom_fields.PROFILE_FIELD_NAME}{L_COLON} </td>
+					<!-- IF custom_fields.PROFILE_FIELD_CONTACT -->
+						<td><a href="{custom_fields.PROFILE_FIELD_CONTACT}"><span class="imageset {custom_fields.PROFILE_FIELD_IDENT}-icon">{custom_fields.PROFILE_FIELD_DESC}</span></a></td>
+					<!-- ELSE -->
+						<td><b class="genmed">{custom_fields.PROFILE_FIELD_VALUE}</b></td>
+					<!-- ENDIF -->
+				</tr>
+				<!-- ENDIF -->
+			<!-- END custom_fields -->
 			</table>
 		</td>
 		<td class="row1">
@@ -152,10 +156,6 @@
 				<td><b class="genmed">{AGE}</b></td>
 			</tr>
 			<!-- ENDIF -->
-			<tr>
-				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_WEBSITE}{L_COLON} </td>
-				<td><!-- IF U_WWW --><b><a class="genmed" href="{U_WWW}">{U_WWW}</a></b><!-- ENDIF --></td>
-			</tr>
 			<!-- IF S_PROFILE_FIELD1 -->
 				<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 				<tr>
@@ -164,10 +164,12 @@
 				</tr>
 			<!-- ENDIF -->
 			<!-- BEGIN custom_fields -->
+				<!-- IF not custom_fields.S_PROFILE_CONTACT -->
 				<tr>
 					<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{custom_fields.PROFILE_FIELD_NAME}{L_COLON} </td>
 					<td><b class="genmed">{custom_fields.PROFILE_FIELD_VALUE}</b></td>
 				</tr>
+				<!-- ENDIF -->
 			<!-- END custom_fields -->
 			</table>
 		</td>

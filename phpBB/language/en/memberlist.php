@@ -74,13 +74,9 @@ $lang = array_merge($lang, array(
 	'IM_AIM'				=> 'Please note that you need AOL Instant Messenger installed to use this.',
 	'IM_AIM_EXPRESS'		=> 'AIM Express',
 	'IM_DOWNLOAD_APP'		=> 'Download application',
-	'IM_ICQ'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s.',
 	'IM_MESSAGE'			=> 'Your message',
-	'IM_MSNM'				=> 'Please note that you need Windows Live Messenger installed to use this.',
-	'IM_MSNM_BROWSER'		=> 'Your browser does not support this.',
-	'IM_MSNM_CONNECT'		=> 'WLM is not connected.\nYou have to connect to WLM to continue.',
 	'IM_NAME'				=> 'Your Name',
 	'IM_NO_DATA'			=> 'There is no suitable contact information for this user.',
 	'IM_NO_JABBER'			=> 'Sorry, direct messaging of Jabber users is not supported on this board. You will need a Jabber client installed on your system to contact the recipient above.',
@@ -123,7 +119,6 @@ $lang = array_merge($lang, array(
 	'SEND_IM'				=> 'Instant messaging',
 	'SEND_JABBER_MESSAGE'	=> 'Send Jabber message',
 	'SEND_MESSAGE'			=> 'Message',
-	'SEND_MSNM_MESSAGE'		=> 'Send WLM message',
 	'SEND_YIM_MESSAGE'		=> 'Send YIM message',
 	'SORT_EMAIL'			=> 'Email',
 	'SORT_LAST_ACTIVE'		=> 'Last active',
@@ -144,6 +139,4 @@ $lang = array_merge($lang, array(
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VISITED'				=> 'Last visited',
-
-	'WWW'					=> 'Website',
 ));
