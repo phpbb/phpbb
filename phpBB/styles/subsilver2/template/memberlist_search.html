@@ -78,16 +78,13 @@
 	<td class="row2"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
 	<td colspan="2" class="row1">&nbsp;</td>
 </tr>
-<tr>
 <!-- IF S_EMAIL_SEARCH_ALLOWED -->
+<tr>
 	<td class="row1"><b class="genmed">{L_EMAIL}{L_COLON}</b></td>
 	<td class="row2"><input class="post" type="email" name="email" value="{EMAIL}" /></td>
-<!-- ELSE -->
 	<td colspan="2" class="row1">&nbsp;</td>
-<!-- ENDIF -->
-	<td class="row1"><b class="genmed">{L_AIM}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="aim" value="{AIM}" /></td>
 </tr>
+<!-- ENDIF -->
 <tr>
 	<td class="row1"><b class="genmed">{L_JOINED}{L_COLON}</b></td>
 	<td class="row2"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>

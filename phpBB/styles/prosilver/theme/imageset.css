@@ -260,7 +260,7 @@ span.imageset {
 	padding-left: 11px;
 	padding-top: 11px;
 }
-.imageset.icon_contact_aim {
+.imageset.phpbb_aol-icon, .imageset.icon_contact_aim {
 	background-image: url("./images/icon_contact_aim.gif");
 	padding-left: 20px;
 	padding-top: 20px;

@@ -620,7 +620,6 @@ $template->assign_vars(array(
 	'SEARCH_IMG' 		=> $user->img('icon_user_search', 'SEARCH_USER_POSTS'),
 	'PM_IMG' 			=> $user->img('icon_contact_pm', 'SEND_PRIVATE_MESSAGE'),
 	'EMAIL_IMG' 		=> $user->img('icon_contact_email', 'SEND_EMAIL'),
-	'AIM_IMG' 			=> $user->img('icon_contact_aim', 'AIM'),
 	'JABBER_IMG'		=> $user->img('icon_contact_jabber', 'JABBER') ,
 	'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_POST'),
 	'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED'),
@@ -1113,7 +1112,6 @@ while ($row = $db->sql_fetchrow($result))
 				'profile'			=> '',
 				'pm'				=> '',
 				'email'				=> '',
-				'aim'				=> '',
 				'jabber'			=> '',
 				'search'			=> '',
 				'age'				=> '',
@@ -1177,7 +1175,6 @@ while ($row = $db->sql_fetchrow($result))
 
 				'online'		=> false,
 				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
-				'aim'			=> ($row['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=aim&amp;u=$poster_id") : '',
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$poster_id&amp;sr=posts") : '',
 
@@ -1621,7 +1618,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
 		'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
-		'U_AIM'			=> $user_cache[$poster_id]['aim'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f=$forum_id&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),

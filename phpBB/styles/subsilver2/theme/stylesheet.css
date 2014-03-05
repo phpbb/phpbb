@@ -1013,7 +1013,7 @@ a.imageset {
 
 
 /* English images for fallback */
-.imageset.icon_contact_aim {
+.imageset.phpbb_aol-icon, .imageset.icon_contact_aim {
 	background-image: url("./en/icon_contact_aim.gif");
 	padding-left: 72px;
 	padding-top: 20px;

@@ -71,8 +71,6 @@ $lang = array_merge($lang, array(
 	'HIDE_MEMBER_SEARCH'	=> 'Hide member search',
 
 	'IM_ADD_CONTACT'		=> 'Add Contact',
-	'IM_AIM'				=> 'Please note that you need AOL Instant Messenger installed to use this.',
-	'IM_AIM_EXPRESS'		=> 'AIM Express',
 	'IM_DOWNLOAD_APP'		=> 'Download application',
 	'IM_JABBER'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s.',
@@ -114,7 +112,6 @@ $lang = array_merge($lang, array(
 
 	'SELECT_MARKED'			=> 'Select marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
-	'SEND_AIM_MESSAGE'		=> 'Send AIM message',
 	'SEND_ICQ_MESSAGE'		=> 'Send ICQ message',
 	'SEND_IM'				=> 'Instant messaging',
 	'SEND_JABBER_MESSAGE'	=> 'Send Jabber message',

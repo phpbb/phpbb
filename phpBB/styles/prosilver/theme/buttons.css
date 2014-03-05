@@ -238,6 +238,7 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background: none top left no-repeat; }
 .aim-icon, .aim-icon a			{ background: none top left no-repeat; }
+.phpbb_aol-icon, .phpbb_aol-icon a			{ background: none top left no-repeat; }
 .yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
 .phpbb_yahoo-icon, .phpbb_yahoo-icon a		{ background: none top left no-repeat; }
 .web-icon, .web-icon a			{ background: none top left no-repeat; }
@@ -259,6 +260,7 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 
 /* Set profile icon dimensions */
 ul.profile-icons li.email-icon		{ width: 20px; height: 20px; }
+ul.profile-icons li.phpbb_aol-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.aim-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.yahoo-icon	{ width: 20px; height: 20px; }
 ul.profile-icons li.phpbb_yahoo-icon	{ width: 20px; height: 20px; }

@@ -907,7 +907,6 @@ if (!$get_info)
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 
 				array('user_jabber',			'',									''),
-				array('user_aim',				'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
 				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 
@@ -962,6 +961,7 @@ if (!$get_info)
 				array('pf_phpbb_icq',			'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_wlm',			'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_yahoo',			'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_aol',			'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_website',		'users.user_website',				'validate_website'),
 
 				'where'			=> 'users.user_id <> -1',
