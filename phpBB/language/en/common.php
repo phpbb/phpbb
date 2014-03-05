@@ -394,6 +394,10 @@ $lang = array_merge($lang, array(
 	'MERGE_TOPIC'			=> 'Merge topic',
 	'MESSAGE'				=> 'Message',
 	'MESSAGES'				=> 'Messages',
+	'MESSAGES_COUNT'		=> array(
+		1	=> '%d message',
+		2	=> '%d messages',
+	),
 	'MESSAGE_BODY'			=> 'Message body',
 	'MINUTES'				=> 'Minutes',
 	'MODERATE'				=> 'Moderate',
