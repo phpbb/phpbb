@@ -69,25 +69,25 @@
 		<!-- BEGIN meta_authors -->
 		<fieldset>
 			<dl>
-				<dt><label for="meta_author_name">{L_AUTHOR_NAME}{L_COLON}</label></dt>
-				<dd><strong id="meta_author_name">{meta_authors.AUTHOR_NAME}</strong></dd>
+				<dt><label for="meta_author_name_{meta_authors.S_ROW_COUNT}">{L_AUTHOR_NAME}{L_COLON}</label></dt>
+				<dd><strong id="meta_author_name_{meta_authors.S_ROW_COUNT}">{meta_authors.AUTHOR_NAME}</strong></dd>
 			</dl>
 			<!-- IF meta_authors.AUTHOR_EMAIL -->
 			<dl>
-				<dt><label for="meta_author_email">{L_AUTHOR_EMAIL}{L_COLON}</label></dt>
-				<dd><strong id="meta_author_email"><a href="mailto:{meta_authors.AUTHOR_EMAIL}">{meta_authors.AUTHOR_EMAIL}</a></strong></dd>
+				<dt><label for="meta_author_email_{meta_authors.S_ROW_COUNT}">{L_AUTHOR_EMAIL}{L_COLON}</label></dt>
+				<dd><strong id="meta_author_email_{meta_authors.S_ROW_COUNT}"><a href="mailto:{meta_authors.AUTHOR_EMAIL}">{meta_authors.AUTHOR_EMAIL}</a></strong></dd>
 			</dl>
 			<!-- ENDIF -->
 			<!-- IF meta_authors.AUTHOR_HOMEPAGE -->
 			<dl>
-				<dt><label for="meta_author_url">{L_AUTHOR_HOMEPAGE}{L_COLON}</label></dt>
-				<dd><strong id="meta_author_url"><a href="{meta_authors.AUTHOR_HOMEPAGE}">{meta_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+				<dt><label for="meta_author_url_{meta_authors.S_ROW_COUNT}">{L_AUTHOR_HOMEPAGE}{L_COLON}</label></dt>
+				<dd><strong id="meta_author_url_{meta_authors.S_ROW_COUNT}"><a href="{meta_authors.AUTHOR_HOMEPAGE}">{meta_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
 			</dl>
 			<!-- ENDIF -->
 			<!-- IF meta_authors.AUTHOR_ROLE -->
 			<dl>
-				<dt><label for="author_role">{L_AUTHOR_ROLE}{L_COLON}</label></dt>
-				<dd><strong id="meta_author_role">{meta_authors.AUTHOR_ROLE}</strong></dd>
+				<dt><label for="meta_author_role_{meta_authors.S_ROW_COUNT}">{L_AUTHOR_ROLE}{L_COLON}</label></dt>
+				<dd><strong id="meta_author_role_{meta_authors.S_ROW_COUNT}">{meta_authors.AUTHOR_ROLE}</strong></dd>
 			</dl>
 			<!-- ENDIF -->
 		</fieldset>
