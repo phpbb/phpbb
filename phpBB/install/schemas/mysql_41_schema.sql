@@ -680,6 +680,8 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_interests text NOT NULL,
 	pf_phpbb_occupation text NOT NULL,
 	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_wlm varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_yahoo varchar(255) DEFAULT '' NOT NULL,
 	pf_phpbb_website varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -1037,8 +1039,6 @@ CREATE TABLE phpbb_users (
 	user_sig_bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	user_aim varchar(255) DEFAULT '' NOT NULL,
-	user_yim varchar(255) DEFAULT '' NOT NULL,
-	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
 	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
