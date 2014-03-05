@@ -48,3 +48,38 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
+
+/**
+* Hash the password
+*
+* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+*
+* @param string $password Password to be hashed
+*
+* @return string|bool Password hash or false if something went wrong during hashing
+*/
+function phpbb_hash($password)
+{
+	global $phpbb_container;
+
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->hash($password);
+}
+
+/**
+* Check for correct password
+*
+* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+*
+* @param string $password The password in plain text
+* @param string $hash The stored password hash
+*
+* @return bool Returns true if the password is correct, false if not.
+*/
+function phpbb_check_hash($password, $hash)
+{
+	global $phpbb_container;
+
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->check($password, $hash);
+}
