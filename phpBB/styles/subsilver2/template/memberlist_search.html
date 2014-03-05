@@ -76,51 +76,42 @@
 <tr>
 	<td class="row1"><b class="genmed">{L_USERNAME}{L_COLON}</b></td>
 	<td class="row2"><input class="post" type="text" name="username" value="{USERNAME}" /></td>
-	<td colspan="2" class="row1">&nbsp;</td>
+	<!-- IF S_EMAIL_SEARCH_ALLOWED -->
+		<td class="row1"><b class="genmed">{L_EMAIL}{L_COLON}</b></td>
+		<td class="row2"><input class="post" type="email" name="email" value="{EMAIL}" /></td>
+	<!-- ELSE -->
+		<td colspan="2" class="row1">&nbsp;</td>
+	<!-- ENDIF -->
 </tr>
-<!-- IF S_EMAIL_SEARCH_ALLOWED -->
-<tr>
-	<td class="row1"><b class="genmed">{L_EMAIL}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="email" name="email" value="{EMAIL}" /></td>
-	<td colspan="2" class="row1">&nbsp;</td>
-</tr>
-<!-- ENDIF -->
 <tr>
 	<td class="row1"><b class="genmed">{L_JOINED}{L_COLON}</b></td>
 	<td class="row2"><select name="joined_select">{S_JOINED_TIME_OPTIONS}</select> <input class="post" type="text" name="joined" value="{JOINED}" /></td>
-	<td colspan="2" class="row1">&nbsp;</td>
+	<td class="row1"><b class="genmed">{L_POSTS}{L_COLON}</b></td>
+	<td class="row2"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="number" min="0" name="count" value="{COUNT}" /></td>
 </tr>
 <!-- IF S_VIEWONLINE -->
 <tr>
 	<td class="row1"><b class="genmed">{L_LAST_ACTIVE}{L_COLON}</b></td>
 	<td class="row2"><select name="active_select">{S_ACTIVE_TIME_OPTIONS}</select> <input class="post" type="text" name="active" value="{ACTIVE}" /></td>
-	<td colspan="2" class="row1">&nbsp;</td>
+	<!-- IF S_IP_SEARCH_ALLOWED -->
+		<td class="row1"><b class="genmed">{L_POST_IP}{L_COLON}</b></td>
+		<td class="row2"><input class="post" type="text" name="ip" value="{IP}" /></td>
+	<!-- ELSE -->
+		<td colspan="2" class="row1">&nbsp;</td>
+	<!-- ENDIF -->
 </tr>
 <!-- ENDIF -->
 <tr>
-	<td class="row1"><b class="genmed">{L_POSTS}{L_COLON}</b></td>
-	<td class="row2"><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="post" type="number" min="0" name="count" value="{COUNT}" /></td>
+	<td class="row1"><b class="genmed">{L_GROUP}{L_COLON}</b></td>
+	<td class="row2" nowrap="nowrap"><select name="search_group_id">{S_GROUP_SELECT}</select></td>
 	<td class="row1"><b class="genmed">{L_JABBER}{L_COLON}</b></td>
 	<td class="row2"><input class="post" type="text" name="jabber" value="{JABBER}" /></td>
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_SORT_BY}{L_COLON}</b></td>
 	<td class="row2" nowrap="nowrap"><select name="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select>&nbsp;</td>
-<!-- IF S_IP_SEARCH_ALLOWED -->
-	<td class="row1"><b class="genmed">{L_POST_IP}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="ip" value="{IP}" /></td>
+	<td colspan="2" class="row1">&nbsp;</td>
 </tr>
-<tr>
-	<td class="row1"><b class="genmed">{L_GROUP}{L_COLON}</b></td>
-	<td class="row2" nowrap="nowrap"><select name="search_group_id">{S_GROUP_SELECT}</select></td>
-	<td class="row1">&nbsp;</td>
-	<td class="row2">&nbsp;</td>
-</tr>
-<!-- ELSE -->
-	<td class="row1"><b class="genmed">{L_GROUP}{L_COLON}</b></td>
-	<td class="row2" nowrap="nowrap"><select name="search_group_id">{S_GROUP_SELECT}</select></td>
-</tr>
-<!-- ENDIF -->
 <tr>
 	<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 </tr>
