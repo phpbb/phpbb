@@ -2210,20 +2210,21 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 */
 function generate_board_url($without_script_path = false)
 {
-	static $board_url, $script_path_url;
-	global $config, $user, $request;
+	static $board_url, $full_board_url;
 
-	if (!empty($board_url))
+	if ($board_url !== null)
 	{
 		if (!$without_script_path)
 		{
-			return $script_path_url;
+			return $full_board_url;
 		}
 		else
 		{
 			return $board_url;
 		}
 	}
+
+	global $config, $user, $request;
 
 	$server_name = $user->host;
 	$server_port = $request->server('SERVER_PORT', 0);
@@ -2257,21 +2258,21 @@ function generate_board_url($without_script_path = false)
 		}
 	}
 
-	$script_path_url = $board_url . $script_path;
+	$full_board_url = $board_url . $script_path;
 
 	// Strip / from the end
 	if (substr($board_url, -1, 1) == '/')
 	{
 		$board_url = substr($board_url, 0, -1);
 	}
-	if (substr($script_path_url, -1, 1) == '/')
+	if (substr($full_board_url, -1, 1) == '/')
 	{
-		$script_path_url = substr($script_path_url, 0, -1);
+		$full_board_url = substr($full_board_url, 0, -1);
 	}
 
 	if (!$without_script_path)
 	{
-		return $script_path_url;
+		return $full_board_url;
 	}
 
 	return $board_url;
