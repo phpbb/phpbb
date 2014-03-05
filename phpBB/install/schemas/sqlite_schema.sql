@@ -644,7 +644,10 @@ CREATE TABLE phpbb_profile_fields (
 	field_hide INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_no_view INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_active INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	field_order INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	field_order INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_is_contact INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_contact_desc varchar(255) NOT NULL DEFAULT '',
+	field_contact_url varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_profile_fields_fld_type ON phpbb_profile_fields (field_type);

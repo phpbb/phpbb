@@ -926,7 +926,10 @@ CREATE TABLE phpbb_profile_fields (
 	field_hide INTEGER DEFAULT 0 NOT NULL,
 	field_no_view INTEGER DEFAULT 0 NOT NULL,
 	field_active INTEGER DEFAULT 0 NOT NULL,
-	field_order INTEGER DEFAULT 0 NOT NULL
+	field_order INTEGER DEFAULT 0 NOT NULL,
+	field_is_contact INTEGER DEFAULT 0 NOT NULL,
+	field_contact_desc VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	field_contact_url VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_profile_fields ADD PRIMARY KEY (field_id);;

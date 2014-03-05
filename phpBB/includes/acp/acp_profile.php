@@ -386,6 +386,9 @@ class acp_profile
 						'field_show_on_pm'	=> 0,
 						'field_show_on_vt'	=> 0,
 						'field_show_on_ml'	=> 0,
+						'field_is_contact'	=> 0,
+						'field_contact_desc'=> '',
+						'field_contact_url'	=> '',
 						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
 						'lang_explain'		=> '',
 						'lang_default_value'=> '')
@@ -396,7 +399,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_show_on_ml', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_show_on_ml', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view', 'field_is_contact', 'field_contact_desc', 'field_contact_url'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -411,21 +414,24 @@ class acp_profile
 					'field_show_on_ml',
 					'field_show_profile',
 					'field_hide',
+					'field_is_contact',
 				);
 
 				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
 
 				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string(request_var('field_ident', $field_row['field_ident'], true)) : request_var('field_ident', $field_row['field_ident']);
-				$cp->vars['lang_name']			= utf8_normalize_nfc(request_var('lang_name', $field_row['lang_name'], true));
-				$cp->vars['lang_explain']		= utf8_normalize_nfc(request_var('lang_explain', $field_row['lang_explain'], true));
-				$cp->vars['lang_default_value']	= utf8_normalize_nfc(request_var('lang_default_value', $field_row['lang_default_value'], true));
+				$cp->vars['lang_name']			= $request->variable('lang_name', $field_row['lang_name'], true);
+				$cp->vars['lang_explain']		= $request->variable('lang_explain', $field_row['lang_explain'], true);
+				$cp->vars['lang_default_value']	= $request->variable('lang_default_value', $field_row['lang_default_value'], true);
+				$cp->vars['field_contact_desc']	= $request->variable('field_contact_desc', $field_row['field_contact_desc'], true);
+				$cp->vars['field_contact_url']	= $request->variable('field_contact_url', $field_row['field_contact_url'], true);
 
 				foreach ($visibility_ary as $val)
 				{
-					$cp->vars[$val] = ($submit || $save) ? request_var($val, 0) : $field_row[$val];
+					$cp->vars[$val] = ($submit || $save) ? $request->variable($val, 0) : $field_row[$val];
 				}
 
-				$cp->vars['field_no_view'] = request_var('field_no_view', (int) $field_row['field_no_view']);
+				$cp->vars['field_no_view'] = $request->variable('field_no_view', (int) $field_row['field_no_view']);
 
 				// If the user has submitted a form with options (i.e. dropdown field)
 				if ($options)
@@ -626,6 +632,9 @@ class acp_profile
 							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
 							'S_SHOW_PROFILE'	=> ($cp->vars['field_show_profile']) ? true : false,
 							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
+							'S_FIELD_CONTACT'	=> $cp->vars['field_is_contact'],
+							'FIELD_CONTACT_DESC'=> $cp->vars['field_contact_desc'],
+							'FIELD_CONTACT_URL'	=> $cp->vars['field_contact_url'],
 
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
 							'FIELD_TYPE'		=> $profile_field->get_name(),
@@ -886,7 +895,10 @@ class acp_profile
 			'field_show_on_ml'		=> $cp->vars['field_show_on_ml'],
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_show_profile'	=> $cp->vars['field_show_profile'],
-			'field_no_view'			=> $cp->vars['field_no_view']
+			'field_no_view'			=> $cp->vars['field_no_view'],
+			'field_is_contact'		=> $cp->vars['field_is_contact'],
+			'field_contact_desc'	=> $cp->vars['field_contact_desc'],
+			'field_contact_url'		=> $cp->vars['field_contact_url'],
 		);
 
 		if ($action == 'create')
