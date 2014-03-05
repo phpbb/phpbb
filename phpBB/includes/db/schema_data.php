@@ -777,6 +777,9 @@ $schema_data['phpbb_profile_fields'] = array(
 		'field_no_view'			=> array('BOOL', 0),
 		'field_active'			=> array('BOOL', 0),
 		'field_order'			=> array('UINT', 0),
+		'field_is_contact'		=> array('BOOL', 0),
+		'field_contact_desc'	=> array('VCHAR', ''),
+		'field_contact_url'		=> array('VCHAR', ''),
 	),
 	'PRIMARY_KEY'	=> 'field_id',
 	'KEYS'			=> array(
@@ -791,6 +794,7 @@ $schema_data['phpbb_profile_fields_data'] = array(
 		'pf_phpbb_location'		=> array('VCHAR', ''),
 		'pf_phpbb_interests'	=> array('TEXT_UNI', ''),
 		'pf_phpbb_occupation'	=> array('TEXT_UNI', ''),
+		'pf_phpbb_icq'			=> array('VCHAR', ''),
 	),
 	'PRIMARY_KEY'	=> 'user_id',
 );
@@ -1169,7 +1173,6 @@ $schema_data['phpbb_users'] = array(
 		'user_sig'					=> array('MTEXT_UNI', ''),
 		'user_sig_bbcode_uid'		=> array('VCHAR:8', ''),
 		'user_sig_bbcode_bitfield'	=> array('VCHAR:255', ''),
-		'user_icq'					=> array('VCHAR:15', ''),
 		'user_aim'					=> array('VCHAR_UNI', ''),
 		'user_yim'					=> array('VCHAR_UNI', ''),
 		'user_msnm'					=> array('VCHAR_UNI', ''),

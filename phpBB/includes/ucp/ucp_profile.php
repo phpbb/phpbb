@@ -264,7 +264,6 @@ class ucp_profile
 				$cp_data = $cp_error = array();
 
 				$data = array(
-					'icq'			=> request_var('icq', $user->data['user_icq']),
 					'aim'			=> request_var('aim', $user->data['user_aim']),
 					'msn'			=> request_var('msn', $user->data['user_msnm']),
 					'yim'			=> request_var('yim', $user->data['user_yim']),
@@ -292,9 +291,6 @@ class ucp_profile
 				if ($submit)
 				{
 					$validate_array = array(
-						'icq'			=> array(
-							array('string', true, 3, 15),
-							array('match', true, '#^[0-9]+$#i')),
 						'aim'			=> array('string', true, 3, 255),
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
@@ -343,7 +339,6 @@ class ucp_profile
 						}
 
 						$sql_ary = array(
-							'user_icq'		=> $data['icq'],
 							'user_aim'		=> $data['aim'],
 							'user_msnm'		=> $data['msn'],
 							'user_yim'		=> $data['yim'],
@@ -411,7 +406,6 @@ class ucp_profile
 				$template->assign_vars(array(
 					'ERROR'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'ICQ'		=> $data['icq'],
 					'YIM'		=> $data['yim'],
 					'AIM'		=> $data['aim'],
 					'MSN'		=> $data['msn'],

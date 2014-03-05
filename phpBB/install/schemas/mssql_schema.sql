@@ -1132,7 +1132,10 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
 	[field_no_view] [int] DEFAULT (0) NOT NULL ,
 	[field_active] [int] DEFAULT (0) NOT NULL ,
-	[field_order] [int] DEFAULT (0) NOT NULL 
+	[field_order] [int] DEFAULT (0) NOT NULL ,
+	[field_is_contact] [int] DEFAULT (0) NOT NULL ,
+	[field_contact_desc] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -1157,7 +1160,8 @@ CREATE TABLE [phpbb_profile_fields_data] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[pf_phpbb_location] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[pf_phpbb_occupation] [varchar] (4000) DEFAULT ('') NOT NULL 
+	[pf_phpbb_occupation] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_icq] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1738,7 +1742,6 @@ CREATE TABLE [phpbb_users] (
 	[user_sig] [text] DEFAULT ('') NOT NULL ,
 	[user_sig_bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[user_sig_bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_icq] [varchar] (15) DEFAULT ('') NOT NULL ,
 	[user_aim] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_yim] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_msnm] [varchar] (255) DEFAULT ('') NOT NULL ,

@@ -353,21 +353,40 @@ class manager
 					continue;
 				}
 
+				$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
+				if (strpos($field_desc, '%s') !== false)
+				{
+					$field_desc = sprintf($field_desc, $value);
+				}
+				$contact_url = '';
+				if (strpos($ident_ary['data']['field_contact_url'], '%s') !== false)
+				{
+					$contact_url = sprintf($ident_ary['data']['field_contact_url'], $value);
+				}
+
 				$tpl_fields['row'] += array(
+					'PROFILE_' . strtoupper($ident) . '_IDENT'	=> $ident,
 					'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $value,
+					'PROFILE_' . strtoupper($ident) . '_CONTACT'=> $contact_url,
+					'PROFILE_' . strtoupper($ident) . '_DESC'	=> $field_desc,
 					'PROFILE_' . strtoupper($ident) . '_TYPE'	=> $ident_ary['data']['field_type'],
 					'PROFILE_' . strtoupper($ident) . '_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
 					'PROFILE_' . strtoupper($ident) . '_EXPLAIN'=> $this->user->lang($ident_ary['data']['lang_explain']),
 
+					'S_PROFILE_' . strtoupper($ident) . '_CONTACT'	=> $ident_ary['data']['field_is_contact'],
 					'S_PROFILE_' . strtoupper($ident)			=> true,
 				);
 
 				$tpl_fields['blockrow'][] = array(
+					'PROFILE_FIELD_IDENT'	=> $ident,
 					'PROFILE_FIELD_VALUE'	=> $value,
+					'PROFILE_FIELD_CONTACT'	=> $contact_url,
+					'PROFILE_FIELD_DESC'	=> $field_desc,
 					'PROFILE_FIELD_TYPE'	=> $ident_ary['data']['field_type'],
 					'PROFILE_FIELD_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
 					'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($ident_ary['data']['lang_explain']),
 
+					'S_PROFILE_CONTACT'						=> $ident_ary['data']['field_is_contact'],
 					'S_PROFILE_' . strtoupper($ident)		=> true,
 				);
 			}

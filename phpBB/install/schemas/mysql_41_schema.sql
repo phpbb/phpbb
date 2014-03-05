@@ -664,6 +664,9 @@ CREATE TABLE phpbb_profile_fields (
 	field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	field_is_contact tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	field_contact_desc varchar(255) DEFAULT '' NOT NULL,
+	field_contact_url varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id),
 	KEY fld_type (field_type),
 	KEY fld_ordr (field_order)
@@ -676,6 +679,7 @@ CREATE TABLE phpbb_profile_fields_data (
 	pf_phpbb_location varchar(255) DEFAULT '' NOT NULL,
 	pf_phpbb_interests text NOT NULL,
 	pf_phpbb_occupation text NOT NULL,
+	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
@@ -1031,7 +1035,6 @@ CREATE TABLE phpbb_users (
 	user_sig mediumtext NOT NULL,
 	user_sig_bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
-	user_icq varchar(15) DEFAULT '' NOT NULL,
 	user_aim varchar(255) DEFAULT '' NOT NULL,
 	user_yim varchar(255) DEFAULT '' NOT NULL,
 	user_msnm varchar(255) DEFAULT '' NOT NULL,

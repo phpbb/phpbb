@@ -210,7 +210,9 @@
 
 					<!-- EVENT viewtopic_body_postrow_custom_fields_before -->
 					<!-- BEGIN custom_fields -->
+						<!-- IF not postrow.custom_fields.S_PROFILE_CONTACT -->
 						<br /><b>{postrow.custom_fields.PROFILE_FIELD_NAME}{L_COLON}</b> {postrow.custom_fields.PROFILE_FIELD_VALUE}
+						<!-- ENDIF -->
 					<!-- END custom_fields -->
 					<!-- EVENT viewtopic_body_postrow_custom_fields_after -->
 				</span>
