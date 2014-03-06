@@ -7,6 +7,9 @@
 *
 */
 
+/*
+* @group slow
+*/
 class phpbb_version_helper_test extends phpbb_test_case
 {
 	public function setUp()
