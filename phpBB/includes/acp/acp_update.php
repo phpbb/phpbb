@@ -24,7 +24,7 @@ class acp_update
 
 	function main($id, $mode)
 	{
-		global $config, $user, $template;
+		global $config, $user, $template, $request;
 		global $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$user->add_lang('install');
@@ -35,7 +35,7 @@ class acp_update
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{
-			$recheck = request_var('versioncheck_force', false);
+			$recheck = $request->variable('versioncheck_force', false);
 			$updates_available = $version_helper->get_suggested_updates($recheck);
 		}
 		catch (\RuntimeException $e)

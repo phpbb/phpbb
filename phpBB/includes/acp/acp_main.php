@@ -435,7 +435,7 @@ class acp_main
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{
-			$recheck = request_var('versioncheck_force', false);
+			$recheck = $request->variable('versioncheck_force', false);
 			$updates_available = $version_helper->get_suggested_updates($recheck);
 
 			$template->assign_var('S_VERSION_UP_TO_DATE', empty($updates_available));
