@@ -14,11 +14,16 @@ namespace phpbb;
  */
 class version_helper
 {
+	/** @var \phpbb\cache\service */
 	protected $cache;
+
+	/** @var \phpbb\config\config */
 	protected $config;
+
+	/** @var \phpbb\user */
 	protected $user;
 
-	public function __construct($cache, $config, $user)
+	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\user $user)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
