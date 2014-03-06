@@ -739,8 +739,10 @@ a.sendemail {
 
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }
+.phpbb_aol-icon, .phpbb_aol-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
 .aim-icon, .aim-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
 .yahoo-icon, .yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
+.phpbb_yahoo-icon, .phpbb_yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
 .web-icon, .web-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
 .phpbb_website-icon, .phpbb_website-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
 .msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }

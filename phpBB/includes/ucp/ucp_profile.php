@@ -264,8 +264,6 @@ class ucp_profile
 				$cp_data = $cp_error = array();
 
 				$data = array(
-					'aim'			=> request_var('aim', $user->data['user_aim']),
-					'yim'			=> request_var('yim', $user->data['user_yim']),
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user->data['user_jabber'], true)),
 				);
 
@@ -289,11 +287,9 @@ class ucp_profile
 				if ($submit)
 				{
 					$validate_array = array(
-						'aim'			=> array('string', true, 3, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
 							array('jabber')),
-						'yim'			=> array('string', true, 5, 255),
 					);
 
 					if ($config['allow_birthdays'])
@@ -333,8 +329,6 @@ class ucp_profile
 						}
 
 						$sql_ary = array(
-							'user_aim'		=> $data['aim'],
-							'user_yim'		=> $data['yim'],
 							'user_jabber'	=> $data['jabber'],
 							'user_notify_type'	=> $data['notify'],
 						);
@@ -397,9 +391,6 @@ class ucp_profile
 
 				$template->assign_vars(array(
 					'ERROR'		=> (sizeof($error)) ? implode('<br />', $error) : '',
-
-					'YIM'		=> $data['yim'],
-					'AIM'		=> $data['aim'],
 					'JABBER'	=> $data['jabber'],
 				));
 

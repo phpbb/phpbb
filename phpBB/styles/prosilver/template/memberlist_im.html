@@ -12,17 +12,8 @@
 	<fieldset>
 	<dl class="fields2">
 		<dt><label>{L_IM_RECIPIENT}{L_COLON}</label></dt>
-		<dd><strong>{USERNAME}</strong><!-- IF S_SEND_AIM or S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
+		<dd><strong>{USERNAME}</strong><!-- IF S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
 	</dl>
-
-	<!-- IF S_SEND_AIM -->
-		<dl class="fields2">
-			<dt>&nbsp;</dt>
-			<dd><a href="{U_AIM_CONTACT}">{L_IM_ADD_CONTACT}</a></dd>
-			<dd><a href="{U_AIM_MESSAGE}">{L_IM_SEND_MESSAGE}</a></dd>
-			<dd><a href="http://www.aim.com">{L_IM_DOWNLOAD_APP}</a> | <a href="http://www.aim.com/products/express">{L_IM_AIM_EXPRESS}</a></dd>
-		</dl>
-	<!-- ENDIF -->
 
 	<!-- IF S_SEND_JABBER -->
 		<dl class="fields2">
@@ -33,19 +24,14 @@
 			<dt>&nbsp;</dt>
 			<dd><input class="button1" name="submit" type="submit" value="{L_IM_SEND}" /></dd>
 		</dl>
-	<!-- ENDIF -->
-
-	<!-- IF S_NO_SEND_JABBER -->
-		<dl class="fields2">
-			<dt>&nbsp;</dt>
-			<dd>{L_IM_NO_JABBER}</dd>
-		</dl>
-	<!-- ENDIF -->
-
-	<!-- IF S_SENT_JABBER -->
 		<dl class="fields2">
 			<dt>&nbsp;</dt>
 			<dd>{L_IM_SENT_JABBER}</dd>
+		</dl>
+	<!-- ELSE IF S_NO_SEND_JABBER -->
+		<dl class="fields2">
+			<dt>&nbsp;</dt>
+			<dd>{L_IM_NO_JABBER}</dd>
 		</dl>
 	<!-- ENDIF -->
 	{S_FORM_TOKEN}

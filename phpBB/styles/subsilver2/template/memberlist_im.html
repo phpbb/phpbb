@@ -12,17 +12,8 @@
 	</tr>
 	<tr>
 		<td class="row1"><b class="genmed">{L_IM_RECIPIENT}{L_COLON} </b></td>
-		<td class="row2"><span class="gen"><b>{USERNAME}</b><!-- IF S_SEND_AIM or S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --></span> <!-- IF PRESENCE_IMG -->{PRESENCE_IMG}<!-- ENDIF --></td>
+		<td class="row2"><span class="gen"><b>{USERNAME}</b><!-- IF S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --></span> <!-- IF PRESENCE_IMG -->{PRESENCE_IMG}<!-- ENDIF --></td>
 	</tr>
-
-	<!-- IF S_SEND_AIM -->
-		<tr>
-			<td class="row1" colspan="2" align="center"><br /><a class="gen" href="{U_AIM_CONTACT}">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="{U_AIM_MESSAGE}">{L_IM_SEND_MESSAGE}</a><br /><br /><a class="gensmall" href="http://www.aim.com">{L_IM_DOWNLOAD_APP}</a> | <a class="gensmall" href="http://www.aim.com/products/express">{L_IM_AIM_EXPRESS}</a> </td>
-		</tr>
-		<tr>
-			<td class="cat" colspan="2" align="center">&nbsp;</td>
-		</tr>
-	<!-- ENDIF -->
 
 	<!-- IF S_SEND_JABBER -->
 		<tr>
@@ -32,20 +23,15 @@
 		<tr>
 			<td class="cat" colspan="2" align="center"><input class="btnmain" name="submit" type="submit" value="{L_IM_SEND}" /></td>
 		</tr>
-	<!-- ENDIF -->
-
-	<!-- IF S_NO_SEND_JABBER -->
-		<tr>
-			<td class="row1" colspan="2"><span class="genmed">{L_IM_NO_JABBER}</span></td>
-		</tr>
-	<!-- ENDIF -->
-
-	<!-- IF S_SENT_JABBER -->
 		<tr>
 			<td class="row1" colspan="2" align="center"><span class="gen">{L_IM_SENT_JABBER}</span></td>
 		</tr>
 		<tr>
 			<td class="cat" colspan="2" align="center"></td>
+		</tr>
+	<!-- ELSEIF S_NO_SEND_JABBER -->
+		<tr>
+			<td class="row1" colspan="2"><span class="genmed">{L_IM_NO_JABBER}</span></td>
 		</tr>
 	<!-- ENDIF -->
 
