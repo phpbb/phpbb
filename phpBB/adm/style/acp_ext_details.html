@@ -11,38 +11,38 @@
 		<!-- IF META_DISPLAY_NAME -->
 		<dl>
 			<dt><label>{L_DISPLAY_NAME}{L_COLON}</label></dt>
-			<dd><strong>{META_DISPLAY_NAME}</strong></dd>
+			<dd><strong id="meta_display_name">{META_DISPLAY_NAME}</strong></dd>
 		</dl>
 		<!-- ENDIF -->
 		<dl>
 			<dt><label>{L_CLEAN_NAME}{L_COLON}</label></dt>
-			<dd><strong>{META_NAME}</strong></dd>
+			<dd><strong id="meta_name">{META_NAME}</strong></dd>
 		</dl>
 		<!-- IF META_DESCRIPTION -->
 		<dl>
 			<dt><label>{L_DESCRIPTION}{L_COLON}</label></dt>
-			<dd><p>{META_DESCRIPTION}</p></dd>
+			<dd><p id="meta_description">{META_DESCRIPTION}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 		<dl>
 			<dt><label>{L_VERSION}{L_COLON}</label></dt>
-			<dd><p>{META_VERSION}</p></dd>
+			<dd><p id="meta_version">{META_VERSION}</p></dd>
 		</dl>
 		<!-- IF META_HOMEPAGE -->
 		<dl>
 			<dt><label>{L_HOMEPAGE}{L_COLON}</label></dt>
-			<dd><strong><a href="{META_HOMEPAGE}">{META_HOMEPAGE}</a></strong></dd>
+			<dd><strong id="meta_homepage"><a href="{META_HOMEPAGE}">{META_HOMEPAGE}</a></strong></dd>
 		</dl>
 		<!-- ENDIF -->
 		<!-- IF META_TIME -->
 		<dl>
 			<dt><label>{L_TIME}{L_COLON}</label></dt>
-			<dd><p>{META_TIME}</p></dd>
+			<dd><p id="meta_time">{META_TIME}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 		<dl>
 			<dt><label>{L_LICENCE}{L_COLON}</label></dt>
-			<dd><p>{META_LICENCE}</p></dd>
+			<dd><p id="meta_license">{META_LICENCE}</p></dd>
 		</dl>
 	</fieldset>
 
@@ -52,13 +52,13 @@
 		<!-- IF META_REQUIRE_PHPBB -->
 		<dl<!-- IF META_REQUIRE_PHPBB_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
 			<dt><label>{L_PHPBB_VERSION}{L_COLON}</label></dt>
-			<dd><p>{META_REQUIRE_PHPBB}</p></dd>
+			<dd><p id="require_phpbb">{META_REQUIRE_PHPBB}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 		<!-- IF META_REQUIRE_PHP -->
 		<dl<!-- IF META_REQUIRE_PHP_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
 			<dt><label>{L_PHP_VERSION}{L_COLON}</label></dt>
-			<dd><p>{META_REQUIRE_PHP}</p></dd>
+			<dd><p id="require_php">{META_REQUIRE_PHP}</p></dd>
 		</dl>
 		<!-- ENDIF -->
 	</fieldset>
