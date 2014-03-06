@@ -105,10 +105,22 @@ class twig extends \phpbb\template\base
 			)
 		);
 
+		// Stuff related to phpBB
 		$this->twig->addExtension(
 			new \phpbb\template\twig\extension(
 				$this->context,
 				$this->user
+			)
+		);
+
+		// Symfony Forms
+		$renderer_engine = new \Symfony\Bridge\Twig\Form\TwigRendererEngine(array('form_layout.html'));
+		$renderer_engine->setEnvironment($this->twig);
+		$this->twig->addExtension(
+			new \Symfony\Bridge\Twig\Extension\FormExtension(
+				new \Symfony\Bridge\Twig\Form\TwigRenderer(
+					$renderer_engine
+				)
 			)
 		);
 

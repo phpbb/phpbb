@@ -68,6 +68,8 @@ class extension extends \Twig_Extension
 		return array(
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
 			new \Twig_SimpleFilter('addslashes', 'addslashes'),
+			new \Twig_SimpleFilter('trans', array($this, 'trans')),
+			new \Twig_SimpleFilter('transchoice', array($this, 'transchoice')),
 		);
 	}
 
@@ -178,5 +180,25 @@ class extension extends \Twig_Extension
 		// need to check for it
 
 		return call_user_func_array(array($this->user, 'lang'), $args);
+	}
+
+	/**
+	* Translate function (used in Symfony Forms)
+	*/
+	public function trans($message, array $arguments = array(), $domain = null, $locale = null)
+	{
+		array_unshift($arguments, $message);
+
+		return call_user_func_array(array($this, 'lang'), $arguments);
+	}
+
+	/**
+	* Translate function (used in Symfony Forms)
+	*/
+	public function transchoice($message, $count, array $arguments = array(), $domain = null, $locale = null)
+	{
+		array_unshift($arguments, $message);
+
+		return call_user_func_array(array($this, 'lang'), $arguments);
 	}
 }
