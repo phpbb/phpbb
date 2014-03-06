@@ -823,10 +823,10 @@ $lang = array_merge($lang, array(
 	'WRONG_DATA_LANG'			=> 'The language you specified is not valid.',
 	'WROTE'						=> 'wrote',
 
+	'YAHOO'				=> 'Yahoo Messenger',
 	'YEAR'				=> 'Year',
 	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',
 	'YES'				=> 'Yes',
-	'YIM'				=> 'Yahoo Messenger',
 	'YOU_LAST_VISIT'	=> 'Last visit was: %s',
 
 	'datetime'			=> array(
