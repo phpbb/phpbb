@@ -2925,6 +2925,72 @@ function get_database_size()
 }
 
 /**
+ * Retrieve contents from remotely stored file
+ */
+function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
+{
+	global $user;
+
+	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
+	{
+		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
+		@fputs($fsock, "HOST: $host\r\n");
+		@fputs($fsock, "Connection: close\r\n\r\n");
+
+		$timer_stop = time() + $timeout;
+		stream_set_timeout($fsock, $timeout);
+
+		$file_info = '';
+		$get_info = false;
+
+		while (!@feof($fsock))
+		{
+			if ($get_info)
+			{
+				$file_info .= @fread($fsock, 1024);
+			}
+			else
+			{
+				$line = @fgets($fsock, 1024);
+				if ($line == "\r\n")
+				{
+					$get_info = true;
+				}
+				else if (stripos($line, '404 not found') !== false)
+				{
+					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
+					return false;
+				}
+			}
+
+			$stream_meta_data = stream_get_meta_data($fsock);
+
+			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
+			{
+				$errstr = $user->lang['FSOCK_TIMEOUT'];
+				return false;
+			}
+		}
+		@fclose($fsock);
+	}
+	else
+	{
+		if ($errstr)
+		{
+			$errstr = utf8_convert_message($errstr);
+			return false;
+		}
+		else
+		{
+			$errstr = $user->lang['FSOCK_DISABLED'];
+			return false;
+		}
+	}
+
+	return $file_info;
+}
+
+/*
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
 * The duration of a warning can be defined by the administrator

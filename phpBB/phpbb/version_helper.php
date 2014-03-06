@@ -151,7 +151,13 @@ class version_helper
 
 		if ($info === false || $force_update)
 		{
-			$info = $this->get_remote_file('version.phpbb.com', '/phpbb', 'versions.json');
+			$errstr = $errno = '';
+			$info = get_remote_file('version.phpbb.com', '/phpbb', 'versions.json', $errstr, $errno);
+
+			if (!empty($errstr))
+			{
+				throw new \RuntimeException($errstr);
+			}
 
 			$info = json_decode($info, true);
 
@@ -175,75 +181,5 @@ class version_helper
 		}
 
 		return $info;
-	}
-
-	/**
-	 * Get remote file
-	 *
-	 * @param string $host			Host, e.g. version.phpbb.com
-	 * @param string $directory		Directory, e.g. /phpbb
-	 * @param string $filename		Filename, e.g. versions.json
-	 * @param int $port				Port
-	 * @param int $timeout			Timeout (seconds)
-	 * @return string				Remote file contents
-	 * @throws \RuntimeException
-	 */
-	public function get_remote_file($host, $directory, $filename, $port = 80, $timeout = 6)
-	{
-		$errstr = $errno = false;
-
-		if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
-		{
-			@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
-			@fputs($fsock, "HOST: $host\r\n");
-			@fputs($fsock, "Connection: close\r\n\r\n");
-
-			$timer_stop = time() + $timeout;
-			stream_set_timeout($fsock, $timeout);
-
-			$file_info = '';
-			$get_info = false;
-
-			while (!@feof($fsock))
-			{
-				if ($get_info)
-				{
-					$file_info .= @fread($fsock, 1024);
-				}
-				else
-				{
-					$line = @fgets($fsock, 1024);
-					if ($line == "\r\n")
-					{
-						$get_info = true;
-					}
-					else if (stripos($line, '404 not found') !== false)
-					{
-						throw new \RuntimeException($this->user->lang('FILE_NOT_FOUND') . ': ' . $filename);
-					}
-				}
-
-				$stream_meta_data = stream_get_meta_data($fsock);
-
-				if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
-				{
-					throw new \RuntimeException($this->user->lang('FSOCK_TIMEOUT'));
-				}
-			}
-			@fclose($fsock);
-		}
-		else
-		{
-			if ($errstr)
-			{
-				throw new \RuntimeException(utf8_convert_message($errstr));
-			}
-			else
-			{
-				throw new \RuntimeException($this->user->lang('FSOCK_DISABLED'));
-			}
-		}
-
-		return $file_info;
 	}
 }
