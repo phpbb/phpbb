@@ -429,11 +429,17 @@ function phpbb_email_hash($email)
 */
 function phpbb_version_compare($version1, $version2, $operator = null)
 {
-	global $phpbb_container;
+	$version1 = strtolower($version1);
+	$version2 = strtolower($version2);
 
-	$version_helper = $phpbb_container->get('version_helper');
-
-	return $version_helper->compare($version1, $version2, $operator);
+	if (is_null($operator))
+	{
+		return version_compare($version1, $version2);
+	}
+	else
+	{
+		return version_compare($version1, $version2, $operator);
+	}
 }
 
 /**

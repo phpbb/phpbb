@@ -40,17 +40,7 @@ class version_helper
 	 */
 	public function compare($version1, $version2, $operator = null)
 	{
-		$version1 = strtolower($version1);
-		$version2 = strtolower($version2);
-
-		if (is_null($operator))
-		{
-			return version_compare($version1, $version2);
-		}
-		else
-		{
-			return version_compare($version1, $version2, $operator);
-		}
+		return phpbb_version_compare($version1, $version2, $operator);
 	}
 
 	/**
