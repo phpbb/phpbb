@@ -63,15 +63,15 @@ class controller
 				'tests/index.php',
 			),
 			array(
-				$this->helper->url('index'),
+				$this->helper->url('foo_index_controller'),
 				$rewrite_prefix . 'index',
 			),
 			array(
-				$this->helper->url('tests/index'),
+				$this->helper->url('foo_tests_index_controller'),
 				$rewrite_prefix . 'tests/index',
 			),
 			array(
-				$this->helper->url('tests/../index'),
+				$this->helper->url('foo_tests_dotdot_index_controller'),
 				$rewrite_prefix . 'index',
 			),
 			/*

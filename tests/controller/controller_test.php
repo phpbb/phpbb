@@ -21,10 +21,10 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
 			array(
-				'foo' => array(
-					'ext_name' => 'foo',
+				'vendor2/foo' => array(
+					'ext_name' => 'vendor2/foo',
 					'ext_active' => '1',
-					'ext_path' => 'ext/foo/',
+					'ext_path' => 'ext/vendor2/foo/',
 				),
 			));
 	}
@@ -52,7 +52,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$container = new ContainerBuilder();
 		// YamlFileLoader only uses one path at a time, so we need to loop
 		// through all of the ones we are using.
-		foreach (array(__DIR__.'/config', __DIR__.'/ext/foo/config') as $path)
+		foreach (array(__DIR__.'/config', __DIR__ . '/ext/vendor2/foo/config') as $path)
 		{
 			$loader = new YamlFileLoader($container, new FileLocator($path));
 			$loader->load('services.yml');
@@ -60,9 +60,9 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		// Autoloading classes within the tests folder does not work
 		// so I'll include them manually.
-		if (!class_exists('foo\\controller'))
+		if (!class_exists('vendor2\\foo\\controller'))
 		{
-			include(__DIR__ . '/ext/foo/controller.php');
+			include(__DIR__ . '/ext/vendor2/foo/controller.php');
 		}
 		if (!class_exists('phpbb\\controller\\foo'))
 		{
