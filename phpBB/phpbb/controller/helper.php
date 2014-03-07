@@ -10,6 +10,8 @@
 namespace phpbb\controller;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\RequestContext;
 
 /**
 * Controller helper class, contains methods that do things for controllers
@@ -56,13 +58,17 @@ class helper
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\extension\finder $finder, \phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+
+		$provider = new \phpbb\controller\provider();
+		$this->route_collection = $provider->import_paths_from_finder($finder)->find($this->phpbb_root_path);
+
 	}
 
 	/**
@@ -87,21 +93,33 @@ class helper
 	}
 
 	/**
-	* Generate a URL
+	* Generate a URL to a route
 	*
-	* @param string	$route		The route to travel
-	* @param mixed	$params		String or array of additional url parameters
+	* @param string	$route		Name of the route to travel
+	* @param array	$params		String or array of additional url parameters
 	* @param bool	$is_amp		Is url using &amp; (true) or & (false)
 	* @param string	$session_id	Possibility to use a custom session id instead of the global one
 	* @return string The URL already passed through append_sid()
 	*/
-	public function url($route, $params = false, $is_amp = true, $session_id = false)
+	public function route($route, array $params = array(), $is_amp = true, $session_id = false)
 	{
-		$route_params = '';
-		if (($route_delim = strpos($route, '?')) !== false)
+		$anchor = '';
+		if (isset($params['#']))
 		{
-			$route_params = substr($route, $route_delim);
-			$route = substr($route, 0, $route_delim);
+			$anchor = '#' . $params['#'];
+			unset($params['#']);
+		}
+		$url_generator = new UrlGenerator($this->route_collection, new RequestContext());
+		$route_url = $url_generator->generate($route, $params);
+
+		if (strpos($route_url, '/') === 0)
+		{
+			$route_url = substr($route_url, 1);
+		}
+
+		if ($is_amp)
+		{
+			$route_url = str_replace(array('&amp;', '&'), array('&', '&amp;'), $route_url);
 		}
 
 		// If enable_mod_rewrite is false, we need to include app.php
@@ -111,7 +129,7 @@ class helper
 			$route_prefix .= 'app.' . $this->php_ext . '/';
 		}
 
-		return append_sid($route_prefix . "$route" . $route_params, $params, $is_amp, $session_id);
+		return append_sid($route_prefix . $route_url . $anchor, false, $is_amp, $session_id);
 	}
 
 	/**

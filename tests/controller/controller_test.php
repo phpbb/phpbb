@@ -62,7 +62,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		// so I'll include them manually.
 		if (!class_exists('foo\\controller'))
 		{
-			include(__DIR__.'/ext/foo/controller.php');
+			include(__DIR__ . '/ext/foo/controller.php');
 		}
 		if (!class_exists('phpbb\\controller\\foo'))
 		{

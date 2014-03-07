@@ -91,6 +91,7 @@ services:
     controller.helper:
         class: phpbb\controller\helper
         arguments:
+            - @ext.finder
             - @template
             - @user
             - @config

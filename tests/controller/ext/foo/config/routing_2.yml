@@ -1,3 +1,0 @@
-controller2:
-    pattern: /bar
-    defaults: { _controller: foo.controller:handle }
