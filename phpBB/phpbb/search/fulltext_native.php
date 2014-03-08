@@ -325,7 +325,6 @@ class fulltext_native extends \phpbb\search\base
 			}
 			$this->db->sql_freeresult($result);
 		}
-		unset($exact_words);
 
 		// now analyse the search query, first split it using the spaces
 		$query = explode(' ', $keywords);
@@ -451,39 +450,21 @@ class fulltext_native extends \phpbb\search\base
 					$this->{$mode . '_ids'}[] = $words[$word];
 				}
 			}
-			// throw an error if we shall not ignore unexistant words
-			else if (!$ignore_no_id)
+			else
 			{
 				if (!isset($common_ids[$word]))
 				{
 					$len = utf8_strlen($word);
-					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
-					{
-						trigger_error(sprintf($this->user->lang['WORD_IN_NO_POST'], $word));
-					}
-					else
+					if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
 					{
 						$this->common_words[] = $word;
 					}
 				}
 			}
-			else
-			{
-				$len = utf8_strlen($word);
-				if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
-				{
-					$this->common_words[] = $word;
-				}
-			}
 		}
 
-		// we can't search for negatives only
-		if (!sizeof($this->must_contain_ids))
-		{
-			return false;
-		}
-
-		if (!empty($this->search_query))
+		// Return true if all words are not common words
+		if (sizeof($exact_words) - sizeof($this->common_words) > 0)
 		{
 			return true;
 		}
@@ -514,6 +495,12 @@ class fulltext_native extends \phpbb\search\base
 	{
 		// No keywords? No posts.
 		if (empty($this->search_query))
+		{
+			return false;
+		}
+
+		// we can't search for negatives only
+		if (empty($this->must_contain_ids))
 		{
 			return false;
 		}
