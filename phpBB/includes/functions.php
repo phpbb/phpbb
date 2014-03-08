@@ -850,46 +850,6 @@ else
 	}
 }
 
-/**
-* Eliminates useless . and .. components from specified path.
-*
-* Deprecated, use filesystem class instead
-*
-* @param string $path Path to clean
-* @return string Cleaned path
-*
-* @deprecated
-*/
-function phpbb_clean_path($path)
-{
-	global $phpbb_path_helper, $phpbb_container;
-
-	if (!$phpbb_path_helper && $phpbb_container)
-	{
-		$phpbb_path_helper = $phpbb_container->get('path_helper');
-	}
-	else if (!$phpbb_path_helper)
-	{
-		// The container is not yet loaded, use a new instance
-		if (!class_exists('\phpbb\path_helper'))
-		{
-			global $phpbb_root_path, $phpEx;
-			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
-		}
-
-		$phpbb_path_helper = new phpbb\path_helper(
-			new phpbb\symfony_request(
-				new phpbb\request\request()
-			),
-			new phpbb\filesystem(),
-			$phpbb_root_path,
-			$phpEx
-		);
-	}
-
-	return $phpbb_path_helper->clean_path($path);
-}
-
 // functions used for building option fields
 
 /**
