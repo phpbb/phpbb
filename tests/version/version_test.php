@@ -16,8 +16,16 @@ class phpbb_version_helper_test extends phpbb_test_case
 	{
 		parent::setUp();
 
+		global $phpbb_root_path, $phpEx;
+
+		include_once($phpbb_root_path . 'includes/functions.' . $phpEx);
+
+		$this->cache = $this->getMockBuilder('\phpbb\cache\service')
+			->disableOriginalConstructor()
+			->getMock();
+
 		$this->version_helper = new \phpbb\version_helper(
-			new phpbb_mock_null_cache(),
+			$this->cache,
 			new \phpbb\config\config(array(
 				'version'	=> '3.1.0',
 			)),
@@ -190,7 +198,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 				'get_versions_matching_stability',
 			))
 			->setConstructorArgs(array(
-				new phpbb_mock_null_cache(),
+				$this->cache,
 				new \phpbb\config\config(array(
 					'version'	=> $current_version,
 				)),
@@ -295,7 +303,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 				'get_versions_matching_stability',
 			))
 			->setConstructorArgs(array(
-				new phpbb_mock_null_cache(),
+				$this->cache,
 				new \phpbb\config\config(array(
 					'version'	=> $current_version,
 				)),
