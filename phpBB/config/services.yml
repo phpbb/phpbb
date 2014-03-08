@@ -263,6 +263,7 @@ services:
         arguments:
             - @template
             - @user
+            - @controller.helper
 
     path_helper:
         class: phpbb\path_helper

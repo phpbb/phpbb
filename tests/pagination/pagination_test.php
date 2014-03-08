@@ -21,11 +21,25 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	public function setUp()
 	{
 		parent::setUp();
-		$user = $this->getMock('\phpbb\user');
-		$user->expects($this->any())
+
+		global $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$this->user = $this->getMock('\phpbb\user');
+		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
-		$this->pagination = new \phpbb\pagination($this->template, $user);
+
+		$this->finder = new \phpbb\extension\finder(
+			new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array()),
+			new \phpbb\filesystem(),
+			dirname(__FILE__) . '/',
+			new phpbb_mock_cache()
+		);
+
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+		$this->helper = new \phpbb\controller\helper($this->finder, $this->template, $this->user, $this->config, dirname(__FILE__) . '/', 'php');
+		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
 
 	public function generate_template_pagination_data()
@@ -77,49 +91,55 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:u_next:page.php?start=30',
 			),
 			array(
-				'test/page/%d',
-				'/page/%d',
+				array('routes' => array(
+					'core_controller',
+					'core_page_controller',
+				)),
+				'page',
 				95,
 				10,
 				10,
 				'pagination
 				:per_page:10
 				:current_page:2
-				:base_url:test/page/%d
-				:previous::test
-				:else:1:test
-				:current:2:test/page/2
-				:else:3:test/page/3
-				:else:4:test/page/4
-				:else:5:test/page/5
-				:ellipsis:9:test/page/9
-				:else:10:test/page/10
-				:next::test/page/3
-				:u_prev:test
-				:u_next:test/page/3',
+				:base_url:
+				:previous::' . dirname(__FILE__) . '/' . 'test
+				:else:1:' . dirname(__FILE__) . '/' . 'test
+				:current:2:' . dirname(__FILE__) . '/' . 'test/page/2
+				:else:3:' . dirname(__FILE__) . '/' . 'test/page/3
+				:else:4:' . dirname(__FILE__) . '/' . 'test/page/4
+				:else:5:' . dirname(__FILE__) . '/' . 'test/page/5
+				:ellipsis:9:' . dirname(__FILE__) . '/' . 'test/page/9
+				:else:10:' . dirname(__FILE__) . '/' . 'test/page/10
+				:next::' . dirname(__FILE__) . '/' . 'test/page/3
+				:u_prev:' . dirname(__FILE__) . '/' . 'test
+				:u_next:' . dirname(__FILE__) . '/' . 'test/page/3',
 			),
 			array(
-				'test/page/%d',
-				'/page/%d',
+				array('routes' => array(
+					'core_controller',
+					'core_page_controller',
+				)),
+				'page',
 				95,
 				10,
 				20,
 				'pagination
 				:per_page:10
 				:current_page:3
-				:base_url:test/page/%d
-				:previous::test/page/2
-				:else:1:test
-				:else:2:test/page/2
-				:current:3:test/page/3
-				:else:4:test/page/4
-				:else:5:test/page/5
-				:else:6:test/page/6
-				:ellipsis:9:test/page/9
-				:else:10:test/page/10
-				:next::test/page/4
-				:u_prev:test/page/2
-				:u_next:test/page/4',
+				:base_url:
+				:previous::' . dirname(__FILE__) . '/' . 'test/page/2
+				:else:1:' . dirname(__FILE__) . '/' . 'test
+				:else:2:' . dirname(__FILE__) . '/' . 'test/page/2
+				:current:3:' . dirname(__FILE__) . '/' . 'test/page/3
+				:else:4:' . dirname(__FILE__) . '/' . 'test/page/4
+				:else:5:' . dirname(__FILE__) . '/' . 'test/page/5
+				:else:6:' . dirname(__FILE__) . '/' . 'test/page/6
+				:ellipsis:9:' . dirname(__FILE__) . '/' . 'test/page/9
+				:else:10:' . dirname(__FILE__) . '/' . 'test/page/10
+				:next::' . dirname(__FILE__) . '/' . 'test/page/4
+				:u_prev:' . dirname(__FILE__) . '/' . 'test/page/2
+				:u_next:' . dirname(__FILE__) . '/' . 'test/page/4',
 			),
 		);
 	}

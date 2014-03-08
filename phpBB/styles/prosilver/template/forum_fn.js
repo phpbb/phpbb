@@ -37,17 +37,14 @@ function jumpto(item) {
 		on_page = item.attr('data-on-page'),
 		per_page = item.attr('data-per-page'),
 		base_url = item.attr('data-base-url'),
+		start_name = item.attr('data-start-name'),
 		page = prompt(jump_page, on_page);
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
-		if (base_url.indexOf('%d') === -1) {
-			if (base_url.indexOf('?') === -1) {
-				document.location.href = base_url + '?start=' + ((page - 1) * per_page);
-			} else {
-				document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
-			}
+		if (base_url.indexOf('?') === -1) {
+			document.location.href = base_url + '?' + start_name + '=' + ((page - 1) * per_page);
 		} else {
-			document.location.href = base_url.replace('%d', page);
+			document.location.href = base_url.replace(/&amp;/g, '&') + '&' + start_name + '=' + ((page - 1) * per_page);
 		}
 	}
 }

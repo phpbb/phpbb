@@ -22,11 +22,13 @@ class pagination
 	*
 	* @param	\phpbb\template\template	$template
 	* @param	\phpbb\user					$user
+	* @param	\phpbb\controller\helper	$helper
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper)
 	{
 		$this->template = $template;
 		$this->user = $user;
+		$this->helper = $helper;
 	}
 
 	/**
@@ -44,9 +46,26 @@ class pagination
 	*/
 	protected function generate_page_link($base_url, $on_page, $start_name, $per_page)
 	{
-		if (strpos($start_name, '%d') !== false)
+		if (!is_string($base_url))
 		{
-			return ($on_page > 1) ? sprintf($base_url, (int) $on_page) : str_replace($start_name, '', $base_url);
+			if (is_array($base_url['routes']))
+			{
+				$route = ($on_page > 1) ? $base_url['routes'][1] : $base_url['routes'][0];
+			}
+			else
+			{
+				$route = $base_url['routes'];
+			}
+			$params = (isset($base_url['params'])) ? $base_url['params'] : array();
+			$is_amp = (isset($base_url['is_amp'])) ? $base_url['is_amp'] : true;
+			$session_id = (isset($base_url['session_id'])) ? $base_url['session_id'] : false;
+
+			if ($on_page > 1 || !is_array($base_url['routes']))
+			{
+				$params[$start_name] = (int) $on_page;
+			}
+
+			return $this->helper->route($route, $params, $is_amp, $session_id);
 		}
 		else
 		{
@@ -194,7 +213,8 @@ class pagination
 		$tpl_prefix = ($tpl_prefix == 'PAGINATION') ? '' : $tpl_prefix . '_';
 
 		$template_array = array(
-			$tpl_prefix . 'BASE_URL'		=> $base_url,
+			$tpl_prefix . 'BASE_URL'		=> is_string($base_url) ? $base_url : '',//@todo: Fix this for routes
+			$tpl_prefix . 'START_NAME'		=> $start_name,
 			$tpl_prefix . 'PER_PAGE'		=> $per_page,
 			'U_' . $tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page != 1) ? $u_previous_page : '',
 			'U_' . $tpl_prefix . 'NEXT_PAGE'		=> ($on_page != $total_pages) ? $u_next_page : '',
