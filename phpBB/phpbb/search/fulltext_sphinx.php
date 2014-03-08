@@ -284,7 +284,7 @@ class fulltext_sphinx
 				array('sql_attr_bool',				'deleted'),
 				array('sql_attr_timestamp'	,		'post_time'),
 				array('sql_attr_timestamp'	,		'topic_last_post_time'),
-				array('sql_attr_str2ordinal',		'post_subject'),
+				array('sql_attr_string',			'post_subject'),
 			),
 			'source source_phpbb_' . $this->id . '_delta : source_phpbb_' . $this->id . '_main' => array(
 				array('sql_query_pre',				''),
