@@ -80,7 +80,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	*/
 	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
-		$this->helper = new \phpbb\controller\helper($this->finder, $this->template, $this->user, $this->config, dirname(__FILE__) . '/', 'php');
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, new \phpbb\controller\provider($this->finder), dirname(__FILE__) . '/', 'php');
 		$this->assertEquals(dirname(__FILE__) . '/' . $expected, $this->helper->route($route, $params, $is_amp, $session_id));
 	}
 
@@ -120,7 +120,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	public function test_helper_url_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new \phpbb\controller\helper($this->finder, $this->template, $this->user, $this->config, dirname(__FILE__) . '/', 'php');
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, new \phpbb\controller\provider($this->finder), dirname(__FILE__) . '/', 'php');
 		$this->assertEquals(dirname(__FILE__) . '/' . $expected, $this->helper->route($route, $params, $is_amp, $session_id));
 	}
 }

@@ -91,10 +91,10 @@ services:
     controller.helper:
         class: phpbb\controller\helper
         arguments:
-            - @ext.finder
             - @template
             - @user
             - @config
+            - @controller.provider
             - %core.root_path%
             - %core.php_ext%
 
@@ -104,6 +104,11 @@ services:
             - @user
             - @service_container
             - @template
+
+    controller.provider:
+        class: phpbb\controller\provider
+        arguments:
+            - @ext.finder
 
     cron.task_collection:
         class: phpbb\di\service_collection

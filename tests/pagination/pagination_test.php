@@ -38,7 +38,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		);
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new \phpbb\controller\helper($this->finder, $this->template, $this->user, $this->config, dirname(__FILE__) . '/', 'php');
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, new \phpbb\controller\provider($this->finder), dirname(__FILE__) . '/', 'php');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
 

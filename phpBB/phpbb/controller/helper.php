@@ -58,16 +58,14 @@ class helper
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\extension\finder $finder, \phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-
-		$provider = new \phpbb\controller\provider();
-		$this->route_collection = $provider->import_paths_from_finder($finder)->find($this->phpbb_root_path);
+		$this->route_collection = $provider->find($this->phpbb_root_path);
 
 	}
 

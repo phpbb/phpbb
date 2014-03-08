@@ -31,28 +31,20 @@ class provider
 	* @param array() $routing_files Array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct($routing_files = array())
+	public function __construct(\phpbb\extension\finder $finder = null, $routing_files = array())
 	{
 		$this->routing_files = $routing_files;
-	}
 
-	/**
-	* Locate paths containing routing files
-	* This sets an internal property but does not return the paths.
-	*
-	* @return The current instance of this object for method chaining
-	*/
-	public function import_paths_from_finder(\phpbb\extension\finder $finder)
-	{
-		// We hardcode the path to the core config directory
-		// because the finder cannot find it
-		$this->routing_files = array_merge(array('config/routing.yml'), array_keys($finder
-			->directory('config')
-			->suffix('routing.yml')
-			->find()
-		));
-
-		return $this;
+		if ($finder)
+		{
+			// We hardcode the path to the core config directory
+			// because the finder cannot find it
+			$this->routing_files = array_merge($this->routing_files, array('config/routing.yml'), array_keys($finder
+					->directory('config')
+					->suffix('routing.yml')
+					->find()
+			));
+		}
 	}
 
 	/**
