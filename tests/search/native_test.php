@@ -106,17 +106,17 @@ class phpbb_search_native_test extends phpbb_search_test_case
 			array(
 				'-foo',
 				'all',
-				false,
-				null,
-				null,
+				true,
+				array(),
+				array(1),
 				array(),
 			),
 			array(
 				'-foo -bar',
 				'all',
-				false,
-				null,
-				null,
+				true,
+				array(),
+				array(1, 2),
 				array(),
 			),
 			// all common
