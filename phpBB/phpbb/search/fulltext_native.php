@@ -326,6 +326,12 @@ class fulltext_native extends \phpbb\search\base
 			$this->db->sql_freeresult($result);
 		}
 
+		// Handle +, - without preceeding whitespace character
+		$match		= array('#(\S)\+#', '#(\S)-#');
+		$replace	= array('$1 +', '$1 +');
+
+		$keywords = preg_replace($match, $replace, $keywords);
+
 		// now analyse the search query, first split it using the spaces
 		$query = explode(' ', $keywords);
 
