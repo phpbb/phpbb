@@ -70,10 +70,13 @@ class controller
 				$this->helper->route('foo_tests_index_controller'),
 				$rewrite_prefix . 'tests/index',
 			),
+			/**
+			* Symfony does not allow /../ in routes
 			array(
 				$this->helper->route('foo_tests_dotdot_index_controller'),
 				$rewrite_prefix . 'index',
 			),
+			*/
 		);
 
 		foreach ($redirects as $redirect)
