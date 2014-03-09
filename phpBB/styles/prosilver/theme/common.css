@@ -768,6 +768,14 @@ fieldset.fields1 ul.recipients  input.button2{
 	padding: 0;
 }
 
+fieldset.fields1 dl.pmlist > dt {
+	width: auto !important;
+}
+
+fieldset.fields1 dl.pmlist dd.recipients {
+	margin-left: 0 !important;
+}
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
