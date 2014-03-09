@@ -51,6 +51,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 			// check if search backend is not supported
 			if ($crawler->filter('.errorbox')->count() > 0)
 			{
+				$this->delete_topic($post['topic_id']);
 				$this->markTestSkipped("Search backend is not supported/running");
 			}
 			$this->create_search_index();
