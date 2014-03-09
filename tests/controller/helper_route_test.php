@@ -28,7 +28,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
 		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, new \phpbb\template\context());
 
-		$this->finder = new \phpbb\extension\finder(
+		$finder = new \phpbb\extension\finder(
 			new phpbb_mock_extension_manager(
 				dirname(__FILE__) . '/',
 				array(
@@ -43,6 +43,8 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache()
 		);
+		$this->provider = new \phpbb\controller\provider($finder);
+		$this->provider->find(dirname(__FILE__) . '/');
 	}
 
 	public function helper_url_data_no_rewrite()
@@ -80,8 +82,8 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	*/
 	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
-		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, new \phpbb\controller\provider($this->finder), dirname(__FILE__) . '/', 'php');
-		$this->assertEquals(dirname(__FILE__) . '/' . $expected, $this->helper->route($route, $params, $is_amp, $session_id));
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, $this->provider, '', 'php');
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id));
 	}
 
 	public function helper_url_data_with_rewrite()
@@ -120,7 +122,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	public function test_helper_url_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, new \phpbb\controller\provider($this->finder), dirname(__FILE__) . '/', 'php');
-		$this->assertEquals(dirname(__FILE__) . '/' . $expected, $this->helper->route($route, $params, $is_amp, $session_id));
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, $this->provider, '', 'php');
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id));
 	}
 }

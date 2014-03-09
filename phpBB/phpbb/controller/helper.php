@@ -66,7 +66,7 @@ class helper
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->route_collection = $provider->find($this->phpbb_root_path)->get_routes();
+		$this->route_collection = $provider->get_routes();
 	}
 
 	/**

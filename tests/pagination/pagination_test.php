@@ -38,7 +38,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		);
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, new \phpbb\controller\provider($this->finder), dirname(__FILE__) . '/', 'php');
+		$provider = new \phpbb\controller\provider($this->finder);
+		$provider->find(dirname(__FILE__) . '/');
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, $provider, '', 'php');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
 
@@ -103,17 +105,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:per_page:10
 				:current_page:2
 				:base_url:
-				:previous::' . dirname(__FILE__) . '/' . 'test
-				:else:1:' . dirname(__FILE__) . '/' . 'test
-				:current:2:' . dirname(__FILE__) . '/' . 'test/page/2
-				:else:3:' . dirname(__FILE__) . '/' . 'test/page/3
-				:else:4:' . dirname(__FILE__) . '/' . 'test/page/4
-				:else:5:' . dirname(__FILE__) . '/' . 'test/page/5
-				:ellipsis:9:' . dirname(__FILE__) . '/' . 'test/page/9
-				:else:10:' . dirname(__FILE__) . '/' . 'test/page/10
-				:next::' . dirname(__FILE__) . '/' . 'test/page/3
-				:u_prev:' . dirname(__FILE__) . '/' . 'test
-				:u_next:' . dirname(__FILE__) . '/' . 'test/page/3',
+				:previous::test
+				:else:1:test
+				:current:2:test/page/2
+				:else:3:test/page/3
+				:else:4:test/page/4
+				:else:5:test/page/5
+				:ellipsis:9:test/page/9
+				:else:10:test/page/10
+				:next::test/page/3
+				:u_prev:test
+				:u_next:test/page/3',
 			),
 			array(
 				array('routes' => array(
@@ -128,18 +130,18 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:per_page:10
 				:current_page:3
 				:base_url:
-				:previous::' . dirname(__FILE__) . '/' . 'test/page/2
-				:else:1:' . dirname(__FILE__) . '/' . 'test
-				:else:2:' . dirname(__FILE__) . '/' . 'test/page/2
-				:current:3:' . dirname(__FILE__) . '/' . 'test/page/3
-				:else:4:' . dirname(__FILE__) . '/' . 'test/page/4
-				:else:5:' . dirname(__FILE__) . '/' . 'test/page/5
-				:else:6:' . dirname(__FILE__) . '/' . 'test/page/6
-				:ellipsis:9:' . dirname(__FILE__) . '/' . 'test/page/9
-				:else:10:' . dirname(__FILE__) . '/' . 'test/page/10
-				:next::' . dirname(__FILE__) . '/' . 'test/page/4
-				:u_prev:' . dirname(__FILE__) . '/' . 'test/page/2
-				:u_next:' . dirname(__FILE__) . '/' . 'test/page/4',
+				:previous::test/page/2
+				:else:1:test
+				:else:2:test/page/2
+				:current:3:test/page/3
+				:else:4:test/page/4
+				:else:5:test/page/5
+				:else:6:test/page/6
+				:ellipsis:9:test/page/9
+				:else:10:test/page/10
+				:next::test/page/4
+				:u_prev:test/page/2
+				:u_next:test/page/4',
 			),
 		);
 	}

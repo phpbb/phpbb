@@ -109,6 +109,8 @@ services:
         class: phpbb\controller\provider
         arguments:
             - @ext.finder
+        calls:
+            - [find, [%core.root_path%]]
 
     cron.task_collection:
         class: phpbb\di\service_collection
