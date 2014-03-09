@@ -53,8 +53,9 @@ class helper
 	* Constructor
 	*
 	* @param \phpbb\template\template $template Template object
-    * @param \phpbb\user $user User object
-    * @param \phpbb\config\config $config Config object
+	* @param \phpbb\user $user User object
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\controller\provider $provider Path provider
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
