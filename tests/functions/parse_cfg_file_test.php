@@ -54,10 +54,10 @@ version = 3.0.12',
 				),
 			),
 			array(
-				'foo = yes
+				'foo = on
 foo1 = true
 foo2 = 1
-bar = no
+bar = off
 bar1 = false
 bar2 = 0
 foobar =
@@ -80,15 +80,15 @@ foobar2 = \'qwer\'',
 bar = <a href="test">Test</a>',
 				array(
 					'foo'		=> '&amp;amp; bar',
-					'bar'		=> '&lt;a href=&#039;test&#039;&gt;Test&lt;/a&gt;',
+					'bar'		=> '&lt;a href=&quot;test&quot;&gt;Test&lt;/a&gt;',
 				),
 			),
 		);
 	}
 
 	/**
-	* @dataprovider parse_cfg_file_data
-	 */
+	* @dataProvider parse_cfg_file_data
+	*/
 	public function test_parse_cfg_file($file_contents, $expected)
 	{
 		$lines = explode("\n", $file_contents);
