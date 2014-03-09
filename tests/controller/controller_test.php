@@ -32,7 +32,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 	public function test_provider()
 	{
 		$provider = new \phpbb\controller\provider($this->extension_manager->get_finder());
-		$routes = $provider->find(__DIR__);
+		$routes = $provider->find(__DIR__)->get_routes();
 
 		// This will need to be updated if any new routes are defined
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('core_controller'));

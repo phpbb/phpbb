@@ -26,6 +26,12 @@ class provider
 	protected $routing_files;
 
 	/**
+	* Collection of the routes in phpBB and all found extensions
+	* @var RouteCollection
+	*/
+	protected $routes;
+
+	/**
 	* Construct method
 	*
 	* @param array() $routing_files Array of strings containing paths
@@ -48,20 +54,30 @@ class provider
 	}
 
 	/**
-	* Get a list of controllers and return it
+	* Find a list of controllers and return it
 	*
 	* @param string $base_path Base path to prepend to file paths
-	* @return array Array of controllers and their route information
+	* @return null
 	*/
 	public function find($base_path = '')
 	{
-		$routes = new RouteCollection;
+		$this->routes = new RouteCollection;
 		foreach ($this->routing_files as $file_path)
 		{
 			$loader = new YamlFileLoader(new FileLocator($base_path));
-			$routes->addCollection($loader->load($file_path));
+			$this->routes->addCollection($loader->load($file_path));
 		}
 
-		return $routes;
+		return $this;
+	}
+
+	/**
+	* Get the list of routes
+	*
+	* @return RouteCollection Get the route collection
+	*/
+	public function get_routes()
+	{
+		return $this->routes;
 	}
 }
