@@ -1001,6 +1001,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->add_lang('mcp');
 		$form = $crawler->selectButton('Yes')->form();
+		$form['delete_permanent'] = 1;
 		$crawler = self::submit($form);
 		$this->assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
 	}
@@ -1021,6 +1022,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();
+		$form['delete_permanent'] = 1;
 		$crawler = self::submit($form);
 		$this->assertContainsLang('POST_DELETED', $crawler->text());
 	}
