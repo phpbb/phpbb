@@ -11,15 +11,21 @@ namespace phpbb\profilefields\type;
 
 abstract class type_string_common extends type_base
 {
+	protected $validation_options = array(
+		'CHARS_ANY'			=> '.*',
+		'NUMBERS_ONLY'		=> '[0-9]+',
+		'ALPHA_ONLY'		=> '[\w]+',
+		'ALPHA_UNDERSCORE'	=> '[\w_]+',
+		'ALPHA_SPACERS'		=> '[\w_\+\. \-\[\]]+',
+	);
+
 	/**
 	* Return possible validation options
 	*/
-	function validate_options($field_data)
+	public function validate_options($field_data)
 	{
-		$validate_ary = array('CHARS_ANY' => '.*', 'NUMBERS_ONLY' => '[0-9]+', 'ALPHA_ONLY' => '[\w]+', 'ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
-
 		$validate_options = '';
-		foreach ($validate_ary as $lang => $value)
+		foreach ($this->validation_options as $lang => $value)
 		{
 			$selected = ($field_data['field_validation'] == $value) ? ' selected="selected"' : '';
 			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $this->user->lang[$lang] . '</option>';
@@ -69,17 +75,12 @@ abstract class type_string_common extends type_base
 			$field_validate = ($field_type != 'text') ? $field_value : bbcode_nl2br($field_value);
 			if (!preg_match('#^' . str_replace('\\\\', '\\', $field_data['field_validation']) . '$#i', $field_validate))
 			{
-				switch ($field_data['field_validation'])
+				$validation = array_search($field_data['field_validation'], $this->validation_options);
+				if ($validation)
 				{
-					case '[0-9]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_NUMBERS_ONLY', $this->get_field_name($field_data['lang_name']));
-
-					case '[\w]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_ALPHA_ONLY', $this->get_field_name($field_data['lang_name']));
-
-					case '[\w_\+\. \-\[\]]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_SPACERS_ONLY', $this->get_field_name($field_data['lang_name']));
+					return $this->user->lang('FIELD_INVALID_CHARS_' . $validation, $this->get_field_name($field_data['lang_name']));
 				}
+				return $this->user->lang('FIELD_INVALID_CHARS_INVALID', $this->get_field_name($field_data['lang_name']));
 			}
 		}
 
