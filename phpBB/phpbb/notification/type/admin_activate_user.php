@@ -81,7 +81,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 			WHERE user_type = ' . USER_FOUNDER;
 		$result = $this->db->sql_query($sql);
 
-		while ($row = $this->db->sql_fetchrow($sql))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$users[] = (int) $row['user_id'];
 		}
