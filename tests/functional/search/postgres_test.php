@@ -16,8 +16,4 @@ class phpbb_functional_search_postgres_test extends phpbb_functional_search_base
 {
 	protected $search_backend = '\phpbb\search\fulltext_postgres';
 
-	protected function assert_search_not_found($keywords)
-	{
-		$this->markTestIncomplete('Postgres search when fails doesn\'t show the search query');
-	}
 }
