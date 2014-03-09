@@ -3368,7 +3368,7 @@ function parse_cfg_file($filename, $lines = false)
 
 		// Determine first occurrence, since in values the equal sign is allowed
 		$key = htmlspecialchars(strtolower(trim(substr($line, 0, $delim_pos))));
-		$value = htmlspecialchars(trim(substr($line, $delim_pos + 1)));
+		$value = trim(substr($line, $delim_pos + 1));
 
 		if (in_array($value, array('off', 'false', '0')))
 		{
@@ -3385,6 +3385,10 @@ function parse_cfg_file($filename, $lines = false)
 		else if (($value[0] == "'" && $value[sizeof($value) - 1] == "'") || ($value[0] == '"' && $value[sizeof($value) - 1] == '"'))
 		{
 			$value = htmlspecialchars(substr($value, 1, sizeof($value)-2));
+		}
+		else
+		{
+			$value = htmlspecialchars($value);
 		}
 
 		$parsed_items[$key] = $value;
