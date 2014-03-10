@@ -6,6 +6,7 @@ services:
             - @path_helper
             - @template
             - @config
+            - @user
             - %core.root_path%
             - %core.php_ext%
 

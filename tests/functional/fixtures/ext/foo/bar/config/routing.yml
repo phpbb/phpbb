@@ -14,6 +14,10 @@ foo_exception_controller:
     pattern: /foo/exception
     defaults: { _controller: foo_bar.controller:exception }
 
+foo_login_redirect_controller:
+    pattern: /foo/login_redirect
+    defaults: { _controller: foo_bar.controller:login_redirect }
+
 foo_redirect_controller:
     pattern: /foo/redirect
     defaults: { _controller: foo_bar.controller:redirect }
