@@ -132,6 +132,14 @@ interface template
 	public function assign_block_vars($blockname, array $vararray);
 
 	/**
+	* Assign key variable pairs from an array to a whole specified block loop
+	* @param string $blockname Name of block to assign $block_vars_array to
+	* @param array $block_vars_array An array of hashes of variable name => value pairs
+	* @return \phpbb\template\template $this
+	*/
+	public function assign_block_vars_array($blockname, array $block_vars_array);
+
+	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
 	* An example of how to use this function:
