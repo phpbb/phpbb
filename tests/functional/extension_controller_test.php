@@ -124,6 +124,8 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 			'username'	=> 'admin',
 			'password'	=> 'adminadmin',
 		));
+		$this->assertStringStartsWith('./app.php/foo/login_redirect', $form->get('redirect')->getValue());
+
 		$crawler = self::submit($form);
 		$this->assertContains("I am a variable", $crawler->filter('#content')->text(), 'Unsuccessful redirect after using login_box()');
 		$this->phpbb_extension_manager->purge('foo/bar');
