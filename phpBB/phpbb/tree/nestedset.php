@@ -664,6 +664,34 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
+	* Get all items from the tree
+	*
+	* Basic data is defined in the $item_basic_data property.
+	*
+	* @param bool		$order_asc		Order the items ascending by their left_id
+	* @return array			Array of items (containing all columns from the item table)
+	*							ID => Item data
+	*/
+	public function get_all_tree_data($order_asc = true)
+	{
+		$rows = array();
+
+		$sql = 'SELECT ' . implode(', ', $this->item_basic_data) . '
+			FROM ' . $this->table_name . ' ' .
+			$this->get_sql_where('WHERE') . '
+			ORDER BY ' . $this->column_left_id . ' ' . ($order_asc ? 'ASC' : 'DESC');
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rows[(int) $row[$this->column_item_id]] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
+	/**
 	* Remove a subset from the nested set
 	*
 	* @param array	$subset_items		Subset of items to remove
