@@ -156,7 +156,6 @@ $lang = array_merge($lang, array(
 		1	=> 'Enter your message here, it may contain no more than <strong>%d</strong> character.',
 		2	=> 'Enter your message here, it may contain no more than <strong>%d</strong> characters.',
 	),
-	'MESSAGE_DELETED'			=> 'This message has been deleted successfully.',
 	'MORE_SMILIES'				=> 'View more smilies',
 
 	'NOTIFY_REPLY'				=> 'Notify me when a reply is posted',
