@@ -113,7 +113,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	}
 
 	/**
-	 * Check the redirect after using he login_box() form
+	 * Check the redirect after using the login_box() form
 	 */
 	public function test_login_redirect()
 	{
