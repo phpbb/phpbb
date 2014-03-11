@@ -54,7 +54,7 @@ function export_from_eventsmd($phpbb_root_path, $filter)
 		{
 			$file_details = substr($file_details, strlen("* Locations:\n    + "));
 			$files = explode("\n    + ", $file_details);
-			$prosilver = $subsilver2 = array();
+			$prosilver = $subsilver2 = $adm = array();
 			foreach ($files as $file)
 			{
 				if (strpos($file, 'styles/prosilver/template/') === 0)
@@ -65,8 +65,19 @@ function export_from_eventsmd($phpbb_root_path, $filter)
 				{
 					$subsilver2[] = substr($file, strlen('styles/subsilver2/template/'));
 				}
+				if (strpos($file, 'adm/style/') === 0)
+				{
+					$adm[] = substr($file, strlen('adm/style/'));
+				}
 			}
-			echo implode(', ', $prosilver) . ' || ' . implode(', ', $subsilver2);
+			if ($filter == 'acp')
+			{
+				echo implode(', ', $adm);
+			}
+			else
+			{
+				echo implode(', ', $prosilver) . ' || ' . implode(', ', $subsilver2);
+			}
 		}
 		else if ($filter == 'acp')
 		{
