@@ -731,7 +731,32 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user, $phpbb_container;
+	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user, $phpbb_container, $phpbb_dispatcher;
+
+	// Notifications types to delete
+	$delete_notifications_types = array(
+		'quote',
+		'bookmark',
+		'post',
+		'approve_post',
+		'post_in_queue',
+	);
+
+	/**
+	* Perform additional actions before post(s) deletion
+	*
+	* @event core.delete_posts_before
+	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
+	* @var	bool	auto_sync					Flag indicating if topics/forums should be synchronized
+	* @var	bool	posted_sync					Flag indicating if topics_posted table should be resynchronized
+	* @var	bool	post_count_sync				Flag indicating if posts count should be resynchronized
+	* @var	bool	call_delete_topics			Flag indicating if topics having no posts should be deleted
+	* @var	array	delete_notifications_types	Array with notifications types to delete
+	* @since 3.1.0-a4
+	*/
+	$vars = array('where_type', 'where_ids', 'auto_sync', 'posted_sync', 'post_count_sync', 'call_delete_topics', 'delete_notifications_types');
+	extract($phpbb_dispatcher->trigger_event('core.delete_posts_before', compact($vars)));
 
 	if ($where_type === 'range')
 	{
@@ -874,7 +899,39 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	delete_attachments('post', $post_ids, false);
 
+	/**
+	* Perform additional actions during post(s) deletion
+	*
+	* @event core.delete_posts_in_transaction
+	* @var	array	post_ids					Array with deleted posts' ids
+	* @var	array	poster_ids					Array with deleted posts' author ids
+	* @var	array	topic_ids					Array with deleted posts' topic ids
+	* @var	array	forum_ids					Array with deleted posts' forum ids
+	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
+	* @var	array	delete_notifications_types	Array with notifications types to delete
+	* @since 3.1.0-a4
+	*/
+	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type', 'where_ids', 'delete_notifications_types');
+	extract($phpbb_dispatcher->trigger_event('core.delete_posts_in_transaction', compact($vars)));
+
 	$db->sql_transaction('commit');
+
+	/**
+	* Perform additional actions after post(s) deletion
+	*
+	* @event core.delete_posts_after
+	* @var	array	post_ids					Array with deleted posts' ids
+	* @var	array	poster_ids					Array with deleted posts' author ids
+	* @var	array	topic_ids					Array with deleted posts' topic ids
+	* @var	array	forum_ids					Array with deleted posts' forum ids
+	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
+	* @var	array	delete_notifications_types	Array with notifications types to delete
+	* @since 3.1.0-a4
+	*/
+	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type', 'where_ids', 'delete_notifications_types');
+	extract($phpbb_dispatcher->trigger_event('core.delete_posts_after', compact($vars)));
 
 	// Resync topics_posted table
 	if ($posted_sync)
@@ -902,13 +959,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-	$phpbb_notifications->delete_notifications(array(
-		'quote',
-		'bookmark',
-		'post',
-		'approve_post',
-		'post_in_queue',
-	), $post_ids);
+	$phpbb_notifications->delete_notifications($delete_notifications_types, $post_ids);
 
 	return sizeof($post_ids);
 }
