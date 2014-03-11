@@ -21,11 +21,27 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	public function setUp()
 	{
 		parent::setUp();
-		$user = $this->getMock('\phpbb\user');
-		$user->expects($this->any())
+
+		global $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$this->user = $this->getMock('\phpbb\user');
+		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
-		$this->pagination = new \phpbb\pagination($this->template, $user);
+
+		$this->finder = new \phpbb\extension\finder(
+			new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array()),
+			new \phpbb\filesystem(),
+			dirname(__FILE__) . '/',
+			new phpbb_mock_cache()
+		);
+
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+		$provider = new \phpbb\controller\provider($this->finder);
+		$provider->find(dirname(__FILE__) . '/');
+		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, $provider, '', 'php');
+		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
 
 	public function generate_template_pagination_data()
@@ -77,15 +93,18 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:u_next:page.php?start=30',
 			),
 			array(
-				'test/page/%d',
-				'/page/%d',
+				array('routes' => array(
+					'core_controller',
+					'core_page_controller',
+				)),
+				'page',
 				95,
 				10,
 				10,
 				'pagination
 				:per_page:10
 				:current_page:2
-				:base_url:test/page/%d
+				:base_url:
 				:previous::test
 				:else:1:test
 				:current:2:test/page/2
@@ -99,15 +118,18 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:u_next:test/page/3',
 			),
 			array(
-				'test/page/%d',
-				'/page/%d',
+				array('routes' => array(
+					'core_controller',
+					'core_page_controller',
+				)),
+				'page',
 				95,
 				10,
 				20,
 				'pagination
 				:per_page:10
 				:current_page:3
-				:base_url:test/page/%d
+				:base_url:
 				:previous::test/page/2
 				:else:1:test
 				:else:2:test/page/2

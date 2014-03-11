@@ -17,3 +17,15 @@ foo_exception_controller:
 foo_redirect_controller:
     pattern: /foo/redirect
     defaults: { _controller: foo_bar.controller:redirect }
+
+foo_index_controller:
+    pattern: /index
+    defaults: { _controller: foo_bar.controller:redirect }
+
+foo_tests_index_controller:
+    pattern: /tests/index
+    defaults: { _controller: foo_bar.controller:redirect }
+
+foo_tests_dotdot_index_controller:
+    pattern: /tests/../index
+    defaults: { _controller: foo_bar.controller:redirect }

@@ -63,39 +63,18 @@ class controller
 				'tests/index.php',
 			),
 			array(
-				$this->helper->url('index'),
+				$this->helper->route('foo_index_controller'),
 				$rewrite_prefix . 'index',
 			),
 			array(
-				$this->helper->url('tests/index'),
+				$this->helper->route('foo_tests_index_controller'),
 				$rewrite_prefix . 'tests/index',
 			),
+			/**
+			* Symfony does not allow /../ in routes
 			array(
-				$this->helper->url('tests/../index'),
+				$this->helper->route('foo_tests_dotdot_index_controller'),
 				$rewrite_prefix . 'index',
-			),
-			/*
-			// helper URLs starting with  ../ are prone to failure.
-			// Do not test them right now.
-			array(
-				$this->helper->url('../index'),
-				'../index',
-			),
-			array(
-				$this->helper->url('../../index'),
-				'../index',
-			),
-			array(
-				$this->helper->url('../tests/index'),
-				$rewrite_prefix . '../tests/index',
-			),
-			array(
-				$this->helper->url('../tests/../index'),
-				'../index',
-			),
-			array(
-				$this->helper->url('../../tests/index'),
-				'../tests/index',
 			),
 			*/
 		);

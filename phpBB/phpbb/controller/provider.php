@@ -26,50 +26,58 @@ class provider
 	protected $routing_files;
 
 	/**
+	* Collection of the routes in phpBB and all found extensions
+	* @var RouteCollection
+	*/
+	protected $routes;
+
+	/**
 	* Construct method
 	*
 	* @param array() $routing_files Array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct($routing_files = array())
+	public function __construct(\phpbb\extension\finder $finder = null, $routing_files = array())
 	{
 		$this->routing_files = $routing_files;
+
+		if ($finder)
+		{
+			// We hardcode the path to the core config directory
+			// because the finder cannot find it
+			$this->routing_files = array_merge($this->routing_files, array('config/routing.yml'), array_keys($finder
+					->directory('config')
+					->suffix('routing.yml')
+					->find()
+			));
+		}
 	}
 
 	/**
-	* Locate paths containing routing files
-	* This sets an internal property but does not return the paths.
+	* Find a list of controllers and return it
 	*
-	* @return The current instance of this object for method chaining
+	* @param string $base_path Base path to prepend to file paths
+	* @return null
 	*/
-	public function import_paths_from_finder(\phpbb\extension\finder $finder)
+	public function find($base_path = '')
 	{
-		// We hardcode the path to the core config directory
-		// because the finder cannot find it
-		$this->routing_files = array_merge(array('config/routing.yml'), array_keys($finder
-			->directory('config')
-			->suffix('routing.yml')
-			->find()
-		));
+		$this->routes = new RouteCollection;
+		foreach ($this->routing_files as $file_path)
+		{
+			$loader = new YamlFileLoader(new FileLocator($base_path));
+			$this->routes->addCollection($loader->load($file_path));
+		}
 
 		return $this;
 	}
 
 	/**
-	* Get a list of controllers and return it
+	* Get the list of routes
 	*
-	* @param string $base_path Base path to prepend to file paths
-	* @return array Array of controllers and their route information
+	* @return RouteCollection Get the route collection
 	*/
-	public function find($base_path = '')
+	public function get_routes()
 	{
-		$routes = new RouteCollection;
-		foreach ($this->routing_files as $file_path)
-		{
-			$loader = new YamlFileLoader(new FileLocator($base_path));
-			$routes->addCollection($loader->load($file_path));
-		}
-
-		return $routes;
+		return $this->routes;
 	}
 }
