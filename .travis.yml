@@ -8,9 +8,7 @@ php:
   - hhvm
 
 env:
-  - DB=mariadb
   - DB=mysql
-  - DB=postgres
 
 services:
   - redis-server
@@ -36,5 +34,10 @@ script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysql' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
 
 matrix:
+  include:
+    - php: 5.4
+      env: DB=mariadb
+    - php: 5.4
+      env: DB=postgres
   allow_failures:
     - php: hhvm
