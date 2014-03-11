@@ -14,6 +14,21 @@ namespace phpbb;
  */
 class version_helper
 {
+	/**
+	 * @var string Host
+	 */
+	protected $host = 'version.phpbb.com';
+
+	/**
+	 * @var string Path to file
+	 */
+	protected $path = '/phpbb';
+
+	/**
+	 * @var string File name
+	 */
+	protected $file = 'versions.json';
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -23,11 +38,35 @@ class version_helper
 	/** @var \phpbb\user */
 	protected $user;
 
+	/**
+	 * Constructor
+	 *
+	 * @param \phpbb\cache\service $cache
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\user $user
+	 */
 	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\user $user)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->user = $user;
+	}
+
+	/**
+	 * Set location to the file
+	 *
+	 * @param string $host Host (e.g. version.phpbb.com)
+	 * @param string $path Path to file (e.g. /phpbb)
+	 * @param string $file File name (Default: versions.json)
+	 * @return version_helper
+	 */
+	public function set_file_location($host, $path, $file = 'versions.json')
+	{
+		$this->host = $host;
+		$this->path = $path;
+		$this->file = $file;
+
+		return $this;
 	}
 
 	/**
@@ -142,12 +181,14 @@ class version_helper
 	 */
 	public function get_versions($force_update = false)
 	{
-		$info = $this->cache->get('versioncheck');
+		$cache_file = 'versioncheck_' . $this->host . $this->path . $this->file;
+
+		$info = $this->cache->get($cache_file);
 
 		if ($info === false || $force_update)
 		{
 			$errstr = $errno = '';
-			$info = get_remote_file('version.phpbb.com', '/phpbb', 'versions.json', $errstr, $errno);
+			$info = get_remote_file($this->host, $this->path, $this->file, $errstr, $errno);
 
 			if (!empty($errstr))
 			{
@@ -172,7 +213,7 @@ class version_helper
 				}
 			}
 
-			$this->cache->put('versioncheck', $info, 86400); // 24 hours
+			$this->cache->put($cache_file, $info, 86400); // 24 hours
 		}
 
 		return $info;

@@ -318,6 +318,7 @@ services:
 
     version_helper:
         class: phpbb\version_helper
+        scope: prototype
         arguments:
             - @cache
             - @config
