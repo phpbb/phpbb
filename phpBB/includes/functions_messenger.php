@@ -768,13 +768,15 @@ class queue
 
 					if (!$this->jabber->connect())
 					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
+						$messenger = new messenger();
+						$messenger->error('JABBER', $user->lang['ERR_JAB_CONNECT']);
 						continue 2;
 					}
 
 					if (!$this->jabber->login())
 					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
+						$messenger = new messenger();
+						$messenger->error('JABBER', $user->lang['ERR_JAB_AUTH']);
 						continue 2;
 					}
 
@@ -807,7 +809,8 @@ class queue
 
 						if (!$result)
 						{
-							messenger::error('EMAIL', $err_msg);
+							$messenger = new messenger();
+							$messenger->error('EMAIL', $err_msg);
 							continue 2;
 						}
 					break;
@@ -817,7 +820,8 @@ class queue
 						{
 							if ($this->jabber->send_message($address, $msg, $subject) === false)
 							{
-								messenger::error('JABBER', $this->jabber->get_log());
+								$messenger = new messenger();
+								$messenger->error('JABBER', $this->jabber->get_log());
 								continue 3;
 							}
 						}
