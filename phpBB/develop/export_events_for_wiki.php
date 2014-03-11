@@ -117,19 +117,30 @@ function check_for_events($phpbb_root_path, $file)
 				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->trigger_event('"));
 				$event_name = substr($event_name, 0, strpos($event_name, "'"));
 
-				// Find $vars array lines
-				$find_varsarray_line = 1;
-				while (strpos($lines[$event_line - $find_varsarray_line], "vars = array('") === false)
+				$current_line = trim($lines[$event_line]);
+				$arguments = array();
+				if (($found_inline_array = strpos($current_line, "', compact(array('")) !== false)
 				{
-					$find_varsarray_line++;
-
-					if ($find_varsarray_line > min(50, $event_line))
-					{
-						throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
-					}
+					$varsarray = substr($current_line, $found_inline_array + strlen("', compact(array('"), -6);
+					$arguments = explode("', '", $varsarray);
 				}
-				$varsarray = substr(trim($lines[$event_line - $find_varsarray_line]), strlen("\$vars = array('"), -3);
-				$arguments = explode("', '", $varsarray);
+
+				if (empty($arguments))
+				{
+					// Find $vars array lines
+					$find_varsarray_line = 1;
+					while (strpos($lines[$event_line - $find_varsarray_line], "vars = array('") === false)
+					{
+						$find_varsarray_line++;
+
+						if ($find_varsarray_line > min(50, $event_line))
+						{
+							throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
+						}
+					}
+					$varsarray = substr(trim($lines[$event_line - $find_varsarray_line]), strlen("\$vars = array('"), -3);
+					$arguments = explode("', '", $varsarray);
+				}
 
 				// Validate $vars array with @var
 				$find_vars_line = 3;
