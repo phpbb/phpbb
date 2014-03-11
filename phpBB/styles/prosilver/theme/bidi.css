@@ -550,7 +550,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 .rtl .small-icon {
 	background-position: 100% 50%;
-	padding: 1px 19px 0 0;
+	padding: 0 19px 0 0;
 }
 
 .rtl ul.linklist li.small-icon {
