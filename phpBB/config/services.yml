@@ -177,6 +177,7 @@ services:
 
     ext.finder:
         class: phpbb\extension\finder
+        scope: prototype
         arguments:
             - @ext.manager
             - @filesystem
