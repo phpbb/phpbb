@@ -19,7 +19,7 @@ class soft_delete_mod_convert extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v310\alpha2',
+			'\phpbb\db\migration\data\v310\alpha3',
 		);
 	}
 
