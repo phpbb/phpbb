@@ -1020,6 +1020,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		{
 			$template->assign_vars(array(
 				'SEARCH_TOPIC'		=> $topic_title,
+				'L_RETURN_TO_TOPIC'	=> $user->lang('RETURN_TO', $topic_title),
 				'U_SEARCH_TOPIC'	=> $view_topic_url
 			));
 		}

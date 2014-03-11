@@ -353,8 +353,9 @@ class ucp_pm
 				{
 					$template->assign_vars(array(
 						'S_VIEW_MESSAGE'	=> true,
-						'MSG_ID'			=> $msg_id)
-					);
+						'L_RETURN_TO_FOLDER'=> $user->lang('RETURN_TO', $folder_status['folder_name']),
+						'MSG_ID'			=> $msg_id,
+					));
 
 					if (!$msg_id)
 					{
