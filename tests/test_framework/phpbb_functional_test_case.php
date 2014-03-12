@@ -424,10 +424,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		/*
-		* We need add some configs into the config array here, otherwise
-		* the set_config() function will try to add the value to the database,
-		* because some DBMS return 0 for sql_affectedrows() when a row was found,
-		* but not changed.
+		* Add required config entries to the config array to prevent
+		* set_config() sending an INSERT query for already existing entries,
+		* resulting in a SQL error.
+		* This is because set_config() first sends an UPDATE query, then checks
+		* sql_affectedrows() which can be 0 (e.g. on MySQL) when the new
+		* data is already there.
 		*/
 		$config['newest_user_colour'] = '';
 		$config['rand_seed'] = '';
