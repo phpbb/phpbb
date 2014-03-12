@@ -29,6 +29,12 @@ class version_helper
 	 */
 	protected $file = 'versions.json';
 
+	/**
+	 * @var null|string Null to not force stability, 'unstable' or 'stable' to
+	 *					force the corresponding stability
+	 */
+	protected $force_stability;
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -50,6 +56,11 @@ class version_helper
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->user = $user;
+
+		if (defined('PHPBB_QA'))
+		{
+			$this->force_stability = 'unstable';
+		}
 	}
 
 	/**
@@ -65,6 +76,20 @@ class version_helper
 		$this->host = $host;
 		$this->path = $path;
 		$this->file = $file;
+
+		return $this;
+	}
+
+	/**
+	 * Over-ride the stability to force check to include unstable versions
+	 *
+	 * @param null|string Null to not force stability, 'unstable' or 'stable' to
+	 * 						force the corresponding stability
+	 * @return version_helper
+	 */
+	public function force_stability($stability)
+	{
+		$this->force_stability = $stability;
 
 		return $this;
 	}
@@ -169,7 +194,12 @@ class version_helper
 	{
 		$info = $this->get_versions($force_update);
 
-		return ($this->is_stable($this->config['version']) && !defined('PHPBB_QA')) ? $info['stable'] : $info['unstable'];
+		if ($this->force_stability !== null)
+		{
+			return ($this->force_stability === 'unstable') ? $info['unstable'] : $info['stable'];
+		}
+
+		return ($this->is_stable($this->config['version'])) ? $info['stable'] : $info['unstable'];
 	}
 
 	/**
