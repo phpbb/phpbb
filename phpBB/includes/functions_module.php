@@ -450,7 +450,7 @@ class p_master
 
 			if (!class_exists("{$this->p_class}_$this->p_name"))
 			{
-				trigger_error($user->lang('MODULE_FILE_RIGHT_CLASS', "$module_path/{$this->p_class}_$this->p_name.$phpEx", "{$this->p_class}_$this->p_name"), E_USER_ERROR);
+				trigger_error($user->lang('MODULE_FILE_INCORRECT_CLASS', "$module_path/{$this->p_class}_$this->p_name.$phpEx", "{$this->p_class}_$this->p_name"), E_USER_ERROR);
 			}
 
 			if (!empty($mode))
