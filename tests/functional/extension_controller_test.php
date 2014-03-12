@@ -113,11 +113,32 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	}
 
 	/**
+	 * Check the redirect after using the login_box() form
+	 */
+	public function test_login_redirect()
+	{
+		$this->markTestIncomplete('Session table contains incorrect data for controllers on travis,'
+			. 'therefor the redirect fails.');
+
+		$this->phpbb_extension_manager->enable('foo/bar');
+		$crawler = self::request('GET', 'app.php/foo/login_redirect');
+		$this->assertContainsLang('LOGIN', $crawler->filter('h2')->text());
+		$form = $crawler->selectButton('login')->form(array(
+			'username'	=> 'admin',
+			'password'	=> 'adminadmin',
+		));
+		$this->assertStringStartsWith('./app.php/foo/login_redirect', $form->get('redirect')->getValue());
+
+		$crawler = self::submit($form);
+		$this->assertContains("I am a variable", $crawler->filter('#content')->text(), 'Unsuccessful redirect after using login_box()');
+		$this->phpbb_extension_manager->purge('foo/bar');
+	}
+
+	/**
 	* Check the output of a controller using the template system
 	*/
 	public function test_redirect()
 	{
-		$filesystem = new \phpbb\filesystem();
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/redirect');
 
