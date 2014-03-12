@@ -423,6 +423,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$config = array();
 		}
 
+		/*
+		* We need add some configs into the config array here, otherwise
+		* the set_config() function will try to add the value to the database,
+		* because some DBMS return 0 for sql_affectedrows() when a row was found,
+		* but not changed.
+		*/
+		$config['newest_user_colour'] = '';
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
