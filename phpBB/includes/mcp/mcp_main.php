@@ -1184,7 +1184,7 @@ function mcp_fork_topic($topic_ids)
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
 
-				if($row['post_postcount'])
+				if ($row['post_postcount'])
 				{
 					// Re-adjust user post count
 					$sql = 'UPDATE ' . USERS_TABLE . '
