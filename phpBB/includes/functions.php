@@ -2135,6 +2135,20 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 */
 function generate_board_url($without_script_path = false)
 {
+	static $board_url, $full_board_url;
+
+	if ($board_url !== null)
+	{
+		if (!$without_script_path)
+		{
+			return $full_board_url;
+		}
+		else
+		{
+			return $board_url;
+		}
+	}
+
 	global $config, $user, $request;
 
 	$server_name = $user->host;
@@ -2148,14 +2162,14 @@ function generate_board_url($without_script_path = false)
 		$server_port = (int) $config['server_port'];
 		$script_path = $config['script_path'];
 
-		$url = $server_protocol . $server_name;
+		$board_url = $server_protocol . $server_name;
 		$cookie_secure = $config['cookie_secure'];
 	}
 	else
 	{
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
 		$cookie_secure = $request->is_secure() ? 1 : 0;
-		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
+		$board_url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 
 		$script_path = $user->page['root_script_path'];
 	}
@@ -2165,22 +2179,28 @@ function generate_board_url($without_script_path = false)
 		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
 		if (strpos($server_name, ':') === false)
 		{
-			$url .= ':' . $server_port;
+			$board_url .= ':' . $server_port;
 		}
+	}
+
+	$full_board_url = $board_url . $script_path;
+
+	// Strip / from the end
+	if (substr($board_url, -1, 1) == '/')
+	{
+		$board_url = substr($board_url, 0, -1);
+	}
+	if (substr($full_board_url, -1, 1) == '/')
+	{
+		$full_board_url = substr($full_board_url, 0, -1);
 	}
 
 	if (!$without_script_path)
 	{
-		$url .= $script_path;
+		return $full_board_url;
 	}
 
-	// Strip / from the end
-	if (substr($url, -1, 1) == '/')
-	{
-		$url = substr($url, 0, -1);
-	}
-
-	return $url;
+	return $board_url;
 }
 
 /**
