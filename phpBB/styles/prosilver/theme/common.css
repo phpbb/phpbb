@@ -751,6 +751,31 @@ dl.details dd {
 	overflow: hidden;
 }
 
+fieldset.fields1 ul.recipients {
+	list-style-type: none;
+	line-height: 1.8;
+	max-height: 150px;
+	overflow-y: auto;
+}
+
+fieldset.fields1 dd.recipients {
+	clear: left;
+	margin-left: 1em;
+}
+
+fieldset.fields1 ul.recipients  input.button2{
+	font-size: 0.8em;
+	margin-right: 0;
+	padding: 0;
+}
+
+fieldset.fields1 dl.pmlist > dt {
+	width: auto !important;
+}
+
+fieldset.fields1 dl.pmlist dd.recipients {
+	margin-left: 0 !important;
+}
 
 /* Pagination
 ---------------------------------------- */
