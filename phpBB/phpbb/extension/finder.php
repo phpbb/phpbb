@@ -475,7 +475,8 @@ class finder
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
-			$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
+			$iterator = new \phpbb\extension\recursive_filter_iterator(new \RecursiveDirectoryIterator($path));
+			$iterator = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($iterator as $file_info)
 			{
 				$filename = $file_info->getFilename();
