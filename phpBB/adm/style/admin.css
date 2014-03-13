@@ -571,12 +571,6 @@ li {
 	padding: 3px 8px 3px 3px;
 }
 
-#menu li span, #menu .header {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 #menu li a:hover, #menu li a:hover span {
 	text-decoration: none;
 	background-color: #FFFFFF;
