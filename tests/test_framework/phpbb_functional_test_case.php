@@ -192,7 +192,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db_tools,
 			self::$config['table_prefix'] . 'migrations',
 			$phpbb_root_path,
-			$php_ext,
+			$phpEx,
 			self::$config['table_prefix'],
 			array(),
 			new \phpbb\db\migration\helper()
@@ -207,7 +207,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			new phpbb\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
-			$php_ext,
+			$phpEx,
 			$this->get_cache_driver()
 		);
 
