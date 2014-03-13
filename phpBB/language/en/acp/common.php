@@ -288,7 +288,6 @@ $lang = array_merge($lang, array(
 	'RESYNC'							=> 'Resynchronise',
 	'RESYNC_FILES_STATS'				=> 'Resynchronise files statistics',
 	'RESYNC_FILES_STATS_EXPLAIN'		=> 'Recalculates the total number and size of files attached to posts and private messages.',
-	'RETURN_TO'							=> 'Return to…',
 
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
