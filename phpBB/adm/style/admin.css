@@ -43,6 +43,10 @@ body {
 	margin: 10px 15px;
 }
 
+code, samp {
+	font-size: 1.2em;
+}
+
 img {
 	border: 0;
 }
