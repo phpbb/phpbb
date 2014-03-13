@@ -668,7 +668,7 @@ INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, 
 # Bots having bot access
 INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (6, 2, 0, 19, 0);
 
-# NEW MEMBERS aren't allowed to PM
+# NEW MEMBERS are not allowed to send private messages
 INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 0, 0, 23, 0);
 
 # NEW MEMBERS on the queue
