@@ -405,22 +405,10 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					$module_ids[] = (int) $module_id;
 				}
 				$this->db->sql_freeresult($result);
-
-				$module_name = $module;
 			}
 			else
 			{
-				$module = (int) $module;
-				$sql = 'SELECT module_langname
-					FROM ' . $this->modules_table . "
-					WHERE module_id = $module
-						AND module_class = '" . $this->db->sql_escape($class) . "'
-						$parent_sql";
-				$result = $this->db->sql_query($sql);
-				$module_name = $this->db->sql_fetchfield('module_id');
-				$this->db->sql_freeresult($result);
-
-				$module_ids[] = $module;
+				$module_ids[] = (int) $module;
 			}
 
 			if (!class_exists('acp_modules'))
