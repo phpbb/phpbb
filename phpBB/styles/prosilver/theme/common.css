@@ -331,6 +331,7 @@ ul.linklist li {
 	margin-right: 5px;
 	font-size: 1.1em;
 	line-height: 2.2em;
+	padding-top: 1px;
 }
 
 ul.linklist li.rightside, p.rightside {
