@@ -473,6 +473,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $config;
 
 		$config = new \phpbb\config\config(array());
+
+		/*
+		* Add required config entries to the config array to prevent
+		* set_config() sending an INSERT query for already existing entries,
+		* resulting in a SQL error.
+		* This is because set_config() first sends an UPDATE query, then checks
+		* sql_affectedrows() which can be 0 (e.g. on MySQL) when the new
+		* data is already there.
+		*/
+		$config['newest_user_colour'] = '';
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
