@@ -12,7 +12,7 @@ namespace phpbb\extension;
 /**
 * Class recursive_filter_iterator
 *
-* This Filter ignores .svn and .git directories.
+* This filter ignores directories starting with a dot.
 * When searching for php classes and template files of extensions
 * we don't need to look inside these directories.
 *
@@ -20,13 +20,8 @@ namespace phpbb\extension;
 */
 class recursive_filter_iterator extends \RecursiveFilterIterator
 {
-	public static $ignore_folders = array(
-		'.svn',
-		'.git',
-	);
-
 	public function accept()
 	{
-		return !in_array($this->current()->getFilename(), self::$ignore_folders);
+		return !$this->current()->isDir() || substr($this->current()->getFilename(), 0, 1) !== '.';
 	}
 }
