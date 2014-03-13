@@ -22,7 +22,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
-	/** @var dbal */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
 	/** @var string */
@@ -35,7 +35,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver $db
-	* @param mixed $cache
+	* @param \phpbb\cache\service
 	* @param \phpbb\auth\auth $auth
 	* @param string $phpbb_root_path
 	* @param string $php_ext
