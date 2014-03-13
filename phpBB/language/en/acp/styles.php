@@ -249,8 +249,9 @@ $lang = array_merge($lang, array(
 	'NO_UNINSTALLED_STYLE'		=> 'No uninstalled styles detected.',
 	'NO_UNIT'					=> 'None',
 
-	'ONLY_STYLE'			=> 'This is the only remaining style, you cannot delete it.',
-
+	'ONLY_STYLE'				=> 'This is the only remaining style, you cannot delete it.',
+	'OVERRIDE_USER_STYLE'		=> 'Forced viewed by',
+	'OVERRIDE_USER_STYLE_WARNING'	=> 'Warning: User styles are overridden in board settings!',
 	'PARENT_STYLE_NOT_FOUND'	=> 'Parent style was not found. This style may not work correctly. Please uninstall it.',
 	'PURGED_CACHE'				=> 'Cache was purged.',
 
