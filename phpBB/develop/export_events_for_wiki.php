@@ -289,7 +289,7 @@ function get_file_list($dir, $path = '')
 				$files[] = $file_info->getFilename() . '/' . $file;
 			}
 		}
-		else if ($file_info->getExtension() == 'php')
+		else if (substr($file_info->getFilename(), -4) == '.php')
 		{
 			$files[] = $file_info->getFilename();
 		}
