@@ -121,7 +121,8 @@ function check_for_events($phpbb_root_path, $file)
 		for ($i = 0, $num_lines = sizeof($lines); $i < $num_lines; $i++)
 		{
 			$event_line = 0;
-			if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->trigger_event('"))
+			$found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->trigger_event('");
+			if ($found_trigger_event !== false)
 			{
 				$event_line = $i;
 				$event_name = $lines[$event_line];
@@ -130,7 +131,8 @@ function check_for_events($phpbb_root_path, $file)
 
 				$current_line = trim($lines[$event_line]);
 				$arguments = array();
-				if (($found_inline_array = strpos($current_line, "', compact(array('")) !== false)
+				$found_inline_array = strpos($current_line, "', compact(array('");
+				if ($found_inline_array !== false)
 				{
 					$varsarray = substr($current_line, $found_inline_array + strlen("', compact(array('"), -6);
 					$arguments = explode("', '", $varsarray);
@@ -175,11 +177,12 @@ function check_for_events($phpbb_root_path, $file)
 					throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
 				}
 			}
-			else if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->dispatch('"))
+			$found_dispatch = strpos($lines[$i], "phpbb_dispatcher->dispatch('");
+			if ($found_dispatch !== false)
 			{
 				$event_line = $i;
 				$event_name = $lines[$event_line];
-				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->dispatch('"));
+				$event_name = substr($event_name, $found_dispatch + strlen("phpbb_dispatcher->dispatch('"));
 				$event_name = substr($event_name, 0, strpos($event_name, "'"));
 				$arguments = array();
 			}
