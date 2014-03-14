@@ -306,6 +306,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
 			),
+			array(
+				'loop_include.html',
+				array(),
+				array('test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1'))),
+				array(),
+				"barbarbar1bar1",
+			),
 			/* Does not pass with the current implementation.
 			array(
 				'loop_reuse.html',
