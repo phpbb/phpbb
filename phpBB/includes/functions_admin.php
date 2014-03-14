@@ -3041,7 +3041,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	return $file_info;
 }
 
-/**
+/*
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
 * The duration of a warning can be defined by the administrator
@@ -3148,45 +3148,6 @@ function add_permission_language()
 			$user->add_lang_ext($ext_name, $lang_file);
 		}
 	}
-}
-
-/**
- * Obtains the latest version information
- *
- * @param bool $force_update Ignores cached data. Defaults to false.
- * @param bool $warn_fail Trigger a warning if obtaining the latest version information fails. Defaults to false.
- * @param int $ttl Cache version information for $ttl seconds. Defaults to 86400 (24 hours).
- *
- * @return string | false Version info on success, false on failure.
- */
-function obtain_latest_version_info($force_update = false, $warn_fail = false, $ttl = 86400)
-{
-	global $cache;
-
-	$info = $cache->get('versioncheck');
-
-	if ($info === false || $force_update)
-	{
-		$errstr = '';
-		$errno = 0;
-
-		$info = get_remote_file('version.phpbb.com', '/phpbb',
-				((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
-
-		if (empty($info))
-		{
-			$cache->destroy('versioncheck');
-			if ($warn_fail)
-			{
-				trigger_error($errstr, E_USER_WARNING);
-			}
-			return false;
-		}
-
-		$cache->put('versioncheck', $info, $ttl);
-	}
-
-	return $info;
 }
 
 /**
