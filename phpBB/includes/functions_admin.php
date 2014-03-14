@@ -2925,8 +2925,8 @@ function get_database_size()
 }
 
 /**
- * Retrieve contents from remotely stored file
- */
+* Retrieve contents from remotely stored file
+*/
 function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
 {
 	global $user;
