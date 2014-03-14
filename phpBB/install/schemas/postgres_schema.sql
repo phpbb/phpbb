@@ -418,10 +418,10 @@ CREATE TABLE phpbb_forums (
 	prune_days INT4 DEFAULT '0' NOT NULL CHECK (prune_days >= 0),
 	prune_viewed INT4 DEFAULT '0' NOT NULL CHECK (prune_viewed >= 0),
 	prune_freq INT4 DEFAULT '0' NOT NULL CHECK (prune_freq >= 0),
-	enable_shadow_topic_prune INT2 DEFAULT '0' NOT NULL CHECK (enable_shadow_topic_prune >= 0),
-	prune_shadow_topic_next INT4 DEFAULT '0' NOT NULL CHECK (prune_shadow_topic_next >= 0),
-	prune_shadow_topic_days INT4 DEFAULT '0' NOT NULL CHECK (prune_shadow_topic_days >= 0),
-	prune_shadow_topic_freq INT4 DEFAULT '0' NOT NULL CHECK (prune_shadow_topic_freq >= 0),
+	enable_shadow_prune INT2 DEFAULT '0' NOT NULL CHECK (enable_shadow_prune >= 0),
+	prune_shadow_next INT4 DEFAULT '0' NOT NULL CHECK (prune_shadow_next >= 0),
+	prune_shadow_days INT4 DEFAULT '0' NOT NULL CHECK (prune_shadow_days >= 0),
+	prune_shadow_freq INT4 DEFAULT '0' NOT NULL CHECK (prune_shadow_freq >= 0),
 	PRIMARY KEY (forum_id)
 );
 

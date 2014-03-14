@@ -273,10 +273,10 @@ CREATE TABLE phpbb_forums (
 	prune_days INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	prune_viewed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	prune_freq INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	enable_shadow_topic_prune INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	prune_shadow_topic_next INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	prune_shadow_topic_days INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	prune_shadow_topic_freq INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	enable_shadow_prune INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_shadow_next INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_shadow_days INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_shadow_freq INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_forums_left_right_id ON phpbb_forums (left_id, right_id);
