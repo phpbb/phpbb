@@ -1227,29 +1227,81 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	// Check for disallowed recipients
 	if (!empty($address_list['u']))
 	{
-		// We need to check their PM status (do they want to receive PM's?)
-		// Only check if not a moderator or admin, since they are allowed to override this user setting
-		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		// Administrator deactivated users check and we need to check their
+		//		PM status (do they want to receive PM's?)
+		// 		Only check PM status if not a moderator or admin, since they
+		//		are allowed to override this user setting
+		$sql = 'SELECT user_id, user_allow_pm
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
+				AND (user_type = ' . USER_INACTIVE . '
+					AND user_inactive_reason = ' . INACTIVE_MANUAL . ')';
+
+		$can_ignore_allow_pm = ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'));
+		if (!$can_ignore_allow_pm)
 		{
-			$sql = 'SELECT user_id
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
-					AND user_allow_pm = 0';
-			$result = $db->sql_query($sql);
+			$sql .= ' OR user_allow_pm = 0';
+		}
 
-			$removed = false;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$removed = true;
-				unset($address_list['u'][$row['user_id']]);
-			}
-			$db->sql_freeresult($result);
+		$result = $db->sql_query($sql);
 
-			// print a notice about users not being added who do not want to receive pms
-			if ($removed)
+		$removed_no_pm = $removed_no_permission = false;
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!$can_ignore_allow_pm && !$row['user_allow_pm'])
 			{
-				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+				$removed_no_pm = true;
 			}
+			else
+			{
+				$removed_no_permission = true;
+			}
+
+			unset($address_list['u'][$row['user_id']]);
+		}
+		$db->sql_freeresult($result);
+
+		// print a notice about users not being added who do not want to receive pms
+		if ($removed_no_pm)
+		{
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+		}
+
+		// print a notice about users not being added who do not have permission to receive PMs
+		if ($removed_no_permission)
+		{
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+		}
+
+		if (!sizeof(array_keys($address_list['u'])))
+		{
+			return;
+		}
+
+		// Check if users have permission to read PMs
+		$can_read = $auth->acl_get_list(array_keys($address_list['u']), 'u_readpm');
+		$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
+		$cannot_read_list = array_diff(array_keys($address_list['u']), $can_read);
+		if (!empty($cannot_read_list))
+		{
+			foreach ($cannot_read_list as $cannot_read)
+			{
+				unset($address_list['u'][$cannot_read]);
+			}
+
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+		}
+
+		// Check if users are banned
+		$banned_user_list = phpbb_get_banned_user_ids(array_keys($address_list['u']), false);
+		if (!empty($banned_user_list))
+		{
+			foreach ($banned_user_list as $banned_user)
+			{
+				unset($address_list['u'][$banned_user]);
+			}
+
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 	}
 }
