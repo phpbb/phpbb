@@ -27,9 +27,9 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 		$crawler = self::submit($form);
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
-			'enable_shadow_topic_prune'	=> true,
-			'prune_shadow_topic_freq'	=> 1,
-			'prune_shadow_topic_days'	=> 1,
+			'enable_shadow_prune'	=> true,
+			'prune_shadow_freq'	=> 1,
+			'prune_shadow_days'	=> 1,
 		));
 		$crawler = self::submit($form);
 	}

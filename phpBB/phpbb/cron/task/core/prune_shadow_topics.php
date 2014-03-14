@@ -73,9 +73,9 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 			include($this->phpbb_root_path . 'includes/functions_admin.' . $this->php_ext);
 		}
 
-		if ($this->forum_data['prune_shadow_topic_days'])
+		if ($this->forum_data['prune_shadow_days'])
 		{
-			$this->auto_prune_shadow_topics($this->forum_data['forum_id'], 'shadow', $this->forum_data['forum_flags'], $this->forum_data['prune_shadow_topic_days'], $this->forum_data['prune_shadow_topic_freq']);
+			$this->auto_prune_shadow_topics($this->forum_data['forum_id'], 'shadow', $this->forum_data['forum_flags'], $this->forum_data['prune_shadow_days'], $this->forum_data['prune_shadow_freq']);
 		}
 	}
 
@@ -105,7 +105,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	*/
 	public function should_run()
 	{
-		return $this->forum_data['enable_shadow_topic_prune'] && $this->forum_data['prune_shadow_topic_next'] < time();
+		return $this->forum_data['enable_shadow_prune'] && $this->forum_data['prune_shadow_next'] < time();
 	}
 
 	/**
@@ -136,7 +136,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 		{
 			$forum_id = $request->variable('f', 0);
 
-			$sql = 'SELECT forum_id, prune_shadow_topic_next, enable_shadow_topic_prune, prune_shadow_topic_days, forum_flags, prune_shadow_topic_freq
+			$sql = 'SELECT forum_id, prune_shadow_next, enable_shadow_prune, prune_shadow_days, forum_flags, prune_shadow_freq
 				FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
 			$result = $this->db->sql_query($sql);
@@ -176,11 +176,11 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 			prune($forum_id, $prune_mode, $prune_date, $prune_flags, true);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET prune_shadow_topic_next = $next_prune
+				SET prune_shadow_next = $next_prune
 				WHERE forum_id = $forum_id";
 			$this->db->sql_query($sql);
 
-			add_log('admin', 'LOG_PRUNE_SHADOW_TOPIC', $row['forum_name']);
+			add_log('admin', 'LOG_PRUNE_SHADOW', $row['forum_name']);
 		}
 
 		return;
