@@ -190,7 +190,7 @@ ul.topiclist li.row dt a.subforum {
 ----------------------------------------*/
 @media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
 {
-	#notification_list {
+	.dropdown-extended {
 		width: 250px;
 	}
 }
