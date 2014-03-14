@@ -455,17 +455,15 @@ class acp_board
 				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
-		
-		
+
 		/**
 		* Event to add and/or modify acp_board configurations
 		*
-		* @event core.acp_config_edit_add
-		* @since 3.1-A4
+		* @event core.acp_board_config_edit_add
+		* @since 3.1.0-a4
 		*/
 		$vars = array('display_vars', 'mode', 'submit');
-		extract($phpbb_dispatcher->trigger_event('core.acp_config_edit_add', compact($vars)));
-
+		extract($phpbb_dispatcher->trigger_event('core.acp_board_config_edit_add', compact($vars)));
 
 		if (isset($display_vars['lang']))
 		{
