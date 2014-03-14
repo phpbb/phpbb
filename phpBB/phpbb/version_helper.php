@@ -30,6 +30,11 @@ class version_helper
 	protected $file = 'versions.json';
 
 	/**
+	 * @var string Current version installed
+	 */
+	protected $current_version;
+
+	/**
 	 * @var null|string Null to not force stability, 'unstable' or 'stable' to
 	 *					force the corresponding stability
 	 */
@@ -61,6 +66,8 @@ class version_helper
 		{
 			$this->force_stability = 'unstable';
 		}
+
+		$this->current_version = $this->config['version'];
 	}
 
 	/**
@@ -76,6 +83,19 @@ class version_helper
 		$this->host = $host;
 		$this->path = $path;
 		$this->file = $file;
+
+		return $this;
+	}
+
+	/**
+	 * Set current version
+	 *
+	 * @param string $version The current version
+	 * @return version_helper
+	 */
+	public function set_current_version($version)
+	{
+		$this->current_version = $version;
 
 		return $this;
 	}
@@ -145,7 +165,7 @@ class version_helper
 		$versions = $this->get_versions_matching_stability($force_update);
 
 		$self = $this;
-		$current_version = $this->config['version'];
+		$current_version = $this->current_version;
 
 		// Filter out any versions less than to the current version
 		$versions = array_filter($versions, function($data) use ($self, $current_version) {
@@ -175,7 +195,7 @@ class version_helper
 		$versions = $this->get_versions_matching_stability($force_update);
 
 		$self = $this;
-		$current_version = $this->config['version'];
+		$current_version = $this->current_version;
 
 		// Filter out any versions less than or equal to the current version
 		return array_filter($versions, function($data) use ($self, $current_version) {
@@ -199,7 +219,7 @@ class version_helper
 			return ($this->force_stability === 'unstable') ? $info['unstable'] : $info['stable'];
 		}
 
-		return ($this->is_stable($this->config['version'])) ? $info['stable'] : $info['unstable'];
+		return ($this->is_stable($this->current_version)) ? $info['stable'] : $info['unstable'];
 	}
 
 	/**
