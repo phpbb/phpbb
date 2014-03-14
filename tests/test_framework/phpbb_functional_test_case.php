@@ -1004,6 +1004,52 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
+	* Deletes a topic
+	*
+	* Be sure to login before creating
+	*
+	* @param int $topic_id
+	* @return null
+	*/
+	public function delete_topic($topic_id)
+	{
+		$crawler = self::request('GET', "viewtopic.php?t={$topic_id}&sid={$this->sid}");
+
+		$this->add_lang('posting');
+		$form = $crawler->selectButton('Go')->eq(1)->form();
+		$form['action']->select('delete_topic');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton('Yes')->form();
+		$form['delete_permanent'] = 1;
+		$crawler = self::submit($form);
+		$this->assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
+	}
+
+	/**
+	* Deletes a post
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param int $topic_id
+	* @return null
+	*/
+	public function delete_post($forum_id, $post_id)
+	{
+		$this->add_lang('posting');
+		$crawler = self::request('GET', "posting.php?mode=delete&f={$forum_id}&p={$post_id}&sid={$this->sid}");
+		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+
+		$form = $crawler->selectButton('Yes')->form();
+		$form['delete_permanent'] = 1;
+		$crawler = self::submit($form);
+		$this->assertContainsLang('POST_DELETED', $crawler->text());
+	}
+
+	/**
 	* Returns the requested parameter from a URL
 	*
 	* @param	string	$url

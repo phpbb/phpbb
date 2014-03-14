@@ -12,11 +12,11 @@
 */
 abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 {
-	protected function assert_search_found($keywords)
+	protected function assert_search_found($keywords, $posts_found, $words_highlighted)
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
-		$this->assertEquals(1, $crawler->filter('.postbody')->count());
-		$this->assertEquals(3, $crawler->filter('.posthilit')->count());
+		$this->assertEquals($posts_found, $crawler->filter('.postbody')->count());
+		$this->assertEquals($words_highlighted, $crawler->filter('.posthilit')->count());
 	}
 
 	protected function assert_search_not_found($keywords)
@@ -31,6 +31,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$this->login();
 		$this->admin_login();
+
+		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
@@ -49,18 +51,21 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 			// check if search backend is not supported
 			if ($crawler->filter('.errorbox')->count() > 0)
 			{
+				$this->delete_topic($post['topic_id']);
 				$this->markTestSkipped("Search backend is not supported/running");
 			}
 			$this->create_search_index();
 		}
 
 		$this->logout();
-		$this->assert_search_found('phpbb3+installation');
+		$this->assert_search_found('phpbb3+installation', 1, 3);
+		$this->assert_search_found('foosubject+barsearch', 1, 2);
 		$this->assert_search_not_found('loremipsumdedo');
 
 		$this->login();
 		$this->admin_login();
 		$this->delete_search_index();
+		$this->delete_topic($post['topic_id']);
 	}
 
 	protected function create_search_index()

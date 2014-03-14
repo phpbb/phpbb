@@ -457,15 +457,13 @@ class fulltext_postgres extends \phpbb\search\base
 		$sql_where_options .= $sql_match_where;
 
 		$tmp_sql_match = array();
-		foreach (explode(',', $sql_match) as $sql_match_column)
-		{
-			$tmp_sql_match[] = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
-		}
+		$sql_match = str_replace(',', " || ' ' ||", $sql_match);
+		$tmp_sql_match = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 
 		$this->db->sql_transaction('begin');
 
 		$sql_from = "FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p";
-		$sql_where = "WHERE (" . implode(' OR ', $tmp_sql_match) . ")
+		$sql_where = "WHERE (" . $tmp_sql_match . ")
 			$sql_where_options";
 		$sql = "SELECT $sql_select
 			$sql_from
@@ -793,9 +791,9 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject))");
 		}
 
-		if (!isset($this->stats['post_text']))
+		if (!isset($this->stats['post_content']))
 		{
-			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text))");
+			$this->db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text || ' ' || post_subject))");
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -826,9 +824,9 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->db->sql_query('DROP INDEX ' . $this->stats['post_subject']['relname']);
 		}
 
-		if (isset($this->stats['post_text']))
+		if (isset($this->stats['post_content']))
 		{
-			$this->db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
+			$this->db->sql_query('DROP INDEX ' . $this->stats['post_content']['relname']);
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -846,7 +844,7 @@ class fulltext_postgres extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_text']) && isset($this->stats['post_subject'])) ? true : false;
+		return (isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
 	}
 
 	/**
@@ -888,13 +886,13 @@ class fulltext_postgres extends \phpbb\search\base
 			// deal with older PostgreSQL versions which didn't use Index_type
 			if (strpos($row['indexdef'], 'to_tsvector') !== false)
 			{
-				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_text' || $row['relname'] == POSTS_TABLE . '_post_text')
-				{
-					$this->stats['post_text'] = $row;
-				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
+				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
 				{
 					$this->stats['post_subject'] = $row;
+				}
+				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_content' || $row['relname'] == POSTS_TABLE . '_post_content')
+				{
+					$this->stats['post_content'] = $row;
 				}
 			}
 		}
