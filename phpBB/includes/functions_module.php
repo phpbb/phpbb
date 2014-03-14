@@ -125,8 +125,17 @@ class p_master
 
 		// Clean up module cache array to only let survive modules the user can access
 		$right_id = false;
+
+		$hide_categories = array();
 		foreach ($this->module_cache['modules'] as $key => $row)
 		{
+			// When the module has no mode (category) we check whether it has visible children
+			// before listing it as well.
+			if (!$row['module_mode'])
+			{
+				$hide_categories[(int) $row['module_id']] = $key;
+			}
+
 			// Not allowed to view module?
 			if (!$this->module_auth_self($row['module_auth']))
 			{
@@ -161,6 +170,22 @@ class p_master
 				$right_id = $row['right_id'];
 				continue;
 			}
+
+			if ($row['module_mode'])
+			{
+				// The parent category has a visible child
+				// So remove it and all its parents from the hide array
+				unset($hide_categories[(int) $row['parent_id']]);
+				foreach ($this->module_cache['parents'][$row['module_id']] as $module_id => $row_id)
+				{
+					unset($hide_categories[$module_id]);
+				}
+			}
+		}
+
+		foreach ($hide_categories as $module_id => $row_id)
+		{
+			unset($this->module_cache['modules'][$row_id]);
 		}
 
 		// Re-index (this is needed, else we are not able to array_slice later)
