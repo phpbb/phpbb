@@ -25,7 +25,7 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $cache, $user, $auth, $template, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -432,17 +432,19 @@ class acp_main
 			));
 		}
 
-		$latest_version_info = false;
-		if (($latest_version_info = obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
+		$version_helper = $phpbb_container->get('version_helper');
+		try
 		{
-			$template->assign_var('S_VERSIONCHECK_FAIL', true);
-		}
-		else
-		{
-			$latest_version_info = explode("\n", $latest_version_info);
+			$recheck = $request->variable('versioncheck_force', false);
+			$updates_available = $version_helper->get_suggested_updates($recheck);
 
+			$template->assign_var('S_VERSION_UP_TO_DATE', empty($updates_available));
+		}
+		catch (\RuntimeException $e)
+		{
 			$template->assign_vars(array(
-				'S_VERSION_UP_TO_DATE'	=> phpbb_version_compare(trim($latest_version_info[0]), $config['version'], '<='),
+				'S_VERSIONCHECK_FAIL'		=> true,
+				'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
 			));
 		}
 

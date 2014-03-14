@@ -324,3 +324,11 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.users%
+
+    version_helper:
+        class: phpbb\version_helper
+        scope: prototype
+        arguments:
+            - @cache
+            - @config
+            - @user
