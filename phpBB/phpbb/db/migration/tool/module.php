@@ -19,7 +19,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
-	/** @var dbal */
+	/** @var \phpbb\db\driver\driver */
 	protected $db;
 
 	/** @var \phpbb\user */
@@ -38,7 +38,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver $db
-	* @param mixed $cache
+	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
 	* @param string $phpbb_root_path
 	* @param string $php_ext
@@ -163,11 +163,10 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* 		)
 	* 		Optionally you may not send 'modes' and it will insert all of the
 	* 			modules in that info file.
-	* @param string|bool $include_path If you would like to use a custom include
 	* 	path, specify that here
 	* @return null
 	*/
-	public function add($class, $parent = 0, $data = array(), $include_path = false)
+	public function add($class, $parent = 0, $data = array())
 	{
 		// Allows '' to be sent as 0
 		$parent = $parent ?: 0;
@@ -328,11 +327,10 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* @param int|string|bool $parent The parent module_id|module_langname(0 for no parent).
 	* 	Use false to ignore the parent check and check class wide.
 	* @param int|string $module The module id|module_langname
-	* @param string|bool $include_path If you would like to use a custom include path,
 	* 	specify that here
 	* @return null
 	*/
-	public function remove($class, $parent = 0, $module = '', $include_path = false)
+	public function remove($class, $parent = 0, $module = '')
 	{
 		// Imitation of module_add's "automatic" and "manual" method so the uninstaller works from the same set of instructions for umil_auto
 		if (is_array($module))
@@ -340,7 +338,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			if (isset($module['module_langname']))
 			{
 				// Manual Method
-				return $this->remove($class, $parent, $module['module_langname'], $include_path);
+				return $this->remove($class, $parent, $module['module_langname']);
 			}
 
 			// Failed.
@@ -407,22 +405,10 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					$module_ids[] = (int) $module_id;
 				}
 				$this->db->sql_freeresult($result);
-
-				$module_name = $module;
 			}
 			else
 			{
-				$module = (int) $module;
-				$sql = 'SELECT module_langname
-					FROM ' . $this->modules_table . "
-					WHERE module_id = $module
-						AND module_class = '" . $this->db->sql_escape($class) . "'
-						$parent_sql";
-				$result = $this->db->sql_query($sql);
-				$module_name = $this->db->sql_fetchfield('module_id');
-				$this->db->sql_freeresult($result);
-
-				$module_ids[] = $module;
+				$module_ids[] = (int) $module;
 			}
 
 			if (!class_exists('acp_modules'))
