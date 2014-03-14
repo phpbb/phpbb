@@ -476,7 +476,7 @@ class finder
 			$directory_pattern = '#' . $directory_pattern . '#';
 
 			$iterator = new \RecursiveIteratorIterator(
-				new \phpbb\extension\recursive_filter_iterator(
+				new \phpbb\recursive_dot_prefix_filter_iterator(
 					new \RecursiveDirectoryIterator(
 						$path,
 						\FilesystemIterator::SKIP_DOTS

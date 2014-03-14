@@ -7,18 +7,18 @@
 *
 */
 
-namespace phpbb\extension;
+namespace phpbb;
 
 /**
-* Class recursive_filter_iterator
+* Class recursive_dot_prefix_filter_iterator
 *
 * This filter ignores directories starting with a dot.
 * When searching for php classes and template files of extensions
 * we don't need to look inside these directories.
 *
-* @package phpbb\extension
+* @package phpbb
 */
-class recursive_filter_iterator extends \RecursiveFilterIterator
+class recursive_dot_prefix_filter_iterator extends \RecursiveFilterIterator
 {
 	public function accept()
 	{
