@@ -50,7 +50,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 }
 
 /* Notification mark read link */
-#notification_list a.mark_read {
+.dropdown-extended a.mark_read {
 	background-position: center center;
 	background-repeat: no-repeat;
 	border-radius: 3px 0 0 3px;
@@ -64,11 +64,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	height: 40px;
 }
 
-#notification_list li:hover a.mark_read {
+.dropdown-extended li:hover a.mark_read {
 	display: block;
 }
 
-#notification_list a.mark_read:hover {
+.dropdown-extended a.mark_read:hover {
 	width: 40px;
 }
 
