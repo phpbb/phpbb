@@ -15,28 +15,29 @@ class phpbb_functions_parse_cfg_file extends phpbb_test_case
 	{
 		return array(
 			array(
-				'#
-# phpBB Style Configuration File
-#
-# @package phpBB3
-# @copyright (c) 2005 phpBB Group
-# @license http://opensource.org/licenses/gpl-license.php GNU Public License
-#
-#
-# At the left is the name, please do not change this
-# At the right the value is entered
-# For on/off options the valid values are on, off, 1, 0, true and false
-#
-# Values get trimmed, if you want to add a space in front or at the end of
-# the value, then enclose the value with single or double quotes.
-# Single and double quotes do not need to be escaped.
-#
-#
-
-# General Information about this style
-name = prosilver
-copyright = © phpBB Group, 2007
-version = 3.0.12',
+				array(
+					'#',
+					'# phpBB Style Configuration File',
+					'#',
+					'# @package phpBB3',
+					'# @copyright (c) 2005 phpBB Group',
+					'# @license http://opensource.org/licenses/gpl-license.php GNU Public License',
+					'#',
+					'#',
+					'# At the left is the name, please do not change this',
+					'# At the right the value is entered',
+					'# For on/off options the valid values are on, off, 1, 0, true and false',
+					'#',
+					'# Values get trimmed, if you want to add a space in front or at the end of',
+					'# the value, then enclose the value with single or double quotes.',
+					'# Single and double quotes do not need to be escaped.',
+					'#',
+					'',
+					'# General Information about this style',
+					'name = prosilver',
+					'copyright = © phpBB Group, 2007',
+					'version = 3.0.12',
+				),
 				array(
 					'name'		=> 'prosilver',
 					'copyright'	=> '© phpBB Group, 2007',
@@ -44,9 +45,11 @@ version = 3.0.12',
 				),
 			),
 			array(
-				'name = subsilver2
-copyright = © 2005 phpBB Group
-version = 3.0.12',
+				array(
+					'name = subsilver2',
+					'copyright = © 2005 phpBB Group',
+					'version = 3.0.12',
+				),
 				array(
 					'name'		=> 'subsilver2',
 					'copyright'	=> '© 2005 phpBB Group',
@@ -54,15 +57,17 @@ version = 3.0.12',
 				),
 			),
 			array(
-				'foo = on
-foo1 = true
-foo2 = 1
-bar = off
-bar1 = false
-bar2 = 0
-foobar =
-foobar1 = "asdf"
-foobar2 = \'qwer\'',
+				array(
+					'foo = on',
+					'foo1 = true',
+					'foo2 = 1',
+					'bar = off',
+					'bar1 = false',
+					'bar2 = 0',
+					'foobar =',
+					'foobar1 = "asdf"',
+					'foobar2 = \'qwer\'',
+				),
 				array(
 					'foo'		=> true,
 					'foo1'		=> true,
@@ -76,8 +81,10 @@ foobar2 = \'qwer\'',
 				),
 			),
 			array(
-				'foo = &amp; bar
-bar = <a href="test">Test</a>',
+				array(
+					'foo = &amp; bar',
+					'bar = <a href="test">Test</a>',
+				),
 				array(
 					'foo'		=> '&amp;amp; bar',
 					'bar'		=> '&lt;a href=&quot;test&quot;&gt;Test&lt;/a&gt;',
@@ -91,7 +98,6 @@ bar = <a href="test">Test</a>',
 	*/
 	public function test_parse_cfg_file($file_contents, $expected)
 	{
-		$lines = explode("\n", $file_contents);
-		$this->assertEquals($expected, parse_cfg_file(false, $lines));
+		$this->assertEquals($expected, parse_cfg_file(false, $file_contents));
 	}
 }
