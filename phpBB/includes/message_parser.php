@@ -1802,8 +1802,7 @@ class parse_message extends bbcode_firstpass
 	/**
 	* Setter function for passing the mimetype_guesser object
 	*
-	* @param \phpbb\mimetype\guesser $mimetype_guesser The mimetype_guesser
-	*				object
+	* @param \phpbb\mimetype\guesser $mimetype_guesser The mimetype_guesser object
 	*
 	* @return null
 	*/
