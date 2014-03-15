@@ -266,6 +266,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 	}
 
+	if (!function_exists('phpbb_gen_download_links'))
+	{
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+	}
+
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
 	{
