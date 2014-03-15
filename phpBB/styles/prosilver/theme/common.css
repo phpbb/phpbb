@@ -444,6 +444,13 @@ ul.linklist.bulletin li.no-bulletin:before {
 	display: none !important;
 }
 
+/* Avatar in overall_header.html */
+span.avatar-index img {
+	max-height: 25px;
+	vertical-align: top;
+	width: auto;
+}
+
 /* Dropdown menu
 ----------------------------------------*/
 .dropdown-container {
