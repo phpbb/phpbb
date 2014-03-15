@@ -1175,7 +1175,7 @@ while ($row = $db->sql_fetchrow($result))
 				'user_colour'		=> $row['user_colour'],
 
 				'online'		=> false,
-				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
+				'profile'		=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour']),
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$poster_id&amp;sr=posts") : '',
 

@@ -1569,7 +1569,7 @@ switch ($mode)
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 					'S_GROUP_LEADER'	=> $is_leader,
 
-					'U_VIEW_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id))
+					'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $row['username']))
 				);
 
 				if (isset($cp_row['row']) && sizeof($cp_row['row']))
