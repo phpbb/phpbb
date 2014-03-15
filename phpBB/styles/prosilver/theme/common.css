@@ -445,7 +445,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 }
 
 /* Avatar in overall_header.html */
-span.avatar-index img {
+span.avatar-overall-header img {
 	max-height: 25px;
 	vertical-align: top;
 	width: auto;
