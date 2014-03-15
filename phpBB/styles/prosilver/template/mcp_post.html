@@ -75,8 +75,12 @@
 			<p class="post-notice unapproved">
 				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
 				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
-				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
+				<!-- IF not S_FIRST_POST -->
+				<input type="hidden" name="mode" value="unapproved_posts" />
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
+				<!-- ELSE -->
+				<input type="hidden" name="topic_id_list[]" value="{TOPIC_ID}" />
+				<!-- ENDIF -->
 				{S_FORM_TOKEN}
 			</p>
 			</form>
@@ -86,8 +90,12 @@
 			<p class="post-notice deleted">
 				<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" /> &nbsp;
 				<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
-				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
+				<!-- IF not S_FIRST_POST -->
+				<input type="hidden" name="mode" value="unapproved_posts" />
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
+				<!-- ELSE -->
+				<input type="hidden" name="topic_id_list[]" value="{TOPIC_ID}" />
+				<!-- ENDIF -->
 				{S_FORM_TOKEN}
 			</p>
 			</form>
