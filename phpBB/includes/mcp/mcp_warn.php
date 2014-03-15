@@ -293,7 +293,6 @@ class mcp_warn
 		$message = generate_text_for_display($user_row['post_text'], $user_row['bbcode_uid'], $user_row['bbcode_bitfield'], $parse_flags, true);
 
 		// Generate the appropriate user information for the user we are looking at
-
 		if (!function_exists('get_user_rank'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
@@ -399,7 +398,10 @@ class mcp_warn
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-
+		if (!function_exists('get_user_rank'))
+		{
+			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		}
 		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 		$avatar_img = phpbb_get_user_avatar($user_row);
 
