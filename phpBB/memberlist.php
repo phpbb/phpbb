@@ -547,12 +547,7 @@ switch ($mode)
 			$parse_flags = ($member['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
-		
-		if (!function_exists('phpbb_get_user_avatar'))
-		{
-		include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
-		
+
 		$poster_avatar = phpbb_get_user_avatar($member);
 
 		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
