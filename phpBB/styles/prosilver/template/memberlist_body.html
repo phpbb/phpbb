@@ -113,7 +113,7 @@
 		<td class="posts"><!-- IF memberrow.POSTS and S_DISPLAY_SEARCH --><a href="{memberrow.U_SEARCH_USER}" title="{L_SEARCH_USER_POSTS}">{memberrow.POSTS}</a><!-- ELSE -->{memberrow.POSTS}<!-- ENDIF --></td>
 		<td class="info"><!-- BEGIN custom_fields --><div>{memberrow.custom_fields.PROFILE_FIELD_VALUE}</div><!-- BEGINELSE -->&nbsp;<!-- END custom_fields --></td>
 		<td>{memberrow.JOINED}</td>
-		<!-- IF S_VIEWONLINE --><td>{memberrow.VISITED}&nbsp;</td><!-- ENDIF -->
+		<!-- IF S_VIEWONLINE --><td>{memberrow.LAST_ACTIVITY}&nbsp;</td><!-- ENDIF -->
 	</tr>
 		<!-- BEGINELSE -->
 	<tr class="bg1">
