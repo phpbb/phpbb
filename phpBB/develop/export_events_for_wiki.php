@@ -54,7 +54,7 @@ function export_from_eventsmd($phpbb_root_path, $filter)
 		{
 			$file_details = substr($file_details, strlen("* Locations:\n    + "));
 			$files = explode("\n    + ", $file_details);
-			$prosilver = $subsilver2 = array();
+			$prosilver = $subsilver2 = $adm = array();
 			foreach ($files as $file)
 			{
 				if (strpos($file, 'styles/prosilver/template/') === 0)
@@ -65,8 +65,19 @@ function export_from_eventsmd($phpbb_root_path, $filter)
 				{
 					$subsilver2[] = substr($file, strlen('styles/subsilver2/template/'));
 				}
+				if (strpos($file, 'adm/style/') === 0)
+				{
+					$adm[] = substr($file, strlen('adm/style/'));
+				}
 			}
-			echo implode(', ', $prosilver) . ' || ' . implode(', ', $subsilver2);
+			if ($filter == 'acp')
+			{
+				echo implode(', ', $adm);
+			}
+			else
+			{
+				echo implode(', ', $prosilver) . ' || ' . implode(', ', $subsilver2);
+			}
 		}
 		else if ($filter == 'acp')
 		{
@@ -110,26 +121,39 @@ function check_for_events($phpbb_root_path, $file)
 		for ($i = 0, $num_lines = sizeof($lines); $i < $num_lines; $i++)
 		{
 			$event_line = 0;
-			if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->trigger_event('"))
+			$found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->trigger_event('");
+			if ($found_trigger_event !== false)
 			{
 				$event_line = $i;
 				$event_name = $lines[$event_line];
 				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->trigger_event('"));
 				$event_name = substr($event_name, 0, strpos($event_name, "'"));
 
-				// Find $vars array lines
-				$find_varsarray_line = 1;
-				while (strpos($lines[$event_line - $find_varsarray_line], "vars = array('") === false)
+				$current_line = trim($lines[$event_line]);
+				$arguments = array();
+				$found_inline_array = strpos($current_line, "', compact(array('");
+				if ($found_inline_array !== false)
 				{
-					$find_varsarray_line++;
-
-					if ($find_varsarray_line > min(50, $event_line))
-					{
-						throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
-					}
+					$varsarray = substr($current_line, $found_inline_array + strlen("', compact(array('"), -6);
+					$arguments = explode("', '", $varsarray);
 				}
-				$varsarray = substr(trim($lines[$event_line - $find_varsarray_line]), strlen("\$vars = array('"), -3);
-				$arguments = explode("', '", $varsarray);
+
+				if (empty($arguments))
+				{
+					// Find $vars array lines
+					$find_varsarray_line = 1;
+					while (strpos($lines[$event_line - $find_varsarray_line], "vars = array('") === false)
+					{
+						$find_varsarray_line++;
+
+						if ($find_varsarray_line > min(50, $event_line))
+						{
+							throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
+						}
+					}
+					$varsarray = substr(trim($lines[$event_line - $find_varsarray_line]), strlen("\$vars = array('"), -3);
+					$arguments = explode("', '", $varsarray);
+				}
 
 				// Validate $vars array with @var
 				$find_vars_line = 3;
@@ -153,11 +177,12 @@ function check_for_events($phpbb_root_path, $file)
 					throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
 				}
 			}
-			else if ($found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->dispatch('"))
+			$found_dispatch = strpos($lines[$i], "phpbb_dispatcher->dispatch('");
+			if ($found_dispatch !== false)
 			{
 				$event_line = $i;
 				$event_name = $lines[$event_line];
-				$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->dispatch('"));
+				$event_name = substr($event_name, $found_dispatch + strlen("phpbb_dispatcher->dispatch('"));
 				$event_name = substr($event_name, 0, strpos($event_name, "'"));
 				$arguments = array();
 			}
@@ -267,7 +292,7 @@ function get_file_list($dir, $path = '')
 				$files[] = $file_info->getFilename() . '/' . $file;
 			}
 		}
-		else if ($file_info->getExtension() == 'php')
+		else if (substr($file_info->getFilename(), -4) == '.php')
 		{
 			$files[] = $file_info->getFilename();
 		}
