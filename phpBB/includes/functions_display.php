@@ -1508,7 +1508,7 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 *
 * @return string String list. Examples: "A"; "A and B"; "A, B and C"
 */
-function phpbb_gen_string_list($items, $user)
+function phpbb_generate_string_list($items, $user)
 {
 	$count = sizeof($items);
 	$last_item = '';
