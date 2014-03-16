@@ -52,5 +52,6 @@ then
 fi
 
 # redis
-git clone git://github.com/nicolasff/phpredis.git redis
-install_php_extension 'redis' "$php_ini_file"
+# Disabled redis for now as it causes travis to fail
+# git clone git://github.com/nicolasff/phpredis.git redis
+# install_php_extension 'redis' "$php_ini_file"
