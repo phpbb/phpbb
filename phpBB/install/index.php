@@ -252,8 +252,10 @@ $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_p
 $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style('adm', $paths);
 
-$template->assign_var('T_ASSETS_PATH', '../assets');
-$template->assign_var('T_TEMPLATE_PATH', array_shift($paths));
+$path = array_shift($paths);
+
+$template->assign_var('T_ASSETS_PATH', $path . '/../../assets');
+$template->assign_var('T_TEMPLATE_PATH', $path);
 
 $install = new module();
 
@@ -397,7 +399,7 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage, $phpbb_root_path, $phpbb_admin_path;
+		global $template, $lang, $stage, $phpbb_admin_path, $path;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
@@ -407,7 +409,7 @@ class module
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> htmlspecialchars($phpbb_admin_path) . 'images/',
-			'T_JQUERY_LINK'			=> $phpbb_root_path . 'assets/javascript/jquery.js',
+			'T_JQUERY_LINK'			=> $path . '/../../assets/javascript/jquery.js',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
