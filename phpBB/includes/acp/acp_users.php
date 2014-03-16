@@ -37,7 +37,6 @@ class acp_users
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
-		$this->page_title = 'ACP_USER_' . strtoupper($mode);
 
 		$error		= array();
 		$username	= utf8_normalize_nfc(request_var('username', '', true));
@@ -158,6 +157,8 @@ class acp_users
 		{
 			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
+
+		$this->page_title = $user_row['username'] . ' :: ' . $user->lang('ACP_USER_' . strtoupper($mode));
 
 		switch ($mode)
 		{
