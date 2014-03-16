@@ -158,7 +158,7 @@ class acp_users
 			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$this->page_title = $user_row['username'] . '\'s ' . $user->lang('ACP_USER_' . strtoupper($mode));
+		$this->page_title = $user_row['username'] . ' :: ' . $user->lang('ACP_USER_' . strtoupper($mode));
 
 		switch ($mode)
 		{
