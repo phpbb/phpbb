@@ -30,7 +30,9 @@ class acp_prune_users_module extends \phpbb\db\migration\migration
 		$acp_prune_users_parent = (int) $this->db->sql_fetchfield('parent_id');
 		$this->db->sql_freeresult($result);
 
-		return $acp_cat_users_id === $acp_prune_users_parent;
+		// Skip migration if "Users" category has been deleted
+		// or the module has already been moved to that category
+		return !$acp_cat_users_id || $acp_cat_users_id === $acp_prune_users_parent;
 	}
 
 	static public function depends_on()
