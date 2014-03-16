@@ -253,7 +253,7 @@ $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style('adm', $paths);
 
 $template->assign_var('T_ASSETS_PATH', '../assets');
-$template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
+$template->assign_var('T_TEMPLATE_PATH', array_shift($paths));
 
 $install = new module();
 
