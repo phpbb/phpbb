@@ -26,7 +26,7 @@ class legend implements \phpbb\groupposition\groupposition_interface
 
 	/**
 	* Database object
-	* @var \phpbb\db\driver\driver
+	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
 
@@ -39,10 +39,10 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver	$db		Database object
+	* @param \phpbb\db\driver\driver_interface	$db		Database object
 	* @param \phpbb\user			$user	User object
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user)
 	{
 		$this->db = $db;
 		$this->user = $user;

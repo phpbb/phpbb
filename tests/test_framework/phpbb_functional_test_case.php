@@ -150,7 +150,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof \phpbb\db\driver\driver))
+		if (!($this->db instanceof \phpbb\db\driver\driver_interface))
 		{
 			$dbms = self::$config['dbms'];
 			$this->db = new $dbms();

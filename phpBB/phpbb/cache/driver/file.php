@@ -407,7 +407,7 @@ class file extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_save(\phpbb\db\driver\driver $db, $query, $query_result, $ttl)
+	function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
 	{
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);

@@ -26,7 +26,7 @@ if (!defined('IN_PHPBB'))
 * Used to bootstrap the container.
 *
 * @param string $config_file
-* @return \phpbb\db\driver\driver
+* @return \phpbb\db\driver\driver_interface
 */
 function phpbb_bootstrap_db_connection($config_file)
 {

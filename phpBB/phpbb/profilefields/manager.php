@@ -23,7 +23,7 @@ class manager
 
 	/**
 	* Database object
-	* @var \phpbb\db\driver\driver
+	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
 
@@ -63,7 +63,7 @@ class manager
 	* Construct
 	*
 	* @param	\phpbb\auth\auth			$auth		Auth object
-	* @param	\phpbb\db\driver\driver		$db			Database object
+	* @param	\phpbb\db\driver\driver_interface	$db			Database object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\di\service_collection $type_collection
@@ -72,7 +72,7 @@ class manager
 	* @param	string				$fields_language_table
 	* @param	string				$fields_data_table
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;

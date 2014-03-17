@@ -24,7 +24,7 @@ class factory
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/**
@@ -32,10 +32,10 @@ class factory
 	*
 	* @param objec				$container	Container object
 	* @param \phpbb\config\config		$config		Config object
-	* @param \phpbb\db\driver\driver	$db			Database connection
+	* @param \phpbb\db\driver\driver_interface	$db			Database connection
 	* @return	null
 	*/
-	public function __construct($container, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
+	public function __construct($container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->container = $container;
 		$this->config = $config;
