@@ -2,7 +2,7 @@
 /**
 *
 * @package testing
-* @copyright (c) 2011 phpBB Group
+* @copyright (c) 2014 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -28,49 +28,49 @@ class phpbb_profile_custom_string_test extends phpbb_database_test_case
 					'H3110',
 					'[0-9]+',
 					'FIELD_INVALID_CHARS_NUMBERS_ONLY-field',
-					'Required field should reject characters in a numbers-only field'
+					'Required field should reject characters in a numbers-only field',
 			),
 			array(
 					1,
 					'This string is too long',
 					'.*',
 					'FIELD_TOO_LONG-10-field',
-					'Required field should reject a field too long'
+					'Required field should reject a field too long',
 			),
 			array(
 					0,
 					'&lt;&gt;&quot;&amp;%&amp;&gt;&lt;&gt;',
 					'.*',
 					false,
-					'Optional field should accept html entities'
+					'Optional field should accept html entities',
 			),
 			array(
 					1,
 					'ö ä ü ß',
 					'.*',
 					false,
-					'Required field should accept UTF-8 string'
+					'Required field should accept UTF-8 string',
 			),
 			array(
 					1,
 					'This ö ä string has to b',
 					'.*',
 					'FIELD_TOO_LONG-10-field',
-					'Required field should reject an UTF-8 string which is too long'
+					'Required field should reject an UTF-8 string which is too long',
 			),
 			array(
 					1,
 					'ö äö äö ä',
 					'[\w]+',
 					'FIELD_INVALID_CHARS_ALPHA_ONLY-field',
-					'Required field should reject UTF-8 in alpha only field'
+					'Required field should reject UTF-8 in alpha only field',
 			),
 			array(
 					1,
 					'Hello',
 					'[\w]+',
 					false,
-					'Required field should accept a characters only field'
+					'Required field should accept a characters only field',
 			),
 		);
 	}
@@ -80,14 +80,13 @@ class phpbb_profile_custom_string_test extends phpbb_database_test_case
 	*/
 	public function test_string_validate($field_required, $field_value, $field_validation, $expected, $description)
 	{
-		global $db;
 		$db = $this->new_dbal();
 
 		$field_data = array(
 			'field_id'          => 1,
 			'lang_id'			=> 1,
 			'lang_name'			=> 'field',
-			'field_novalue'     => 1,
+			'field_novalue'		=> 1,
 			'field_required'    => $field_required,
 			'field_maxlen'      => 10,
 			'field_validation'  => $field_validation,
