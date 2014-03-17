@@ -13,7 +13,7 @@ namespace phpbb\db\driver;
 * Database Abstraction Layer
 * @package dbal
 */
-class driver
+abstract class driver implements driver_interface
 {
 	var $db_connect_id;
 	var $query_result;
@@ -327,7 +327,7 @@ class driver
 		switch ($status)
 		{
 			case 'begin':
-				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (prevening auto commit)
+				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (preventing auto commit)
 				if ($this->transaction)
 				{
 					$this->transactions++;
