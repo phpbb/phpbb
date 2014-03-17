@@ -91,6 +91,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'03!false',
 			),
 			array(
+				'if.html',
+				array('VALUE_TEST' => 'value'),
+				array(),
+				array(),
+				'03!falsevalue',
+			),
+			array(
 				'loop.html',
 				array(),
 				array(),
