@@ -252,6 +252,23 @@ if (!$user_id && $username == '')
 	$module->set_display('warn', 'warn_user', false);
 }
 
+/**
+* This event allows you to set display option for custom MCP modules
+*
+* @event core.modify_mcp_modules_display_option
+* @var	p_master	module			Module system class
+* @var	string		mode			MCP mode
+* @var	int			user_id			User id
+* @var	int			forum_id		Forum id
+* @var	int			topic_id		Topic id
+* @var	int			post_id			Post id
+* @var	string		username		User name
+* @var	int			id				Parent module id
+* @since 3.1.0-b2
+*/
+$vars = array('module', 'mode', 'user_id', 'forum_id', 'topic_id', 'post_id', 'username', 'id');
+extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
+
 // Load and execute the relevant module
 $module->load_active();
 
