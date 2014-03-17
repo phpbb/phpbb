@@ -65,7 +65,7 @@ abstract class type_string_common extends type_base
 		{
 			return $this->user->lang('FIELD_TOO_SHORT', (int) $field_data['field_minlen'], $this->get_field_name($field_data['lang_name']));
 		}
-		else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
+		else if ($field_data['field_maxlen'] && utf8_strlen(html_entity_decode($field_value)) > $field_data['field_maxlen'])
 		{
 			return $this->user->lang('FIELD_TOO_LONG', (int) $field_data['field_maxlen'], $this->get_field_name($field_data['lang_name']));
 		}
