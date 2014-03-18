@@ -190,19 +190,12 @@ class ...
 
 	<ul>
 		<li><strong>phpBB3</strong><br />Core files and all files not assigned to a separate package</li>
-		<li><strong>acm</strong><br /><code>/includes/cache</code><br />Cache System</li>
+		<li><strong>acm</strong><br /><code>/phpbb/cache</code><br />Cache System</li>
 		<li><strong>acp</strong><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
-		<li><strong>dbal</strong><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
+		<li><strong>dbal</strong><br /><code>/phpbb/db</code>, <code>/includes/db</code><br />Database Abstraction Layer.
 			<ul>
-				<li><code>/includes/db/dbal.php</code><br />Base DBAL class, defining the overall framework</li>
-				<li><code>/includes/db/firebird.php</code><br />Firebird/Interbase Database Abstraction Layer</li>
-				<li><code>/includes/db/msssql.php</code><br />MSSQL Database Abstraction Layer</li>
-				<li><code>/includes/db/mssql_odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL</li>
-				<li><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer for MySQL 3.x/4.0.x/4.1.x/5.x</li>
-				<li><code>/includes/db/mysqli.php</code><br />MySQLi Database Abstraction Layer</li>
-				<li><code>/includes/db/oracle.php</code><br />Oracle Database Abstraction Layer</li>
-				<li><code>/includes/db/postgres.php</code><br />PostgreSQL Database Abstraction Layer</li>
-				<li><code>/includes/db/sqlite.php</code><br />Sqlite Database Abstraction Layer</li>
+				<li><code>/phpbb/db/driver/</code><br />Database Abstraction Layer classes</li>
+				<li><code>/phpbb/db/migration/</code><br />Migrations are used for updating the database from one release to another</li>
 			</ul>
 		</li>
 		<li><strong>diff</strong><br /><code>/includes/diff</code><br />Diff Engine</li>
@@ -210,12 +203,12 @@ class ...
 		<li><strong>images</strong><br /><code>/images</code><br />All global images not connected to styles</li>
 		<li><strong>install</strong><br /><code>/install</code><br />Installation System</li>
 		<li><strong>language</strong><br /><code>/language</code><br />All language files</li>
-		<li><strong>login</strong><br /><code>/includes/auth</code><br />Login Authentication Plugins</li>
+		<li><strong>login</strong><br /><code>/phpbb/auth</code><br />Login Authentication Plugins</li>
 		<li><strong>VC</strong><br /><code>/includes/captcha</code><br />CAPTCHA</li>
 		<li><strong>mcp</strong><br /><code>mcp.php</code>, <code>/includes/mcp</code>, <code>report.php</code><br />Moderator Control Panel</li>
 		<li><strong>ucp</strong><br /><code>ucp.php</code>, <code>/includes/ucp</code><br />User Control Panel</li>
 		<li><strong>utf</strong><br /><code>/includes/utf</code><br />UTF8-related functions/classes</li>
-		<li><strong>search</strong><br /><code>/includes/search</code>, <code>search.php</code><br />Search System</li>
+		<li><strong>search</strong><br /><code>/phpbb/search</code>, <code>search.php</code><br />Search System</li>
 		<li><strong>styles</strong><br /><code>/styles</code><br />phpBB Styles/Templates/Themes</li>
 	</ul>
 
@@ -249,7 +242,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 <p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
 
 <ul>
-	<li>/includes/user.php - phpbb_user::img()</li>
+	<li>/phpbb/user.php - \phpbb\user::img()</li>
 	<li>/includes/functions_content.php - smiley_text()</li>
 </ul>
 
@@ -332,28 +325,26 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 	<p>Apart from following the rules for function names, all classes should meet the following conditions:</p>
 	<ul>
 		<li>Every class must be defined in a separate file.</li>
-		<li>The classes have to be located in a subdirectory of <code>includes/</code>.</li>
-		<li>Classnames to be prefixed with <code>phpbb_</code> to avoid name clashes, the filename should not contain the prefix.</li>
-		<li>Class names have to reflect the location of the file they are defined in. The longest list of prefixes, separated by underscores, which is a valid path must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may. If the filename would be empty the last directory name is used for the filename as well.</li>
+		<li>The classes have to be located in a subdirectory of <code>phpbb/</code>.</li>
+		<li>Classnames must be namespaced with <code>\phpbb\</code> to avoid name clashes.</li>
+		<li>Class names/namespaces have to reflect the location of the file they are defined in. The namespace must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may.</li>
 		<li>Directories should typically be a singular noun (e.g. <code>dir</code> in the example below, not <code>dirs</code>.</li>
 	</ul>
 
 	<p>So given the following example directory structure you would result in the below listed lookups</p>
 	<div class="codebox"><pre>
-includes/
+phpbb/
   class_name.php
   dir/
     class_name.php
-    dir.php
       subdir/
         class_name.php
 	</pre></div>
 
 	<div class="codebox"><pre>
-phpbb_class_name            - includes/class_name.php
-phpbb_dir_class_name        - includes/dir/class_name.php
-phpbb_dir                   - includes/dir/dir.php
-phpbb_dir_subdir_class_name - includes/dir/subdir/class_name.php
+\phpbb\class_name            - phpbb/class_name.php
+\phpbb\dir\class_name        - phpbb/dir/class_name.php
+\phpbb\dir\subdir\class_name - phpbb/dir/subdir/class_name.php
 	</pre></div>
 
 
