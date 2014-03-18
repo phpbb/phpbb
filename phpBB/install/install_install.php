@@ -18,14 +18,9 @@ if (!defined('IN_INSTALL'))
 if (!empty($setmodules))
 {
 	// If phpBB is already installed we do not include this module
-	if (@file_exists($phpbb_root_path . 'config.' . $phpEx) && !file_exists($phpbb_root_path . 'cache/install_lock'))
+	if (phpbb_check_installation_exists($phpbb_root_path, $phpEx) && !file_exists($phpbb_root_path . 'cache/install_lock'))
 	{
-		include_once($phpbb_root_path . 'config.' . $phpEx);
-
-		if (defined('PHPBB_INSTALLED'))
-		{
-			return;
-		}
+		return;
 	}
 
 	$module[] = array(
