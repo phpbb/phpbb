@@ -2363,6 +2363,58 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 	</pre></div>
 
+	<h4>Using plurals:</h4>
+
+	<p>
+		The english language is very simple when it comes to plurals.<br />
+		You have <code>0 elephants</code>, <code>1 elephant</code>, or <code>2+ elephants</code>. So basically you have 2 different forms: one singular and one plural.<br />
+		But for some other languages this is quite more difficult. Let's take the Bosnian language as another example:<br />
+		You have <code>[1/21/31] slon</code>, <code>[2/3/4] slona</code>, <code>[0/5/6] slonova</code> and <code>[7/8/9/11] ...</code> and some more difficult rules.
+	</p>
+
+	<p>Therefor we introduced a <a href="https://wiki.phpbb.com/Plural_Rules">plural system</a> that deals with this kind of problems.</p>
+
+	<p>The php Code will basically look like this:</p>
+
+	<div class="codebox"><pre>
+	...
+	$user->lang('NUMBER_OF_ELEFANTS', $number_of_elefants);
+	...
+	</pre></div>
+
+	<p>And the English translation would be:</p>
+
+	<div class="codebox"><pre>
+	...
+	'NUMBER_OF_ELEFANTS'	=> array(
+		0	=> 'You have no elephant', // Optional special case for 0
+		1	=> 'You have 1 elephant', // Singular
+		2	=> 'You have %d elephant', // Plural
+	),
+	...
+	</pre></div>
+
+	<p>While the Bosnian translation can have more cases:</p>
+
+	<div class="codebox"><pre>
+	...
+	'NUMBER_OF_ELEFANTS'	=> array(
+		0	=> 'You have no slonova', // Optional special case for 0
+		1	=> 'You have %d slon', // Used for 1, 21, 31, ..
+		2	=> 'You have %d slona', // Used for 5, 6,
+		3	=> ...
+	),
+	...
+	</pre></div>
+
+	<p><strong>NOTE:</strong> It is okay to use plurals for an unknown number compared to a single item, when the number is not known and displayed:</p>
+	<div class="codebox"><pre>
+	...
+	'MODERATOR'	=> 'Moderator',  // Your board has 1 moderator
+	'MODERATORS'	=> 'Moderators', // Your board has multiple moderators
+	...
+	</pre></div>
+
 	<a name="writingstyle"></a><h3>6.iii. Writing Style</h3>
 
 	<h4>Miscellaneous tips &amp; hints:</h4>
