@@ -106,8 +106,8 @@
 	<p>Tabs in front of lines are no problem, but having them within the text can be a problem if you do not set it to the amount of spaces every one of us uses. Here is a short example of how it should look like:</p>
 
 	<div class="codebox"><pre>
-{TAB}$mode{TAB}{TAB}= request_var('mode', '');
-{TAB}$search_id{TAB}= request_var('search_id', '');
+{TAB}$mode{TAB}{TAB}= $request->variable('mode', '');
+{TAB}$search_id{TAB}= $request->variable('search_id', '');
 	</pre></div>
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
@@ -1025,8 +1025,8 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	<p>No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to).</p>
 
 	<h4>Variables: </h4>
-	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params.</p>
-	<p>The request_var function determines the type to set from the second parameter (which determines the default value too). If you need to get a scalar variable type, you need to tell this the request_var function explicitly. Examples:</p>
+	<p>Make use of the <code>\phpbb\request\request</code> class for everything.</p>
+	<p>The $request->variable() method determines the type to set from the second parameter (which determines the default value too). If you need to get a scalar variable type, you need to tell this the variable() method explicitly. Examples:</p>
 
 	<p class="bad">// Old method, do not use it</p>
 	<div class="codebox"><pre>
@@ -1036,23 +1036,23 @@ $submit = (isset($HTTP_POST_VARS['submit'])) ? true : false;
 
 	<p class="good">// Use request var and define a default variable (use the correct type)</p>
 	<div class="codebox"><pre>
-$start = request_var('start', 0);
-$submit = (isset($_POST['submit'])) ? true : false;
+$start = $request->variable('start', 0);
+$submit = $request->is_set_post('submit');
 	</pre></div>
 
-	<p class="bad">// $start is an int, the following use of request_var therefore is not allowed</p>
+	<p class="bad">// $start is an int, the following use of $request->variable() therefore is not allowed</p>
 	<div class="codebox"><pre>
-$start = request_var('start', '0');
+$start = $request->variable('start', '0');
 	</pre></div>
 
 	<p class="good">// Getting an array, keys are integers, value defaults to 0</p>
 	<div class="codebox"><pre>
-$mark_array = request_var('mark', array(0));
+$mark_array = $request->variable('mark', array(0));
 	</pre></div>
 
 	<p class="good">// Getting an array, keys are strings, value defaults to 0</p>
 	<div class="codebox"><pre>
-$action_ary = request_var('action', array('' =&gt; 0));
+$action_ary = $request->variable('action', array('' =&gt; 0));
 	</pre></div>
 
 	<h4>Login checks/redirection: </h4>
@@ -1765,16 +1765,16 @@ This may span multiple lines.
 
 <p>phpBB only uses the ASCII and the UTF-8 character encodings. Still all Strings are UTF-8 encoded because ASCII is a subset of UTF-8. The only exceptions to this rule are code sections which deal with external systems which use other encodings and character sets. Such external data should be converted to UTF-8 using the <code>utf8_recode()</code> function supplied with phpBB. It supports a variety of other character sets and encodings, a full list can be found below.</p>
 
-<p>With <code>request_var()</code> you can either allow all UCS characters in user input or restrict user input to ASCII characters. This feature is controlled by the function's third parameter called <code>$multibyte</code>. You should allow multibyte characters in posts, PMs, topic titles, forum names, etc. but it's not necessary for internal uses like a <code>$mode</code> variable which should only hold a predefined list of ASCII strings anyway.</p>
+<p>With <code>$request->variable()</code> you can either allow all UCS characters in user input or restrict user input to ASCII characters. This feature is controlled by the method's third parameter called <code>$multibyte</code>. You should allow multibyte characters in posts, PMs, topic titles, forum names, etc. but it's not necessary for internal uses like a <code>$mode</code> variable which should only hold a predefined list of ASCII strings anyway.</p>
 
 <div class="codebox"><pre>
 // an input string containing a multibyte character
 $_REQUEST['multibyte_string'] = 'K&#228;se';
 
 // print request variable as a UTF-8 string allowing multibyte characters
-echo request_var('multibyte_string', '', true);
+echo $request->variable('multibyte_string', '', true);
 // print request variable as ASCII string
-echo request_var('multibyte_string', '');
+echo $request->variable('multibyte_string', '');
 </pre></div>
 
 <p>This code snippet will generate the following output:</p>
@@ -1792,9 +1792,9 @@ K??se
 $_REQUEST['multibyte_string'] = 'K&#228;se';
 
 // normalize multibyte strings
-echo utf8_normalize_nfc(request_var('multibyte_string', '', true));
+echo utf8_normalize_nfc($request->variable('multibyte_string', '', true));
 // ASCII strings do not need to be normalized
-echo request_var('multibyte_string', '');
+echo $request->variable('multibyte_string', '');
 </pre></div>
 
 <h4>Case Folding</h4>
