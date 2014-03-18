@@ -893,9 +893,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
 	* @param string $expected Lang var of expected message after posting
-	* @return array|null post_id, topic_id if message is 'POST_STORED'
+	* @return array|null post_id, topic_id if message is empty
 	*/
-	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
 		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
 
@@ -919,9 +919,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
 	* @param string $expected Lang var of expected message after posting
-	* @return array|null post_id, topic_id if message is 'POST_STORED'
+	* @return array|null post_id, topic_id if message is empty
 	*/
-	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
 		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
 
@@ -941,9 +941,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $posting_contains
 	* @param array $form_data
 	* @param string $expected Lang var of expected message after posting
-	* @return array|null post_id, topic_id if message is 'POST_STORED'
+	* @return array|null post_id, topic_id if message is empty
 	*/
-	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = 'POST_STORED')
+	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = '')
 	{
 		$this->add_lang('posting');
 
@@ -989,13 +989,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
-		$this->assertContainsLang($expected, $crawler->filter('html')->text());
 
-		if ($expected !== 'POST_STORED')
+		if ($expected !== '')
 		{
-			return;
+			$this->assertContainsLang($expected, $crawler->filter('html')->text());
+			return null;
 		}
-		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
 
 		return array(
 			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
