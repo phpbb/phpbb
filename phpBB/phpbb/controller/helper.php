@@ -79,7 +79,7 @@ class helper
 	*/
 	public function render($template_file, $page_title = '', $status_code = 200)
 	{
-		page_header($page_title);
+		page_header($page_title, true);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,

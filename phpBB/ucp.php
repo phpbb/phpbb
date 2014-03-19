@@ -128,7 +128,7 @@ switch ($mode)
 		);
 
 		// Disable online list
-		page_header($user->lang[$title], false);
+		page_header($user->lang[$title]);
 
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,

@@ -2679,7 +2679,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 	else
 	{
-		page_header(((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]), false);
+		page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
 	}
 
 	$template->set_filenames(array(
@@ -2956,7 +2956,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
 
-	page_header($user->lang['LOGIN'], false);
+	page_header($user->lang['LOGIN']);
 
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
@@ -3032,7 +3032,7 @@ function login_forum_box($forum_data)
 		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
 	}
 
-	page_header($user->lang['LOGIN'], false);
+	page_header($user->lang['LOGIN']);
 
 	$template->assign_vars(array(
 		'FORUM_NAME'			=> isset($forum_data['forum_name']) ? $forum_data['forum_name'] : '',
@@ -3945,7 +3945,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 				else
 				{
-					page_header($msg_title, false);
+					page_header($msg_title);
 				}
 			}
 
@@ -4622,7 +4622,7 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 /**
 * Generate page header
 */
-function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
+function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
 	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;

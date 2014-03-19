@@ -70,7 +70,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 	$db->sql_freeresult($result);
 
 	// Output the page
-	page_header($user->lang['WHO_IS_ONLINE']);
+	page_header($user->lang['WHO_IS_ONLINE'], true);
 
 	$template->set_filenames(array(
 		'body' => 'viewonline_whois.html')
@@ -444,7 +444,7 @@ $template->assign_vars(array(
 $config['load_online'] = false;
 
 // Output the page
-page_header($user->lang['WHO_IS_ONLINE']);
+page_header($user->lang['WHO_IS_ONLINE'], true);
 
 $template->set_filenames(array(
 	'body' => 'viewonline_body.html')

@@ -1623,7 +1623,7 @@ switch ($mode)
 }
 
 // Output the page
-page_header($page_title, false);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => $template_html)
