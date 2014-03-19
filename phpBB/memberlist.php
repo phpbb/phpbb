@@ -1666,11 +1666,11 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 	{
-		$last_activity = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+		$last_active = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 	}
 	else
 	{
-		$last_activity = '';
+		$last_active = '';
 	}
 
 	$age = '';
@@ -1703,7 +1703,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
-		'LAST_ACTIVE'		=> (empty($last_activity)) ? ' - ' : $user->format_date($last_activity),
+		'LAST_ACTIVE'		=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
