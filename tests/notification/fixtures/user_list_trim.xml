@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_colour</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>2</value>
+			<value>A</value>
+			<value>a</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>B</value>
+			<value>b</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>C</value>
+			<value>c</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>D</value>
+			<value>d</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>E</value>
+			<value>e</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
