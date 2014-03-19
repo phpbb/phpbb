@@ -683,11 +683,8 @@ $lang = array_merge($lang, array(
 	'START_WATCHING_TOPIC'		=> 'Subscribe topic',
 	'STOP_WATCHING_FORUM'		=> 'Unsubscribe forum',
 	'STOP_WATCHING_TOPIC'		=> 'Unsubscribe topic',
-	'STRING_LIST'				=> array(
-		1 => '%1$s',
-		2 => '%1$s and %2$s',
-		// At 3 or more, %1$s returns comma separated items. So output would be: X, Y and Z
-	),
+	'STRING_LIST_MULTI'			=> '%1$s, and %2$s',
+	'STRING_LIST_SIMPLE'		=> '%1$s and %2$s',
 	'SUBFORUM'					=> 'Subforum',
 	'SUBFORUMS'					=> 'Subforums',
 	'SUBJECT'					=> 'Subject',

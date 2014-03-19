@@ -1506,18 +1506,28 @@ function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $php
 * @param array $items Array of items to concatenate
 * @param object $user The phpBB $user object.
 *
-* @return string String list. Examples: "A"; "A and B"; "A, B and C"
+* @return string String list. Examples: "A"; "A and B"; "A, B, and C"
 */
 function phpbb_generate_string_list($items, $user)
 {
-	$count = sizeof($items);
-	$last_item = '';
-
-	if ($count > 1)
+	if (empty($items))
 	{
-		$last_item = array_pop($items);
+		return '';
+	}
+
+	$count = sizeof($items);
+	$last_item = array_pop($items);
+	$lang_key = 'STRING_LIST_MULTI';
+
+	if ($count == 1)
+	{
+		return $last_item;
+	}
+	else if ($count == 2)
+	{
+		$lang_key = 'STRING_LIST_SIMPLE';
 	}
 	$list = implode($user->lang['COMMA_SEPARATOR'], $items);
 
-	return $user->lang('STRING_LIST', $list, $last_item, $count);
+	return $user->lang($lang_key, $list, $last_item);
 }
