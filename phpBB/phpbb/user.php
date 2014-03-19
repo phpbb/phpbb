@@ -631,18 +631,20 @@ class user extends \phpbb\session
 				else if ($this->lang_name == basename($config['default_lang']))
 				{
 					// Fall back to the English Language
+					$reset_lang_name = $this->lang_name;
 					$this->lang_name = 'en';
 					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
+					$this->lang_name = $reset_lang_name;
 				}
 				else if ($this->lang_name == $this->data['user_lang'])
 				{
 					// Fall back to the board default language
+					$reset_lang_name = $this->lang_name;
 					$this->lang_name = basename($config['default_lang']);
 					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
+					$this->lang_name = $reset_lang_name;
 				}
 
-				// Reset the lang name
-				$this->lang_name = (file_exists($lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 				return;
 			}
 
