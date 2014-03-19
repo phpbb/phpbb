@@ -189,7 +189,7 @@ class ucp_main
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '',
 					'JOINED'			=> $user->format_date($user->data['user_regdate']),
-					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
+					'LAST_ACTIVE'			=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
 					'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
