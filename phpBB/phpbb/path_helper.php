@@ -300,10 +300,7 @@ class path_helper
 			// Strip the parameters off
 			foreach ($strip as $param)
 			{
-				if (isset($params[$param]))
-				{
-					unset($params[$param]);
-				}
+				unset($params[$param]);
 			}
 		}
 
