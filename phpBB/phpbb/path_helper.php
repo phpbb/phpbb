@@ -263,7 +263,7 @@ class path_helper
 					continue;
 				}
 
-				$params[$key] = implode('=', $arguments);
+				$params[$key] = $arguments[1];
 			}
 		}
 		else
