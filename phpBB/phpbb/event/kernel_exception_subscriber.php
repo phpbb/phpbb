@@ -49,7 +49,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*/
 	public function on_kernel_exception(GetResponseForExceptionEvent $event)
 	{
-		page_header($this->user->lang('INFORMATION'), true);
+		page_header($this->user->lang('INFORMATION'));
 
 		$exception = $event->getException();
 

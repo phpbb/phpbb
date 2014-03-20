@@ -1027,7 +1027,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	unset($rowset);
 
-	page_header((($l_search_title) ? $l_search_title : $user->lang['SEARCH']), true);
+	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
 
 	$template->set_filenames(array(
 		'body' => 'search_results.html')
@@ -1215,7 +1215,7 @@ if ($auth->acl_get('a_search'))
 }
 
 // Output the basic page
-page_header($user->lang['SEARCH'], true);
+page_header($user->lang['SEARCH']);
 
 $template->set_filenames(array(
 	'body' => 'search_body.html')

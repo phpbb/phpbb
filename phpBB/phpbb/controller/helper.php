@@ -77,9 +77,9 @@ class helper
 	* @param int $status_code The status code to be sent to the page header
 	* @return Response object containing rendered page
 	*/
-	public function render($template_file, $page_title = '', $status_code = 200)
+	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false)
 	{
-		page_header($page_title, true);
+		page_header($page_title, $display_online_list);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,

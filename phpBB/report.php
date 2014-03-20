@@ -307,7 +307,7 @@ $template->assign_vars(array(
 generate_forum_nav($forum_data);
 
 // Start output of page
-page_header($page_title, true);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => 'report_body.html')
