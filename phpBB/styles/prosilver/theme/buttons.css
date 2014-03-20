@@ -235,20 +235,49 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	max-width: 40%;
 }
 
+.contact-icons.dropdown-contents {
+	min-width: 0;
+	padding: 0;
+}
+
+.contact-icon {
+	background-repeat: no-repeat;
+	display: block;
+	height: 16px;
+	width: 16px;
+}
+.contact-icons a {
+	border-bottom: 1px dotted;
+	border-right: 1px dotted;
+	display: block;
+	float: left;
+	padding: 8px;
+}
+
+.contact-icons div:last-child a {
+	border-bottom: none;
+}
+
+.contact-icons .last-cell {
+	border-right: none;
+}
+
+
 /* Profile & navigation icons */
-.email-icon, .email-icon a		{ background: none top left no-repeat; }
-.aim-icon, .aim-icon a			{ background: none top left no-repeat; }
-.phpbb_aol-icon, .phpbb_aol-icon a			{ background: none top left no-repeat; }
-.yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
-.phpbb_yahoo-icon, .phpbb_yahoo-icon a		{ background: none top left no-repeat; }
-.web-icon, .web-icon a			{ background: none top left no-repeat; }
-.phpbb_website-icon, .phpbb_website-icon a	{ background: none top left no-repeat; }
-.msnm-icon, .msnm-icon a			{ background: none top left no-repeat; }
-.phpbb_wlm-icon, .phpbb_wlm-icon a			{ background: none top left no-repeat; }
-.icq-icon, .icq-icon a			{ background: none top left no-repeat; }
-.phpbb_icq-icon, .phpbb_icq-icon a			{ background: none top left no-repeat; }
-.jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
-.pm-icon, .pm-icon a				{ background: none top left no-repeat; }
+.pm-icon		{ background-position: 0 0; }
+.email-icon		{ background-position: -21px 0; }
+.jabber-icon	{ background-position: -82px 0; }
+.phpbb_icq-icon	{ background-position: -61px 0 ; }
+.phpbb_wlm-icon	{ background-position: -182px 0; }
+.phpbb_aol-icon	{ background-position: -245px 0; }
+.phpbb_website-icon		{ background-position: -40px 0; }
+.phpbb_youtube-icon		{ background-position: -98px 0; }
+.phpbb_facebook-icon	{ background-position: -119px 0; }
+.phpbb_google_plus-icon	{ background-position: -140px 0; }
+.phpbb_skype-icon		{ background-position: -161px 0; }
+.phpbb_twitter-icon		{ background-position: -203px 0; }
+.phpbb_yahoo-icon		{ background-position: -224px 0; }
+
 .quote-icon, .quote-icon a		{ background: none top left no-repeat; }
 
 /* Moderator icons */

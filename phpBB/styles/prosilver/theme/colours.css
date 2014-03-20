@@ -718,6 +718,14 @@ a.sendemail {
 	background-image: url("images/buttons.png");
 }
 
+.contact-icons a {
+	border-color: #DCDCDC;
+}
+
+.contact-icons a:hover {
+	background-color: #F2F6F9;
+}
+
 /* Icon images
 ---------------------------------------- */
 .icon-faq						{ background-image: url("./images/icon_faq.gif"); }
@@ -738,19 +746,8 @@ a.sendemail {
 .icon-mark						{ background-image: url("./images/icon_mark.gif"); }
 
 /* Profile & navigation icons */
-.email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }
-.phpbb_aol-icon, .phpbb_aol-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
-.aim-icon, .aim-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
-.yahoo-icon, .yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
-.phpbb_yahoo-icon, .phpbb_yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
-.web-icon, .web-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
-.phpbb_website-icon, .phpbb_website-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
-.msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
-.phpbb_wlm-icon, .phpbb_wlm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
-.icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
-.phpbb_icq-icon, .phpbb_icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
-.jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
-.pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
+.contact-icon { background-image: url("./images/icons_contact.png"); }
+
 .quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
 ul.profile-icons.responsive a.responsive-menu-link	{ background-image: url("./images/icon_post_menu.png"); }
 

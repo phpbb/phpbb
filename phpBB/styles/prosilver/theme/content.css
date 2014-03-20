@@ -731,6 +731,10 @@ fieldset.polls dd div {
 	height: auto !important;
 }
 
+dd.profile-contact {
+	overflow: visible;
+}
+
 .online {
 	background-image: none;
 	background-position: 100% 0;
