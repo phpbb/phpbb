@@ -547,7 +547,6 @@ class mcp_queue
 					'S_TOPICS'				=> $is_topics,
 					'S_RESTORE'				=> $is_restore,
 
-					'PAGE_NUMBER'			=> $pagination->on_page($base_url, $total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $user->lang(((!$is_topics) ? 'VIEW_TOPIC_POSTS' : 'VIEW_FORUM_TOPICS'), (int) $total),
 				));

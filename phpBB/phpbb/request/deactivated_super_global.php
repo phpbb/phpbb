@@ -112,4 +112,3 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 		$this->error();
 	}
 }
-

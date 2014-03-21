@@ -212,6 +212,11 @@ class manager
 			$this->cache->purge();
 		}
 
+		if ($active)
+		{
+			$this->config->increment('assets_version', 1);
+		}
+
 		return !$active;
 	}
 

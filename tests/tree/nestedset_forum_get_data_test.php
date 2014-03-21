@@ -116,4 +116,20 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 		$forum_data['forum_parents'] = $forum_parents;
 		$this->assertEquals($expected, array_keys($this->set->get_path_basic_data($forum_data)));
 	}
+
+	public function get_all_tree_data_data()
+	{
+		return array(
+			array(true, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)),
+			array(false, array(11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)),
+		);
+	}
+
+	/**
+	* @dataProvider get_all_tree_data_data
+	*/
+	public function test_get_all_tree_data($order_asc, $expected)
+	{
+		$this->assertEquals($expected, array_keys($this->set->get_all_tree_data($order_asc)));
+	}
 }

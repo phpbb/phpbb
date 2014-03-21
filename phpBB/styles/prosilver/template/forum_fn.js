@@ -37,17 +37,14 @@ function jumpto(item) {
 		on_page = item.attr('data-on-page'),
 		per_page = item.attr('data-per-page'),
 		base_url = item.attr('data-base-url'),
+		start_name = item.attr('data-start-name'),
 		page = prompt(jump_page, on_page);
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
-		if (base_url.indexOf('%d') === -1) {
-			if (base_url.indexOf('?') === -1) {
-				document.location.href = base_url + '?start=' + ((page - 1) * per_page);
-			} else {
-				document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
-			}
+		if (base_url.indexOf('?') === -1) {
+			document.location.href = base_url + '?' + start_name + '=' + ((page - 1) * per_page);
 		} else {
-			document.location.href = base_url.replace('%d', page);
+			document.location.href = base_url.replace(/&amp;/g, '&') + '&' + start_name + '=' + ((page - 1) * per_page);
 		}
 	}
 }
@@ -304,64 +301,6 @@ function apply_onkeypress_event() {
 }
 
 jQuery(document).ready(apply_onkeypress_event);
-
-/**
-* Run MSN action
-*/
-function msn_action(action, address)
-{
-	// Does the browser support the MSNM object?
-	var app = document.getElementById('objMessengerApp');
-
-	if (!app || !app.MyStatus) {
-		var lang = $('form[data-lang-im-msnm-browser]');
-		if (lang.length) {
-			alert(lang.attr('data-lang-im-msnm-browser'));
-		}
-		return false;
-	}
-
-	// Is MSNM connected?
-	if (app.MyStatus == 1) {
-		var lang = $('form[data-lang-im-msnm-connect]');
-		if (lang.length) {
-			alert(lang.attr('data-lang-im-msnm-connect'));
-		}
-		return false;
-	}
-
-	// Do stuff
-	try {
-		switch (action) {
-			case 'add':
-				app.AddContact(0, address);
-				break;
-
-			case 'im':
-				app.InstantMessage(address);
-				break;
-		}
-	}
-	catch (e) {
-		return;
-	}
-}
-
-/**
-* Add to your contact list
-*/
-function add_contact(address) 
-{
-	msn_action('add', address);
-}
-
-/**
-* Write IM to contact
-*/
-function im_contact(address)
-{
-	msn_action('im', address);
-}
 
 /**
 * Functions for user search popup

@@ -155,11 +155,12 @@ class context
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
+			$s_num_rows = sizeof($str[$blocks[$blockcount]]);
 
 			// Set S_NUM_ROWS
 			foreach ($str[$blocks[$blockcount]] as &$mod_block)
 			{
-				$mod_block['S_NUM_ROWS'] = sizeof($str[$blocks[$blockcount]]);
+				$mod_block['S_NUM_ROWS'] = $s_num_rows;
 			}
 		}
 		else
@@ -186,12 +187,29 @@ class context
 
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->tpldata[$blockname][] = $vararray;
+			$s_num_rows = sizeof($this->tpldata[$blockname]);
 
 			// Set S_NUM_ROWS
 			foreach ($this->tpldata[$blockname] as &$mod_block)
 			{
-				$mod_block['S_NUM_ROWS'] = sizeof($this->tpldata[$blockname]);
+				$mod_block['S_NUM_ROWS'] = $s_num_rows;
 			}
+		}
+
+		return true;
+	}
+
+	/**
+	* Assign key variable pairs from an array to a whole specified block loop
+	*
+	* @param string $blockname Name of block to assign $block_vars_array to
+	* @param array $block_vars_array An array of hashes of variable name => value pairs
+	*/
+	public function assign_block_vars_array($blockname, array $block_vars_array)
+	{
+		foreach ($block_vars_array as $vararray)
+		{
+			$this->assign_block_vars($blockname, $vararray);
 		}
 
 		return true;

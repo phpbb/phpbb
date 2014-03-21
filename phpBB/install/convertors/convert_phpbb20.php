@@ -33,7 +33,7 @@ $dbms = phpbb_convert_30_dbms_to_31($dbms);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.1.0-a3',
+	'phpbb_version'	=> '3.1.0-b1',
 	'author'		=> '<a href="https://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -906,15 +906,7 @@ if (!$get_info)
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 
-				array('user_interests',			'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
-				array('user_occ',				'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
-				array('user_website',			'users.user_website',				'validate_website'),
 				array('user_jabber',			'',									''),
-				array('user_msnm',				'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
-				array('user_yim',				'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
-				array('user_aim',				'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
-				array('user_icq',				'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
-				array('user_from',				'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 
@@ -951,6 +943,26 @@ if (!$get_info)
 				array('',							'users.user_regdate AS post_time',				''),
 
 				array('',						'users.user_notify_pm',				'phpbb_add_notification_options'),
+
+				'where'			=> 'users.user_id <> -1',
+			),
+
+			array(
+				'target'		=> PROFILE_FIELDS_DATA_TABLE,
+				'primary'		=> 'users.user_id',
+				'query_first'	=> array(
+					array('target', $convert->truncate_statement . PROFILE_FIELDS_DATA_TABLE),
+				),
+
+				array('user_id',				'users.user_id',					'phpbb_user_id'),
+				array('pf_phpbb_occupation',	'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_interests',		'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_location',		'users.user_from',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_icq',			'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_wlm',			'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_yahoo',			'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_aol',			'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_website',		'users.user_website',				'validate_website'),
 
 				'where'			=> 'users.user_id <> -1',
 			),

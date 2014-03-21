@@ -125,8 +125,17 @@ class p_master
 
 		// Clean up module cache array to only let survive modules the user can access
 		$right_id = false;
+
+		$hide_categories = array();
 		foreach ($this->module_cache['modules'] as $key => $row)
 		{
+			// When the module has no mode (category) we check whether it has visible children
+			// before listing it as well.
+			if (!$row['module_mode'])
+			{
+				$hide_categories[(int) $row['module_id']] = $key;
+			}
+
 			// Not allowed to view module?
 			if (!$this->module_auth_self($row['module_auth']))
 			{
@@ -161,6 +170,22 @@ class p_master
 				$right_id = $row['right_id'];
 				continue;
 			}
+
+			if ($row['module_mode'])
+			{
+				// The parent category has a visible child
+				// So remove it and all its parents from the hide array
+				unset($hide_categories[(int) $row['parent_id']]);
+				foreach ($this->module_cache['parents'][$row['module_id']] as $module_id => $row_id)
+				{
+					unset($hide_categories[$module_id]);
+				}
+			}
+		}
+
+		foreach ($hide_categories as $module_id => $row_id)
+		{
+			unset($this->module_cache['modules'][$row_id]);
 		}
 
 		// Re-index (this is needed, else we are not able to array_slice later)
@@ -495,7 +520,7 @@ class p_master
 
 		if ($this->active_module === false)
 		{
-			trigger_error('Module not accessible', E_USER_ERROR);
+			trigger_error('MODULE_NOT_ACCESS', E_USER_ERROR);
 		}
 
 		// new modules use the full class names, old ones are always called <type>_<name>, e.g. acp_board
@@ -503,14 +528,14 @@ class p_master
 		{
 			if (!file_exists("$module_path/{$this->p_name}.$phpEx"))
 			{
-				trigger_error("Cannot find module $module_path/{$this->p_name}.$phpEx", E_USER_ERROR);
+				trigger_error($user->lang('MODULE_NOT_FIND', "$module_path/{$this->p_name}.$phpEx"), E_USER_ERROR);
 			}
 
 			include("$module_path/{$this->p_name}.$phpEx");
 
 			if (!class_exists($this->p_name))
 			{
-				trigger_error("Module file $module_path/{$this->p_name}.$phpEx does not contain correct class [{$this->p_name}]", E_USER_ERROR);
+				trigger_error($user->lang('MODULE_FILE_INCORRECT_CLASS', "$module_path/{$this->p_name}.$phpEx", $this->p_name), E_USER_ERROR);
 			}
 		}
 

@@ -48,3 +48,78 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
+
+/**
+* Hash the password
+*
+* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+*
+* @param string $password Password to be hashed
+*
+* @return string|bool Password hash or false if something went wrong during hashing
+*/
+function phpbb_hash($password)
+{
+	global $phpbb_container;
+
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->hash($password);
+}
+
+/**
+* Check for correct password
+*
+* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+*
+* @param string $password The password in plain text
+* @param string $hash The stored password hash
+*
+* @return bool Returns true if the password is correct, false if not.
+*/
+function phpbb_check_hash($password, $hash)
+{
+	global $phpbb_container;
+
+	$passwords_manager = $phpbb_container->get('passwords.manager');
+	return $passwords_manager->check($password, $hash);
+}
+
+/**
+* Eliminates useless . and .. components from specified path.
+*
+* Deprecated, use filesystem class instead
+*
+* @param string $path Path to clean
+* @return string Cleaned path
+*
+* @deprecated
+*/
+function phpbb_clean_path($path)
+{
+	global $phpbb_path_helper, $phpbb_container;
+
+	if (!$phpbb_path_helper && $phpbb_container)
+	{
+		$phpbb_path_helper = $phpbb_container->get('path_helper');
+	}
+	else if (!$phpbb_path_helper)
+	{
+		// The container is not yet loaded, use a new instance
+		if (!class_exists('\phpbb\path_helper'))
+		{
+			global $phpbb_root_path, $phpEx;
+			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
+		}
+
+		$phpbb_path_helper = new phpbb\path_helper(
+			new phpbb\symfony_request(
+				new phpbb\request\request()
+			),
+			new phpbb\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
+	}
+
+	return $phpbb_path_helper->clean_path($path);
+}

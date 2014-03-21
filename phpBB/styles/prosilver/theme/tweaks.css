@@ -53,11 +53,11 @@ dd.option {
 }
 
 /* Notifications list for IE7 */
-#notification_list {
+.dropdown-extended {
 	*left: 0;
 }
 
-#notification_list .header_settings {
+.dropdown-extended .header_settings {
 	*position: absolute;
 	*right: 10px;
 	*top: 0;

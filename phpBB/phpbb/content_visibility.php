@@ -528,16 +528,16 @@ class content_visibility
 		if (!$force_update_all && $original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
 		{
 			// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
-			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
+			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
 		}
 		else if (!$force_update_all && $original_topic_data['topic_visibility'] == ITEM_APPROVED && $visibility == ITEM_DELETED)
 		{
 			// If we're soft deleting a topic we only approved posts are soft deleted.
-			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility']);
+			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility']);
 		}
 		else
 		{
-			self::set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
+			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
 		}
 
 		return $data;

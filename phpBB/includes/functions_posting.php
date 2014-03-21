@@ -21,8 +21,10 @@ if (!defined('IN_PHPBB'))
 function generate_smilies($mode, $forum_id)
 {
 	global $db, $user, $config, $template, $phpbb_dispatcher;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_container;
 
+	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
+	$pagination = $phpbb_container->get('pagination');
 	$start = request_var('start', 0);
 
 	if ($mode == 'window')
@@ -61,7 +63,8 @@ function generate_smilies($mode, $forum_id)
 			'body' => 'posting_smilies.html')
 		);
 
-		generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id), $smiley_count, $config['smilies_per_page'], $start);
+		$start = $pagination->validate_start($start, $config['smilies_per_page'], $smiley_count);
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $smiley_count, $config['smilies_per_page'], $start);
 	}
 
 	$display_link = false;
@@ -139,8 +142,8 @@ function generate_smilies($mode, $forum_id)
 	{
 		$template->assign_vars(array(
 			'S_SHOW_SMILEY_LINK' 	=> true,
-			'U_MORE_SMILIES' 		=> append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id))
-		);
+			'U_MORE_SMILIES' 		=> $base_url,
+		));
 	}
 
 	if ($mode == 'window')
@@ -1475,6 +1478,22 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
+
+	/**
+	* Modify the data for post submitting
+	*
+	* @event core.modify_submit_post_data
+	* @var	string	mode				Variable containing posting mode value
+	* @var	string	subject				Variable containing post subject value
+	* @var	string	username			Variable containing post author name
+	* @var	int		topic_type			Variable containing topic type value
+	* @var	array	poll				Array with the poll data for the post
+	* @var	array	data				Array with the data for the post
+	* @var	bool	update_message		Flag indicating if the post will be updated
+	* @var	bool	update_search_index	Flag indicating if the search index will be updated
+	* @since 3.1.0-a4
+	*/
+	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact(array('mode', 'subject', 'username', 'topic_type', 'poll', 'data', 'update_message', 'update_search_index'))));
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')

@@ -24,6 +24,9 @@ class helper
 	/** @var string */
 	protected $phpbb_root_path;
 
+	/** @var string */
+	protected $phpEx;
+
 	/**
 	* Constructor
 	*
@@ -32,11 +35,12 @@ class helper
 	* @param	string	$phpbb_root_path	Root path
 	* @return	null
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
 	}
 
 	/**
@@ -81,8 +85,16 @@ class helper
 
 	/**
 	* Generate text content
+	*
+	* @param string $content is feed text content
+	* @param string $uid is bbcode_uid
+	* @param string $bitfield is bbcode bitfield
+	* @param int $options bbcode flag options
+	* @param int $forum_id is the forum id
+	* @param array $post_attachments is an array containing the attachments and their respective info
+	* @return string the html content to be printed for the feed
 	*/
-	public function generate_content($content, $uid, $bitfield, $options)
+	public function generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 	{
 		if (empty($content))
 		{
@@ -129,8 +141,21 @@ class helper
 		// Remove some specials html tag, because somewhere there are a mod to allow html tags ;)
 		$content	= preg_replace( '#<(script|iframe)([^[]+)\1>#siU', ' <strong>$1</strong> ', $content);
 
+		// Parse inline images to display with the feed
+		if (!empty($post_attachments))
+		{
+			$update_count = array();
+			parse_attachments($forum_id, $content, $post_attachments, $update_count);
+			$post_attachments = implode('<br />', $post_attachments);
+
+			// Convert attachments' relative path to absolute path
+			$post_attachments = str_replace($this->phpbb_root_path . 'download/file.' . $this->phpEx, $this->get_board_url() . '/download/file.' . $this->phpEx, $post_attachments);
+
+			$content .= $post_attachments;
+		}
+
 		// Remove Comments from inline attachments [ia]
-		$content	= preg_replace('#<div class="(inline-attachment|attachtitle)">(.*?)<!-- ia(.*?) -->(.*?)<!-- ia(.*?) -->(.*?)</div>#si','$4',$content);
+		$content = preg_replace('#<dd>(.*?)</dd>#','',$content);
 
 		// Replace some entities with their unicode counterpart
 		$entities = array(

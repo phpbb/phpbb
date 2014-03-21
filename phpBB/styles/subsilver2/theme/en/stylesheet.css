@@ -1,5 +1,5 @@
 /* EN Language Pack */
-.imageset.icon_contact_aim {
+.imageset.phpbb_aol-icon, .imageset.icon_contact_aim {
 	background-image: url("./icon_contact_aim.gif");
 	padding-left: 72px;
 	padding-top: 20px;
@@ -9,7 +9,7 @@
 	padding-left: 72px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_icq {
+.imageset.phpbb_icq-icon, .imageset.icon_contact_icq {
 	background-image: url("./icon_contact_icq.gif");
 	padding-left: 72px;
 	padding-top: 20px;
@@ -19,7 +19,7 @@
 	padding-left: 72px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_msnm {
+.imageset.phpbb_wlm-icon, .imageset.icon_contact_msnm {
 	background-image: url("./icon_contact_msnm.gif");
 	padding-left: 72px;
 	padding-top: 20px;
@@ -29,12 +29,12 @@
 	padding-left: 72px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_yahoo {
+.imageset.phpbb_yahoo-icon, .imageset.icon_contact_yahoo {
 	background-image: url("./icon_contact_yahoo.gif");
 	padding-left: 72px;
 	padding-top: 20px;
 }
-.imageset.icon_contact_www {
+.imageset.phpbb_website-icon, .imageset.icon_contact_www {
 	background-image: url("./icon_contact_www.gif");
 	padding-left: 72px;
 	padding-top: 20px;

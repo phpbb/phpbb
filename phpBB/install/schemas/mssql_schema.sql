@@ -1164,11 +1164,15 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_show_on_reg] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_pm] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_vt] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_ml] [int] DEFAULT (0) NOT NULL ,
 	[field_show_profile] [int] DEFAULT (0) NOT NULL ,
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
 	[field_no_view] [int] DEFAULT (0) NOT NULL ,
 	[field_active] [int] DEFAULT (0) NOT NULL ,
-	[field_order] [int] DEFAULT (0) NOT NULL
+	[field_order] [int] DEFAULT (0) NOT NULL ,
+	[field_is_contact] [int] DEFAULT (0) NOT NULL ,
+	[field_contact_desc] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -1190,7 +1194,19 @@ GO
 	Table: 'phpbb_profile_fields_data'
 */
 CREATE TABLE [phpbb_profile_fields_data] (
+<<<<<<< HEAD
 	[user_id] [int] DEFAULT (0) NOT NULL
+=======
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[pf_phpbb_location] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_occupation] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_icq] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_aol] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_wlm] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_yahoo] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_website] [varchar] (255) DEFAULT ('') NOT NULL
+>>>>>>> 7f5d8becad864ad86e6172c07a6a5d56d91e5264
 ) ON [PRIMARY]
 GO
 
@@ -1721,6 +1737,8 @@ CREATE TABLE [phpbb_users] (
 	[user_password] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_passchg] [int] DEFAULT (0) NOT NULL ,
 	[user_pass_convert] [int] DEFAULT (0) NOT NULL ,
+	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[user_newpasswd] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_email] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[user_email_hash] [float] DEFAULT (0) NOT NULL ,
 	[user_birthday] [varchar] (10) DEFAULT ('') NOT NULL ,
@@ -1769,17 +1787,7 @@ CREATE TABLE [phpbb_users] (
 	[user_sig] [text] DEFAULT ('') NOT NULL ,
 	[user_sig_bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[user_sig_bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_from] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[user_icq] [varchar] (15) DEFAULT ('') NOT NULL ,
-	[user_aim] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_yim] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_msnm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_jabber] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[user_website] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[user_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[user_newpasswd] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_new] [int] DEFAULT (1) NOT NULL ,
 	[user_reminded] [int] DEFAULT (0) NOT NULL ,

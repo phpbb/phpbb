@@ -28,7 +28,7 @@ class acp_board
 	{
 		global $db, $user, $auth, $template;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $cache, $phpbb_container;
+		global $cache, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('acp/board');
 
@@ -464,6 +464,18 @@ class acp_board
 				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
+
+		/**
+		* Event to add and/or modify acp_board configurations
+		*
+		* @event core.acp_board_config_edit_add
+		* @var	array	display_vars	Array of config values to display and process
+		* @var	string	mode			Mode of the config page we are displaying
+		* @var	boolean	submit			Do we display the form or process the submission
+		* @since 3.1.0-a4
+		*/
+		$vars = array('display_vars', 'mode', 'submit');
+		extract($phpbb_dispatcher->trigger_event('core.acp_board_config_edit_add', compact($vars)));
 
 		if (isset($display_vars['lang']))
 		{

@@ -625,17 +625,29 @@ function phpbb_increment_downloads($db, $ids)
 */
 function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
-	$sql = 'SELECT t.forum_id, f.forum_name, f.forum_password, f.parent_id
-		FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-		WHERE t.topic_id = " . (int) $topic_id . "
-			AND t.forum_id = f.forum_id";
+	$sql_array = array(
+		'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
+		'FROM'		=> array(
+			TOPICS_TABLE => 't',
+			FORUMS_TABLE => 'f',
+		),
+		'WHERE'	=> 't.topic_id = ' . (int) $topic_id . '
+			AND t.forum_id = f.forum_id',
+	);
+
+	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	if ($row && $row['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 	{
-		if ($row && $row['forum_password'])
+		send_status_line(404, 'Not Found');
+		trigger_error('ERROR_NO_ATTACHMENT');
+	}
+	else if ($row && $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+	{
+		if ($row['forum_password'])
 		{
 			// Do something else ... ?
 			login_forum_box($row);

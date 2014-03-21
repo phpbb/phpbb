@@ -121,7 +121,6 @@ $lang = array_merge($lang, array(
 		2	=> '%d posts',
 	),
 	'VIEW_UNREAD_POST'		=> 'First unread post',
-	'VISIT_WEBSITE'			=> 'WWW',
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast.',
 	'VOTE_CONVERTED'		=> 'Changing votes is not supported for converted polls.',
 

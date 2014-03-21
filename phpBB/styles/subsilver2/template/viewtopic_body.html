@@ -127,6 +127,7 @@
 	</table>
 
 <!-- BEGIN postrow -->
+	<!-- EVENT viewtopic_body_postrow_post_before -->
 	<table class="tablebg" width="100%" cellspacing="1">
 	<!-- IF postrow.S_FIRST_ROW -->
 		<tr>
@@ -201,7 +202,6 @@
 				<span class="postdetails">
 					<!-- IF postrow.POSTER_JOINED --><br /><b>{L_JOINED}{L_COLON}</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
 					<!-- IF postrow.POSTER_POSTS != '' --><br /><b>{L_POSTS}{L_COLON}</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
-					<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}{L_COLON}</b> {postrow.POSTER_FROM}<!-- ENDIF -->
 
 					<!-- IF postrow.S_PROFILE_FIELD1 -->
 						<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
@@ -210,7 +210,9 @@
 
 					<!-- EVENT viewtopic_body_postrow_custom_fields_before -->
 					<!-- BEGIN custom_fields -->
+						<!-- IF not postrow.custom_fields.S_PROFILE_CONTACT -->
 						<br /><b>{postrow.custom_fields.PROFILE_FIELD_NAME}{L_COLON}</b> {postrow.custom_fields.PROFILE_FIELD_VALUE}
+						<!-- ENDIF -->
 					<!-- END custom_fields -->
 					<!-- EVENT viewtopic_body_postrow_custom_fields_after -->
 				</span>
@@ -339,6 +341,7 @@
 		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	</table>
+	<!-- EVENT viewtopic_body_postrow_post_after -->
 <!-- END postrow -->
 
 	<!-- IF not S_IS_BOT -->
@@ -348,6 +351,8 @@
 	</tr>
 	</table>
 	<!-- ENDIF -->
+
+	<!-- EVENT viewtopic_body_topic_actions_before -->
 
 	<table width="100%" cellspacing="1">
 	<tr>

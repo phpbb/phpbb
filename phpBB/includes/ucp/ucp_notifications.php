@@ -154,7 +154,6 @@ class ucp_notifications
 				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $notifications['total_count'], $config['topics_per_page'], $start);
 
 				$template->assign_vars(array(
-					'PAGE_NUMBER'	=> $pagination->on_page($base_url, $notifications['total_count'], $config['topics_per_page'], $start),
 					'TOTAL_COUNT'	=> $notifications['total_count'],
 					'U_MARK_ALL'	=> $base_url . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_notifications_read'),
 				));

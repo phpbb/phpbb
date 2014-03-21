@@ -113,6 +113,16 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
+	public function assign_block_vars_array($blockname, array $block_vars_array)
+	{
+		$this->context->assign_block_vars_array($blockname, $block_vars_array);
+
+		return $this;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
 		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);

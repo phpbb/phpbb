@@ -33,6 +33,13 @@ interface type_interface
 	public function get_service_name();
 
 	/**
+	* Get the name of template file for this type
+	*
+	* @return string Returns the name of the template file
+	*/
+	public function get_template_filename();
+
+	/**
 	* Get dropdown options for second step in ACP
 	*
 	* @param string	$default_lang_id	ID of the default language
@@ -81,6 +88,17 @@ interface type_interface
 	* @return mixed		Field value to display
 	*/
 	public function get_profile_value($field_value, $field_data);
+
+	/**
+	* Get Profile Value for display
+	*
+	* When displaying a contact field, we don't want to have links already parsed and more
+	*
+	* @param mixed	$field_value		Field value as stored in the database
+	* @param array	$field_data			Array with requirements of the field
+	* @return mixed		Field value to display
+	*/
+	public function get_profile_contact_value($field_value, $field_data);
 
 	/**
 	* Generate the input field for display
@@ -174,4 +192,14 @@ interface type_interface
 	* @return null
 	*/
 	public function display_options(&$template_vars, &$field_data);
+
+	/**
+	* Return templated value/field. Possible values for $mode are:
+	* change == user is able to set/enter profile values; preview == just show the value
+	*
+	* @param string	$mode			Mode for displaying the field (preview|change)
+	* @param array	$profile_row	Array with data for this field
+	* @return null
+	*/
+	public function process_field_row($mode, $profile_row);
 }

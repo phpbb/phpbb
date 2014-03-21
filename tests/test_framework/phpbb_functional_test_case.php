@@ -192,7 +192,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db_tools,
 			self::$config['table_prefix'] . 'migrations',
 			$phpbb_root_path,
-			$php_ext,
+			$phpEx,
 			self::$config['table_prefix'],
 			array(),
 			new \phpbb\db\migration\helper()
@@ -207,7 +207,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			new phpbb\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
-			$php_ext,
+			$phpEx,
 			$this->get_cache_driver()
 		);
 
@@ -473,6 +473,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $config;
 
 		$config = new \phpbb\config\config(array());
+
+		/*
+		* Add required config entries to the config array to prevent
+		* set_config() sending an INSERT query for already existing entries,
+		* resulting in a SQL error.
+		* This is because set_config() first sends an UPDATE query, then checks
+		* sql_affectedrows() which can be 0 (e.g. on MySQL) when the new
+		* data is already there.
+		*/
+		$config['newest_user_colour'] = '';
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
@@ -716,13 +726,25 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	 * assertContains for language strings
 	 *
-	 * @param string $needle Search string
-	 * @param string $haystack Search this
-	 * @param string $message Optional failure message
+	 * @param string $needle	Search string
+	 * @param string $haystack	Search this
+	 * @param string $message	Optional failure message
 	 */
 	public function assertContainsLang($needle, $haystack, $message = null)
 	{
 		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/**
+	* assertNotContains for language strings
+	*
+	* @param string $needle		Search string
+	* @param string $haystack	Search this
+	* @param string $message	Optional failure message
+	*/
+	public function assertNotContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertNotContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
 	}
 
 	/*
@@ -871,9 +893,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
 	* @param string $expected Lang var of expected message after posting
-	* @return array|null post_id, topic_id if message is 'POST_STORED'
+	* @return array|null post_id, topic_id if message is empty
 	*/
-	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
+	public function create_topic($forum_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
 		$posting_url = "posting.php?mode=post&f={$forum_id}&sid={$this->sid}";
 
@@ -897,9 +919,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $message
 	* @param array $additional_form_data Any additional form data to be sent in the request
 	* @param string $expected Lang var of expected message after posting
-	* @return array|null post_id, topic_id if message is 'POST_STORED'
+	* @return array|null post_id, topic_id if message is empty
 	*/
-	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = 'POST_STORED')
+	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
 		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
 
@@ -919,14 +941,31 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $posting_contains
 	* @param array $form_data
 	* @param string $expected Lang var of expected message after posting
-	* @return array|null post_id, topic_id if message is 'POST_STORED'
+	* @return array|null post_id, topic_id if message is empty
 	*/
-	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = 'POST_STORED')
+	protected function submit_post($posting_url, $posting_contains, $form_data, $expected = '')
 	{
 		$this->add_lang('posting');
 
 		$crawler = self::request('GET', $posting_url);
 		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
+
+		if (!empty($form_data['upload_files']))
+		{
+			for ($i = 0; $i < $form_data['upload_files']; $i++)
+			{
+				$file = array(
+					'tmp_name'	=> __DIR__ . '/../functional/fixtures/files/valid.jpg',
+					'name'		=> 'valid.jpg',
+					'type'		=> 'image/jpeg',
+					'size'		=> filesize(__DIR__ . '/../functional/fixtures/files/valid.jpg'),
+					'error'		=> UPLOAD_ERR_OK,
+				);
+
+				$crawler = self::$client->request('POST', $posting_url, array('add_file' => $this->lang('ADD_FILE')), array('fileupload' => $file));
+			}
+			unset($form_data['upload_files']);
+		}
 
 		$hidden_fields = array(
 			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
@@ -950,18 +989,64 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
-		$this->assertContainsLang($expected, $crawler->filter('html')->text());
 
-		if ($expected !== 'POST_STORED')
+		if ($expected !== '')
 		{
-			return;
+			$this->assertContainsLang($expected, $crawler->filter('html')->text());
+			return null;
 		}
-		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
 
 		return array(
 			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
 			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
 		);
+	}
+
+	/**
+	* Deletes a topic
+	*
+	* Be sure to login before creating
+	*
+	* @param int $topic_id
+	* @return null
+	*/
+	public function delete_topic($topic_id)
+	{
+		$crawler = self::request('GET', "viewtopic.php?t={$topic_id}&sid={$this->sid}");
+
+		$this->add_lang('posting');
+		$form = $crawler->selectButton('Go')->eq(1)->form();
+		$form['action']->select('delete_topic');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton('Yes')->form();
+		$form['delete_permanent'] = 1;
+		$crawler = self::submit($form);
+		$this->assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
+	}
+
+	/**
+	* Deletes a post
+	*
+	* Be sure to login before creating
+	*
+	* @param int $forum_id
+	* @param int $topic_id
+	* @return null
+	*/
+	public function delete_post($forum_id, $post_id)
+	{
+		$this->add_lang('posting');
+		$crawler = self::request('GET', "posting.php?mode=delete&f={$forum_id}&p={$post_id}&sid={$this->sid}");
+		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+
+		$form = $crawler->selectButton('Yes')->form();
+		$form['delete_permanent'] = 1;
+		$crawler = self::submit($form);
+		$this->assertContainsLang('POST_DELETED', $crawler->text());
 	}
 
 	/**

@@ -892,11 +892,15 @@ CREATE TABLE phpbb_profile_fields (
 	field_show_on_reg INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_reg >= 0),
 	field_show_on_pm INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_pm >= 0),
 	field_show_on_vt INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_vt >= 0),
+	field_show_on_ml INT2 DEFAULT '0' NOT NULL CHECK (field_show_on_ml >= 0),
 	field_show_profile INT2 DEFAULT '0' NOT NULL CHECK (field_show_profile >= 0),
 	field_hide INT2 DEFAULT '0' NOT NULL CHECK (field_hide >= 0),
 	field_no_view INT2 DEFAULT '0' NOT NULL CHECK (field_no_view >= 0),
 	field_active INT2 DEFAULT '0' NOT NULL CHECK (field_active >= 0),
 	field_order INT4 DEFAULT '0' NOT NULL CHECK (field_order >= 0),
+	field_is_contact INT2 DEFAULT '0' NOT NULL CHECK (field_is_contact >= 0),
+	field_contact_desc varchar(255) DEFAULT '' NOT NULL,
+	field_contact_url varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id)
 );
 
@@ -908,6 +912,14 @@ CREATE INDEX phpbb_profile_fields_fld_ordr ON phpbb_profile_fields (field_order)
 */
 CREATE TABLE phpbb_profile_fields_data (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	pf_phpbb_location varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_interests varchar(4000) DEFAULT '' NOT NULL,
+	pf_phpbb_occupation varchar(4000) DEFAULT '' NOT NULL,
+	pf_phpbb_icq varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_aol varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_wlm varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_yahoo varchar(255) DEFAULT '' NOT NULL,
+	pf_phpbb_website varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id)
 );
 
@@ -1275,6 +1287,8 @@ CREATE TABLE phpbb_users (
 	user_password varchar(255) DEFAULT '' NOT NULL,
 	user_passchg INT4 DEFAULT '0' NOT NULL CHECK (user_passchg >= 0),
 	user_pass_convert INT2 DEFAULT '0' NOT NULL CHECK (user_pass_convert >= 0),
+	user_actkey varchar(32) DEFAULT '' NOT NULL,
+	user_newpasswd varchar(255) DEFAULT '' NOT NULL,
 	user_email varchar(100) DEFAULT '' NOT NULL,
 	user_email_hash INT8 DEFAULT '0' NOT NULL,
 	user_birthday varchar(10) DEFAULT '' NOT NULL,
@@ -1323,17 +1337,7 @@ CREATE TABLE phpbb_users (
 	user_sig TEXT DEFAULT '' NOT NULL,
 	user_sig_bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
-	user_from varchar(100) DEFAULT '' NOT NULL,
-	user_icq varchar(15) DEFAULT '' NOT NULL,
-	user_aim varchar(255) DEFAULT '' NOT NULL,
-	user_yim varchar(255) DEFAULT '' NOT NULL,
-	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
-	user_website varchar(200) DEFAULT '' NOT NULL,
-	user_occ varchar(4000) DEFAULT '' NOT NULL,
-	user_interests varchar(4000) DEFAULT '' NOT NULL,
-	user_actkey varchar(32) DEFAULT '' NOT NULL,
-	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
 	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
 	user_reminded INT2 DEFAULT '0' NOT NULL,

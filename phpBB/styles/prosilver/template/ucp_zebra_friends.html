@@ -11,6 +11,7 @@
 
 	<fieldset class="fields2">
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- EVENT ucp_friend_list_before -->
 	<dl>
 		<dt><label <!-- IF S_USERNAME_OPTIONS -->for="usernames"<!-- ENDIF -->>{L_YOUR_FRIENDS}{L_COLON}</label><br /><span>{L_YOUR_FRIENDS_EXPLAIN}</span></dt>
 		<dd>
@@ -21,6 +22,7 @@
 			<!-- ENDIF -->
 		</dd>
 	</dl>
+	<!-- EVENT ucp_friend_list_after -->
 	<dl>
 		<dt><label for="add">{L_ADD_FRIENDS}{L_COLON}</label><br /><span>{L_ADD_FRIENDS_EXPLAIN}</span></dt>
 		<dd><textarea name="add" id="add" rows="3" cols="30" class="inputbox">{USERNAMES}</textarea></dd>

@@ -53,7 +53,7 @@ class helper
 						$steps[] = array(
 							'dbtools.perform_schema_changes', array(array(
 									$change_type	=> array(
-									$value,
+										(!is_int($key)) ? $key : 0	=> $value,
 								),
 							)),
 						);

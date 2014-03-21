@@ -182,14 +182,9 @@ $lang = array_merge($lang, array(
 
 	'IMG_ICON_BACK_TOP'		=> 'Top',
 
-	'IMG_ICON_CONTACT_AIM'		=> 'AIM',
 	'IMG_ICON_CONTACT_EMAIL'	=> 'Send email',
-	'IMG_ICON_CONTACT_ICQ'		=> 'ICQ',
 	'IMG_ICON_CONTACT_JABBER'	=> 'Jabber',
-	'IMG_ICON_CONTACT_MSNM'		=> 'WLM',
 	'IMG_ICON_CONTACT_PM'		=> 'Send message',
-	'IMG_ICON_CONTACT_YAHOO'	=> 'YIM',
-	'IMG_ICON_CONTACT_WWW'		=> 'Website',
 
 	'IMG_ICON_POST_DELETE'			=> 'Delete post',
 	'IMG_ICON_POST_EDIT'			=> 'Edit post',

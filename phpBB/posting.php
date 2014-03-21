@@ -42,7 +42,7 @@ $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($
 $mode		= request_var('mode', '');
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
-if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_get('m_delete', $forum_id)))
+if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_gets('f_delete', 'm_delete', $forum_id)))
 {
 	$mode = 'soft_delete';
 }
@@ -1238,17 +1238,11 @@ if ($submit || $preview || $refresh)
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
 				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang['POST_APPROVAL_NOTIFY']);
-			}
-			else
-			{
-				meta_refresh(3, $redirect_url);
-
-				$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
-				$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
+				$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
+				trigger_error($message);
 			}
 
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
-			trigger_error($message);
+			redirect($redirect_url);
 		}
 	}
 }

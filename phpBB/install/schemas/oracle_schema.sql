@@ -1274,11 +1274,15 @@ CREATE TABLE phpbb_profile_fields (
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
 	field_show_on_pm number(1) DEFAULT '0' NOT NULL,
 	field_show_on_vt number(1) DEFAULT '0' NOT NULL,
+	field_show_on_ml number(1) DEFAULT '0' NOT NULL,
 	field_show_profile number(1) DEFAULT '0' NOT NULL,
 	field_hide number(1) DEFAULT '0' NOT NULL,
 	field_no_view number(1) DEFAULT '0' NOT NULL,
 	field_active number(1) DEFAULT '0' NOT NULL,
 	field_order number(8) DEFAULT '0' NOT NULL,
+	field_is_contact number(1) DEFAULT '0' NOT NULL,
+	field_contact_desc varchar2(255) DEFAULT '' ,
+	field_contact_url varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields PRIMARY KEY (field_id)
 )
 /
@@ -1309,6 +1313,14 @@ END;
 */
 CREATE TABLE phpbb_profile_fields_data (
 	user_id number(8) DEFAULT '0' NOT NULL,
+	pf_phpbb_location varchar2(255) DEFAULT '' ,
+	pf_phpbb_interests clob DEFAULT '' ,
+	pf_phpbb_occupation clob DEFAULT '' ,
+	pf_phpbb_icq varchar2(255) DEFAULT '' ,
+	pf_phpbb_aol varchar2(255) DEFAULT '' ,
+	pf_phpbb_wlm varchar2(255) DEFAULT '' ,
+	pf_phpbb_yahoo varchar2(255) DEFAULT '' ,
+	pf_phpbb_website varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_profile_fields_data PRIMARY KEY (user_id)
 )
 /
@@ -1845,6 +1857,8 @@ CREATE TABLE phpbb_users (
 	user_password varchar2(765) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
 	user_pass_convert number(1) DEFAULT '0' NOT NULL,
+	user_actkey varchar2(32) DEFAULT '' ,
+	user_newpasswd varchar2(765) DEFAULT '' ,
 	user_email varchar2(300) DEFAULT '' ,
 	user_email_hash number(20) DEFAULT '0' NOT NULL,
 	user_birthday varchar2(10) DEFAULT '' ,
@@ -1893,17 +1907,7 @@ CREATE TABLE phpbb_users (
 	user_sig clob DEFAULT '' ,
 	user_sig_bbcode_uid varchar2(8) DEFAULT '' ,
 	user_sig_bbcode_bitfield varchar2(255) DEFAULT '' ,
-	user_from varchar2(300) DEFAULT '' ,
-	user_icq varchar2(15) DEFAULT '' ,
-	user_aim varchar2(765) DEFAULT '' ,
-	user_yim varchar2(765) DEFAULT '' ,
-	user_msnm varchar2(765) DEFAULT '' ,
 	user_jabber varchar2(765) DEFAULT '' ,
-	user_website varchar2(600) DEFAULT '' ,
-	user_occ clob DEFAULT '' ,
-	user_interests clob DEFAULT '' ,
-	user_actkey varchar2(32) DEFAULT '' ,
-	user_newpasswd varchar2(120) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
 	user_new number(1) DEFAULT '1' NOT NULL,
 	user_reminded number(4) DEFAULT '0' NOT NULL,

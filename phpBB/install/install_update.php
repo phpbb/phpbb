@@ -19,16 +19,7 @@ if (!defined('IN_INSTALL'))
 if (!empty($setmodules))
 {
 	// If phpBB is not installed we do not include this module
-	if (@file_exists($phpbb_root_path . 'config.' . $phpEx) && !@file_exists($phpbb_root_path . 'cache/install_lock'))
-	{
-		include_once($phpbb_root_path . 'config.' . $phpEx);
-
-		if (!defined('PHPBB_INSTALLED'))
-		{
-			return;
-		}
-	}
-	else
+	if (!phpbb_check_installation_exists($phpbb_root_path, $phpEx) || file_exists($phpbb_root_path . 'cache/install_lock'))
 	{
 		return;
 	}
@@ -154,14 +145,23 @@ class install_update extends module
 		));
 
 		// Get current and latest version
-		if (($latest_version = $cache->get('_version_info')) === false)
+		$version_helper = $phpbb_container->get('version_helper');
+		try
 		{
-			$this->latest_version = $this->get_file('version_info');
-			$cache->put('_version_info', $this->latest_version);
+			$this->latest_version = $version_helper->get_latest_on_current_branch(true);
 		}
-		else
+		catch (\RuntimeException $e)
 		{
-			$this->latest_version = $latest_version;
+			$this->latest_version = false;
+
+			$update_info = array();
+			include($phpbb_root_path . 'install/update/index.' . $phpEx);
+			$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
+
+			if ($info !== false)
+			{
+				$this->latest_version = (!empty($info['version']['to'])) ? trim($info['version']['to']) : false;
+			}
 		}
 
 		// For the current version we trick a bit. ;)
@@ -1606,37 +1606,6 @@ class install_update extends module
 
 		switch ($mode)
 		{
-			case 'version_info':
-				global $phpbb_root_path, $phpEx;
-
-				$info = get_remote_file('version.phpbb.com', '/phpbb',
-						((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
-
-				if ($info !== false)
-				{
-					$info = explode("\n", $info);
-					$info = trim($info[0]);
-				}
-
-				if ($this->test_update !== false)
-				{
-					$info = $this->test_update;
-				}
-
-				// If info is false the fsockopen function may not be working. Instead get the latest version from our update file (and pray it is up-to-date)
-				if ($info === false)
-				{
-					$update_info = array();
-					include($phpbb_root_path . 'install/update/index.' . $phpEx);
-					$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
-
-					if ($info !== false)
-					{
-						$info = (!empty($info['version']['to'])) ? trim($info['version']['to']) : false;
-					}
-				}
-			break;
-
 			case 'update_info':
 				global $phpbb_root_path, $phpEx;
 

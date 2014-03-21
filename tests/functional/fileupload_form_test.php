@@ -19,7 +19,6 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		parent::setUp();
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
-		$this->login();
 	}
 
 	public function tearDown()
@@ -63,30 +62,39 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function test_empty_file()
 	{
-		$this->markTestIncomplete('Test fails intermittently.');
+		$this->login();
+
 		$crawler = $this->upload_file('empty.png', 'image/png');
-		$this->assertEquals($this->lang('ATTACHED_IMAGE_NOT_IMAGE'), $this->assert_filter($crawler, 'div#message p')->text());
+		$this->assertEquals($this->lang('EMPTY_FILEUPLOAD'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_invalid_extension()
 	{
+		$this->login();
+
 		$crawler = $this->upload_file('illegal-extension.bif', 'application/octet-stream');
 		$this->assertEquals($this->lang('DISALLOWED_EXTENSION', 'bif'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_too_large()
 	{
-		$this->markTestIncomplete('Functional tests use an admin account which ignores maximum upload size.');
+		$this->create_user('fileupload');
+		$this->login('fileupload');
+
 		$crawler = $this->upload_file('too-large.png', 'image/png');
 		$this->assertEquals($this->lang('WRONG_FILESIZE', '256', 'KiB'), $crawler->filter('p.error')->text());
 	}
 
 	public function test_valid_file()
 	{
-		$this->markTestIncomplete('Test fails intermittently.');
+		$this->login();
+
 		$crawler = $this->upload_file('valid.jpg', 'image/jpeg');
-		// ensure there was no error message rendered
+
+		// Ensure there was no error message rendered
 		$this->assertNotContains('<h2>' . $this->lang('INFORMATION') . '</h2>', $this->get_content());
-		$this->assertContains($this->lang('POSTED_ATTACHMENTS'), $crawler->filter('#postform h3')->eq(1)->text());
+
+		// Also the file name should be in the first row of the files table
+		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name')->eq(1)->text());
 	}
 }

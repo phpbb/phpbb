@@ -43,6 +43,10 @@ body {
 	margin: 10px 15px;
 }
 
+code, samp {
+	font-size: 1.2em;
+}
+
 img {
 	border: 0;
 }
@@ -571,12 +575,6 @@ li {
 	padding: 3px 8px 3px 3px;
 }
 
-#menu li span, #menu .header {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 #menu li a:hover, #menu li a:hover span {
 	text-decoration: none;
 	background-color: #FFFFFF;
@@ -1045,6 +1043,14 @@ table.styles td.users, table td.mark {
 	table.responsive.styles td:first-child > dfn, table.responsive td.actions > dfn {
 		display: none !important;
 	}
+
+	.horizontal-palette td:nth-child(2n), .vertical-palette tr:nth-child(2n) {
+		display: none;
+	}
+
+	.colour-palette a {
+		display: inline-block !important;
+	}
 }
 
 /* General form styles
@@ -1353,6 +1359,10 @@ fieldset dt {
 	border-left: 1px solid #CCCCCC;
 }
 
+fieldset #color_palette_placeholder {
+	padding-top: 0;
+}
+
 fieldset dd {
 	margin: 0 0 0 45%;
 	padding: 0 0 0 5px;
@@ -1417,6 +1427,10 @@ input:focus, textarea:focus {
 		margin-right: 0;
 		float: none;
 		width: auto;
+	}
+
+	fieldset .responsive-columns dt {
+		float: left;
 	}
 
 	.ltr fieldset dd {
@@ -1556,7 +1570,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	top: 150px;
 	left: 0;
 	right: 0;
-	max-width: 600px;
+	width: 620px;
 	margin: 0 auto;
 	z-index: 50;
 	padding: 25px;
@@ -1626,7 +1640,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	.phpbb_alert {
-		max-width: none;
+		width: auto;
 		margin: 0 25px;
 	}
 }
@@ -1860,7 +1874,6 @@ li.pagination ul {
 }*/
 
 .clearfix, .row, #content, fieldset dl, #page-body {
-	height: 1%;
 	overflow: hidden;
 }
 

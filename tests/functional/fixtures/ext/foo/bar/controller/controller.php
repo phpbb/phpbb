@@ -10,13 +10,15 @@ class controller
 	protected $helper;
 	protected $path_helper;
 	protected $config;
+	protected $user;
 
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\path_helper $path_helper, \phpbb\template\template $template, \phpbb\config\config $config, $root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\path_helper $path_helper, \phpbb\template\template $template, \phpbb\config\config $config, \phpbb\user $user, $root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->helper = $helper;
 		$this->path_helper = $path_helper;
 		$this->config = $config;
+		$this->user = $user;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -43,6 +45,18 @@ class controller
 		throw new \phpbb\controller\exception('Exception thrown from foo/exception route');
 	}
 
+	public function login_redirect()
+	{
+		if (!$this->user->data['is_registered'])
+		{
+			login_box();
+		}
+
+		$this->template->assign_var('A_VARIABLE', 'I am a variable');
+
+		return $this->helper->render('foo_bar_body.html');
+	}
+
 	public function redirect()
 	{
 		$url_root = generate_board_url();
@@ -63,39 +77,18 @@ class controller
 				'tests/index.php',
 			),
 			array(
-				$this->helper->url('index'),
+				$this->helper->route('foo_index_controller'),
 				$rewrite_prefix . 'index',
 			),
 			array(
-				$this->helper->url('tests/index'),
+				$this->helper->route('foo_tests_index_controller'),
 				$rewrite_prefix . 'tests/index',
 			),
+			/**
+			* Symfony does not allow /../ in routes
 			array(
-				$this->helper->url('tests/../index'),
+				$this->helper->route('foo_tests_dotdot_index_controller'),
 				$rewrite_prefix . 'index',
-			),
-			/*
-			// helper URLs starting with  ../ are prone to failure.
-			// Do not test them right now.
-			array(
-				$this->helper->url('../index'),
-				'../index',
-			),
-			array(
-				$this->helper->url('../../index'),
-				'../index',
-			),
-			array(
-				$this->helper->url('../tests/index'),
-				$rewrite_prefix . '../tests/index',
-			),
-			array(
-				$this->helper->url('../tests/../index'),
-				'../index',
-			),
-			array(
-				$this->helper->url('../../tests/index'),
-				'../tests/index',
 			),
 			*/
 		);

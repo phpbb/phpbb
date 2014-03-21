@@ -6,15 +6,11 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<column>user_email_hash</column>
 		<row>
 			<value>1</value>
 			<value>admin</value>
 			<value>admin</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 			<value>143317126117</value>

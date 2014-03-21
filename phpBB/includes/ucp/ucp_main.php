@@ -189,14 +189,11 @@ class ucp_main
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '',
 					'JOINED'			=> $user->format_date($user->data['user_regdate']),
-					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
+					'LAST_ACTIVE'			=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
 					'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
 					'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
-
-					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
-					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
 //					'S_GROUP_OPTIONS'	=> $group_options,
 
@@ -674,7 +671,6 @@ class ucp_main
 			$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
 
 			$template->assign_vars(array(
-				'PAGE_NUMBER'	=> $pagination->on_page($this->u_action, $topics_count, $config['topics_per_page'], $start),
 				'TOTAL_TOPICS'	=> $user->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
 			));
 		}

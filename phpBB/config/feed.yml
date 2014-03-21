@@ -5,6 +5,7 @@ services:
             - @config
             - @user
             - %core.root_path%
+            - %core.php_ext%
 
     feed.factory:
         class: phpbb\feed\factory

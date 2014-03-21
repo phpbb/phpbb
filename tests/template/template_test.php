@@ -91,6 +91,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'03!false',
 			),
 			array(
+				'if.html',
+				array('VALUE_TEST' => 'value'),
+				array(),
+				array(),
+				'03!falsevalue',
+			),
+			array(
 				'loop.html',
 				array(),
 				array(),
@@ -305,6 +312,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('test_loop' => array(array()), 'empty_loop' => array()),
 				array(),
 				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
+			),
+			array(
+				'loop_include.html',
+				array(),
+				array('test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1'))),
+				array(),
+				"barbarbar1bar1",
 			),
 			/* Does not pass with the current implementation.
 			array(
@@ -560,6 +574,40 @@ EOT
 
 		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
+	}
+
+	public function assign_block_vars_array_data()
+	{
+		return array(
+			array(
+				array(
+					'outer' => array(
+						array('VARIABLE' => 'Test assigning block vars array loop 0:'),
+						array('VARIABLE' => 'Test assigning block vars array loop 1:'),
+					),
+					'outer.middle' => array(
+						array('VARIABLE' => '1st iteration',),
+						array('VARIABLE' => '2nd iteration',),
+						array('VARIABLE' => '3rd iteration',),
+					),
+				)
+			)
+		);
+	}
+
+	/**
+	* @dataProvider assign_block_vars_array_data
+	*/
+	public function test_assign_block_vars_array($block_data)
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		foreach ($block_data as $blockname => $block_vars_array)
+		{
+			$this->template->assign_block_vars_array($blockname, $block_vars_array);
+		}
+
+		$this->assertEquals("outer - 0 - Test assigning block vars array loop 0:outer - 1 - Test assigning block vars array loop 1:middle - 0 - 1st iterationmiddle - 1 - 2nd iterationmiddle - 2 - 3rd iteration", $this->display('test'), 'Ensuring assigning block vars array to template is working correctly');
 	}
 
 	/**

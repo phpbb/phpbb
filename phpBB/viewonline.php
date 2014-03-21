@@ -26,7 +26,7 @@ $session_id	= request_var('s', '');
 $start		= request_var('start', 0);
 $sort_key	= request_var('sk', 'b');
 $sort_dir	= request_var('sd', 'd');
-$show_guests= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
+$show_guests	= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
 
 // Can this user view profiles/memberlist?
 if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
@@ -430,7 +430,6 @@ $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> $user->lang('REG_USERS_ONLINE', (int) $logged_visible_online, $user->lang('HIDDEN_USERS_ONLINE', (int) $logged_hidden_online)),
 	'TOTAL_GUEST_USERS_ONLINE'		=> $user->lang('GUEST_USERS_ONLINE', (int) $guest_counter),
 	'LEGEND'						=> $legend,
-	'PAGE_NUMBER'					=> $pagination->on_page($base_url, $counter, $config['topics_per_page'], $start),
 
 	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),

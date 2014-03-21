@@ -41,4 +41,17 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 
 	}
 
+	public function tearDown()
+	{
+		$this->login();
+		$this->admin_login();
+
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=security');
+
+		// Enable allow_password_reset again after test
+		$form = $crawler->selectButton('Submit')->form(array(
+			'config[allow_password_reset]'	=> 1,
+		));
+		$crawler = self::submit($form);
+	}
 }

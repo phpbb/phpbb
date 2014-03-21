@@ -61,7 +61,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_CAT_CUSTOMISE'			=> 'Customise',
 	'ACP_CAT_DATABASE'			=> 'Database',
-	'ACP_CAT_DOT_MODS'			=> '.MODs',
+	'ACP_CAT_DOT_MODS'			=> 'Extensions',
 	'ACP_CAT_FORUMS'			=> 'Forums',
 	'ACP_CAT_GENERAL'			=> 'General',
 	'ACP_CAT_MAINTENANCE'		=> 'Maintenance',
@@ -83,7 +83,7 @@ $lang = array_merge($lang, array(
 	'ACP_EMAIL_SETTINGS'		=> 'Email settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage attachment extension groups',
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
-	'ACP_EXTENSIONS'			=> 'Extensions',
+	'ACP_EXTENSIONS'			=> 'Manage extensions',
 
 
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
@@ -288,7 +288,6 @@ $lang = array_merge($lang, array(
 	'RESYNC'							=> 'Resynchronise',
 	'RESYNC_FILES_STATS'				=> 'Resynchronise files statistics',
 	'RESYNC_FILES_STATS_EXPLAIN'		=> 'Recalculates the total number and size of files attached to posts and private messages.',
-	'RETURN_TO'							=> 'Return to…',
 
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',

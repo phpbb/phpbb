@@ -278,7 +278,7 @@ a:active	{ color: #368AD2; }
 }
 
 /* Notification mark read link */
-#notification_list a.mark_read {
+.dropdown-extended a.mark_read {
 	background-color: #FFFFFF;
 }
 
@@ -744,11 +744,16 @@ a.sendemail {
 
 /* Profile & navigation icons */
 .email-icon, .email-icon a		{ background-image: url("./images/icon_contact_email.gif"); }
+.phpbb_aol-icon, .phpbb_aol-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
 .aim-icon, .aim-icon a			{ background-image: url("./images/icon_contact_aim.gif"); }
 .yahoo-icon, .yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
+.phpbb_yahoo-icon, .phpbb_yahoo-icon a		{ background-image: url("./images/icon_contact_yahoo.gif"); }
 .web-icon, .web-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
+.phpbb_website-icon, .phpbb_website-icon a			{ background-image: url("./images/icon_contact_www.gif"); }
 .msnm-icon, .msnm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
+.phpbb_wlm-icon, .phpbb_wlm-icon a			{ background-image: url("./images/icon_contact_msnm.gif"); }
 .icq-icon, .icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
+.phpbb_icq-icon, .phpbb_icq-icon a			{ background-image: url("./images/icon_contact_icq.gif"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("./images/icon_contact_jabber.gif"); }
 .pm-icon, .pm-icon a				{ background-image: url("./en/icon_contact_pm.gif"); }
 .quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
@@ -1151,21 +1156,27 @@ input.disabled {
 	background-image: url("./images/loading.gif");
 }
 
-#notification_list ul li {
+.dropdown-extended ul li {
 	border-bottom-color: #B9B9B9;
 }
 
-#notification_list ul li:hover {
+.dropdown-extended ul li:hover {
 	background-color: #CFE1F6;
 	color: #000000;
 }
 
-#notification_list .header, .notification_list .footer {
+.dropdown-extended .header, .dropdown-extended .footer {
 	border-color: #B9B9B9;
 	color: #000000;
 }
 
-#notification_list .header {
+.dropdown-extended .footer {
+	padding: 5px 0;
+	border-top-style: solid;
+	border-top-width: 1px;
+}
+
+.dropdown-extended .header {
 	background: #F1F8FF;
 	background: -moz-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F1F8FF), color-stop(100%, #CADCEB));
@@ -1183,7 +1194,7 @@ input.disabled {
 	border-color: #FFF transparent;
 }
 
-#notification_list .pointer-inner, #minitabs .pointer-inner {
+.dropdown-extended .pointer-inner, #minitabs .pointer-inner {
 	border-color: #F1F8FF transparent;
 }
 

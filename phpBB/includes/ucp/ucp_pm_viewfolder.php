@@ -458,7 +458,6 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
 
 	$template->assign_vars(array(
-		'PAGE_NUMBER'		=> $pagination->on_page($base_url, $pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> $user->lang('VIEW_PM_MESSAGES', (int) $pm_count),
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'POST_PM_LOCKED') : $user->img('button_pm_new', 'POST_NEW_PM'),

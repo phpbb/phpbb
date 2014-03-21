@@ -2226,8 +2226,8 @@ class colour_manager
 			return $this->random_colour($colour, $mode);
 		}
 
-		$rgb		= colour_manager::model_convert($colour, $mode, 'rgb');
-		$store		= ($this->mode == 'rgb') ? $rgb : colour_manager::model_convert($colour, $mode, $this->mode);
+		$rgb		= $this->model_convert($colour, $mode, 'rgb');
+		$store		= ($this->mode == 'rgb') ? $rgb : $this->model_convert($colour, $mode, $this->mode);
 		$resource	= imagecolorallocate($this->img, $rgb[0], $rgb[1], $rgb[2]);
 		$this->colours[$resource] = $store;
 
@@ -2345,7 +2345,7 @@ class colour_manager
 			$resource = $pre;
 		}
 
-		$colour = colour_manager::model_convert($this->colours[$resource], $this->mode, $mode);
+		$colour = $this->model_convert($this->colours[$resource], $this->mode, $mode);
 		$results = ($include_original) ? array($resource) : array();
 		$colour2 = $colour3 = $colour4 = $colour;
 		$colour2[0] += 150;
@@ -2380,7 +2380,7 @@ class colour_manager
 			$resource = $pre;
 		}
 
-		$colour = colour_manager::model_convert($this->colours[$resource], $this->mode, $mode);
+		$colour = $this->model_convert($this->colours[$resource], $this->mode, $mode);
 
 		$results = array();
 		if ($include_original)
@@ -2418,11 +2418,11 @@ class colour_manager
 				switch ($from_model)
 				{
 					case 'ahsv':
-						return colour_manager::ah2h($colour);
+						return $this->ah2h($colour);
 					break;
 
 					case 'rgb':
-						return colour_manager::rgb2hsv($colour);
+						return $this->rgb2hsv($colour);
 					break;
 				}
 			break;
@@ -2432,11 +2432,11 @@ class colour_manager
 				switch ($from_model)
 				{
 					case 'hsv':
-						return colour_manager::h2ah($colour);
+						return $this->h2ah($colour);
 					break;
 
 					case 'rgb':
-						return colour_manager::h2ah(colour_manager::rgb2hsv($colour));
+						return $this->h2ah($this->rgb2hsv($colour));
 					break;
 				}
 			break;
@@ -2445,11 +2445,11 @@ class colour_manager
 				switch ($from_model)
 				{
 					case 'hsv':
-						return colour_manager::hsv2rgb($colour);
+						return $this->hsv2rgb($colour);
 					break;
 
 					case 'ahsv':
-						return colour_manager::hsv2rgb(colour_manager::ah2h($colour));
+						return $this->hsv2rgb($this->ah2h($colour));
 					break;
 				}
 			break;
@@ -2462,7 +2462,7 @@ class colour_manager
 	*/
 	function hsv2rgb($hsv)
 	{
-		colour_manager::normalize_hue($hsv[0]);
+		$this->normalize_hue($hsv[0]);
 
 		$h = $hsv[0];
 		$s = min(1, max(0, $hsv[1] / 100));
@@ -2554,7 +2554,7 @@ class colour_manager
 				break;
 			}
 		}
-		colour_manager::normalize_hue($h);
+		$this->normalize_hue($h);
 
 		return array($h, $s * 100, $v * 100);
 	}
@@ -2578,10 +2578,10 @@ class colour_manager
 	{
 		if (is_array($ahue))
 		{
-			$ahue[0] = colour_manager::ah2h($ahue[0]);
+			$ahue[0] = $this->ah2h($ahue[0]);
 			return $ahue;
 		}
-		colour_manager::normalize_hue($ahue);
+		$this->normalize_hue($ahue);
 
 		// blue through red is already ok
 		if ($ahue >= 240)
@@ -2612,10 +2612,10 @@ class colour_manager
 	{
 		if (is_array($hue))
 		{
-			$hue[0] = colour_manager::h2ah($hue[0]);
+			$hue[0] = $this->h2ah($hue[0]);
 			return $hue;
 		}
-		colour_manager::normalize_hue($hue);
+		$this->normalize_hue($hue);
 
 		// blue through red is already ok
 		if ($hue >= 240)

@@ -61,7 +61,7 @@ class type_int extends type_base
 			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" size="5" value="' . $field_data['field_length'] . '" />'),
 			1 => array('TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" size="5" value="' . $field_data['field_minlen'] . '" />'),
 			2 => array('TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" size="5" value="' . $field_data['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'),
+			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="number" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'),
 		);
 
 		return $options;
@@ -126,11 +126,11 @@ class type_int extends type_base
 
 		if ($field_value < $field_data['field_minlen'])
 		{
-			return $this->user->lang('FIELD_TOO_SMALL', (int) $row['field_minlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_SMALL', (int) $field_data['field_minlen'], $this->get_field_name($field_data['lang_name']));
 		}
 		else if ($field_value > $field_data['field_maxlen'])
 		{
-			return $this->user->lang('FIELD_TOO_LARGE', (int) $row['field_maxlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_LARGE', (int) $field_data['field_maxlen'], $this->get_field_name($field_data['lang_name']));
 		}
 
 		return false;
@@ -141,7 +141,7 @@ class type_int extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
-		if ($field_value === '' && !$field_data['field_show_novalue'])
+		if (($field_value === '' || $field_value === null) && !$field_data['field_show_novalue'])
 		{
 			return null;
 		}

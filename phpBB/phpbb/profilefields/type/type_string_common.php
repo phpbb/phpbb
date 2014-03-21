@@ -11,15 +11,21 @@ namespace phpbb\profilefields\type;
 
 abstract class type_string_common extends type_base
 {
+	protected $validation_options = array(
+		'CHARS_ANY'			=> '.*',
+		'NUMBERS_ONLY'		=> '[0-9]+',
+		'ALPHA_ONLY'		=> '[\w]+',
+		'ALPHA_UNDERSCORE'	=> '[\w_]+',
+		'ALPHA_SPACERS'		=> '[\w_\+\. \-\[\]]+',
+	);
+
 	/**
 	* Return possible validation options
 	*/
-	function validate_options($field_data)
+	public function validate_options($field_data)
 	{
-		$validate_ary = array('CHARS_ANY' => '.*', 'NUMBERS_ONLY' => '[0-9]+', 'ALPHA_ONLY' => '[\w]+', 'ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
-
 		$validate_options = '';
-		foreach ($validate_ary as $lang => $value)
+		foreach ($this->validation_options as $lang => $value)
 		{
 			$selected = ($field_data['field_validation'] == $value) ? ' selected="selected"' : '';
 			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $this->user->lang[$lang] . '</option>';
@@ -52,16 +58,16 @@ abstract class type_string_common extends type_base
 		}
 		else if (trim($field_value) === '' && $field_data['field_required'])
 		{
-			return $this->user->lang('FIELD_REQUIRED', $field_data['lang_name']);
+			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
 		}
 
 		if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])
 		{
-			return $this->user->lang('FIELD_TOO_SHORT', (int) $row['field_minlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_SHORT', (int) $field_data['field_minlen'], $this->get_field_name($field_data['lang_name']));
 		}
-		else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
+		else if ($field_data['field_maxlen'] && utf8_strlen(html_entity_decode($field_value)) > $field_data['field_maxlen'])
 		{
-			return $this->user->lang('FIELD_TOO_LONG', (int) $row['field_maxlen'], $row['lang_name']);
+			return $this->user->lang('FIELD_TOO_LONG', (int) $field_data['field_maxlen'], $this->get_field_name($field_data['lang_name']));
 		}
 
 		if (!empty($field_data['field_validation']) && $field_data['field_validation'] != '.*')
@@ -69,17 +75,12 @@ abstract class type_string_common extends type_base
 			$field_validate = ($field_type != 'text') ? $field_value : bbcode_nl2br($field_value);
 			if (!preg_match('#^' . str_replace('\\\\', '\\', $field_data['field_validation']) . '$#i', $field_validate))
 			{
-				switch ($row['field_validation'])
+				$validation = array_search($field_data['field_validation'], $this->validation_options);
+				if ($validation)
 				{
-					case '[0-9]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_NUMBERS_ONLY', $row['lang_name']);
-
-					case '[\w]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_ALPHA_ONLY', $row['lang_name']);
-
-					case '[\w_\+\. \-\[\]]+':
-						return $this->user->lang('FIELD_INVALID_CHARS_SPACERS_ONLY', $row['lang_name']);
+					return $this->user->lang('FIELD_INVALID_CHARS_' . $validation, $this->get_field_name($field_data['lang_name']));
 				}
+				return $this->user->lang('FIELD_INVALID_CHARS_INVALID', $this->get_field_name($field_data['lang_name']));
 			}
 		}
 
@@ -99,6 +100,19 @@ abstract class type_string_common extends type_base
 		$field_value = make_clickable($field_value);
 		$field_value = censor_text($field_value);
 		$field_value = bbcode_nl2br($field_value);
+		return $field_value;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_profile_contact_value($field_value, $field_data)
+	{
+		if (!$field_value && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+
 		return $field_value;
 	}
 

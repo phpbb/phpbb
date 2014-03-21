@@ -70,7 +70,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		// Details should be html escaped
 		// However, text() only returns the displayed text, so HTML Special Chars are decoded.
 		// So we test this directly on the content of the response.
-		$this->assertContains('<p id="require_php">&gt;=5.3</p>', $this->get_content());
+		$this->assertContains('<span id="require_php">&gt;=5.3</span>', $this->get_content());
 	}
 
 	public function test_extensions_details_notexists()

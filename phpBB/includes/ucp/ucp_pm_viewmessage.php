@@ -63,7 +63,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 		$cp = $phpbb_container->get('profilefields.manager');
 
-		$profile_fields = $cp->generate_profile_fields_template('grab', $author_id);
+		$profile_fields = $cp->grab_profile_fields_data($author_id);
 	}
 
 	// Assign TO/BCC Addresses to template
@@ -173,7 +173,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		if (isset($profile_fields[$author_id]))
 		{
-			$cp_row = $cp->generate_profile_fields_template('show', false, $profile_fields[$author_id]);
+			$cp_row = $cp->generate_profile_fields_template_data($profile_fields[$author_id]);
 		}
 	}
 
@@ -188,7 +188,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (int) $user_info['user_posts'],
-		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
@@ -210,11 +209,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'MESSAGE_ID'		=> $message_row['msg_id'],
 
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
-		'U_WWW'			=> (!empty($user_info['user_website'])) ? $user_info['user_website'] : '',
-		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people/' . urlencode($user_info['user_icq']) . '/' : '',
-		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
-		'U_YIM'			=> ($user_info['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($user_info['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
 		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
 
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
@@ -275,7 +269,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
 	{
-		$methods = phpbb_gen_download_links('post_msg_id', $msg_id, $phpbb_root_path, $phpEx);
+		$methods = phpbb_gen_download_links('msg_id', $msg_id, $phpbb_root_path, $phpEx);
 		foreach ($methods as $method)
 		{
 			$template->assign_block_vars('dl_method', $method);

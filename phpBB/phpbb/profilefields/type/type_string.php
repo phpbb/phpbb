@@ -60,7 +60,7 @@ class type_string extends type_string_common
 		$options = array(
 			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" name="field_length" size="5" value="' . $field_data['field_length'] . '" />'),
 			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" name="field_minlen" size="5" value="' . $field_data['field_minlen'] . '" />'),
-			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" size="5" value="' . $field_data['field_maxlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" name="field_maxlen" size="5" value="' . $field_data['field_maxlen'] . '" />'),
 			3 => array('TITLE' => $this->user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options($field_data) . '</select>'),
 		);
 
@@ -109,7 +109,7 @@ class type_string extends type_string_common
 		$default_value = $profile_row['lang_default_value'];
 		$profile_row['field_value'] = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value, true) : ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $default_value : $this->user->profile_fields[$field_ident]);
 
-		$this->template->assign_block_vars('string', array_change_key_case($profile_row, CASE_UPPER));
+		$this->template->assign_block_vars($this->get_name_short(), array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**

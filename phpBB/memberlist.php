@@ -305,20 +305,6 @@ switch ($mode)
 		$presence_img = '';
 		switch ($action)
 		{
-			case 'aim':
-				$lang = 'AIM';
-				$sql_field = 'user_aim';
-				$s_select = 'S_SEND_AIM';
-				$s_action = '';
-			break;
-
-			case 'msnm':
-				$lang = 'MSNM';
-				$sql_field = 'user_msnm';
-				$s_select = 'S_SEND_MSNM';
-				$s_action = '';
-			break;
-
 			case 'jabber':
 				$lang = 'JABBER';
 				$sql_field = 'user_jabber';
@@ -401,9 +387,6 @@ switch ($mode)
 		$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
 			'A_IM_CONTACT'	=> addslashes($row[$sql_field]),
-
-			'U_AIM_CONTACT'	=> ($action == 'aim') ? 'aim:addbuddy?screenname=' . urlencode($row[$sql_field]) : '',
-			'U_AIM_MESSAGE'	=> ($action == 'aim') ? 'aim:goim?screenname=' . urlencode($row[$sql_field]) . '&amp;message=' . urlencode($config['sitename']) : '',
 
 			'USERNAME'		=> $row['username'],
 			'CONTACT_NAME'	=> $row[$sql_field],
@@ -618,8 +601,8 @@ switch ($mode)
 		if ($config['load_cpf_viewprofile'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
-			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
+			$profile_fields = $cp->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
 		}
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
@@ -644,19 +627,12 @@ switch ($mode)
 			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
 			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
-			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
-			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
 			'SIGNATURE'		=> $member['user_sig'],
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
 			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
-			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
-			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
-			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
@@ -1000,8 +976,8 @@ switch ($mode)
 		$pagination = $phpbb_container->get('pagination');
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
-		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'k' => $user->lang['JABBER']);
+		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts',  'k' => 'u.user_jabber');
 
 		if ($auth->acl_get('a_user'))
 		{
@@ -1044,7 +1020,7 @@ switch ($mode)
 		$select_single 	= request_var('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
-		$search_params = array('username', 'email', 'icq', 'aim', 'yahoo', 'msn', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -1053,10 +1029,6 @@ switch ($mode)
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
-			$icq		= request_var('icq', '');
-			$aim		= request_var('aim', '');
-			$yahoo		= request_var('yahoo', '');
-			$msn		= request_var('msn', '');
 			$jabber		= request_var('jabber', '');
 			$search_group_id	= request_var('search_group_id', 0);
 
@@ -1097,10 +1069,6 @@ switch ($mode)
 
 			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
 			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
-			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', $db->any_char, $icq)) . ' ' : '';
-			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $aim)) . ' ' : '';
-			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $yahoo)) . ' ' : '';
-			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', $db->any_char, $msn)) . ' ' : '';
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
@@ -1329,10 +1297,6 @@ switch ($mode)
 			'select_single'	=> array('select_single', $select_single),
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
-			'icq'			=> array('icq', ''),
-			'aim'			=> array('aim', ''),
-			'yahoo'			=> array('yahoo', ''),
-			'msn'			=> array('msn', ''),
 			'jabber'		=> array('jabber', ''),
 			'search_group_id'	=> array('search_group_id', 0),
 			'joined_select'	=> array('joined_select', 'lt'),
@@ -1461,10 +1425,6 @@ switch ($mode)
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
-				'ICQ'		=> $icq,
-				'AIM'		=> $aim,
-				'YAHOO'		=> $yahoo,
-				'MSNM'		=> $msn,
 				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
@@ -1504,6 +1464,19 @@ switch ($mode)
 			$user_list[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
+
+		// Load custom profile fields
+		if ($config['load_cpf_memberlist'])
+		{
+			$cp = $phpbb_container->get('profilefields.manager');
+
+			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
+			foreach ($cp_row as $profile_field)
+			{
+				$template->assign_block_vars('custom_fields', $profile_field);
+			}
+		}
+
 		$leaders_set = false;
 		// So, did we get any users?
 		if (sizeof($user_list))
@@ -1554,10 +1527,20 @@ switch ($mode)
 			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
-				$cp = $phpbb_container->get('profilefields.manager');
-
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
-				$profile_fields_cache = $cp->generate_profile_fields_template('grab', $user_list);
+				$profile_fields_cache = $cp->grab_profile_fields_data($user_list);
+
+				// Filter the fields we don't want to show
+				foreach ($profile_fields_cache as $user_id => $user_profile_fields)
+				{
+					foreach ($user_profile_fields as $field_ident => $profile_field)
+					{
+						if (!$profile_field['data']['field_show_on_ml'])
+						{
+							unset($profile_fields_cache[$user_id][$field_ident]);
+						}
+					}
+				}
 			}
 
 			// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
@@ -1577,7 +1560,7 @@ switch ($mode)
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$user_id]) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
 				$memberrow = array_merge(show_profile($row), array(
@@ -1612,33 +1595,20 @@ switch ($mode)
 
 		// Generate page
 		$template->assign_vars(array(
-			'PAGE_NUMBER'	=> $pagination->on_page($pagination_url, $total_users, $config['topics_per_page'], $start),
 			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
-			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
-			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
-			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_POSTS'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_EMAIL'			=> $sort_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_WEBSITE'		=> $sort_url . '&amp;sk=f&amp;sd=' . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_LOCATION'		=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_ICQ'			=> $sort_url . '&amp;sk=g&amp;sd=' . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_AIM'			=> $sort_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_MSN'			=> $sort_url . '&amp;sk=i&amp;sd=' . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_YIM'			=> $sort_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a') : '',
 			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1696,11 +1666,11 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 	{
-		$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+		$last_active = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 	}
 	else
 	{
-		$last_visit = '';
+		$last_active = '';
 	}
 
 	$age = '';
@@ -1733,7 +1703,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
-		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
+		'LAST_ACTIVE'		=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
@@ -1749,7 +1719,6 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
 		'RANK_IMG_SRC'		=> $rank_img_src,
-		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
 		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
 		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
@@ -1759,19 +1728,8 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
-		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
-		'U_SHORT_WWW'			=> (!empty($data['user_website'])) ? ((strlen($data['user_website']) > 55) ? substr($data['user_website'], 0, 39) . ' ... ' . substr($data['user_website'], -10) : $data['user_website']) : '',
-		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/' . urlencode($data['user_icq']) . '/' : '',
-		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
-		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
 		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
-		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',
 
-		'USER_ICQ'			=> $data['user_icq'],
-		'USER_AIM'			=> $data['user_aim'],
-		'USER_YIM'			=> $data['user_yim'],
-		'USER_MSN'			=> $data['user_msnm'],
 		'USER_JABBER'		=> $data['user_jabber'],
 		'USER_JABBER_IMG'	=> ($data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
 

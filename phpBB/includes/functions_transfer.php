@@ -279,7 +279,7 @@ class ftp extends transfer
 		}
 
 		// Init some needed values
-		transfer::transfer();
+		$this->transfer();
 
 		return;
 	}
@@ -533,7 +533,7 @@ class ftp_fsock extends transfer
 		}
 
 		// Init some needed values
-		transfer::transfer();
+		$this->transfer();
 
 		return;
 	}

@@ -660,11 +660,15 @@ CREATE TABLE phpbb_profile_fields (
 	field_show_on_reg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_vt INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_show_on_ml INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_profile INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_hide INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_no_view INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_active INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	field_order INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	field_order INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_is_contact INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_contact_desc varchar(255) NOT NULL DEFAULT '',
+	field_contact_url varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_profile_fields_fld_type ON phpbb_profile_fields (field_type);
@@ -673,6 +677,14 @@ CREATE INDEX phpbb_profile_fields_fld_ordr ON phpbb_profile_fields (field_order)
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	pf_phpbb_location varchar(255) NOT NULL DEFAULT '',
+	pf_phpbb_interests text(65535) NOT NULL DEFAULT '',
+	pf_phpbb_occupation text(65535) NOT NULL DEFAULT '',
+	pf_phpbb_icq varchar(255) NOT NULL DEFAULT '',
+	pf_phpbb_aol varchar(255) NOT NULL DEFAULT '',
+	pf_phpbb_wlm varchar(255) NOT NULL DEFAULT '',
+	pf_phpbb_yahoo varchar(255) NOT NULL DEFAULT '',
+	pf_phpbb_website varchar(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (user_id)
 );
 
@@ -969,6 +981,8 @@ CREATE TABLE phpbb_users (
 	user_password varchar(255) NOT NULL DEFAULT '',
 	user_passchg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_pass_convert INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_actkey varchar(32) NOT NULL DEFAULT '',
+	user_newpasswd varchar(255) NOT NULL DEFAULT '',
 	user_email varchar(100) NOT NULL DEFAULT '',
 	user_email_hash bigint(20) NOT NULL DEFAULT '0',
 	user_birthday varchar(10) NOT NULL DEFAULT '',
@@ -1017,17 +1031,7 @@ CREATE TABLE phpbb_users (
 	user_sig mediumtext(16777215) NOT NULL DEFAULT '',
 	user_sig_bbcode_uid varchar(8) NOT NULL DEFAULT '',
 	user_sig_bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
-	user_from varchar(100) NOT NULL DEFAULT '',
-	user_icq varchar(15) NOT NULL DEFAULT '',
-	user_aim varchar(255) NOT NULL DEFAULT '',
-	user_yim varchar(255) NOT NULL DEFAULT '',
-	user_msnm varchar(255) NOT NULL DEFAULT '',
 	user_jabber varchar(255) NOT NULL DEFAULT '',
-	user_website varchar(200) NOT NULL DEFAULT '',
-	user_occ text(65535) NOT NULL DEFAULT '',
-	user_interests text(65535) NOT NULL DEFAULT '',
-	user_actkey varchar(32) NOT NULL DEFAULT '',
-	user_newpasswd varchar(40) NOT NULL DEFAULT '',
 	user_form_salt varchar(32) NOT NULL DEFAULT '',
 	user_new INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_reminded tinyint(4) NOT NULL DEFAULT '0',
