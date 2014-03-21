@@ -62,9 +62,9 @@ class post_revisions
 	* @param string $route The route to travel
 	* @return string The URL
 	*/
-	protected function url($route)
+	protected function route($route, $params = array())
 	{
-		return $this->helper->url($route);
+		return $this->helper->route($route, $params);
 	}
 
 	/**
@@ -109,7 +109,7 @@ class post_revisions
 			'FORUM_NAME'	=> $post_data['post_subject'],
 		));
 		$this->template->assign_block_vars('navlinks', array(
-			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_FORUM'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION_HISTORY'),
 		));
 
@@ -193,14 +193,13 @@ class post_revisions
 
 			'POSTER_JOINED'		=> $this->user->format_date($post_data['user_regdate']),
 			'POSTER_POSTS'		=> $post_data['user_posts'],
-			'POSTER_LOCATION'	=> $post_data['user_from'],
 
 			'POST_IMG'			=> $this->user->img('icon_post_target', 'POST'),
 
 			'POST_ID'			=> $post_data['post_id'],
 			'POSTER_ID'			=> $post_data['poster_id'],
 
-			'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_REVISIONS'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 
 			'REVISION_COUNT'	=> sizeof($revisions),
@@ -227,7 +226,7 @@ class post_revisions
 		$revision = !$revision_id ? $post->get_current_revision() : new \phpbb\revisions\revision($revision_id, $this->db);
 		if ($revision_id && !$revision->exists())
 		{
-			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>', 404);
+			return $this->helper->error($this->user->lang('NO_REVISION') . '<br /><a href="'. $this->route('post_revisions_view', array('id' => $id)) . '">' . $this->user->lang('RETURN_REVISION') . '</a>', 404);
 		}
 
 		// Ensure that the user can view the revision
@@ -241,11 +240,11 @@ class post_revisions
 			'FORUM_NAME'	=> $post_data['post_subject'],
 		));
 		$this->template->assign_block_vars('navlinks', array(
-			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_FORUM'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION_HISTORY'),
 		));
 		$this->template->assign_block_vars('navlinks', array(
-			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_FORUM'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION'),
 		));
 
@@ -277,7 +276,7 @@ class post_revisions
 				$this->user->format_date($revision->get_time())
 			),
 
-			'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_REVISIONS'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 			'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 		));
 
@@ -539,11 +538,11 @@ class post_revisions
 			'FORUM_NAME'	=> $post_data['post_subject'],
 		));
 		$this->template->assign_block_vars('navlinks', array(
-			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+			'U_VIEW_FORUM'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 			'FORUM_NAME'	=> $this->user->lang('VIEWING_POST_REVISION_HISTORY'),
 		));
 		$this->template->assign_block_vars('navlinks', array(
-			'U_VIEW_FORUM'	=> $this->url("post/{$post_data['post_id']}/revisions/restore/{$to}"),
+			'U_VIEW_FORUM'	=> $this->route('post_revisions_restore', array('id' => $post_data['post_id'], 'to' => $to)),
 			'FORUM_NAME'	=> $this->user->lang('REVISIONS_RESTORE_TITLE'),
 		));
 
@@ -608,7 +607,7 @@ class post_revisions
 			add_form_key('restore');
 
 			$this->template->assign_vars(array(
-				'U_ACTION'			=> $this->url("post/$id/restore/$to"),
+				'U_ACTION'			=> $this->route('post_revisions_restore', array('id' => $id, 'to' => $to)),
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array(
 					'id'	=> $id,
 					'to'	=> $to,
@@ -617,7 +616,7 @@ class post_revisions
 
 			if (!isset($revisions[$to]))
 			{
-				return $this->helper->error($this->user->lang('ERROR_REVISION_NOT_FOUND') . '<br /><a href="'. $this->url("post/$id/revisions") . '">' . $this->user->lang('RETURN_REVISION') . '</a>', 404);
+				return $this->helper->error($this->user->lang('ERROR_REVISION_NOT_FOUND') . '<br /><a href="'. $this->route('post_revisions_view', array('id' => $id)) . '">' . $this->user->lang('RETURN_REVISION') . '</a>', 404);
 			}
 
 			// Compare current post to the revision to which we are going to
@@ -646,7 +645,7 @@ class post_revisions
 				'POST_ID'			=> $post_data['post_id'],
 				'POSTER_ID'			=> $post_data['poster_id'],
 
-				'U_VIEW_REVISIONS'	=> $this->url("post/{$post_data['post_id']}/revisions"),
+				'U_VIEW_REVISIONS'	=> $this->route('post_revisions_view', array('id' => $post_data['post_id'])),
 				'U_VIEW_POST'		=> append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", array('f' => $post_data['forum_id'], 't' => $post_data['topic_id'], 'p' => $post_data['post_id'])) . '#p' . $post_data['post_id'],
 			));
 
