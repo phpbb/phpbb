@@ -108,10 +108,7 @@ class phpbb_cron_task_core_prune_old_post_revisions extends phpbb_cron_task_base
 	*/
 	public function is_runnable()
 	{
-		// The max age stored in the database is in days; we want seconds
-		// We multiple the number of days by the number of seconds in a day
-		$max_age = $this->config['post_revisions_max_age'] * 86400;
-		return $this->config['track_post_revisions'] && $max_age;
+		return $this->config['track_post_revisions'] && $max_age = $this->config['post_revisions_max_age'];
 	}
 
 	/**

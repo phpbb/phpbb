@@ -131,12 +131,10 @@ class post
 		$this->post_data = array();
 
 		$sql_ary = array(
-			'SELECT'	=> 'p.*, t.topic_title, f.forum_name, u.*, r.*',
+			'SELECT'	=> 'p.*, u.*, r.*',
 
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
-				TOPICS_TABLE	=> 't',
-				FORUMS_TABLE	=> 'f',
 			),
 
 			'LEFT_JOIN'	=> array(

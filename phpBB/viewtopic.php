@@ -1607,7 +1607,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$post_revision_comparison_output = '';
 	if ($can_view_revisions)
 	{
-		$user->add_lang('revisions');
+		// Because we're in a loop, only add this if it hasn't been added yet
+		if (!$user->lang('RETURN_REVISION'))
+		{
+			$user->add_lang('revisions');
+		}
 
 		$revisions_post = new \phpbb\revisions\post($row['post_id'], $db, $config, $auth);
 		$revisions = $revisions_post->get_revisions();
