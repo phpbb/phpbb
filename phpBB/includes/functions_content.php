@@ -1277,7 +1277,13 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 * Get username details for placing into templates.
 * This function caches all modes on first call, except for no_profile and anonymous user - determined by $user_id.
 *
-* @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour), full (for obtaining a html string representing a coloured link to the users profile) or no_profile (the same as full but forcing no profile link)
+* @param string $mode Can be one of the following:
+*                     profile (for getting a url to the profile),
+*                     username (for obtaining the username),
+*                     colour (for obtaining the user colour),
+*                     full (for obtaining a html string representing a coloured link to the users profile),
+*                     no_profile (the same as full but forcing no profile link) or
+*                     profile_full_board_url (for getting a url to the profile with the board url prepended, but without appended sid)
 * @param int $user_id The users id
 * @param string $username The users name
 * @param string $username_colour The users colour
@@ -1298,6 +1304,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		global $phpbb_root_path, $phpEx;
 
 		$_profile_cache['base_url'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u={USER_ID}');
+		$_profile_cache['full_url'] = generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={USER_ID}";
 		$_profile_cache['tpl_noprofile'] = '{USERNAME}';
 		$_profile_cache['tpl_noprofile_colour'] = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
 		$_profile_cache['tpl_profile'] = '<a href="{PROFILE_URL}">{USERNAME}</a>';
@@ -1345,12 +1352,20 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		// no break;
 
 		case 'profile':
+		case 'profile_full_board_url':
 
 			// Build correct profile url - only show if not anonymous and permission to view profile if registered user
 			// For anonymous the link leads to a login page.
 			if ($user_id && $user_id != ANONYMOUS && ($user->data['user_id'] == ANONYMOUS || $auth->acl_get('u_viewprofile')))
 			{
-				$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : str_replace(array('={USER_ID}', '=%7BUSER_ID%7D'), '=' . (int) $user_id, $_profile_cache['base_url']);
+				if ($custom_profile_url !== false)
+				{
+					$profile_url = $custom_profile_url . '&amp;u=' . (int) $user_id;
+				}
+				else
+				{
+					$profile_url = str_replace(array('={USER_ID}', '=%7BUSER_ID%7D'), '=' . (int) $user_id, ($mode == 'profile_full_board_url') ? $_profile_cache['full_url'] : $_profile_cache['base_url']);
+				}
 			}
 			else
 			{
@@ -1358,7 +1373,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			}
 
 			// Return profile
-			if ($mode == 'profile')
+			if ($mode == 'profile' || $mode == 'profile_full_board_url')
 			{
 				return $profile_url;
 			}
@@ -1379,7 +1394,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	* Use this event to change the output of get_username_string()
 	*
 	* @event core.modify_username_string
-	* @var string mode				profile|username|colour|full|no_profile
+	* @var string mode				profile|username|colour|full|no_profile|profile_full_board_url
 	* @var int user_id				String or array of additional url
 	*								parameters
 	* @var string username			The user's username
