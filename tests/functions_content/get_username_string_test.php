@@ -16,7 +16,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $auth, $phpbb_dispatcher, $user;
+		global $auth, $config, $request, $phpbb_dispatcher, $user;
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
@@ -24,7 +24,13 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 			->will($this->returnValueMap(array(
 				array('u_viewprofile', true),
 			)));
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$config['force_server_vars'] = 1;
+		$config['server_protocol'] = 'http://';
+		$config['server_name'] = 'www.example.org';
+		$config['server_port'] = 80;
+		$config['script_path'] = '/phpBB';
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$request = $this->getMock('\phpbb\request\request');
 		$user->data['user_id'] = ANONYMOUS;
 		$user->lang['GUEST'] = 'Guest';
 	}
@@ -122,5 +128,25 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 	public function test_get_username_string_no_profile($user_id, $username, $user_colour, $guest_username, $custom_profile_url, $expected)
 	{
 		$this->assertEquals($expected, get_username_string('no_profile', $user_id, $username, $user_colour, $guest_username, $custom_profile_url));
+	}
+
+	public function get_username_string_profile_full_board_url_data()
+	{
+		global $phpEx;
+
+		return array(
+			array(ANONYMOUS, 'Anonymous', '', false, false, ''),
+			array(2, 'Administrator', 'FF0000', false, false, "http://www.example.org/phpBB/memberlist.$phpEx?mode=viewprofile&amp;u=2"),
+			array(5, 'User5', '', false, 'http://www.example.org/user.php?mode=show', 'http://www.example.org/user.php?mode=show&amp;u=5'),
+			array(8, 'Eight', '', false, false, "http://www.example.org/phpBB/memberlist.$phpEx?mode=viewprofile&amp;u=8"),
+		);
+	}
+
+	/**
+	* @dataProvider get_username_string_profile_full_board_url_data
+	*/
+	public function test_get_username_string_profile_full_board_url($user_id, $username, $user_colour, $guest_username, $custom_profile_url, $expected)
+	{
+		$this->assertEquals($expected, get_username_string('profile_full_board_url', $user_id, $username, $user_colour, $guest_username, $custom_profile_url));
 	}
 }
