@@ -530,6 +530,9 @@ class acp_styles
 			return;
 		}
 
+		// Show page title
+		$this->welcome_message('ACP_STYLES', null);
+
 		// Show parent styles
 		foreach ($list as $row)
 		{
