@@ -2,6 +2,10 @@
 
 <a id="maincontent"></a>
 
+<!-- IF S_STYLE_DETAILS -->
+	<a href="{U_ACTION}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+<!-- ENDIF -->
+
 <!-- IF S_CONFIRM_ACTION -->
 <form id="confirm" method="post" action="{S_CONFIRM_ACTION}">
 
@@ -72,8 +76,8 @@
 
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
-		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
-		<a href="{U_ACTION}" class="button2">{L_BACK}</a>
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 		{S_FORM_TOKEN}
 	</fieldset>
 <!-- ENDIF -->
@@ -151,14 +155,6 @@
 		<!-- BEGIN extra_actions -->
 			<input type="submit" name="{extra_actions.ACTION_NAME}" class="button2" value="{extra_actions.L_ACTION}" />
 		<!-- END extra_actions -->
-	</fieldset>
-<!-- ENDIF -->
-
-<!-- IF .extra_links -->
-	<fieldset class="quick">
-		<!-- BEGIN extra_links -->
-			<a class="button2" href="{extra_links.U_ACTION}">{extra_links.L_ACTION}</a>
-		<!-- END extra_links -->
 	</fieldset>
 <!-- ENDIF -->
 
