@@ -308,7 +308,7 @@ class log implements \phpbb\log\log_interface
 		* @since 3.1-A1
 		*/
 		$vars = array('mode', 'user_id', 'log_ip', 'log_operation', 'log_time', 'additional_data', 'sql_ary');
-		extract($this->dispatcher->trigger_event('core.add_log', $vars));
+		extract($this->dispatcher->trigger_event('core.add_log', compact($vars)));
 
 		// We didn't find a log_type, so we don't save it in the database.
 		if (!isset($sql_ary['log_type']))
@@ -406,7 +406,7 @@ class log implements \phpbb\log\log_interface
 		* @since 3.1-A1
 		*/
 		$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
-		extract($this->dispatcher->trigger_event('core.get_logs_modify_type', $vars));
+		extract($this->dispatcher->trigger_event('core.get_logs_modify_type', compact($vars)));
 
 		if ($log_type === false)
 		{
@@ -502,7 +502,7 @@ class log implements \phpbb\log\log_interface
 			* @since 3.1-A1
 			*/
 			$vars = array('row', 'log_entry_data');
-			extract($this->dispatcher->trigger_event('core.get_logs_modify_entry_data', $vars));
+			extract($this->dispatcher->trigger_event('core.get_logs_modify_entry_data', compact($vars)));
 
 			$log[$i] = $log_entry_data;
 
@@ -561,7 +561,7 @@ class log implements \phpbb\log\log_interface
 		* @since 3.1-A1
 		*/
 		$vars = array('log', 'topic_id_list', 'reportee_id_list');
-		extract($this->dispatcher->trigger_event('core.get_logs_get_additional_data', $vars));
+		extract($this->dispatcher->trigger_event('core.get_logs_get_additional_data', compact($vars)));
 
 		if (sizeof($topic_id_list))
 		{
