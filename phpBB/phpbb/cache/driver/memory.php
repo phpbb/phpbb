@@ -400,6 +400,10 @@ abstract class memory extends \phpbb\cache\driver\base
 
 	/**
 	* Removes/unlinks file
+	*
+	* @param string $filename Filename to remove
+	* @param bool $check Check file permissions
+	* @return bool True if the file was successfully removed, otherwise false
 	*/
 	function remove_file($filename, $check = false)
 	{

@@ -18,6 +18,8 @@ interface driver_interface
 {
 	/**
 	* Load global cache
+	*
+	* @return mixed False if an error was encountered, otherwise the data type of the cached data
 	*/
 	public function load();
 
@@ -28,36 +30,58 @@ interface driver_interface
 
 	/**
 	* Save modified objects
+	*
+	* @return null
 	*/
 	public function save();
 
 	/**
 	* Tidy cache
+	*
+	* @return null
 	*/
 	public function tidy();
 
 	/**
 	* Get saved cache object
+	*
+	* @param string $var_name 		Cache key
+	* @return mixed 				False if an error was encountered, otherwise the saved cached object
 	*/
 	public function get($var_name);
 
 	/**
 	* Put data into cache
+	*
+	* @param string $var_name 		Cache key
+	* @param mixed $var 			Cached data to store
+	* @param int $ttl 				Time-to-live of cached data
 	*/
 	public function put($var_name, $var, $ttl = 0);
 
 	/**
 	* Purge cache data
+	*
+	* @return null
 	*/
 	public function purge();
 
 	/**
 	* Destroy cache data
+	*
+	* @param string $var_name 		Cache key
+	* @param string $table 			Table name
+	* @return null
 	*/
 	public function destroy($var_name, $table = '');
 
 	/**
 	* Check if a given cache entry exists
+	*
+	* @param string $var_name 		Cache key
+	*
+	* @return bool 					True if cache file exists and has not expired.
+	*								False otherwise.
 	*/
 	public function _exists($var_name);
 
