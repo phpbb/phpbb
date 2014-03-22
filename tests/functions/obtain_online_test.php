@@ -27,6 +27,11 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		$db = $this->db = $this->new_dbal();
 		$config = array(
 			'load_online_time'	=> 5,
+			'force_server_vars'	=> 1,
+			'server_protocol'	=> 'http://',
+			'server_name'		=> 'www.example.org',
+			'server_port'		=> 80,
+			'script_path'		=> '/phpBB',
 		);
 	}
 
@@ -157,7 +162,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		$this->db->sql_query('DELETE FROM phpbb_sessions');
 
-		global $config, $user, $auth, $phpbb_dispatcher;
+		global $config, $user, $auth, $phpbb_dispatcher, $request;
 		$config['load_online_guests'] = $display_guests;
 		$user = new phpbb_mock_lang();
 		$user->lang = $this->load_language();
@@ -172,6 +177,8 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 				$this->anything())
 			->will($this->returnValueMap($acl_get_map));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
+		$request = $this->getMock('\phpbb\request\request');
 
 		$time = time();
 		$this->create_guest_sessions($time);
