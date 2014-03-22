@@ -540,6 +540,22 @@ viewtopic_body_postrow_post_before
 * Since: 3.1.0-a4
 * Purpose: Add data before posts
 
+viewtopic_body_postrow_post_notices_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b2
+* Purpose: Add posts specific custom notices at the notices bottom.
+
+viewtopic_body_postrow_post_notices_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b2
+* Purpose: Add posts specific custom notices at the notices top.
+
 viewtopic_body_topic_actions_before
 ===
 * Locations:
