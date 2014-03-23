@@ -19,9 +19,19 @@ if (!is_writable($schema_path))
 }
 
 define('IN_PHPBB', true);
+define('IN_INSTALL', true);
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include($phpbb_root_path . 'common.' . $phpEx);
 
-require(dirname(__FILE__) . '/../phpbb/db/tools.php');
+$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$finder = $finder
+	->core_path('phpbb/db/migration/data/')
+	->extension_prefix('migration/');
+$db_tools = new \phpbb\db\tools($db, true);
 
+$schema_generator = new \phpbb\db\migration\schema_generator($finder, $config, $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
+$schema_data = $schema_generator->get_schema();
 $dbms_type_map = phpbb\db\tools::get_dbms_type_map();
 
 // A list of types being unsigned for better reference in some db's
