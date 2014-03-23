@@ -31,7 +31,7 @@ $finder = $finder
 $db_tools = new \phpbb\db\tools($db, true);
 
 $schema_generator = new \phpbb\db\migration\schema_generator($finder, $config, $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
-$schema_data = $schema_generator->get_schema();
+$original_schema_data = $schema_generator->get_schema();
 $dbms_type_map = phpbb\db\tools::get_dbms_type_map();
 
 // A list of types being unsigned for better reference in some db's
@@ -40,7 +40,7 @@ $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', '
 
 foreach ($supported_dbms as $dbms)
 {
-	include(dirname(__FILE__) . '/../includes/db/schema_data.php');
+	$schema_data = $original_schema_data;
 	if ($dbms == 'mssql')
 	{
 		foreach ($schema_data as $table_name => $table_data)

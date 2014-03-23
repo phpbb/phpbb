@@ -7,50 +7,6 @@
  */
 
 /*
-	Table: 'phpbb_attachments'
-*/
-CREATE TABLE [phpbb_attachments] (
-	[attach_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[post_msg_id] [int] DEFAULT (0) NOT NULL ,
-	[topic_id] [int] DEFAULT (0) NOT NULL ,
-	[in_message] [int] DEFAULT (0) NOT NULL ,
-	[poster_id] [int] DEFAULT (0) NOT NULL ,
-	[is_orphan] [int] DEFAULT (1) NOT NULL ,
-	[physical_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[real_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[download_count] [int] DEFAULT (0) NOT NULL ,
-	[attach_comment] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[extension] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[mimetype] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[filesize] [int] DEFAULT (0) NOT NULL ,
-	[filetime] [int] DEFAULT (0) NOT NULL ,
-	[thumbnail] [int] DEFAULT (0) NOT NULL 
-)GO
-
-ALTER TABLE [phpbb_attachments] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_attachments] PRIMARY KEY  CLUSTERED 
-	(
-		[attach_id]
-	)
-GO
-
-CREATE  INDEX [filetime] ON [phpbb_attachments]([filetime])
-GO
-
-CREATE  INDEX [post_msg_id] ON [phpbb_attachments]([post_msg_id])
-GO
-
-CREATE  INDEX [topic_id] ON [phpbb_attachments]([topic_id])
-GO
-
-CREATE  INDEX [poster_id] ON [phpbb_attachments]([poster_id])
-GO
-
-CREATE  INDEX [is_orphan] ON [phpbb_attachments]([is_orphan])
-GO
-
-
-/*
 	Table: 'phpbb_acl_groups'
 */
 CREATE TABLE [phpbb_acl_groups] (
@@ -173,6 +129,50 @@ CREATE  INDEX [auth_option_id] ON [phpbb_acl_users]([auth_option_id])
 GO
 
 CREATE  INDEX [auth_role_id] ON [phpbb_acl_users]([auth_role_id])
+GO
+
+
+/*
+	Table: 'phpbb_attachments'
+*/
+CREATE TABLE [phpbb_attachments] (
+	[attach_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[post_msg_id] [int] DEFAULT (0) NOT NULL ,
+	[topic_id] [int] DEFAULT (0) NOT NULL ,
+	[in_message] [int] DEFAULT (0) NOT NULL ,
+	[poster_id] [int] DEFAULT (0) NOT NULL ,
+	[is_orphan] [int] DEFAULT (1) NOT NULL ,
+	[physical_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[real_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[download_count] [int] DEFAULT (0) NOT NULL ,
+	[attach_comment] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[extension] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[mimetype] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[filesize] [int] DEFAULT (0) NOT NULL ,
+	[filetime] [int] DEFAULT (0) NOT NULL ,
+	[thumbnail] [int] DEFAULT (0) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_attachments] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_attachments] PRIMARY KEY  CLUSTERED 
+	(
+		[attach_id]
+	)
+GO
+
+CREATE  INDEX [filetime] ON [phpbb_attachments]([filetime])
+GO
+
+CREATE  INDEX [post_msg_id] ON [phpbb_attachments]([post_msg_id])
+GO
+
+CREATE  INDEX [topic_id] ON [phpbb_attachments]([topic_id])
+GO
+
+CREATE  INDEX [poster_id] ON [phpbb_attachments]([poster_id])
+GO
+
+CREATE  INDEX [is_orphan] ON [phpbb_attachments]([is_orphan])
 GO
 
 
@@ -400,23 +400,6 @@ GO
 
 
 /*
-	Table: 'phpbb_extensions'
-*/
-CREATE TABLE [phpbb_extensions] (
-	[extension_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[group_id] [int] DEFAULT (0) NOT NULL ,
-	[extension] [varchar] (100) DEFAULT ('') NOT NULL 
-)GO
-
-ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_extensions] PRIMARY KEY  CLUSTERED 
-	(
-		[extension_id]
-	)
-GO
-
-
-/*
 	Table: 'phpbb_extension_groups'
 */
 CREATE TABLE [phpbb_extension_groups] (
@@ -435,6 +418,23 @@ ALTER TABLE [phpbb_extension_groups] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_extension_groups] PRIMARY KEY  CLUSTERED 
 	(
 		[group_id]
+	)
+GO
+
+
+/*
+	Table: 'phpbb_extensions'
+*/
+CREATE TABLE [phpbb_extensions] (
+	[extension_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[group_id] [int] DEFAULT (0) NOT NULL ,
+	[extension] [varchar] (100) DEFAULT ('') NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_extensions] PRIMARY KEY  CLUSTERED 
+	(
+		[extension_id]
 	)
 GO
 
@@ -465,12 +465,6 @@ CREATE TABLE [phpbb_forums] (
 	[forum_topics_per_page] [int] DEFAULT (0) NOT NULL ,
 	[forum_type] [int] DEFAULT (0) NOT NULL ,
 	[forum_status] [int] DEFAULT (0) NOT NULL ,
-	[forum_posts_approved] [int] DEFAULT (0) NOT NULL ,
-	[forum_posts_unapproved] [int] DEFAULT (0) NOT NULL ,
-	[forum_posts_softdeleted] [int] DEFAULT (0) NOT NULL ,
-	[forum_topics_approved] [int] DEFAULT (0) NOT NULL ,
-	[forum_topics_unapproved] [int] DEFAULT (0) NOT NULL ,
-	[forum_topics_softdeleted] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_post_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_poster_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_last_post_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -478,8 +472,6 @@ CREATE TABLE [phpbb_forums] (
 	[forum_last_poster_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_last_poster_colour] [varchar] (6) DEFAULT ('') NOT NULL ,
 	[forum_flags] [int] DEFAULT (32) NOT NULL ,
-	[forum_options] [int] DEFAULT (0) NOT NULL ,
-	[display_subforum_list] [int] DEFAULT (1) NOT NULL ,
 	[display_on_index] [int] DEFAULT (1) NOT NULL ,
 	[enable_indexing] [int] DEFAULT (1) NOT NULL ,
 	[enable_icons] [int] DEFAULT (1) NOT NULL ,
@@ -487,7 +479,15 @@ CREATE TABLE [phpbb_forums] (
 	[prune_next] [int] DEFAULT (0) NOT NULL ,
 	[prune_days] [int] DEFAULT (0) NOT NULL ,
 	[prune_viewed] [int] DEFAULT (0) NOT NULL ,
-	[prune_freq] [int] DEFAULT (0) NOT NULL 
+	[prune_freq] [int] DEFAULT (0) NOT NULL ,
+	[display_subforum_list] [int] DEFAULT (1) NOT NULL ,
+	[forum_options] [int] DEFAULT (0) NOT NULL ,
+	[forum_posts_approved] [int] DEFAULT (0) NOT NULL ,
+	[forum_posts_unapproved] [int] DEFAULT (0) NOT NULL ,
+	[forum_posts_softdeleted] [int] DEFAULT (0) NOT NULL ,
+	[forum_topics_approved] [int] DEFAULT (0) NOT NULL ,
+	[forum_topics_unapproved] [int] DEFAULT (0) NOT NULL ,
+	[forum_topics_softdeleted] [int] DEFAULT (0) NOT NULL 
 )GO
 
 ALTER TABLE [phpbb_forums] WITH NOCHECK ADD 
@@ -575,7 +575,6 @@ CREATE TABLE [phpbb_groups] (
 	[group_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[group_type] [int] DEFAULT (1) NOT NULL ,
 	[group_founder_manage] [int] DEFAULT (0) NOT NULL ,
-	[group_skip_auth] [int] DEFAULT (0) NOT NULL ,
 	[group_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_desc] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[group_desc_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
@@ -591,8 +590,9 @@ CREATE TABLE [phpbb_groups] (
 	[group_sig_chars] [int] DEFAULT (0) NOT NULL ,
 	[group_receive_pm] [int] DEFAULT (0) NOT NULL ,
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
+	[group_legend] [int] DEFAULT (0) NOT NULL ,
 	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
-	[group_legend] [int] DEFAULT (0) NOT NULL 
+	[group_skip_auth] [int] DEFAULT (0) NOT NULL 
 )GO
 
 ALTER TABLE [phpbb_groups] WITH NOCHECK ADD 
@@ -678,9 +678,6 @@ GO
 CREATE  INDEX [log_type] ON [phpbb_log]([log_type])
 GO
 
-CREATE  INDEX [log_time] ON [phpbb_log]([log_time])
-GO
-
 CREATE  INDEX [forum_id] ON [phpbb_log]([forum_id])
 GO
 
@@ -752,27 +749,6 @@ CREATE  INDEX [disp_idx] ON [phpbb_moderator_cache]([display_on_index])
 GO
 
 CREATE  INDEX [forum_id] ON [phpbb_moderator_cache]([forum_id])
-GO
-
-
-/*
-	Table: 'phpbb_migrations'
-*/
-CREATE TABLE [phpbb_migrations] (
-	[migration_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[migration_depends_on] [varchar] (8000) DEFAULT ('') NOT NULL ,
-	[migration_schema_done] [int] DEFAULT (0) NOT NULL ,
-	[migration_data_done] [int] DEFAULT (0) NOT NULL ,
-	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
-	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
-	[migration_end_time] [int] DEFAULT (0) NOT NULL 
-)GO
-
-ALTER TABLE [phpbb_migrations] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_migrations] PRIMARY KEY  CLUSTERED 
-	(
-		[migration_name]
-	)
 GO
 
 
@@ -965,7 +941,6 @@ CREATE TABLE [phpbb_posts] (
 	[icon_id] [int] DEFAULT (0) NOT NULL ,
 	[poster_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[post_time] [int] DEFAULT (0) NOT NULL ,
-	[post_visibility] [int] DEFAULT (0) NOT NULL ,
 	[post_reported] [int] DEFAULT (0) NOT NULL ,
 	[enable_bbcode] [int] DEFAULT (1) NOT NULL ,
 	[enable_smilies] [int] DEFAULT (1) NOT NULL ,
@@ -984,6 +959,7 @@ CREATE TABLE [phpbb_posts] (
 	[post_edit_user] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_count] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_locked] [int] DEFAULT (0) NOT NULL ,
+	[post_visibility] [int] DEFAULT (0) NOT NULL ,
 	[post_delete_time] [int] DEFAULT (0) NOT NULL ,
 	[post_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_delete_user] [int] DEFAULT (0) NOT NULL 
@@ -1008,13 +984,13 @@ GO
 CREATE  INDEX [poster_id] ON [phpbb_posts]([poster_id])
 GO
 
-CREATE  INDEX [post_visibility] ON [phpbb_posts]([post_visibility])
-GO
-
-CREATE  INDEX [post_username] ON [phpbb_posts]([post_username])
-GO
-
 CREATE  INDEX [tid_post_time] ON [phpbb_posts]([topic_id], [post_time])
+GO
+
+CREATE  INDEX [post_username] ON [phpbb_posts]([post_username:255])
+GO
+
+CREATE  INDEX [post_visibility] ON [phpbb_posts]([post_visibility])
 GO
 
 
@@ -1162,16 +1138,16 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_default_value] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[field_validation] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_required] [int] DEFAULT (0) NOT NULL ,
-	[field_show_novalue] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_reg] [int] DEFAULT (0) NOT NULL ,
-	[field_show_on_pm] [int] DEFAULT (0) NOT NULL ,
-	[field_show_on_vt] [int] DEFAULT (0) NOT NULL ,
-	[field_show_on_ml] [int] DEFAULT (0) NOT NULL ,
-	[field_show_profile] [int] DEFAULT (0) NOT NULL ,
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
 	[field_no_view] [int] DEFAULT (0) NOT NULL ,
 	[field_active] [int] DEFAULT (0) NOT NULL ,
 	[field_order] [int] DEFAULT (0) NOT NULL ,
+	[field_show_profile] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_vt] [int] DEFAULT (0) NOT NULL ,
+	[field_show_novalue] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_pm] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_ml] [int] DEFAULT (0) NOT NULL ,
 	[field_is_contact] [int] DEFAULT (0) NOT NULL ,
 	[field_contact_desc] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL 
@@ -1196,14 +1172,14 @@ GO
 */
 CREATE TABLE [phpbb_profile_fields_data] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[pf_phpbb_location] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[pf_phpbb_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[pf_phpbb_occupation] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_interests] [text] DEFAULT ('') NOT NULL ,
+	[pf_phpbb_occupation] [text] DEFAULT ('') NOT NULL ,
 	[pf_phpbb_icq] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[pf_phpbb_aol] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_location] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[pf_phpbb_website] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_wlm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_yahoo] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[pf_phpbb_website] [varchar] (255) DEFAULT ('') NOT NULL 
+	[pf_phpbb_aol] [varchar] (255) DEFAULT ('') NOT NULL 
 )GO
 
 ALTER TABLE [phpbb_profile_fields_data] WITH NOCHECK ADD 
@@ -1281,18 +1257,18 @@ CREATE TABLE [phpbb_reports] (
 	[report_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[reason_id] [int] DEFAULT (0) NOT NULL ,
 	[post_id] [int] DEFAULT (0) NOT NULL ,
-	[pm_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[user_notify] [int] DEFAULT (0) NOT NULL ,
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
 	[report_time] [int] DEFAULT (0) NOT NULL ,
 	[report_text] [text] DEFAULT ('') NOT NULL ,
+	[pm_id] [int] DEFAULT (0) NOT NULL ,
+	[reported_post_enable_bbcode] [int] DEFAULT (1) NOT NULL ,
+	[reported_post_enable_smilies] [int] DEFAULT (1) NOT NULL ,
+	[reported_post_enable_magic_url] [int] DEFAULT (1) NOT NULL ,
 	[reported_post_text] [text] DEFAULT ('') NOT NULL ,
 	[reported_post_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
-	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[reported_post_enable_magic_url] [int] DEFAULT (1) NOT NULL ,
-	[reported_post_enable_smilies] [int] DEFAULT (1) NOT NULL ,
-	[reported_post_enable_bbcode] [int] DEFAULT (1) NOT NULL 
+	[reported_post_bitfield] [varchar] (255) DEFAULT ('') NOT NULL 
 )GO
 
 ALTER TABLE [phpbb_reports] WITH NOCHECK ADD 
@@ -1402,7 +1378,6 @@ GO
 CREATE TABLE [phpbb_sessions] (
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[session_user_id] [int] DEFAULT (0) NOT NULL ,
-	[session_forum_id] [int] DEFAULT (0) NOT NULL ,
 	[session_last_visit] [int] DEFAULT (0) NOT NULL ,
 	[session_start] [int] DEFAULT (0) NOT NULL ,
 	[session_time] [int] DEFAULT (0) NOT NULL ,
@@ -1412,7 +1387,8 @@ CREATE TABLE [phpbb_sessions] (
 	[session_page] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[session_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[session_autologin] [int] DEFAULT (0) NOT NULL ,
-	[session_admin] [int] DEFAULT (0) NOT NULL 
+	[session_admin] [int] DEFAULT (0) NOT NULL ,
+	[session_forum_id] [int] DEFAULT (0) NOT NULL 
 )GO
 
 ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD 
@@ -1549,16 +1525,12 @@ CREATE TABLE [phpbb_topics] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[icon_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_attachment] [int] DEFAULT (0) NOT NULL ,
-	[topic_visibility] [int] DEFAULT (0) NOT NULL ,
 	[topic_reported] [int] DEFAULT (0) NOT NULL ,
 	[topic_title] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[topic_poster] [int] DEFAULT (0) NOT NULL ,
 	[topic_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_time_limit] [int] DEFAULT (0) NOT NULL ,
 	[topic_views] [int] DEFAULT (0) NOT NULL ,
-	[topic_posts_approved] [int] DEFAULT (0) NOT NULL ,
-	[topic_posts_unapproved] [int] DEFAULT (0) NOT NULL ,
-	[topic_posts_softdeleted] [int] DEFAULT (0) NOT NULL ,
 	[topic_status] [int] DEFAULT (0) NOT NULL ,
 	[topic_type] [int] DEFAULT (0) NOT NULL ,
 	[topic_first_post_id] [int] DEFAULT (0) NOT NULL ,
@@ -1580,9 +1552,13 @@ CREATE TABLE [phpbb_topics] (
 	[poll_max_options] [int] DEFAULT (1) NOT NULL ,
 	[poll_last_vote] [int] DEFAULT (0) NOT NULL ,
 	[poll_vote_change] [int] DEFAULT (0) NOT NULL ,
+	[topic_visibility] [int] DEFAULT (0) NOT NULL ,
 	[topic_delete_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[topic_delete_user] [int] DEFAULT (0) NOT NULL 
+	[topic_delete_user] [int] DEFAULT (0) NOT NULL ,
+	[topic_posts_approved] [int] DEFAULT (0) NOT NULL ,
+	[topic_posts_unapproved] [int] DEFAULT (0) NOT NULL ,
+	[topic_posts_softdeleted] [int] DEFAULT (0) NOT NULL 
 )GO
 
 ALTER TABLE [phpbb_topics] WITH NOCHECK ADD 
@@ -1601,13 +1577,31 @@ GO
 CREATE  INDEX [last_post_time] ON [phpbb_topics]([topic_last_post_time])
 GO
 
+CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id])
+GO
+
 CREATE  INDEX [topic_visibility] ON [phpbb_topics]([topic_visibility])
 GO
 
-CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_visibility], [topic_last_post_id])
+CREATE  INDEX [forum_vis_last] ON [phpbb_topics]([forum_id], [topic_visibility], [topic_last_post_id])
 GO
 
-CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id])
+
+/*
+	Table: 'phpbb_topics_posted'
+*/
+CREATE TABLE [phpbb_topics_posted] (
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[topic_id] [int] DEFAULT (0) NOT NULL ,
+	[topic_posted] [int] DEFAULT (0) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_topics_posted] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_topics_posted] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[topic_id]
+	)
 GO
 
 
@@ -1629,28 +1623,10 @@ ALTER TABLE [phpbb_topics_track] WITH NOCHECK ADD
 	)
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_topics_track]([topic_id])
-GO
-
 CREATE  INDEX [forum_id] ON [phpbb_topics_track]([forum_id])
 GO
 
-
-/*
-	Table: 'phpbb_topics_posted'
-*/
-CREATE TABLE [phpbb_topics_posted] (
-	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[topic_id] [int] DEFAULT (0) NOT NULL ,
-	[topic_posted] [int] DEFAULT (0) NOT NULL 
-)GO
-
-ALTER TABLE [phpbb_topics_posted] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_topics_posted] PRIMARY KEY  CLUSTERED 
-	(
-		[user_id],
-		[topic_id]
-	)
+CREATE  INDEX [topic_id] ON [phpbb_topics_track]([topic_id])
 GO
 
 
@@ -1678,26 +1654,6 @@ CREATE  INDEX [user_id] ON [phpbb_topics_watch]([user_id])
 GO
 
 CREATE  INDEX [notify_stat] ON [phpbb_topics_watch]([notify_status])
-GO
-
-
-/*
-	Table: 'phpbb_user_notifications'
-*/
-CREATE TABLE [phpbb_user_notifications] (
-	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[item_id] [int] DEFAULT (0) NOT NULL ,
-	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[method] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[notify] [int] DEFAULT (1) NOT NULL ,
-	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
-)GO
-
-ALTER TABLE [phpbb_user_notifications] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_user_notifications] PRIMARY KEY  CLUSTERED 
-	(
-		[mssqlindex]
-	)
 GO
 
 
@@ -1730,6 +1686,26 @@ GO
 
 
 /*
+	Table: 'phpbb_user_notifications'
+*/
+CREATE TABLE [phpbb_user_notifications] (
+	[item_type] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[item_id] [int] DEFAULT (0) NOT NULL ,
+	[user_id] [int] DEFAULT (0) NOT NULL ,
+	[method] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[notify] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_user_notifications] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_user_notifications] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
+GO
+
+
+/*
 	Table: 'phpbb_users'
 */
 CREATE TABLE [phpbb_users] (
@@ -1745,8 +1721,6 @@ CREATE TABLE [phpbb_users] (
 	[user_password] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_passchg] [int] DEFAULT (0) NOT NULL ,
 	[user_pass_convert] [int] DEFAULT (0) NOT NULL ,
-	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[user_newpasswd] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_email] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[user_email_hash] [float] DEFAULT (0) NOT NULL ,
 	[user_birthday] [varchar] (10) DEFAULT ('') NOT NULL ,
@@ -1763,7 +1737,7 @@ CREATE TABLE [phpbb_users] (
 	[user_inactive_time] [int] DEFAULT (0) NOT NULL ,
 	[user_posts] [int] DEFAULT (0) NOT NULL ,
 	[user_lang] [varchar] (30) DEFAULT ('') NOT NULL ,
-	[user_timezone] [varchar] (100) DEFAULT ('UTC') NOT NULL ,
+	[user_timezone] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[user_dateformat] [varchar] (30) DEFAULT ('d M Y H:i') NOT NULL ,
 	[user_style] [int] DEFAULT (0) NOT NULL ,
 	[user_rank] [int] DEFAULT (0) NOT NULL ,
@@ -1796,6 +1770,8 @@ CREATE TABLE [phpbb_users] (
 	[user_sig_bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[user_sig_bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_jabber] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[user_newpasswd] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_new] [int] DEFAULT (1) NOT NULL ,
 	[user_reminded] [int] DEFAULT (0) NOT NULL ,
