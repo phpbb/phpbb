@@ -30,7 +30,7 @@ $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'leaders')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team')))
 {
 	trigger_error('NO_MODE');
 }
@@ -64,12 +64,12 @@ $sort_dir = request_var('sd', 'a');
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
-	case 'leaders':
+	case 'team':
 		// Display a listing of board admins, moderators
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		$page_title = $user->lang['THE_TEAM'];
-		$template_html = 'memberlist_leaders.html';
+		$template_html = 'memberlist_team.html';
 
 		$sql = 'SELECT *
 			FROM ' . TEAMPAGE_TABLE . '
