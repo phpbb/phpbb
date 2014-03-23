@@ -1556,7 +1556,7 @@ input.disabled {
 }
 
 /* Focus states */
-input.button1:focus, input.button2:focus, {
+input.button1:focus, input.button2:focus {
 	outline-style: none;
 }
 
