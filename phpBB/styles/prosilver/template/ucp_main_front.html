@@ -16,13 +16,7 @@
 			<dl class="icon {topicrow.TOPIC_IMG_STYLE}">
 				<dt <!-- IF topicrow.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
 					<div class="list-inner">
-						<!-- IF topicrow.S_UNREAD -->
-							<a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> 
-							<a href="{topicrow.U_NEWEST_POST}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-						<!-- ELSE -->
-							<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-						<!-- ENDIF -->
-						<br />
+						<!-- IF topicrow.S_UNREAD --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><br />
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
 							<ul>
@@ -39,7 +33,7 @@
 						<!-- ENDIF -->
 						<div class="responsive-hide">
 							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
-							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; <a href="{topicrow.U_VIEW_TOPIC}" title="{L_GOTO_FIRST_POST}">{topicrow.FIRST_POST_TIME}</a>
+							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
 						<div class="responsive-show" style="display: none;">
 							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
