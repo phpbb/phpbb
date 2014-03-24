@@ -472,7 +472,7 @@ class phpbb_db_tools
 		{
 			if (!isset($table_data['PRIMARY_KEY']))
 			{
-				$table_data['COLUMNS']['mssqlindex'] = array('UINT', NULL, 'auto_increment');
+				$table_data['COLUMNS']['mssqlindex'] = array('UINT', null, 'auto_increment');
 				$table_data['PRIMARY_KEY'] = 'mssqlindex';
 			}
 		}
@@ -1819,7 +1819,7 @@ class phpbb_db_tools
 				$result = $this->db->sql_query($sql);
 				$row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
-				
+
 				// Remove default constraints
 				if ($row['mssql_version'][0] == '8')	// SQL Server 2000
 				{
@@ -1851,7 +1851,7 @@ class phpbb_db_tools
 					$result = $this->db->sql_query($sql);
 					$row = $this->db->sql_fetchrow($result);
 					$this->db->sql_freeresult($result);
-					
+
 					if ($row)
 					{
 						$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
@@ -2348,7 +2348,7 @@ class phpbb_db_tools
 					$result = $this->db->sql_query($sql);
 					$row = $this->db->sql_fetchrow($result);
 					$this->db->sql_freeresult($result);
-					
+
 					// Using TRANSACT-SQL for this statement because we do not want to have colliding data if statements are executed at a later stage
 					if ($row['mssql_version'][0] == '8')	// SQL Server 2000
 					{
