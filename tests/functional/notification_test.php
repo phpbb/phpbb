@@ -60,7 +60,7 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		$this->add_user_group('NEWLY_REGISTERED', array('notificationtestuser'));
 		$this->login('notificationtestuser');
 		$crawler = self::request('GET', 'index.php');
-		$this->assertContains('notificationtestuser', $crawler->filter('.icon-logout')->text());
+		$this->assertContains('notificationtestuser', $crawler->filter('#username_logged_in')->text());
 
 		// Post a new post that needs approval
 		$this->create_post(2, 1, 'Re: Welcome to phpBB3', 'This is a test [b]post[/b] posted by notificationtestuser.', array(), 'POST_STORED_MOD');
