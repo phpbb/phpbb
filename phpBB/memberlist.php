@@ -29,6 +29,12 @@ $username	= request_var('un', '', true);
 $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
+// Redirect when old mode is used
+if ($mode == 'leaders')
+{
+    redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'));
+}
+
 // Check our mode...
 if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team')))
 {
