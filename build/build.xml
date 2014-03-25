@@ -255,7 +255,7 @@
 							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
 							checkreturn="true" />
 						<exec dir="${dir}"
-							command="php composer.phar install"
+							command="php composer.phar install --no-dev"
 							checkreturn="true"
 							passthru="true" />
 						<delete file="${dir}/composer.phar" />
