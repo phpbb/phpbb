@@ -592,9 +592,8 @@ switch ($mode)
 		* @since 3.1-A1
 		* 
 		* @var	bool    friend				Is the user friend?
-		* 
 		* @var	bool	foe				Is the user foe?
-		* @since 3.1-A4
+		* @changed 3.1.0-b2 Added friend and foe status
 		*/
 		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled', 'zebra_enabled', 'friends_enabled', 'foes_enabled', 'friend', 'foe');
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
