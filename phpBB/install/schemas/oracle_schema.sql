@@ -49,7 +49,7 @@ CONNECT phpbb/phpbb_password;
 CREATE TABLE phpbb_attachments (
 	attach_id number(8) NOT NULL,
 	post_msg_id number(8) DEFAULT '0' NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	in_message number(1) DEFAULT '0' NOT NULL,
 	poster_id number(8) DEFAULT '0' NOT NULL,
 	is_orphan number(1) DEFAULT '1' NOT NULL,
@@ -195,7 +195,7 @@ CREATE INDEX phpbb_acl_roles_data_ath_op_id ON phpbb_acl_roles_data (auth_option
 	Table: 'phpbb_acl_users'
 */
 CREATE TABLE phpbb_acl_users (
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	auth_option_id number(8) DEFAULT '0' NOT NULL,
 	auth_role_id number(8) DEFAULT '0' NOT NULL,
@@ -277,8 +277,8 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes (display_on_posting)
 	Table: 'phpbb_bookmarks'
 */
 CREATE TABLE phpbb_bookmarks (
-	topic_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_bookmarks PRIMARY KEY (topic_id, user_id)
 )
 /
@@ -291,7 +291,7 @@ CREATE TABLE phpbb_bots (
 	bot_id number(8) NOT NULL,
 	bot_active number(1) DEFAULT '1' NOT NULL,
 	bot_name varchar2(765) DEFAULT '' ,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	bot_agent varchar2(255) DEFAULT '' ,
 	bot_ip varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_bots PRIMARY KEY (bot_id)
@@ -391,8 +391,8 @@ END;
 */
 CREATE TABLE phpbb_drafts (
 	draft_id number(8) NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	save_time number(11) DEFAULT '0' NOT NULL,
 	draft_subject varchar2(765) DEFAULT '' ,
@@ -573,7 +573,7 @@ END;
 */
 CREATE TABLE phpbb_forums_access (
 	forum_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_forums_access PRIMARY KEY (forum_id, user_id, session_id)
 )
@@ -584,7 +584,7 @@ CREATE TABLE phpbb_forums_access (
 	Table: 'phpbb_forums_track'
 */
 CREATE TABLE phpbb_forums_track (
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	mark_time number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_forums_track PRIMARY KEY (user_id, forum_id)
@@ -597,7 +597,7 @@ CREATE TABLE phpbb_forums_track (
 */
 CREATE TABLE phpbb_forums_watch (
 	forum_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	notify_status number(1) DEFAULT '0' NOT NULL
 )
 /
@@ -729,9 +729,9 @@ END;
 CREATE TABLE phpbb_log (
 	log_id number(8) NOT NULL,
 	log_type number(4) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	reportee_id number(8) DEFAULT '0' NOT NULL,
 	log_ip varchar2(40) DEFAULT '' ,
 	log_time number(11) DEFAULT '0' NOT NULL,
@@ -778,7 +778,7 @@ CREATE TABLE phpbb_login_attempts (
 	attempt_browser varchar2(150) DEFAULT '' ,
 	attempt_forwarded_for varchar2(255) DEFAULT '' ,
 	attempt_time number(11) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	username varchar2(765) DEFAULT '0' NOT NULL,
 	username_clean varchar2(255) DEFAULT '0' NOT NULL
 )
@@ -798,7 +798,7 @@ CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id)
 */
 CREATE TABLE phpbb_moderator_cache (
 	forum_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	username varchar2(765) DEFAULT '' ,
 	group_id number(8) DEFAULT '0' NOT NULL,
 	group_name varchar2(765) DEFAULT '' ,
@@ -906,7 +906,7 @@ CREATE TABLE phpbb_notifications (
 	notification_type_id number(4) DEFAULT '0' NOT NULL,
 	item_id number(8) DEFAULT '0' NOT NULL,
 	item_parent_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	notification_read number(1) DEFAULT '0' NOT NULL,
 	notification_time number(11) DEFAULT '1' NOT NULL,
 	notification_data clob DEFAULT '' ,
@@ -939,7 +939,7 @@ END;
 	Table: 'phpbb_oauth_accounts'
 */
 CREATE TABLE phpbb_oauth_accounts (
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	provider varchar2(255) DEFAULT '' ,
 	oauth_provider_id clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_oauth_accounts PRIMARY KEY (user_id, provider)
@@ -951,7 +951,7 @@ CREATE TABLE phpbb_oauth_accounts (
 	Table: 'phpbb_oauth_tokens'
 */
 CREATE TABLE phpbb_oauth_tokens (
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' ,
 	provider varchar2(255) DEFAULT '' ,
 	oauth_token clob DEFAULT '' 
@@ -968,7 +968,7 @@ CREATE INDEX phpbb_oauth_tokens_provider ON phpbb_oauth_tokens (provider)
 */
 CREATE TABLE phpbb_poll_options (
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	poll_option_text clob DEFAULT '' ,
 	poll_option_total number(8) DEFAULT '0' NOT NULL
 )
@@ -983,7 +983,7 @@ CREATE INDEX phpbb_poll_options_topic_id ON phpbb_poll_options (topic_id)
 	Table: 'phpbb_poll_votes'
 */
 CREATE TABLE phpbb_poll_votes (
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
 	vote_user_id number(8) DEFAULT '0' NOT NULL,
 	vote_user_ip varchar2(40) DEFAULT '' 
@@ -1001,8 +1001,8 @@ CREATE INDEX phpbb_poll_votes_vote_user_ip ON phpbb_poll_votes (vote_user_ip)
 	Table: 'phpbb_posts'
 */
 CREATE TABLE phpbb_posts (
-	post_id number(8) NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	post_id number(10) NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	poster_id number(8) DEFAULT '0' NOT NULL,
 	icon_id number(8) DEFAULT '0' NOT NULL,
@@ -1125,7 +1125,7 @@ END;
 */
 CREATE TABLE phpbb_privmsgs_folder (
 	folder_id number(8) NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	folder_name varchar2(765) DEFAULT '' ,
 	pm_count number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_privmsgs_folder PRIMARY KEY (folder_id)
@@ -1156,7 +1156,7 @@ END;
 */
 CREATE TABLE phpbb_privmsgs_rules (
 	rule_id number(8) NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	rule_check number(8) DEFAULT '0' NOT NULL,
 	rule_connection number(8) DEFAULT '0' NOT NULL,
 	rule_string varchar2(765) DEFAULT '' ,
@@ -1192,7 +1192,7 @@ END;
 */
 CREATE TABLE phpbb_privmsgs_to (
 	msg_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	author_id number(8) DEFAULT '0' NOT NULL,
 	pm_deleted number(1) DEFAULT '0' NOT NULL,
 	pm_new number(1) DEFAULT '1' NOT NULL,
@@ -1268,7 +1268,7 @@ END;
 	Table: 'phpbb_profile_fields_data'
 */
 CREATE TABLE phpbb_profile_fields_data (
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	pf_phpbb_location varchar2(255) DEFAULT '' ,
 	pf_phpbb_interests clob DEFAULT '' ,
 	pf_phpbb_occupation clob DEFAULT '' ,
@@ -1346,9 +1346,9 @@ END;
 CREATE TABLE phpbb_reports (
 	report_id number(8) NOT NULL,
 	reason_id number(4) DEFAULT '0' NOT NULL,
-	post_id number(8) DEFAULT '0' NOT NULL,
+	post_id number(10) DEFAULT '0' NOT NULL,
 	pm_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	user_notify number(1) DEFAULT '0' NOT NULL,
 	report_closed number(1) DEFAULT '0' NOT NULL,
 	report_time number(11) DEFAULT '0' NOT NULL,
@@ -1462,7 +1462,7 @@ END;
 	Table: 'phpbb_search_wordmatch'
 */
 CREATE TABLE phpbb_search_wordmatch (
-	post_id number(8) DEFAULT '0' NOT NULL,
+	post_id number(10) DEFAULT '0' NOT NULL,
 	word_id number(8) DEFAULT '0' NOT NULL,
 	title_match number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT u_phpbb_unq_mtch UNIQUE (word_id, post_id, title_match)
@@ -1507,7 +1507,7 @@ CREATE INDEX phpbb_sessions_session_fid ON phpbb_sessions (session_forum_id)
 */
 CREATE TABLE phpbb_sessions_keys (
 	key_id char(32) DEFAULT '' ,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	last_ip varchar2(40) DEFAULT '' ,
 	last_login number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_sessions_keys PRIMARY KEY (key_id, user_id)
@@ -1649,7 +1649,7 @@ END;
 	Table: 'phpbb_topics'
 */
 CREATE TABLE phpbb_topics (
-	topic_id number(8) NOT NULL,
+	topic_id number(10) NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	icon_id number(8) DEFAULT '0' NOT NULL,
 	topic_attachment number(1) DEFAULT '0' NOT NULL,
@@ -1724,8 +1724,8 @@ END;
 	Table: 'phpbb_topics_track'
 */
 CREATE TABLE phpbb_topics_track (
-	user_id number(8) DEFAULT '0' NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	mark_time number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_topics_track PRIMARY KEY (user_id, topic_id)
@@ -1741,8 +1741,8 @@ CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track (forum_id)
 	Table: 'phpbb_topics_posted'
 */
 CREATE TABLE phpbb_topics_posted (
-	user_id number(8) DEFAULT '0' NOT NULL,
-	topic_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
 	topic_posted number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_topics_posted PRIMARY KEY (user_id, topic_id)
 )
@@ -1753,8 +1753,8 @@ CREATE TABLE phpbb_topics_posted (
 	Table: 'phpbb_topics_watch'
 */
 CREATE TABLE phpbb_topics_watch (
-	topic_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	topic_id number(10) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	notify_status number(1) DEFAULT '0' NOT NULL
 )
 /
@@ -1772,7 +1772,7 @@ CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status
 CREATE TABLE phpbb_user_notifications (
 	item_type varchar2(255) DEFAULT '' ,
 	item_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	method varchar2(255) DEFAULT '' ,
 	notify number(1) DEFAULT '1' NOT NULL
 )
@@ -1784,7 +1784,7 @@ CREATE TABLE phpbb_user_notifications (
 */
 CREATE TABLE phpbb_user_group (
 	group_id number(8) DEFAULT '0' NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	group_leader number(1) DEFAULT '0' NOT NULL,
 	user_pending number(1) DEFAULT '1' NOT NULL
 )
@@ -1801,7 +1801,7 @@ CREATE INDEX phpbb_user_group_group_leader ON phpbb_user_group (group_leader)
 	Table: 'phpbb_users'
 */
 CREATE TABLE phpbb_users (
-	user_id number(8) NOT NULL,
+	user_id number(10) NOT NULL,
 	user_type number(2) DEFAULT '0' NOT NULL,
 	group_id number(8) DEFAULT '3' NOT NULL,
 	user_permissions clob DEFAULT '' ,
@@ -1901,8 +1901,8 @@ END;
 */
 CREATE TABLE phpbb_warnings (
 	warning_id number(8) NOT NULL,
-	user_id number(8) DEFAULT '0' NOT NULL,
-	post_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
+	post_id number(10) DEFAULT '0' NOT NULL,
 	log_id number(8) DEFAULT '0' NOT NULL,
 	warning_time number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_warnings PRIMARY KEY (warning_id)
@@ -1958,7 +1958,7 @@ END;
 	Table: 'phpbb_zebra'
 */
 CREATE TABLE phpbb_zebra (
-	user_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(10) DEFAULT '0' NOT NULL,
 	zebra_id number(8) DEFAULT '0' NOT NULL,
 	friend number(1) DEFAULT '0' NOT NULL,
 	foe number(1) DEFAULT '0' NOT NULL,
