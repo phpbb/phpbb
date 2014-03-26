@@ -11,11 +11,11 @@
 <!-- ENDIF -->
 
 <!-- IF S_FORUM_RULES -->
-	<div class="rules">
+	<div class="rules<!-- IF U_FORUM_RULES --> rules-link<!-- ENDIF -->">
 		<div class="inner">
 
 		<!-- IF U_FORUM_RULES -->
-			<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
+			<a href="{U_FORUM_RULES}" class="rules-link">{L_FORUM_RULES}</a>
 		<!-- ELSE -->
 			<strong>{L_FORUM_RULES}</strong><br />
 			{FORUM_RULES}
