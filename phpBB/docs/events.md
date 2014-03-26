@@ -118,6 +118,14 @@ forumlist_body_subforums_before
 * Since: 3.1.0-a4
 * Purpose: Add content before the list of subforums (if any) for each forum on the forum list.
 
+forumlist_body_last_row_after
+====
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+    + styles/subsilver2/template/forumlist_body.html
+* Since: 3.1.0-b2
+* Purpose: Add content after the very last row of the forum list.
+
 index_body_linklist_after
 ===
 * Locations:
