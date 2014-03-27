@@ -578,6 +578,7 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
+		$topics_id_list = array();
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -652,18 +653,26 @@ class mcp_queue
 				// Handle notifications
 				foreach ($post_info as $post_id => $post_data)
 				{
-					// A single topic approval may also happen here, so handle deleting the respective notification.
+					$send_topic_notification = false;
+
+					// A single topic approval may also happen here.
 					if (!$post_data['topic_posts_approved'])
 					{
-						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+						$send_topic_notification = true;
+						$topics_id_list[] = $post_data['topic_id'];
 					}
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
+<<<<<<< HEAD
 					// Only add notifications, if we are not reapproving post
 					// When the topic was already approved, but was edited and
 					// now needs re-approval, we don't want to notify the users
 					// again.
 					if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+=======
+					// Send post notification only if a topic notification will not be sent.
+					if (!$send_topic_notification)
+>>>>>>> c3f1f31... [ticket/12270] Correct notifications for posts/topics now working
 					{
 						$phpbb_notifications->add_notifications(array(
 							'quote',
@@ -686,16 +695,11 @@ class mcp_queue
 							continue;
 						}
 
-						if ($topic_info[$post_data['topic_id']]['first_post'])
-						{
-							$phpbb_notifications->add_notifications('approve_topic', $topic_info[$post_data['topic_id']]);
-						}
-						else
-						{
-							$phpbb_notifications->add_notifications('approve_post', $post_data);
-						}
+						$phpbb_notifications->add_notifications('approve_post', $post_data);
 					}
 				}
+
+				self::approve_topics($action, $topics_id_list, $id, $mode);
 			}
 
 			meta_refresh(3, $redirect);
