@@ -18,3 +18,4 @@ parameters:
     tables.topics: %core.table_prefix%topics
     tables.user_notifications: %core.table_prefix%user_notifications
     tables.users: %core.table_prefix%users
+    tables.post_revisions: %core.table_prefix%post_revisions

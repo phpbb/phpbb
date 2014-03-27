@@ -223,6 +223,11 @@ li.reported:hover {
 	/* you can add a background for stickies and announcements*/
 }
 
+.success_message {
+	background-color: #228822;
+	color: #FFFFFF;
+}
+
 div.rules {
 	background-color: #ECD5D8;
 	color: #BC2A4D;

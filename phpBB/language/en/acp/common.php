@@ -382,6 +382,11 @@ $lang = array_merge($lang, array(
 	'PURGE_SESSIONS_EXPLAIN'	=> 'Purge all sessions. This will log out all users by truncating the session table.',
 	'PURGE_SESSIONS_SUCCESS'	=> 'Sessions successfully purged.',
 
+	'PURGE_REVISIONS'			=> 'Purge all post revisions',
+	'PURGE_REVISIONS_CONFIRM'	=> 'Are you sure you wish to purge all post revisions? This cannot be undone.',
+	'PURGE_REVISIONS_EXPLAIN'	=> 'Purge all revisions. This will delete all previous versions of posts that have been saved in the database.',
+	'PURGE_REVISIONS_SUCCESS'	=> 'Revisions successfully purged.',
+
 	'RESET_DATE'					=> 'Reset board’s start date',
 	'RESET_DATE_CONFIRM'			=> 'Are you sure you wish to reset the board’s start date?',
 	'RESET_DATE_SUCCESS'				=> 'Board’s start date reset',
@@ -680,7 +685,11 @@ $lang = array_merge($lang, array(
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<strong>Users pruned and posts retained</strong><br />» %s',
 
+	'LOG_PRUNED_EXCESS_POST_REVISIONS'	=> '<strong>Pruned excess post revisions</strong><br />» %s',
+	'LOG_PRUNED_OLD_POST_REVISIONS'		=> '<strong>Pruned old post revisions</strong><br />» %s',
+
 	'LOG_PURGE_CACHE'			=> '<strong>Purged cache</strong>',
+	'LOG_PURGE_REVISIONS'		=> '<strong>Purged post revisions</strong>',
 	'LOG_PURGE_SESSIONS'		=> '<strong>Purged sessions</strong>',
 
 

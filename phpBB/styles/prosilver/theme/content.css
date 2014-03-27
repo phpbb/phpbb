@@ -90,6 +90,51 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
+ul.revisions li.row dt, ul.revisions li.row dd {
+	font-size: 1.1em;
+	padding: 3px 5px;
+	vertical-align: middle;
+}
+
+.out_of_range .revision_user, .out_of_range .revision_date, .out_of_range .revision_options {
+	opacity: 0.6;
+}
+.revision_compare, .revision_view, .revision_user, .revision_date {
+	text-align: center;
+}
+
+dd.revision_reason, dd.revision_options {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+li.header dt.revision_view, ul.topiclist dt.revision_view {
+	width: 8%;
+	margin-right: 0;
+}
+
+li.header dt.revision_view {
+	margin-left: 10px;
+}
+
+.revision_compare { 
+	width: 6%;
+}
+.revision_user { width: 18%; }
+.revision_date { width: 16%; }
+.revision_reason { width: 35%; }
+
+.revision_user a, .revision_user img {
+	vertical-align: middle;
+}
+
+.success_message {
+	font-size: 1.1em;
+	padding: 5px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+
 .forum-image {
 	float: left;
 	padding-top: 5px;
@@ -261,6 +306,16 @@ div[class].topic-actions {
 	overflow-x: auto;
 }
 
+.postbody .content ins {
+	text-decoration: none;
+	background-color: #99FF99;
+}
+
+.postbody .content del {
+	text-decoration: none;
+	background-color: #FFAAAA;
+}
+
 .search .postbody {
 	width: 68%
 }
@@ -314,6 +369,10 @@ div[class].topic-actions {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	padding-bottom: 1px;
+}
+
+.basic-content {
+	font-size: 1.1em;
 }
 
 .content h2, .panel h2 {

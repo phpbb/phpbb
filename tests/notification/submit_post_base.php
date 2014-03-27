@@ -34,6 +34,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		'bbcode_bitfield'	=> '',
 		'bbcode_uid'		=> '',
 		'post_edit_locked'	=> false,
+		'post_wiki'			=> 0,
 		//'force_approved_state'	=> 1,
 	);
 

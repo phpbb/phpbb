@@ -76,7 +76,10 @@ $f_permissions = array(
 	'f_postcount'	=> array(1, 0),
 	'f_noapprove'=> array(1, 0),
 	'f_report'	=> array(1, 0),
+	'f_revisions'	=> array(1, 0),
 	'f_subscribe'	=> array(1, 0),
+	'f_wiki_create'	=> array(1, 0),
+	'f_wiki_edit'	=> array(1, 0),
 );
 
 $m_permissions = array(
@@ -92,6 +95,9 @@ $m_permissions = array(
 	'm_auth'	=> array(1, 1),
 	'm_ip'		=> array(1, 1),
 	'm_info'	=> array(1, 1),
+	'm_revisions' => array(1, 1),
+	'm_delete_revisions'	=> array(1, 1),
+	'm_protect_revisions'	=> array(1, 1),
 );
 
 $a_permissions = array(

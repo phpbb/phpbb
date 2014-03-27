@@ -1021,11 +1021,13 @@ CREATE TABLE phpbb_posts (
 	post_attachment number(1) DEFAULT '0' NOT NULL,
 	bbcode_bitfield varchar2(255) DEFAULT '' ,
 	bbcode_uid varchar2(8) DEFAULT '' ,
+	post_wiki number(1) DEFAULT '0' NOT NULL,
 	post_postcount number(1) DEFAULT '1' NOT NULL,
 	post_edit_time number(11) DEFAULT '0' NOT NULL,
 	post_edit_reason varchar2(765) DEFAULT '' ,
 	post_edit_user number(8) DEFAULT '0' NOT NULL,
 	post_edit_count number(4) DEFAULT '0' NOT NULL,
+	post_revision_count number(4) DEFAULT '0' NOT NULL,
 	post_edit_locked number(1) DEFAULT '0' NOT NULL,
 	post_delete_time number(11) DEFAULT '0' NOT NULL,
 	post_delete_reason varchar2(765) DEFAULT '' ,
@@ -1060,6 +1062,48 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_posts_seq.nextval
 	INTO :new.post_id
+	FROM dual;
+END;
+/
+
+
+/*
+	Table: 'phpbb_post_revisions'
+*/
+CREATE TABLE phpbb_post_revisions (
+	revision_id number(8) NOT NULL,
+	post_id number(8) DEFAULT '0' NOT NULL,
+	user_id number(8) DEFAULT '0' NOT NULL,
+	revision_time number(11) DEFAULT '0' NOT NULL,
+	revision_subject varchar2(765) DEFAULT '' ,
+	revision_text clob DEFAULT '' ,
+	revision_checksum varchar2(32) DEFAULT '' ,
+	bbcode_bitfield varchar2(255) DEFAULT '' ,
+	bbcode_uid varchar2(8) DEFAULT '' ,
+	revision_reason varchar2(765) DEFAULT '' ,
+	revision_protected number(1) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_post_revisions PRIMARY KEY (revision_id)
+)
+/
+
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id)
+/
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions (user_id)
+/
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions (revision_time)
+/
+
+CREATE SEQUENCE phpbb_post_revisions_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_post_revisions
+BEFORE INSERT ON phpbb_post_revisions
+FOR EACH ROW WHEN (
+	new.revision_id IS NULL OR new.revision_id = 0
+)
+BEGIN
+	SELECT phpbb_post_revisions_seq.nextval
+	INTO :new.revision_id
 	FROM dual;
 END;
 /

@@ -734,11 +734,13 @@ CREATE TABLE phpbb_posts (
 	post_attachment INT2 DEFAULT '0' NOT NULL CHECK (post_attachment >= 0),
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
+	post_wiki INT2 DEFAULT '0' NOT NULL CHECK (post_wiki >= 0),
 	post_postcount INT2 DEFAULT '1' NOT NULL CHECK (post_postcount >= 0),
 	post_edit_time INT4 DEFAULT '0' NOT NULL CHECK (post_edit_time >= 0),
 	post_edit_reason varchar(255) DEFAULT '' NOT NULL,
 	post_edit_user INT4 DEFAULT '0' NOT NULL CHECK (post_edit_user >= 0),
 	post_edit_count INT2 DEFAULT '0' NOT NULL CHECK (post_edit_count >= 0),
+	post_revision_count INT2 DEFAULT '0' NOT NULL CHECK (post_revision_count >= 0),
 	post_edit_locked INT2 DEFAULT '0' NOT NULL CHECK (post_edit_locked >= 0),
 	post_delete_time INT4 DEFAULT '0' NOT NULL CHECK (post_delete_time >= 0),
 	post_delete_reason varchar(255) DEFAULT '' NOT NULL,
@@ -753,6 +755,30 @@ CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
 CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility);
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
+
+/*
+	Table: 'phpbb_post_revisions'
+*/
+CREATE SEQUENCE phpbb_post_revisions_seq;
+
+CREATE TABLE phpbb_post_revisions (
+	revision_id INT4 DEFAULT nextval('phpbb_post_revisions_seq'),
+	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
+	revision_time INT4 DEFAULT '0' NOT NULL CHECK (revision_time >= 0),
+	revision_subject varchar(255) DEFAULT '' NOT NULL,
+	revision_text TEXT DEFAULT '' NOT NULL,
+	revision_checksum varchar(32) DEFAULT '' NOT NULL,
+	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
+	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
+	revision_reason varchar(255) DEFAULT '' NOT NULL,
+	revision_protected INT2 DEFAULT '0' NOT NULL CHECK (revision_protected >= 0),
+	PRIMARY KEY (revision_id)
+);
+
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id);
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions (user_id);
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions (revision_time);
 
 /*
 	Table: 'phpbb_privmsgs'

@@ -529,11 +529,13 @@ CREATE TABLE phpbb_posts (
 	post_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
 	bbcode_uid varchar(8) NOT NULL DEFAULT '',
+	post_wiki INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_postcount INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	post_edit_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_reason text(65535) NOT NULL DEFAULT '',
 	post_edit_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	post_revision_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_locked INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_delete_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_delete_reason text(65535) NOT NULL DEFAULT '',
@@ -547,6 +549,25 @@ CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
 CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility);
 CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
+
+# Table: 'phpbb_post_revisions'
+CREATE TABLE phpbb_post_revisions (
+	revision_id INTEGER PRIMARY KEY NOT NULL ,
+	post_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	revision_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	revision_subject text(65535) NOT NULL DEFAULT '',
+	revision_text mediumtext(16777215) NOT NULL DEFAULT '',
+	revision_checksum varchar(32) NOT NULL DEFAULT '',
+	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
+	bbcode_uid varchar(8) NOT NULL DEFAULT '',
+	revision_reason text(65535) NOT NULL DEFAULT '',
+	revision_protected INTEGER UNSIGNED NOT NULL DEFAULT '0'
+);
+
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions (post_id);
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions (user_id);
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions (revision_time);
 
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (

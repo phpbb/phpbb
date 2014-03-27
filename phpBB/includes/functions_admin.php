@@ -831,7 +831,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(POSTS_TABLE, REPORTS_TABLE);
+	$table_ary = array(POSTS_TABLE, REPORTS_TABLE, POST_REVISIONS_TABLE);
 
 	foreach ($table_ary as $table)
 	{
@@ -3168,4 +3168,25 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 		SET ' . $column_name . ' = ' . $db->sql_bit_or($column_name, $flag) . '
 		' . $sql_more;
 	$db->sql_query($sql);
+}
+
+/**
+ * Purge all post revisions
+ *
+ * @param phpbb_db_driver $db Database object
+ *
+ * @return null
+ */
+function phpbb_purge_post_revisions(phpbb_db_driver $db)
+{
+	$db->sql_transaction('begin');
+
+	$sql = 'DELETE FROM ' . POST_REVISIONS_TABLE;
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_revision_count = 0';
+	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
 }

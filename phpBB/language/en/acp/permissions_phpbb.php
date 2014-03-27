@@ -123,6 +123,9 @@ $lang = array_merge($lang, array(
 	'ACL_F_IGNOREFLOOD' => 'Can ignore flood limit',
 	'ACL_F_POSTCOUNT'	=> 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>',
 	'ACL_F_NOAPPROVE'	=> 'Can post without approval',
+	'ACL_F_REVISIONS'	=> 'Can view own posts’ revisions',
+	'ACL_F_WIKI_CREATE'	=> 'Can create wiki posts',
+	'ACL_F_WIKI_EDIT'	=> 'Can edit wiki posts and view their revisions',
 
 	'ACL_F_ATTACH'		=> 'Can attach files',
 	'ACL_F_ICONS'		=> 'Can use topic/post icons',
@@ -145,6 +148,10 @@ $lang = array_merge($lang, array(
 	'ACL_M_APPROVE'		=> 'Can approve posts',
 	'ACL_M_REPORT'		=> 'Can close and delete reports',
 	'ACL_M_CHGPOSTER'	=> 'Can change post author',
+	'ACL_M_REVISIONS'	=> 'Can view post revisions',
+	'ACL_M_RESTORE_REVISIONS'	=> 'Can restore a post to a selected revision',
+	'ACL_M_DELETE_REVISIONS'	=> 'Can delete post revisions',
+	'ACL_M_PROTECT_REVISIONS'	=> 'Can protect post revisions',
 
 	'ACL_M_MOVE'	=> 'Can move topics',
 	'ACL_M_LOCK'	=> 'Can lock topics',

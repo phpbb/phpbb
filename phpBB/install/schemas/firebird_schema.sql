@@ -759,11 +759,13 @@ CREATE TABLE phpbb_posts (
 	post_attachment INTEGER DEFAULT 0 NOT NULL,
 	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	post_wiki INTEGER DEFAULT 0 NOT NULL,
 	post_postcount INTEGER DEFAULT 1 NOT NULL,
 	post_edit_time INTEGER DEFAULT 0 NOT NULL,
 	post_edit_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	post_edit_user INTEGER DEFAULT 0 NOT NULL,
 	post_edit_count INTEGER DEFAULT 0 NOT NULL,
+	post_revision_count INTEGER DEFAULT 0 NOT NULL,
 	post_edit_locked INTEGER DEFAULT 0 NOT NULL,
 	post_delete_time INTEGER DEFAULT 0 NOT NULL,
 	post_delete_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
@@ -788,6 +790,38 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.post_id = GEN_ID(phpbb_posts_gen, 1);
+END;;
+
+
+# Table: 'phpbb_post_revisions'
+CREATE TABLE phpbb_post_revisions (
+	revision_id INTEGER NOT NULL,
+	post_id INTEGER DEFAULT 0 NOT NULL,
+	user_id INTEGER DEFAULT 0 NOT NULL,
+	revision_time INTEGER DEFAULT 0 NOT NULL,
+	revision_subject VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	revision_text BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
+	revision_checksum VARCHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	bbcode_uid VARCHAR(8) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	revision_reason VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	revision_protected INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_post_revisions ADD PRIMARY KEY (revision_id);;
+
+CREATE INDEX phpbb_post_revisions_post_id ON phpbb_post_revisions(post_id);;
+CREATE INDEX phpbb_post_revisions_user_id ON phpbb_post_revisions(user_id);;
+CREATE INDEX phpbb_post_revisions_time ON phpbb_post_revisions(revision_time);;
+
+CREATE GENERATOR phpbb_post_revisions_gen;;
+SET GENERATOR phpbb_post_revisions_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_post_revisions FOR phpbb_post_revisions
+BEFORE INSERT
+AS
+BEGIN
+	NEW.revision_id = GEN_ID(phpbb_post_revisions_gen, 1);
 END;;
 
 

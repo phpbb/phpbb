@@ -1049,6 +1049,8 @@ while ($row = $db->sql_fetchrow($result))
 		'post_edit_reason'	=> $row['post_edit_reason'],
 		'post_edit_user'	=> $row['post_edit_user'],
 		'post_edit_locked'	=> $row['post_edit_locked'],
+		'post_revision_count' => $row['post_revision_count'],
+		'post_wiki'			=> $row['post_wiki'],
 		'post_delete_time'	=> $row['post_delete_time'],
 		'post_delete_reason'=> $row['post_delete_reason'],
 		'post_delete_user'	=> $row['post_delete_user'],
@@ -1567,6 +1569,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$topic_data['topic_status'] != ITEM_LOCKED &&
 		!$row['post_edit_locked'] &&
 		($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
+	) || (
+		// @todo - Find out if guests should be able to have the wiki edit permission
+		// If so, this OR chunk needs to be moved to after the very end of the conditional
+		$config['revisions_allow_wiki'] &&
+		$row['post_wiki'] &&
+		$auth->acl_get('f_wiki_edit', $forum_id) &&
+		!$row['post_edit_locked']
 	)));
 
 	$quote_allowed = $auth->acl_get('m_edit', $forum_id) || ($topic_data['topic_status'] != ITEM_LOCKED &&
@@ -1582,6 +1591,36 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		// we do not want to allow removal of the last post if a moderator locked it!
 		!$row['post_edit_locked']
 	)));
+
+	// The user can view the post's revisions if:
+	// The post has revisions, AND:
+	// the user is a moderator, OR:
+	// the user is the post author AND has f_revisions in this forum, OR:
+	// the post is a wiki post AND the user has f_wiki_edit in this forum
+	$can_view_revisions = $row['post_revision_count'] &&
+		($auth->acl_get('m_revisions', $forum_id) ||
+			($user->data['user_id'] == $poster_id && $auth->acl_get('f_revisions', $forum_id)) ||
+			($row['post_wiki'] && $auth->acl_get('f_wiki_edit', $forum_id))
+		);
+
+	// List the most recent revisions
+	$post_revision_comparison_output = '';
+	if ($can_view_revisions)
+	{
+		// Because we're in a loop, only add this if it hasn't been added yet
+		if (!$user->lang('RETURN_REVISION'))
+		{
+			$user->add_lang('revisions');
+		}
+
+		$revisions_post = new \phpbb\revisions\post($row['post_id'], $db, $config, $auth);
+		$revisions = $revisions_post->get_revisions();
+		if (sizeof($revisions))
+		{
+			$comparison = new \phpbb\revisions\comparison(current($revisions), $revisions_post->get_current_revision());
+			$post_revision_comparison_output = $comparison->output_template_block($revisions_post, $template, $user, $auth, $request, false, $phpbb_root_path, $phpEx, false);
+		}
+	}
 
 	//
 	$post_row = array(
@@ -1627,6 +1666,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
+		'U_VIEW_POST_REVISIONS'	=> append_sid("{$phpbb_root_path}app.$phpEx/post/{$row['post_id']}/revisions"),
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f=$forum_id&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
 		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
@@ -1655,10 +1695,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 		'S_TOPIC_POSTER'	=> ($topic_data['topic_poster'] == $poster_id) ? true : false,
 
+		'S_VIEW_POST_REVISIONS'	=> $can_view_revisions,
+
 		'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
 		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		'S_POST_HIDDEN'		=> $row['hide_post'],
 		'L_POST_DISPLAY'	=> ($row['hide_post']) ? $user->lang('POST_DISPLAY', '<a class="display_post" data-post-id="' . $row['post_id'] . '" href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
+
+		'POST_REVISION_COMPARISON_OUTPUT'	=> $post_revision_comparison_output,
 	);
 
 	$user_poster_data = $user_cache[$poster_id];

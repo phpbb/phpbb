@@ -1,0 +1,99 @@
+<!-- INCLUDE overall_header.html -->
+<div class="revision_action_success"<!-- IF not L_REVISIONS_ACTION_SUCCESS --> style="display: none;"<!-- ENDIF -->>
+	<div class="inner">
+		<strong>{L_REVISIONS_ACTION_SUCCESS}</strong>
+	</div>
+</div>
+
+<div id="pageheader">
+
+<h2>{L_VIEWING_POST_REVISION}</h2>
+
+</div>
+
+<br clear="all" /><br />
+
+<div id="pagecontent">
+
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{L_AUTHOR}</th>
+		<th>{L_MESSAGE}</th>
+	</tr>
+	<tr class="row1">
+
+		<td align="center" valign="middle">
+			{POST_USERNAME}
+		</td>
+		<td width="100%" height="25">
+			<table width="100%" cellspacing="0">
+			<tr>
+				<td class="gensmall" width="100%"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<b>{L_POST_SUBJECT}:</b> <a href="{U_VIEW_POST}">{POST_SUBJECT}</a></div><div style="float: {S_CONTENT_FLOW_END};"><a href="{U_VIEW_POST}" class="imageset">{POST_IMG}</a><b>{L_POSTED}:</b> {POST_DATE}&nbsp;</div></td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr class="row1">
+
+		<td valign="top" class="profile">
+			<table cellspacing="4" align="center" width="150">
+		<!-- IF RANK_TITLE -->
+			<tr>
+				<td class="postdetails">{RANK_TITLE}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF RANK_IMG -->
+			<tr>
+				<td>{RANK_IMG}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF postrow.POSTER_AVATAR -->
+			<tr>
+				<td>{postrow.POSTER_AVATAR}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF not (RANK_TITLE or RANK_IMG or POSTER_AVATAR) -->
+			<tr>
+				<td></td>
+			</tr>
+		<!-- ENDIF -->
+			</table>
+
+			<span class="postdetails">
+				<!-- IF POSTER_JOINED --><br /><b>{L_JOINED}:</b> {POSTER_JOINED}<!-- ENDIF -->
+				<!-- IF POSTER_POSTS != '' --><br /><b>{L_POSTS}:</b> {POSTER_POSTS}<!-- ENDIF -->
+				<!-- IF POSTER_FROM --><br /><b>{L_LOCATION}:</b> {POSTER_FROM}<!-- ENDIF -->
+			</span>
+
+		</td>
+		<td valign="top">
+			<table width="100%" cellspacing="5">
+			<tr>
+				<td>
+					<div class="postbody">{MESSAGE}</div>
+					<br clear="all" /><br />
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+
+	<tr>
+		<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
+	</tr>
+	</table>
+
+</div>
+
+<div id="pagefooter"></div>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<br clear="all" />
+
+<!-- INCLUDE overall_footer.html -->

@@ -1590,7 +1590,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
-				'post_edit_locked'	=> $data['post_edit_locked']
+				'post_edit_locked'	=> $data['post_edit_locked'],
+				'post_wiki'			=> $data['post_wiki'],
 			);
 		break;
 
@@ -1607,9 +1608,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// If normal edit display edit info
 
 			// Display edit info if edit reason given or user is editing his post, which is not the last within the topic.
-			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
+			if ($config['track_post_revisions'] || $data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
-				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, 255, false);
+				$data['post_edit_reason'] = (truncate_string($data['post_edit_reason'], 255, 255, false)) ?: '';
 
 				$sql_data[POSTS_TABLE]['sql']	= array(
 					'post_edit_time'	=> $current_time,
@@ -1655,12 +1656,48 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_attachment'	=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
-				'post_edit_locked'	=> $data['post_edit_locked'])
-			);
+				'post_edit_locked'	=> $data['post_edit_locked'],
+				'post_wiki'			=> $data['post_wiki'],
+			));
 
 			if ($update_message)
 			{
 				$sql_data[POSTS_TABLE]['sql']['post_text'] = $data['message'];
+			}
+
+			// We save a post revision if the following evaluates true:
+			// 1) We are tracking post revisions AND
+			// 2) We have some original post data to save AND
+			// 3) One of the following is true:
+			// 3.1) The current user is the original poster AND the post is
+			// not locked from editing
+			// 3.2) The current user is a moderator in the current forum
+			// 3.3) The current post is a wiki post AND the current user can
+			// edit wiki posts
+			if ($config['track_post_revisions']
+				&& !empty($data['original_post_data'])
+				&& (($data['poster_id'] == $user->data['user_id'] && !$data['post_edit_locked'])
+					|| $auth->acl_getf('m_edit', $data['forum_id'])
+					|| ($data['post_wiki'] && $auth->acl_getf('f_wiki_edit', $data['forum_id']))))
+			{
+				$sql_data[POST_REVISIONS_TABLE]['sql'] = array(
+					'post_id'				=> $data['original_post_data']['post_id'],
+					// We need to store the user ID of the user who is
+					// responsible for the content just prior to this edit;
+					// i.e. the previous current post.
+					'user_id'				=> $data['original_post_data']['post_edit_user'] ?: $data['original_post_data']['user_id'],
+					'revision_time'			=> $data['original_post_data']['post_time'],
+					'revision_subject'		=> $data['original_post_data']['post_subject'],
+					'revision_text'			=> $data['original_post_data']['message'],
+					'revision_checksum'		=> $data['original_post_data']['post_checksum'],
+					'bbcode_bitfield'		=> $data['original_post_data']['bbcode_bitfield'],
+					'bbcode_uid'			=> $data['original_post_data']['bbcode_uid'],
+					'revision_reason'		=> $data['original_post_data']['post_edit_reason'],
+				);
+
+				$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
+					'post_revision_count'			=> ++$data['original_post_data']['post_revision_count'],
+				));
 			}
 
 		break;
@@ -1869,6 +1906,29 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$db->sql_query($sql);
 
 		unset($sql_data[TOPICS_TABLE]['sql']);
+	}
+
+	// If applicable, insert a new post revision
+	if (isset($sql_data[POST_REVISIONS_TABLE]['sql']))
+	{
+		$sql = 'INSERT INTO ' . POST_REVISIONS_TABLE . '
+			' . $db->sql_build_array('INSERT', $sql_data[POST_REVISIONS_TABLE]['sql']);
+		$db->sql_query($sql);
+
+		$revision_post = new \phpbb\revisions\post($data['post_id'], $db, $config, $auth);
+
+		// The first revision of a post is the original post content
+		// We want to hold onto the original post revision, so we
+		// mark it as protected by default.
+		if ($revision_post->get_revision_count() == 1)
+		{
+			$sql = 'UPDATE ' . POST_REVISIONS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', array('revision_protected' => 1)) . '
+				WHERE post_id = ' . (int) $data['post_id'];
+			$db->sql_query($sql);
+		}
+
+		$revision_post->delete_excess_revisions();
 	}
 
 	// Update the posts table

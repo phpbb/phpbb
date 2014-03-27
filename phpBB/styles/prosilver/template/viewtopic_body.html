@@ -254,6 +254,7 @@
 
 			<!-- EVENT viewtopic_body_postrow_post_notices_before -->
 			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
+
 			<!-- IF postrow.DELETED_MESSAGE or postrow.DELETE_REASON -->
 				<div class="notice post_deleted_msg">
 					{postrow.DELETED_MESSAGE}
@@ -261,7 +262,7 @@
 				</div>
 			<!-- ELSEIF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
 				<div class="notice">
-					{postrow.EDITED_MESSAGE}
+					{postrow.EDITED_MESSAGE}<!-- IF postrow.S_VIEW_POST_REVISIONS --> <a href="{postrow.U_VIEW_POST_REVISIONS}" class="revision_toggle">{L_EDITED_REVISIONS_TOTAL}</a><!-- ENDIF -->
 					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
 				</div>
 			<!-- ENDIF -->
@@ -277,6 +278,13 @@
 
 		</div>
 	</div>
+
+<!-- IF postrow.S_VIEW_POST_REVISIONS -->
+	<div id="p{postrow.POST_ID}_revisions" class="hidden">
+		<h3>{L_LAST_FIVE_REVISIONS} (<a href="{postrow.U_VIEW_POST_REVISIONS}">{L_VIEW_ALL}</a>)</h3>
+		{postrow.POST_REVISION_COMPARISON_OUTPUT}
+	</div>
+<!-- ENDIF -->
 
 	<hr class="divider" />
 	<!-- EVENT viewtopic_body_postrow_post_after -->

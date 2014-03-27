@@ -288,6 +288,62 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 	}
 });
 
+// This callback updates the comparison of revisions
+phpbb.addAjaxCallback('revisions.compare', function(res) {
+	var i;
+
+	for (i in res.revisions_block) {
+		$('#r' + res.revisions_block[i].ID).toggleClass('out_of_range', !res.revisions_block[i].IN_RANGE);
+	}
+
+	$('.first').html(res.subject_diff_rendered);
+	$('.content').html(res.text_diff_rendered);
+	$('#comparing_to').html(res.comparing_to);
+	$('#revision_lines_changed').html(res.lines_changed);
+});
+
+// This callback updates information about the protected status of revisions
+phpbb.addAjaxCallback('revisions.protect', function(res) {
+	if (res.success) {
+		$('#r' + res.revision_id + ' .revision_protect').hide();
+		$('#r' + res.revision_id + ' .revision_unprotect').show();
+		$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
+	}
+});
+
+// This callback updates information about the unprotected status of revisions
+phpbb.addAjaxCallback('revisions.unprotect', function(res) {
+	if (res.success) {
+		$('#r' + res.revision_id + ' .revision_unprotect').hide();
+		$('#r' + res.revision_id + ' .revision_protect').show();
+		$('.revision_action_success').html(res.message).fadeIn(500).delay(5000).fadeOut(500);
+	}
+});
+
+// This callback removes a deleted revision from view
+phpbb.addAjaxCallback('revisions.delete', function(res) {
+	if (res.success) {
+		var revisionCount;
+
+		$(this).parents('li.row').remove();
+		revisionCount = parseInt($('#compare_summary').html()) - 1;
+		$('#compare_summary').html(revisionCount);
+
+		// Disable radio buttons if there's only a single revision left.
+		if (revisionCount === 1) {
+			$('.revision_compare input[type="radio"]').attr({'disabled': 'disabled', 'checked': 'checked'});
+		}
+	}
+});
+
+// This toggles display of a revision list on viewtopic
+$('.revision_toggle').click(function(event) {
+	event.preventDefault();	// Don't follow the link
+	var id;
+	id = $(this).parents('.post').attr('id');
+	$('#' + id + '_revisions').slideToggle();
+});
+
 /**
  * Show poll results when clicking View results link.
  */

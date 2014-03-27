@@ -544,11 +544,13 @@ CREATE TABLE phpbb_posts (
 	post_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
 	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
+	post_wiki tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	post_postcount tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	post_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_reason varchar(255) DEFAULT '' NOT NULL,
 	post_edit_user mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	post_revision_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_locked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	post_delete_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	post_delete_reason varchar(255) DEFAULT '' NOT NULL,
@@ -561,6 +563,26 @@ CREATE TABLE phpbb_posts (
 	KEY post_visibility (post_visibility),
 	KEY post_username (post_username),
 	KEY tid_post_time (topic_id, post_time)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_post_revisions'
+CREATE TABLE phpbb_post_revisions (
+	revision_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	revision_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
+	revision_subject varchar(255) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
+	revision_text mediumtext NOT NULL,
+	revision_checksum varchar(32) DEFAULT '' NOT NULL,
+	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
+	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
+	revision_reason varchar(255) DEFAULT '' NOT NULL,
+	revision_protected tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	PRIMARY KEY (revision_id),
+	KEY post_id (post_id),
+	KEY user_id (user_id),
+	KEY time (revision_time)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
