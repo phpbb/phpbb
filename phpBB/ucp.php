@@ -128,7 +128,7 @@ switch ($mode)
 		);
 
 		// Disable online list
-		page_header($user->lang[$title], false);
+		page_header($user->lang[$title]);
 
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
@@ -353,7 +353,7 @@ $module->load_active();
 $module->assign_tpl_vars(append_sid("{$phpbb_root_path}ucp.$phpEx"));
 
 // Generate the page, do not display/query online list
-$module->display($module->get_page_title(), false);
+$module->display($module->get_page_title());
 
 /**
 * Function for assigning a template var if the zebra module got included
