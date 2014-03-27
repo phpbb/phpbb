@@ -578,7 +578,6 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
-		$topic_approve_log = array();
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
