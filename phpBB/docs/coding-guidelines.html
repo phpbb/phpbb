@@ -79,6 +79,8 @@
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#standardisation">Standardisation</a></li>
 		<li><a href="#otherconsiderations">Other considerations</a></li>
+		<li><a href="#placeholders">Working with placeholders</a></li>
+		<li><a href="#usingplurals">Using plurals</a></li>
 		<li><a href="#writingstyle">Writing Style</a></li>
 	</ol>
 	</li>
@@ -2341,7 +2343,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<p>Within some cases, there may be mixed scripts of a left-to-right and right-to-left direction, so using <code>LRE</code> &amp; <code>RLE</code> with <code>PDF</code> may be more appropriate. Lastly, in very rare instances where directionality must be forced, then use <code>LRO</code> &amp; <code>RLO</code> with <code>PDF</code>.</p>
 	<p>For further information on authoring techniques of bi-directional text, please see the W3C tutorial on <a href="http://www.w3.org/International/tutorials/bidi-xhtml/">authoring techniques for XHTML pages with bi-directional text</a>.</p>
 
-	<h4>Working with placeholders:</h4>
+	<a name="placeholders"></a><h3>6.iii. Working with placeholders</h3>
 
 	<p>As phpBB is translated into languages with different ordering rules to that of English, it is possible to show specific values in any order deemed appropriate. Take for example the extremely simple &quot;Page <em>X</em> of <em>Y</em>&quot;, whilst in English this could just be coded as:</p>
 
@@ -2373,7 +2375,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 	</pre></div>
 
-	<h4>Using plurals:</h4>
+	<a name="usingplurals"></a><h3>6.iv. Using plurals</h3>
 
 	<p>
 		The english language is very simple when it comes to plurals.<br />
@@ -2382,7 +2384,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		You have <code>[1/21/31] slon</code>, <code>[2/3/4] slona</code>, <code>[0/5/6] slonova</code> and <code>[7/8/9/11] ...</code> and some more difficult rules.
 	</p>
 
-	<p>Therefor we introduced a <a href="https://wiki.phpbb.com/Plural_Rules">plural system</a> that deals with this kind of problems.</p>
+	<p>The <a href="https://wiki.phpbb.com/Plural_Rules">plural system</a> takes care of this and can be used as follows:</p>
 
 	<p>The PHP code will basically look like this:</p>
 
@@ -2425,7 +2427,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 	</pre></div>
 
-	<a name="writingstyle"></a><h3>6.iii. Writing Style</h3>
+	<a name="writingstyle"></a><h3>6.v. Writing Style</h3>
 
 	<h4>Miscellaneous tips &amp; hints:</h4>
 
