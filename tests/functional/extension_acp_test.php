@@ -116,7 +116,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 			'DESCRIPTION'		=> 'An example/sample extension to be used for testing purposes in phpBB Development.',
 			'VERSION'	  		=> '1.0.0',
 			'TIME'				=> '2012-02-15 01:01:01',
-			'LICENCE'			=> 'GPL-2.0',
+			'LICENSE'			=> 'GPL-2.0',
 			'PHPBB_VERSION'		=> '3.1.*@dev',
 			'PHP_VERSION'		=> '>=5.3',
 			'AUTHOR_NAME'		=> 'John Smith',
