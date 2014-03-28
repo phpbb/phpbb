@@ -26,7 +26,8 @@ include($phpbb_root_path . 'common.' . $phpEx);
 
 $classes = $phpbb_container->get('ext.manager')
 	->get_finder()
-	->core_path('phpbb/db/migration/data/')
+	->core_path('phpbb/')
+	->directory('db/migration/data')
 	->get_classes();
 $db_tools = new \phpbb\db\tools($db, true);
 
