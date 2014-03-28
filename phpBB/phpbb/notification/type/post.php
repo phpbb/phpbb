@@ -103,7 +103,7 @@ class post extends \phpbb\notification\type\base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$users[] = $row['user_id'];
+			$users[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
 
@@ -115,7 +115,7 @@ class post extends \phpbb\notification\type\base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$users[] = $row['user_id'];
+			$users[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
 
