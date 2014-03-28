@@ -481,7 +481,11 @@ CREATE TABLE [phpbb_forums] (
 	[prune_next] [int] DEFAULT (0) NOT NULL ,
 	[prune_days] [int] DEFAULT (0) NOT NULL ,
 	[prune_viewed] [int] DEFAULT (0) NOT NULL ,
-	[prune_freq] [int] DEFAULT (0) NOT NULL 
+	[prune_freq] [int] DEFAULT (0) NOT NULL ,
+	[enable_shadow_prune] [int] DEFAULT (0) NOT NULL ,
+	[prune_shadow_next] [int] DEFAULT (0) NOT NULL ,
+	[prune_shadow_days] [int] DEFAULT (0) NOT NULL ,
+	[prune_shadow_freq] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

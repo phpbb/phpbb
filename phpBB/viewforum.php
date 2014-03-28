@@ -224,6 +224,18 @@ if (!$config['use_system_cron'])
 		$url = $task->get_url();
 		$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
 	}
+	else
+	{
+		// See if we should prune the shadow topics instead
+		$task = $cron->find_task('cron.task.core.prune_shadow_topics');
+		$task->set_forum_data($forum_data);
+
+		if ($task->is_ready())
+		{
+			$url = $task->get_url();
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+		}
+	}
 }
 
 // Forum rules and subscription info

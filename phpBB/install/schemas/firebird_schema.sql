@@ -394,7 +394,11 @@ CREATE TABLE phpbb_forums (
 	prune_next INTEGER DEFAULT 0 NOT NULL,
 	prune_days INTEGER DEFAULT 0 NOT NULL,
 	prune_viewed INTEGER DEFAULT 0 NOT NULL,
-	prune_freq INTEGER DEFAULT 0 NOT NULL
+	prune_freq INTEGER DEFAULT 0 NOT NULL,
+	enable_shadow_prune INTEGER DEFAULT 0 NOT NULL,
+	prune_shadow_next INTEGER DEFAULT 0 NOT NULL,
+	prune_shadow_days INTEGER DEFAULT 0 NOT NULL,
+	prune_shadow_freq INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_forums ADD PRIMARY KEY (forum_id);;
