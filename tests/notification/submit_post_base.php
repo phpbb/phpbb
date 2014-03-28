@@ -133,7 +133,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			FROM ' . NOTIFICATIONS_TABLE . ' n, ' . NOTIFICATION_TYPES_TABLE . " nt
 			WHERE nt.notification_type_name = '" . $this->item_type . "'
 				AND n.notification_type_id = nt.notification_type_id
-			ORDER BY user_id, item_id ASC";
+			ORDER BY user_id ASC, item_id ASC";
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals($expected_before, $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
@@ -142,11 +142,6 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$post_data = array_merge($this->post_data, $additional_post_data);
 		submit_post('reply', '', 'poster-name', POST_NORMAL, $poll_data, $post_data, false, false);
 
-		$sql = 'SELECT user_id, item_id, item_parent_id
-			FROM ' . NOTIFICATIONS_TABLE . ' n, ' . NOTIFICATION_TYPES_TABLE . " nt
-			WHERE nt.notification_type_name = '" . $this->item_type . "'
-				AND n.notification_type_id = nt.notification_type_id
-			ORDER BY user_id ASC, item_id ASC";
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals($expected_after, $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
