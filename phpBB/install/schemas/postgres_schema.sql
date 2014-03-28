@@ -569,6 +569,21 @@ CREATE INDEX phpbb_login_attempts_att_time ON phpbb_login_attempts (attempt_time
 CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id);
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar(255) DEFAULT '' NOT NULL,
+	migration_depends_on varchar(8000) DEFAULT '' NOT NULL,
+	migration_schema_done INT2 DEFAULT '0' NOT NULL CHECK (migration_schema_done >= 0),
+	migration_data_done INT2 DEFAULT '0' NOT NULL CHECK (migration_data_done >= 0),
+	migration_data_state varchar(8000) DEFAULT '' NOT NULL,
+	migration_start_time INT4 DEFAULT '0' NOT NULL CHECK (migration_start_time >= 0),
+	migration_end_time INT4 DEFAULT '0' NOT NULL CHECK (migration_end_time >= 0),
+	PRIMARY KEY (migration_name)
+);
+
+
+/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE phpbb_moderator_cache (
@@ -735,7 +750,7 @@ CREATE INDEX phpbb_posts_topic_id ON phpbb_posts (topic_id);
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip);
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
-CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username:255);
+CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username);
 CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility);
 
 /*

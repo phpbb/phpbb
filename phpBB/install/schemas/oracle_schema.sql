@@ -792,6 +792,22 @@ CREATE INDEX phpbb_login_attempts_user_id ON phpbb_login_attempts (user_id)
 /
 
 /*
+	Table: 'phpbb_migrations'
+*/
+CREATE TABLE phpbb_migrations (
+	migration_name varchar2(255) DEFAULT '' ,
+	migration_depends_on clob DEFAULT '' ,
+	migration_schema_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_done number(1) DEFAULT '0' NOT NULL,
+	migration_data_state clob DEFAULT '' ,
+	migration_start_time number(11) DEFAULT '0' NOT NULL,
+	migration_end_time number(11) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_migrations PRIMARY KEY (migration_name)
+)
+/
+
+
+/*
 	Table: 'phpbb_moderator_cache'
 */
 CREATE TABLE phpbb_moderator_cache (
@@ -1026,7 +1042,7 @@ CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id)
 /
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time)
 /
-CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username:255)
+CREATE INDEX phpbb_posts_post_username ON phpbb_posts (post_username)
 /
 CREATE INDEX phpbb_posts_post_visibility ON phpbb_posts (post_visibility)
 /
