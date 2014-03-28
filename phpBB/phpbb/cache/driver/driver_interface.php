@@ -25,6 +25,8 @@ interface driver_interface
 
 	/**
 	* Unload cache object
+	*
+	* @return null
 	*/
 	public function unload();
 
@@ -56,6 +58,7 @@ interface driver_interface
 	* @param string $var_name 		Cache key
 	* @param mixed $var 			Cached data to store
 	* @param int $ttl 				Time-to-live of cached data
+	* @return null
 	*/
 	public function put($var_name, $var, $ttl = 0);
 
