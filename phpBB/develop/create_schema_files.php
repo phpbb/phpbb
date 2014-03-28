@@ -35,6 +35,10 @@ $schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, 
 $original_schema_data = $schema_generator->get_schema();
 $dbms_type_map = phpbb\db\tools::get_dbms_type_map();
 
+$fp = fopen($schema_path . 'schema.json', 'wb');
+fwrite($fp, json_encode($schema_data, JSON_PRETTY_PRINT));
+fclose($fp);
+
 // A list of types being unsigned for better reference in some db's
 $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
