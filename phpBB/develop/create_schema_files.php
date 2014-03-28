@@ -402,8 +402,8 @@ foreach ($supported_dbms as $dbms)
 				break;
 
 				case 'mssql':
-					$line .= "ALTER TABLE [{$table_name}] WITH NOCHECK ADD \n";
-					$line .= "\tCONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED \n";
+					$line .= "ALTER TABLE [{$table_name}] WITH NOCHECK ADD\n";
+					$line .= "\tCONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED\n";
 					$line .= "\t(\n";
 					$line .= "\t\t[" . implode("],\n\t\t[", $table_data['PRIMARY_KEY']) . "]\n";
 					$line .= "\t)\n";
