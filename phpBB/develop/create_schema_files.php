@@ -74,10 +74,6 @@ foreach ($supported_dbms as $dbms)
 	$line = '';
 	switch ($dbms)
 	{
-		case 'firebird':
-			$line .= custom_data('firebird') . "\n";
-		break;
-
 		case 'oracle':
 			$line .= custom_data('oracle') . "\n";
 		break;
