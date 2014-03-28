@@ -76,7 +76,7 @@ $template->assign_vars(array(
 	'SWITCH_COLUMN_MANUALLY'	=> (!$found_switch) ? true : false,
 ));
 
-page_header($l_title, false);
+page_header($l_title);
 
 $template->set_filenames(array(
 	'body' => 'faq_body.html')

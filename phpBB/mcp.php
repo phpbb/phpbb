@@ -284,7 +284,7 @@ $template->assign_vars(array(
 ));
 
 // Generate the page, do not display/query online list
-$module->display($module->get_page_title(), false);
+$module->display($module->get_page_title());
 
 /**
 * Functions used to generate additional URL paramters
