@@ -25,6 +25,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$finder = $phpbb_extension_manager->get_finder();
 $finder = $finder
 	->core_path('phpbb/db/migration/data/')
 	->extension_prefix('migration/');
@@ -468,15 +469,27 @@ foreach ($supported_dbms as $dbms)
 					trigger_error("Index name '${table_name}_$key_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
 				}
 
+				foreach ($key_data[1] as $key => $col_name)
+				{
+					// remove index length unless MySQL4
+					if ($dbms !== 'mysql_40')
+					{
+						$key_data[1][$key] = preg_replace('#:.*$#', '', $col_name);
+					}
+				}
+
 				switch ($dbms)
 				{
 					case 'mysql_40':
-					case 'mysql_41':
-						$line .= ($key_data[0] == 'INDEX') ? "\tKEY" : '';
-						$line .= ($key_data[0] == 'UNIQUE') ? "\tUNIQUE" : '';
+						// add index size to definition as required by MySQL4
 						foreach ($key_data[1] as $key => $col_name)
 						{
-							if (isset($modded_array[$col_name]))
+							if (false !== strpos($col_name, ':'))
+							{
+								list($col_name, $index_size) = explode(':', $col_name);
+								$key_data[1][$key] = "$col_name($index_size)";
+							}
+							else if (isset($modded_array[$col_name]))
 							{
 								switch ($modded_array[$col_name])
 								{
@@ -487,6 +500,10 @@ foreach ($supported_dbms as $dbms)
 								}
 							}
 						}
+					// no break
+					case 'mysql_41':
+						$line .= ($key_data[0] == 'INDEX') ? "\tKEY" : '';
+						$line .= ($key_data[0] == 'UNIQUE') ? "\tUNIQUE" : '';
 						$line .= ' ' . $key_name . ' (' . implode(', ', $key_data[1]) . "),\n";
 					break;
 
