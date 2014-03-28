@@ -33,9 +33,7 @@ class xcache extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Purge cache data
-	*
-	* @return null
+	* {@inheritDoc}
 	*/
 	function purge()
 	{

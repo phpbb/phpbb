@@ -18,9 +18,7 @@ class apc extends \phpbb\cache\driver\memory
 	var $extension = 'apc';
 
 	/**
-	* Purge cache data
-	*
-	* @return null
+	* {@inheritDoc}
 	*/
 	function purge()
 	{

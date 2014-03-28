@@ -18,9 +18,7 @@ class wincache extends \phpbb\cache\driver\memory
 	var $extension = 'wincache';
 
 	/**
-	* Purge cache data
-	*
-	* @return null
+	* {@inheritDoc}
 	*/
 	function purge()
 	{

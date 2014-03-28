@@ -56,9 +56,7 @@ class memcache extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Unload the cache resources
-	*
-	* @return null
+	* {@inheritDoc}
 	*/
 	function unload()
 	{
@@ -68,9 +66,7 @@ class memcache extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Purge cache data
-	*
-	* @return null
+	* {@inheritDoc}
 	*/
 	function purge()
 	{
