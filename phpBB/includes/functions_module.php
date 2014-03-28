@@ -956,7 +956,7 @@ class p_master
 	/**
 	* Display module
 	*/
-	function display($page_title, $display_online_list = true)
+	function display($page_title, $display_online_list = false)
 	{
 		global $template, $user;
 

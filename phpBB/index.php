@@ -193,7 +193,7 @@ $vars = array('page_title');
 extract($phpbb_dispatcher->trigger_event('core.index_modify_page_title', compact($vars)));
 
 // Output page
-page_header($page_title);
+page_header($page_title, true);
 
 $template->set_filenames(array(
 	'body' => 'index_body.html')
