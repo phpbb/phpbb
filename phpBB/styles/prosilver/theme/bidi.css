@@ -378,9 +378,16 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	padding-right: 45px;					/* Space for folder icon */
 }
 
-	float: right;
-	margin: 4px 5px;
+.rtl dl.icon dt {							/* fix for topic row icon links */
+	position: relative;
+}
+
 .rtl dl a.icon-link {						/* topic row icon links */
+	display: inline-block;
+	left: auto;
+	right: 0;
+	margin-left: 0;
+	margin-right: 2px;
 }
 
 .rtl dd.lastpost span, .rtl ul.topiclist dd.info span, .rtl ul.topiclist dd.time span, .rtl dd.redirect span, .rtl dd.moderation span {
