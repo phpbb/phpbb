@@ -5,7 +5,7 @@
 	"homepage": "",
 	"version": "1.0.0",
 	"time": "2013-03-21 01:01:01",
-	"licence": "GPL-2.0",
+	"license": "GPL-2.0",
 	"authors": [{
 		"name": "Joas Schilling",
 		"email": "nickvergessen@phpbb.com",

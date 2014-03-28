@@ -196,7 +196,7 @@ class metadata_manager
 		$fields = array(
 			'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
 			'type'		=> '#^phpbb-extension$#',
-			'licence'	=> '#.+#',
+			'license'	=> '#.+#',
 			'version'	=> '#.+#',
 		);
 
@@ -351,7 +351,7 @@ class metadata_manager
 			'META_HOMEPAGE'		=> (isset($this->metadata['homepage'])) ? $this->metadata['homepage'] : '',
 			'META_VERSION'		=> (isset($this->metadata['version'])) ? htmlspecialchars($this->metadata['version']) : '',
 			'META_TIME'			=> (isset($this->metadata['time'])) ? htmlspecialchars($this->metadata['time']) : '',
-			'META_LICENCE'		=> htmlspecialchars($this->metadata['licence']),
+			'META_LICENSE'		=> htmlspecialchars($this->metadata['license']),
 
 			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
 			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
