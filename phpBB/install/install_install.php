@@ -1151,13 +1151,9 @@ class install_install extends module
 
 		// How should we treat this schema?
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
-
 		$sql_query = @file_get_contents($dbms_schema);
-
 		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
-
 		$sql_query = phpbb_remove_comments($sql_query);
-
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
 		foreach ($sql_query as $sql)
@@ -1170,6 +1166,19 @@ class install_install extends module
 			}
 		}
 		unset($sql_query);
+
+		// Ok we have the db info go ahead and work on building the table
+		$db_table_schema = @file_get_contents('schemas/schema.json');
+		$db_table_schema = json_decode($db_table_schema, true);
+
+		$db_tools = new \phpbb\db\tools($db);
+		foreach ($db_table_schema as $table_name => $table_data)
+		{
+			$db_tools->sql_create_table(
+				$data['table_prefix'] . substr($table_name, 6),
+				$table_data
+			);
+		}
 
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
