@@ -138,7 +138,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		if (!self::$already_connected)
 		{
-			$manager->load_schema();
+			$manager->load_schema($this->new_dbal());
 			self::$already_connected = true;
 		}
 
