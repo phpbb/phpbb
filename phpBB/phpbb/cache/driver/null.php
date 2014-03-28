@@ -23,7 +23,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Load global cache
+	* {@inheritDoc}
 	*/
 	function load()
 	{
@@ -31,21 +31,21 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Unload cache object
+	* {@inheritDoc}
 	*/
 	function unload()
 	{
 	}
 
 	/**
-	* Save modified objects
+	* {@inheritDoc}
 	*/
 	function save()
 	{
 	}
 
 	/**
-	* Tidy cache
+	* {@inheritDoc}
 	*/
 	function tidy()
 	{
@@ -54,7 +54,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Get saved cache object
+	* {@inheritDoc}
 	*/
 	function get($var_name)
 	{
@@ -62,28 +62,28 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Put data into cache
+	* {@inheritDoc}
 	*/
 	function put($var_name, $var, $ttl = 0)
 	{
 	}
 
 	/**
-	* Purge cache data
+	* {@inheritDoc}
 	*/
 	function purge()
 	{
 	}
 
 	/**
-	* Destroy cache data
+	* {@inheritDoc}
 	*/
 	function destroy($var_name, $table = '')
 	{
 	}
 
 	/**
-	* Check if a given cache entry exist
+	* {@inheritDoc}
 	*/
 	function _exists($var_name)
 	{
@@ -91,7 +91,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Load cached sql query
+	* {@inheritDoc}
 	*/
 	function sql_load($query)
 	{
@@ -107,7 +107,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Ceck if a given sql query exist in cache
+	* {@inheritDoc}
 	*/
 	function sql_exists($query_id)
 	{
@@ -115,7 +115,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Fetch row from cache (database)
+	* {@inheritDoc}
 	*/
 	function sql_fetchrow($query_id)
 	{
@@ -123,7 +123,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Fetch a field from the current row of a cached database result (database)
+	* {@inheritDoc}
 	*/
 	function sql_fetchfield($query_id, $field)
 	{
@@ -131,7 +131,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Seek a specific row in an a cached database result (database)
+	* {@inheritDoc}
 	*/
 	function sql_rowseek($rownum, $query_id)
 	{
@@ -139,7 +139,7 @@ class null extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Free memory used for a cached database result (database)
+	* {@inheritDoc}
 	*/
 	function sql_freeresult($query_id)
 	{

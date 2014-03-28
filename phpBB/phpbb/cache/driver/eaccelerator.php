@@ -22,9 +22,7 @@ class eaccelerator extends \phpbb\cache\driver\memory
 	var $serialize_header = '#phpbb-serialized#';
 
 	/**
-	* Purge cache data
-	*
-	* @return null
+	* {@inheritDoc}
 	*/
 	function purge()
 	{
@@ -39,10 +37,8 @@ class eaccelerator extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	 * Perform cache garbage collection
-	 *
-	 * @return null
-	 */
+	* {@inheritDoc}
+	*/
 	function tidy()
 	{
 		eaccelerator_gc();
