@@ -148,13 +148,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 		try
 		{
-			$manager->validate('licence');
+			$manager->validate('license');
 
 			$this->fail('Exception not triggered');
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'licence\' has not been set.');
+			$this->assertEquals((string) $e, 'Required meta field \'license\' has not been set.');
 		}
 
 		try
@@ -208,7 +208,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->set_metadata(array(
 			'name'		=> 'asdf',
 			'type'		=> 'asdf',
-			'licence'	=> '',
+			'license'	=> '',
 			'version'	=> '',
 		));
 
@@ -236,13 +236,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 		try
 		{
-			$manager->validate('licence');
+			$manager->validate('license');
 
 			$this->fail('Exception not triggered');
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Meta field \'licence\' is invalid.');
+			$this->assertEquals((string) $e, 'Meta field \'license\' is invalid.');
 		}
 
 		try
@@ -267,7 +267,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->set_metadata(array(
 			'name'		=> 'test/foo',
 			'type'		=> 'phpbb-extension',
-			'licence'	=> 'GPL v2',
+			'license'	=> 'GPL v2',
 			'version'	=> '1.0.0',
 		));
 
