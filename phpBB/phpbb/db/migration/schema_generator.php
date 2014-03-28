@@ -25,8 +25,8 @@ class schema_generator
 	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
-	/** @var \phpbb\extension\finder */
-	protected $finder;
+	/** @var array */
+	protected $class_names;
 
 	/** @var string */
 	protected $table_prefix;
@@ -43,12 +43,12 @@ class schema_generator
 	/**
 	* Constructor
 	*/
-	public function __construct(\phpbb\extension\finder $finder, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
-		$this->finder = $finder;
+		$this->class_names = $class_names;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->table_prefix = $table_prefix;
@@ -66,7 +66,7 @@ class schema_generator
 			return $this->tables;
 		}
 
-		$migrations = $this->finder->get_classes();
+		$migrations = $this->class_names;
 
 		$tree = array();
 		while (!empty($migrations))

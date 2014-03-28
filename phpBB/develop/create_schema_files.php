@@ -24,14 +24,13 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
-$phpbb_extension_manager = $phpbb_container->get('ext.manager');
-$finder = $phpbb_extension_manager->get_finder();
-$finder = $finder
+$classes = $phpbb_container->get('ext.manager')
+	->get_finder()
 	->core_path('phpbb/db/migration/data/')
-	->extension_prefix('migration/');
+	->get_classes();
 $db_tools = new \phpbb\db\tools($db, true);
 
-$schema_generator = new \phpbb\db\migration\schema_generator($finder, $config, $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
+$schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 $original_schema_data = $schema_generator->get_schema();
 $dbms_type_map = phpbb\db\tools::get_dbms_type_map();
 
