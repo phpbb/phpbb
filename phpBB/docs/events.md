@@ -40,6 +40,12 @@ acp_overall_footer_after
 * Since: 3.1.0-a1
 * Purpose: Add content below the footer in the ACP
 
+acp_overall_header_body_before
+===
+* Location: adm/style/overall_header.html
+* Since: 3.1.0-b2
+* Purpose: Add content to the header body
+
 acp_overall_header_head_append
 ===
 * Location: adm/style/overall_header.html
@@ -51,6 +57,12 @@ acp_simple_footer_after
 * Location: adm/style/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content below the simple footer in the ACP
+
+acp_simple_header_body_before
+===
+* Location: adm/style/simple_header.html
+* Since: 3.1.0-b2
+* Purpose: Add content to the header body
 
 acp_simple_header_head_append
 ===
@@ -231,6 +243,14 @@ overall_footer_copyright_prepend
 * Since: 3.1.0-a1
 * Purpose: Add content before the copyright line
 
+overall_header_body_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.0-b2
+* Purpose: Add content to the header body
+
 overall_header_breadcrumb_append
 ===
 * Locations:
@@ -365,6 +385,14 @@ simple_footer_after
     + styles/prosilver/template/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
+
+simple_header_body_before
+===
+* Locations:
+    + styles/prosilver/template/simple_header.html
+    + styles/subsilver2/template/simple_header.html
+* Since: 3.1.0-b2
+* Purpose: Add content to the header body
 
 topiclist_row_prepend
 ===
