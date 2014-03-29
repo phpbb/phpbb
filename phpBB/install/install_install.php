@@ -1171,6 +1171,14 @@ class install_install extends module
 		$db_table_schema = @file_get_contents('schemas/schema.json');
 		$db_table_schema = json_decode($db_table_schema, true);
 
+		if (!defined('CONFIG_TABLE'))
+		{
+			// CONFIG_TABLE is required by sql_create_index() to check the
+			// length of index names. However table_prefix is not defined
+			// here yet, so we need to create the constant ourselves.
+			define('CONFIG_TABLE', $data['table_prefix'] . 'config');
+		}
+
 		$db_tools = new \phpbb\db\tools($db);
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
