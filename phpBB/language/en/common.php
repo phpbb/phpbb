@@ -422,18 +422,29 @@ $lang = array_merge($lang, array(
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
 	'NOTIFICATIONS'				=> 'Notifications',
-	'NOTIFICATION_BOOKMARK'				=> '%1$s replied to the topic "%2$s" you have bookmarked.',
-	'NOTIFICATION_BOOKMARK_TRIMMED'		=> '%1$s and %3$d others replied to the topic “%2$s” you have bookmarked.',
+	// This applies for NOTIFICATION_BOOKMARK, NOTIFICATION_POST, and NOTIFICATION_QUOTE.
+	// %1$s will return a list of users that's concatenated using "," and "and" - see STRING_LIST
+	// Once the user count reaches 5 users or more, the list is trimmed using NOTIFICATION_X_OTHERS
+	// Examples:
+	// A replied...
+	// A and B replied...
+	// A, B and C replied...
+	// A, B, C and 2 others replied...
+	'NOTIFICATION_BOOKMARK'				=> array(
+		1	=> '%1$s replied to the topic “%2$s” you have bookmarked.',
+	),
 	'NOTIFICATION_GROUP_REQUEST'		=> '%1$s is requesting to join the group %2$s.',
 	'NOTIFICATION_GROUP_REQUEST_APPROVED'	=> 'Your request to join the group %1$s has been approved.',
 	'NOTIFICATION_PM'					=> '%1$s sent you a Private Message "%2$s".',
-	'NOTIFICATION_POST'					=> '%1$s replied to the topic "%2$s".',
-	'NOTIFICATION_POST_TRIMMED'			=> '%1$s and %3$d others replied to the topic “%2$s”',
+	'NOTIFICATION_POST'					=> array(
+		1	=> '%1$s replied to the topic “%2$s”.',
+	),
 	'NOTIFICATION_POST_APPROVED'		=> 'Your post was approved "%2$s".',
 	'NOTIFICATION_POST_DISAPPROVED'		=> 'Your post "%1$s" was disapproved for reason: "%2$s".',
 	'NOTIFICATION_POST_IN_QUEUE'		=> 'A new post titled "%2$s" was posted by %1$s and needs approval.',
-	'NOTIFICATION_QUOTE'				=> '%1$s quoted you in the post "%2$s".',
-	'NOTIFICATION_QUOTE_TRIMMED'		=> '%1$s and %3$d others replied to the topic “%2$s”',
+	'NOTIFICATION_QUOTE'				=> array(
+		1	=> '%1$s quoted you in the post “%2$s”.',
+	),
 	'NOTIFICATION_REPORT_PM'			=> '%1$s reported a Private Message "%2$s" for reason: "%3$s".',
 	'NOTIFICATION_REPORT_POST'			=> '%1$s reported a post "%2$s" for reason: "%3$s".',
 	'NOTIFICATION_REPORT_CLOSED'   		=> '%1$s closed the report you made for "%2$s".',
@@ -443,6 +454,10 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TOPIC_IN_QUEUE'		=> 'A new topic titled "%2$s" was posted by %1$s and needs approval.',
 	'NOTIFICATION_TYPE_NOT_EXIST'		=> 'The notification type "%s" is missing from the file system.',
 	'NOTIFICATION_ADMIN_ACTIVATE_USER'	=> 'The user “%1$s” is newly registered and requires activation.',
+	// Used in conjuction with NOTIFICATION_BOOKMARK, NOTIFICATION_POST, and NOTIFICATION_QUOTE.
+	'NOTIFICATION_X_OTHERS'				=> array(
+		2	=> '%d others',
+	),
 	'NOTIFY_ADMIN'				=> 'Please notify the board administrator or webmaster.',
 	'NOTIFY_ADMIN_EMAIL'		=> 'Please notify the board administrator or webmaster: <a href="mailto:%1$s">%1$s</a>',
 	'NO_ACCESS_ATTACHMENT'		=> 'You are not allowed to access this file.',
@@ -666,6 +681,8 @@ $lang = array_merge($lang, array(
 	'START_WATCHING_TOPIC'		=> 'Subscribe topic',
 	'STOP_WATCHING_FORUM'		=> 'Unsubscribe forum',
 	'STOP_WATCHING_TOPIC'		=> 'Unsubscribe topic',
+	'STRING_LIST_MULTI'			=> '%1$s, and %2$s',
+	'STRING_LIST_SIMPLE'		=> '%1$s and %2$s',
 	'SUBFORUM'					=> 'Subforum',
 	'SUBFORUMS'					=> 'Subforums',
 	'SUBJECT'					=> 'Subject',
