@@ -211,11 +211,6 @@ class post extends \phpbb\notification\type\base
 			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
 
-		if (!function_exists('phpbb_generate_string_list'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
-		}
-
 		return $this->user->lang(
 			$this->language_key,
 			phpbb_generate_string_list($usernames, $this->user),
