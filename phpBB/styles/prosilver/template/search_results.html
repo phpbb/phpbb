@@ -61,7 +61,7 @@
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="icon {searchresults.TOPIC_IMG_STYLE}">
 					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
-						<a href="<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->{searchresults.U_NEWEST_POST}<!-- ELSE -->{searchresults.U_VIEW_TOPIC}<!-- ENDIF -->" class="icon-link"></a>
+						<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{searchresults.U_NEWEST_POST}" class="icon-link"></a><!-- ENDIF -->
 						<div class="list-inner">
 
 							<!-- EVENT topiclist_row_prepend -->
