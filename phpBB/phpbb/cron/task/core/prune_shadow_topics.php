@@ -24,6 +24,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	protected $php_ext;
 	protected $config;
 	protected $db;
+	protected $log;
 
 	/**
 	* If $forum_data is given, it is assumed to contain necessary information
@@ -42,13 +43,15 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	* @param string $php_ext The PHP extension
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver $db The db connection
+	* @param \phpbb\log\log $log The phpBB log system
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\log\log $log)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->db = $db;
+		$this->log = $log;
 	}
 
 	/**
@@ -180,7 +183,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 				WHERE forum_id = $forum_id";
 			$this->db->sql_query($sql);
 
-			add_log('admin', 'LOG_PRUNE_SHADOW', $row['forum_name']);
+			$this->log->add('admin', 'LOG_PRUNE_SHADOW', $row['forum_name']);
 		}
 
 		return;
