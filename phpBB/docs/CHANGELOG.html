@@ -93,6 +93,72 @@
 
 	<a name="v310b1"></a><h3>1.i. Changes since 3.1.0-b1</h3>
 
+	<h4>Bug</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-8309">PHPBB3-8309</a>] - Rename &quot;Last visited&quot; to &quot;Last activity&quot; on memberlist/viewprofile</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-9040">PHPBB3-9040</a>] - Count HTML entities as single characters in Custom Profile fields</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-9725">PHPBB3-9725</a>] - MSSQL Schema is not azure compatible</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10769">PHPBB3-10769</a>] - &quot;ACP Access Denied&quot; view includes ajax parts</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11071">PHPBB3-11071</a>] - User selection of an invalid style causes a general error</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11357">PHPBB3-11357</a>] - Invalid markup in installer</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11959">PHPBB3-11959</a>] - List of users in notifications should be trimmed</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12031">PHPBB3-12031</a>] - Bug language Notification list should trim users</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12127">PHPBB3-12127</a>] - Possible NOTIFICATION_QUOTE_TRIMMED miswording</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12160">PHPBB3-12160</a>] - Convert Page throws &quot;invalid dbms driver&quot; when no phpBB installation is present</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12257">PHPBB3-12257</a>] - MySQL Fulltext Tests are not run on Travis CI</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12281">PHPBB3-12281</a>] - Disable redis in travis setup on develop until redis fixes it</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12292">PHPBB3-12292</a>] - Buttons are mis-matched, unaligned in ACP Style Details</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12293">PHPBB3-12293</a>] - Core event listeners not working in log.php</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12294">PHPBB3-12294</a>] - phpbb_ in profile fields column names is incorrectly replaced with the table prefix</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12297">PHPBB3-12297</a>] - user_from column not deleted on update to b1</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12310">PHPBB3-12310</a>] - SMTP username and password should not autocomplete during install</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12311">PHPBB3-12311</a>] - Metadata Manager should require license instead of licence</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12314">PHPBB3-12314</a>] - HHVM SPL autoloader sometimes passes class name with leading backslash</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12315">PHPBB3-12315</a>] - NO_SEARCH_INDEX in language/en/acp/common.php uses invalid HTML</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12316">PHPBB3-12316</a>] - develop-ascraeus build status missing from &quot;Automated Testing&quot; section in README.md</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12317">PHPBB3-12317</a>] - Some notification tests fail on DBMS drivers using appropriate integer typing (MSSQL, Sqlite3, also MySQL on HHVM)</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12321">PHPBB3-12321</a>] - Remove execute bit from file ucp_main_subscribed.html and buttons.png in prosilver</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12324">PHPBB3-12324</a>] - Can not update from b1 to b2 because of missing install/update/new/config/ folder</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12326">PHPBB3-12326</a>] - Error while updating from b1 to b2 because of incomplete update files</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12330">PHPBB3-12330</a>] - Installation fails on MSSQL</li>
+	</ul>
+	<h4>Improvement</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10174">PHPBB3-10174</a>] - Rename &quot;Ban usernames&quot; to &quot;Ban users&quot; in ACP</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10590">PHPBB3-10590</a>] - Skip confirmation page after successful posting of an approved post</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11169">PHPBB3-11169</a>] - Move prune users from security to users category</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11230">PHPBB3-11230</a>] - Use @inheritdoc in docblocks in cache drivers</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11239">PHPBB3-11239</a>] - Include username before the Overview title.</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11336">PHPBB3-11336</a>] - Rename mode parameter from &quot;leaders&quot; to something more accurate for the &quot;The team&quot; page</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11360">PHPBB3-11360</a>] - page_header() argument &quot;display_online_list&quot; should be FALSE by default</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11666">PHPBB3-11666</a>] - POST_DELETED should refer to posts instead of messages</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12035">PHPBB3-12035</a>] - Add a link to user's posts in the ACP user overview page</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12198">PHPBB3-12198</a>] - Unused ERR_TEMPLATE_EVENT_* language strings in en/common.php</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12268">PHPBB3-12268</a>] - Extension finder should not crawl through .git/ of extensions</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12269">PHPBB3-12269</a>] - Delete &quot;mods&quot; folder from the language folder</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12274">PHPBB3-12274</a>] - Updater is using old version of adm/style/admin.css</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12276">PHPBB3-12276</a>] - Expand core.memberlist_view_profile event to include Zebra state</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12278">PHPBB3-12278</a>] - Add mcp.php core event to allow setting display options for custom MCP modules</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12284">PHPBB3-12284</a>] - Make Extension Details page more readable</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12289">PHPBB3-12289</a>] - Add viewtopic_body.html template event to allow custom post notices</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12300">PHPBB3-12300</a>] - Revert and Reimagine Link to last read posts</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12304">PHPBB3-12304</a>] - Add CSS class to rules-link container</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12308">PHPBB3-12308</a>] - Add Template Event forumlist_body_last_row_after</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12309">PHPBB3-12309</a>] - Add Template Event quickreply_editor_panel_before/after</li>
+	</ul>
+	<h4>New Feature</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-7580">PHPBB3-7580</a>] - Allow isset() check in IF template syntax</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12298">PHPBB3-12298</a>] - Template Event memberlist_view_contact_before/after</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12301">PHPBB3-12301</a>] - Template Event overall_header_body_before</li>
+	</ul>
+	<h4>Task</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11459">PHPBB3-11459</a>] - Deduplicate database schema definiton</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11904">PHPBB3-11904</a>] - Revisit ALLOW_CDN_EXPLAIN wording</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12302">PHPBB3-12302</a>] - Upgrade composer.phar to 1.0.0-alpha8</li>
+	</ul>
+
 	<a name="v310a3"></a><h3>1.ii. Changes since 3.1.0-a3</h3>
 
 	<h4>Bug</h4>
