@@ -3,4 +3,3 @@
 # To change the contents of this file, edit
 # phpBB/develop/create_schema_files.php and
 # run it.
-

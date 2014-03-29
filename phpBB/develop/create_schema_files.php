@@ -12,6 +12,15 @@
 */
 
 $schema_path = dirname(__FILE__) . '/../install/schemas/';
+$supported_dbms = array(
+	'firebird',
+	'mssql',
+	'mysql_40',
+	'mysql_41',
+	'oracle',
+	'postgres',
+	'sqlite',
+);
 
 if (!is_writable($schema_path))
 {
@@ -39,7 +48,6 @@ $fp = fopen($schema_path . 'schema.json', 'wb');
 fwrite($fp, json_encode($schema_data, JSON_PRETTY_PRINT));
 fclose($fp);
 
-$supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
 foreach ($supported_dbms as $dbms)
 {
 	$fp = fopen($schema_path . $dbms . '_schema.sql', 'wb');
