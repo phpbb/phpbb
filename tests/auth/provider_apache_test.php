@@ -161,7 +161,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_inactive_time' => '0',
 			'user_posts' => '0',
 			'user_lang' => '',
-			'user_timezone' => 'UTC',
+			'user_timezone' => '',
 			'user_dateformat' => 'd M Y H:i',
 			'user_style' => '0',
 			'user_rank' => '0',
