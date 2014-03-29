@@ -24,6 +24,7 @@
 		<li class="row<!-- IF forumrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl class="icon {forumrow.FORUM_IMG_STYLE}">
 				<dt>
+					<!-- IF forumrow.S_UNREAD_FORUM --><a href="{forumrow.U_VIEWFORUM}" class="icon-link"></a><!-- ENDIF -->
 					<div class="list-inner">
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a><br />
 						{forumrow.FORUM_DESC}
@@ -35,7 +36,7 @@
 					</div>
 				</dt>
 				<dd class="lastpost"><!-- IF forumrow.LAST_POST_TIME --><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
-					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{forumrow.LAST_POST_TIME}</span>
+					<a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{forumrow.LAST_POST_TIME}</span>
 					<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF -->
 				</dd>
 				<dd class="mark"><input type="checkbox" name="f[{forumrow.FORUM_ID}]" id="f{forumrow.FORUM_ID}" /></dd>
@@ -71,16 +72,11 @@
 		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl class="icon {topicrow.TOPIC_IMG_STYLE}">
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="icon-link"></a><!-- ENDIF -->
 					<div class="list-inner">
-						<!-- IF topicrow.S_UNREAD_TOPIC -->
-							<a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> 
-							<a href="{topicrow.U_NEWEST_POST}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-						<!-- ELSE -->
-							<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-						<!-- ENDIF -->
+						<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-						<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF -->
-						<br />
+						<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
 							<ul>
@@ -97,7 +93,7 @@
 						<!-- ENDIF -->
 						<div class="responsive-hide">
 							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
-							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; <a href="{topicrow.U_VIEW_TOPIC}" title="{L_GOTO_FIRST_POST}">{topicrow.FIRST_POST_TIME}</a>
+							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
 						<div class="responsive-show" style="display: none;">
 							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->

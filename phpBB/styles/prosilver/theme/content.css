@@ -162,6 +162,18 @@ dl.icon dt, dl.icon dd {
 	min-height: 35px;
 }
 
+dl a.icon-link {						/* topic row icon links */
+	display: block;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	margin-top: -15px;
+	margin-left: 9px;
+}
+
 dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
 	width: 80px;
 	text-align: center;
