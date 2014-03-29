@@ -23,6 +23,7 @@ class dev extends \phpbb\db\migration\migration
 			'\phpbb\db\migration\data\v310\style_update_p2',
 			'\phpbb\db\migration\data\v310\timezone_p2',
 			'\phpbb\db\migration\data\v310\reported_posts_display',
+			'\phpbb\db\migration\data\v310\migrations_table',
 		);
 	}
 
