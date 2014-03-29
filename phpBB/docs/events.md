@@ -319,6 +319,22 @@ posting_editor_subject_before
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
+quickreply_editor_panel_after
+===
+* Locations:
+    + styles/prosilver/template/quickreply_editor.html
+    + styles/subsilver2/template/quickreply_editor.html
+* Since: 3.1.0-b2
+* Purpose: Add content after the quick reply panel (but inside the form)
+
+quickreply_editor_panel_before
+===
+* Locations:
+    + styles/prosilver/template/quickreply_editor.html
+    + styles/subsilver2/template/quickreply_editor.html
+* Since: 3.1.0-b2
+* Purpose: Add content before the quick reply panel (but inside the form)
+
 quickreply_editor_message_after
 ===
 * Locations:
