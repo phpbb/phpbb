@@ -25,29 +25,28 @@ CREATE TABLE [phpbb_attachments] (
 	[filesize] [int] DEFAULT (0) NOT NULL ,
 	[filetime] [int] DEFAULT (0) NOT NULL ,
 	[thumbnail] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_attachments] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_attachments] PRIMARY KEY  CLUSTERED 
 	(
 		[attach_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [filetime] ON [phpbb_attachments]([filetime]) ON [PRIMARY]
+CREATE  INDEX [filetime] ON [phpbb_attachments]([filetime])
 GO
 
-CREATE  INDEX [post_msg_id] ON [phpbb_attachments]([post_msg_id]) ON [PRIMARY]
+CREATE  INDEX [post_msg_id] ON [phpbb_attachments]([post_msg_id])
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_attachments]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_attachments]([topic_id])
 GO
 
-CREATE  INDEX [poster_id] ON [phpbb_attachments]([poster_id]) ON [PRIMARY]
+CREATE  INDEX [poster_id] ON [phpbb_attachments]([poster_id])
 GO
 
-CREATE  INDEX [is_orphan] ON [phpbb_attachments]([is_orphan]) ON [PRIMARY]
+CREATE  INDEX [is_orphan] ON [phpbb_attachments]([is_orphan])
 GO
 
 
@@ -59,17 +58,24 @@ CREATE TABLE [phpbb_acl_groups] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_option_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_role_id] [int] DEFAULT (0) NOT NULL ,
-	[auth_setting] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[auth_setting] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_acl_groups] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_groups] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [group_id] ON [phpbb_acl_groups]([group_id]) ON [PRIMARY]
+CREATE  INDEX [group_id] ON [phpbb_acl_groups]([group_id])
 GO
 
-CREATE  INDEX [auth_opt_id] ON [phpbb_acl_groups]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [auth_opt_id] ON [phpbb_acl_groups]([auth_option_id])
 GO
 
-CREATE  INDEX [auth_role_id] ON [phpbb_acl_groups]([auth_role_id]) ON [PRIMARY]
+CREATE  INDEX [auth_role_id] ON [phpbb_acl_groups]([auth_role_id])
 GO
 
 
@@ -82,17 +88,16 @@ CREATE TABLE [phpbb_acl_options] (
 	[is_global] [int] DEFAULT (0) NOT NULL ,
 	[is_local] [int] DEFAULT (0) NOT NULL ,
 	[founder_only] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_acl_options] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_acl_options] PRIMARY KEY  CLUSTERED 
 	(
 		[auth_option_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  UNIQUE  INDEX [auth_option] ON [phpbb_acl_options]([auth_option]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [auth_option] ON [phpbb_acl_options]([auth_option])
 GO
 
 
@@ -105,20 +110,19 @@ CREATE TABLE [phpbb_acl_roles] (
 	[role_description] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[role_type] [varchar] (10) DEFAULT ('') NOT NULL ,
 	[role_order] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_acl_roles] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_acl_roles] PRIMARY KEY  CLUSTERED 
 	(
 		[role_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [role_type] ON [phpbb_acl_roles]([role_type]) ON [PRIMARY]
+CREATE  INDEX [role_type] ON [phpbb_acl_roles]([role_type])
 GO
 
-CREATE  INDEX [role_order] ON [phpbb_acl_roles]([role_order]) ON [PRIMARY]
+CREATE  INDEX [role_order] ON [phpbb_acl_roles]([role_order])
 GO
 
 
@@ -129,18 +133,17 @@ CREATE TABLE [phpbb_acl_roles_data] (
 	[role_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_option_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_setting] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_acl_roles_data] PRIMARY KEY  CLUSTERED 
 	(
 		[role_id],
 		[auth_option_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [ath_op_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [ath_op_id] ON [phpbb_acl_roles_data]([auth_option_id])
 GO
 
 
@@ -152,17 +155,24 @@ CREATE TABLE [phpbb_acl_users] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_option_id] [int] DEFAULT (0) NOT NULL ,
 	[auth_role_id] [int] DEFAULT (0) NOT NULL ,
-	[auth_setting] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[auth_setting] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_acl_users] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_users] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_acl_users]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_acl_users]([user_id])
 GO
 
-CREATE  INDEX [auth_option_id] ON [phpbb_acl_users]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [auth_option_id] ON [phpbb_acl_users]([auth_option_id])
 GO
 
-CREATE  INDEX [auth_role_id] ON [phpbb_acl_users]([auth_role_id]) ON [PRIMARY]
+CREATE  INDEX [auth_role_id] ON [phpbb_acl_users]([auth_role_id])
 GO
 
 
@@ -179,26 +189,25 @@ CREATE TABLE [phpbb_banlist] (
 	[ban_exclude] [int] DEFAULT (0) NOT NULL ,
 	[ban_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[ban_give_reason] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_banlist] PRIMARY KEY  CLUSTERED 
 	(
 		[ban_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [ban_end] ON [phpbb_banlist]([ban_end]) ON [PRIMARY]
+CREATE  INDEX [ban_end] ON [phpbb_banlist]([ban_end])
 GO
 
-CREATE  INDEX [ban_user] ON [phpbb_banlist]([ban_userid], [ban_exclude]) ON [PRIMARY]
+CREATE  INDEX [ban_user] ON [phpbb_banlist]([ban_userid], [ban_exclude])
 GO
 
-CREATE  INDEX [ban_email] ON [phpbb_banlist]([ban_email], [ban_exclude]) ON [PRIMARY]
+CREATE  INDEX [ban_email] ON [phpbb_banlist]([ban_email], [ban_exclude])
 GO
 
-CREATE  INDEX [ban_ip] ON [phpbb_banlist]([ban_ip], [ban_exclude]) ON [PRIMARY]
+CREATE  INDEX [ban_ip] ON [phpbb_banlist]([ban_ip], [ban_exclude])
 GO
 
 
@@ -216,17 +225,16 @@ CREATE TABLE [phpbb_bbcodes] (
 	[first_pass_replace] [text] DEFAULT ('') NOT NULL ,
 	[second_pass_match] [text] DEFAULT ('') NOT NULL ,
 	[second_pass_replace] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_bbcodes] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_bbcodes] PRIMARY KEY  CLUSTERED 
 	(
 		[bbcode_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [display_on_post] ON [phpbb_bbcodes]([display_on_posting]) ON [PRIMARY]
+CREATE  INDEX [display_on_post] ON [phpbb_bbcodes]([display_on_posting])
 GO
 
 
@@ -236,15 +244,14 @@ GO
 CREATE TABLE [phpbb_bookmarks] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_bookmarks] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_bookmarks] PRIMARY KEY  CLUSTERED 
 	(
 		[topic_id],
 		[user_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -258,17 +265,16 @@ CREATE TABLE [phpbb_bots] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[bot_agent] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[bot_ip] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_bots] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_bots] PRIMARY KEY  CLUSTERED 
 	(
 		[bot_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [bot_active] ON [phpbb_bots]([bot_active]) ON [PRIMARY]
+CREATE  INDEX [bot_active] ON [phpbb_bots]([bot_active])
 GO
 
 
@@ -279,17 +285,16 @@ CREATE TABLE [phpbb_config] (
 	[config_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[config_value] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[is_dynamic] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_config] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_config] PRIMARY KEY  CLUSTERED 
 	(
 		[config_name]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [is_dynamic] ON [phpbb_config]([is_dynamic]) ON [PRIMARY]
+CREATE  INDEX [is_dynamic] ON [phpbb_config]([is_dynamic])
 GO
 
 
@@ -299,14 +304,13 @@ GO
 CREATE TABLE [phpbb_config_text] (
 	[config_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[config_value] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_config_text] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_config_text] PRIMARY KEY  CLUSTERED 
 	(
 		[config_name]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -320,18 +324,17 @@ CREATE TABLE [phpbb_confirm] (
 	[code] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[seed] [int] DEFAULT (0) NOT NULL ,
 	[attempts] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_confirm] PRIMARY KEY  CLUSTERED 
 	(
 		[session_id],
 		[confirm_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [confirm_type] ON [phpbb_confirm]([confirm_type]) ON [PRIMARY]
+CREATE  INDEX [confirm_type] ON [phpbb_confirm]([confirm_type])
 GO
 
 
@@ -341,14 +344,13 @@ GO
 CREATE TABLE [phpbb_disallow] (
 	[disallow_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[disallow_username] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_disallow] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_disallow] PRIMARY KEY  CLUSTERED 
 	(
 		[disallow_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -363,17 +365,16 @@ CREATE TABLE [phpbb_drafts] (
 	[save_time] [int] DEFAULT (0) NOT NULL ,
 	[draft_subject] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[draft_message] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_drafts] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_drafts] PRIMARY KEY  CLUSTERED 
 	(
 		[draft_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [save_time] ON [phpbb_drafts]([save_time]) ON [PRIMARY]
+CREATE  INDEX [save_time] ON [phpbb_drafts]([save_time])
 GO
 
 
@@ -383,11 +384,18 @@ GO
 CREATE TABLE [phpbb_ext] (
 	[ext_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[ext_active] [int] DEFAULT (0) NOT NULL ,
-	[ext_state] [varchar] (8000) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
+	[ext_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_ext] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_ext] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  UNIQUE  INDEX [ext_name] ON [phpbb_ext]([ext_name]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [ext_name] ON [phpbb_ext]([ext_name])
 GO
 
 
@@ -398,14 +406,13 @@ CREATE TABLE [phpbb_extensions] (
 	[extension_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[group_id] [int] DEFAULT (0) NOT NULL ,
 	[extension] [varchar] (100) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_extensions] PRIMARY KEY  CLUSTERED 
 	(
 		[extension_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -422,14 +429,13 @@ CREATE TABLE [phpbb_extension_groups] (
 	[max_filesize] [int] DEFAULT (0) NOT NULL ,
 	[allowed_forums] [varchar] (8000) DEFAULT ('') NOT NULL ,
 	[allow_in_pm] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_extension_groups] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_extension_groups] PRIMARY KEY  CLUSTERED 
 	(
 		[group_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -482,20 +488,19 @@ CREATE TABLE [phpbb_forums] (
 	[prune_days] [int] DEFAULT (0) NOT NULL ,
 	[prune_viewed] [int] DEFAULT (0) NOT NULL ,
 	[prune_freq] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_forums] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_forums] PRIMARY KEY  CLUSTERED 
 	(
 		[forum_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [left_right_id] ON [phpbb_forums]([left_id], [right_id]) ON [PRIMARY]
+CREATE  INDEX [left_right_id] ON [phpbb_forums]([left_id], [right_id])
 GO
 
-CREATE  INDEX [forum_lastpost_id] ON [phpbb_forums]([forum_last_post_id]) ON [PRIMARY]
+CREATE  INDEX [forum_lastpost_id] ON [phpbb_forums]([forum_last_post_id])
 GO
 
 
@@ -506,8 +511,7 @@ CREATE TABLE [phpbb_forums_access] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[session_id] [char] (32) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_forums_access] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_forums_access] PRIMARY KEY  CLUSTERED 
@@ -515,7 +519,7 @@ ALTER TABLE [phpbb_forums_access] WITH NOCHECK ADD
 		[forum_id],
 		[user_id],
 		[session_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -526,15 +530,14 @@ CREATE TABLE [phpbb_forums_track] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[mark_time] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_forums_track] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_forums_track] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[forum_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -544,17 +547,24 @@ GO
 CREATE TABLE [phpbb_forums_watch] (
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[notify_status] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[notify_status] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_forums_watch] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_forums_watch] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_forums_watch]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_forums_watch]([forum_id])
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_forums_watch]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_forums_watch]([user_id])
 GO
 
-CREATE  INDEX [notify_stat] ON [phpbb_forums_watch]([notify_status]) ON [PRIMARY]
+CREATE  INDEX [notify_stat] ON [phpbb_forums_watch]([notify_status])
 GO
 
 
@@ -583,17 +593,16 @@ CREATE TABLE [phpbb_groups] (
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
 	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
 	[group_legend] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_groups] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_groups] PRIMARY KEY  CLUSTERED 
 	(
 		[group_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [group_legend_name] ON [phpbb_groups]([group_legend], [group_name]) ON [PRIMARY]
+CREATE  INDEX [group_legend_name] ON [phpbb_groups]([group_legend], [group_name])
 GO
 
 
@@ -607,17 +616,16 @@ CREATE TABLE [phpbb_icons] (
 	[icons_height] [int] DEFAULT (0) NOT NULL ,
 	[icons_order] [int] DEFAULT (0) NOT NULL ,
 	[display_on_posting] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_icons] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_icons] PRIMARY KEY  CLUSTERED 
 	(
 		[icons_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [display_on_posting] ON [phpbb_icons]([display_on_posting]) ON [PRIMARY]
+CREATE  INDEX [display_on_posting] ON [phpbb_icons]([display_on_posting])
 GO
 
 
@@ -631,17 +639,16 @@ CREATE TABLE [phpbb_lang] (
 	[lang_english_name] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[lang_local_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[lang_author] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_lang] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_lang] PRIMARY KEY  CLUSTERED 
 	(
 		[lang_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [lang_iso] ON [phpbb_lang]([lang_iso]) ON [PRIMARY]
+CREATE  INDEX [lang_iso] ON [phpbb_lang]([lang_iso])
 GO
 
 
@@ -659,32 +666,31 @@ CREATE TABLE [phpbb_log] (
 	[log_time] [int] DEFAULT (0) NOT NULL ,
 	[log_operation] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[log_data] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_log] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_log] PRIMARY KEY  CLUSTERED 
 	(
 		[log_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [log_type] ON [phpbb_log]([log_type]) ON [PRIMARY]
+CREATE  INDEX [log_type] ON [phpbb_log]([log_type])
 GO
 
-CREATE  INDEX [log_time] ON [phpbb_log]([log_time]) ON [PRIMARY]
+CREATE  INDEX [log_time] ON [phpbb_log]([log_time])
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_log]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_log]([forum_id])
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_log]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_log]([topic_id])
 GO
 
-CREATE  INDEX [reportee_id] ON [phpbb_log]([reportee_id]) ON [PRIMARY]
+CREATE  INDEX [reportee_id] ON [phpbb_log]([reportee_id])
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_log]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_log]([user_id])
 GO
 
 
@@ -698,20 +704,27 @@ CREATE TABLE [phpbb_login_attempts] (
 	[attempt_time] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[username] [varchar] (255) DEFAULT (0) NOT NULL ,
-	[username_clean] [varchar] (255) DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[username_clean] [varchar] (255) DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_login_attempts] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_login_attempts] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [att_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time]) ON [PRIMARY]
+CREATE  INDEX [att_ip] ON [phpbb_login_attempts]([attempt_ip], [attempt_time])
 GO
 
-CREATE  INDEX [att_for] ON [phpbb_login_attempts]([attempt_forwarded_for], [attempt_time]) ON [PRIMARY]
+CREATE  INDEX [att_for] ON [phpbb_login_attempts]([attempt_forwarded_for], [attempt_time])
 GO
 
-CREATE  INDEX [att_time] ON [phpbb_login_attempts]([attempt_time]) ON [PRIMARY]
+CREATE  INDEX [att_time] ON [phpbb_login_attempts]([attempt_time])
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_login_attempts]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_login_attempts]([user_id])
 GO
 
 
@@ -724,14 +737,21 @@ CREATE TABLE [phpbb_moderator_cache] (
 	[username] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_id] [int] DEFAULT (0) NOT NULL ,
 	[group_name] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[display_on_index] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY]
+	[display_on_index] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_moderator_cache] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_moderator_cache] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [disp_idx] ON [phpbb_moderator_cache]([display_on_index]) ON [PRIMARY]
+CREATE  INDEX [disp_idx] ON [phpbb_moderator_cache]([display_on_index])
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_moderator_cache]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_moderator_cache]([forum_id])
 GO
 
 
@@ -746,14 +766,13 @@ CREATE TABLE [phpbb_migrations] (
 	[migration_data_state] [varchar] (8000) DEFAULT ('') NOT NULL ,
 	[migration_start_time] [int] DEFAULT (0) NOT NULL ,
 	[migration_end_time] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_migrations] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_migrations] PRIMARY KEY  CLUSTERED 
 	(
 		[migration_name]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -772,23 +791,22 @@ CREATE TABLE [phpbb_modules] (
 	[module_langname] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[module_mode] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[module_auth] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_modules] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_modules] PRIMARY KEY  CLUSTERED 
 	(
 		[module_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [left_right_id] ON [phpbb_modules]([left_id], [right_id]) ON [PRIMARY]
+CREATE  INDEX [left_right_id] ON [phpbb_modules]([left_id], [right_id])
 GO
 
-CREATE  INDEX [module_enabled] ON [phpbb_modules]([module_enabled]) ON [PRIMARY]
+CREATE  INDEX [module_enabled] ON [phpbb_modules]([module_enabled])
 GO
 
-CREATE  INDEX [class_left_id] ON [phpbb_modules]([module_class], [left_id]) ON [PRIMARY]
+CREATE  INDEX [class_left_id] ON [phpbb_modules]([module_class], [left_id])
 GO
 
 
@@ -799,17 +817,16 @@ CREATE TABLE [phpbb_notification_types] (
 	[notification_type_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[notification_type_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[notification_type_enabled] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_notification_types] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_notification_types] PRIMARY KEY  CLUSTERED 
 	(
 		[notification_type_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type_name]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [type] ON [phpbb_notification_types]([notification_type_name])
 GO
 
 
@@ -825,20 +842,19 @@ CREATE TABLE [phpbb_notifications] (
 	[notification_read] [int] DEFAULT (0) NOT NULL ,
 	[notification_time] [int] DEFAULT (1) NOT NULL ,
 	[notification_data] [varchar] (4000) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_notifications] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_notifications] PRIMARY KEY  CLUSTERED 
 	(
 		[notification_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [item_ident] ON [phpbb_notifications]([notification_type_id], [item_id]) ON [PRIMARY]
+CREATE  INDEX [item_ident] ON [phpbb_notifications]([notification_type_id], [item_id])
 GO
 
-CREATE  INDEX [user] ON [phpbb_notifications]([user_id], [notification_read]) ON [PRIMARY]
+CREATE  INDEX [user] ON [phpbb_notifications]([user_id], [notification_read])
 GO
 
 
@@ -849,15 +865,14 @@ CREATE TABLE [phpbb_oauth_accounts] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[provider] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[oauth_provider_id] [varchar] (4000) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_oauth_accounts] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_oauth_accounts] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[provider]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -868,14 +883,21 @@ CREATE TABLE [phpbb_oauth_tokens] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[provider] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[oauth_token] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+	[oauth_token] [text] DEFAULT ('') NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_oauth_tokens] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_oauth_tokens] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_oauth_tokens]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_oauth_tokens]([user_id])
 GO
 
-CREATE  INDEX [provider] ON [phpbb_oauth_tokens]([provider]) ON [PRIMARY]
+CREATE  INDEX [provider] ON [phpbb_oauth_tokens]([provider])
 GO
 
 
@@ -886,14 +908,21 @@ CREATE TABLE [phpbb_poll_options] (
 	[poll_option_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[poll_option_text] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[poll_option_total] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[poll_option_total] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_poll_options] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_poll_options] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [poll_opt_id] ON [phpbb_poll_options]([poll_option_id]) ON [PRIMARY]
+CREATE  INDEX [poll_opt_id] ON [phpbb_poll_options]([poll_option_id])
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_poll_options]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_poll_options]([topic_id])
 GO
 
 
@@ -904,17 +933,24 @@ CREATE TABLE [phpbb_poll_votes] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[poll_option_id] [int] DEFAULT (0) NOT NULL ,
 	[vote_user_id] [int] DEFAULT (0) NOT NULL ,
-	[vote_user_ip] [varchar] (40) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
+	[vote_user_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_poll_votes] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_poll_votes] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_poll_votes]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_poll_votes]([topic_id])
 GO
 
-CREATE  INDEX [vote_user_id] ON [phpbb_poll_votes]([vote_user_id]) ON [PRIMARY]
+CREATE  INDEX [vote_user_id] ON [phpbb_poll_votes]([vote_user_id])
 GO
 
-CREATE  INDEX [vote_user_ip] ON [phpbb_poll_votes]([vote_user_ip]) ON [PRIMARY]
+CREATE  INDEX [vote_user_ip] ON [phpbb_poll_votes]([vote_user_ip])
 GO
 
 
@@ -951,35 +987,34 @@ CREATE TABLE [phpbb_posts] (
 	[post_delete_time] [int] DEFAULT (0) NOT NULL ,
 	[post_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[post_delete_user] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_posts] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_posts] PRIMARY KEY  CLUSTERED 
 	(
 		[post_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_posts]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_posts]([forum_id])
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_posts]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_posts]([topic_id])
 GO
 
-CREATE  INDEX [poster_ip] ON [phpbb_posts]([poster_ip]) ON [PRIMARY]
+CREATE  INDEX [poster_ip] ON [phpbb_posts]([poster_ip])
 GO
 
-CREATE  INDEX [poster_id] ON [phpbb_posts]([poster_id]) ON [PRIMARY]
+CREATE  INDEX [poster_id] ON [phpbb_posts]([poster_id])
 GO
 
-CREATE  INDEX [post_visibility] ON [phpbb_posts]([post_visibility]) ON [PRIMARY]
+CREATE  INDEX [post_visibility] ON [phpbb_posts]([post_visibility])
 GO
 
-CREATE  INDEX [post_username] ON [phpbb_posts]([post_username]) ON [PRIMARY]
+CREATE  INDEX [post_username] ON [phpbb_posts]([post_username])
 GO
 
-CREATE  INDEX [tid_post_time] ON [phpbb_posts]([topic_id], [post_time]) ON [PRIMARY]
+CREATE  INDEX [tid_post_time] ON [phpbb_posts]([topic_id], [post_time])
 GO
 
 
@@ -1009,26 +1044,25 @@ CREATE TABLE [phpbb_privmsgs] (
 	[to_address] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[bcc_address] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[message_reported] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_privmsgs] PRIMARY KEY  CLUSTERED 
 	(
 		[msg_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [author_ip] ON [phpbb_privmsgs]([author_ip]) ON [PRIMARY]
+CREATE  INDEX [author_ip] ON [phpbb_privmsgs]([author_ip])
 GO
 
-CREATE  INDEX [message_time] ON [phpbb_privmsgs]([message_time]) ON [PRIMARY]
+CREATE  INDEX [message_time] ON [phpbb_privmsgs]([message_time])
 GO
 
-CREATE  INDEX [author_id] ON [phpbb_privmsgs]([author_id]) ON [PRIMARY]
+CREATE  INDEX [author_id] ON [phpbb_privmsgs]([author_id])
 GO
 
-CREATE  INDEX [root_level] ON [phpbb_privmsgs]([root_level]) ON [PRIMARY]
+CREATE  INDEX [root_level] ON [phpbb_privmsgs]([root_level])
 GO
 
 
@@ -1040,17 +1074,16 @@ CREATE TABLE [phpbb_privmsgs_folder] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[folder_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pm_count] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_privmsgs_folder] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_privmsgs_folder] PRIMARY KEY  CLUSTERED 
 	(
 		[folder_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_privmsgs_folder]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_privmsgs_folder]([user_id])
 GO
 
 
@@ -1067,17 +1100,16 @@ CREATE TABLE [phpbb_privmsgs_rules] (
 	[rule_group_id] [int] DEFAULT (0) NOT NULL ,
 	[rule_action] [int] DEFAULT (0) NOT NULL ,
 	[rule_folder_id] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_privmsgs_rules] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_privmsgs_rules] PRIMARY KEY  CLUSTERED 
 	(
 		[rule_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_privmsgs_rules]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_privmsgs_rules]([user_id])
 GO
 
 
@@ -1094,17 +1126,24 @@ CREATE TABLE [phpbb_privmsgs_to] (
 	[pm_replied] [int] DEFAULT (0) NOT NULL ,
 	[pm_marked] [int] DEFAULT (0) NOT NULL ,
 	[pm_forwarded] [int] DEFAULT (0) NOT NULL ,
-	[folder_id] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[folder_id] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_privmsgs_to] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_privmsgs_to] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [msg_id] ON [phpbb_privmsgs_to]([msg_id]) ON [PRIMARY]
+CREATE  INDEX [msg_id] ON [phpbb_privmsgs_to]([msg_id])
 GO
 
-CREATE  INDEX [author_id] ON [phpbb_privmsgs_to]([author_id]) ON [PRIMARY]
+CREATE  INDEX [author_id] ON [phpbb_privmsgs_to]([author_id])
 GO
 
-CREATE  INDEX [usr_flder_id] ON [phpbb_privmsgs_to]([user_id], [folder_id]) ON [PRIMARY]
+CREATE  INDEX [usr_flder_id] ON [phpbb_privmsgs_to]([user_id], [folder_id])
 GO
 
 
@@ -1136,20 +1175,19 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_is_contact] [int] DEFAULT (0) NOT NULL ,
 	[field_contact_desc] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[field_contact_url] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_profile_fields] PRIMARY KEY  CLUSTERED 
 	(
 		[field_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [fld_type] ON [phpbb_profile_fields]([field_type]) ON [PRIMARY]
+CREATE  INDEX [fld_type] ON [phpbb_profile_fields]([field_type])
 GO
 
-CREATE  INDEX [fld_ordr] ON [phpbb_profile_fields]([field_order]) ON [PRIMARY]
+CREATE  INDEX [fld_ordr] ON [phpbb_profile_fields]([field_order])
 GO
 
 
@@ -1166,14 +1204,13 @@ CREATE TABLE [phpbb_profile_fields_data] (
 	[pf_phpbb_wlm] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_yahoo] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[pf_phpbb_website] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_profile_fields_data] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_profile_fields_data] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1186,8 +1223,7 @@ CREATE TABLE [phpbb_profile_fields_lang] (
 	[option_id] [int] DEFAULT (0) NOT NULL ,
 	[field_type] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[lang_value] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_profile_fields_lang] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_profile_fields_lang] PRIMARY KEY  CLUSTERED 
@@ -1195,7 +1231,7 @@ ALTER TABLE [phpbb_profile_fields_lang] WITH NOCHECK ADD
 		[field_id],
 		[lang_id],
 		[option_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1208,15 +1244,14 @@ CREATE TABLE [phpbb_profile_lang] (
 	[lang_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[lang_explain] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[lang_default_value] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_profile_lang] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_profile_lang] PRIMARY KEY  CLUSTERED 
 	(
 		[field_id],
 		[lang_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1229,14 +1264,13 @@ CREATE TABLE [phpbb_ranks] (
 	[rank_min] [int] DEFAULT (0) NOT NULL ,
 	[rank_special] [int] DEFAULT (0) NOT NULL ,
 	[rank_image] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_ranks] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_ranks] PRIMARY KEY  CLUSTERED 
 	(
 		[rank_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1259,20 +1293,19 @@ CREATE TABLE [phpbb_reports] (
 	[reported_post_enable_magic_url] [int] DEFAULT (1) NOT NULL ,
 	[reported_post_enable_smilies] [int] DEFAULT (1) NOT NULL ,
 	[reported_post_enable_bbcode] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_reports] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_reports] PRIMARY KEY  CLUSTERED 
 	(
 		[report_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [post_id] ON [phpbb_reports]([post_id]) ON [PRIMARY]
+CREATE  INDEX [post_id] ON [phpbb_reports]([post_id])
 GO
 
-CREATE  INDEX [pm_id] ON [phpbb_reports]([pm_id]) ON [PRIMARY]
+CREATE  INDEX [pm_id] ON [phpbb_reports]([pm_id])
 GO
 
 
@@ -1284,14 +1317,13 @@ CREATE TABLE [phpbb_reports_reasons] (
 	[reason_title] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[reason_description] [text] DEFAULT ('') NOT NULL ,
 	[reason_order] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_reports_reasons] PRIMARY KEY  CLUSTERED 
 	(
 		[reason_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1303,14 +1335,13 @@ CREATE TABLE [phpbb_search_results] (
 	[search_time] [int] DEFAULT (0) NOT NULL ,
 	[search_keywords] [text] DEFAULT ('') NOT NULL ,
 	[search_authors] [text] DEFAULT ('') NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_search_results] PRIMARY KEY  CLUSTERED 
 	(
 		[search_key]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1322,20 +1353,19 @@ CREATE TABLE [phpbb_search_wordlist] (
 	[word_text] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[word_common] [int] DEFAULT (0) NOT NULL ,
 	[word_count] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_search_wordlist] PRIMARY KEY  CLUSTERED 
 	(
 		[word_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  UNIQUE  INDEX [wrd_txt] ON [phpbb_search_wordlist]([word_text]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [wrd_txt] ON [phpbb_search_wordlist]([word_text])
 GO
 
-CREATE  INDEX [wrd_cnt] ON [phpbb_search_wordlist]([word_count]) ON [PRIMARY]
+CREATE  INDEX [wrd_cnt] ON [phpbb_search_wordlist]([word_count])
 GO
 
 
@@ -1345,17 +1375,24 @@ GO
 CREATE TABLE [phpbb_search_wordmatch] (
 	[post_id] [int] DEFAULT (0) NOT NULL ,
 	[word_id] [int] DEFAULT (0) NOT NULL ,
-	[title_match] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[title_match] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_search_wordmatch] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_search_wordmatch] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  UNIQUE  INDEX [unq_mtch] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [unq_mtch] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match])
 GO
 
-CREATE  INDEX [word_id] ON [phpbb_search_wordmatch]([word_id]) ON [PRIMARY]
+CREATE  INDEX [word_id] ON [phpbb_search_wordmatch]([word_id])
 GO
 
-CREATE  INDEX [post_id] ON [phpbb_search_wordmatch]([post_id]) ON [PRIMARY]
+CREATE  INDEX [post_id] ON [phpbb_search_wordmatch]([post_id])
 GO
 
 
@@ -1376,23 +1413,22 @@ CREATE TABLE [phpbb_sessions] (
 	[session_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[session_autologin] [int] DEFAULT (0) NOT NULL ,
 	[session_admin] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_sessions] PRIMARY KEY  CLUSTERED 
 	(
 		[session_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [session_time] ON [phpbb_sessions]([session_time]) ON [PRIMARY]
+CREATE  INDEX [session_time] ON [phpbb_sessions]([session_time])
 GO
 
-CREATE  INDEX [session_user_id] ON [phpbb_sessions]([session_user_id]) ON [PRIMARY]
+CREATE  INDEX [session_user_id] ON [phpbb_sessions]([session_user_id])
 GO
 
-CREATE  INDEX [session_fid] ON [phpbb_sessions]([session_forum_id]) ON [PRIMARY]
+CREATE  INDEX [session_fid] ON [phpbb_sessions]([session_forum_id])
 GO
 
 
@@ -1404,18 +1440,17 @@ CREATE TABLE [phpbb_sessions_keys] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[last_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[last_login] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_sessions_keys] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_sessions_keys] PRIMARY KEY  CLUSTERED 
 	(
 		[key_id],
 		[user_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [last_login] ON [phpbb_sessions_keys]([last_login]) ON [PRIMARY]
+CREATE  INDEX [last_login] ON [phpbb_sessions_keys]([last_login])
 GO
 
 
@@ -1427,14 +1462,13 @@ CREATE TABLE [phpbb_sitelist] (
 	[site_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[site_hostname] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[ip_exclude] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_sitelist] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_sitelist] PRIMARY KEY  CLUSTERED 
 	(
 		[site_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1450,17 +1484,16 @@ CREATE TABLE [phpbb_smilies] (
 	[smiley_height] [int] DEFAULT (0) NOT NULL ,
 	[smiley_order] [int] DEFAULT (0) NOT NULL ,
 	[display_on_posting] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_smilies] PRIMARY KEY  CLUSTERED 
 	(
 		[smiley_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [display_on_post] ON [phpbb_smilies]([display_on_posting]) ON [PRIMARY]
+CREATE  INDEX [display_on_post] ON [phpbb_smilies]([display_on_posting])
 GO
 
 
@@ -1476,17 +1509,16 @@ CREATE TABLE [phpbb_styles] (
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
 	[style_parent_id] [int] DEFAULT (0) NOT NULL ,
 	[style_parent_tree] [varchar] (8000) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_styles] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_styles] PRIMARY KEY  CLUSTERED 
 	(
 		[style_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name])
 GO
 
 
@@ -1499,14 +1531,13 @@ CREATE TABLE [phpbb_teampage] (
 	[teampage_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[teampage_position] [int] DEFAULT (0) NOT NULL ,
 	[teampage_parent] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_teampage] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_teampage] PRIMARY KEY  CLUSTERED 
 	(
 		[teampage_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1552,32 +1583,31 @@ CREATE TABLE [phpbb_topics] (
 	[topic_delete_time] [int] DEFAULT (0) NOT NULL ,
 	[topic_delete_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[topic_delete_user] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_topics] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_topics] PRIMARY KEY  CLUSTERED 
 	(
 		[topic_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_topics]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_topics]([forum_id])
 GO
 
-CREATE  INDEX [forum_id_type] ON [phpbb_topics]([forum_id], [topic_type]) ON [PRIMARY]
+CREATE  INDEX [forum_id_type] ON [phpbb_topics]([forum_id], [topic_type])
 GO
 
-CREATE  INDEX [last_post_time] ON [phpbb_topics]([topic_last_post_time]) ON [PRIMARY]
+CREATE  INDEX [last_post_time] ON [phpbb_topics]([topic_last_post_time])
 GO
 
-CREATE  INDEX [topic_visibility] ON [phpbb_topics]([topic_visibility]) ON [PRIMARY]
+CREATE  INDEX [topic_visibility] ON [phpbb_topics]([topic_visibility])
 GO
 
-CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_visibility], [topic_last_post_id]) ON [PRIMARY]
+CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_visibility], [topic_last_post_id])
 GO
 
-CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id]) ON [PRIMARY]
+CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id])
 GO
 
 
@@ -1589,21 +1619,20 @@ CREATE TABLE [phpbb_topics_track] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[forum_id] [int] DEFAULT (0) NOT NULL ,
 	[mark_time] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_topics_track] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_topics_track] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[topic_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_topics_track]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_topics_track]([topic_id])
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_topics_track]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_topics_track]([forum_id])
 GO
 
 
@@ -1614,15 +1643,14 @@ CREATE TABLE [phpbb_topics_posted] (
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_posted] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_topics_posted] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_topics_posted] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[topic_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1632,17 +1660,24 @@ GO
 CREATE TABLE [phpbb_topics_watch] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[notify_status] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
+	[notify_status] [int] DEFAULT (0) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_topics_watch] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_topics_watch] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_topics_watch]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_topics_watch]([topic_id])
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_topics_watch]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_topics_watch]([user_id])
 GO
 
-CREATE  INDEX [notify_stat] ON [phpbb_topics_watch]([notify_status]) ON [PRIMARY]
+CREATE  INDEX [notify_stat] ON [phpbb_topics_watch]([notify_status])
 GO
 
 
@@ -1654,8 +1689,15 @@ CREATE TABLE [phpbb_user_notifications] (
 	[item_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[method] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[notify] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY]
+	[notify] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_user_notifications] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_user_notifications] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
 
@@ -1666,17 +1708,24 @@ CREATE TABLE [phpbb_user_group] (
 	[group_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[group_leader] [int] DEFAULT (0) NOT NULL ,
-	[user_pending] [int] DEFAULT (1) NOT NULL 
-) ON [PRIMARY]
+	[user_pending] [int] DEFAULT (1) NOT NULL ,
+	[mssqlindex] [int] IDENTITY (1, 1) NOT NULL 
+)GO
+
+ALTER TABLE [phpbb_user_group] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_user_group] PRIMARY KEY  CLUSTERED 
+	(
+		[mssqlindex]
+	)
 GO
 
-CREATE  INDEX [group_id] ON [phpbb_user_group]([group_id]) ON [PRIMARY]
+CREATE  INDEX [group_id] ON [phpbb_user_group]([group_id])
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_user_group]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_user_group]([user_id])
 GO
 
-CREATE  INDEX [group_leader] ON [phpbb_user_group]([group_leader]) ON [PRIMARY]
+CREATE  INDEX [group_leader] ON [phpbb_user_group]([group_leader])
 GO
 
 
@@ -1751,26 +1800,25 @@ CREATE TABLE [phpbb_users] (
 	[user_new] [int] DEFAULT (1) NOT NULL ,
 	[user_reminded] [int] DEFAULT (0) NOT NULL ,
 	[user_reminded_time] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_users] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
-CREATE  INDEX [user_birthday] ON [phpbb_users]([user_birthday]) ON [PRIMARY]
+CREATE  INDEX [user_birthday] ON [phpbb_users]([user_birthday])
 GO
 
-CREATE  INDEX [user_email_hash] ON [phpbb_users]([user_email_hash]) ON [PRIMARY]
+CREATE  INDEX [user_email_hash] ON [phpbb_users]([user_email_hash])
 GO
 
-CREATE  INDEX [user_type] ON [phpbb_users]([user_type]) ON [PRIMARY]
+CREATE  INDEX [user_type] ON [phpbb_users]([user_type])
 GO
 
-CREATE  UNIQUE  INDEX [username_clean] ON [phpbb_users]([username_clean]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [username_clean] ON [phpbb_users]([username_clean])
 GO
 
 
@@ -1783,14 +1831,13 @@ CREATE TABLE [phpbb_warnings] (
 	[post_id] [int] DEFAULT (0) NOT NULL ,
 	[log_id] [int] DEFAULT (0) NOT NULL ,
 	[warning_time] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_warnings] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_warnings] PRIMARY KEY  CLUSTERED 
 	(
 		[warning_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1801,14 +1848,13 @@ CREATE TABLE [phpbb_words] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[replacement] [varchar] (255) DEFAULT ('') NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_words] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_words] PRIMARY KEY  CLUSTERED 
 	(
 		[word_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
@@ -1820,15 +1866,14 @@ CREATE TABLE [phpbb_zebra] (
 	[zebra_id] [int] DEFAULT (0) NOT NULL ,
 	[friend] [int] DEFAULT (0) NOT NULL ,
 	[foe] [int] DEFAULT (0) NOT NULL 
-) ON [PRIMARY]
-GO
+)GO
 
 ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_zebra] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[zebra_id]
-	)  ON [PRIMARY] 
+	)
 GO
 
 
