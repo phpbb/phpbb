@@ -241,14 +241,23 @@ class acp_extensions
 	 */
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
+		$enabled_extension_meta_data = array();
+		
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
+			$enabled_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
+		}
+
+		natcasesort($enabled_extension_meta_data);
+
+		foreach ($enabled_extension_meta_data as $name => $display_name)
+		{
 			try
 			{
 				$this->template->assign_block_vars('enabled', array(
-					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
+					'META_DISPLAY_NAME'		=> $display_name,
 
 					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
@@ -274,14 +283,23 @@ class acp_extensions
 	 */
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
+		$disabled_extension_meta_data = array();
+		
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
+			$disabled_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
+		}
+
+		natcasesort($disabled_extension_meta_data);
+
+		foreach ($disabled_extension_meta_data as $name => $display_name)
+		{
 			try
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
+					'META_DISPLAY_NAME'		=> $display_name,
 
 					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
@@ -310,14 +328,23 @@ class acp_extensions
 	{
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
 
+		$available_extension_meta_data = array();
+		
 		foreach ($uninstalled as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
+			$available_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
+		}
+
+		natcasesort($available_extension_meta_data);
+
+		foreach ($available_extension_meta_data as $name => $display_name)
+		{
 			try
 			{
 				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
+					'META_DISPLAY_NAME'		=> $display_name,
 
 					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
 				));
