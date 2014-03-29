@@ -205,18 +205,17 @@ class post extends \phpbb\notification\type\base
 				$usernames[] = $this->user_loader->get_username($responder['poster_id'], 'no_profile');
 			}
 		}
-		$lang_key = $this->language_key;
 
 		if ($trimmed_responders_cnt)
 		{
-			$lang_key .= '_TRIMMED';
+			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
 
 		return $this->user->lang(
-			$lang_key,
-			implode($this->user->lang['COMMA_SEPARATOR'], $usernames),
+			$this->language_key,
+			phpbb_generate_string_list($usernames, $this->user),
 			censor_text($this->get_data('topic_title')),
-			$trimmed_responders_cnt
+			$responders_cnt
 		);
 	}
 
