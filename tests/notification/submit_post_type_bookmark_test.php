@@ -27,7 +27,7 @@ class phpbb_notification_submit_post_type_bookmark_test extends phpbb_notificati
 				$this->greaterThan(0))
 			->will($this->returnValueMap(array(
 				array(
-					array('3', '4', '5', '6', '7'),
+					array(3, 4, 5, 6, 7),
 					'f_read',
 					1,
 					array(
