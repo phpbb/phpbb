@@ -142,7 +142,13 @@ class class_loader
 	*/
 	public function load_class($class)
 	{
-		$class = '\\' . $class;
+		// In general $class is not supposed to contain a leading backslash,
+		// but sometimes it does. See tickets PHP-50731 and HHVM-1840.
+		if ($class[0] !== '\\')
+		{
+			$class = '\\' . $class;
+		}
+
 		if (substr($class, 0, strlen($this->namespace)) === $this->namespace)
 		{
 			$path = $this->resolve_path($class);

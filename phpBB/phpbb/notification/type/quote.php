@@ -94,7 +94,7 @@ class quote extends \phpbb\notification\type\post
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$users[] = $row['user_id'];
+			$users[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
 
