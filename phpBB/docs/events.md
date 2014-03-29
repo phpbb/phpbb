@@ -160,6 +160,22 @@ memberlist_body_username_prepend
 * Purpose: Add information before every username in the memberlist. Works in
 all display modes (leader, group and normal memberlist).
 
+memberlist_view_contact_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+    + styles/subsilver2/template/memberlist_view.html
+* Since: 3.1.0-b2
+* Purpose: Add content after the user contact part of any user profile
+
+memberlist_view_contact_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+    + styles/subsilver2/template/memberlist_view.html
+* Since: 3.1.0-b2
+* Purpose: Add content before the user contact part of any user profile
+
 memberlist_view_content_append
 ===
 * Locations:
