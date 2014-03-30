@@ -70,7 +70,14 @@ class install_update extends module
 		$request->enable_super_globals();
 
 		// Create a normal container now
-		$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'install/update/new/config');
+		if (file_exists($phpbb_root_path . 'install/update/new/config'))
+		{
+			$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'install/update/new/config');
+		}
+		else
+		{
+			$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'config');
+		}
 
 		// Writes into global $cache
 		$cache = $phpbb_container->get('cache');
