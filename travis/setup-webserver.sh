@@ -6,6 +6,12 @@
 set -e
 set -x
 
+if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
+then
+	# Add PPA providing dependencies for recent HHVM on Ubuntu 12.04.
+	sudo add-apt-repository -y ppa:mapnik/boost
+fi
+
 sudo apt-get update
 sudo apt-get install -y nginx realpath
 
