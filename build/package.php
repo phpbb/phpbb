@@ -139,6 +139,12 @@ if (sizeof($package->old_packages))
 			{
 				unset($file_contents['all'][$index]);
 			}
+
+			$source_filename = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $file;
+			if (!file_exists($source_filename))
+			{
+				unset($file_contents['all'][$index]);
+			}
 		}
 
 		// First of all, fill the 'old' directory
@@ -200,12 +206,6 @@ if (sizeof($package->old_packages))
 		{
 			$source_filename = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $file;
 			$dest_filename = $dest_filename_dir . '/install/update/new/' . $file;
-
-			if (!file_exists($source_filename))
-			{
-				continue;
-			}
-
 			$filename = $file;
 
 			// Create Directories along the way?
@@ -276,29 +276,23 @@ $update_info = array(
 
 		if (sizeof($file_contents['all']))
 		{
-			$index_contents .= '\'files\'		=> array(\'' . implode("',\n\t'", $file_contents['all']) . '\'),
-';
+			$index_contents .= "\t'files'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['all']) . "',\n\t),\n";
 		}
 		else
 		{
-			$index_contents .= '\'files\'		=> array(),
-';
+			$index_contents .= "\t'files'		=> array(),\n";
 		}
 
 		if (sizeof($file_contents['binary']))
 		{
-			$index_contents .= '\'binary\'		=> array(\'' . implode("',\n\t'", $file_contents['binary']) . '\'),
-';
+			$index_contents .= "\t'binary'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['binary']) . "',\n\t),\n";
 		}
 		else
 		{
-			$index_contents .= '\'binary\'		=> array(),
-';
+			$index_contents .= "\t'binary'		=> array(),\n";
 		}
 
-		$index_contents .= ');
-
-?' . '>';
+		$index_contents .= ");\n";
 
 		$fp = fopen($dest_filename_dir . '/install/update/index.php', 'wt');
 		fwrite($fp, $index_contents);
