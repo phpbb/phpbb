@@ -800,6 +800,26 @@
                 "UINT:20",
                 0
             ],
+            "enable_shadow_prune": {
+                "0": "BOOL",
+                "1": 0,
+                "after": "prune_freq"
+            },
+            "prune_shadow_days": {
+                "0": "UINT",
+                "1": 7,
+                "after": "enable_shadow_prune"
+            },
+            "prune_shadow_freq": {
+                "0": "UINT",
+                "1": 1,
+                "after": "prune_shadow_freq"
+            },
+            "prune_shadow_next": {
+                "0": "INT:11",
+                "1": 0,
+                "after": "prune_shadow_freq"
+            },
             "forum_posts_approved": [
                 "UINT",
                 0
