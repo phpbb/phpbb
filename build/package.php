@@ -139,6 +139,12 @@ if (sizeof($package->old_packages))
 			{
 				unset($file_contents['all'][$index]);
 			}
+
+			$source_filename = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $file;
+			if (!file_exists($source_filename))
+			{
+				unset($file_contents['all'][$index]);
+			}
 		}
 
 		// First of all, fill the 'old' directory
@@ -200,12 +206,6 @@ if (sizeof($package->old_packages))
 		{
 			$source_filename = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $file;
 			$dest_filename = $dest_filename_dir . '/install/update/new/' . $file;
-
-			if (!file_exists($source_filename))
-			{
-				continue;
-			}
-
 			$filename = $file;
 
 			// Create Directories along the way?
