@@ -89,7 +89,7 @@
 					<!-- EVENT overall_header_breadcrumb_append -->
 				</li>
 
-				<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- IF CURRENT_USER_AVATAR --><span class="avatar-overall-header">{CURRENT_USER_AVATAR}</span> <!-- ENDIF -->{USERNAME_FULL}</li><!-- ENDIF -->
+				<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- IF CURRENT_USER_AVATAR --><a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a> <!-- ENDIF -->{USERNAME_FULL}</li><!-- ENDIF -->
 				<!-- IF U_EMAIL_TOPIC --><li class="rightside"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}" class="sendemail">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_EMAIL_PM --><li class="rightside"><a href="{U_EMAIL_PM}" title="{L_EMAIL_PM}" class="sendemail">{L_EMAIL_PM}</a></li><!-- ENDIF -->
 				<!-- IF U_PRINT_TOPIC --><li class="rightside"><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p" class="print">{L_PRINT_TOPIC}</a></li><!-- ENDIF -->
