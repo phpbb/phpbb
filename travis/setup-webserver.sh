@@ -26,7 +26,8 @@ APP_SOCK=$(realpath "$DIR")/php-app.sock
 if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
 then
 	# Upgrade to a recent stable version of HHVM
-	sudo apt-get -o Dpkg::Options::="--force-confnew" install -y hhvm
+	sudo apt-get -o Dpkg::Options::="--force-confnew" \
+		install -y hhvm=3.0.0~precise
 
 	HHVM_LOG=$(realpath "$DIR")/hhvm.log
 
