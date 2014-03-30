@@ -2190,7 +2190,7 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$statements[] = 'CREATE UNIQUE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 			break;
 		}
 
@@ -2243,7 +2243,7 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$statements[] = 'CREATE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 			break;
 		}
 
