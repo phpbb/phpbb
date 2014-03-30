@@ -134,6 +134,14 @@ index_body_linklist_before
 * Since: 3.1.0-a3
 * Purpose: Add content before the linklist above the forum list on Board index
 
+index_body_stat_blocks_after
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b2
+* Purpose: Add new statistic blocks below the Who Is Online and Board Statistics blocks
+
 index_body_stat_blocks_before
 ===
 * Locations:
