@@ -80,7 +80,7 @@ class p_master
 	function list_modules($p_class)
 	{
 		global $auth, $db, $user, $cache;
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
@@ -283,6 +283,20 @@ class p_master
 			{
 				$custom_func($row['module_mode'], $module_row);
 			}
+
+			/**
+			* This event allows to modify parameters for building modules list
+			*
+			* @event core.modify_module_row
+			* @var	string		url_func		Function for building 'url_extra'
+			* @var	string		lang_func		Function for building the language name
+			* @var	string		custom_func		Custom function for calling parameters on module init
+			* @var	array		row				Array holding the basic module data
+			* @var	array		module_row		Array holding the module display parameters
+			* @since 3.1.0-b3
+			*/
+			$vars = array('url_func', 'lang_func', 'custom_func', 'row', 'module_row');
+			extract($phpbb_dispatcher->trigger_event('core.modify_module_row', compact($vars)));
 
 			$this->module_ary[] = $module_row;
 		}
