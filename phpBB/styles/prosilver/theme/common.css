@@ -444,6 +444,14 @@ ul.linklist.bulletin li.no-bulletin:before {
 	display: none !important;
 }
 
+/* Avatar in overall_header.html */
+.header-avatar img {
+	margin-bottom: 2px;
+	max-height: 25px;
+	vertical-align: middle;
+	width: auto;
+}
+
 /* Dropdown menu
 ----------------------------------------*/
 .dropdown-container {

@@ -18,7 +18,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 
 		// check for logout link
 		$crawler = self::request('GET', 'index.php');
-		$this->assertContains($this->lang('LOGOUT_USER', 'admin'), $crawler->filter('.navbar')->text());
+		$this->assertContains($this->lang('LOGOUT', 'admin'), $crawler->filter('.navbar')->text());
 	}
 
 	public function test_login_other()
@@ -26,7 +26,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->create_user('anothertestuser');
 		$this->login('anothertestuser');
 		$crawler = self::request('GET', 'index.php');
-		$this->assertContains('anothertestuser', $crawler->filter('.icon-logout')->text());
+		$this->assertContains('anothertestuser', $crawler->filter('#username_logged_in')->text());
 	}
 
 	/**
