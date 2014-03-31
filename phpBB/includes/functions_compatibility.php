@@ -39,13 +39,6 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 		'avatar_height'	=> $avatar_height,
 	);
 
-	if (!function_exists('phpbb_get_avatar'))
-	{
-		global $phpbb_root_path, $phpEx;
-
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-	}
-
 	return phpbb_get_avatar($row, $alt, $ignore_config);
 }
 

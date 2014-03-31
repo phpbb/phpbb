@@ -4620,6 +4620,92 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 }
 
 /**
+* Get user avatar
+*
+* @param array $user_row Row from the users table
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
+{
+	$row = \phpbb\avatar\manager::clean_row($user_row, 'user');
+	return phpbb_get_avatar($row, $alt, $ignore_config);
+}
+
+/**
+* Get group avatar
+*
+* @param array $group_row Row from the groups table
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+{
+	$row = \phpbb\avatar\manager::clean_row($user_row, 'group');
+	return phpbb_get_avatar($row, $alt, $ignore_config);
+}
+
+/**
+* Get avatar
+*
+* @param array $row Row cleaned by \phpbb\avatar\driver\driver::clean_row
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+*
+* @return string Avatar html
+*/
+function phpbb_get_avatar($row, $alt, $ignore_config = false)
+{
+	global $user, $config, $cache, $phpbb_root_path, $phpEx;
+	global $request;
+	global $phpbb_container;
+
+	if (!$config['allow_avatar'] && !$ignore_config)
+	{
+		return '';
+	}
+
+	$avatar_data = array(
+		'src' => $row['avatar'],
+		'width' => $row['avatar_width'],
+		'height' => $row['avatar_height'],
+	);
+
+	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+	$driver = $phpbb_avatar_manager->get_driver($row['avatar_type'], $ignore_config);
+	$html = '';
+
+	if ($driver)
+	{
+		$html = $driver->get_custom_html($user, $row, $alt);
+		if (!empty($html))
+		{
+			return $html;
+		}
+
+		$avatar_data = $driver->get_data($row, $ignore_config);
+	}
+	else
+	{
+		$avatar_data['src'] = '';
+	}
+
+	if (!empty($avatar_data['src']))
+	{
+		$html = '<img src="' . $avatar_data['src'] . '" ' .
+			($avatar_data['width'] ? ('width="' . $avatar_data['width'] . '" ') : '') .
+			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
+			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	}
+
+	return $html;
+}
+
+/**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum')
@@ -4686,7 +4772,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
-		$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
+		$l_login_logout = $user->lang['LOGOUT'];
 	}
 	else
 	{
@@ -4830,6 +4916,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
+		'CURRENT_USER_AVATAR'	=> phpbb_get_user_avatar($user->data),
 		'SITENAME'						=> $config['sitename'],
 		'SITE_DESCRIPTION'				=> $config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
@@ -4859,6 +4946,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
+		'USERNAME_FULL'		=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
@@ -4875,6 +4963,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_SITE_HOME'			=> $config['site_home_url'],
 		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
 		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
+		'U_USER_PROFILE'		=> get_username_string('profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
 		'U_FAQ'					=> append_sid("{$phpbb_root_path}faq.$phpEx"),
 		'U_SEARCH_SELF'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=egosearch'),
