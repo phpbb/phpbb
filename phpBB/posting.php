@@ -1331,7 +1331,7 @@ if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 {
 	if ($config['allow_bbcode'])
 	{
-		$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+		$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . ' '.censor_text(trim($message_parser->message)) . "[/quote]\n";
 	}
 	else
 	{
