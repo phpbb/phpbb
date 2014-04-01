@@ -650,8 +650,8 @@ class auth_admin extends \phpbb\auth\auth
 					$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
 						'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username']),
-						'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username']))
-					);
+						'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username']),
+					));
 				}
 				$db->sql_freeresult($result);
 			}

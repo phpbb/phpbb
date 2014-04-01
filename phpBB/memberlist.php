@@ -1569,8 +1569,8 @@ switch ($mode)
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 					'S_GROUP_LEADER'	=> $is_leader,
 
-					'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $row['username']))
-				);
+					'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $row['username']),
+				));
 
 				if (isset($cp_row['row']) && sizeof($cp_row['row']))
 				{
