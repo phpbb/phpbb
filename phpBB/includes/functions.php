@@ -4957,6 +4957,17 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
 
+	/**
+	* Execute code and/or overwrite _common_ template variables after they have been assigned.
+	*
+	* @event core.page_header_after
+	* @var	string	page_title			Page title
+	*
+	* @since 3.1-B3
+	*/
+	$vars = array('page_title');
+	extract($phpbb_dispatcher->trigger_event('core.page_header_after', compact($vars)));
+
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
 
