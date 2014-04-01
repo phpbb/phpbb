@@ -873,8 +873,8 @@ if (!empty($topic_data['poll_start']))
 			'POLL_OPTION_PERCENT_REL' 	=> $option_pct_rel_txt,
 			'POLL_OPTION_PCT'			=> round($option_pct * 100),
 			'POLL_OPTION_WIDTH'     	=> round($option_pct * 250),
-			'POLL_OPTION_VOTED'			=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
-		);
+			'POLL_OPTION_VOTED'			=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false,
+		));
 	}
 
 	$poll_end = $topic_data['poll_length'] + $topic_data['poll_start'];
@@ -894,8 +894,8 @@ if (!empty($topic_data['poll_start']))
 		'S_IS_MULTI_CHOICE'	=> ($topic_data['poll_max_options'] > 1) ? true : false,
 		'S_POLL_ACTION'		=> $viewtopic_url,
 
-		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
-	);
+		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll',
+	));
 
 	unset($poll_end, $poll_info, $voted_id);
 }
