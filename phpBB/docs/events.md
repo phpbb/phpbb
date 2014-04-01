@@ -139,7 +139,7 @@ index_body_stat_blocks_after
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
-* Since: 3.1.0-b2
+* Since: 3.1.0-b3
 * Purpose: Add new statistic blocks below the Who Is Online and Board Statistics blocks
 
 index_body_stat_blocks_before
