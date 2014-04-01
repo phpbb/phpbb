@@ -223,14 +223,6 @@ overall_footer_copyright_prepend
 * Since: 3.1.0-a1
 * Purpose: Add content before the copyright line
 
-overall_header_body_after
-===
-* Locations:
-    + styles/prosilver/template/overall_header.html
-    + styles/subsilver2/template/overall_header.html
-* Since: 3.1.0-b3
-* Purpose: Add content after the header body
-
 overall_header_breadcrumb_append
 ===
 * Locations:
@@ -270,6 +262,14 @@ overall_header_navigation_prepend
     + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
+
+overall_header_page_body_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.0-b3
+* Purpose: Add content after the page-header, but before the page-body
 
 posting_editor_buttons_after
 ===
