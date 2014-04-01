@@ -22,20 +22,20 @@
 
 		<!-- IF RANK_TITLE or RANK_IMG --><dd class="profile-rank">{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
 
-		<dd><strong>{L_POSTS}{L_COLON}</strong> {AUTHOR_POSTS}</dd>
-		<!-- IF AUTHOR_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
+		<dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> {AUTHOR_POSTS}</dd>
+		<!-- IF AUTHOR_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
 
 		<!-- EVENT ucp_pm_viewmessage_custom_fields_before -->
 		<!-- BEGIN custom_fields -->
 			<!-- IF not custom_fields.S_PROFILE_CONTACT -->
-				<dd><strong>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
+				<dd class="profile-custom-field profile-{custom_fields.PROFILE_FIELD_IDENT}"><strong>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
 			<!-- ENDIF -->
 		<!-- END custom_fields -->
 		<!-- EVENT ucp_pm_viewmessage_custom_fields_after -->
 
 
 		<!-- IF U_PM or U_EMAIL or U_JABBER -->
-		<dd>
+		<dd class="profile-contact">
 			<ul class="profile-icons">
 			<!-- EVENT ucp_pm_viewmessage_contact_fields_before -->
 			<!-- IF U_PM --><li class="pm-icon"><a href="{U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
