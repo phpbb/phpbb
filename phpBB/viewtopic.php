@@ -842,9 +842,11 @@ if (!empty($topic_data['poll_start']))
 	}
 
 	$poll_total = 0;
+	$poll_most = 0;
 	foreach ($poll_info as $poll_option)
 	{
 		$poll_total += $poll_option['poll_option_total'];
+		$poll_most = ($poll_option['poll_option_total'] >= $poll_most) ? $poll_option['poll_option_total'] : $poll_most;
 	}
 
 	$parse_flags = ($poll_info[0]['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
@@ -860,15 +862,18 @@ if (!empty($topic_data['poll_start']))
 	{
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
 		$option_pct_txt = sprintf("%.1d%%", round($option_pct * 100));
+		$option_pct_rel = ($poll_most > 0) ? $poll_option['poll_option_total'] / $poll_most : 0;
+		$option_pct_rel_txt = sprintf("%.1d%%", round($option_pct_rel * 100));
 
 		$template->assign_block_vars('poll_option', array(
-			'POLL_OPTION_ID' 		=> $poll_option['poll_option_id'],
-			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
-			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
-			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
-			'POLL_OPTION_PCT'		=> round($option_pct * 100),
-			'POLL_OPTION_WIDTH'     => round($option_pct * 250),
-			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
+			'POLL_OPTION_ID' 			=> $poll_option['poll_option_id'],
+			'POLL_OPTION_CAPTION' 		=> $poll_option['poll_option_text'],
+			'POLL_OPTION_RESULT' 		=> $poll_option['poll_option_total'],
+			'POLL_OPTION_PERCENT' 		=> $option_pct_txt,
+			'POLL_OPTION_PERCENT_REL' 	=> $option_pct_rel_txt,
+			'POLL_OPTION_PCT'			=> round($option_pct * 100),
+			'POLL_OPTION_WIDTH'     	=> round($option_pct * 250),
+			'POLL_OPTION_VOTED'			=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
 		);
 	}
 
