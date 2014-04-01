@@ -74,3 +74,11 @@
 	height: 16px;
 	width: 16px;
 }
+
+.file-name {
+	display: inline-block;
+	width: 350px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
