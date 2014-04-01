@@ -73,7 +73,7 @@ $lang = array_merge($lang, array(
 	'STYLE_INSTALLED_RETURN_UNINSTALLED'	=> '<a href="%s">Click here</a> to install more styles.',
 	'STYLE_NAME'				=> 'Style name',
 	'STYLE_NOT_INSTALLED'		=> 'Style "%s" was not installed.',
-	'STYLE_PATH'				=> 'Style path:',
+	'STYLE_PATH'				=> 'Style path',
 	'STYLE_UNINSTALL'			=> 'Uninstall',
 	'STYLE_UNINSTALL_DEPENDENT'	=> 'Style "%s" cannot be uninstalled because it has one or more child styles.',
 	'STYLE_UNINSTALLED'			=> 'Style "%s" uninstalled successfully.',
