@@ -373,7 +373,7 @@ $('#quick-mod-select').change(function () {
 });
 
 $('#delete_permanent').click(function () {
-	if ($(this).attr('checked')) {
+	if ($(this).prop('checked')) {
 		$('#delete_reason').hide();
 	} else {
 		$('#delete_reason').show();
