@@ -209,7 +209,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 	*/
 	public function test_modules_auth($module_auth, $expected)
 	{
-		global $phpbb_extension_manager;
+		global $phpbb_extension_manager, $phpbb_dispatcher;
 
 		$phpbb_extension_manager = $this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
@@ -226,6 +226,8 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				),
 			)
 		);
+
+		$phpbb_dispatcher = phpbb_mock_event_dispatcher();
 
 		$this->assertEquals($expected, p_master::module_auth($module_auth, 0));
 	}
