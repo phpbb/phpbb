@@ -16,14 +16,15 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $auth, $user;
-		$auth = $this->getMock('auth');
+		global $auth, $phpbb_dispatcher, $user;
+		$auth = $this->getMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap(array(
 				array('u_viewprofile', true),
 			)));
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$user->data['user_id'] = ANONYMOUS;
 		$user->lang['GUEST'] = 'Guest';
 	}
