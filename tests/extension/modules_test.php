@@ -227,7 +227,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			)
 		);
 
-		$phpbb_dispatcher = phpbb_mock_event_dispatcher();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$this->assertEquals($expected, p_master::module_auth($module_auth, 0));
 	}
