@@ -206,6 +206,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 		var poll = $('.topic_poll');
 		var panel = poll.find('.panel');
 		var results_visible = poll.find('dl:first-child .resultbar').is(':visible');
+		var most_votes = 0;
 
 		// Set min-height to prevent the page from jumping when the content changes
 		var update_panel_height = function (height) {
@@ -227,6 +228,13 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			// If the user can still vote, simply slide down the results
 			poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show(500);
 		}
+		
+		// Get the votes count of the highest poll option
+		poll.find('[data-poll-option-id]').each(function() {
+			var option = $(this);
+			var option_id = option.attr('data-poll-option-id');
+			most_votes = (res.vote_counts[option_id] >= most_votes) ? res.vote_counts[option_id] : most_votes;
+		});
 
 		// Update the total votes count
 		poll.find('.poll_total_vote_cnt').html(res.total_votes);
@@ -237,6 +245,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var option_id = option.attr('data-poll-option-id');
 			var voted = (typeof res.user_votes[option_id] !== 'undefined') ? true : false;
 			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[option_id] / res.total_votes) * 100);
+			var percent_rel = (most_votes == 0) ? 0 : Math.round((res.vote_counts[option_id] / most_votes) * 100);
 
 			option.toggleClass('voted', voted);
 
@@ -246,7 +255,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var new_bar_class = (percent == 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
 
 			setTimeout(function () {
-				bar.animate({width: percent + '%'}, 500).removeClass('pollbar1 pollbar2 pollbar3 pollbar4 pollbar5').addClass(new_bar_class);
+				bar.animate({width: percent_rel + '%'}, 500).removeClass('pollbar1 pollbar2 pollbar3 pollbar4 pollbar5').addClass(new_bar_class);
 				bar.html(res.vote_counts[option_id]);
 
 				var percent_txt = (!percent) ? res.NO_VOTES : percent + '%';
