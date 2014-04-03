@@ -85,14 +85,14 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContains('phpBB Foo Extension', $crawler->filter('.ext_enabled')->eq(0)->text());
 		$this->assertContainsLang('EXTENSION_DISABLE', $crawler->filter('.ext_enabled')->eq(0)->text());
 
-		$this->assertContains('phpBB Moo Extension', $crawler->filter('.ext_disabled')->eq(1)->text());
-		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(1)->text());
-		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(1)->text());
-		$this->assertContainsLang('EXTENSION_DELETE_DATA', $crawler->filter('.ext_disabled')->eq(1)->text());
+		$this->assertContains('phpBB Moo Extension', $crawler->filter('.ext_disabled')->eq(2)->text());
+		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(2)->text());
+		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(2)->text());
+		$this->assertContainsLang('EXTENSION_DELETE_DATA', $crawler->filter('.ext_disabled')->eq(2)->text());
 
 		$this->assertContains('The “vendor/test2” extension is not valid.', $crawler->filter('.ext_disabled')->eq(0)->text());
 
-		$this->assertContains('The “vendor/test3” extension is not valid.', $crawler->filter('.ext_disabled')->eq(2)->text());
+		$this->assertContains('The “vendor/test3” extension is not valid.', $crawler->filter('.ext_disabled')->eq(1)->text());
 
 		$this->assertContains('phpBB Bar Extension', $crawler->filter('.ext_disabled')->eq(3)->text());
 		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(3)->text());
