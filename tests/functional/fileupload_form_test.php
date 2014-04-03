@@ -76,6 +76,39 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$this->assertEquals($this->lang('DISALLOWED_EXTENSION', 'bif'), $crawler->filter('p.error')->text());
 	}
 
+	public function test_disallowed_content()
+	{
+		$this->login();
+
+		$crawler = $this->upload_file('disallowed.jpg', 'image/jpeg');
+		$this->assertEquals($this->lang('DISALLOWED_CONTENT'), $crawler->filter('p.error')->text());
+	}
+
+	public function test_disallowed_content_no_check()
+	{
+		$this->login();
+		$this->admin_login();
+		$this->add_lang('ucp');
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_attachments&mode=attach');
+
+		$form = $crawler->selectButton('Submit')->form();
+		$values = $form->getValues();
+
+		$values["config[check_attachment_content]"] = 0;
+		$form->setValues($values);
+		$crawler = self::submit($form);
+
+		// Logout and back in for correct URL
+		$this->logout();
+		$this->login();
+
+		$crawler = $this->upload_file('disallowed.jpg', 'image/jpeg');
+
+		// Hitting the UNABLE_GET_IMAGE_SIZE error means we passed the
+		// DISALLOWED_CONTENT check
+		$this->assertEquals($this->lang('UNABLE_GET_IMAGE_SIZE'), $crawler->filter('p.error')->text());
+	}
+
 	public function test_too_large()
 	{
 		$this->create_user('fileupload');
