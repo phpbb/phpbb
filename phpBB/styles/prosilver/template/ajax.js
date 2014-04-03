@@ -389,7 +389,7 @@ $('#delete_permanent').click(function () {
 */
 $('#member_search').click(function () {
 	$('#memberlist_search').slideToggle('fast');
-	phpbb.alt_text;
+	phpbb.ajaxCallbacks.alt_text.call(this);
 	// Focus on the username textbox if it's available and displayed
 	if ($('#memberlist_search').is(':visible')) {
 		$('#username').focus();
