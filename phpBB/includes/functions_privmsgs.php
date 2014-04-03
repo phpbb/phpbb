@@ -1575,7 +1575,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container;
+	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1712,6 +1712,21 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		break;
 	}
 
+	/**
+	* Get all parts of the PM that is to be submited to the DB.
+	*
+	* @event	core.pm_pre_submit
+	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
+	* @var	array	sql_data	sql_data that will be sent to PRIVMSGS_TABLE
+	* @var	array	recipients	array of all recipients of the PM
+	* @var	int	from_user	Who sends the pm
+	* @since 3.1-b3
+	*/
+	$from_user = $data['from_user_id'];
+	$msg_id = $data['msg_id'];
+	$vars = array('sql_data', 'mode', 'recipients', 'from_user');
+	extract($phpbb_dispatcher->trigger_event('core.pm_pre_submit', compact($vars)));
+	
 	if (sizeof($sql_data))
 	{
 		$query = '';
