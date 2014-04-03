@@ -800,26 +800,22 @@
                 "UINT:20",
                 0
             ],
-            "enable_shadow_prune": {
-                "0": "BOOL",
-                "1": 0,
-                "after": "prune_freq"
-            },
-            "prune_shadow_days": {
-                "0": "UINT",
-                "1": 7,
-                "after": "enable_shadow_prune"
-            },
-            "prune_shadow_freq": {
-                "0": "UINT",
-                "1": 1,
-                "after": "prune_shadow_freq"
-            },
-            "prune_shadow_next": {
-                "0": "INT:11",
-                "1": 0,
-                "after": "prune_shadow_freq"
-            },
+            "enable_shadow_prune": [
+                "BOOL",
+                0
+            ],
+            "prune_shadow_days": [
+                "UINT",
+                7
+            ],
+            "prune_shadow_freq": [
+                "UINT",
+                1
+            ],
+            "prune_shadow_next": [
+                "INT:11",
+                0
+            ],
             "forum_posts_approved": [
                 "UINT",
                 0

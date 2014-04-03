@@ -21,10 +21,10 @@ class prune_shadow_topics extends \phpbb\db\migration\migration
 		return array(
 			'add_columns'		=> array(
 				$this->table_prefix . 'forums'		=> array(
-					'enable_shadow_prune'	=> array('BOOL', 0, 'after' => 'prune_freq'),
-					'prune_shadow_days'	=> array('UINT', 7, 'after' => 'enable_shadow_prune'),
-					'prune_shadow_freq'	=> array('UINT', 1, 'after' => 'prune_shadow_freq'),
-					'prune_shadow_next'	=> array('INT:11', 0, 'after' => 'prune_shadow_freq'),
+					'enable_shadow_prune'	=> array('BOOL', 0),
+					'prune_shadow_days'	=> array('UINT', 7),
+					'prune_shadow_freq'	=> array('UINT', 1),
+					'prune_shadow_next'	=> array('INT:11', 0),
 				),
 			),
 		);
