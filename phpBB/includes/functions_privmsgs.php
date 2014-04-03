@@ -1584,7 +1584,20 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	}
 
 	$current_time = time();
-
+	
+	/**
+ 	* Get all parts of the PM that is to be submited to the DB.
+ 	* 
+ 	* @event	core.pm_pre_submit
+ 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
+  	* @var	string	subject	Subject of the private message
+  	* @var	array	data	The whole row data of the PM.
+  	* @since 3.1.0-b3
+  	*/
+  	$vars = array('mode', 'subject', 'data');
+  	extract($phpbb_dispatcher->trigger_event('core.pm_pre_submit', compact($vars)));
+	
+	
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
 	$root_level = 0;
@@ -1711,21 +1724,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			);
 		break;
 	}
-
- 	/**
- 	* Get all parts of the PM that is to be submited to the DB.
- 	* 
- 	* @event	core.pm_pre_submit
- 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
-  	* @var	array	sql_data	sql_data that will be sent to PRIVMSGS_TABLE
-  	* @var	array	recipients	array of all recipients of the PM
-  	* @var	int	from_user	Who sends the pm
-  	* @since 3.1-b3
-  	*/
-  	$from_user = $data['from_user_id'];
-  	$msg_id = $data['msg_id'];
-  	$vars = array('sql_data', 'mode', 'recipients', 'from_user');
-  	extract($phpbb_dispatcher->trigger_event('core.pm_pre_submit', compact($vars)));
 
 	if (sizeof($sql_data))
 	{
