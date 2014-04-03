@@ -21,6 +21,7 @@ $supported_dbms = array(
 	'postgres',
 	'sqlite',
 );
+$table_prefix = 'phpbb_';
 
 if (!is_writable($schema_path))
 {
@@ -28,19 +29,29 @@ if (!is_writable($schema_path))
 }
 
 define('IN_PHPBB', true);
-define('IN_INSTALL', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
+$phpbb_root_path = dirname(__FILE__) . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
 
-$classes = $phpbb_container->get('ext.manager')
-	->get_finder()
-	->core_path('phpbb/')
+include($phpbb_root_path . 'includes/constants.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader->register();
+
+class phpbb_extension_empty_manager extends \phpbb\extension\manager
+{
+	public function __construct()
+	{
+		$this->extensions = array();
+	}
+}
+
+$finder = new \phpbb\extension\finder(new \phpbb_extension_empty_manager(), new \phpbb\filesystem(), $phpbb_root_path);
+$classes = $finder->core_path('phpbb/')
 	->directory('db/migration/data')
 	->get_classes();
-$db_tools = new \phpbb\db\tools($db, true);
 
-$schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, $db, $db_tools, $phpbb_root_path, $phpEx, 'phpbb_');
+$db = new \phpbb\db\driver\sqlite();
+$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
 $schema_data = $schema_generator->get_schema();
 $dbms_type_map = phpbb\db\tools::get_dbms_type_map();
 
