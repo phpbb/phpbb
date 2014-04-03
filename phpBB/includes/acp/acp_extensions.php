@@ -241,21 +241,15 @@ class acp_extensions
 	 */
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
+		$enabled_extension_meta_data = array();
+		
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
-				$this->template->assign_block_vars('enabled', array(
-					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
-
-					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
-				));
-
-				$this->output_actions('enabled', array(
-					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
-				));
+				$enabled_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
 			}
 			catch(\phpbb\extension\exception $e)
 			{
@@ -263,6 +257,21 @@ class acp_extensions
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
 			}
+		}
+
+		natcasesort($enabled_extension_meta_data);
+
+		foreach ($enabled_extension_meta_data as $name => $display_name)
+		{
+			$this->template->assign_block_vars('enabled', array(
+				'META_DISPLAY_NAME'		=> $display_name,
+
+				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
+			));
+
+			$this->output_actions('enabled', array(
+				'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
+			));
 		}
 	}
 
@@ -274,22 +283,15 @@ class acp_extensions
 	 */
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
+		$disabled_extension_meta_data = array();
+		
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
-
-					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
-				));
-
-				$this->output_actions('disabled', array(
-					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
-					'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
-				));
+				$disabled_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
 			}
 			catch(\phpbb\extension\exception $e)
 			{
@@ -297,6 +299,22 @@ class acp_extensions
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
 			}
+		}
+
+		natcasesort($disabled_extension_meta_data);
+
+		foreach ($disabled_extension_meta_data as $name => $display_name)
+		{
+			$this->template->assign_block_vars('disabled', array(
+				'META_DISPLAY_NAME'		=> $display_name,
+
+				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
+			));
+
+			$this->output_actions('disabled', array(
+				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+				'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
+			));
 		}
 	}
 
@@ -310,21 +328,15 @@ class acp_extensions
 	{
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
 
+		$available_extension_meta_data = array();
+		
 		foreach ($uninstalled as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $md_manager->get_metadata('display-name'),
-
-					'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
-				));
-
-				$this->output_actions('disabled', array(
-					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
-				));
+				$available_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
 			}
 			catch(\phpbb\extension\exception $e)
 			{
@@ -332,6 +344,21 @@ class acp_extensions
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 				));
 			}
+		}
+
+		natcasesort($available_extension_meta_data);
+
+		foreach ($available_extension_meta_data as $name => $display_name)
+		{
+			$this->template->assign_block_vars('disabled', array(
+				'META_DISPLAY_NAME'		=> $display_name,
+
+				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
+			));
+
+			$this->output_actions('disabled', array(
+				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+			));
 		}
 	}
 
