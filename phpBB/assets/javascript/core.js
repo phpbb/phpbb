@@ -431,14 +431,14 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 
 	if ($("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option").size() === 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
-		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").attr('selected', true);
+		$("#timezone > optgroup[label='" + $('#tz_date').val() + "'] > option:first").prop('selected', true);
 		keepSelection = true;
 	}
 
 	if (typeof keepSelection !== 'undefined' && !keepSelection) {
 		var timezoneOptions = $('#timezone > optgroup option');
 		if (timezoneOptions.filter(':selected').length <= 0) {
-			timezoneOptions.filter(':first').attr('selected', true);
+			timezoneOptions.filter(':first').prop('selected', true);
 		}
 	}
 };
