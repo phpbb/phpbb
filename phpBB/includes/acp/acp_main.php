@@ -40,10 +40,12 @@ class acp_main
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
+			$perm_from = get_username_string('full', $user_row['user_id'], $user_row['username'], $user_row['user_colour']);
+
 			$template->assign_vars(array(
 				'S_RESTORE_PERMISSIONS'		=> true,
 				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
-				'PERM_FROM'					=> get_username_string('full', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+				'PERM_FROM'					=> $perm_from,
 				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERRED_EXPLAIN'], $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
 			));
 
