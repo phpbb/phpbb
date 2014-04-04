@@ -142,7 +142,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'memberlist.' . $this->php_ext, "mode=viewprofile&u={$this->item_id}");
+		return $this->user_loader->get_username($this->item_id, 'profile');
 	}
 
 	/**

@@ -294,8 +294,8 @@ function mcp_post_details($id, $mode, $action)
 					'REPORT_ID'		=> $row['report_id'],
 					'REASON_TITLE'	=> $row['reason_title'],
 					'REASON_DESC'	=> $row['reason_description'],
-					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : $user->lang['GUEST'],
-					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+					'REPORTER'		=> get_username_string('username', $row['user_id'], $row['username']),
+					'U_REPORTER'	=> get_username_string('profile', $row['user_id'], $row['username']),
 					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
 					'REPORT_TIME'	=> $user->format_date($row['report_time']),
 					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
@@ -354,11 +354,11 @@ function mcp_post_details($id, $mode, $action)
 			foreach ($users_ary as $user_id => $user_row)
 			{
 				$template->assign_block_vars('userrow', array(
-					'USERNAME'		=> ($user_id == ANONYMOUS) ? $user->lang['GUEST'] : $user_row['username'],
+					'USERNAME'		=> get_username_string('username', $user_id, $user_row['username']),
 					'NUM_POSTS'		=> $user_row['postings'],
 					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
 
-					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id),
+					'U_PROFILE'		=> get_username_string('profile', $user_id, $user_row['username']),
 					'U_SEARCHPOSTS' => append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user_id . '&amp;sr=topics'))
 				);
 			}
