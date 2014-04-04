@@ -373,7 +373,7 @@ $('#quick-mod-select').change(function () {
 });
 
 $('#delete_permanent').click(function () {
-	if ($(this).attr('checked')) {
+	if ($(this).prop('checked')) {
 		$('#delete_reason').hide();
 	} else {
 		$('#delete_reason').show();
@@ -389,7 +389,7 @@ $('#delete_permanent').click(function () {
 */
 $('#member_search').click(function () {
 	$('#memberlist_search').slideToggle('fast');
-	phpbb.ajax_callbacks.alt_text.call(this);
+	phpbb.ajaxCallbacks.alt_text.call(this);
 	// Focus on the username textbox if it's available and displayed
 	if ($('#memberlist_search').is(':visible')) {
 		$('#username').focus();
