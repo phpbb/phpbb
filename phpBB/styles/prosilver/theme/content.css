@@ -273,6 +273,10 @@ div[class].topic-actions {
 	overflow-x: auto;
 }
 
+.postbody img.postimage {
+	max-width: 99%;
+}
+
 .search .postbody {
 	width: 68%
 }
