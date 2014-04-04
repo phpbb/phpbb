@@ -4962,10 +4962,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	*
 	* @event core.page_header_after
 	* @var	string	page_title			Page title
-	*
-	* @since 3.1-B3
+	* @var	bool	display_online_list		Do we display online users list
+	* @var	string	item				Restrict online users to a certain
+	*									session item, e.g. forum for
+	*									session_forum_id
+	* @var	int		item_id				Restrict online users to item id
+	* @var	bool	page_header_override	Shall we return instead of running
+	*										the rest of page_header()
+	* @since 3.1.0-b3
 	*/
-	$vars = array('page_title');
+	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_header_after', compact($vars)));
 
 	// application/xhtml+xml not used because of IE
