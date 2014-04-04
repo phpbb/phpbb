@@ -98,9 +98,8 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$form->setValues($values);
 		$crawler = self::submit($form);
 
-		// Logout and back in for correct URL
-		$this->logout();
-		$this->login();
+		// Request index for correct URL
+		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
 
 		$crawler = $this->upload_file('disallowed.jpg', 'image/jpeg');
 
