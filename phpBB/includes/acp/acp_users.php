@@ -2015,7 +2015,7 @@ class acp_users
 					WHERE a.poster_id = ' . $user_id . "
 						AND a.is_orphan = 0
 					ORDER BY $order_by";
-				$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
