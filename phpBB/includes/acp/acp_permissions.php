@@ -917,7 +917,13 @@ class acp_permissions
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . get_translated_groupname($row['name'], 'sep');
+			$prefix = $suffix = '';
+			if (isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL)
+			{
+				$prefix = '<span class="sep">';
+				$suffix = '</span>';
+			}
+			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . $prefix . phpbb_get_groupname_string($row['name'], $user) . $suffix;
 		}
 		$db->sql_freeresult($result);
 
@@ -1013,7 +1019,7 @@ class acp_permissions
 		{
 			$groups[$row['group_id']] = array(
 				'auth_setting'		=> ACL_NO,
-				'group_name'		=> get_translated_groupname($group_row['group_name']),
+				'group_name'		=> phpbb_get_groupname_string($group_row['group_name'], $user),
 			);
 		}
 		$db->sql_freeresult($result);
@@ -1296,7 +1302,7 @@ class acp_permissions
 		$defined_group_ids = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (get_translated_groupname($row['group_name'])) . '</option>';
+			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (phpbb_get_groupname_string($row['group_name'], $user)) . '</option>';
 			$defined_group_ids[] = $row['group_id'];
 		}
 		$db->sql_freeresult($result);

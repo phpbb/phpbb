@@ -802,13 +802,13 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			{
 				if ($rule_group_id && ($row['group_id'] == $rule_group_id))
 				{
-					$rule_string = get_translated_groupname($row['group_name']);
+					$rule_string = phpbb_get_groupname_string($row['group_name'], $user);
 				}
 
 				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '';
 				$s_selected	= ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
 
-				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . get_translated_groupname($row['group_name']) . '</option>';
+				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . phpbb_get_groupname_string($row['group_name'], $user) . '</option>';
 			}
 			$db->sql_freeresult($result);
 

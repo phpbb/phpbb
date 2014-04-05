@@ -99,7 +99,7 @@ $legend = array();
 while ($row = $db->sql_fetchrow($result))
 {
 	$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
-	$group_name = get_translated_groupname($row['group_name']);
+	$group_name = phpbb_get_groupname_string($row['group_name'], $user);
 
 	if ($row['group_name'] == 'BOTS' || ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')))
 	{

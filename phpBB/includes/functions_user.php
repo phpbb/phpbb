@@ -3231,7 +3231,7 @@ function get_group_name($group_id)
 		return '';
 	}
 
-	return get_translated_groupname($row['group_name']);
+	return phpbb_get_groupname_string($row['group_name'], $user);
 }
 
 /**

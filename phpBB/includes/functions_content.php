@@ -34,6 +34,7 @@ if (!defined('IN_PHPBB'))
 * extension_allowed()
 * truncate_string()
 * get_username_string()
+* phpbb_get_groupname_string()
 * class bitfield
 */
 
@@ -1396,6 +1397,19 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;
+}
+
+/**
+* Get groupname or translated groupname if it exists
+*
+* @param string			$groupname The stored groupname
+* @param \phpbb\user	$user An instance of \phpbb\user
+*
+* @return string Groupname or tranlsated groupname if it exists
+*/
+function phpbb_get_groupname_string($groupname, $user)
+{
+	return (isset($user->lang['G_' . $groupname]) ? $user->lang('G_' . $groupname) : $groupname);
 }
 
 /**
