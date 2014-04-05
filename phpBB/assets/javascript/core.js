@@ -549,11 +549,11 @@ phpbb.addAjaxCallback = function(id, callback) {
  * current text so that the process can be repeated.
  */
 phpbb.addAjaxCallback('alt_text', function() {
-	var el = $(this),
+	var el = $('[data-ajax="alt_text"]'),
 		altText;
 
 	altText = el.attr('data-alt-text');
-	el.attr('data-alt-text', el.text());
+	el.attr('data-alt-text', el.first().text());
 	el.attr('title', altText);
 	el.text(altText);
 });
@@ -568,7 +568,7 @@ phpbb.addAjaxCallback('alt_text', function() {
  * and changes the link itself.
  */
 phpbb.addAjaxCallback('toggle_link', function() {
-	var el = $(this),
+	var el = $('[data-ajax="toggle_link"]'),
 		toggleText,
 		toggleUrl,
 		toggleClass;
@@ -576,7 +576,7 @@ phpbb.addAjaxCallback('toggle_link', function() {
 	// Toggle link text
 
 	toggleText = el.attr('data-toggle-text');
-	el.attr('data-toggle-text', el.text());
+	el.attr('data-toggle-text', el.first().text());
 	el.attr('title', toggleText);
 	el.text(toggleText);
 
