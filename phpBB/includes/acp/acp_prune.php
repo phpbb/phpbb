@@ -294,7 +294,7 @@ class acp_prune
 					$template->assign_block_vars('users', array(
 						'USERNAME'			=> $usernames[$user_id],
 						'USER_ID'           => $user_id,
-						'U_PROFILE'			=> append_sid($phpbb_root_path . 'memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $user_id),
+						'U_PROFILE'			=> get_username_string('profile', $user_id, $usernames[$user_id]),
 						'U_USER_ADMIN'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 					));
 				}

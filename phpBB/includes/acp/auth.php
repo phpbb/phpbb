@@ -649,9 +649,9 @@ class auth_admin extends \phpbb\auth\auth
 				{
 					$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
-						'USERNAME'		=> $row['username'],
-						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$row['user_id']}"))
-					);
+						'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username']),
+						'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username']),
+					));
 				}
 				$db->sql_freeresult($result);
 			}

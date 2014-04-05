@@ -40,11 +40,7 @@ class acp_main
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$perm_from = '<strong' . (($user_row['user_colour']) ? ' style="color: #' . $user_row['user_colour'] . '">' : '>');
-			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_row['user_id']) . '">' : '';
-			$perm_from .= $user_row['username'];
-			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '</a>' : '';
-			$perm_from .= '</strong>';
+			$perm_from = get_username_string('full', $user_row['user_id'], $user_row['username'], $user_row['user_colour']);
 
 			$template->assign_vars(array(
 				'S_RESTORE_PERMISSIONS'		=> true,
