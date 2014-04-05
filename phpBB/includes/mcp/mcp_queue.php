@@ -578,7 +578,7 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
-		$topics_id_list = array();
+		$topic_id_list = array();
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -653,14 +653,12 @@ class mcp_queue
 				// Handle notifications
 				foreach ($post_info as $post_id => $post_data)
 				{
-					$send_topic_notification = false;
-
 					// A single topic approval may also happen here.
 					if (!$post_data['topic_posts_approved'])
 					{
-						$send_topic_notification = true;
-						$topics_id_list[] = $post_data['topic_id'];
+						$topic_id_list[] = $post_data['topic_id'];
 					}
+<<<<<<< HEAD
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 <<<<<<< HEAD
@@ -673,6 +671,10 @@ class mcp_queue
 					// Send post notification only if a topic notification will not be sent.
 					if (!$send_topic_notification)
 >>>>>>> c3f1f31... [ticket/12270] Correct notifications for posts/topics now working
+=======
+					// Send post notification only if a topic notification will not be sent.
+					else
+>>>>>>> a21cc11... [ticket/12270] Better structured code and no debug error message
 					{
 						$phpbb_notifications->add_notifications(array(
 							'quote',
@@ -680,6 +682,7 @@ class mcp_queue
 							'post',
 						), $post_data);
 					}
+					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 					$phpbb_notifications->mark_notifications_read(array(
 						'quote',
@@ -699,7 +702,8 @@ class mcp_queue
 					}
 				}
 
-				self::approve_topics($action, $topics_id_list, $id, $mode);
+				if(count($topic_id_list) > 0)
+					self::approve_topics($action, $topic_id_list, $id, $mode);
 			}
 
 			meta_refresh(3, $redirect);
@@ -845,7 +849,7 @@ class mcp_queue
 						'post_subject'	=> $topic_data['topic_title'],
 						'post_time'		=> $topic_data['topic_time'],
 						'poster_id'		=> $topic_data['topic_poster'],
-						'username'		=> $topic_data['topic_first_poster_name'],
+						'post_username'	=> $topic_data['topic_first_poster_name'],
 					));
 
 					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
