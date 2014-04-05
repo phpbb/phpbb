@@ -1586,7 +1586,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	$current_time = time();
 	
         /**
-        * Get all parts of the PM that is to be submited to the DB.
+        * Get all parts of the PM that are to be submited to the DB.
         * 
         * @event	core.pm_pre_submit
         * @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
