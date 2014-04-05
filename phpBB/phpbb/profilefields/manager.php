@@ -389,6 +389,7 @@ class manager
 		{
 			$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
 			$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
+			$valueid = (!$ident_ary['value'] && !$ident_ary['data']['field_show_novalue']) ? $ident_ary['data']['field_novalue'] : $ident_ary['value'];
 
 			if ($value === null)
 			{
@@ -414,7 +415,7 @@ class manager
 			$tpl_fields['row'] += array(
 				'PROFILE_' . strtoupper($ident) . '_IDENT'		=> $ident,
 				'PROFILE_' . strtoupper($ident) . '_VALUE'		=> $value,
-				'PROFILE_' . strtoupper($ident) . '_VALUEID'	=> $ident_ary['value'],
+				'PROFILE_' . strtoupper($ident) . '_VALUEID'	=> $valueid,
 				'PROFILE_' . strtoupper($ident) . '_CONTACT'	=> $contact_url,
 				'PROFILE_' . strtoupper($ident) . '_DESC'		=> $field_desc,
 				'PROFILE_' . strtoupper($ident) . '_TYPE'		=> $ident_ary['data']['field_type'],
@@ -428,7 +429,7 @@ class manager
 			$tpl_fields['blockrow'][] = array(
 				'PROFILE_FIELD_IDENT'	=> $ident,
 				'PROFILE_FIELD_VALUE'	=> $value,
-				'PROFILE_FIELD_VALUEID'	=> $ident_ary['value'],
+				'PROFILE_FIELD_VALUEID'	=> $valueid,
 				'PROFILE_FIELD_CONTACT'	=> $contact_url,
 				'PROFILE_FIELD_DESC'	=> $field_desc,
 				'PROFILE_FIELD_TYPE'	=> $ident_ary['data']['field_type'],
