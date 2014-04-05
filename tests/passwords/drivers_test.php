@@ -38,7 +38,7 @@ class phpbb_passwords_helper_test extends PHPUnit_Framework_TestCase
 	public function test_helper_encode64($input, $length, $output)
 	{
 		$return = $this->driver_helper->hash_encode64($input, $length);
-		$this->assertEquals($output, $return);
+		$this->assertSame($output, $return);
 	}
 
 	public function data_get_random_salt()
@@ -61,8 +61,8 @@ class phpbb_passwords_helper_test extends PHPUnit_Framework_TestCase
 		while ((microtime(true) - $start) < 1)
 		{
 			$urandom_string = (empty($rand_seed)) ? $this->driver_helper->get_random_salt($length) : $this->driver_helper->get_random_salt($length, $rand_seed);
-			$this->assertEquals($length, strlen($urandom_string));
-			$this->assertNotEquals($rand_string, $urandom_string);
+			$this->assertSame($length, strlen($urandom_string));
+			$this->assertNotSame($rand_string, $urandom_string);
 		}
 	}
 
