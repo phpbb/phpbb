@@ -143,6 +143,8 @@ class phpbb_filespec_test extends phpbb_test_case
 		$disallowed_content = explode('|', $this->config['mime_triggers']);
 		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename));
 		$this->assertEquals($expected, $filespec->check_content($disallowed_content));
+		// All files should pass if $disallowed_content is empty
+		$this->assertEquals(true, $filespec->check_content(array()));
 	}
 
 	public function clean_filename_variables()
