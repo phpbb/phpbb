@@ -3849,6 +3849,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (defined('IN_INSTALL') || defined('DEBUG') || isset($auth) && $auth->acl_get('a_'))
 			{
 				$msg_text = $log_text;
+
+				// If this is defined there already was some output
+				// So let's not break it
+				if (defined('IN_DB_UPDATE'))
+				{
+					echo '<div class="errorbox">' . $msg_text . '</div>';
+
+					$db->sql_return_on_error(true);
+					phpbb_end_update($cache, $config);
+				}
 			}
 
 			if ((defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
