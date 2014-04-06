@@ -23,6 +23,19 @@ services:
         tags:
             - { name: cron.task }
 
+    cron.task.core.prune_shadow_topics:
+        class: phpbb\cron\task\core\prune_shadow_topics
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
+            - @config
+            - @dbal.conn
+            - @log
+        calls:
+            - [set_name, [cron.task.core.prune_shadow_topics]]
+        tags:
+            - { name: cron.task }
+
     cron.task.core.prune_notifications:
         class: phpbb\cron\task\core\prune_notifications
         arguments:
