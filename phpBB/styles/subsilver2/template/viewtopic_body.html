@@ -80,7 +80,7 @@
 				<!-- BEGIN poll_option -->
 					<tr>
 					<!-- IF S_CAN_VOTE -->
-						<td<!-- IF poll_option.POLL_OPTION_WINNER --> class="winner"<!-- ENDIF -->>
+						<td<!-- IF poll_option.POLL_OPTION_MOST_VOTES --> class="most-votes"<!-- ENDIF -->>
 							<!-- IF S_IS_MULTI_CHOICE -->
 								<input type="checkbox" class="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> />
 							<!-- ELSE -->
