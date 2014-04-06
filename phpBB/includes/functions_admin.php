@@ -2326,6 +2326,11 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		$sql_and .= " AND topic_last_view_time < $prune_date";
 	}
 
+	if ($prune_mode == 'shadow')
+	{
+		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
+	}
+
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('forum_id', $forum_id) . "
