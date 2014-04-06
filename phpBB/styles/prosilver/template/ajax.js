@@ -244,10 +244,12 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var option = $(this);
 			var option_id = option.attr('data-poll-option-id');
 			var voted = (typeof res.user_votes[option_id] !== 'undefined') ? true : false;
+			var winner = (res.vote_counts[option_id] == most_votes) ? true : false;
 			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[option_id] / res.total_votes) * 100);
 			var percent_rel = (most_votes == 0) ? 0 : Math.round((res.vote_counts[option_id] / most_votes) * 100);
 
 			option.toggleClass('voted', voted);
+			option.toggleClass('winner', winner);
 
 			// Update the bars
 			var bar = option.find('.resultbar div');
