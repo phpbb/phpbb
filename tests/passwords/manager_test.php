@@ -273,7 +273,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		// Limit test to 1 second
 		while ((microtime(true) - $time) < 1)
 		{
-			$this->assertNotEquals($first_id, $this->driver_helper->unique_id());
+			$this->assertNotSame($first_id, $this->driver_helper->unique_id());
 		}
 	}
 
