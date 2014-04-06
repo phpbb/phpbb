@@ -7,20 +7,14 @@
 *
 */
 
-class schmema_generator_test extends phpbb_database_test_case
+class schmema_generator_test extends phpbb_test_case
 {
-	// Use some bogus fixture as we don't actually need to access the database
-	public function getDataSet()
-	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/../dbal/fixtures/config.xml');
-	}
-
 	public function setUp()
 	{
 		parent::setUp();
 
 		$this->config = new \phpbb\config\config(array());
-		$this->db = $this->new_dbal();
+		$this->db = new \phpbb\db\driver\sqlite();
 		$this->db_tools = new \phpbb\db\tools($this->db);
 		$this->table_prefix = 'phpbb_';
 	}
