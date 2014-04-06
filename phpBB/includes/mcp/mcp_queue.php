@@ -702,8 +702,10 @@ class mcp_queue
 					}
 				}
 
-				if(count($topic_id_list) > 0)
+				if (!empty($topic_id_list))
+				{
 					self::approve_topics($action, $topic_id_list, $id, $mode);
+				}
 			}
 
 			meta_refresh(3, $redirect);
