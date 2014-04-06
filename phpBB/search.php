@@ -635,11 +635,26 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
-				FROM ' . POSTS_TABLE . ' p
+			$sql_from = POSTS_TABLE . ' p
 					LEFT JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
 					LEFT JOIN ' . FORUMS_TABLE . ' f ON (p.forum_id = f.forum_id)
-					LEFT JOIN ' . USERS_TABLE . " u ON (p.poster_id = u.user_id)
+					LEFT JOIN ' . USERS_TABLE . ' u ON (p.poster_id = u.user_id) ';
+			$sql_select = 'p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour';
+
+			/**
+			* Event to modify the SQL query before the posts data is retrieved
+			*
+			* @event core.search_get_posts_data
+			* @var	string	sql_select		The SQL SELECT string used by search to get posts data
+			* @var	string	sql_from		The SQL FROM string used by search to get posts data
+			* @var	string	sql_where		The SQL WHERE string used by search to get posts data
+			* @since 3.1.0-b3
+			*/
+			$vars = array('sql_select', 'sql_from', 'sql_where');
+			extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
+
+			$sql = "SELECT $sql_select
+				FROM $sql_from
 				WHERE $sql_where";
 		}
 		else
