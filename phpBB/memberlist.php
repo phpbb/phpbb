@@ -21,6 +21,9 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
+// Setting a variable to let the style designer know where he is...
+$template->assign_var('S_IN_MEMBERLIST', true);
+
 // Grab data
 $mode		= request_var('mode', '');
 $action		= request_var('action', '');
