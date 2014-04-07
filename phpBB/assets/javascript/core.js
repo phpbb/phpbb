@@ -1070,7 +1070,7 @@ phpbb.registerPalette = function(el) {
 * @param string	type	Display type that should be used, e.g. inline, block or
 *			other CSS "display" types
 */
-function dE(id, action, type) {
+phpbb.toggleDisplay = function(id, action, type) {
 	if (!type) {
 		type = 'block';
 	}
