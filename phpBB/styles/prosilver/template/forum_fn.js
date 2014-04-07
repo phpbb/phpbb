@@ -93,19 +93,23 @@ function viewableArea(e, itself) {
 
 /**
 * Set display of page element
-* s[-1,0,1] = hide,toggle display,show
-* type = string: inline, block, inline-block or other CSS "display" type
+*
+* @param string	id	The ID of the element to change
+* @param int	action	Set to 0 if element display should be toggled, -1 for
+*			hiding the element, and 1 for showing it.
+* @param string	type	Display type that should be used, e.g. inline, block or
+*			other CSS "display" types
 */
-function dE(n, s, type) {
+function dE(id, action, type) {
 	if (!type) {
 		type = 'block';
 	}
 
-	var e = document.getElementById(n);
-	if (!s) {
-		s = (e.style.display === '' || e.style.display === type) ? -1 : 1;
+	var display = jQuery('#' + id).css('display');
+	if (!action) {
+		action = (display === '' || display === type) ? -1 : 1;
 	}
-	e.style.display = (s === 1) ? type : 'none';
+	jQuery('#' + id).css('display', ((action === 1) ? type : 'none'));
 }
 
 /**
