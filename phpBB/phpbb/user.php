@@ -69,7 +69,7 @@ class user extends \phpbb\session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $request, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 		global $phpbb_dispatcher;
 
 		if ($this->data['user_id'] != ANONYMOUS)
@@ -80,7 +80,7 @@ class user extends \phpbb\session
 		}
 		else
 		{
-			$change_lang = request_var('change_lang', '');
+			$change_lang = $request->variable('change_lang', '');
 			if ($change_lang)
 			{
 				global $SID, $_EXTRA_URL;
@@ -196,7 +196,7 @@ class user extends \phpbb\session
 		}
 		unset($lang_set_ext);
 
-		$style_request = request_var('style', 0);
+		$style_request = $request->variable('style', 0);
 		if ($style_request && (!$config['override_user_style'] || $auth->acl_get('a_styles')) && !defined('ADMIN_START'))
 		{
 			global $SID, $_EXTRA_URL;
