@@ -1544,6 +1544,7 @@ $template->assign_vars(array(
 	'S_POST_ACTION'			=> $s_action,
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 	'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
+	'S_IN_POSTING'			=> true,
 ));
 
 /**
