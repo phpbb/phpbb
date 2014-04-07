@@ -2437,19 +2437,19 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 {
 	global $template, $refresh_data, $request;
 
+	$url = redirect($url, true, $disable_cd_check);
 	if ($request->is_ajax())
 	{
 		$refresh_data = array(
 			'time'	=> $time,
-			'url'		=> str_replace('&amp;', '&', $url)
+			'url'	=> $url,
 		);
 	}
 	else
 	{
-		$url = redirect($url, true, $disable_cd_check);
+		// For XHTML compatibility we change back & to &amp;
 		$url = str_replace('&', '&amp;', $url);
 
-		// For XHTML compatibility we change back & to &amp;
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />')
 		);
