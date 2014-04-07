@@ -184,9 +184,10 @@ function selectCode(a) {
 	// Not IE and IE9+
 	if (window.getSelection) {
 		s = window.getSelection();
-		// Safari
+		// Safari and Chrome
 		if (s.setBaseAndExtent) {
-			s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
+			var l = (e.innerText.length > 1) ? e.innerText.length - 1 : 1;
+			s.setBaseAndExtent(e, 0, e, l);
 		}
 		// Firefox and Opera
 		else {
