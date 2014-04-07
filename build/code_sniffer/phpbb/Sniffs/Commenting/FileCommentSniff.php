@@ -193,7 +193,7 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
      */
     protected function processLicense(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
     {
-    	$license = 'http://opensource.org/licenses/gpl-license.php GNU Public License';
+		$license = 'http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2';
     	
         if (!isset($tags['license']))
         {
