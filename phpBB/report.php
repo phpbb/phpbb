@@ -301,8 +301,9 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS'	=> (sizeof($s_hidden_fields)) ? $s_hidden_fields : null,
 
 	'S_NOTIFY'			=> $user_notify,
-	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false)
-);
+	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false,
+	'S_IN_REPORT'		=> true,
+));
 
 generate_forum_nav($forum_data);
 
