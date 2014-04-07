@@ -63,6 +63,7 @@ function adm_page_header($page_title)
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
 		'USERNAME'				=> $user->data['username'],
+		'BODY_CLASS'			=> '',
 
 		'SID'					=> $SID,
 		'_SID'					=> $_SID,
