@@ -327,7 +327,7 @@ class manager
 		* @event core.grab_profile_fields_data
 		* @var	int|array	$user_ids	Single user id or an array of ids 
 		* @var	array	$field_data		Array with profile fields data
-		* @since 3.1-B3
+		* @since 3.1.0-b3
 		*/
 		$vars = array('user_ids', 'field_data');
 		extract($this->dispatcher->trigger_event('core.grab_profile_fields_data', compact($vars)));
@@ -429,7 +429,7 @@ class manager
 		* @event core.generate_profile_fields_template_data
 		* @var	array	profile_row		Array with users profile field data 
 		* @var	array	tpl_fields		Array with template data fields
-		* @since 3.1-B3
+		* @since 3.1.0-b3
 		*/
 		$vars = array('profile_row', 'tpl_fields');
 		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_data', compact($vars)));
