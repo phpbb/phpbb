@@ -65,7 +65,6 @@ class ucp_register
 				}
 
 				$user->lang_name = $user_lang = $use_lang;
-				$user->lang = array();
 				$user->data['user_lang'] = $user->lang_name;
 				$user->add_lang(array('common', 'ucp'));
 			}

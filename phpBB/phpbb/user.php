@@ -80,7 +80,21 @@ class user extends \phpbb\session
 		}
 		else
 		{
-			$user_lang_name = basename($config['default_lang']);
+			$change_lang = request_var('change_lang', '');
+			if ($change_lang)
+			{
+				global $SID, $_EXTRA_URL;
+
+				$use_lang = basename($change_lang);
+				$user_lang_name = (file_exists($this->lang_path . $use_lang . "/common.$phpEx")) ? $use_lang : basename($config['default_lang']);
+				$this->data['user_lang'] = $user_lang_name;
+				$SID .= '&amp;change_lang=' . $user_lang_name;
+				$_EXTRA_URL[] = 'change_lang=' . $user_lang_name;
+			}
+			else
+			{
+				$user_lang_name = basename($config['default_lang']);
+			}
 			$user_date_format = $config['default_dateformat'];
 			$user_timezone = $config['board_timezone'];
 
@@ -189,7 +203,7 @@ class user extends \phpbb\session
 
 			$style_id = $style_request;
 			$SID .= '&amp;style=' . $style_id;
-			$_EXTRA_URL = array('style=' . $style_id);
+			$_EXTRA_URL[] = 'style=' . $style_id;
 		}
 		else
 		{
