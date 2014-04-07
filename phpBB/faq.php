@@ -74,6 +74,7 @@ $template->assign_vars(array(
 	'L_BACK_TO_TOP'				=> $user->lang['BACK_TO_TOP'],
 
 	'SWITCH_COLUMN_MANUALLY'	=> (!$found_switch) ? true : false,
+	'S_IN_FAQ'					=> true,
 ));
 
 page_header($l_title);

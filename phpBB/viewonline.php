@@ -437,8 +437,9 @@ $template->assign_vars(array(
 
 	'U_SWITCH_GUEST_DISPLAY'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sg=' . ((int) !$show_guests)),
 	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],
-	'S_SWITCH_GUEST_DISPLAY'	=> ($config['load_online_guests']) ? true : false)
-);
+	'S_SWITCH_GUEST_DISPLAY'	=> ($config['load_online_guests']) ? true : false,
+	'S_VIEWONLINE'				=> true,
+));
 
 // We do not need to load the who is online box here. ;)
 $config['load_online'] = false;
