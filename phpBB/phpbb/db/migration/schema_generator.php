@@ -40,6 +40,9 @@ class schema_generator
 	/** @var array */
 	protected $tables;
 
+	/** @var array */
+	protected $dependencies = array();
+
 	/**
 	* Constructor
 	*/
@@ -69,11 +72,13 @@ class schema_generator
 		$migrations = $this->class_names;
 
 		$tree = array();
+		$check_dependencies = true;
 		while (!empty($migrations))
 		{
 			foreach ($migrations as $migration_class)
 			{
 				$open_dependencies = array_diff($migration_class::depends_on(), $tree);
+
 				if (empty($open_dependencies))
 				{
 					$migration = new $migration_class($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
@@ -170,10 +175,41 @@ class schema_generator
 					}
 					unset($migrations[$migration_key]);
 				}
+				else if ($check_dependencies)
+				{
+					$this->dependencies = array_merge($this->dependencies, $open_dependencies);
+				}
+			}
+
+			// Only run this check after the first run
+			if ($check_dependencies)
+			{
+				$this->check_dependencies();
+				$check_dependencies = false;
 			}
 		}
 
 		ksort($this->tables);
 		return $this->tables;
+	}
+
+	/**
+	* Check if one of the migrations files' dependencies can't be resolved
+	* by the supplied list of migrations
+	*
+	* @throws UnexpectedValueException If a dependency can't be resolved
+	*/
+	protected function check_dependencies()
+	{
+		// Strip duplicate values from array
+		$this->dependencies = array_unique($this->dependencies);
+
+		foreach ($this->dependencies as $dependency)
+		{
+			if (!in_array($dependency, $this->class_names))
+			{
+				throw new \UnexpectedValueException("Unable to resolve the dependency '$dependency'");
+			}
+		}
 	}
 }
