@@ -80,7 +80,7 @@ class user extends \phpbb\session
 		}
 		else
 		{
-			$change_lang = $request->variable('change_lang', '');
+			$change_lang = $request->variable('set_lang', '');
 			if ($change_lang)
 			{
 				global $SID, $_EXTRA_URL;
@@ -88,8 +88,8 @@ class user extends \phpbb\session
 				$use_lang = basename($change_lang);
 				$user_lang_name = (file_exists($this->lang_path . $use_lang . "/common.$phpEx")) ? $use_lang : basename($config['default_lang']);
 				$this->data['user_lang'] = $user_lang_name;
-				$SID .= '&amp;change_lang=' . $user_lang_name;
-				$_EXTRA_URL[] = 'change_lang=' . $user_lang_name;
+				$SID .= '&amp;set_lang=' . $user_lang_name;
+				$_EXTRA_URL[] = 'set_lang=' . $user_lang_name;
 			}
 			else
 			{
