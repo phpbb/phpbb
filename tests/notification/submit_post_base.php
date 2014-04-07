@@ -101,7 +101,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Notification Types
-		$notification_types = array('quote', 'bookmark', 'post', 'post_in_queue', 'topic', 'approve_topic', 'approve_post');
+		$notification_types = array('quote', 'bookmark', 'post', 'post_in_queue', 'topic', 'topic_in_queue', 'approve_topic', 'approve_post');
 		$notification_types_array = array();
 		foreach ($notification_types as $type)
 		{
