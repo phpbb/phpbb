@@ -103,7 +103,7 @@ class ucp_register
 
 			$s_hidden_fields = array_merge($s_hidden_fields, array(
 				'change_lang'	=> '',
-				'set_lang'	=> $user_lang,
+				'set_lang'		=> ($user_lang != $config['default_lang']) ? $user_lang : '',
 			));
 
 			// If we change the language, we want to pass on some more possible parameter.
@@ -411,7 +411,7 @@ class ucp_register
 		$s_hidden_fields = array_merge($s_hidden_fields, array(
 			'agreed'		=> 'true',
 			'change_lang'	=> 0,
-			'set_lang'		=> $user_lang,
+			'set_lang'		=> ($user_lang != $config['default_lang']) ? $user_lang : '',
 		));
 
 		if ($config['coppa_enable'])
