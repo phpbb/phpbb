@@ -655,6 +655,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					),
 				),
 				'WHERE'	=> $sql_where,
+				'ORDER_BY' => $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC'),
 			);
 
 			/**
@@ -716,8 +717,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$sql = "SELECT $sql_select
 				FROM $sql_from
 				WHERE $sql_where";
+			$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		}
-		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
 
