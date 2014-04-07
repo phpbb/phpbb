@@ -94,7 +94,6 @@ switch ($mode)
 		if ($user->data['user_id'] != ANONYMOUS && $request->is_set('sid') && $request->variable('sid', '') === $user->session_id)
 		{
 			$user->session_kill();
-			$user->session_begin();
 		}
 		else if ($user->data['user_id'] != ANONYMOUS)
 		{
