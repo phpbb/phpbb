@@ -92,27 +92,6 @@ function viewableArea(e, itself) {
 }
 
 /**
-* Set display of page element
-*
-* @param string	id	The ID of the element to change
-* @param int	action	Set to 0 if element display should be toggled, -1 for
-*			hiding the element, and 1 for showing it.
-* @param string	type	Display type that should be used, e.g. inline, block or
-*			other CSS "display" types
-*/
-function dE(id, action, type) {
-	if (!type) {
-		type = 'block';
-	}
-
-	var display = jQuery('#' + id).css('display');
-	if (!action) {
-		action = (display === '' || display === type) ? -1 : 1;
-	}
-	jQuery('#' + id).css('display', ((action === 1) ? type : 'none'));
-}
-
-/**
 * Alternate display of subPanels
 */
 jQuery(document).ready(function() {
