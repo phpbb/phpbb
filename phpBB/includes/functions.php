@@ -4929,7 +4929,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'		=> $hidden_fields_for_jumpbox,
-		'BODY_CLASS'					=> '',
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
