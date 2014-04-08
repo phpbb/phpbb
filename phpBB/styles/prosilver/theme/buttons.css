@@ -254,12 +254,16 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	padding: 8px;
 }
 
-.contact-icons div:last-child a {
-	border-bottom: none;
+.contact-icons a:nth-child(4) {
+	border-right: none;
 }
 
-.contact-icons .last-cell {
-	border-right: none;
+.contact-icons a:nth-child(5) {
+	clear: left;
+}
+
+.contact-icons div:last-child a {
+	border-bottom: none;
 }
 
 

@@ -35,18 +35,6 @@
 
 
 		<!-- IF U_PM or U_EMAIL or U_JABBER -->
-			{% set CELL_BREAK = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4, 8: 4, 9: 5, 10: 5, 11: 4, 12: 4, 13: 5, 14: 5, 16: 4} %}
-			{% set CONTACT_CNT = 0 %}
-			{% set CNT = 0 %}
-			<!-- IF U_PM -->{% set CONTACT_CNT = CONTACT_CNT + 1 %}<!-- ENDIF -->
-			<!-- IF U_EMAIL -->{% set CONTACT_CNT = CONTACT_CNT + 1 %}<!-- ENDIF -->
-			<!-- IF U_JABBER -->{% set CONTACT_CNT = CONTACT_CNT + 1 %}<!-- ENDIF -->
-
-			<!-- BEGIN custom_fields -->
-				<!-- IF custom_fields.S_PROFILE_CONTACT -->{% set CONTACT_CNT = CONTACT_CNT + 1 %}<!-- ENDIF -->
-			<!-- END custom_fields -->
-			<!-- IF CELL_BREAK[CONTACT_CNT] -->{% set DIV_CNT = CELL_BREAK[CONTACT_CNT] %}<!-- ELSE -->{% set DIV_CNT = 4 %}<!-- ENDIF -->
-			
 			<dd class="profile-contact">
 				<strong>{L_CONTACT_USER}{L_COLON}</strong>
 				<div class="dropdown-container">
@@ -54,32 +42,24 @@
 					<div class="dropdown hidden">
 						<div class="pointer"><div class="pointer-inner"></div></div>
 						<div class="dropdown-contents contact-icons">
-							<div>
 							<!-- EVENT ucp_pm_viewmessage_contact_fields_before -->
 							<!-- IF U_PM -->
-								{% set CNT = CNT + 1 %}
 								<a href="{U_PM}" title="{L_PRIVATE_MESSAGE}"><span class="contact-icon pm-icon"></span></a>
 							<!-- ENDIF -->
 							<!-- IF U_EMAIL -->
-								{% set CNT = CNT + 1 %}
 								<a href="{U_EMAIL}" title="{L_SEND_EMAIL_USER} {POST_AUTHOR}"><span class="contact-icon email-icon"></span></a>
 							<!-- ENDIF -->
 							<!-- IF U_JABBER -->
-								{% set CNT = CNT + 1 %}
-								<a <!-- IF CNT % DIV_CNT == 0 -->class="last-cell" <!-- ENDIF -->href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span class="contact-icon jabber-icon"></span></a>
-								<!-- IF (CNT % DIV_CNT == 0) && CNT != CONTACT_CNT --></div><div><!-- ENDIF -->
+								<a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span class="contact-icon jabber-icon"></span></a>
 							<!-- ENDIF -->
 							<!-- BEGIN custom_fields -->
 								<!-- IF custom_fields.S_PROFILE_CONTACT -->
-									{% set CNT = CNT + 1 %}
-									<a <!-- IF CNT % DIV_CNT == 0 -->class="last-cell" <!-- ENDIF -->href="<!-- IF postrow.custom_fields.PROFILE_FIELD_CONTACT -->{custom_fields.PROFILE_FIELD_CONTACT}<!-- ELSE -->{U_POST_AUTHOR}<!-- ENDIF -->" title="{custom_fields.PROFILE_FIELD_NAME}">
+									<a href="<!-- IF postrow.custom_fields.PROFILE_FIELD_CONTACT -->{custom_fields.PROFILE_FIELD_CONTACT}<!-- ELSE -->{U_POST_AUTHOR}<!-- ENDIF -->" title="{custom_fields.PROFILE_FIELD_NAME}">
 										<span class="contact-icon {custom_fields.PROFILE_FIELD_IDENT}-icon"></span>
 									</a>
-									<!-- IF (CNT % DIV_CNT == 0) && CNT != CONTACT_CNT --></div><div><!-- ENDIF -->
 								<!-- ENDIF -->
 							<!-- END custom_fields -->
 							<!-- EVENT ucp_pm_viewmessage_contact_fields_after -->
-							</div>
 						</div>
 					</div>
 				</div>
