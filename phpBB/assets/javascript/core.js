@@ -665,11 +665,11 @@ phpbb.search.showResults = function(results, el, container, callback) {
 
 	$.each(results, function(i, item) {
 		row = tpl.clone();
-		row.find('.search-result').html(item.result);
+		row.find('.search-result').html(item.display);
 
-		if (callback === 'function') {
+		if (typeof callback === 'function') {
 			callback.call(this, el, item, row, container);
-		}	
+		}
 		row.appendTo(resultContainer).show();
 	});
 	container.show();
@@ -836,7 +836,7 @@ phpbb.addAjaxCallback = function(id, callback) {
  * This callback handles live member searches.
  */
 phpbb.addAjaxCallback('member_search', function(res) {
-	phpbb.search.handleResponse(res, $(this), false);
+	phpbb.search.handleResponse(res, $(this), false, phpbb.getFunctionByName('phpbb.search.setValueOnClick'));
 });
 
 /**

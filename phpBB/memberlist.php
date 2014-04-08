@@ -996,8 +996,9 @@ switch ($mode)
 		{
 			$user_list[] = array(
 				'user_id'		=> (int) $row['user_id'],
-				'username'		=> $row['username'],
-				'result'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'result'		=> $row['username'],
+				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
 			);
 		}
 		$db->sql_freeresult($result);
