@@ -472,6 +472,10 @@ ul.linklist.bulletin li.no-bulletin:before {
 	padding: 9px 0 0;
 }
 
+.dropdown.live-search {
+	top: auto;
+}
+
 .dropdown-container.topic-tools {
 	float: left;
 }
@@ -938,17 +942,6 @@ li.pagination ul {
 	left: 50%;
 	top: 50%;
 	z-index: 51;
-}
-
-/* Live search box */
-#livesearch {
-	width: 30%;
-	margin: 0px;
-	position: absolute;
-	background-color: #12A3EB;
-	box-shadow: 1px 2px 5px rgb(175,167,167);
-	z-index: 999;
-	overflow: auto;
 }
 
 /* Miscellaneous styles
