@@ -146,10 +146,11 @@ class plupload
 	* @param \phpbb\template\template	$template
 	* @param string						$s_action The URL to submit the POST data to
 	* @param int						$forum_id The ID of the forum
+	* @param int						$max_files Maximum number of files allowed. 0 for unlimited.
 	*
 	* @return null
 	*/
-	public function configure(\phpbb\cache\service $cache, \phpbb\template\template $template, $s_action, $forum_id)
+	public function configure(\phpbb\cache\service $cache, \phpbb\template\template $template, $s_action, $forum_id, $max_files)
 	{
 		$filters = $this->generate_filter_string($cache, $forum_id);
 		$chunk_size = $this->get_chunk_size();
@@ -161,6 +162,9 @@ class plupload
 			'FILTERS'			=> $filters,
 			'CHUNK_SIZE'		=> $chunk_size,
 			'S_PLUPLOAD_URL'	=> htmlspecialchars_decode($s_action),
+			'MAX_ATTACHMENTS'	=> $max_files,
+			'ATTACH_ORDER'		=> ($this->config['display_order']) ? 'asc' : 'desc',
+			'L_TOO_MANY_ATTACHMENTS'	=> $this->user->lang('TOO_MANY_ATTACHMENTS', $max_files),
 		));
 
 		$this->user->add_lang('plupload');
