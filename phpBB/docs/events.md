@@ -711,6 +711,14 @@ viewtopic_body_poll_fieldset_prepend
 * Purpose: Add content after the items in the polls fieldset
 the list.
 
+viewtopic_body_poll_question_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly after the poll question on the View topic screen
+
 viewtopic_body_poll_question_prepend
 ===
 * Locations:
