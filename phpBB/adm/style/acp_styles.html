@@ -24,7 +24,7 @@
 	</div>
 
 </fieldset>
-		
+
 </form>
 <!-- ELSE -->
 
@@ -44,7 +44,7 @@
 		<dd><input type="text" id="name" name="style_name" value="{STYLE_NAME}" /></dd>
 	</dl>
 	<dl>
-		<dt><label>{L_STYLE_PATH}</label></dt>
+		<dt><label>{L_STYLE_PATH}{L_COLON}</label></dt>
 		<dd><strong>{STYLE_PATH}</strong></dd>
 	</dl>
 	<dl>
@@ -117,7 +117,7 @@
 				<span class="error"><br />{styles_list.COMMENT}</span>
 			<!-- ENDIF -->
 			<!-- IF not styles_list.STYLE_ID and styles_list.COMMENT == '' -->
-				<span class="style-path"><br />{L_STYLE_PATH} {styles_list.STYLE_PATH_FULL}</span>
+				<span class="style-path"><br />{L_STYLE_PATH}{L_COLON} {styles_list.STYLE_PATH_FULL}</span>
 			<!-- ENDIF -->
 		</td>
 		<!-- IF not STYLES_LIST_HIDE_COUNT -->
