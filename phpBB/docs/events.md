@@ -239,7 +239,7 @@ overall_footer_after
 overall_footer_breadcrumb_append
 ===
 * Locations:
-    + styles/prosilver/template/overall_footer.html
+    + styles/prosilver/template/overall_footer_navbar.html
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the footer
 
@@ -310,7 +310,7 @@ overall_header_head_append
 overall_header_navigation_append
 ===
 * Locations:
-    + styles/prosilver/template/overall_header.html
+    + styles/prosilver/template/overall_header_navbar.html
     + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links after the navigation links in the header
@@ -318,7 +318,7 @@ overall_header_navigation_append
 overall_header_navigation_prepend
 ===
 * Locations:
-    + styles/prosilver/template/overall_header.html
+    + styles/prosilver/template/overall_header_navbar.html
     + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
