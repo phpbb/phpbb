@@ -253,10 +253,7 @@ phpbb.plupload.deleteFile = function(row, attachId) {
 	};
 
 	var done = function(response) {
-		var json = {};
-		try {
-			json = $.parseJSON(response);
-		} catch (e) {
+		if (typeof response !== 'object') {
 			return;
 		}
 
