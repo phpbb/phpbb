@@ -67,10 +67,12 @@
 		<div class="inner">
 
 		<div class="content">
-			<h2 class="poll-title">{POLL_QUESTION}</h2>
+			<h2 class="poll-title"><!-- EVENT viewtopic_body_poll_question_prepend -->{POLL_QUESTION}</h2>
 			<p class="author">{L_POLL_LENGTH}<!-- IF S_CAN_VOTE and L_POLL_LENGTH --><br /><!-- ENDIF --><!-- IF S_CAN_VOTE --><span class="poll_max_votes">{L_MAX_VOTES}</span><!-- ENDIF --></p>
 
 			<fieldset class="polls">
+			<!-- EVENT viewtopic_body_poll_fieldset_prepend -->
+
 			<!-- BEGIN poll_option -->
 				<dl class="<!-- IF poll_option.POLL_OPTION_VOTED -->voted<!-- ENDIF --><!-- IF poll_option.POLL_OPTION_MOST_VOTES --> most-votes<!-- ENDIF -->"<!-- IF poll_option.POLL_OPTION_VOTED --> title="{L_POLL_VOTED_OPTION}"<!-- ENDIF --> data-poll-option-id="{poll_option.POLL_OPTION_ID}">
 					<dt><!-- IF S_CAN_VOTE --><label for="vote_{poll_option.POLL_OPTION_ID}">{poll_option.POLL_OPTION_CAPTION}</label><!-- ELSE -->{poll_option.POLL_OPTION_CAPTION}<!-- ENDIF --></dt>
@@ -98,6 +100,8 @@
 					<dd class="resultbar"><a href="{U_VIEW_RESULTS}">{L_VIEW_RESULTS}</a></dd>
 				</dl>
 			<!-- ENDIF -->
+
+			<!-- EVENT viewtopic_body_poll_fieldset_append -->
 			</fieldset>
 			<div class="vote-submitted hidden">{L_VOTE_SUBMITTED}</div>
 		</div>

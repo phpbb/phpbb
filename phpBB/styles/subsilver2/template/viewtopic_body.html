@@ -72,10 +72,11 @@
 
 			<table cellspacing="0" cellpadding="4" border="0" align="center">
 			<tr>
-				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
+				<td align="center"><span class="gen"><!-- EVENT viewtopic_body_poll_question_prepend --><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
 			</tr>
 			<tr>
 				<td align="{S_CONTENT_FLOW_BEGIN}">
+				<!-- EVENT viewtopic_body_poll_fieldset_prepend -->
 					<table cellspacing="0" cellpadding="2" border="0">
 				<!-- BEGIN poll_option -->
 					<tr>
@@ -100,6 +101,7 @@
 					</tr>
 				<!-- END poll_option -->
 					</table>
+				<!-- EVENT viewtopic_body_poll_fieldset_append -->
 				</td>
 			</tr>
 		<!-- IF S_CAN_VOTE -->
