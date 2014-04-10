@@ -90,6 +90,19 @@ Zeta test event in all',
 				array(),
 				'event_loop0|event_loop1|event_loop2',
 			),
+			array(
+				'EVENT with subloop in loop',
+				'ext_trivial',
+				array('silver'),
+				'event_subloop.html',
+				array(),
+				array(
+					'event_loop' => array(array()),
+					'event_loop.subloop' => array(array()),
+				),
+				array(),
+				'event_loop[0[subloop:0]]',
+			),
 		);
 	}
 
