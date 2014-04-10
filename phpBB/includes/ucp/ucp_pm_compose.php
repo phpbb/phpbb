@@ -1081,6 +1081,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $action != 'edit') ? true : false,
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
 		'S_FORM_ENCTYPE'		=> $form_enctype,
+		'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 
 		'S_BBCODE_IMG'			=> $img_status,
 		'S_BBCODE_FLASH'		=> $flash_status,
@@ -1104,7 +1105,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	if ($allowed)
 	{
-		$plupload->configure($cache, $template, $s_action, false);
+		$max_files = ($auth->acl_gets('a_', 'm_')) ? 0 : (int) $config['max_attachments_pm'];
+		$plupload->configure($cache, $template, $s_action, false, $max_files);
 	}
 
 	// Attachment entry
