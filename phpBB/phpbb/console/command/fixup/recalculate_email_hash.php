@@ -13,10 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class recalculate_email_hash extends \phpbb\console\command\command
 {
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	function __construct(\phpbb\db\driver\driver $db)
+	function __construct(\phpbb\db\driver\driver_interface $db)
 	{
 		$this->db = $db;
 

@@ -93,10 +93,10 @@ class log implements \phpbb\log\log_interface
 	/**
 	* Constructor
 	*
-	* @param	\phpbb\db\driver\driver	$db		Database object
+	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user	User object
 	* @param	\phpbb\auth\auth		$auth	Auth object
-	* @param	phpbb_dispatcher	$phpbb_dispatcher	Event dispatcher
+	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher
 	* @param	string		$phpbb_root_path		Root path
 	* @param	string		$relative_admin_path	Relative admin root path
 	* @param	string		$php_ext			PHP Extension

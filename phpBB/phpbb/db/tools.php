@@ -304,10 +304,10 @@ class tools
 	/**
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
-	* @param \phpbb\db\driver\driver	$db					Database connection
+	* @param \phpbb\db\driver\driver_interface	$db					Database connection
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, $return_statements = false)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $return_statements = false)
 	{
 		$this->db = $db;
 		$this->return_statements = $return_statements;

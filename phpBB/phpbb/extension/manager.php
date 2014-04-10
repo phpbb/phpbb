@@ -34,7 +34,7 @@ class manager
 	* Creates a manager and loads information from database
 	*
 	* @param ContainerInterface $container A container
-	* @param \phpbb\db\driver\driver $db A database connection
+	* @param \phpbb\db\driver\driver_interface $db A database connection
 	* @param \phpbb\config\config $config \phpbb\config\config
 	* @param \phpbb\filesystem $filesystem
 	* @param string $extension_table The name of the table holding extensions
@@ -43,7 +43,7 @@ class manager
 	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->container = $container;
 		$this->phpbb_root_path = $phpbb_root_path;

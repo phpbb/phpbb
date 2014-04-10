@@ -30,7 +30,7 @@ class manager
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\cache\service */
@@ -62,7 +62,7 @@ class manager
 	* @param ContainerBuilder $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
-	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\user $user
 	* @param string $phpbb_root_path
 	* @param string $php_ext
@@ -71,7 +71,7 @@ class manager
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;

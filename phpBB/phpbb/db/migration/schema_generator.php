@@ -19,7 +19,7 @@ class schema_generator
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\db\tools */
@@ -46,7 +46,7 @@ class schema_generator
 	/**
 	* Constructor
 	*/
-	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;

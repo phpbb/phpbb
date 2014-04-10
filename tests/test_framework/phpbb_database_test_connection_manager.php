@@ -321,7 +321,7 @@ class phpbb_database_test_connection_manager
 	* Compile the correct schema filename (as per create_schema_files) and
 	* load it into the database.
 	*/
-	protected function load_schema_from_file($directory, \phpbb\db\driver\driver $db)
+	protected function load_schema_from_file($directory, \phpbb\db\driver\driver_interface $db)
 	{
 		$schema = $this->dbms['SCHEMA'];
 

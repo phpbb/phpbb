@@ -26,7 +26,7 @@ class token_storage implements TokenStorageInterface
 	/**
 	* Cache driver.
 	*
-	* @var \phpbb\db\driver\driver
+	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
 
@@ -52,11 +52,11 @@ class token_storage implements TokenStorageInterface
 	/**
 	* Creates token storage for phpBB.
 	*
-	* @param	\phpbb\db\driver\driver	$db
+	* @param	\phpbb\db\driver\driver_interface	$db
 	* @param	\phpbb\user		$user
 	* @param	string			$auth_provider_oauth_table
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\user $user, $auth_provider_oauth_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $auth_provider_oauth_table)
 	{
 		$this->db = $db;
 		$this->user = $user;

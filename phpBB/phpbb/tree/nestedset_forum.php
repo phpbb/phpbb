@@ -14,11 +14,11 @@ class nestedset_forum extends \phpbb\tree\nestedset
 	/**
 	* Construct
 	*
-	* @param \phpbb\db\driver\driver	$db		Database connection
+	* @param \phpbb\db\driver\driver_interface	$db		Database connection
 	* @param \phpbb\lock\db		$lock	Lock class used to lock the table when moving forums around
 	* @param string				$table_name		Table name
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\lock\db $lock, $table_name)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\lock\db $lock, $table_name)
 	{
 		parent::__construct(
 			$db,

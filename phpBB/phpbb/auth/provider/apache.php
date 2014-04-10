@@ -26,7 +26,7 @@ class apache extends \phpbb\auth\provider\base
 	/**
 	 * Apache Authentication Constructor
 	 *
-	 * @param 	\phpbb\db\driver\driver 	$db
+	 * @param 	\phpbb\db\driver\driver_interface 	$db
 	 * @param 	\phpbb\config\config 		$config
 	 * @param	\phpbb\passwords\manager	$passwords_manager
 	 * @param 	\phpbb\request\request 		$request
@@ -34,7 +34,7 @@ class apache extends \phpbb\auth\provider\base
 	 * @param 	string 				$phpbb_root_path
 	 * @param 	string 				$php_ext
 	 */
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
