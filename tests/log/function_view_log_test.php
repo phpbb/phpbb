@@ -44,7 +44,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'topic_id'			=> 0,
 
 				'viewforum'			=> '',
-				'action'			=> 'installed: 3.1.0-dev',
+				'action'			=> 'LOG_INSTALL_INSTALLED 3.1.0-dev',
 			),
 			2 => array(
 				'id'				=> 2,
