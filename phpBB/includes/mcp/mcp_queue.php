@@ -1163,6 +1163,22 @@ class mcp_queue
 				$success_msg .= '_DELETED_SUCCESS';
 			}
 
+			// If we came from viewtopic, we try to go back to it.
+			if (strpos($redirect, $phpbb_root_path . 'viewtopic.' . $phpEx) === 0)
+			{
+				if ($num_disapproved_topics == 0)
+				{
+					// So we need to remove the post id part from the Url
+					$redirect = str_replace("&amp;p={$post_id_list[0]}#p{$post_id_list[0]}", '', $redirect);
+				}
+				else
+				{
+					// However this is only possible if the topic still exists,
+					// Otherwise we go back to the viewforum page
+					$redirect = append_sid($phpbb_root_path . 'viewforum.' . $phpEx, 'f=' . $request->variable('f', 0));
+				}
+			}
+
 			meta_refresh(3, $redirect);
 			$message = $user->lang[$success_msg];
 
