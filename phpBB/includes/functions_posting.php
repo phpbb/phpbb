@@ -2272,8 +2272,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
-				// @todo: Check whether these notification deletions are correct
-				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+				if ($data['topic_visibility'] != ITEM_APPROVED)
+				{
+					$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+				}
 
 				$phpbb_notifications->delete_notifications(array(
 					'quote',
@@ -2297,8 +2299,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
-				// @todo: Check whether these notification deletions are correct
-				$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+				if ($data['topic_visibility'] != ITEM_APPROVED)
+				{
+					$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
+				}
 
 				$phpbb_notifications->delete_notifications(array(
 					'quote',
