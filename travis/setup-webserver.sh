@@ -26,7 +26,7 @@ APP_SOCK=$(realpath "$DIR")/php-app.sock
 if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
 then
 	# Upgrade to a recent stable version of HHVM
-	sudo apt-get -o Dpkg::Options::="--force-confnew" install -y hhvm
+	sudo apt-get -o Dpkg::Options::="--force-confnew" install -y hhvm-nightly
 
 	# MySQLi is broken in HHVM 3.0.0~precise and still does not work for us in
 	# 2014.03.28~saucy, i.e. needs more work. Use MySQL extension for now.
