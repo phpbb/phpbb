@@ -1253,17 +1253,13 @@ class acp_users
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
 
-							switch ($log_warnings)
+							if ($log_warnings)
 							{
-								case 2:
-									add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
-								break;
-								case 1:
-									add_log('admin', 'LOG_WARNING_DELETED', $user_row['username']);
-								break;
-								default:
-									add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
-								break;
+								add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
+							}
+							else
+							{
+								add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
 							}
 						}
 					}

@@ -490,7 +490,7 @@ class log implements \phpbb\log\log_interface
 				'topic_id'			=> (int) $row['topic_id'],
 
 				'viewforum'			=> ($row['forum_id'] && $this->auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $row['forum_id']) : false,
-				'action'			=> (isset($this->user->lang[$row['log_operation']])) ? $this->user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
+				'action'			=> (isset($this->user->lang[$row['log_operation']])) ? $row['log_operation'] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
 			);
 
 			/**
@@ -517,12 +517,26 @@ class log implements \phpbb\log\log_interface
 					// arguments, if there are we fill out the arguments
 					// array. It doesn't matter if we add more arguments than
 					// placeholders.
-					if ((substr_count($log[$i]['action'], '%') - sizeof($log_data_ary)) > 0)
+					$num_args = 0;
+					if (!is_array($this->user->lang[$row['log_operation']]))
 					{
-						$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($log[$i]['action'], '%') - sizeof($log_data_ary), ''));
+						$num_args = substr_count($log[$i]['action'], '%');
+					}
+					else
+					{
+						foreach ($this->user->lang[$row['log_operation']] as $case => $plural_string)
+						{
+							$num_args = max($num_args, substr_count($plural_string, '%'));
+						}
 					}
 
-					$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
+					if (($num_args - sizeof($log_data_ary)) > 0)
+					{
+						$log_data_ary = array_merge($log_data_ary, array_fill(0, $num_args - sizeof($log_data_ary), ''));
+					}
+
+					$lang_arguments = array_merge(array($log[$i]['action']), $log_data_ary);
+					$log[$i]['action'] = call_user_func_array(array($this->user, 'lang'), $lang_arguments);
 
 					// If within the admin panel we do not censor text out
 					if ($this->get_is_admin())
