@@ -300,7 +300,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// because that step will create a config.php file if phpBB has the
 		// permission to do so. We have to create the config file on our own
 		// in order to get the DEBUG constants defined.
-		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, true);
+		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, false, true);
 		$config_created = file_put_contents($config_file, $config_php_data) !== false;
 		if (!$config_created)
 		{

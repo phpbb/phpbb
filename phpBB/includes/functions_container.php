@@ -239,7 +239,7 @@ function phpbb_create_dumped_container($config_file, array $extensions, array $p
 */
 function phpbb_create_dumped_container_unless_debug($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
-	$container_factory = defined('DEBUG') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
+	$container_factory = defined('DEBUG_EXTRA') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
 	return $container_factory($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
