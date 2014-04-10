@@ -79,6 +79,8 @@
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#standardisation">Standardisation</a></li>
 		<li><a href="#otherconsiderations">Other considerations</a></li>
+		<li><a href="#placeholders">Working with placeholders</a></li>
+		<li><a href="#usingplurals">Using plurals</a></li>
 		<li><a href="#writingstyle">Writing Style</a></li>
 	</ol>
 	</li>
@@ -106,8 +108,8 @@
 	<p>Tabs in front of lines are no problem, but having them within the text can be a problem if you do not set it to the amount of spaces every one of us uses. Here is a short example of how it should look like:</p>
 
 	<div class="codebox"><pre>
-{TAB}$mode{TAB}{TAB}= request_var('mode', '');
-{TAB}$search_id{TAB}= request_var('search_id', '');
+{TAB}$mode{TAB}{TAB}= $request->variable('mode', '');
+{TAB}$search_id{TAB}= $request->variable('search_id', '');
 	</pre></div>
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
@@ -190,19 +192,12 @@ class ...
 
 	<ul>
 		<li><strong>phpBB3</strong><br />Core files and all files not assigned to a separate package</li>
-		<li><strong>acm</strong><br /><code>/includes/cache</code><br />Cache System</li>
+		<li><strong>acm</strong><br /><code>/phpbb/cache</code><br />Cache System</li>
 		<li><strong>acp</strong><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
-		<li><strong>dbal</strong><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
+		<li><strong>dbal</strong><br /><code>/phpbb/db</code>, <code>/includes/db</code><br />Database Abstraction Layer.
 			<ul>
-				<li><code>/includes/db/dbal.php</code><br />Base DBAL class, defining the overall framework</li>
-				<li><code>/includes/db/firebird.php</code><br />Firebird/Interbase Database Abstraction Layer</li>
-				<li><code>/includes/db/msssql.php</code><br />MSSQL Database Abstraction Layer</li>
-				<li><code>/includes/db/mssql_odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL</li>
-				<li><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer for MySQL 3.x/4.0.x/4.1.x/5.x</li>
-				<li><code>/includes/db/mysqli.php</code><br />MySQLi Database Abstraction Layer</li>
-				<li><code>/includes/db/oracle.php</code><br />Oracle Database Abstraction Layer</li>
-				<li><code>/includes/db/postgres.php</code><br />PostgreSQL Database Abstraction Layer</li>
-				<li><code>/includes/db/sqlite.php</code><br />Sqlite Database Abstraction Layer</li>
+				<li><code>/phpbb/db/driver/</code><br />Database Abstraction Layer classes</li>
+				<li><code>/phpbb/db/migration/</code><br />Migrations are used for updating the database from one release to another</li>
 			</ul>
 		</li>
 		<li><strong>diff</strong><br /><code>/includes/diff</code><br />Diff Engine</li>
@@ -210,13 +205,13 @@ class ...
 		<li><strong>images</strong><br /><code>/images</code><br />All global images not connected to styles</li>
 		<li><strong>install</strong><br /><code>/install</code><br />Installation System</li>
 		<li><strong>language</strong><br /><code>/language</code><br />All language files</li>
-		<li><strong>login</strong><br /><code>/includes/auth</code><br />Login Authentication Plugins</li>
+		<li><strong>login</strong><br /><code>/phpbb/auth</code><br />Login Authentication Plugins</li>
 		<li><strong>VC</strong><br /><code>/includes/captcha</code><br />CAPTCHA</li>
 		<li><strong>mcp</strong><br /><code>mcp.php</code>, <code>/includes/mcp</code>, <code>report.php</code><br />Moderator Control Panel</li>
 		<li><strong>ucp</strong><br /><code>ucp.php</code>, <code>/includes/ucp</code><br />User Control Panel</li>
 		<li><strong>utf</strong><br /><code>/includes/utf</code><br />UTF8-related functions/classes</li>
-		<li><strong>search</strong><br /><code>/includes/search</code>, <code>search.php</code><br />Search System</li>
-		<li><strong>styles</strong><br /><code>/styles</code>, <code>style.php</code><br />phpBB Styles/Templates/Themes/Imagesets</li>
+		<li><strong>search</strong><br /><code>/phpbb/search</code>, <code>search.php</code><br />Search System</li>
+		<li><strong>styles</strong><br /><code>/styles</code><br />phpBB Styles/Templates/Themes</li>
 	</ul>
 
 	<a name="constants"></a><h3>1.iv. Special Constants</h3>
@@ -249,7 +244,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 <p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
 
 <ul>
-	<li>/includes/user.php - phpbb_user::img()</li>
+	<li>/phpbb/user.php - \phpbb\user::img()</li>
 	<li>/includes/functions_content.php - smiley_text()</li>
 </ul>
 
@@ -260,8 +255,6 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 	<li>{T_THEME_PATH} - styles/xxx/theme</li>
 	<li>{T_TEMPLATE_PATH} - styles/xxx/template</li>
 	<li>{T_SUPER_TEMPLATE_PATH} - styles/xxx/template</li>
-	<li>{T_IMAGESET_PATH} - styles/xxx/imageset</li>
-	<li>{T_IMAGESET_LANG_PATH} - styles/xxx/imageset/yy</li>
 	<li>{T_IMAGES_PATH} - images/</li>
 	<li>{T_SMILIES_PATH} - $config['smilies_path']/</li>
 	<li>{T_AVATAR_PATH} - $config['avatar_path']/</li>
@@ -269,7 +262,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 	<li>{T_ICONS_PATH} - $config['icons_path']/</li>
 	<li>{T_RANKS_PATH} - $config['ranks_path']/</li>
 	<li>{T_UPLOAD_PATH} - $config['upload_path']/</li>
-	<li>{T_STYLESHEET_LINK} - styles/xxx/theme/stylesheet.css (or link to style.php if css is parsed dynamically)</li>
+	<li>{T_STYLESHEET_LINK} - styles/xxx/theme/stylesheet.css</li>
 	<li>New template variable {BOARD_URL} for the board url + script path.</li>
 </ul>
 
@@ -324,7 +317,7 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 	</pre></div>
 
 	<h4>Function Names:</h4>
-	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character in PHP, and camel caps in JavaScript. Function names should preferably have a verb in them somewhere. Good function names are <code>print_login_status()</code>, <code>get_user_data()</code>, etc. Constructor functions in JavaScript should begin with a capital letter.</p>
+	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character in PHP, and camel caps in JavaScript. Function names should be prefixed with "phpbb_" and preferably have a verb in them somewhere. Good function names are <code>phpbb_print_login_status()</code>, <code>phpbb_get_user_data()</code>, etc. Constructor functions in JavaScript should begin with a capital letter.</p>
 
 	<h4>Function Arguments:</h4>
 	<p>Arguments are subject to the same guidelines as variable names. We don't want a bunch of functions like: <code>do_stuff($a, $b, $c)</code>. In most cases, we'd like to be able to tell how to use a function by just looking at its declaration. </p>
@@ -334,33 +327,31 @@ for ($i = 0; $i &lt; $outer_size; $i++)
 	<p>Apart from following the rules for function names, all classes should meet the following conditions:</p>
 	<ul>
 		<li>Every class must be defined in a separate file.</li>
-		<li>The classes have to be located in a subdirectory of <code>includes/</code>.</li>
-		<li>Classnames to be prefixed with <code>phpbb_</code> to avoid name clashes, the filename should not contain the prefix.</li>
-		<li>Class names have to reflect the location of the file they are defined in. The longest list of prefixes, separated by underscores, which is a valid path must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may. If the filename would be empty the last directory name is used for the filename as well.</li>
+		<li>The classes have to be located in a subdirectory of <code>phpbb/</code>.</li>
+		<li>Classnames must be namespaced with <code>\phpbb\</code> to avoid name clashes.</li>
+		<li>Class names/namespaces have to reflect the location of the file they are defined in. The namespace must be the directory in which the file is located. So the directory names must not contain any underscores, but the filename may.</li>
 		<li>Directories should typically be a singular noun (e.g. <code>dir</code> in the example below, not <code>dirs</code>.</li>
 	</ul>
 
 	<p>So given the following example directory structure you would result in the below listed lookups</p>
 	<div class="codebox"><pre>
-includes/
+phpbb/
   class_name.php
   dir/
     class_name.php
-    dir.php
       subdir/
         class_name.php
 	</pre></div>
 
 	<div class="codebox"><pre>
-phpbb_class_name            - includes/class_name.php
-phpbb_dir_class_name        - includes/dir/class_name.php
-phpbb_dir                   - includes/dir/dir.php
-phpbb_dir_subdir_class_name - includes/dir/subdir/class_name.php
+\phpbb\class_name            - phpbb/class_name.php
+\phpbb\dir\class_name        - phpbb/dir/class_name.php
+\phpbb\dir\subdir\class_name - phpbb/dir/subdir/class_name.php
 	</pre></div>
 
 
 	<h4>Summary:</h4>
-	<p>The basic philosophy here is to not hurt code clarity for the sake of laziness. This has to be balanced by a little bit of common sense, though; <code>print_login_status_for_a_given_user()</code> goes too far, for example -- that function would be better named <code>print_user_login_status()</code>, or just <code>print_login_status()</code>.</p>
+	<p>The basic philosophy here is to not hurt code clarity for the sake of laziness. This has to be balanced by a little bit of common sense, though; <code>phpbb_print_login_status_for_a_given_user()</code> goes too far, for example -- that function would be better named <code>phpbb_print_user_login_status()</code>, or just <code>phpbb_print_login_status()</code>.</p>
 
 	<h4>Special Namings: </h4>
 	<p>For all emoticons use the term <code>smiley</code> in singular and <code>smilies</code> in plural. For emails we use the term <code>email</code> (without dash between “e” and “m”).</p>
@@ -1027,8 +1018,8 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	<p>No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to).</p>
 
 	<h4>Variables: </h4>
-	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params.</p>
-	<p>The request_var function determines the type to set from the second parameter (which determines the default value too). If you need to get a scalar variable type, you need to tell this the request_var function explicitly. Examples:</p>
+	<p>Make use of the <code>\phpbb\request\request</code> class for everything.</p>
+	<p>The $request->variable() method determines the type to set from the second parameter (which determines the default value too). If you need to get a scalar variable type, you need to tell this the variable() method explicitly. Examples:</p>
 
 	<p class="bad">// Old method, do not use it</p>
 	<div class="codebox"><pre>
@@ -1038,23 +1029,23 @@ $submit = (isset($HTTP_POST_VARS['submit'])) ? true : false;
 
 	<p class="good">// Use request var and define a default variable (use the correct type)</p>
 	<div class="codebox"><pre>
-$start = request_var('start', 0);
-$submit = (isset($_POST['submit'])) ? true : false;
+$start = $request->variable('start', 0);
+$submit = $request->is_set_post('submit');
 	</pre></div>
 
-	<p class="bad">// $start is an int, the following use of request_var therefore is not allowed</p>
+	<p class="bad">// $start is an int, the following use of $request->variable() therefore is not allowed</p>
 	<div class="codebox"><pre>
-$start = request_var('start', '0');
+$start = $request->variable('start', '0');
 	</pre></div>
 
 	<p class="good">// Getting an array, keys are integers, value defaults to 0</p>
 	<div class="codebox"><pre>
-$mark_array = request_var('mark', array(0));
+$mark_array = $request->variable('mark', array(0));
 	</pre></div>
 
 	<p class="good">// Getting an array, keys are strings, value defaults to 0</p>
 	<div class="codebox"><pre>
-$action_ary = request_var('action', array('' =&gt; 0));
+$action_ary = $request->variable('action', array('' =&gt; 0));
 	</pre></div>
 
 	<h4>Login checks/redirection: </h4>
@@ -1162,6 +1153,14 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 	<p>The <strong>e</strong> modifier in <strong>preg_replace</strong> can be replaced by <strong>preg_replace_callback</strong> and objects to encapsulate state that is needed in the callback code.</p>
 
+	<h4>Other functions, operators, statements and keywords:</h4>
+
+	<p>The following PHP statements should also not be used in phpBB:</p>
+
+	<ul>
+		<li><strong>goto</strong></li>
+	</ul>
+
 		</div>
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
@@ -1181,8 +1180,9 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 	<div class="codebox"><pre>
 # General Information about this style
 name = prosilver_duplicate
-copyright = &copy; phpBB Group, 2007
-version = 3.1.0
+copyright = © phpBB Group, 2007
+style_version = 3.1.0
+phpbb_version = 3.1.0
 
 # Defining a different template bitfield
 # template_bitfield = lNg=
@@ -1670,8 +1670,9 @@ div
 		<div class="codebox"><pre>
 # General Information about this style
 name = Custom Style
-copyright = &amp;copy; phpBB Group, 2007
-version = 3.1.0
+copyright = © phpBB Group, 2007
+style_version = 3.1.0-b1
+phpbb_version = 3.1.0-b1
 
 # Defining a different template bitfield
 # template_bitfield = lNg=
@@ -1689,13 +1690,15 @@ parent = prosilver
 		<ul>
 			<li>An event name must be all lowercase, with each word separated by an underscore.</li>
 			<li>An event name must briefly describe the location and purpose of the event.</li>
-			<li>An event name must end with one of the following suffixes:</li>
-			<ul>
-				<li><code>_prepend</code> - This event adds an item to the beginning of a block of related items, or adds to the beginning of individual items in a block.</li>
-				<li><code>_append</code> - This event adds an item to the end of a block of related items, or adds to the end of individual items in a block.</li>
-				<li><code>_before</code> - This event adds content directly before the specified block</li>
-				<li><code>_after</code> - This event adds content directly after the specified block</li>
-			</ul>
+			<li>
+				An event name must end with one of the following suffixes:
+				<ul>
+					<li><code>_prepend</code> - This event adds an item to the beginning of a block of related items, or adds to the beginning of individual items in a block.</li>
+					<li><code>_append</code> - This event adds an item to the end of a block of related items, or adds to the end of individual items in a block.</li>
+					<li><code>_before</code> - This event adds content directly before the specified block</li>
+					<li><code>_after</code> - This event adds content directly after the specified block</li>
+				</ul>
+			</li>
 		</ul>
 
 		<h4>Template event documentation</h4>
@@ -1707,6 +1710,7 @@ parent = prosilver
 * Location: styles/&lt;style_name&gt;/template/filename.html
 * Purpose: A brief description of what this event should be used for.
 This may span multiple lines.
+* Since: Version since when the event was added
 </pre></div></li>
 		<li>An event found in multiple template files:
 		<div class="codebox"><pre>event_name
@@ -1715,6 +1719,7 @@ This may span multiple lines.
     + first/file/path.html
     + second/file/path.html
 * Purpose: Same as above.
+* Since: 3.1.0-b1
 </pre></div>
 		<li>An event that is found multiple times in a file should have the number of instances in parenthesis next to the filename.
 		<div class="codebox"><pre>event_name
@@ -1723,6 +1728,7 @@ This may span multiple lines.
     + first/file/path.html (2)
     + second/file/path.html
 * Purpose: Same as above.
+* Since: 3.1.0-b1
 </pre></div></li>
 		<li>An actual example event documentation:
 		<div class="codebox"><pre>forumlist_body_last_post_title_prepend
@@ -1730,7 +1736,9 @@ This may span multiple lines.
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
-* Purpose: Add content before the post title of the latest post in a forum on the forum list.</pre></div></ul><br />
+* Purpose: Add content before the post title of the latest post in a forum on the forum list.
+* Since: 3.1.0-a1
+</pre></div></ul><br />
 
 		</div>
 
@@ -1760,16 +1768,16 @@ This may span multiple lines.
 
 <p>phpBB only uses the ASCII and the UTF-8 character encodings. Still all Strings are UTF-8 encoded because ASCII is a subset of UTF-8. The only exceptions to this rule are code sections which deal with external systems which use other encodings and character sets. Such external data should be converted to UTF-8 using the <code>utf8_recode()</code> function supplied with phpBB. It supports a variety of other character sets and encodings, a full list can be found below.</p>
 
-<p>With <code>request_var()</code> you can either allow all UCS characters in user input or restrict user input to ASCII characters. This feature is controlled by the function's third parameter called <code>$multibyte</code>. You should allow multibyte characters in posts, PMs, topic titles, forum names, etc. but it's not necessary for internal uses like a <code>$mode</code> variable which should only hold a predefined list of ASCII strings anyway.</p>
+<p>With <code>$request->variable()</code> you can either allow all UCS characters in user input or restrict user input to ASCII characters. This feature is controlled by the method's third parameter called <code>$multibyte</code>. You should allow multibyte characters in posts, PMs, topic titles, forum names, etc. but it's not necessary for internal uses like a <code>$mode</code> variable which should only hold a predefined list of ASCII strings anyway.</p>
 
 <div class="codebox"><pre>
 // an input string containing a multibyte character
 $_REQUEST['multibyte_string'] = 'K&#228;se';
 
 // print request variable as a UTF-8 string allowing multibyte characters
-echo request_var('multibyte_string', '', true);
+echo $request->variable('multibyte_string', '', true);
 // print request variable as ASCII string
-echo request_var('multibyte_string', '');
+echo $request->variable('multibyte_string', '');
 </pre></div>
 
 <p>This code snippet will generate the following output:</p>
@@ -1777,19 +1785,6 @@ echo request_var('multibyte_string', '');
 <div class="codebox"><pre>
 K&#228;se
 K??se
-</pre></div>
-
-<h4>Unicode Normalization</h4>
-
-<p>If you retrieve user input with multibyte characters you should additionally normalize the string using <code>utf8_normalize_nfc()</code> before you work with it. This is necessary to make sure that equal characters can only occur in one particular binary representation. For example the character &#197; can be represented either as <code>U+00C5</code> (LATIN CAPITAL LETTER A WITH RING ABOVE) or as <code>U+212B</code> (ANGSTROM SIGN). phpBB uses Normalization Form Canonical Composition (NFC) for all text. So the correct version of the above example would look like this:</p>
-
-<div class="codebox"><pre>
-$_REQUEST['multibyte_string'] = 'K&#228;se';
-
-// normalize multibyte strings
-echo utf8_normalize_nfc(request_var('multibyte_string', '', true));
-// ASCII strings do not need to be normalized
-echo request_var('multibyte_string', '');
 </pre></div>
 
 <h4>Case Folding</h4>
@@ -2348,7 +2343,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<p>Within some cases, there may be mixed scripts of a left-to-right and right-to-left direction, so using <code>LRE</code> &amp; <code>RLE</code> with <code>PDF</code> may be more appropriate. Lastly, in very rare instances where directionality must be forced, then use <code>LRO</code> &amp; <code>RLO</code> with <code>PDF</code>.</p>
 	<p>For further information on authoring techniques of bi-directional text, please see the W3C tutorial on <a href="http://www.w3.org/International/tutorials/bidi-xhtml/">authoring techniques for XHTML pages with bi-directional text</a>.</p>
 
-	<h4>Working with placeholders:</h4>
+	<a name="placeholders"></a><h3>6.iii. Working with placeholders</h3>
 
 	<p>As phpBB is translated into languages with different ordering rules to that of English, it is possible to show specific values in any order deemed appropriate. Take for example the extremely simple &quot;Page <em>X</em> of <em>Y</em>&quot;, whilst in English this could just be coded as:</p>
 
@@ -2380,7 +2375,59 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 	</pre></div>
 
-	<a name="writingstyle"></a><h3>6.iii. Writing Style</h3>
+	<a name="usingplurals"></a><h3>6.iv. Using plurals</h3>
+
+	<p>
+		The english language is very simple when it comes to plurals.<br />
+		You have <code>0 elephants</code>, <code>1 elephant</code>, or <code>2+ elephants</code>. So basically you have 2 different forms: one singular and one plural.<br />
+		But for some other languages this is quite more difficult. Let's take the Bosnian language as another example:<br />
+		You have <code>[1/21/31] slon</code>, <code>[2/3/4] slona</code>, <code>[0/5/6] slonova</code> and <code>[7/8/9/11] ...</code> and some more difficult rules.
+	</p>
+
+	<p>The <a href="https://wiki.phpbb.com/Plural_Rules">plural system</a> takes care of this and can be used as follows:</p>
+
+	<p>The PHP code will basically look like this:</p>
+
+	<div class="codebox"><pre>
+	...
+	$user->lang('NUMBER_OF_ELEPHANTS', $number_of_elephants);
+	...
+	</pre></div>
+
+	<p>And the English translation would be:</p>
+
+	<div class="codebox"><pre>
+	...
+	'NUMBER_OF_ELEPHANTS'	=> array(
+		0	=> 'You have no elephants', // Optional special case for 0
+		1	=> 'You have 1 elephant', // Singular
+		2	=> 'You have %d elephants', // Plural
+	),
+	...
+	</pre></div>
+
+	<p>While the Bosnian translation can have more cases:</p>
+
+	<div class="codebox"><pre>
+	...
+	'NUMBER_OF_ELEPHANTS'	=> array(
+		0	=> 'You have no slonova', // Optional special case for 0
+		1	=> 'You have %d slon', // Used for 1, 21, 31, ..
+		2	=> 'You have %d slona', // Used for 5, 6,
+		3	=> ...
+	),
+	...
+	</pre></div>
+
+	<p><strong>NOTE:</strong> It is okay to use plurals for an unknown number compared to a single item, when the number is not known and displayed:</p>
+	<div class="codebox"><pre>
+	...
+	'MODERATOR'	=> 'Moderator',  // Your board has 1 moderator
+	'MODERATORS'	=> 'Moderators', // Your board has multiple moderators
+	...
+	</pre></div>
+
+	<a name="writingstyle"></a><h3>6.v. Writing Style</h3>
 
 	<h4>Miscellaneous tips &amp; hints:</h4>
 
