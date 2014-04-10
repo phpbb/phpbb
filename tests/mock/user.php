@@ -46,4 +46,9 @@ class phpbb_mock_user
 		}
 		return false;
 	}
+
+	public function lang()
+	{
+		return implode(' ', func_get_args());
+	}
 }
