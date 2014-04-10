@@ -21,7 +21,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -89,7 +89,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* Notification Type Base Constructor
 	*
 	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\driver\driver_interface $cache
 	* @param \phpbb\user $user
 	* @param \phpbb\auth\auth $auth
@@ -101,7 +101,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\type\base
 	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;

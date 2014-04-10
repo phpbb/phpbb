@@ -21,7 +21,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -59,7 +59,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	* Notification Method Base Constructor
 	* 
 	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\driver\driver_interface $cache
 	* @param \phpbb\user $user
 	* @param \phpbb\auth\auth $auth
@@ -68,7 +68,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	* @param string $php_ext
 	* @return \phpbb\notification\method\base
 	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;

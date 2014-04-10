@@ -24,8 +24,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	var $connect_error = '';
 
 	/**
-	* Connect to server
-	* @access public
+	* {@inheritDoc}
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
@@ -103,10 +102,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Version information about used database
-	* @param bool $raw if true, only return the fetched sql_server_version
-	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
-	* @return string sql server version
+	* {@inheritDoc}
 	*/
 	function sql_server_info($raw = false, $use_cache = true)
 	{
@@ -154,13 +150,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Base query method
-	*
-	* @param	string	$query		Contains the SQL query which shall be executed
-	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
-	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
-	*
-	* @access	public
+	* {@inheritDoc}
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -213,7 +203,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Return number of affected rows
+	* {@inheritDoc}
 	*/
 	function sql_affectedrows()
 	{
@@ -221,7 +211,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Fetch current row
+	* {@inheritDoc}
 	*/
 	function sql_fetchrow($query_id = false)
 	{
@@ -241,8 +231,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Seek to given row number
-	* rownum is zero-based
+	* {@inheritDoc}
 	*/
 	function sql_rowseek($rownum, &$query_id)
 	{
@@ -262,7 +251,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Get last inserted id after insert statement
+	* {@inheritDoc}
 	*/
 	function sql_nextid()
 	{
@@ -270,7 +259,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Free sql result
+	* {@inheritDoc}
 	*/
 	function sql_freeresult($query_id = false)
 	{
@@ -296,7 +285,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* Escape string used in sql query
+	* {@inheritDoc}
 	*/
 	function sql_escape($msg)
 	{

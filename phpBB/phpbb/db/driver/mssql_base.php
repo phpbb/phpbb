@@ -24,7 +24,7 @@ abstract class mssql_base extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Escape string used in sql query
+	* {@inheritDoc}
 	*/
 	function sql_escape($msg)
 	{

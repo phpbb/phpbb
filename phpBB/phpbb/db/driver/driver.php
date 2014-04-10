@@ -13,7 +13,7 @@ namespace phpbb\db\driver;
 * Database Abstraction Layer
 * @package dbal
 */
-class driver
+abstract class driver implements driver_interface
 {
 	var $db_connect_id;
 	var $query_result;
@@ -84,7 +84,7 @@ class driver
 	}
 
 	/**
-	* return on error or display error message
+	* {@inheritDoc}
 	*/
 	function sql_return_on_error($fail = false)
 	{
@@ -95,7 +95,7 @@ class driver
 	}
 
 	/**
-	* Return number of sql queries and cached sql queries used
+	* {@inheritDoc}
 	*/
 	function sql_num_queries($cached = false)
 	{
@@ -103,7 +103,7 @@ class driver
 	}
 
 	/**
-	* Add to query count
+	* {@inheritDoc}
 	*/
 	function sql_add_num_queries($cached = false)
 	{
@@ -113,7 +113,7 @@ class driver
 	}
 
 	/**
-	* DBAL garbage collection, close sql connection
+	* {@inheritDoc}
 	*/
 	function sql_close()
 	{
@@ -146,8 +146,7 @@ class driver
 	}
 
 	/**
-	* Build LIMIT query
-	* Doing some validation here.
+	* {@inheritDoc}
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
 	{
@@ -164,7 +163,7 @@ class driver
 	}
 
 	/**
-	* Fetch all rows
+	* {@inheritDoc}
 	*/
 	function sql_fetchrowset($query_id = false)
 	{
@@ -188,8 +187,7 @@ class driver
 	}
 
 	/**
-	* Seek to given row number
-	* rownum is zero-based
+	* {@inheritDoc}
 	*/
 	function sql_rowseek($rownum, &$query_id)
 	{
@@ -231,8 +229,7 @@ class driver
 	}
 
 	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
+	* {@inheritDoc}
 	*/
 	function sql_fetchfield($field, $rownum = false, $query_id = false)
 	{
@@ -263,11 +260,7 @@ class driver
 	}
 
 	/**
-	* Correctly adjust LIKE expression for special characters
-	* Some DBMS are handling them in a different way
-	*
-	* @param string $expression The expression to use. Every wildcard is escaped, except $this->any_char and $this->one_char
-	* @return string LIKE expression including the keyword!
+	* {@inheritDoc}
 	*/
 	function sql_like_expression($expression)
 	{
@@ -278,14 +271,7 @@ class driver
 	}
 
 	/**
-	* Build a case expression
-	*
-	* Note: The two statements action_true and action_false must have the same data type (int, vchar, ...) in the database!
-	*
-	* @param	string	$condition		The condition which must be true, to use action_true rather then action_else
-	* @param	string	$action_true	SQL expression that is used, if the condition is true
-	* @param	string	$action_else	SQL expression that is used, if the condition is false, optional
-	* @return	string			CASE expression including the condition and statements
+	* {@inheritDoc}
 	*/
 	public function sql_case($condition, $action_true, $action_false = false)
 	{
@@ -297,11 +283,7 @@ class driver
 	}
 
 	/**
-	* Build a concatenated expression
-	*
-	* @param	string	$expr1		Base SQL expression where we append the second one
-	* @param	string	$expr2		SQL expression that is appended to the first expression
-	* @return	string		Concatenated string
+	* {@inheritDoc}
 	*/
 	public function sql_concatenate($expr1, $expr2)
 	{
@@ -309,9 +291,7 @@ class driver
 	}
 
 	/**
-	* Returns whether results of a query need to be buffered to run a transaction while iterating over them.
-	*
-	* @return bool Whether buffering is required.
+	* {@inheritDoc}
 	*/
 	function sql_buffer_nested_transactions()
 	{
@@ -319,15 +299,14 @@ class driver
 	}
 
 	/**
-	* SQL Transaction
-	* @access private
+	* {@inheritDoc}
 	*/
 	function sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (prevening auto commit)
+				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (preventing auto commit)
 				if ($this->transaction)
 				{
 					$this->transactions++;
@@ -345,14 +324,16 @@ class driver
 			break;
 
 			case 'commit':
-				// If there was a previously opened transaction we do not commit yet... but count back the number of inner transactions
+				// If there was a previously opened transaction we do not commit yet...
+				// but count back the number of inner transactions
 				if ($this->transaction && $this->transactions)
 				{
 					$this->transactions--;
 					return true;
 				}
 
-				// Check if there is a transaction (no transaction can happen if there was an error, with a combined rollback and error returning enabled)
+				// Check if there is a transaction (no transaction can happen if
+				// there was an error, with a combined rollback and error returning enabled)
 				// This implies we have transaction always set for autocommit db's
 				if (!$this->transaction)
 				{
@@ -385,11 +366,7 @@ class driver
 	}
 
 	/**
-	* Build sql statement from array for insert/update/select statements
-	*
-	* Idea for this from Ikonboard
-	* Possible query values: INSERT, INSERT_SELECT, UPDATE, SELECT, DELETE
-	*
+	* {@inheritDoc}
 	*/
 	function sql_build_array($query, $assoc_ary = false)
 	{
@@ -437,14 +414,7 @@ class driver
 	}
 
 	/**
-	* Build IN or NOT IN sql comparison string, uses <> or = on single element
-	* arrays to improve comparison speed
-	*
-	* @access public
-	* @param	string	$field				name of the sql column that shall be compared
-	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
-	* @param	bool	$negate				true for NOT IN (), false for IN () (default)
-	* @param	bool	$allow_empty_set	If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
+	* {@inheritDoc}
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
@@ -489,12 +459,7 @@ class driver
 	}
 
 	/**
-	* Run binary AND operator on DB column.
-	* Results in sql statement: "{$column_name} & (1 << {$bit}) {$compare}"
-	*
-	* @param string $column_name The column name to use
-	* @param int $bit The value to use for the AND operator, will be converted to (1 << $bit). Is used by options, using the number schema... 0, 1, 2...29
-	* @param string $compare Any custom SQL code after the check (for example "= 0")
+	* {@inheritDoc}
 	*/
 	function sql_bit_and($column_name, $bit, $compare = '')
 	{
@@ -507,12 +472,7 @@ class driver
 	}
 
 	/**
-	* Run binary OR operator on DB column.
-	* Results in sql statement: "{$column_name} | (1 << {$bit}) {$compare}"
-	*
-	* @param string $column_name The column name to use
-	* @param int $bit The value to use for the OR operator, will be converted to (1 << $bit). Is used by options, using the number schema... 0, 1, 2...29
-	* @param string $compare Any custom SQL code after the check (for example "= 0")
+	* {@inheritDoc}
 	*/
 	function sql_bit_or($column_name, $bit, $compare = '')
 	{
@@ -525,10 +485,7 @@ class driver
 	}
 
 	/**
-	* Returns SQL string to cast a string expression to an int.
-	*
-	* @param  string $expression An expression evaluating to string
-	* @return string             Expression returning an int
+	* {@inheritDoc}
 	*/
 	function cast_expr_to_bigint($expression)
 	{
@@ -536,10 +493,7 @@ class driver
 	}
 
 	/**
-	* Returns SQL string to cast an integer expression to a string.
-	*
-	* @param  string $expression An expression evaluating to int
-	* @return string             Expression returning a string
+	* {@inheritDoc}
 	*/
 	function cast_expr_to_string($expression)
 	{
@@ -547,11 +501,7 @@ class driver
 	}
 
 	/**
-	* Run LOWER() on DB column of type text (i.e. neither varchar nor char).
-	*
-	* @param string $column_name	The column name to use
-	*
-	* @return string				A SQL statement like "LOWER($column_name)"
+	* {@inheritDoc}
 	*/
 	function sql_lower_text($column_name)
 	{
@@ -559,13 +509,7 @@ class driver
 	}
 
 	/**
-	* Run more than one insert statement.
-	*
-	* @param string $table table name to run the statements on
-	* @param array $sql_ary multi-dimensional array holding the statement data.
-	*
-	* @return bool false if no statements were executed.
-	* @access public
+	* {@inheritDoc}
 	*/
 	function sql_multi_insert($table, $sql_ary)
 	{
@@ -637,9 +581,7 @@ class driver
 	}
 
 	/**
-	* Build sql statement from array for select and select distinct statements
-	*
-	* Possible query values: SELECT, SELECT_DISTINCT
+	* {@inheritDoc}
 	*/
 	function sql_build_query($query, $array)
 	{
@@ -742,7 +684,7 @@ class driver
 	}
 
 	/**
-	* display sql error page
+	* {@inheritDoc}
 	*/
 	function sql_error($sql = '')
 	{
@@ -812,7 +754,7 @@ class driver
 	}
 
 	/**
-	* Explain queries
+	* {@inheritDoc}
 	*/
 	function sql_report($mode, $query = '')
 	{
@@ -1002,14 +944,7 @@ class driver
 	}
 
 	/**
-	* Gets the estimated number of rows in a specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return string				Number of rows in $table_name.
-	*								Prefixed with ~ if estimated (otherwise exact).
-	*
-	* @access public
+	* {@inheritDoc}
 	*/
 	function get_estimated_row_count($table_name)
 	{
@@ -1017,13 +952,7 @@ class driver
 	}
 
 	/**
-	* Gets the exact number of rows in a specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return string				Exact number of rows in $table_name.
-	*
-	* @access public
+	* {@inheritDoc}
 	*/
 	function get_row_count($table_name)
 	{

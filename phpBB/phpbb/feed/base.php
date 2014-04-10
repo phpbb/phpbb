@@ -25,7 +25,7 @@ abstract class base
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\cache\driver\driver_interface */
@@ -70,7 +70,7 @@ abstract class base
 	*
 	* @param \phpbb\feed\helper $helper Feed helper
 	* @param \phpbb\config\config		$config		Config object
-	* @param \phpbb\db\driver\driver	$db			Database connection
+	* @param \phpbb\db\driver\driver_interface	$db			Database connection
 	* @param \phpbb\cache\driver\driver_interface	$cache			Cache object
 	* @param \phpbb\user			$user		User object
 	* @param \phpbb\auth\auth			$auth		Auth object
@@ -78,7 +78,7 @@ abstract class base
 	* @param string				$phpEx		php file extension
 	* @return	null
 	*/
-	function __construct(\phpbb\feed\helper $helper, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\content_visibility $content_visibility, $phpEx)
+	function __construct(\phpbb\feed\helper $helper, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\content_visibility $content_visibility, $phpEx)
 	{
 		$this->config = $config;
 		$this->helper = $helper;

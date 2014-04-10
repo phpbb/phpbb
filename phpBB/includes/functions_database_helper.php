@@ -22,14 +22,14 @@ if (!defined('IN_PHPBB'))
 *
 * The only supported table is bookmarks.
 *
-* @param \phpbb\db\driver\driver $db Database object
+* @param \phpbb\db\driver\driver_interface $db Database object
 * @param string $table Table on which to perform the update
 * @param string $column Column whose values to change
 * @param array $from_values An array of values that should be changed
 * @param int $to_value The new value
 * @return null
 */
-function phpbb_update_rows_avoiding_duplicates(\phpbb\db\driver\driver $db, $table, $column, $from_values, $to_value)
+function phpbb_update_rows_avoiding_duplicates(\phpbb\db\driver\driver_interface $db, $table, $column, $from_values, $to_value)
 {
 	$sql = "SELECT $column, user_id
 		FROM $table
@@ -107,14 +107,14 @@ function phpbb_update_rows_avoiding_duplicates(\phpbb\db\driver\driver $db, $tab
 *
 * The only supported table is topics_watch.
 *
-* @param \phpbb\db\driver\driver $db Database object
+* @param \phpbb\db\driver\driver_interface $db Database object
 * @param string $table Table on which to perform the update
 * @param string $column Column whose values to change
 * @param array $from_values An array of values that should be changed
 * @param int $to_value The new value
 * @return null
 */
-function phpbb_update_rows_avoiding_duplicates_notify_status(\phpbb\db\driver\driver $db, $table, $column, $from_values, $to_value)
+function phpbb_update_rows_avoiding_duplicates_notify_status(\phpbb\db\driver\driver_interface $db, $table, $column, $from_values, $to_value)
 {
 	$sql = "SELECT $column, user_id, notify_status
 		FROM $table

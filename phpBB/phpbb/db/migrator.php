@@ -19,7 +19,7 @@ class migrator
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\db\tools */
@@ -68,7 +68,7 @@ class migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
 		$this->config = $config;
 		$this->db = $db;

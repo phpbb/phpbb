@@ -41,9 +41,9 @@ class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\para
 	* @param string $phpbb_root_path The root path
 	* @param string $php_ext The PHP extension
 	* @param \phpbb\config\config $config The config
-	* @param \phpbb\db\driver\driver $db The db connection
+	* @param \phpbb\db\driver\driver_interface $db The db connection
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;

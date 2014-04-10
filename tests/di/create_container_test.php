@@ -59,19 +59,43 @@ namespace phpbb\db\driver
 {
 	class container_mock extends \phpbb\db\driver\driver
 	{
-		public function sql_connect()
+		public function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 		{
 		}
 
-		public function sql_query()
+		public function sql_query($query = '', $cache_ttl = 0)
 		{
 		}
 
-		public function sql_fetchrow()
+		public function sql_fetchrow($query_id = false)
 		{
 		}
 
-		public function sql_freeresult()
+		public function sql_freeresult($query_id = false)
+		{
+		}
+
+		function sql_server_info($raw = false, $use_cache = true)
+		{
+		}
+
+		function sql_affectedrows()
+		{
+		}
+
+		function sql_rowseek($rownum, &$query_id)
+		{
+		}
+
+		function sql_nextid()
+		{
+		}
+
+		function sql_escape($msg)
+		{
+		}
+
+		function sql_like_expression($expression)
 		{
 		}
 	}

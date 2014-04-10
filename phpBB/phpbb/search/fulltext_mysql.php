@@ -36,7 +36,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 	/**
 	 * Database connection
-	 * @var \phpbb\db\driver\driver
+	 * @var \phpbb\db\driver\driver_interface
 	 */
 	protected $db;
 
