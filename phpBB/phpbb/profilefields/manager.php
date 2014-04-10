@@ -231,6 +231,7 @@ class manager
 
 		if (!$this->db->sql_affectedrows())
 		{
+			$cp_data = $this->build_insert_sql_array($cp_data);
 			$cp_data['user_id'] = (int) $user_id;
 
 			$this->db->sql_return_on_error(true);
