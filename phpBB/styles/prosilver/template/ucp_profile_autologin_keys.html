@@ -5,14 +5,8 @@
 <h2>{L_TITLE}</h2>
 <div class="panel">
 	<div class="inner">
-		<!-- IF .errors -->
-		<p class="error">
-			<!-- BEGIN errors -->
-				{errors} <br />
-			<!-- END errors -->
-		</p>
-		<!-- ENDIF -->
 		<p>{L_PROFILE_AUTOLOGIN_KEYS}</p>
+		<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 		<table class="table1">
 			<thead>
 				<tr>
