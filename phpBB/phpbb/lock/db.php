@@ -42,7 +42,7 @@ class db
 
 	/**
 	* A database connection
-	* @var \phpbb\db\driver\driver
+	* @var \phpbb\db\driver\driver_interface
 	*/
 	private $db;
 
@@ -53,9 +53,9 @@ class db
 	*
 	* @param	string	$config_name	A config variable to be used for locking
 	* @param	array	$config			The phpBB configuration
-	* @param	\phpbb\db\driver\driver	$db				A database connection
+	* @param	\phpbb\db\driver\driver_interface	$db				A database connection
 	*/
-	public function __construct($config_name, \phpbb\config\config $config, \phpbb\db\driver\driver $db)
+	public function __construct($config_name, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->config_name = $config_name;
 		$this->config = $config;

@@ -43,14 +43,7 @@ abstract class mysql_base extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Gets the estimated number of rows in a specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return string				Number of rows in $table_name.
-	*								Prefixed with ~ if estimated (otherwise exact).
-	*
-	* @access public
+	* {@inheritDoc}
 	*/
 	function get_estimated_row_count($table_name)
 	{
@@ -72,13 +65,7 @@ abstract class mysql_base extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Gets the exact number of rows in a specified table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return string				Exact number of rows in $table_name.
-	*
-	* @access public
+	* {@inheritDoc}
 	*/
 	function get_row_count($table_name)
 	{

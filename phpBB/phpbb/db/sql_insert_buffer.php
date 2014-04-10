@@ -49,7 +49,7 @@ namespace phpbb\db;
 */
 class sql_insert_buffer
 {
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var string */
@@ -62,11 +62,11 @@ class sql_insert_buffer
 	protected $buffer = array();
 
 	/**
-	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\db\driver\driver_interface $db
 	* @param string          $table_name
 	* @param int             $max_buffered_rows
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, $table_name, $max_buffered_rows = 500)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $table_name, $max_buffered_rows = 500)
 	{
 		$this->db = $db;
 		$this->table_name = $table_name;

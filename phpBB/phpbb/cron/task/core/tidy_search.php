@@ -32,10 +32,10 @@ class tidy_search extends \phpbb\cron\task\base
 	* @param string $php_ext The PHP extension
 	* @param \phpbb\auth\auth $auth The auth
 	* @param \phpbb\config\config $config The config
-	* @param \phpbb\db\driver\driver $db The db connection
+	* @param \phpbb\db\driver\driver_interface $db The db connection
 	* @param \phpbb\user $user The user
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\user $user)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;

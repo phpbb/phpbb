@@ -77,7 +77,7 @@ class fulltext_sphinx
 
 	/**
 	 * Database connection
-	 * @var \phpbb\db\driver\driver
+	 * @var \phpbb\db\driver\driver_interface
 	 */
 	protected $db;
 

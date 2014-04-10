@@ -19,7 +19,7 @@ class mssql extends \phpbb\db\driver\driver
 	var $connect_error = '';
 
 	/**
-	* Connect to server
+	* {@inheritDoc}
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
@@ -55,10 +55,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Version information about used database
-	* @param bool $raw if true, only return the fetched sql_server_version
-	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
-	* @return string sql server version
+	* {@inheritDoc}
 	*/
 	function sql_server_info($raw = false, $use_cache = true)
 	{
@@ -124,13 +121,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Base query method
-	*
-	* @param	string	$query		Contains the SQL query which shall be executed
-	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
-	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
-	*
-	* @access	public
+	* {@inheritDoc}
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -215,7 +206,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Return number of affected rows
+	* {@inheritDoc}
 	*/
 	function sql_affectedrows()
 	{
@@ -223,7 +214,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Fetch current row
+	* {@inheritDoc}
 	*/
 	function sql_fetchrow($query_id = false)
 	{
@@ -259,8 +250,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Seek to given row number
-	* rownum is zero-based
+	* {@inheritDoc}
 	*/
 	function sql_rowseek($rownum, &$query_id)
 	{
@@ -280,7 +270,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Get last inserted id after insert statement
+	* {@inheritDoc}
 	*/
 	function sql_nextid()
 	{
@@ -299,7 +289,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Free sql result
+	* {@inheritDoc}
 	*/
 	function sql_freeresult($query_id = false)
 	{
@@ -325,7 +315,7 @@ class mssql extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Escape string used in sql query
+	* {@inheritDoc}
 	*/
 	function sql_escape($msg)
 	{

@@ -24,7 +24,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	var $connect_error = '';
 
 	/**
-	* Connect to server
+	* {@inheritDoc}
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
@@ -53,10 +53,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* Version information about used database
-	* @param bool $raw if true, only return the fetched sql_server_version
-	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
-	* @return string sql server version
+	* {@inheritDoc}
 	*/
 	function sql_server_info($raw = false, $use_cache = true)
 	{
@@ -113,13 +110,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* Base query method
-	*
-	* @param	string	$query		Contains the SQL query which shall be executed
-	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
-	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
-	*
-	* @access	public
+	* {@inheritDoc}
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -215,7 +206,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* Return number of affected rows
+	* {@inheritDoc}
 	*/
 	function sql_affectedrows()
 	{
@@ -223,7 +214,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* Fetch current row
+	* {@inheritDoc}
 	*/
 	function sql_fetchrow($query_id = false)
 	{
@@ -263,7 +254,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* Get last inserted id after insert statement
+	* {@inheritDoc}
 	*/
 	function sql_nextid()
 	{
@@ -283,7 +274,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* Free sql result
+	* {@inheritDoc}
 	*/
 	function sql_freeresult($query_id = false)
 	{

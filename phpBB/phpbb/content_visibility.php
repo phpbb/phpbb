@@ -18,7 +18,7 @@ class content_visibility
 {
 	/**
 	* Database object
-	* @var \phpbb\db\driver\driver
+	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
 
@@ -50,13 +50,13 @@ class content_visibility
 	* Constructor
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
-	* @param	\phpbb\db\driver\driver	$db		Database object
+	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user	User object
 	* @param	string		$phpbb_root_path	Root path
 	* @param	string		$php_ext			PHP Extension
 	* @return	null
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;

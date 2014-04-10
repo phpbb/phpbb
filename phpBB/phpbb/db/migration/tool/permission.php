@@ -22,7 +22,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var string */
@@ -34,13 +34,13 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver $db
+	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\auth\auth $auth
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver $db, \phpbb\cache\service $cache, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
