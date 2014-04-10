@@ -415,9 +415,8 @@ function change_topic_type($action, $topic_ids)
 */
 function mcp_move_topic($topic_ids)
 {
-	global $auth, $user, $db, $template;
+	global $auth, $user, $db, $template, $phpbb_log, $request;
 	global $phpEx, $phpbb_root_path;
-	global $request;
 
 	// Here we limit the operation to one forum only
 	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
@@ -525,9 +524,19 @@ function mcp_move_topic($topic_ids)
 		$forum_ids = array($to_forum_id);
 		foreach ($topic_data as $topic_id => $row)
 		{
-			// Get the list of forums to resync, add a log entry
+			// Get the list of forums to resync
 			$forum_ids[] = $row['forum_id'];
-			add_log('mod', $to_forum_id, $topic_id, 'LOG_MOVE', $row['forum_name'], $forum_data['forum_name']);
+
+			// We add the $to_forum_id twice, because 'forum_id' is updated
+			// when the topic is moved again later.
+			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MOVE', false, array(
+				'forum_id'		=> (int) $to_forum_id,
+				'topic_id'		=> (int) $topic_id,
+				$row['forum_name'],
+				$forum_data['forum_name'],
+				(int) $row['forum_id'],
+				(int) $forum_data['forum_id'],
+			));
 
 			// Leave a redirection if required and only if the topic is visible to users
 			if ($leave_shadow && $row['topic_visibility'] == ITEM_APPROVED && $row['topic_type'] != POST_GLOBAL)
