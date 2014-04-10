@@ -11,26 +11,28 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_wrapper_gmgetdate_test extends phpbb_test_case
 {
-	public function test_gmgetdate()
+	public static function phpbb_gmgetdate_data()
 	{
-		$this->run_gmgetdate_assertion();
-		$this->run_test_with_timezone('UTC');
-		$this->run_test_with_timezone('Europe/Berlin');
-		$this->run_test_with_timezone('America/Los_Angeles');
-		$this->run_test_with_timezone('Antarctica/South_Pole');
+		return array(
+			array(''),
+			array('UTC'),
+			array('Europe/Berlin'),
+			array('America/Los_Angeles'),
+			array('Antarctica/South_Pole'),
+		);
 	}
 
-	protected function run_test_with_timezone($timezone_identifier)
+	/**
+	 * @dataProvider phpbb_gmgetdate_data
+	 */
+	public function test_phpbb_gmgetdate($timezone_identifier)
 	{
-		$current_timezone = date_default_timezone_get();
+		if ($timezone_identifier)
+		{
+			$current_timezone = date_default_timezone_get();
+			date_default_timezone_set($timezone_identifier);
+		}
 
-		date_default_timezone_set($timezone_identifier);
-		$this->run_gmgetdate_assertion();
-		date_default_timezone_set($current_timezone);
-	}
-
-	protected function run_gmgetdate_assertion()
-	{
 		$expected = time();
 
 		$date_array = phpbb_gmgetdate($expected);
@@ -45,5 +47,10 @@ class phpbb_wrapper_gmgetdate_test extends phpbb_test_case
 		);
 
 		$this->assertEquals($expected, $actual);
+
+		if (isset($current_timezone))
+		{
+			date_default_timezone_set($current_timezone);
+		}
 	}
 }
