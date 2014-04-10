@@ -679,8 +679,6 @@ class ucp_profile
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('sessions', array(
-						'errors' => $error,
-
 						'KEY' => $row['key_id'],
 						'IP' => $row['last_ip'],
 						'LOGIN_TIME' => $user->format_date($row['last_login']),
@@ -693,6 +691,8 @@ class ucp_profile
 		}
 
 		$template->assign_vars(array(
+			'ERROR'		=> (sizeof($error)) ? implode('<br />', $error) : '',
+
 			'L_TITLE'	=> $user->lang['UCP_PROFILE_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
