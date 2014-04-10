@@ -417,7 +417,7 @@ class install_convert extends module
 
 			if (!isset($available_dbms[$src_dbms]) || !$available_dbms[$src_dbms]['AVAILABLE'])
 			{
-				$error['db'][] = $lang['INST_ERR_NO_DB'];
+				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
 			else
