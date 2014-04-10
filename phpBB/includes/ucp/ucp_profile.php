@@ -672,7 +672,8 @@ class ucp_profile
 
 				$sql = 'SELECT key_id, last_ip, last_login
 					FROM ' . SESSIONS_KEYS_TABLE . '
-					WHERE user_id = ' . (int) $user->data['user_id'];
+					WHERE user_id = ' . (int) $user->data['user_id'] . '
+					ORDER BY last_login';
 
 				$result = $db->sql_query($sql);
 
