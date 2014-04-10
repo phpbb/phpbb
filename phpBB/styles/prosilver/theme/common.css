@@ -470,6 +470,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 9px 0 0;
+	margin-right: -500px;
 }
 
 .dropdown-container.topic-tools {
@@ -485,6 +486,8 @@ ul.linklist.bulletin li.no-bulletin:before {
 .dropdown-left .dropdown, .nojs .rightside .dropdown {
 	left: auto;
 	right: 0;
+	margin-left: -500px;
+	margin-right: 0;
 }
 
 .dropdown-button-control .dropdown {
