@@ -533,7 +533,7 @@ class acp_prune
 				WHERE u.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER .
 					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
-					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
+					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE)) . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;

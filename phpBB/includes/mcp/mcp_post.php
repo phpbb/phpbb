@@ -203,7 +203,7 @@ function mcp_post_details($id, $mode, $action)
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
 
 		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
-		'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED) ? true : false,
+		'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE) ? true : false,
 		'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED) ? true : false,
 		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
 		'S_USER_NOTES'			=> true,

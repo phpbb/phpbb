@@ -657,6 +657,7 @@ class acp_users
 								{
 									if ($topic_id_ary[$row['topic_id']][ITEM_APPROVED] == $row['topic_posts_approved']
 										&& $topic_id_ary[$row['topic_id']][ITEM_UNAPPROVED] == $row['topic_posts_unapproved']
+										&& $topic_id_ary[$row['topic_id']][ITEM_REAPPROVE] == $row['topic_posts_unapproved']
 										&& $topic_id_ary[$row['topic_id']][ITEM_DELETED] == $row['topic_posts_softdeleted'])
 									{
 										$move_topic_ary[] = $row['topic_id'];
@@ -1050,7 +1051,7 @@ class acp_users
 				$sql = 'SELECT COUNT(post_id) as posts_in_queue
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = ' . $user_id . '
-						AND post_visibility = ' . ITEM_UNAPPROVED;
+						AND post_visibility = ' . $db->sql_in_set('post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE));
 				$result = $db->sql_query($sql);
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);
