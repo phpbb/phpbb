@@ -660,11 +660,18 @@ class mcp_queue
 					}
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
-					$phpbb_notifications->add_notifications(array(
-						'quote',
-						'bookmark',
-						'post',
-					), $post_data);
+					// Only add notifications, if we are not reapproving post
+					// When the topic was already approved, but was edited and
+					// now needs re-approval, we don't want to notify the users
+					// again.
+					if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+					{
+						$phpbb_notifications->add_notifications(array(
+							'quote',
+							'bookmark',
+							'post',
+						), $post_data);
+					}
 
 					$phpbb_notifications->mark_notifications_read(array(
 						'quote',
@@ -832,10 +839,18 @@ class mcp_queue
 					));
 
 					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
-					$phpbb_notifications->add_notifications(array(
-						'quote',
-						'topic',
-					), $topic_data);
+
+					// Only add notifications, if we are not reapproving post
+					// When the topic was already approved, but was edited and
+					// now needs re-approval, we don't want to notify the users
+					// again.
+					if ($topic_data['topic_visibility'] == ITEM_UNAPPROVED)
+					{
+						$phpbb_notifications->add_notifications(array(
+							'quote',
+							'topic',
+						), $topic_data);
+					}
 
 					$phpbb_notifications->mark_notifications_read('quote', $topic_data['post_id'], $user->data['user_id']);
 					$phpbb_notifications->mark_notifications_read('topic', $topic_id, $user->data['user_id']);
