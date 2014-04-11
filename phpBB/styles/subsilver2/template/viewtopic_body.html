@@ -76,10 +76,10 @@
 			</tr>
 			<tr>
 				<td align="{S_CONTENT_FLOW_BEGIN}">
-				<!-- EVENT viewtopic_body_poll_fieldset_prepend -->
 					<table cellspacing="0" cellpadding="2" border="0">
 				<!-- BEGIN poll_option -->
 					<tr>
+					<!-- EVENT viewtopic_body_poll_option_before -->
 					<!-- IF S_CAN_VOTE -->
 						<td<!-- IF poll_option.POLL_OPTION_MOST_VOTES --> class="most-votes"<!-- ENDIF -->>
 							<!-- IF S_IS_MULTI_CHOICE -->
@@ -98,10 +98,10 @@
 								<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>
 							<!-- ENDIF -->
 						<!-- ENDIF -->
+					<!-- EVENT viewtopic_body_poll_option_after -->
 					</tr>
 				<!-- END poll_option -->
 					</table>
-				<!-- EVENT viewtopic_body_poll_fieldset_append -->
 				</td>
 			</tr>
 		<!-- IF S_CAN_VOTE -->

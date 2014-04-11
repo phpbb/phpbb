@@ -693,22 +693,22 @@ viewtopic_body_footer_before
 and quick reply, directly before the jumpbox in Prosilver, breadcrumbs in
 Subsilver2.
 
-viewtopic_body_poll_fieldset_append
+viewtopic_body_poll_option_after
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-b3
-* Purpose: Add content before the items in the polls fieldset
+* Purpose: Add content after the poll option
 the list.
 
-viewtopic_body_poll_fieldset_prepend
+viewtopic_body_poll_option_before
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-b3
-* Purpose: Add content after the items in the polls fieldset
+* Purpose: Add content before the poll option
 the list.
 
 viewtopic_body_poll_question_append
