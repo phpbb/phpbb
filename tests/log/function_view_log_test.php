@@ -164,7 +164,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'topic_id'			=> 45,
 
 				'viewforum'			=> '',
-				'action'			=> '{LOG MOD2}',
+				'action'			=> 'LOG_MOD2',
 				'viewtopic'			=> '',
 				'viewlogs'			=> '',
 			),
@@ -185,7 +185,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'topic_id'			=> 0,
 
 				'viewforum'			=> '',
-				'action'			=> '{LOG USER}<br />admin',
+				'action'			=> 'LOG_USER admin',
 			),
 			9 => array(
 				'id'				=> 9,
@@ -204,7 +204,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'topic_id'			=> 0,
 
 				'viewforum'			=> '',
-				'action'			=> '{LOG USER}<br />guest',
+				'action'			=> 'LOG_USER guest',
 			),
 		);
 
@@ -331,6 +331,8 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		// Test sprintf() of the data into the action
 		$user->lang = array(
 			'LOG_INSTALL_INSTALLED'		=> 'installed: %s',
+			'LOG_USER'					=> 'User<br /> %s',
+			'LOG_MOD2'					=> 'Mod2',
 		);
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
