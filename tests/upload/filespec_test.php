@@ -273,4 +273,18 @@ class phpbb_filespec_test extends phpbb_test_case
 
 		$phpEx = '';
 	}
+
+	/**
+	* @dataProvider clean_filename_variables
+	*/
+	public function test_uploadname($filename)
+	{
+		$type_cast_helper = new \phpbb\request\type_cast_helper();
+
+		$upload_name = '';
+		$type_cast_helper->set_var($upload_name, $filename, 'string', true, true);
+		$filespec = $this->get_filespec(array('name'=> $upload_name));
+
+		$this->assertSame(trim(utf8_basename(htmlspecialchars($filename))), $filespec->uploadname);
+	}
 }
