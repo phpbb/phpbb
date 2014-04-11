@@ -270,6 +270,14 @@ class post extends \phpbb\notification\type\base
 	}
 
 	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t={$this->item_parent_id}&amp;view=unread#unread");
+	}
+
+	/**
 	* Users needed to query before this notification can be displayed
 	*
 	* @return array Array of user_ids
