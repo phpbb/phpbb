@@ -1075,11 +1075,11 @@ phpbb.toggleDisplay = function(id, action, type) {
 		type = 'block';
 	}
 
-	var display = jQuery('#' + id).css('display');
+	var display = $('#' + id).css('display');
 	if (!action) {
 		action = (display === '' || display === type) ? -1 : 1;
 	}
-	jQuery('#' + id).css('display', ((action === 1) ? type : 'none'));
+	$('#' + id).css('display', ((action === 1) ? type : 'none'));
 }
 
 /**
