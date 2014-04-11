@@ -549,13 +549,23 @@ phpbb.addAjaxCallback = function(id, callback) {
  * current text so that the process can be repeated.
  */
 phpbb.addAjaxCallback('alt_text', function() {
-	var el = $(this),
+	var el,
+		updateAll = $(this).data('update-all'),
 		altText;
 
-	altText = el.attr('data-alt-text');
-	el.attr('data-alt-text', el.text());
-	el.attr('title', altText);
-	el.text(altText);
+	if (updateAll !== undefined && updateAll.length) {
+		el = $(updateAll);
+	} else {
+		el = $(this);
+	}
+
+	el.each(function() {
+		var el = $(this);
+		altText = el.attr('data-alt-text');
+		el.attr('data-alt-text', el.text());
+		el.attr('title', $.trim(altText));
+		el.text(altText);
+	});
 });
 
 /**
@@ -568,27 +578,37 @@ phpbb.addAjaxCallback('alt_text', function() {
  * and changes the link itself.
  */
 phpbb.addAjaxCallback('toggle_link', function() {
-	var el = $(this),
+	var el,
+		updateAll = $(this).data('update-all') ,
 		toggleText,
 		toggleUrl,
 		toggleClass;
 
-	// Toggle link text
+	if (updateAll !== undefined && updateAll.length) {
+		el = $(updateAll);
+	} else {
+		el = $(this);
+	}
 
-	toggleText = el.attr('data-toggle-text');
-	el.attr('data-toggle-text', el.text());
-	el.attr('title', toggleText);
-	el.text(toggleText);
+	el.each(function() {
+		var el = $(this);
 
-	// Toggle link url
-	toggleUrl = el.attr('data-toggle-url');
-	el.attr('data-toggle-url', el.attr('href'));
-	el.attr('href', toggleUrl);
+		// Toggle link text
+		toggleText = el.attr('data-toggle-text');
+		el.attr('data-toggle-text', el.text());
+		el.attr('title', $.trim(toggleText));
+		el.text(toggleText);
 
-	// Toggle class of link parent
-	toggleClass = el.attr('data-toggle-class');
-	el.attr('data-toggle-class', el.parent().attr('class'));
-	el.parent().attr('class', toggleClass);
+		// Toggle link url
+		toggleUrl = el.attr('data-toggle-url');
+		el.attr('data-toggle-url', el.attr('href'));
+		el.attr('href', toggleUrl);
+
+		// Toggle class of link parent
+		toggleClass = el.attr('data-toggle-class');
+		el.attr('data-toggle-class', el.parent().attr('class'));
+		el.parent().attr('class', toggleClass);
+	});
 });
 
 /**
