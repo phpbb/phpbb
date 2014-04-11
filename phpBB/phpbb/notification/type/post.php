@@ -210,7 +210,11 @@ class post extends \phpbb\notification\type\base
 			}
 		}
 
-		if ($trimmed_responders_cnt)
+		if ($trimmed_responders_cnt > 20)
+		{
+			$usernames[] = $this->user->lang('NOTIFICATION_MANY_OTHERS');
+		}
+		else if ($trimmed_responders_cnt)
 		{
 			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
@@ -403,6 +407,14 @@ class post extends \phpbb\notification\type\base
 
 		$responders = ($responders === null) ? array() : $responders;
 
+		// Do not add more then 25 responder,
+		// we trim the username list to "a, b, c and x others" anyway
+		// so there is no use to add all of them anyway.
+		if (sizeof($responders) > 25)
+		{
+			return array();
+		}
+
 		foreach ($responders as $responder)
 		{
 			// Do not add them as a responder multiple times
@@ -420,6 +432,15 @@ class post extends \phpbb\notification\type\base
 		$this->set_data('responders', $responders);
 
 		$serialized_data = serialize($this->get_data(false));
+
+		// If the data is longer then 4000 characters, it would cause a SQL error
+		// so we just don't add the username to the list, when this would be the
+		// case.
+		if (utf8_strlen($serialized_data) >= 4000)
+		{
+			return array();
+		}
+
 		return array('notification_data' => $serialized_data);
 	}
 }
