@@ -558,6 +558,10 @@ class log implements \phpbb\log\log_interface
 				$log[$i]['action'] = make_clickable($log[$i]['action']);
 				*/
 			}
+			else
+			{
+				$log[$i]['action'] = $this->user->lang($log[$i]['action']);
+			}
 
 			$i++;
 		}
