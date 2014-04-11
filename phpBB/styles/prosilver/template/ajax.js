@@ -13,6 +13,9 @@ phpbb.closeDarkenWrapper = function(delay) {
 	}, delay);
 };
 
+// Holds the standard edit button click event during quickedit
+phpbb.edit_button_event = [];
+
 /**
  * This callback displays the quickedit area in place of the post that is being
  * edited. It will also ajaxify the cancel button.
@@ -21,10 +24,34 @@ phpbb.addAjaxCallback('quickedit_post', function(res) {
 	if (typeof res.POST_ID !== 'undefined' && res.POST_ID > 0) {
 		$('#p' + res.POST_ID +' .content').hide();
 		$(res.MESSAGE).insertAfter('#p' + res.POST_ID +' .author');
+		var edit_link = $('#p' + res.POST_ID +' .edit-icon a');
+
+		// Cancel button will show post again
 		$('#quickeditbox input[name="cancel"]').click(function () {
 			$('#quickeditbox').remove();
-			$('#p' + res.POST_ID +' .content').show();
+			$('#p' + res.POST_ID + ' .content').show();
+
+			// Add edit button click event for quickedit back
+			edit_link.each(function() {
+				var event_handlers = $._data(this, 'events')['click'];
+				event_handlers.splice(0, 0, phpbb.edit_button_event);
+			});
+			phpbb.edit_button_event = [];
 			return false;
+		});
+
+		// Edit button will redirect to full editor
+		edit_link.bind('click', function () {
+			if (typeof $('#quickeditbox input[name="preview"]') !== 'undefined') {
+				$('#quickeditbox input[name="preview"]').click();
+			}
+			return false;
+		});
+
+		// Remove edit button click event for quickedit
+		edit_link.each(function() {
+			var event_handlers = $._data(this, 'events')['click'];
+			phpbb.edit_button_event = event_handlers.shift();
 		});
 	}
 });
