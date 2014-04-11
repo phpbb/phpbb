@@ -21,7 +21,7 @@ phpbb.edit_button_event = [];
  * edited. It will also ajaxify the cancel button.
  */
 phpbb.addAjaxCallback('quickedit_post', function(res) {
-	if (typeof res.POST_ID !== 'undefined' && res.POST_ID > 0) {
+	if (typeof res.POST_ID !== 'undefined' && res.POST_ID > 0 && !$('#quickeditbox').length) {
 		$('#p' + res.POST_ID +' .content').hide();
 		$(res.MESSAGE).insertAfter('#p' + res.POST_ID +' .author');
 		var edit_link = $('#p' + res.POST_ID +' .edit-icon a');
