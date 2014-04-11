@@ -1,21 +1,15 @@
 <?php
 /**
 *
-* @package email
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @package message
+* @copyright (c) 2014 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\message;
 
-class phpbb_message_admin_form extends phpbb_message_form
+class admin_form extends form
 {
 	protected $subject;
 	protected $sender_name;
@@ -37,7 +31,7 @@ class phpbb_message_admin_form extends phpbb_message_form
 		return false;
 	}
 
-	public function bind($request)
+	public function bind(\phpbb\request\request_interface $request)
 	{
 		parent::bind($request);
 
@@ -46,7 +40,7 @@ class phpbb_message_admin_form extends phpbb_message_form
 		$this->sender_name = $request->variable('name', '', true);
 	}
 
-	public function submit(messenger $messenger)
+	public function submit(\messenger $messenger)
 	{
 		if (!$this->subject)
 		{
@@ -99,7 +93,7 @@ class phpbb_message_admin_form extends phpbb_message_form
 		parent::submit($messenger);
 	}
 
-	public function render($template)
+	public function render(\phpbb\template\template $template)
 	{
 		$template->assign_vars(array(
 			'S_CONTACT_ADMIN'	=> true,

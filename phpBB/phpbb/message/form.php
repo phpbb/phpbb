@@ -2,33 +2,35 @@
 /**
 *
 * @package message
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) 2014 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\message;
 
-abstract class phpbb_message_form
+abstract class form
 {
-	protected $phpbb_root_path;
-	protected $phpEx;
-	protected $user;
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+	/** @var \phpbb\config\config */
 	protected $config;
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var string */
+	protected $phpbb_root_path;
+	/** @var string */
+	protected $phpEx;
+
 	protected $errors;
 	protected $message;
 	protected $cc_sender;
 	protected $body;
 
-	public function __construct($phpbb_root_path, $phpEx, $user, $auth, $config, $db)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -39,7 +41,7 @@ abstract class phpbb_message_form
 
 		$this->errors = array();
 
-		$this->message = new phpbb_message($config['server_name']);
+		$this->message = new \phpbb\message\message($config['server_name']);
 		$this->message->set_sender_from_user($this->user);
 	}
 
@@ -76,13 +78,13 @@ abstract class phpbb_message_form
 		return sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . append_sid($this->phpbb_root_path . 'index.' . $this->phpEx) . '">', '</a>');
 	}
 
-	public function bind(phpbb_request_interface $request)
+	public function bind(\phpbb\request\request_interface $request)
 	{
 		$this->cc_sender = $request->is_set_post('cc_sender');
 		$this->body = $request->variable('message', '', true);
 	}
 
-	public function submit(messenger $messenger)
+	public function submit(\messenger $messenger)
 	{
 		if (!check_form_key('memberlist_email'))
 		{
@@ -94,21 +96,21 @@ abstract class phpbb_message_form
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_emailtime = ' . time() . '
 				WHERE user_id = ' . $this->user->data['user_id'];
-			$result = $this->db->sql_query($sql);
+			$this->db->sql_query($sql);
 
 			if ($this->cc_sender)
 			{
 				$this->message->cc_sender();
 			}
 
-			$this->message->send($messenger);
+			$this->message->send($messenger, $this->phpEx);
 
 			meta_refresh(3, append_sid($this->phpbb_root_path . 'index.' . $this->phpEx));
 			trigger_error($this->user->lang['EMAIL_SENT'] . '<br /><br />' . $this->get_return_message());
 		}
 	}
 
-	public function render($template)
+	public function render(\phpbb\template\template $template)
 	{
 		add_form_key('memberlist_email');
 

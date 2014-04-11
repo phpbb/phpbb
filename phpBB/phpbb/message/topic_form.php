@@ -2,20 +2,14 @@
 /**
 *
 * @package message
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) 2014 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\message;
 
-class phpbb_message_topic_form extends phpbb_message_form
+class topic_form extends form
 {
 	protected $topic_id;
 
@@ -86,7 +80,7 @@ class phpbb_message_topic_form extends phpbb_message_form
 		return false;
 	}
 
-	public function bind($request)
+	public function bind(\phpbb\request\request_interface $request)
 	{
 		parent::bind($request);
 
@@ -98,7 +92,7 @@ class phpbb_message_topic_form extends phpbb_message_form
 		$this->topic_row = $this->get_topic_row($this->topic_id);
 	}
 
-	public function submit(messenger $messenger)
+	public function submit(\messenger $messenger)
 	{
 		if (!$this->recipient_address || !preg_match('/^' . get_preg_expression('email') . '$/i', $this->recipient_address))
 		{
@@ -128,12 +122,12 @@ class phpbb_message_topic_form extends phpbb_message_form
 		parent::submit($messenger);
 	}
 
-	protected function get_return_message()
+	public function get_return_message()
 	{
 		return sprintf($this->user->lang['RETURN_TOPIC'],  '<a href="' . append_sid($this->phpbb_root_path . 'viewtopic.' . $this->phpEx, 'f=' . $this->topic_row['forum_id'] . '&amp;t=' . $this->topic_id) . '">', '</a>');
 	}
 
-	public function render($template)
+	public function render(\phpbb\template\template $template)
 	{
 		parent::render($template);
 

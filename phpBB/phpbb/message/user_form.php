@@ -2,23 +2,18 @@
 /**
 *
 * @package message
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) 2014 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\message;
 
-class phpbb_message_user_form extends phpbb_message_form
+class user_form extends form
 {
 	protected $recipient_id;
 	protected $subject;
+	protected $recipient_row;
 
 	public function check_allow()
 	{
@@ -65,7 +60,7 @@ class phpbb_message_user_form extends phpbb_message_form
 		return $row;
 	}
 
-	public function bind($request)
+	public function bind(\phpbb\request\request_interface $request)
 	{
 		parent::bind($request);
 
@@ -75,7 +70,7 @@ class phpbb_message_user_form extends phpbb_message_form
 		$this->recipient_row = $this->get_user_row($this->recipient_id);
 	}
 
-	public function submit(messenger $messenger)
+	public function submit(\messenger $messenger)
 	{
 		if (!$this->subject)
 		{
@@ -95,7 +90,7 @@ class phpbb_message_user_form extends phpbb_message_form
 		parent::submit($messenger);
 	}
 
-	public function render($template)
+	public function render(\phpbb\template\template $template)
 	{
 		parent::render($template);
 

@@ -755,20 +755,21 @@ switch ($mode)
 
 		if ($user_id)
 		{
-			$form = new phpbb_message_user_form($phpbb_root_path, $phpEx, $user, $auth, $config, $db);
+			$form_name = 'user';
 		}
 		else if ($topic_id)
 		{
-			$form = new phpbb_message_topic_form($phpbb_root_path, $phpEx, $user, $auth, $config, $db);
+			$form_name = 'topic';
 		}
 		else if ($mode === 'contactadmin')
 		{
-			$form = new phpbb_message_admin_form($phpbb_root_path, $phpEx, $user, $auth, $config, $db);
+			$form_name = 'admin';
 		}
 		else
 		{
 			trigger_error('NO_EMAIL');
 		}
+		$form = $phpbb_container->get('message.form.' . $form_name);
 
 		$form->bind($request);
 		$error = $form->check_allow();
@@ -777,7 +778,7 @@ switch ($mode)
 			trigger_error($error);
 		}
 
-		if (isset($_POST['submit']))
+		if ($request->is_set_post('submit'))
 		{
 			$messenger = new messenger(false);
 			$form->submit($messenger);

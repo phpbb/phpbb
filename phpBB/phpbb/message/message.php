@@ -2,20 +2,14 @@
 /**
 *
 * @package message
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) 2014 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\message;
 
-class phpbb_message
+class message
 {
 	protected $server_name;
 
@@ -116,8 +110,11 @@ class phpbb_message
 		$this->sender_notify_type = $sender_notify_type;
 	}
 
-
-// Ok, now the same email if CC specified, but without exposing the users email address
+	/**
+	* Ok, now the same email if CC specified, but without exposing the users email address
+	*
+	* @return null
+	*/
 	public function cc_sender()
 	{
 		if (!sizeof($this->recipients))
@@ -140,7 +137,7 @@ class phpbb_message
 		);
 	}
 
-	public function send(messenger $messenger)
+	public function send(\messenger $messenger, $phpEx)
 	{
 		if (!sizeof($this->recipients))
 		{

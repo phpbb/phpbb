@@ -238,6 +238,36 @@ services:
             - %core.php_ext%
             - %tables.log%
 
+    message.form.admin:
+        class: phpbb\message\admin_form
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+
+    message.form.topic:
+        class: phpbb\message\topic_form
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+
+    message.form.user:
+        class: phpbb\message\user_form
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+
     notification_manager:
         class: phpbb\notification\manager
         arguments:
