@@ -20,6 +20,7 @@ phpbb.addAjaxCallback('quickedit_post', function(res) {
 		$('#quickeditbox input[name="cancel"]').click(function () {
 			$('#quickeditbox').remove();
 			$('#p' + res.POST_ID +' .content').show();
+			return false;
 		});
 	}
 });
