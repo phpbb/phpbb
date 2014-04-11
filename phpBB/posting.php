@@ -1467,6 +1467,11 @@ if ($request->is_ajax() && $mode == 'edit')
 {
 	$s_hidden_fields .= build_hidden_fields(array(
 		'attachment_data' 		=> $message_parser->attachment_data,
+		'poll_vote_change'		=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
+		'poll_title'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
+		'poll_option_text'		=> (!empty($post_data['poll_options'])) ? implode("\n", $post_data['poll_options']) : '',
+		'poll_max_options'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
+		'poll_length'			=> $post_data['poll_length'],
 	));
 }
 
