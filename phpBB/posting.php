@@ -1463,6 +1463,13 @@ if ($mode == 'edit')
 	));
 }
 
+if ($request->is_ajax() && $mode == 'edit')
+{
+	$s_hidden_fields .= build_hidden_fields(array(
+		'attachment_data' 		=> $message_parser->attachment_data,
+	));
+}
+
 // Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
 if (isset($captcha) && $captcha->is_solved() !== false)
 {
@@ -1573,6 +1580,27 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'POLL_MAX_OPTIONS'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
 		'POLL_LENGTH'			=> $post_data['poll_length'])
 	);
+}
+
+// Parse page for quickedit window
+if ($request->is_ajax() && !$submit && $mode == 'edit')
+{
+	$template->assign_vars(array(
+		'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+	));
+	$template->set_filenames(array(
+		'body'	=> 'quickedit_body.html'
+	));
+	$s_hidden_fields .= build_hidden_fields(array(
+		'full_editor' 			=> true,
+		'subject'			=> $post_data['post_subject'],
+		'attachment_data' 		=> $message_parser->attachment_data,
+	));
+	$json = new phpbb\json_response();
+	$json->send(array(
+		'POST_ID'	=> $post_id,
+		'MESSAGE'	=> $template->assign_display('body'),
+	));
 }
 
 // Show attachment box for adding attachments if true

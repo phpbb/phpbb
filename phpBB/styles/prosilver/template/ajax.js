@@ -13,6 +13,17 @@ phpbb.closeDarkenWrapper = function(delay) {
 	}, delay);
 };
 
+phpbb.addAjaxCallback('quickedit_post', function(res) {
+	if (typeof res.POST_ID !== 'undefined' && res.POST_ID > 0) {
+		$('#p' + res.POST_ID +' .content').hide();
+		$(res.MESSAGE).insertAfter('#p' + res.POST_ID +' .author');
+		$('#quickeditbox input[name="cancel"]').click(function () {
+			$('#quickeditbox').remove();
+			$('#p' + res.POST_ID +' .content').show();
+		});
+	}
+});
+
 // This callback will mark all forum icons read
 phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
