@@ -1588,14 +1588,14 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	/**
 	* Get all parts of the PM that are to be submited to the DB.
 	*
-	* @event	core.pm_pre_submit
+	* @event	core.submit_pm_before
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
 	* @var	array	data	The whole row data of the PM.
 	* @since 3.1.0-b3
 	*/
 	$vars = array('mode', 'subject', 'data');
-	extract($phpbb_dispatcher->trigger_event('core.pm_pre_submit', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.submit_pm_before', compact($vars)));
 
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
