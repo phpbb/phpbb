@@ -262,6 +262,10 @@ ul.profile-icons.responsive a.responsive-menu-link:before {
 	border-bottom: none;
 }
 
+.contact-icons div {
+	clear: left;
+}
+
 
 /* Profile & navigation icons */
 .pm-icon		{ background-position: 0 0; }
