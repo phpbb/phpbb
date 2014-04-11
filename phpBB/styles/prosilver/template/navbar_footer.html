@@ -1,0 +1,17 @@
+<div class="navbar">
+	<div class="inner">
+
+	<ul class="linklist bulletin">
+		<li class="small-icon icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}">{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF --><span class="crumb"><a href="{U_INDEX}">{L_INDEX}</a></span>
+			<!-- EVENT overall_footer_breadcrumb_append -->
+		</li>
+		<!-- IF not S_IS_BOT -->
+			<!-- IF U_WATCH_FORUM_LINK --><li class="small-icon icon-<!-- IF S_WATCHING_FORUM -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->"><a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon icon-<!-- IF not S_WATCHING_FORUM -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">{S_WATCH_FORUM_TITLE}</a></li><!-- ENDIF -->
+		<!-- ENDIF -->
+		<li class="rightside">{S_TIMEZONE}</li>
+		<!-- IF not S_IS_BOT --><li class="rightside"><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
+		<!-- IF U_TEAM --><li class="rightside"><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF -->
+	</ul>
+
+	</div>
+</div>

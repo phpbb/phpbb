@@ -1,0 +1,55 @@
+<div class="navbar">
+	<div class="inner">
+
+	<ul class="linklist navlinks">
+		<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
+		<li class="small-icon icon-home breadcrumbs"><!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#8249;</strong></span> <!-- ENDIF -->
+			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a></span> 
+			<!-- BEGIN navlinks --> <span class="crumb"><strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span><!-- END navlinks -->
+			<!-- EVENT overall_header_breadcrumb_append -->
+		</li>
+
+		<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- IF CURRENT_USER_AVATAR --><a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a> <!-- ENDIF -->{USERNAME_FULL}</li><!-- ENDIF -->
+		<!-- IF U_EMAIL_TOPIC --><li class="rightside"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}" class="sendemail">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
+		<!-- IF U_EMAIL_PM --><li class="rightside"><a href="{U_EMAIL_PM}" title="{L_EMAIL_PM}" class="sendemail">{L_EMAIL_PM}</a></li><!-- ENDIF -->
+		<!-- IF U_PRINT_TOPIC --><li class="rightside"><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p" class="print">{L_PRINT_TOPIC}</a></li><!-- ENDIF -->
+		<!-- IF U_PRINT_PM --><li class="rightside"><a href="{U_PRINT_PM}" title="{L_PRINT_PM}" accesskey="p" class="print">{L_PRINT_PM}</a></li><!-- ENDIF -->
+		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH --><li class="responsive-search rightside" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH}</a></li><!-- ENDIF -->
+	</ul>
+
+	<ul class="linklist bulletin">
+	<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
+		<!-- IF S_NOTIFICATIONS_DISPLAY -->
+		<li class="small-icon icon-notification" data-skip-responsive="true">
+			<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
+			<!-- INCLUDE notification_dropdown.html -->
+		</li>
+		<!-- ENDIF -->
+		<!-- IF S_DISPLAY_PM -->
+			<li class="small-icon icon-pm">
+				<a href="{U_PRIVATEMSGS}"><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></a>
+			</li>
+		<!-- ENDIF -->
+		<li class="small-icon icon-ucp">
+			<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
+		</li>
+		<!-- IF S_DISPLAY_SEARCH -->
+			<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
+		<!-- ENDIF -->
+		<!-- IF U_RESTORE_PERMISSIONS -->
+			<li class="icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li>
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+
+		<!-- EVENT overall_header_navigation_append -->
+		<!-- IF not S_IS_BOT -->
+			<li class="small-icon icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
+			<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="small-icon icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
+			<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
+		<!-- ENDIF -->
+		<li class="small-icon icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
+		<!-- EVENT overall_header_navigation_prepend -->
+	</ul>
+
+	</div>
+</div>
