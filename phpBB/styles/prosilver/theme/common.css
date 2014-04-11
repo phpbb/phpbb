@@ -597,7 +597,19 @@ ul.linklist.bulletin li.no-bulletin:before {
 /* Responsive breadcrumbs
 ----------------------------------------*/
 .breadcrumbs .crumb {
+	float: left;
 	word-wrap: normal;
+}
+
+.breadcrumbs .crumb:after {
+	content: '‹';
+	font-weight: bold;
+	padding: 0 0.5em;
+}
+
+.breadcrumbs .crumb:last-of-type:after {
+	content: '';
+	content: none;
 }
 
 .breadcrumbs .crumb a {
