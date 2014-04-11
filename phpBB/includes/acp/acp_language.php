@@ -366,7 +366,7 @@ class acp_language
 							fwrite($fp, $entry);
 						}
 
-						$footer = ");\n\n?>";
+						$footer = ");\n";
 						fwrite($fp, $footer);
 					}
 					else if ($language_file_type == 'normal')
@@ -397,7 +397,7 @@ class acp_language
 							}
 						}
 
-						$footer = "));\n\n?>";
+						$footer = "));\n";
 						fwrite($fp, $footer);
 					}
 				}
