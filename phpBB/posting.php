@@ -1596,11 +1596,7 @@ if ($request->is_ajax() && !$submit && $mode == 'edit')
 	$template->set_filenames(array(
 		'body'	=> 'quickedit_body.html'
 	));
-	$s_hidden_fields .= build_hidden_fields(array(
-		'full_editor' 			=> true,
-		'subject'			=> $post_data['post_subject'],
-		'attachment_data' 		=> $message_parser->attachment_data,
-	));
+
 	$json = new phpbb\json_response();
 	$json->send(array(
 		'POST_ID'	=> $post_id,
