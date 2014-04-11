@@ -1846,49 +1846,7 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				// Remove default constraints
-				if ($row['mssql_version'][0] == '8')	// SQL Server 2000
-				{
-					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-					// Deprecated in SQL Server 2005
-					$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-						SET @drop_default_name =
-							(SELECT so.name FROM sysobjects so
-							JOIN sysconstraints sc ON so.id = sc.constid
-							WHERE object_name(so.parent_obj) = '{$table_name}'
-								AND so.xtype = 'D'
-								AND sc.colid = (SELECT colid FROM syscolumns
-									WHERE id = object_id('{$table_name}')
-										AND name = '{$column_name}'))
-						IF @drop_default_name <> ''
-						BEGIN
-							SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-							EXEC(@cmd)
-						END";
-				}
-				else
-				{
-					$sql = "SELECT dobj.name AS def_name
-					FROM sys.columns col 
-						LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
-					WHERE col.object_id = object_id('{$table_name}') 
-					AND col.name = '{$column_name}'
-					AND dobj.name IS NOT NULL";
-					$result = $this->db->sql_query($sql);
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					if ($row)
-					{
-						$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
-					}
-				}
-
+				$statements = $this->mssql_drop_default_constraints($table_name, $column_name);
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
 
@@ -2371,52 +2329,12 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				$statements = $this->mssql_drop_default_constraints($table_name, $column_name);
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
 				if (!empty($column_data['default']))
 				{
-					$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-					$result = $this->db->sql_query($sql);
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					// Using TRANSACT-SQL for this statement because we do not want to have colliding data if statements are executed at a later stage
-					if ($row['mssql_version'][0] == '8')	// SQL Server 2000
-					{
-						$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-							SET @drop_default_name =
-								(SELECT so.name FROM sysobjects so
-								JOIN sysconstraints sc ON so.id = sc.constid
-								WHERE object_name(so.parent_obj) = '{$table_name}'
-									AND so.xtype = 'D'
-									AND sc.colid = (SELECT colid FROM syscolumns
-										WHERE id = object_id('{$table_name}')
-											AND name = '{$column_name}'))
-							IF @drop_default_name <> ''
-							BEGIN
-								SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-								EXEC(@cmd)
-							END
-							SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
-							EXEC(@cmd)";
-					}
-					else
-					{
-						$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-							SET @drop_default_name =
-								(SELECT dobj.name FROM sys.columns col 
-									LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
-								WHERE col.object_id = object_id('{$table_name}') 
-								AND col.name = '{$column_name}'
-								AND dobj.name IS NOT NULL)
-							IF @drop_default_name <> ''
-							BEGIN
-								SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-								EXEC(@cmd)
-							END
-							SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
-							EXEC(@cmd)";
-					}
+					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
 				}
 			break;
 
@@ -2550,5 +2468,61 @@ class tools
 		}
 
 		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	* Drop the default constraints of a column
+	*
+	* We need to drop the default constraints of a column,
+	* before being able to change their type or deleting them.
+	*
+	* @param string $table_name
+	* @param string $column_name
+	* @return array		Array with SQL statements
+	*/
+	protected function mssql_drop_default_constraints($table_name, $column_name)
+	{
+		$statements = array();
+		$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
+		$result = $this->db->sql_query($sql);
+		$mssql_server_properties = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		// Remove default constraints
+		if ($mssql_server_properties['mssql_version'][0] == '8')	// SQL Server 2000
+		{
+			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+			// Deprecated in SQL Server 2005
+			$sql = "SELECT so.name AS def_name FROM sysobjects so
+				JOIN sysconstraints sc ON so.id = sc.constid
+				WHERE object_name(so.parent_obj) = '{$table_name}'
+					AND so.xtype = 'D'
+					AND sc.colid = (SELECT colid FROM syscolumns
+						WHERE id = object_id('{$table_name}')
+							AND name = '{$column_name}')";
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+			}
+			$this->db->sql_freeresult($result);
+		}
+		else
+		{
+			$sql = "SELECT dobj.name AS def_name
+				FROM sys.columns col
+					LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
+				WHERE col.object_id = object_id('{$table_name}')
+					AND col.name = '{$column_name}'
+					AND dobj.name IS NOT NULL";
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		return $statements;
 	}
 }
