@@ -46,6 +46,7 @@
 	<!-- ENDIF -->
 		<td class="row1" width="100%">
 			<span class="genmed">
+				<!-- EVENT index_body_block_online_prepend -->
 				{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}
 				<!-- EVENT index_body_block_online_append -->
 			</span>
@@ -70,6 +71,7 @@
 		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_BIRTHDAYS}" /></td>
 		<td class="row1" width="100%">
 			<p class="genmed">
+				<!-- EVENT index_body_block_birthday_prepend -->
 				<!-- IF .birthdays -->{L_CONGRATULATIONS}{L_COLON} <b><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF -->
 				<!-- EVENT index_body_block_birthday_append -->
 			</p>
@@ -88,6 +90,7 @@
 	<td class="row1"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_STATISTICS}" /></td>
 	<td class="row1" width="100%" valign="middle">
 		<p class="genmed">
+			<!-- EVENT index_body_block_stats_prepend -->
 			{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}
 			<!-- EVENT index_body_block_stats_append -->
 		</p>

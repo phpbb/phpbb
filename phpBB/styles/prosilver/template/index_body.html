@@ -49,6 +49,7 @@
 	<div class="stat-block online-list">
 		<!-- IF U_VIEWONLINE --><h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3><!-- ELSE --><h3>{L_WHO_IS_ONLINE}</h3><!-- ENDIF -->
 		<p>
+			<!-- EVENT index_body_block_online_prepend -->
 			{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /> <br />{LOGGED_IN_USER_LIST}
 			<!-- IF LEGEND --><br /><em>{L_LEGEND}{L_COLON} {LEGEND}</em><!-- ENDIF -->
 			<!-- EVENT index_body_block_online_append -->
@@ -60,6 +61,7 @@
 	<div class="stat-block birthday-list">
 		<h3>{L_BIRTHDAYS}</h3>
 		<p>
+			<!-- EVENT index_body_block_birthday_prepend -->
 			<!-- IF .birthdays -->{L_CONGRATULATIONS}{L_COLON} <strong><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></strong><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF -->
 			<!-- EVENT index_body_block_birthday_append -->
 		</p>
@@ -70,6 +72,7 @@
 	<div class="stat-block statistics">
 		<h3>{L_STATISTICS}</h3>
 		<p>
+			<!-- EVENT index_body_block_stats_prepend -->
 			{TOTAL_POSTS} &bull; {TOTAL_TOPICS} &bull; {TOTAL_USERS} &bull; {NEWEST_USER}
 			<!-- EVENT index_body_block_stats_append -->
 		</p>

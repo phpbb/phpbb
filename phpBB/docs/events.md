@@ -194,6 +194,14 @@ index_body_block_online_append
 * Since: 3.1.0-b3
 * Purpose: Append content to the online list on the Board index
 
+index_body_block_online_prepend
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Prepend content to the online list on the Board index
+
 index_body_block_birthday_append
 ===
 * Locations:
@@ -202,6 +210,14 @@ index_body_block_birthday_append
 * Since: 3.1.0-b3
 * Purpose: Append content to the birthday list on the Board index
 
+index_body_block_birthday_prepend
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Prepend content to the birthday list on the Board index
+
 index_body_block_stats_append
 ===
 * Locations:
@@ -209,6 +225,14 @@ index_body_block_stats_append
     + styles/subsilver2/template/index_body.html
 * Since: 3.1.0-b3
 * Purpose: Append content to the statistics list on the Board index
+
+index_body_block_stats_prepend
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Prepend content to the statistics list on the Board index
 
 index_body_linklist_after
 ===
