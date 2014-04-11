@@ -13,6 +13,10 @@ phpbb.closeDarkenWrapper = function(delay) {
 	}, delay);
 };
 
+/**
+ * This callback displays the quickedit area in place of the post that is being
+ * edited. It will also ajaxify the cancel button.
+ */
 phpbb.addAjaxCallback('quickedit_post', function(res) {
 	if (typeof res.POST_ID !== 'undefined' && res.POST_ID > 0) {
 		$('#p' + res.POST_ID +' .content').hide();
