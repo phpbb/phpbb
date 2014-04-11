@@ -113,29 +113,6 @@ class quote extends \phpbb\notification\type\post
 
 		$notify_users = $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], $options);
 
-		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
-		$update_notifications = array();
-		$sql = 'SELECT n.*
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_parent_id = ' . (int) self::get_item_parent_id($post) . '
-				AND n.notification_read = 0
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			// Do not create a new notification
-			unset($notify_users[$row['user_id']]);
-
-			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
-			$sql = 'UPDATE ' . $this->notifications_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
-				WHERE notification_id = ' . $row['notification_id'];
-			$this->db->sql_query($sql);
-		}
-		$this->db->sql_freeresult($result);
-
 		return $notify_users;
 	}
 
@@ -188,6 +165,14 @@ class quote extends \phpbb\notification\type\post
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
 		return true;
+	}
+
+	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return $this->get_url();
 	}
 
 	/**
