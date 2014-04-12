@@ -50,6 +50,13 @@ switch ($mode)
 	case 'email':
 	break;
 
+	case 'livesearch':
+		if (!$config['allow_live_searches'])
+		{
+			trigger_error('LIVE_SEARCHES_NOT_ALLOWED');
+		}
+		// No break
+
 	default:
 		// Can this user view profiles/memberlist?
 		if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
