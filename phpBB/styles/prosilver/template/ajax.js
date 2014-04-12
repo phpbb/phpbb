@@ -31,11 +31,18 @@ phpbb.addAjaxCallback('quickedit_post', function(res) {
 			$('#quickeditbox').remove();
 			$('#p' + res.POST_ID + ' .content').show();
 
-			// Add edit button click event for quickedit back
-			edit_link.each(function() {
-				var event_handlers = $._data(this, 'events')['click'];
-				event_handlers.splice(0, 0, phpbb.edit_button_event);
+			// Add edit button click events for quickedit back
+			$.each(phpbb.edit_button_event, function(key) {
+				if (key < 1) {
+					return true;
+				}
+				var edit_button = $('#p' + key + ' .edit-icon a');
+				edit_button.each(function () {
+					var event_handlers = $._data(this, 'events')['click'];
+					event_handlers.splice(0, 0, phpbb.edit_button_event[key]);
+				});
 			});
+
 			phpbb.edit_button_event = [];
 			return false;
 		});
@@ -48,10 +55,20 @@ phpbb.addAjaxCallback('quickedit_post', function(res) {
 			return false;
 		});
 
+		// Get all edit buttons on page
+		var edit_buttons = $('div[id^="p"]').filter(function() {
+			return this.id.match(/^p+(?:([0-9]+))/);
+		});
+
 		// Remove edit button click event for quickedit
-		edit_link.each(function() {
-			var event_handlers = $._data(this, 'events')['click'];
-			phpbb.edit_button_event = event_handlers.shift();
+		edit_buttons.each(function() {
+			var edit_button_id = '#' + this.id;
+			var edit_button = $(edit_button_id + ' .edit-icon a');
+			edit_button.each(function() {
+				var event_handlers = $._data(this, 'events')['click'];
+				var row = edit_button_id.match(/^#p+(?:([0-9]+))/);
+				phpbb.edit_button_event[row[1]] = event_handlers.shift();
+			});
 		});
 	}
 });
