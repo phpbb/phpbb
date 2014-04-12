@@ -60,7 +60,7 @@
 								<!-- BEGIN custom_fields -->
 									<!-- IF custom_fields.S_PROFILE_CONTACT -->
 										<!-- DEFINE $CNT = definition.CNT + 1 -->
-										<!-- IF $CNT % 5 == 0 --><div><!-- ENDIF -->
+										<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
 										<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="<!-- IF postrow.custom_fields.PROFILE_FIELD_CONTACT -->{custom_fields.PROFILE_FIELD_CONTACT}<!-- ELSE -->{U_POST_AUTHOR}<!-- ENDIF -->" title="{custom_fields.PROFILE_FIELD_NAME}">
 											<span class="contact-icon {custom_fields.PROFILE_FIELD_IDENT}-icon"></span>
 										</a>
