@@ -732,20 +732,21 @@ class mcp_queue
 		}
 		else
 		{
+			$num_topics = 0;
 			$show_notify = false;
 
 			if ($action == 'approve')
 			{
 				foreach ($post_info as $post_data)
 				{
-					if ($post_data['poster_id'] == ANONYMOUS)
+					if (!$post_data['topic_posts_approved'])
 					{
-						continue;
+						$num_topics++;
 					}
-					else
+
+					if (!$show_notify && $post_data['poster_id'] != ANONYMOUS)
 					{
 						$show_notify = true;
-						break;
 					}
 				}
 			}
@@ -755,7 +756,18 @@ class mcp_queue
 				'S_' . strtoupper($action)	=> true,
 			));
 
-			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+			// Create the confirm box message
+			$action_msg = strtoupper($action);
+			$num_posts = sizeof($post_id_list) - $num_topics;
+			if ($num_topics > 0 && $num_posts <= 0)
+			{
+				$action_msg .= '_TOPIC' . (($num_topics == 1) ? '' : 'S');
+			}
+			else
+			{
+				$action_msg .= '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S');
+			}
+			confirm_box(false, $action_msg, $s_hidden_fields, 'mcp_approve.html');
 		}
 
 		redirect($redirect);
