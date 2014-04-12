@@ -1846,6 +1846,13 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+
+				if (!empty($indexes))
+				{
+					trigger_error("Column '$column_name' on table '$table_name' is still part of an index and can not be removed: " . implode(', ', array_keys($indexes)), E_USER_ERROR);
+				}
+
 				$statements = $this->mssql_drop_default_constraints($table_name, $column_name);
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
@@ -2329,12 +2336,31 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+
+				if (!empty($indexes))
+				{
+					foreach ($indexes as $index_name => $index_data)
+					{
+						$this->sql_index_drop($table_name, $index_name);
+					}
+				}
+
 				$statements = $this->mssql_drop_default_constraints($table_name, $column_name);
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
 				if (!empty($column_data['default']))
 				{
 					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
+				}
+
+				if (!empty($indexes))
+				{
+					// Recreate indexes after we changed the column
+					foreach ($indexes as $index_name => $index_data)
+					{
+						$this->sql_create_index($table_name, $index_name, $index_data);
+					}
 				}
 			break;
 
@@ -2525,5 +2551,90 @@ class tools
 		}
 
 		return $statements;
+	}
+
+	/**
+	* Get a list with existing indexes for the column
+	*
+	* @param string $table_name
+	* @param string $column_name
+	* @return array		Array with Index name => columns
+	*/
+	protected function mssql_get_existing_indexes($table_name, $column_name)
+	{
+		$existing_indexes = array();
+		$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
+		$result = $this->db->sql_query($sql);
+		$mssql_server_properties = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		// Remove default constraints
+		if ($mssql_server_properties['mssql_version'][0] == '8')	// SQL Server 2000
+		{
+			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+			// Deprecated in SQL Server 2005
+			/**
+			* @todo Fix for SQL Server 2000
+			$sql = "SELECT so.name AS def_name
+				FROM sysobjects so
+				JOIN sysconstraints sc ON so.id = sc.constid
+				WHERE object_name(so.parent_obj) = '{$table_name}'
+					AND so.xtype = 'D'
+					AND sc.colid = (SELECT colid FROM syscolumns
+						WHERE id = object_id('{$table_name}')
+							AND name = '{$column_name}')";
+			$result = $this->db->sql_query($sql);
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+			}
+			$this->db->sql_freeresult($result);
+			*/
+		}
+		else
+		{
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+				FROM sys.indexes ix
+				INNER JOIN sys.index_columns ixc
+					ON ixc.object_id = ix.object_id
+						AND ixc.index_id = ix.index_id
+				INNER JOIN sys.columns cols
+					ON cols.column_id = ixc.column_id
+					AND cols.object_id = ix.object_id
+				WHERE ix.object_id = object_id('{$table_name}')
+					AND cols.name = '{$column_name}'";
+			$result = $this->db->sql_query($sql);
+			$existing_indexes = array();
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$existing_indexes[$row['phpbb_index_name']] = array();
+			}
+			$this->db->sql_freeresult($result);
+
+			if (empty($existing_indexes))
+			{
+				return array();
+			}
+
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+				FROM sys.indexes ix
+				INNER JOIN sys.index_columns ixc
+					ON ixc.object_id = ix.object_id
+						AND ixc.index_id = ix.index_id
+				INNER JOIN sys.columns cols
+					ON cols.column_id = ixc.column_id
+						AND cols.object_id = ix.object_id
+				WHERE ix.object_id = object_id('{$table_name}')
+					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
+			}
+			$this->db->sql_freeresult($result);
+		}
+
+		return $existing_indexes;
 	}
 }
