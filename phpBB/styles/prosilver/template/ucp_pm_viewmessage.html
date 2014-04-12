@@ -47,15 +47,21 @@
 								<!-- EVENT ucp_pm_viewmessage_contact_fields_before -->
 								<!-- IF U_PM -->
 									<!-- DEFINE $CNT = definition.CNT + 1 -->
+									<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
 									<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="{U_PM}" title="{L_PRIVATE_MESSAGE}"><span class="contact-icon pm-icon"></span></a>
+									<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
 								<!-- ENDIF -->
 								<!-- IF U_EMAIL -->
 									<!-- DEFINE $CNT = definition.CNT + 1 -->
+									<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
 									<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="{U_EMAIL}" title="{L_SEND_EMAIL_USER} {POST_AUTHOR}"><span class="contact-icon email-icon"></span></a>
+									<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
 								<!-- ENDIF -->
 								<!-- IF U_JABBER -->
 									<!-- DEFINE $CNT = definition.CNT + 1 -->
+									<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
 									<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span class="contact-icon jabber-icon"></span></a>
+									<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
 								<!-- ENDIF -->
 								<!-- BEGIN custom_fields -->
 									<!-- IF custom_fields.S_PROFILE_CONTACT -->
