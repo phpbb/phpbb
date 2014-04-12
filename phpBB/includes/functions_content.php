@@ -175,7 +175,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 				'FORUM_ID'		=> ($select_all) ? 0 : -1,
 				'FORUM_NAME'	=> ($select_all) ? $user->lang['ALL_FORUMS'] : $user->lang['SELECT_FORUM'],
 				'S_FORUM_COUNT'	=> $iteration,
-				'LINK'			=> phpbb_append_url_param($action, 'f', $forum_id), 
+				'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $forum_id)),
 			));
 
 			$iteration++;
@@ -190,7 +190,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			'S_IS_CAT'		=> ($row['forum_type'] == FORUM_CAT) ? true : false,
 			'S_IS_LINK'		=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_IS_POST'		=> ($row['forum_type'] == FORUM_POST) ? true : false,
-			'LINK'			=> phpbb_append_url_param($action, 'f', $row['forum_id']), 
+			'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $forum_id)),
 		));
 
 		for ($i = 0; $i < $padding; $i++)
@@ -1460,12 +1460,13 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
  */
 function phpbb_add_quickmod_option($url, $option, $lang_string)
 {
-	global $template, $user;
+	global $template, $user, $phpbb_path_helper;
+
 	$lang_string = $user->lang($lang_string);
 	$template->assign_block_vars('quickmod', array(
 		'VALUE'		=> $option,
 		'TITLE'		=> $lang_string,
-		'LINK'		=> phpbb_append_url_param($url, 'action', $option),
+		'LINK'		=> $phpbb_path_helper->append_url_params($url, array('action' => $option)),
 	));
 }
 
