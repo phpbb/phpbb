@@ -83,7 +83,7 @@ class phpbb_functional_softdelete_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 
 		$this->assertContains('Re: Soft Delete Topic #1-#2', $crawler->filter('html')->text());
-		$this->data['posts']['Re: Soft Delete Topic #1-#2'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->eq(1)->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
+		$this->data['posts']['Re: Soft Delete Topic #1-#2'] = (int) $post2['post_id'];
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 2,
