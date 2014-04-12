@@ -57,7 +57,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 
 		$this->assertContains('Re: Download Topic #1-#2', $crawler->filter('html')->text());
-		$this->data['posts']['Re: Download Topic #1-#2'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->eq(1)->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
+		$this->data['posts']['Re: Download Topic #1-#2'] = (int) $post2['post_id'];
 	}
 
 	public function test_download_accessible()
