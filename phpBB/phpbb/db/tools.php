@@ -2493,7 +2493,8 @@ class tools
 		{
 			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
 			// Deprecated in SQL Server 2005
-			$sql = "SELECT so.name AS def_name FROM sysobjects so
+			$sql = "SELECT so.name AS def_name
+				FROM sysobjects so
 				JOIN sysconstraints sc ON so.id = sc.constid
 				WHERE object_name(so.parent_obj) = '{$table_name}'
 					AND so.xtype = 'D'
