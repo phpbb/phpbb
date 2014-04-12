@@ -659,6 +659,22 @@ ucp_friend_list_after
 * Since: 3.1.0-a4
 * Purpose: Add optional elements after list of friends in UCP
 
+viewforum_forum_name_append
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly after the forum name link on the View forum screen
+
+viewforum_forum_name_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly before the forum name link on the View forum screen
+
 viewtopic_print_head_append
 ===
 * Locations:
