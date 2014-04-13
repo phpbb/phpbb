@@ -410,7 +410,7 @@ class phpbb_functional_softdelete_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
 
 		$this->add_lang('mcp');
-		$form = $crawler->selectButton($this->lang('RESTORE'))->form();
+		$form = $crawler->filter('#p' . $this->data['posts']['Soft Delete Topic #1'])->selectButton($this->lang('RESTORE'))->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('RESTORE_POST', $crawler->text());
 
