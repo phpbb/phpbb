@@ -138,6 +138,7 @@ class acp_forums
 						'enable_prune'			=> request_var('enable_prune', false),
 						'enable_post_review'	=> request_var('enable_post_review', true),
 						'enable_quick_reply'	=> request_var('enable_quick_reply', false),
+						'enable_quick_edit'	=> request_var('enable_quick_edit', false),
 						'enable_shadow_prune'		=> request_var('enable_shadow_prune', false),
 						'prune_days'			=> request_var('prune_days', 7),
 						'prune_viewed'			=> request_var('prune_viewed', 7),
@@ -396,6 +397,7 @@ class acp_forums
 					$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
 					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? FORUM_FLAG_POST_REVIEW : 0;
 					$forum_data['forum_flags'] += (request_var('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
+					$forum_data['forum_flags'] += (request_var('enable_quick_edit', false)) ? FORUM_FLAG_QUICK_EDIT : 0;
 				}
 
 				// Initialise $row, so we always have it in the event
@@ -685,6 +687,7 @@ class acp_forums
 					'S_ENABLE_ACTIVE_TOPICS'	=> ($forum_data['forum_type'] == FORUM_CAT) ? ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
+					'S_ENABLE_QUICK_EDIT'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_EDIT) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
 				);
 
@@ -999,6 +1002,8 @@ class acp_forums
 		// 8 = prune stickies
 		// 16 = show active topics
 		// 32 = enable post review
+		// 64 = enable quick reply
+		// 128 = enable quick edit
 		$forum_data['forum_flags'] = 0;
 		$forum_data['forum_flags'] += ($forum_data['forum_link_track']) ? FORUM_FLAG_LINK_TRACK : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_old_polls']) ? FORUM_FLAG_PRUNE_POLL : 0;
@@ -1007,6 +1012,7 @@ class acp_forums
 		$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
 		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? FORUM_FLAG_POST_REVIEW : 0;
 		$forum_data['forum_flags'] += ($forum_data['enable_quick_reply']) ? FORUM_FLAG_QUICK_REPLY : 0;
+		$forum_data['forum_flags'] += ($forum_data['enable_quick_edit']) ? FORUM_FLAG_QUICK_EDIT : 0;
 
 		// Unset data that are not database fields
 		$forum_data_sql = $forum_data;
@@ -1018,6 +1024,7 @@ class acp_forums
 		unset($forum_data_sql['show_active']);
 		unset($forum_data_sql['enable_post_review']);
 		unset($forum_data_sql['enable_quick_reply']);
+		unset($forum_data_sql['enable_quick_edit']);
 		unset($forum_data_sql['forum_password_confirm']);
 
 		// What are we going to do tonight Brain? The same thing we do everynight,

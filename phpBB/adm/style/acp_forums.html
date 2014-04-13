@@ -223,6 +223,11 @@
 				<label><input type="radio" class="radio" name="enable_quick_reply" value="0"<!-- IF not S_ENABLE_QUICK_REPLY --> id="enable_quick_reply" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
+			<dt><label for="enable_quick_edit">{L_ENABLE_QUICK_EDIT}{L_COLON}</label><br /><span>{L_ENABLE_QUICK_EDIT_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" name="enable_quick_edit" value="1"<!-- IF S_ENABLE_QUICK_EDIT --> id="enable_quick_edit" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="enable_quick_edit" value="0"<!-- IF not S_ENABLE_QUICK_EDIT --> id="enable_quick_edit" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+		<dl>
 			<dt><label for="enable_indexing">{L_ENABLE_INDEXING}{L_COLON}</label><br /><span>{L_ENABLE_INDEXING_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_indexing" value="1"<!-- IF S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="enable_indexing" value="0"<!-- IF not S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
