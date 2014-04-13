@@ -24,6 +24,8 @@ class phpbb_functions_content_phpbb_clean_search_string_test extends phpbb_test_
 			array('* *test*', '*test*'),
 			array('test  test  * test', 'test test test'),
 			array(' some  wild*cards *    between wo*rds  ', 'some wild*cards between wo*rds'),
+			array(' we * now have*** multiple wild***cards * ', 'we now have* multiple wild*cards'),
+			array('pi is *** . * **** * *****', 'pi is .'),
 		);
 	}
 

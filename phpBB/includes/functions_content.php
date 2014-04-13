@@ -372,9 +372,9 @@ function phpbb_clean_search_string($search_string)
 {
 	// This regular expressions matches every single wildcard.
 	// That means one after a whitespace or the beginning of the string or one before a whitespace or the end of the string.
-	$search_string = preg_replace('#(?<=^|\s)\*(?=\s|$)#', '', $search_string);
+	$search_string = preg_replace('#(?<=^|\s)\*+(?=\s|$)#', '', $search_string);
 	$search_string = trim($search_string);
-	$search_string = preg_replace('#\s+#u', ' ', $search_string);
+	$search_string = preg_replace(array('#\s+#u', '#\*+#u'), array(' ', '*'), $search_string);
 	return $search_string;
 }
 
