@@ -104,7 +104,6 @@ class topic_form extends form
 			$this->errors[] = $this->user->lang['EMPTY_NAME_EMAIL'];
 		}
 
-
 		$this->message->set_template('email_notify');
 		$this->message->set_template_vars(array(
 			'TOPIC_NAME'	=> htmlspecialchars_decode($this->topic_row['topic_title']),
