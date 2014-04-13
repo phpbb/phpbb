@@ -686,8 +686,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(p.post_id) AS total
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND p.post_visibility = ' . $visibility_const . '
-					AND ' . $db->sql_in_set('topic_visibility', $visibility_const) .'
+					AND ' . $db->sql_in_set('p.post_visibility', $visibility_const) .'
 					AND t.topic_id = p.topic_id
 					AND t.topic_visibility <> p.post_visibility';
 
