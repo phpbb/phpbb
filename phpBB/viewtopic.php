@@ -475,7 +475,7 @@ if ($hilit_words)
 	{
 		if (trim($word))
 		{
-			$word = preg_replace('#\s+#u', ' ', trim(preg_replace('#(?<=^|\s)\*(?=\s|$)#', '', $word)));
+			$word = phpbb_clean_search_string($word);
 			$word = str_replace('\*', '\w+?', preg_quote($word, '#'));
 			$word = preg_replace('#(^|\s)\\\\w\*\?(\s|$)#', '$1\w+?$2', $word);
 			$highlight_match .= (($highlight_match != '' && $word != '') ? '|' : '') . $word;
