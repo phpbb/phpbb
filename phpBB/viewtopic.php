@@ -1815,6 +1815,15 @@ else if (!$all_marked_read)
 	}
 }
 
+// Check if quick edit is available
+$s_quick_edit = false;
+if ($user->data['is_registered'] && $config['allow_quick_edit'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_EDIT) && $auth->acl_get('f_reply', $forum_id))
+{
+	// Quick edit enabled forum
+	$s_quick_edit = (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $auth->acl_get('m_edit', $forum_id)) ? true : false;
+}
+$template->assign_var('S_QUICK_EDIT', $s_quick_edit);
+
 // let's set up quick_reply
 $s_quick_reply = false;
 if ($user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) && $auth->acl_get('f_reply', $forum_id))

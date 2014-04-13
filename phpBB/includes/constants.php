@@ -100,6 +100,7 @@ define('FORUM_FLAG_PRUNE_STICKY', 8);
 define('FORUM_FLAG_ACTIVE_TOPICS', 16);
 define('FORUM_FLAG_POST_REVIEW', 32);
 define('FORUM_FLAG_QUICK_REPLY', 64);
+define('FORUM_FLAG_QUICK_EDIT', 128);
 
 // Forum Options... sequential order. Modifications should begin at number 10 (number 29 is maximum)
 define('FORUM_OPTION_FEED_NEWS', 1);

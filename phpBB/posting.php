@@ -1463,6 +1463,18 @@ if ($mode == 'edit')
 	));
 }
 
+if ($request->is_ajax() && $mode == 'edit')
+{
+	$s_hidden_fields .= build_hidden_fields(array(
+		'attachment_data' 		=> $message_parser->attachment_data,
+		'poll_vote_change'		=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
+		'poll_title'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
+		'poll_option_text'		=> (!empty($post_data['poll_options'])) ? implode("\n", $post_data['poll_options']) : '',
+		'poll_max_options'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
+		'poll_length'			=> $post_data['poll_length'],
+	));
+}
+
 // Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
 if (isset($captcha) && $captcha->is_solved() !== false)
 {
@@ -1573,6 +1585,23 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'POLL_MAX_OPTIONS'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
 		'POLL_LENGTH'			=> $post_data['poll_length'])
 	);
+}
+
+// Parse page for quickedit window
+if ($request->is_ajax() && !$submit && $mode == 'edit')
+{
+	$template->assign_vars(array(
+		'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+	));
+	$template->set_filenames(array(
+		'body'	=> 'quickedit_body.html'
+	));
+
+	$json = new phpbb\json_response();
+	$json->send(array(
+		'POST_ID'	=> $post_id,
+		'MESSAGE'	=> $template->assign_display('body'),
+	));
 }
 
 // Show attachment box for adding attachments if true

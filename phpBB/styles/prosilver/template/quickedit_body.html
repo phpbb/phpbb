@@ -1,0 +1,27 @@
+<div id="quickeditbox">
+<form id="postform" method="post" action="{S_POST_ACTION}"{S_FORM_ENCTYPE}>
+	<fieldset class="fields1">
+		<dl style="clear: left;">
+			<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+			<dd><input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" /></dd>
+		</dl>
+		{S_FORM_TOKEN}
+
+		<div id="message-box">
+			<textarea name="message" id="message" rows="15" cols="76" tabindex="4" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+		</div>
+	</fieldset>
+	<div class="panel bg2">
+		<div class="inner">
+		<fieldset class="submit-buttons">
+			{S_HIDDEN_ADDRESS_FIELD}
+			{S_HIDDEN_FIELDS}
+			<input type="submit" id="cancel" name="cancel" value="{L_CANCEL}" class="button2">&nbsp;
+			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1 default-submit-action" />&nbsp;
+			<input type="submit" accesskey="f" name="preview" value="{L_FULL_EDITOR}" class="button2">
+		</fieldset>
+
+		</div>
+	</div>
+</form>
+</div>
