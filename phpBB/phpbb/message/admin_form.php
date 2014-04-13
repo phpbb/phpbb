@@ -35,7 +35,7 @@ class admin_form extends form
 			return $error;
 		}
 
-		if (!$this->config['contact_admin_form_enable']) /** TODO:  && !$this->config['contact_admin_info']) */
+		if (!$this->config['contact_admin_form_enable'])
 		{
 			return 'NO_CONTACT_PAGE';
 		}
