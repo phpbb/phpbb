@@ -48,33 +48,14 @@ class topic_form extends form
 			return 'NO_TOPIC';
 		}
 
-		/**
-		* @todo remove else case when global topics have forum id
-		*/
-		if ($this->topic_row['forum_id'])
+		if (!$this->auth->acl_get('f_read', $this->topic_row['forum_id']))
 		{
-			if (!$this->auth->acl_get('f_read', $this->topic_row['forum_id']))
-			{
-				return 'SORRY_AUTH_READ';
-			}
-
-			if (!$this->auth->acl_get('f_email', $this->topic_row['forum_id']))
-			{
-				return 'NO_EMAIL';
-			}
+			return 'SORRY_AUTH_READ';
 		}
-		else
-		{
-			// If global announcement, we need to check if the user is able to at least read and email in one forum...
-			if (!$this->auth->acl_getf_global('f_read'))
-			{
-				return 'SORRY_AUTH_READ';
-			}
 
-			if (!$this->auth->acl_getf_global('f_email'))
-			{
-				return 'NO_EMAIL';
-			}
+		if (!$this->auth->acl_get('f_email', $this->topic_row['forum_id']))
+		{
+			return 'NO_EMAIL';
 		}
 
 		return false;
