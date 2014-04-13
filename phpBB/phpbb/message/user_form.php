@@ -9,12 +9,43 @@
 
 namespace phpbb\message;
 
+/**
+* Class user_form
+* Allows users to send emails to other users
+*
+* @package phpbb\message
+*/
 class user_form extends form
 {
+	/** @var int */
 	protected $recipient_id;
-	protected $subject;
+	/** @var array */
 	protected $recipient_row;
+	/** @var string */
+	protected $subject;
 
+	/**
+	* Get the data of the recipient
+	*
+	* @param int $user_id
+	* @return	false|array		false if the user does not exist, array otherwise
+	*/
+	protected function get_user_row($user_id)
+	{
+		$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . (int) $user_id . '
+				AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row;
+	}
+
+	/**
+	* {inheritDoc}
+	*/
 	public function check_allow()
 	{
 		$error = parent::check_allow();
@@ -47,19 +78,9 @@ class user_form extends form
 		return false;
 	}
 
-	protected function get_user_row($user_id)
-	{
-		$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
-			FROM ' . USERS_TABLE . '
-			WHERE user_id = ' . ((int) $user_id) . '
-				AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return $row;
-	}
-
+	/**
+	* {inheritDoc}
+	*/
 	public function bind(\phpbb\request\request_interface $request)
 	{
 		parent::bind($request);
@@ -70,6 +91,9 @@ class user_form extends form
 		$this->recipient_row = $this->get_user_row($this->recipient_id);
 	}
 
+	/**
+	* {inheritDoc}
+	*/
 	public function submit(\messenger $messenger)
 	{
 		if (!$this->subject)
@@ -90,6 +114,9 @@ class user_form extends form
 		parent::submit($messenger);
 	}
 
+	/**
+	* {inheritDoc}
+	*/
 	public function render(\phpbb\template\template $template)
 	{
 		parent::render($template);

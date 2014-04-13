@@ -9,6 +9,11 @@
 
 namespace phpbb\message;
 
+/**
+* Abstract class form
+*
+* @package phpbb\message
+*/
 abstract class form
 {
 	/** @var \phpbb\auth\auth */
@@ -17,6 +22,8 @@ abstract class form
 	protected $config;
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+	/** @var \phpbb\message\message */
+	protected $message;
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -25,11 +32,23 @@ abstract class form
 	/** @var string */
 	protected $phpEx;
 
-	protected $errors;
-	protected $message;
+	/** @var array */
+	protected $errors = array();
+	/** @var bool */
 	protected $cc_sender;
+	/** @var string */
 	protected $body;
 
+	/**
+	* Construct
+	*
+	* @param \phpbb\auth\auth $auth
+	* @param \phpbb\config\config $config
+	* @param \phpbb\db\driver\driver_interface $db
+	* @param \phpbb\user $user
+	* @param string $phpbb_root_path
+	* @param string $phpEx
+	*/
 	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -39,25 +58,35 @@ abstract class form
 		$this->config = $config;
 		$this->db = $db;
 
-		$this->errors = array();
-
-		$this->message = new \phpbb\message\message($config['server_name']);
+		$this->message = new message($config['server_name']);
 		$this->message->set_sender_from_user($this->user);
 	}
 
 	/**
 	* Returns the title for the email form page
+	*
+	* @return string
 	*/
 	public function get_page_title()
 	{
-		$this->user->lang['SEND_EMAIL'];
+		return $this->user->lang['SEND_EMAIL'];
 	}
 
+	/**
+	* Returns the file name of the form template
+	*
+	* @return string
+	*/
 	public function get_template_file()
 	{
 		return 'memberlist_email.html';
 	}
 
+	/**
+	* Checks whether the user is allowed to use the form
+	*
+	* @return false|string	Error string if not allowed, false otherwise
+	*/
 	public function check_allow()
 	{
 		if (!$this->config['email_enable'])
@@ -73,17 +102,34 @@ abstract class form
 		return false;
 	}
 
+	/**
+	* Get the return link after the message has been sent
+	*
+	* @return string
+	*/
 	public function get_return_message()
 	{
 		return sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . append_sid($this->phpbb_root_path . 'index.' . $this->phpEx) . '">', '</a>');
 	}
 
+	/**
+	* Bind the values of the request to the form
+	*
+	* @param \phpbb\request\request_interface $request
+	* @return null
+	*/
 	public function bind(\phpbb\request\request_interface $request)
 	{
 		$this->cc_sender = $request->is_set_post('cc_sender');
 		$this->body = $request->variable('message', '', true);
 	}
 
+	/**
+	* Submit form, generate the email and send it
+	*
+	* @param \messenger $messenger
+	* @return null
+	*/
 	public function submit(\messenger $messenger)
 	{
 		if (!check_form_key('memberlist_email'))
@@ -110,6 +156,12 @@ abstract class form
 		}
 	}
 
+	/**
+	* Render the template of the form
+	*
+	* @param \phpbb\template\template $template
+	* @return null
+	*/
 	public function render(\phpbb\template\template $template)
 	{
 		add_form_key('memberlist_email');

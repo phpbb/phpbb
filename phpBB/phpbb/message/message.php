@@ -9,63 +9,129 @@
 
 namespace phpbb\message;
 
+/**
+* Class message
+* Holds all information for an email and sends it in the end
+*
+* @package phpbb\message
+*/
 class message
 {
+	/** @var string */
 	protected $server_name;
 
+	/** @var string */
 	protected $subject = '';
+	/** @var string */
 	protected $body = '';
+	/** @var string */
 	protected $template = '';
+	/** @var array */
 	protected $template_vars = array();
 
+	/** @var string */
 	protected $sender_ip = '';
+	/** @var string */
 	protected $sender_name = '';
+	/** @var string */
 	protected $sender_address = '';
+	/** @var string */
 	protected $sender_lang = '';
+	/** @var string */
 	protected $sender_id = '';
+	/** @var string */
 	protected $sender_username = '';
+	/** @var string */
 	protected $sender_jabber = '';
+	/** @var int */
 	protected $sender_notify_type = NOTIFY_EMAIL;
 
+	/** @var array */
 	protected $recipients;
 
+	/**
+	* Construct
+	*
+	* @param string $server_name	Used for AntiAbuse header
+	*/
 	public function __construct($server_name)
 	{
 		$this->server_name = $server_name;
 	}
 
+	/**
+	* Set the subject of the email
+	*
+	* @param string $subject
+	* @return null
+	*/
 	public function set_subject($subject)
 	{
 		$this->subject = $subject;
 	}
 
+	/**
+	* Set the body of the email text
+	*
+	* @param string $body
+	* @return null
+	*/
 	public function set_body($body)
 	{
 		$this->body = $body;
 	}
 
+	/**
+	* Set the name of the email template to use
+	*
+	* @param string $template
+	* @return null
+	*/
 	public function set_template($template)
 	{
 		$this->template = $template;
 	}
 
+	/**
+	* Set the array with the "template" data for the email
+	*
+	* @param array $template_vars
+	* @return null
+	*/
 	public function set_template_vars($template_vars)
 	{
 		$this->template_vars = $template_vars;
 	}
 
+	/**
+	* Add a recipient from \phpbb\user
+	*
+	* @param \phpbb\user $user
+	* @return null
+	*/
 	public function add_recipient_from_user_row(array $user)
 	{
 		$this->add_recipient(
 			$user['username'],
 			$user['user_email'],
 			$user['user_lang'],
+			$user['user_notify_type'],
 			$user['username'],
-			$user['user_jabber'],
-			$user['user_notify_type']
+			$user['user_jabber']
 		);
 	}
 
+	/**
+	* Add a recipient
+	*
+	* @param string $recipient_name		Displayed sender name
+	* @param string $recipient_address	Email address
+	* @param string $recipient_lang
+	* @param int $recipient_notify_type	Used notification methods (Jabber, Email, ...)
+	* @param string $recipient_username	User Name (used for AntiAbuse header)
+	* @param string $recipient_jabber
+	* @return null
+	*/
 	public function add_recipient($recipient_name, $recipient_address, $recipient_lang, $recipient_notify_type = NOTIFY_EMAIL, $recipient_username = '', $recipient_jabber = '')
 	{
 		$this->recipients[] = array(
@@ -79,6 +145,12 @@ class message
 		);
 	}
 
+	/**
+	* Set the senders data from \phpbb\user object
+	*
+	* @param \phpbb\user $user
+	* @return null
+	*/
 	public function set_sender_from_user($user)
 	{
 		$this->set_sender(
@@ -94,6 +166,18 @@ class message
 		$this->set_sender_notify_type($user->data['user_notify_type']);
 	}
 
+	/**
+	* Set the senders data
+	*
+	* @param string $sender_ip
+	* @param string $sender_name		Displayed sender name
+	* @param string $sender_address		Email address
+	* @param string $sender_lang
+	* @param int $sender_id				User ID
+	* @param string $sender_username	User Name (used for AntiAbuse header)
+	* @param string $sender_jabber
+	* @return null
+	*/
 	public function set_sender($sender_ip, $sender_name, $sender_address, $sender_lang = '', $sender_id = 0, $sender_username = '', $sender_jabber = '')
 	{
 		$this->sender_ip = $sender_ip;
@@ -105,6 +189,12 @@ class message
 		$this->sender_jabber = $sender_jabber;
 	}
 
+	/**
+	* Which notification type should be used? Jabber, Email, ...?
+	*
+	* @param int $sender_notify_type
+	* @return null
+	*/
 	public function set_sender_notify_type($sender_notify_type)
 	{
 		$this->sender_notify_type = $sender_notify_type;
@@ -137,6 +227,13 @@ class message
 		);
 	}
 
+	/**
+	* Send the email
+	*
+	* @param \messenger $messenger
+	* @param string $phpEx
+	* @return null
+	*/
 	public function send(\messenger $messenger, $phpEx)
 	{
 		if (!sizeof($this->recipients))

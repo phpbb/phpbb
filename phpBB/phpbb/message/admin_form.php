@@ -9,12 +9,24 @@
 
 namespace phpbb\message;
 
+/**
+* Class admin_form
+* Displays a message to the user and allows him to send an email
+*
+* @package phpbb\message
+*/
 class admin_form extends form
 {
+	/** @var string */
 	protected $subject;
+	/** @var string */
 	protected $sender_name;
+	/** @var string */
 	protected $sender_address;
 
+	/**
+	* {inheritDoc}
+	*/
 	public function check_allow()
 	{
 		$error = parent::check_allow();
@@ -31,6 +43,9 @@ class admin_form extends form
 		return false;
 	}
 
+	/**
+	* {inheritDoc}
+	*/
 	public function bind(\phpbb\request\request_interface $request)
 	{
 		parent::bind($request);
@@ -40,6 +55,9 @@ class admin_form extends form
 		$this->sender_name = $request->variable('name', '', true);
 	}
 
+	/**
+	* {inheritDoc}
+	*/
 	public function submit(\messenger $messenger)
 	{
 		if (!$this->subject)
@@ -93,6 +111,9 @@ class admin_form extends form
 		parent::submit($messenger);
 	}
 
+	/**
+	* {inheritDoc}
+	*/
 	public function render(\phpbb\template\template $template)
 	{
 		$template->assign_vars(array(
