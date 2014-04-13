@@ -2336,21 +2336,32 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				// We need the data here
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
+
 				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
 
+				// Drop any indexes
 				if (!empty($indexes))
 				{
 					foreach ($indexes as $index_name => $index_data)
 					{
-						$this->sql_index_drop($table_name, $index_name);
+						$result = $this->sql_index_drop($table_name, $index_name);
+						$statements = array_merge($statements, $result);
 					}
 				}
 
-				$statements = $this->mssql_drop_default_constraints($table_name, $column_name);
+				// Drop default value constraint
+				$result = $this->mssql_drop_default_constraints($table_name, $column_name);
+				$statements = array_merge($statements, $result);
+
+				// Change the column
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
 				if (!empty($column_data['default']))
 				{
+					// Add new default value constraint
 					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
 				}
 
@@ -2359,9 +2370,12 @@ class tools
 					// Recreate indexes after we changed the column
 					foreach ($indexes as $index_name => $index_data)
 					{
-						$this->sql_create_index($table_name, $index_name, $index_data);
+						$result = $this->sql_create_index($table_name, $index_name, $index_data);
+						$statements = array_merge($statements, $result);
 					}
 				}
+
+				$this->return_statements = $old_return_statements;
 			break;
 
 			case 'mysql_40':
