@@ -111,7 +111,7 @@ class message
 	}
 
 	/**
-	* Ok, now the same email if CC specified, but without exposing the users email address
+	* Ok, now the same email if CC specified, but without exposing the user's email address
 	*
 	* @return null
 	*/
