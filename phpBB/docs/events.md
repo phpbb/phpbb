@@ -76,6 +76,54 @@ acp_users_overview_options_append
 * Since: 3.1.0-a1
 * Purpose: Add options and settings on user overview page
 
+acp_users_prefs_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users prefs settings
+
+acp_users_prefs_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users prefs settings
+
+acp_users_prefs_personal_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users personal prefs settings
+
+acp_users_prefs_personal_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users personal prefs settings
+
+acp_users_prefs_post_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users post prefs settings
+
+acp_users_prefs_post_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users post prefs settings
+
+acp_users_prefs_view_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users view prefs settings
+
+acp_users_prefs_view_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users view prefs settings
+
 acp_users_signature_editor_buttons_after
 ===
 * Locations:
