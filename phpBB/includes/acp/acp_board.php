@@ -28,12 +28,12 @@ class acp_board
 	{
 		global $db, $user, $auth, $template;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $cache, $phpbb_container, $phpbb_dispatcher;
+		global $cache, $phpbb_container, $phpbb_dispatcher, $request;
 
 		$user->add_lang('acp/board');
 
 		$action	= request_var('action', '');
-		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
+		$submit = ($request->is_set('submit') || $request->is_set('allow_quick_reply_enable') || $request->is_set('allow_quick_edit_enable')) ? true : false;
 
 		$form_key = 'acp_board';
 		add_form_key($form_key);
@@ -92,6 +92,7 @@ class acp_board
 						'allow_birthdays'		=> array('lang' => 'ALLOW_BIRTHDAYS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'display_last_subject'	=> array('lang' => 'DISPLAY_LAST_SUBJECT',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_quick_reply'		=> array('lang' => 'ALLOW_QUICK_REPLY',		'validate' => 'bool',	'type' => 'custom', 'method' => 'quick_reply', 'explain' => true),
+						'allow_quick_edit'		=> array('lang' => 'ALLOW_QUICK_EDIT',		'validate' => 'bool',	'type' => 'custom', 'method' => 'quick_edit', 'explain' => true),
 
 						'legend2'				=> 'ACP_LOAD_SETTINGS',
 						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -192,6 +193,7 @@ class acp_board
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_quick_reply'		=> array('lang' => 'ALLOW_QUICK_REPLY',		'validate' => 'bool',	'type' => 'custom', 'method' => 'quick_reply', 'explain' => true),
+						'allow_quick_edit'		=> array('lang' => 'ALLOW_QUICK_EDIT',		'validate' => 'bool',	'type' => 'custom', 'method' => 'quick_edit', 'explain' => true),
 
 						'legend2'				=> 'POSTING',
 						'bump_type'				=> false,
@@ -519,6 +521,10 @@ class acp_board
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
 				{
 					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
+				}
+				else if ($config_name == 'allow_quick_edit' && $request->is_set('allow_quick_edit_enable'))
+				{
+					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_EDIT, 2));
 				}
 			}
 		}
@@ -891,6 +897,19 @@ class acp_board
 
 		return h_radio('config[allow_quick_reply]', $radio_ary, $value) .
 			'<br /><br /><input class="button2" type="submit" id="' . $key . '_enable" name="' . $key . '_enable" value="' . $user->lang['ALLOW_QUICK_REPLY_BUTTON'] . '" />';
+	}
+
+	/**
+	* Global quick edit enable/disable setting and button to enable in all forums
+	*/
+	function quick_edit($value, $key)
+	{
+		global $user;
+
+		$radio_ary = array(1 => 'YES', 0 => 'NO');
+
+		return h_radio('config[allow_quick_edit]', $radio_ary, $value) .
+			'<br /><br /><input class="button2" type="submit" id="' . $key . '_enable" name="' . $key . '_enable" value="' . $user->lang['ALLOW_QUICK_EDIT_BUTTON'] . '" />';
 	}
 
 	/**
