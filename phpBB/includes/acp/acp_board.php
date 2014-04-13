@@ -33,7 +33,7 @@ class acp_board
 		$user->add_lang('acp/board');
 
 		$action	= request_var('action', '');
-		$submit = ($request->is_set('submit') || $request->is_set('allow_quick_reply_enable') || $request->is_set('allow_quick_edit_enable')) ? true : false;
+		$submit = ($request->is_set_post('submit') || $request->is_set_post('allow_quick_reply_enable') || $request->is_set_post('allow_quick_edit_enable')) ? true : false;
 
 		$form_key = 'acp_board';
 		add_form_key($form_key);
@@ -522,7 +522,7 @@ class acp_board
 				{
 					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
 				}
-				else if ($config_name == 'allow_quick_edit' && $request->is_set('allow_quick_edit_enable'))
+				else if ($config_name == 'allow_quick_edit' && $request->is_set_post('allow_quick_edit_enable'))
 				{
 					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_EDIT, 2));
 				}
