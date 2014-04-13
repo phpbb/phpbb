@@ -17,12 +17,32 @@ namespace phpbb\message;
 */
 class admin_form extends form
 {
+	/** @var \phpbb\config\db_text */
+	protected $config_text;
+
 	/** @var string */
 	protected $subject;
 	/** @var string */
 	protected $sender_name;
 	/** @var string */
 	protected $sender_address;
+
+	/**
+	* Construct
+	*
+	* @param \phpbb\auth\auth $auth
+	* @param \phpbb\config\config $config
+	* @param \phpbb\config\db_text $config_text
+	* @param \phpbb\db\driver\driver_interface $db
+	* @param \phpbb\user $user
+	* @param string $phpbb_root_path
+	* @param string $phpEx
+	*/
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	{
+		parent::__construct($auth, $config, $db, $user, $phpbb_root_path, $phpEx);
+		$this->config_text = $config_text;
+	}
 
 	/**
 	* {inheritDoc}
@@ -116,12 +136,15 @@ class admin_form extends form
 	*/
 	public function render(\phpbb\template\template $template)
 	{
+		// @todo Add option to fill the db with it and add migration
+		$l_admin_info = '';//$this->config_text['contact_admin_info'];
+
 		$template->assign_vars(array(
 			'S_CONTACT_ADMIN'	=> true,
 			'S_CONTACT_FORM'	=> $this->config['contact_admin_form_enable'],
 			'S_IS_REGISTERED'	=> $this->user->data['is_registered'],
 
-			'CONTACT_INFO'		=> '', /** TODO: $this->config['contact_admin_info'] */
+			'CONTACT_INFO'		=> $l_admin_info,
 			'MESSAGE'			=> $this->body,
 			'SUBJECT'			=> $this->subject,
 			'NAME'				=> $this->sender_name,
