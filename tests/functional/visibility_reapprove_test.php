@@ -315,6 +315,16 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->assertContains('Post edited by testing framework', $crawler->filter('#page-body')->text());
 	}
 
+	public function test_approve_post_again()
+	{
+		$this->test_approve_post();
+	}
+
+	public function test_approve_topic_again()
+	{
+		$this->test_approve_topic();
+	}
+
 	public function test_reset_flood_interval()
 	{
 		$this->login();
