@@ -2049,7 +2049,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		// If the post was not approved, it could also be the starter,
 		// so we sync the starter after approving/restoring, to ensure that the stats are correct
 		// Same applies for the last post
-		$is_starter = ($post_mode == 'edit_first_post' || $data['post_visibility'] != ITEM_APPROVED);
+		$is_starter = ($post_mode == 'edit_first_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 		$is_latest = ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
