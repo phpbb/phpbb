@@ -601,13 +601,13 @@ ul.linklist.bulletin li.no-bulletin:before {
 	word-wrap: normal;
 }
 
-.breadcrumbs .crumb:after {
+.breadcrumbs .crumb:before {
 	content: '‹';
 	font-weight: bold;
 	padding: 0 0.5em;
 }
 
-.breadcrumbs .crumb:last-of-type:after {
+.breadcrumbs .crumb:first-of-type:before {
 	content: '';
 	content: none;
 }
