@@ -663,9 +663,21 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			*
 			* @event core.search_get_posts_data
 			* @var	array	sql_array		The SQL array
+			* @var	array	zebra			Array of zebra data for the current user
+			* @var	int		total_match_count	The total number of search matches
+			* @var	string	keywords		String of the specified keywords
+			* @var	array	sort_by_sql		Array of SQL sorting instructions
+			* @var	string	s_sort_dir		The sort direction
+			* @var	string	s_sort_key		The sort key
+			* @var	string	s_limit_days	Limit the age of results
+			* @var	array	ex_fid_ary		Array of excluded forum ids
+			* @var	array	author_id_ary	Array of exclusive author ids
+			* @var	string	search_fields	The data fields to search in
+			* @var	int		search_id		The id of the search request
+			* @var	int		start			The starting id of the results
 			* @since 3.1.0-b3
 			*/
-			$vars = array('sql_array');
+			$vars = array('sql_array', 'zebra', 'total_match_count', 'keywords', 'sort_by_sql', 's_sort_dir', 's_sort_key', 's_limit_days', 'ex_fid_ary', 'author_id_ary', 'search_fields', 'search_id', 'start');
 			extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
 
 			$sql = $db->sql_build_query('SELECT', $sql_array);
