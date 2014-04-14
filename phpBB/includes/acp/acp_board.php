@@ -65,7 +65,8 @@ class acp_board
 						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
-						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => false),
+						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => true),
+						'default_guest_style'	=> array('lang' => 'DEFAULT_GUEST_STYLE',	'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array($this->guest_style_get(), false), 'explain' => true),
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'WARNINGS',
@@ -509,6 +510,14 @@ class acp_board
 				continue;
 			}
 
+			if ($config_name == 'default_guest_style')
+			{
+				if (isset($cfg_array[$config_name])) {
+					$this->guest_style_set($cfg_array[$config_name]);
+				}
+				continue;
+			}
+
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($config_name == 'email_function_name')
@@ -910,6 +919,51 @@ class acp_board
 		$timezone_select['tz_select'];
 
 		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select['tz_select'] . '</select>';
+	}
+
+	/**
+	* Get default guest style
+	*/
+	function guest_style_get()
+	{
+		global $db;
+		
+		$style = false;
+
+		$sql_array = array(
+			'SELECT' => 'u.user_style',
+			'FROM' => array(
+				USERS_TABLE => 'u',
+				),
+			'WHERE' =>  'u.user_id = ' . ANONYMOUS,
+		);
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$result = $db->sql_query_limit($sql, 1);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$style = (isset($row['user_style'])) ? $row['user_style'] : false;
+		}
+
+		return $style;
+	}
+
+	/**
+	* Set default guest style
+	*/
+	function guest_style_set($style_id)
+	{
+		global $db;
+
+		$sql_ary = array(
+			'user_style' => $style_id,
+		);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+		WHERE user_id = ' . ANONYMOUS;
+		$db->sql_query($sql);
 	}
 
 	/**
