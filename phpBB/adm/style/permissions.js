@@ -177,7 +177,7 @@ function swap_options(pmask, fmask, cat, adv, view) {
 	var adv_block = document.getElementById('advanced' + pmask + fmask);
 
 	if (adv_block.style.display === 'block' && adv === true) {
-		dE('advanced' + pmask + fmask, -1);
+		phpbb.toggleDisplay('advanced' + pmask + fmask, -1);
 		reset_opacity(1);
 		display_checkboxes(false);
 		return;
@@ -207,11 +207,11 @@ function swap_options(pmask, fmask, cat, adv, view) {
 		return;
 	}
 
-	dE('options' + active_option, -1);
+	phpbb.toggleDisplay('options' + active_option, -1);
 
 	//hiding and showing the checkbox
 	if (document.getElementById('checkbox' + active_pmask + active_fmask)) {
-		dE('checkbox' + pmask + fmask, -1);
+		phpbb.toggleDisplay('checkbox' + pmask + fmask, -1);
 
 		if ((pmask + fmask) !== (active_pmask + active_fmask)) {
 			document.getElementById('checkbox' + active_pmask + active_fmask).style.display = 'inline';
@@ -219,13 +219,13 @@ function swap_options(pmask, fmask, cat, adv, view) {
 	}
 
 	if (!view) {
-		dE('advanced' + active_pmask + active_fmask, -1);
+		phpbb.toggleDisplay('advanced' + active_pmask + active_fmask, -1);
 	}
 
 	if (!view) {
-		dE('advanced' + pmask + fmask, 1);
+		phpbb.toggleDisplay('advanced' + pmask + fmask, 1);
 	}
-	dE('options' + id, 1);
+	phpbb.toggleDisplay('options' + id, 1);
 
 	active_pmask = pmask;
 	active_fmask = fmask;

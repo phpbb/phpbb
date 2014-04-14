@@ -1082,6 +1082,27 @@ phpbb.registerPalette = function(el) {
 }
 
 /**
+* Set display of page element
+*
+* @param string	id	The ID of the element to change
+* @param int	action	Set to 0 if element display should be toggled, -1 for
+*			hiding the element, and 1 for showing it.
+* @param string	type	Display type that should be used, e.g. inline, block or
+*			other CSS "display" types
+*/
+phpbb.toggleDisplay = function(id, action, type) {
+	if (!type) {
+		type = 'block';
+	}
+
+	var display = $('#' + id).css('display');
+	if (!action) {
+		action = (display === '' || display === type) ? -1 : 1;
+	}
+	$('#' + id).css('display', ((action === 1) ? type : 'none'));
+}
+
+/**
 * Apply code editor to all textarea elements with data-bbcode attribute
 */
 $(document).ready(function() {
