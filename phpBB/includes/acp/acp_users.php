@@ -1503,6 +1503,17 @@ class acp_users
 					'notify'	=> request_var('notify', $user_row['user_notify']),
 				);
 
+				/**
+				* Modify users preferences data
+				*
+				* @event core.acp_users_prefs_modify_data
+				* @var	array	data			Array with users preferences data
+				* @var	array	user_row		Array with user data
+				* @since 3.1.0-b3
+				*/
+				$vars = array('data', 'user_row');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_data', compact($vars)));
+
 				if ($submit)
 				{
 					$error = validate_data($data, array(
@@ -1559,37 +1570,53 @@ class acp_users
 							'user_notify'	=> $data['notify'],
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-							WHERE user_id = $user_id";
-						$db->sql_query($sql);
+						/**
+						* Modify SQL query before users preferences are updated
+						*
+						* @event core.acp_users_prefs_modify_sql
+						* @var	array	data			Array with users preferences data
+						* @var	array	user_row		Array with user data
+						* @var	array	sql_ary			SQL array with users preferences data to update
+						* @var	array	error			Array with errors data
+						* @since 3.1.0-b3
+						*/
+						$vars = array('data', 'user_row', 'sql_ary', 'error');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_sql', compact($vars)));
 
-						// Check if user has an active session
-						if ($user_row['session_id'])
+						if (!sizeof($error))
 						{
-							// We'll update the session if user_allow_viewonline has changed and the user is a bot
-							// Or if it's a regular user and the admin set it to hide the session
-							if ($user_row['user_allow_viewonline'] != $sql_ary['user_allow_viewonline'] && $user_row['user_type'] == USER_IGNORE
-								|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								WHERE user_id = $user_id";
+							$db->sql_query($sql);
+
+							// Check if user has an active session
+							if ($user_row['session_id'])
 							{
-								// We also need to check if the user has the permission to cloak.
-								$user_auth = new \phpbb\auth\auth();
-								$user_auth->acl($user_row);
+								// We'll update the session if user_allow_viewonline has changed and the user is a bot
+								// Or if it's a regular user and the admin set it to hide the session
+								if ($user_row['user_allow_viewonline'] != $sql_ary['user_allow_viewonline'] && $user_row['user_type'] == USER_IGNORE
+									|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
+								{
+									// We also need to check if the user has the permission to cloak.
+									$user_auth = new \phpbb\auth\auth();
+									$user_auth->acl($user_row);
 
-								$session_sql_ary = array(
-									'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
-								);
+									$session_sql_ary = array(
+										'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
+									);
 
-								$sql = 'UPDATE ' . SESSIONS_TABLE . '
-									SET ' . $db->sql_build_array('UPDATE', $session_sql_ary) . "
-									WHERE session_user_id = $user_id";
-								$db->sql_query($sql);
+									$sql = 'UPDATE ' . SESSIONS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', $session_sql_ary) . "
+										WHERE session_user_id = $user_id";
+									$db->sql_query($sql);
 
-								unset($user_auth);
+									unset($user_auth);
+								}
 							}
-						}
 
-						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						}
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1653,7 +1680,7 @@ class acp_users
 				}
 
 				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
-				$template->assign_vars(array(
+				$user_prefs_data = array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
 
@@ -1693,8 +1720,21 @@ class acp_users
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
 					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
 					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
-					)
 				);
+
+				/**
+				* Modify users preferences data before assigning it to the template
+				*
+				* @event core.acp_users_prefs_modify_template_data
+				* @var	array	data				Array with users preferences data
+				* @var	array	user_row			Array with user data
+				* @var	array	user_prefs_data		Array with users preferences data to be assigned to the template
+				* @since 3.1.0-b3
+				*/
+				$vars = array('data', 'user_row', 'user_prefs_data');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_template_data', compact($vars)));
+
+				$template->assign_vars($user_prefs_data);
 
 			break;
 
