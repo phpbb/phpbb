@@ -149,6 +149,16 @@ class path_helper
 		$script_name = $this->symfony_request->getScriptName();
 
 		/*
+		* If the path info is empty but we're using app.php, then we
+		*	might be using an empty route like app.php/ which is
+		*	supported by symfony's routing
+		*/
+		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
+		{
+			return $this->web_root_path = $this->phpbb_root_path . '../';
+		}
+
+		/*
 		* If the path info is empty (single /), then we're not using
 		*	a route like app.php/foo/bar
 		*/
