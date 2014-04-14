@@ -244,6 +244,28 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
 	}
 
+	public function test_column_remove_with_index()
+	{
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012_2', array('UINT', 4)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+
+		// Create index over the column
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012_2', array('c_bug_12012_2', 'c_bool')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_2'));
+
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_3'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012_3', array('c_bug_12012_2')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_3'));
+
+		// Remove the column
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+	}
+
 	public function test_column_remove_primary()
 	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_id'));
