@@ -370,6 +370,18 @@ class manager
 		$tpl_fields = array();
 		$tpl_fields['row'] = $tpl_fields['blockrow'] = array();
 
+		/**
+		* Event to modify data of the generated profile fields, before the template assignment loop
+		*
+		* @event core.generate_profile_fields_template_data_before
+		* @var	array	profile_row		Array with users profile field data 
+		* @var	array	tpl_fields		Array with template data fields
+		* @var	bool	use_contact_fields	Should we display contact fields as such?
+		* @since 3.1.0-b3
+		*/
+		$vars = array('profile_row', 'tpl_fields', 'use_contact_fields');
+		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_data_before', compact($vars)));
+
 		foreach ($profile_row as $ident => $ident_ary)
 		{
 			$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
