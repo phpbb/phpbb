@@ -1369,7 +1369,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		// no break;
 	}
 	
-	if (empty($username_string))
+	if (!isset($username_string))
 	{
 		if (($mode == 'full' && !$profile_url) || $mode == 'no_profile')
 		{
