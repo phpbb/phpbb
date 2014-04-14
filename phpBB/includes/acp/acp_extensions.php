@@ -310,16 +310,16 @@ class acp_extensions
 				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}	
-			catch (\RuntimeException $e)
-			{
-				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
-			}
 			catch(\phpbb\extension\exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 					'S_VERSIONCHECK'		=> false,
 				));
+			}
+			catch (\RuntimeException $e)
+			{
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
@@ -366,16 +366,16 @@ class acp_extensions
 				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
-			catch (\RuntimeException $e)
-			{
-				$disabeld_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
-			}
 			catch(\phpbb\extension\exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
 					'S_VERSIONCHECK'		=> false,
 				));
+			}
+			catch (\RuntimeException $e)
+			{
+				$disabeld_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
