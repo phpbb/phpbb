@@ -927,13 +927,11 @@ class acp_board
 	function guest_style_get()
 	{
 		global $db;
-		
-		$style = false;
 
-		$sql = 'SELECT u.user_style 
-			FROM ' . USERS_TABLE . ' u 
-			WHERE u.user_id = ' . ANONYMOUS;
-		$result = $db->sql_query_limit($sql, 1);
+		$sql = 'SELECT user_style 
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . ANONYMOUS;
+		$result = $db->sql_query($sql);
 
 		$style = (int) $db->sql_fetchfield('user_style');
 		$db->sql_freeresult($result);
@@ -948,12 +946,8 @@ class acp_board
 	{
 		global $db;
 
-		$sql_ary = array(
-			'user_style' => $style_id,
-		);
-
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_style = ' . $style_id . '
+			SET user_style = ' . (int) $style_id . '
 			WHERE user_id = ' . ANONYMOUS;
 		$db->sql_query($sql);
 	}
