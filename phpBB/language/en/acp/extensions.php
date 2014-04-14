@@ -106,4 +106,11 @@ $lang = array_merge($lang, array(
 	'AUTHOR_EMAIL'			=> 'Email',
 	'AUTHOR_HOMEPAGE'		=> 'Homepage',
 	'AUTHOR_ROLE'			=> 'Role',
+
+	'NOT_UP_TO_DATE'			=> '%s is not up to date',
+	'UP_TO_DATE'			=> '%s is up to date',
+	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
+	'DOWNLOAD_LATEST'		=> 'Download Latest Version',
+	'NO_VERSIONCHECK'		=> 'No informations about how get the latest version.',
+//	'NO_INFO'					=> 'Version server could not be contacted',
 ));
