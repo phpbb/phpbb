@@ -7,7 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 
 class phpbb_functions_content_phpbb_clean_search_string_test extends phpbb_test_case
