@@ -251,9 +251,18 @@ class acp_extensions
 
 				try
 				{
-					$infos = array();
-					$this->version_check($md_manager, $infos, $request->variable('versioncheck_force', false));
-					$template->assign_vars($infos);
+					$updates_available = $this->version_check($md_manager, $request->variable('versioncheck_force', false));
+
+					$template->assign_vars(array(
+						'S_UP_TO_DATE'		=> empty($updates_available),
+						'S_VERSIONCHECK'	=> true,
+						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
+					));
+
+					foreach ($updates_available as $branch => $version_data)
+					{
+						$template->assign_block_vars('updates_available', $version_data);
+					}
 				}
 				catch (\RuntimeException $e)
 				{
@@ -295,7 +304,15 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$this->version_check($md_manager, $enabled_extension_meta_data[$name]);
+				$updates = $this->version_check($md_manager);
+	
+				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+			}	
+			catch (\RuntimeException $e)
+			{
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 			catch(\phpbb\extension\exception $e)
 			{
@@ -343,7 +360,15 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$this->version_check($md_manager, $disabled_extension_meta_data[$name]);
+				$updates = $this->version_check($md_manager);
+	
+				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+			}
+			catch (\RuntimeException $e)
+			{
+				$disabeld_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 			catch(\phpbb\extension\exception $e)
 			{
@@ -394,7 +419,15 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$this->version_check($md_manager, $available_extension_meta_data[$name]);
+				$updates = $this->version_check($md_manager);
+
+				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+			}
+			catch (\RuntimeException $e)
+			{
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 			catch(\phpbb\extension\exception $e)
 			{
@@ -439,13 +472,12 @@ class acp_extensions
 	}
 
 	/**
-	 * Check the version and dump to the template
+	 * Check the version and return the availables updates.
 	 *
 	 * @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
-	 * @param array $array_dest The array to bind to the template.
 	 * @param bool $force Ignores cached data. Default to false.
 	 */
-	private function version_check(\phpbb\extension\metadata_manager $md_manager, &$array_dest, $force = false) 
+	private function version_check(\phpbb\extension\metadata_manager $md_manager, $force = false) 
 	{
 		$meta = $md_manager->get_metadata('all');
 
@@ -453,29 +485,14 @@ class acp_extensions
 		{
 			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'));
 		}
+
+		$meta_vc = $meta['extra']['version-check'];
 		
-		$version_helper = new \phpbb\extension\version_helper($this->cache, $this->user);
-		$version_helper->set_metadata($meta);
+		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
+		$version_helper->set_current_version($meta['version']);
+		$version_helper->set_file_location($meta_vc['host'], $meta_vc['directory'], $meta_vc['filename']);
 
-		try
-		{
-			$version_helper->get_version($force);
-			$version_compare = $version_helper->is_uptodate();
-
-			$array_dest = array_merge($array_dest, array(
-				'S_VERSIONCHECK'		=> true,
-				'S_UP_TO_DATE'			=> $version_compare,
-				'LATEST_VERSION'		=> $version_helper->get_latest_version(),
-				'LATEST_DOWNLOAD'		=> $version_helper->get_latest_download_link(),
-				'LATEST_ANNOUNCEMENT'	=> $version_helper->get_latest_announcement_link(),
-				'UP_TO_DATE_MSG'		=> $this->user->lang($version_compare ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-				'U_VERSIONCHECK_FORCE' => $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name')),
-			));
-		}
-		catch(\RuntimeException $e)
-		{
-			$array_dest['S_VERSIONCHECK'] = false;
-		}
+		return $updates = $version_helper->get_suggested_updates(true);
 	}
 
 	/**

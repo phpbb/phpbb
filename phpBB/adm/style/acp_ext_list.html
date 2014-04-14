@@ -7,12 +7,11 @@
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 
 	<table class="table1">
-		<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" ><col class="row2" >
+		<col class="row1" ><col class="row1" ><col class="row2" ><col class="row2" >
 	<thead>
 		<tr>
 			<th>{L_EXTENSION_NAME}</th>
 			<th width="10%">{L_CURRENT_VERSION}</th>
-			<th width="10%">{L_LATEST_VERSION}</th>
 			<th width="10%">{L_EXTENSION_OPTIONS}</th>
 			<th width="10%">{L_EXTENSION_ACTIONS}</th>
 		</tr>
@@ -25,10 +24,9 @@
 		<!-- BEGIN enabled -->
 		<tr class="ext_enabled">
 			<td><strong>{enabled.META_DISPLAY_NAME}</strong></td>
-			<td style="text-align: center;">{enabled.META_VERSION}</td>
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
-				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.LATEST_VERSION}</strong> [&nbsp;<a href="{enabled.U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong> [&nbsp;<a href="{enabled.U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
 				<!-- ENDIF -->
 			</td>
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
@@ -44,15 +42,14 @@
 
 		<!-- IF .disabled -->
 		<tr>
-			<td class="row3" colspan="5"><strong>{L_EXTENSIONS_DISABLED}</strong></td>
+			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_DISABLED}</strong></td>
 		</tr>
 		<!-- BEGIN disabled -->
 		<tr class="ext_disabled">
 			<td><strong>{disabled.META_DISPLAY_NAME}</strong></td>
-			<td style="text-align: center;">{disabled.META_VERSION}</td>
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
-				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.LATEST_VERSION}</strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong> [&nbsp;<a href="{disabled.U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
 				<!-- ENDIF -->
 			</td>
 			<td style="text-align: center;">
