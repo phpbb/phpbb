@@ -325,7 +325,7 @@ class manager
 		* Event to modify profile fields data retrieved from the database
 		*
 		* @event core.grab_profile_fields_data
-		* @var	int|array	$user_ids	Single user id or an array of ids 
+		* @var	array	$user_ids		Single user id or an array of ids 
 		* @var	array	$field_data		Array with profile fields data
 		* @since 3.1.0-b3
 		*/
@@ -429,9 +429,10 @@ class manager
 		* @event core.generate_profile_fields_template_data
 		* @var	array	profile_row		Array with users profile field data 
 		* @var	array	tpl_fields		Array with template data fields
+		* @var	bool	use_contact_fields	Should we display contact fields as such?
 		* @since 3.1.0-b3
 		*/
-		$vars = array('profile_row', 'tpl_fields');
+		$vars = array('profile_row', 'tpl_fields', 'use_contact_fields');
 		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_data', compact($vars)));
 
 		return $tpl_fields;
