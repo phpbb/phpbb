@@ -14,45 +14,45 @@
 			<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_POST -->
 				if (value == {FORUM_POST})
 				{
-					dE('type_actions', -1);
+					phpbb.toggleDisplay('type_actions', -1);
 				}
 				else
 				{
-					dE('type_actions', 1);
+					phpbb.toggleDisplay('type_actions', 1);
 				}
 			<!-- ENDIF -->
 
 			<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_CAT and S_HAS_SUBFORUMS -->
 				if (value == {FORUM_LINK})
 				{
-					dE('cat_to_link_actions', 1);
+					phpbb.toggleDisplay('cat_to_link_actions', 1);
 				}
 				else
 				{
-					dE('cat_to_link_actions', -1);
+					phpbb.toggleDisplay('cat_to_link_actions', -1);
 				}
 			<!-- ENDIF -->
 
 			if (value == {FORUM_POST})
 			{
-				dE('forum_post_options', 1);
-				dE('forum_link_options', -1);
-				dE('forum_rules_options', 1);
-				dE('forum_cat_options', -1);
+				phpbb.toggleDisplay('forum_post_options', 1);
+				phpbb.toggleDisplay('forum_link_options', -1);
+				phpbb.toggleDisplay('forum_rules_options', 1);
+				phpbb.toggleDisplay('forum_cat_options', -1);
 			}
 			else if (value == {FORUM_LINK})
 			{
-				dE('forum_post_options', -1);
-				dE('forum_link_options', 1);
-				dE('forum_rules_options', -1);
-				dE('forum_cat_options', -1);
+				phpbb.toggleDisplay('forum_post_options', -1);
+				phpbb.toggleDisplay('forum_link_options', 1);
+				phpbb.toggleDisplay('forum_rules_options', -1);
+				phpbb.toggleDisplay('forum_cat_options', -1);
 			}
 			else if (value == {FORUM_CAT})
 			{
-				dE('forum_post_options', -1);
-				dE('forum_link_options', -1);
-				dE('forum_rules_options', 1);
-				dE('forum_cat_options', 1);
+				phpbb.toggleDisplay('forum_post_options', -1);
+				phpbb.toggleDisplay('forum_link_options', -1);
+				phpbb.toggleDisplay('forum_rules_options', 1);
+				phpbb.toggleDisplay('forum_cat_options', 1);
 			}
 		}
 
@@ -64,30 +64,30 @@
 		{
 			<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_POST -->
 				<!-- IF S_FORUM_POST -->
-					dE('type_actions', -1);
+					phpbb.toggleDisplay('type_actions', -1);
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 
 			<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_CAT and S_HAS_SUBFORUMS -->
 				<!-- IF S_FORUM_CAT -->
-					dE('cat_to_link_actions', -1);
+					phpbb.toggleDisplay('cat_to_link_actions', -1);
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 
 			<!-- IF not S_FORUM_POST -->
-				dE('forum_post_options', -1);
+				phpbb.toggleDisplay('forum_post_options', -1);
 			<!-- ENDIF -->
 
 			<!-- IF not S_FORUM_CAT -->
-				dE('forum_cat_options', -1);
+				phpbb.toggleDisplay('forum_cat_options', -1);
 			<!-- ENDIF -->
 
 			<!-- IF not S_FORUM_LINK -->
-				dE('forum_link_options', -1);
+				phpbb.toggleDisplay('forum_link_options', -1);
 			<!-- ENDIF -->
 
 			<!-- IF S_FORUM_LINK -->
-			dE('forum_rules_options', -1);
+			phpbb.toggleDisplay('forum_rules_options', -1);
 			<!-- ENDIF -->
 		}
 

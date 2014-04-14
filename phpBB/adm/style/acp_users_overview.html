@@ -86,11 +86,11 @@
 		{
 			if (option != 'banuser' && option != 'banemail' && option != 'banip')
 			{
-				dE('reasons', -1);
+				phpbb.toggleDisplay('reasons', -1);
 				return;
 			}
 
-			dE('reasons', 1);
+			phpbb.toggleDisplay('reasons', 1);
 
 			element = document.getElementById('user_quick_tools').ban_reason;
 

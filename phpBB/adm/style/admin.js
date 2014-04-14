@@ -242,5 +242,9 @@ function parse_document(container)
 		});
 
 		parse_document($('body'));
+
+		// Hide configlist and success message in send statistics page
+		phpbb.toggleDisplay('configlist', -1);
+		phpbb.toggleDisplay('questionnaire-thanks', -1);
 	});
 })(jQuery);
