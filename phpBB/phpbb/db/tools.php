@@ -1846,15 +1846,46 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				// We need the data here
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
+
 				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
 
+				// Drop any indexes
+				$recreate_indexes = array();
 				if (!empty($indexes))
 				{
-					trigger_error("Column '$column_name' on table '$table_name' is still part of an index and can not be removed: " . implode(', ', array_keys($indexes)), E_USER_ERROR);
+					foreach ($indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_index_drop($table_name, $index_name);
+						$statements = array_merge($statements, $result);
+						if (sizeof($index_data) > 1)
+						{
+							// Remove this column from the index and recreate it
+							$recreate_indexes[$index_name] = array_diff($index_data, array($column_name));
+						}
+					}
 				}
 
-				$statements = $this->mssql_drop_default_constraints($table_name, $column_name);
+				// Drop default value constraint
+				$result = $this->mssql_drop_default_constraints($table_name, $column_name);
+				$statements = array_merge($statements, $result);
+
+				// Remove the column
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
+
+				if (!empty($recreate_indexes))
+				{
+					// Recreate indexes after we removed the column
+					foreach ($recreate_indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_create_index($table_name, $index_name, $index_data);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				$this->return_statements = $old_return_statements;
 			break;
 
 			case 'mysql_40':
