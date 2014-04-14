@@ -1,6 +1,6 @@
 
 <!-- BEGIN forumrow -->
-	<!-- IF (forumrow.S_IS_CAT and not forumrow.S_FIRST_ROW) or forumrow.S_NO_CAT  -->
+	<!-- IF (forumrow.S_IS_CAT and not forumrow.S_FIRST_ROW) or forumrow.S_NO_CAT -->
 			</ul>
 
 			</div>
@@ -74,7 +74,6 @@
 						<!-- ENDIF -->
 						<!-- IF forumrow.FORUM_PRIVATE -->{L_PRIVATE_FORUM_FORUM}<br />&nbsp;
 						<!-- ELSEIF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn>
-						<!-- ENDIF --> 
 						<!-- IF forumrow.S_DISPLAY_SUBJECT -->
 							<!-- EVENT forumlist_body_last_post_title_prepend -->
 							<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
