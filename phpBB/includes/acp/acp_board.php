@@ -930,21 +930,13 @@ class acp_board
 		
 		$style = false;
 
-		$sql_array = array(
-			'SELECT' => 'u.user_style',
-			'FROM' => array(
-				USERS_TABLE => 'u',
-				),
-			'WHERE' =>  'u.user_id = ' . ANONYMOUS,
-		);
-
-		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$sql = 'SELECT u.user_style 
+			FROM ' . USERS_TABLE . ' u 
+			WHERE u.user_id = ' . ANONYMOUS;
 		$result = $db->sql_query_limit($sql, 1);
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$style = (isset($row['user_style'])) ? $row['user_style'] : false;
-		}
+		$style = (int) $db->sql_fetchfield('user_style');
+		$db->sql_freeresult($result);
 
 		return $style;
 	}
@@ -961,8 +953,8 @@ class acp_board
 		);
 
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-		WHERE user_id = ' . ANONYMOUS;
+			SET user_style = ' . $style_id . '
+			WHERE user_id = ' . ANONYMOUS;
 		$db->sql_query($sql);
 	}
 
