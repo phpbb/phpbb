@@ -102,6 +102,7 @@ Zeta test event in all',
 				),
 				array(),
 				'event_loop[0[subloop:0]]',
+				'Event files are missing opened parent loops: PHPBB3-12382',
 			),
 		);
 	}
@@ -109,8 +110,13 @@ Zeta test event in all',
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_event($desc, $dataset, $style_names, $file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_event($desc, $dataset, $style_names, $file, array $vars, array $block_vars, array $destroy, $expected, $incomplete_message = '')
 	{
+		if ($incomplete_message)
+		{
+			$this->markTestIncomplete($incomplete_message);
+		}
+
 		// Reset the engine state
 		$this->setup_engine_for_events($dataset, $style_names);
 
