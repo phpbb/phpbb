@@ -1570,10 +1570,11 @@ $page_data = array(
 * @var	array	post_data	Post data of the post to create, edit, etc.
 * @var	array	page_data	Posting page data that should be passed to the
 *				posting page via $template->assign_vars()
+* @var	object	message_parser	The message parser object
 * @since 3.1-A1
 * @changed 3.1.0-b3 Introduced variables passed to listener
 */
-$vars = array('post_id', 'topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error', 's_hidden_fields', 'post_data', 'page_data');
+$vars = array('post_id', 'topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error', 's_hidden_fields', 'post_data', 'page_data', 'message_parser');
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
 
 // Start assigning vars for main posting page ...
