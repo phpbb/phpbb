@@ -471,18 +471,11 @@ else
 $highlight_match = $highlight = '';
 if ($hilit_words)
 {
-	foreach (explode(' ', trim($hilit_words)) as $word)
-	{
-		if (trim($word))
-		{
-			$word = phpbb_clean_search_string($word);
-			$word = str_replace('\*', '\w+?', preg_quote($word, '#'));
-			$word = preg_replace('#(^|\s)\\\\w\*\?(\s|$)#', '$1\w+?$2', $word);
-			$highlight_match .= (($highlight_match != '' && $word != '') ? '|' : '') . $word;
-		}
-	}
-
-	$highlight = urlencode($hilit_words);
+	$highlight_match = phpbb_clean_search_string($hilit_words);
+	$highlight = urlencode($highlight_match);
+	$highlight_match = str_replace('\*', '\w+?', preg_quote($highlight_match, '#'));
+	$highlight_match = preg_replace('#(?<=^|\s)\\\\w\*\?(?=\s|$)#', '\w+?', $highlight_match);
+	$highlight_match = str_replace(' ', '|', $highlight_match);
 }
 
 // Make sure $start is set to the last page if it exceeds the amount
