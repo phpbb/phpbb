@@ -1473,8 +1473,8 @@ $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_up
 add_form_key('posting');
 
 
-// Start assigning vars for main posting page ...
-$template->assign_vars(array(
+// Build array of variables for main posting page
+$page_data = array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
 	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
@@ -1542,15 +1542,42 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 	'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 	'S_IN_POSTING'			=> true,
-));
+);
 
 /**
 * This event allows you to modify template variables for the posting screen
 *
 * @event core.posting_modify_template_vars
+* @var	int	post_id		ID of the post
+* @var	int	topic_id	ID of the topic
+* @var	int	forum_id	ID of the forum
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*				viewtopic or viewforum depending on if the user
+*				is posting a new topic or editing a post)
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been sumitted
+*				post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*				form submission.
+*				NOTE: Should be actual language strings, NOT
+*				language keys.
+* @var	array	s_hidden_fields	Hidden fields of posting form
+* @var	array	post_data	Post data of the post to create, edit, etc.
+* @var	array	page_data	Posting page data that should be passed to the
+*				posting page via $template->assign_vars()
 * @since 3.1-A1
+* @changed 3.1.0-b3 Introduced variables passed to listener
 */
-$phpbb_dispatcher->dispatch('core.posting_modify_template_vars');
+$vars = array('post_id', 'topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error', 's_hidden_fields', 'post_data', 'page_data');
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
+
+// Start assigning vars for main posting page ...
+$template->assign_vars($page_data);
 
 // Build custom bbcodes array
 display_custom_bbcodes();
