@@ -1242,7 +1242,7 @@ fieldset.display-options {
 	border: none;
 	background-color: transparent;
 	text-align: center;
-	font-size: 0.75em;
+	font-size: 0.85em;
 }
 
 fieldset.display-options select, fieldset.display-options input, fieldset.display-options label {
