@@ -226,6 +226,21 @@ class phpbb_path_helper_test extends phpbb_test_case
 				true,
 				array('base' => 'https://phpbb.com/community/viewtopic.php', 'params' => array('t' => '5', 'f' => '6')),
 			),
+			array(
+				'test.php?topic=post=5&amp;f=3',
+				true,
+				array('base' => 'test.php', 'params' => array('topic' => 'post=5', 'f' => '3')),
+			),
+			array(
+				'mcp.php?&amp;t=4&amp;f=3',
+				true,
+				array('base' => 'mcp.php', 'params' => array('t' => '4', 'f' => '3')),
+			),
+			array(
+				'mcp.php?=4&amp;f=3',
+				true,
+				array('base' => 'mcp.php', 'params' => array('f' => '3')),
+			),
 		);
 	}
 

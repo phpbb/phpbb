@@ -254,16 +254,18 @@ class path_helper
 
 			foreach ($args as $argument)
 			{
-				$arguments = explode('=', $argument);
-				$key = $arguments[0];
-				unset($arguments[0]);
+				if (empty($argument))
+				{
+					continue;
+				}
+				list($key, $value) = explode('=', $argument, 2);
 
 				if ($key === '')
 				{
 					continue;
 				}
 
-				$params[$key] = $arguments[1];
+				$params[$key] = $value;
 			}
 		}
 		else
