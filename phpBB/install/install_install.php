@@ -1662,6 +1662,18 @@ class install_install extends module
 				$db->sql_freeresult($result);
 
 				$_module->move_module_by($row, 'move_down', 4);
+
+				// Move notification options module 4 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'ucp_notifications'
+						AND module_class = 'ucp'
+						AND module_mode = 'notification_options'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 4);
 			}
 
 			// And now for the special ones
