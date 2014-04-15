@@ -520,18 +520,44 @@ else
 	$sql_start = $start;
 }
 
+$topics_from_others_filter = '';
 if ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary))
 {
+	if (!$auth->acl_get('f_read_other', $forum_id))
+	{
+		$topics_from_others_filter = " AND " . (int) $user->data['user_id'] . " = t.topic_poster";
+	}
 	$sql_where = 't.forum_id = ' . $forum_id;
 }
 else if (empty($active_forum_ary['exclude_forum_id']))
 {
+	$read_other_forums = array_keys($auth->acl_getf('f_read_other', true));
+	if (count($read_other_forums) > 0)
+	{
+		$forum_id_limited_intersect = array_intersect($active_forum_ary['forum_id'], $read_other_forums);
+		if (count($forum_id_limited_intersect) > 0)
+		{
+			$topics_from_others_filter = " AND (" . $db->sql_in_set('t.forum_id', $forum_id_limited_intersect) ."
+				OR " . (int) $user->data['user_id'] . " = t.topic_poster ) ";
+		}
+	}
 	$sql_where = $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id']);
 }
 else
 {
+	$read_other_forums = array_keys($auth->acl_getf('f_read_other', true));
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
 	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+	// If the forum does not use this funcitonality, the intersection is not required.
+	if (count($read_other_forums) > 0)
+	{
+		$forum_id_limited_intersect = array_intersect($get_forum_ids, $read_other_forums);
+		if (count($forum_id_limited_intersect) > 0)
+		{
+			$topics_from_others_filter = " AND (" . $db->sql_in_set('t.forum_id', $forum_id_limited_intersect) ."
+				OR " . (int) $user->data['user_id'] . " = t.topic_poster ) ";
+		}
+	}
 }
 
 // Grab just the sorted topic ids
@@ -540,8 +566,7 @@ $sql = 'SELECT t.topic_id
 	FROM ' . TOPICS_TABLE . " t
 	WHERE $sql_where
 		AND t.topic_type IN (" . POST_NORMAL . ', ' . POST_STICKY . ")
-		AND (" . $db->sql_in_set('t.forum_id', array_keys($auth->acl_getf('f_read_other', true))) ."
-			OR " . (int) $user->data['user_id'] . " = t.topic_poster )
+		$topics_from_others_filter
 		$sql_approved
 		$sql_limit_time
 	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
