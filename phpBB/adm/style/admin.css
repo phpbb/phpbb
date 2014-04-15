@@ -1130,11 +1130,14 @@ input.langvalue, textarea.langvalue {
 }
 
 optgroup, select {
+	background-color: #FAFAFA;
+	border: 1px solid #666666;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.85em;
 	font-weight: normal;
 	font-style: normal;
 	cursor: pointer;
+	padding: 1px;
 	vertical-align: middle;
 	width: auto;
 	color: #000;
