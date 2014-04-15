@@ -12,7 +12,7 @@ namespace phpbb\db\migration\data\v310;
 class topic_sort_username_clean extends \phpbb\db\migration\migration
 {
 	protected $user_array;
-	
+
 	public function effectively_installed()
 	{
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'topics', 'topic_first_poster_name_clean');
@@ -131,4 +131,3 @@ class topic_sort_username_clean extends \phpbb\db\migration\migration
 		}
 	}
 }
-
