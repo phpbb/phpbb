@@ -653,6 +653,18 @@ $template->assign_vars(array(
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
 
+/**
+* Modify topics data before we display the viewforum page
+*
+* @event core.viewforum_modify_topics_data
+* @var	array	topic_list			Array with current viewforum page topic ids
+* @var	array	rowset				Array with topics data (in topic_id => topic_data format)
+* @var	int		total_topic_count	Forum's total topic count
+* @since 3.1.0-b3
+*/
+$vars = array('topic_list', 'rowset', 'total_topic_count');
+extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topics_data', compact($vars)));
+
 // Okay, lets dump out the page ...
 if (sizeof($topic_list))
 {
