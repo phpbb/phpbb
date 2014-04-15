@@ -547,7 +547,6 @@ else
 {
 	$read_other_forums = array_keys($auth->acl_getf('f_read_other', true));
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
-	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
 	// If the forum does not use this funcitonality, the intersection is not required.
 	if (count($read_other_forums) > 0)
 	{
@@ -557,6 +556,14 @@ else
 			$topics_from_others_filter = " AND (" . $db->sql_in_set('t.forum_id', $forum_id_limited_intersect) ."
 				OR " . (int) $user->data['user_id'] . " = t.topic_poster ) ";
 		}
+	}
+	if (sizeof($get_forum_ids))
+	{
+		$sql_where = $db->sql_in_set('t.forum_id', $get_forum_ids);
+	}
+	else
+	{
+		$sql_where = 't.forum_id = ' . $forum_id;
 	}
 }
 
