@@ -2097,11 +2097,11 @@
                 "MTEXT",
                 ""
             ],
-            "pf_phpbb_icq": [
+            "pf_phpbb_location": [
                 "VCHAR",
                 ""
             ],
-            "pf_phpbb_location": [
+            "pf_phpbb_icq": [
                 "VCHAR",
                 ""
             ],
