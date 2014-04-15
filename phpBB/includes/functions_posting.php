@@ -1315,7 +1315,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		break;
 
 		case 'delete_first_post':
-			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.user_colour
+			$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.username_clean, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
@@ -1328,7 +1328,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			if (!$row)
 			{
 				// No approved post, so the first is a not-approved post (unapproved or soft deleted)
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.user_colour
+				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.username_clean, u.user_colour
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 					WHERE p.topic_id = $topic_id
 						AND p.poster_id = u.user_id
@@ -1341,11 +1341,12 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			$next_post_id = (int) $row['post_id'];
 
 			$sql_data[TOPICS_TABLE] = $db->sql_build_array('UPDATE', array(
-				'topic_poster'				=> (int) $row['poster_id'],
-				'topic_first_post_id'		=> (int) $row['post_id'],
-				'topic_first_poster_colour'	=> $row['user_colour'],
-				'topic_first_poster_name'	=> ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'],
-				'topic_time'				=> (int) $row['post_time'],
+				'topic_poster'					=> (int) $row['poster_id'],
+				'topic_first_post_id'			=> (int) $row['post_id'],
+				'topic_first_poster_colour'		=> $row['user_colour'],
+				'topic_first_poster_name'		=> ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'],
+				'topic_first_poster_name_clean'	=> ($row['poster_id'] == ANONYMOUS) ? utf8_clean_string($row['post_username']) : $row['username_clean'],
+				'topic_time'					=> (int) $row['post_time'],
 			));
 		break;
 
@@ -1694,22 +1695,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		case 'post':
 			$sql_data[TOPICS_TABLE]['sql'] = array(
-				'topic_poster'				=> (int) $user->data['user_id'],
-				'topic_time'				=> $current_time,
-				'topic_last_view_time'		=> $current_time,
-				'forum_id'					=> $data['forum_id'],
-				'icon_id'					=> $data['icon_id'],
-				'topic_posts_approved'		=> ($post_visibility == ITEM_APPROVED) ? 1 : 0,
-				'topic_posts_softdeleted'	=> ($post_visibility == ITEM_DELETED) ? 1 : 0,
-				'topic_posts_unapproved'	=> ($post_visibility == ITEM_UNAPPROVED) ? 1 : 0,
-				'topic_visibility'			=> $post_visibility,
-				'topic_delete_user'			=> ($post_visibility != ITEM_APPROVED) ? (int) $user->data['user_id'] : 0,
-				'topic_title'				=> $subject,
-				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
-				'topic_first_poster_colour'	=> $user->data['user_colour'],
-				'topic_type'				=> $topic_type,
-				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : 0,
+				'topic_poster'					=> (int) $user->data['user_id'],
+				'topic_time'					=> $current_time,
+				'topic_last_view_time'			=> $current_time,
+				'forum_id'						=> $data['forum_id'],
+				'icon_id'						=> $data['icon_id'],
+				'topic_posts_approved'			=> ($post_visibility == ITEM_APPROVED) ? 1 : 0,
+				'topic_posts_softdeleted'		=> ($post_visibility == ITEM_DELETED) ? 1 : 0,
+				'topic_posts_unapproved'		=> ($post_visibility == ITEM_UNAPPROVED) ? 1 : 0,
+				'topic_visibility'				=> $post_visibility,
+				'topic_delete_user'				=> ($post_visibility != ITEM_APPROVED) ? (int) $user->data['user_id'] : 0,
+				'topic_title'					=> $subject,
+				'topic_first_poster_name'		=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
+				'topic_first_poster_name_clean'	=> (!$user->data['is_registered'] && $username) ? utf8_clean_string($username) : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username_clean'] : utf8_clean_string($user->lang['GUEST'])),
+				'topic_first_poster_colour'		=> $user->data['user_colour'],
+				'topic_type'					=> $topic_type,
+				'topic_time_limit'				=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
+				'topic_attachment'				=> (!empty($data['attachment_data'])) ? 1 : 0,
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1797,20 +1799,21 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 
 			$sql_data[TOPICS_TABLE]['sql'] = array(
-				'forum_id'					=> $data['forum_id'],
-				'icon_id'					=> $data['icon_id'],
-				'topic_title'				=> $subject,
-				'topic_first_poster_name'	=> $username,
-				'topic_type'				=> $topic_type,
-				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'poll_title'				=> (isset($poll['poll_options'])) ? $poll['poll_title'] : '',
-				'poll_start'				=> (isset($poll['poll_options'])) ? $poll_start : 0,
-				'poll_max_options'			=> (isset($poll['poll_options'])) ? $poll['poll_max_options'] : 1,
-				'poll_length'				=> (isset($poll['poll_options'])) ? $poll_length : 0,
-				'poll_vote_change'			=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
-				'topic_last_view_time'		=> $current_time,
+				'forum_id'						=> $data['forum_id'],
+				'icon_id'						=> $data['icon_id'],
+				'topic_title'					=> $subject,
+				'topic_first_poster_name'		=> $username,
+				'topic_first_poster_name_clean'	=> utf8_clean_string($username),
+				'topic_type'					=> $topic_type,
+				'topic_time_limit'				=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
+				'poll_title'					=> (isset($poll['poll_options'])) ? $poll['poll_title'] : '',
+				'poll_start'					=> (isset($poll['poll_options'])) ? $poll_start : 0,
+				'poll_max_options'				=> (isset($poll['poll_options'])) ? $poll['poll_max_options'] : 1,
+				'poll_length'					=> (isset($poll['poll_options'])) ? $poll_length : 0,
+				'poll_vote_change'				=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
+				'topic_last_view_time'			=> $current_time,
 
-				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
+				'topic_attachment'				=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
 
 		break;

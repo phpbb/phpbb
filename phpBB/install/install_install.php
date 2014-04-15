@@ -1350,7 +1350,9 @@ class install_install extends module
 				WHERE forum_last_poster_name = 'Admin'",
 
 			'UPDATE ' . $data['table_prefix'] . "topics
-				SET topic_first_poster_name = '" . $db->sql_escape($data['admin_name']) . "', topic_last_poster_name = '" . $db->sql_escape($data['admin_name']) . "'
+				SET topic_first_poster_name = '" . $db->sql_escape($data['admin_name']) . "', 
+				    topic_first_poster_name_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "', 
+					topic_last_poster_name = '" . $db->sql_escape($data['admin_name']) . "'
 				WHERE topic_first_poster_name = 'Admin'
 					OR topic_last_poster_name = 'Admin'",
 

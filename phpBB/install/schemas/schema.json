@@ -2763,6 +2763,10 @@
                 "BOOL",
                 0
             ],
+            "topic_first_poster_name_clean": [
+                "VCHAR_UNI:255",
+                ""
+            ],
             "topic_visibility": [
                 "TINT:3",
                 0
