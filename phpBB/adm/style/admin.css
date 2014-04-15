@@ -1670,6 +1670,7 @@ input.button1:focus, input.button2:focus {
 /* Pagination
 ---------------------------------------- */
 .pagination {
+	font-size: .85em;
 	height: 1%; /* IE tweak (holly hack) */
 	width: auto;
 	text-align: right;
