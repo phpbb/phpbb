@@ -1290,7 +1290,8 @@ class parse_message extends bbcode_firstpass
 			$return_message = &$this->message;
 		}
 
-		($custom_bbcode_uid) ? decode_message($this->message, $custom_bbcode_uid) : decode_message($this->message, $this->bbcode_uid);
+		$uid = $custom_bbcode_uid ?: $this->bbcode_uid;
+		generate_text_for_edit($this->message, $uid, 0);
 
 		if (!$update_this_message)
 		{
