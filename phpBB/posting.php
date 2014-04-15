@@ -52,7 +52,7 @@ $current_time = time();
 
 /**
 * This event allows you to alter the above parameters, such as submit and mode
-* 
+*
 * Note: $refresh must be true to retain previously submitted form data.
 *
 * Note: The template class will not work properly until $user->setup() is
@@ -74,7 +74,7 @@ $current_time = time();
 *							viewtopic or viewforum depending on if the user
 *							is posting a new topic or editing a post)
 * @var	bool	refresh		Whether or not to retain previously submitted data
-* @var	string	mode		What action to take if the form has been sumitted
+* @var	string	mode		What action to take if the form has been submitted
 *							post|reply|quote|edit|delete|bump|smilies|popup
 * @var	array	error		Any error strings; a non-empty array aborts
 *							form submission.
@@ -1548,9 +1548,21 @@ $template->assign_vars(array(
 * This event allows you to modify template variables for the posting screen
 *
 * @event core.posting_modify_template_vars
+* @var	array	post_data		Array with post data
+* @var	array	moderators		Array with forum moderators
+* @var	string	mode			What action to take if the form is submitted
+*								post|reply|quote|edit|delete|bump|smilies|popup
+* @var	string	page_title		Title of the mode page
+* @var	bool	s_topic_icons	Whether or not to show the topic icons
+* @var	string	form_enctype	If attachments are allowed for this form the value of
+*								this is "multipart/form-data" else it is the empty string
+* @var	string	s_action		The URL to submit the POST data to
+* @var	string	s_hidden_fields The concatenated input tags of the form's hidden fields
 * @since 3.1-A1
+* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title, s_topic_icons, form_enctype, s_action, s_hidden_fields
 */
-$phpbb_dispatcher->dispatch('core.posting_modify_template_vars');
+$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype', 's_action', 's_hidden_fields');
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
 
 // Build custom bbcodes array
 display_custom_bbcodes();
