@@ -574,9 +574,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
-	$hilit = implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')', '&quot;'), ' ', $keywords))));
-	// Do not allow *only* wildcard being used for hilight
-	$hilit = (strspn($hilit, '*') === strlen($hilit)) ? '' : $hilit;
+	// A single wildcard will make the search results look ugly
+	$hilit = phpbb_clean_search_string(str_replace(array('+', '-', '|', '(', ')', '&quot;'), ' ', $keywords));
+	$hilit = str_replace(' ', '|', $hilit);
 
 	$u_hilit = urlencode(htmlspecialchars_decode(str_replace('|', ' ', $hilit)));
 	$u_show_results = '&amp;sr=' . $show_results;
@@ -840,7 +840,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$hilit_array = array_filter(explode('|', $hilit), 'strlen');
 			foreach ($hilit_array as $key => $value)
 			{
-				$hilit_array[$key] = str_replace('\*', '\w*?', preg_quote($value, '#'));
+				$hilit_array[$key] = phpbb_clean_search_string($value);
+				$hilit_array[$key] = str_replace('\*', '\w*?', preg_quote($hilit_array[$key], '#'));
 				$hilit_array[$key] = preg_replace('#(^|\s)\\\\w\*\?(\s|$)#', '$1\w+?$2', $hilit_array[$key]);
 			}
 			$hilit = implode('|', $hilit_array);
