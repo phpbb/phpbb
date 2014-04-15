@@ -1694,19 +1694,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	switch ($post_mode)
 	{
 		case 'post':
-			$topic_first_poster = '';
-			$topic_first_poster_clean = '';
-			if (!$user->data['is_registered'] && $username)
-			{
-				$topic_first_poster = $username;
-				$topic_first_poster_clean = utf8_clean_string($username);
-			}
-			else
-			{
-				$topic_first_poster = ($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '';
-				$topic_first_poster_clean = $user->data['user_id'] != ANONYMOUS ? $user->data['username_clean'] : utf8_clean_string($user->lang['GUEST']);
-			}
-			
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'topic_poster'					=> (int) $user->data['user_id'],
 				'topic_time'					=> $current_time,
@@ -1719,9 +1706,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_visibility'				=> $post_visibility,
 				'topic_delete_user'				=> ($post_visibility != ITEM_APPROVED) ? (int) $user->data['user_id'] : 0,
 				'topic_title'					=> $subject,
-				'topic_first_poster_name'		=> $topic_first_poster,
-				'topic_first_poster_name_clean'	=> $topic_first_poster_clean,
-				//(!$user->data['is_registered'] && $username) ? utf8_clean_string($username) : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username_clean'] : utf8_clean_string($user->lang['GUEST'])),
+				'topic_first_poster_name'		=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
+				'topic_first_poster_name_clean'	=> (!$user->data['is_registered'] && $username) ? utf8_clean_string($username) : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username_clean'] : utf8_clean_string($user->lang['GUEST'])),
 				'topic_first_poster_colour'		=> $user->data['user_colour'],
 				'topic_type'					=> $topic_type,
 				'topic_time_limit'				=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
