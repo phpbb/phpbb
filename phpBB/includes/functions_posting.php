@@ -1696,7 +1696,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'post':
 			$topic_first_poster = '';
 			$topic_first_poster_clean = '';
-			if (!$user->data['is_registred'] && $username)
+			if (!$user->data['is_registered'] && $username)
 			{
 				$topic_first_poster = $username;
 				$topic_first_poster_clean = utf8_clean_string($username);
