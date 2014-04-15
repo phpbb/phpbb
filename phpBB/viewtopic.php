@@ -1668,15 +1668,18 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	int		start				Start item of this page
 	* @var	int		current_row_number	Number of the post on this page
 	* @var	int		end					Number of posts on this page
+	* @var	int		total_posts			Total posts count
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
 	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
+	* @var	array	topic_data			Array with topic data
 	* @since 3.1-A1
 	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
+	* @change 3.1.0-b3 Added topic_data array, total_posts
 	*/
-	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
+	$vars = array('start', 'current_row_number', 'end', 'total_posts', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row', 'topic_data');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
 
 	$i = $current_row_number;
