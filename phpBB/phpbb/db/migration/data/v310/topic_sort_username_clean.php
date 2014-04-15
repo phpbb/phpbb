@@ -131,3 +131,4 @@ class topic_sort_username_clean extends \phpbb\db\migration\migration
 		}
 	}
 }
+
