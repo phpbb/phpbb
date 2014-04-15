@@ -40,6 +40,9 @@ class ucp_register
 		$submit			= $request->is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
+		$register_mode	= $this->get_register_mode();
+		$auth_provider	= 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
+		$auth_provider	= $phpbb_container->get($auth_provider);
 
 		if ($agreed)
 		{
@@ -79,7 +82,9 @@ class ucp_register
 		$cp = $phpbb_container->get('profilefields.manager');
 
 		$error = $cp_data = $cp_error = array();
-		$s_hidden_fields = array();
+		$s_hidden_fields = array(
+			'register_mode'	=> $register_mode,
+		);
 
 		// Handle login_link data added to $_hidden_fields
 		$login_link_data = $this->get_login_link_data_array();
@@ -87,9 +92,6 @@ class ucp_register
 		if (!empty($login_link_data))
 		{
 			// Confirm that we have all necessary data
-			$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
-			$auth_provider = $phpbb_container->get($auth_provider);
-
 			$result = $auth_provider->login_link_has_necessary_data($login_link_data);
 			if ($result !== null)
 			{
@@ -171,6 +173,23 @@ class ucp_register
 			unset($lang_row);
 
 			$this->tpl_name = 'ucp_agreement';
+			return;
+		}
+
+		if ($config['coppa_enable'])
+		{
+			$s_hidden_fields['coppa'] = $coppa;
+		}
+
+		// Ask user if they wish to register with an external account or create a board account
+		$auth_provider_data = $auth_provider->get_register_data();
+		if (empty($login_link_data) && !empty($auth_provider_data) && $register_mode === '')
+		{
+			$template->assign_vars(array(
+				'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
+				'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			));
+			$this->tpl_name = 'ucp_register_mode_select';
 			return;
 		}
 
@@ -415,11 +434,6 @@ class ucp_register
 			'change_lang'	=> 0,
 		));
 
-		if ($config['coppa_enable'])
-		{
-			$s_hidden_fields['coppa'] = $coppa;
-		}
-
 		if ($config['enable_confirm'])
 		{
 			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
@@ -525,5 +539,29 @@ class ucp_register
 		}
 
 		return $new_data;
+	}
+
+	/**
+	 * This method determines the requested register mode (if any) and then
+	 * returns it.
+	 * @return	string	The register mode that the user has requested or empty
+	 *					string.
+	 */
+	protected function get_register_mode()
+	{
+		global $request;
+
+		$mode = $request->variable('request_mode', '');
+
+		if (!$mode && $request->is_set_post('submit_board'))
+		{
+			$mode = 'board';
+		}
+		else if (!$mode && $request->is_set_post('submit_external'))
+		{
+			$mode = 'external';
+		}
+
+		return $mode;
 	}
 }

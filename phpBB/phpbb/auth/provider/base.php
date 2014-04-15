@@ -103,4 +103,12 @@ abstract class base implements \phpbb\auth\provider\provider_interface
 	{
 		return;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_register_data()
+	{
+		return;
+	}
 }
