@@ -143,8 +143,7 @@
 		<!-- END custom_fields -->
 		<!-- EVENT viewtopic_body_postrow_custom_fields_after -->
 
-		<!-- IF not S_IS_BOT and (postrow.U_PM or postrow.U_EMAIL or postrow.U_JABBER) -->
-			<!-- DEFINE $CNT = 0 -->
+		<!-- IF not S_IS_BOT and .postrow.contact -->
 			<dd class="profile-contact">
 				<strong>{L_CONTACT_USER}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
@@ -152,36 +151,19 @@
 					<div class="dropdown hidden">
 						<div class="pointer"><div class="pointer-inner"></div></div>
 						<div class="dropdown-contents contact-icons">
-							<div>
-								<!-- IF postrow.U_PM -->
-									<!-- DEFINE $CNT = definition.CNT + 1 -->
-									<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
-									<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="{postrow.U_PM}" title="{L_PRIVATE_MESSAGE}"><span class="contact-icon pm-icon"></span></a>
-									<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
+							<!-- BEGIN contact -->
+								{% set REMAINDER = postrow.contact.S_ROW_COUNT % 4 %}
+								<!-- DEFINE $S_LAST_CELL = ((REMAINDER eq 3) or (postrow.contact.S_LAST_ROW and postrow.contact.S_NUM_ROWS < 4)) -->
+								<!-- IF REMAINDER eq 0 -->
+									<div>
 								<!-- ENDIF -->
-								<!-- IF postrow.U_EMAIL -->
-									<!-- DEFINE $CNT = definition.CNT + 1 -->
-									<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
-									<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="{postrow.U_EMAIL}" title="{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}"><span class="contact-icon email-icon"></span></a>
-									<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
+									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 550, 320); return false;"<!-- ENDIF -->>
+										<span class="contact-icon {postrow.contact.ID}-icon"></span>
+									</a>
+								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
+									</div>
 								<!-- ENDIF -->
-								<!-- IF postrow.U_JABBER -->
-									<!-- DEFINE $CNT = definition.CNT + 1 -->
-									<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
-									<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="{postrow.U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span class="contact-icon jabber-icon"></span></a>
-									<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
-								<!-- ENDIF -->
-								<!-- BEGIN custom_fields -->
-									<!-- IF postrow.custom_fields.S_PROFILE_CONTACT -->
-										<!-- DEFINE $CNT = definition.CNT + 1 -->
-										<!-- IF $CNT % 4 == 1 --><div><!-- ENDIF -->
-										<a <!-- IF $CNT % 4 == 0 -->class="last-cell" <!-- ENDIF -->href="<!-- IF postrow.custom_fields.PROFILE_FIELD_CONTACT -->{postrow.custom_fields.PROFILE_FIELD_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.custom_fields.PROFILE_FIELD_NAME}">
-											<span class="contact-icon {postrow.custom_fields.PROFILE_FIELD_IDENT}-icon"></span>
-										</a>
-										<!-- IF $CNT % 4 == 0 --></div><!-- ENDIF -->
-									<!-- ENDIF -->
-								<!-- END custom_fields -->
-							<!-- IF $CNT % 4 != 0 --></div><!-- ENDIF -->
+							<!-- END contact -->
 						</div>
 					</div>
 				</div>
