@@ -892,7 +892,7 @@ class tools
 			}
 		}
 
-		// Add unqiue indexes?
+		// Add unique indexes?
 		if (!empty($schema_changes['add_unique_index']))
 		{
 			foreach ($schema_changes['add_unique_index'] as $table => $index_array)
@@ -1303,7 +1303,7 @@ class tools
 	}
 
 	/**
-	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
+	* Check if a specified index exists in table. Does not return PRIMARY KEY indexes.
 	*
 	* @param string	$table_name		Table to check the index at
 	* @param string	$index_name		The index name to check
