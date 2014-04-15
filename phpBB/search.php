@@ -1002,11 +1002,43 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* Modify the topic data before it is assigned to the template
 			*
 			* @event core.search_modify_tpl_ary
-			* @var	array	row			Array with topic data
-			* @var	array	tpl_ary		Template block array with topic data
+			* @var	array	row				Array with topic data
+			* @var	array	tpl_ary			Template block array with topic data
+			* @var	string	show_results	Display topics or posts
+			* @var	string	topic_title		Cleaned topic title
+			* @var	int		replies			The number of topic replies
+			* @var	string	view_topic_url	The URL to the topic
+			* @var	string	folder_img		The folder image of the topic
+			* @var	string	folder_alt		The alt attribute of the topic folder img
+			* @var	int		topic_type		The topic type
+			* @var	int		unread_topic	Whether the topic has unread posts
+			* @var	int		topic_unapproved	Whether the topic is unapproved
+			* @var	int		posts_unapproved	The number of unapproved posts
+			* @var	int		topic_deleted	Whether the topic has been deleted
+			* @var	string	u_mcp_queue		The URL to the corresponding MCP queue page
+			* @var	array	zebra			The zebra data of the current user
+			* @var	array	attachments		All the attachments of the search results
 			* @since 3.1.0-a1
+			* @changed 3.1.0-b3 Added many vars
 			*/
-			$vars = array('row', 'tpl_ary');
+			$vars = array(
+				'row',
+				'tpl_ary',
+				'show_results',
+				'topic_title',
+				'replies',
+				'view_topic_url',
+				'folder_img',
+				'folder_alt',
+				'topic_type',
+				'unread_topic',
+				'topic_unapproved',
+				'posts_unapproved',
+				'topic_deleted',
+				'u_mcp_queue',
+				'zebra',
+				'attachments'
+			);
 			extract($phpbb_dispatcher->trigger_event('core.search_modify_tpl_ary', compact($vars)));
 
 			$template->assign_block_vars('searchresults', $tpl_ary);
