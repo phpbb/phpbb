@@ -271,7 +271,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		array(
 			'ID'		=> 'pm',
 			'NAME'		=> $user->lang['PRIVATE_MESSAGE'],
-			'U_CONTACT' => append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id)
+			'U_CONTACT' => $u_pm,
 		),
 		array(
 			'ID'		=> 'email',
