@@ -275,6 +275,22 @@ overall_footer_page_body_after
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-body, but before the footer
 
+overall_footer_timezone_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add new List-Elements to the navbar in the page footer, before Timezone
+
+overall_footer_timezone_append
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add new List-Elements to the navbar in the page footer, after "The Team"
+
 overall_header_body_before
 ===
 * Locations:
