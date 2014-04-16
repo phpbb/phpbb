@@ -433,9 +433,8 @@ class post extends \phpbb\notification\type\base
 
 		$serialized_data = serialize($this->get_data(false));
 
-		// If the data is longer then 4000 characters, it would cause a SQL error
-		// so we just don't add the username to the list, when this would be the
-		// case.
+		// If the data is longer then 4000 characters, it would cause a SQL error.
+		// We don't add the username to the list if this is the case.
 		if (utf8_strlen($serialized_data) >= 4000)
 		{
 			return array();
