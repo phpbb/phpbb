@@ -1588,6 +1588,9 @@ $vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 
 $vars += array('topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'error', 'page_data', 'message_parser');
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
 
+// Start assigning vars for main posting page ...
+$template->assign_vars($page_data);
+
 // Build custom bbcodes array
 display_custom_bbcodes();
 
