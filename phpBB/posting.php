@@ -52,7 +52,7 @@ $current_time = time();
 
 /**
 * This event allows you to alter the above parameters, such as submit and mode
-* 
+*
 * Note: $refresh must be true to retain previously submitted form data.
 *
 * Note: The template class will not work properly until $user->setup() is
@@ -74,7 +74,7 @@ $current_time = time();
 *							viewtopic or viewforum depending on if the user
 *							is posting a new topic or editing a post)
 * @var	bool	refresh		Whether or not to retain previously submitted data
-* @var	string	mode		What action to take if the form has been sumitted
+* @var	string	mode		What action to take if the form has been submitted
 *							post|reply|quote|edit|delete|bump|smilies|popup
 * @var	array	error		Any error strings; a non-empty array aborts
 *							form submission.
@@ -1548,6 +1548,16 @@ $page_data = array(
 * This event allows you to modify template variables for the posting screen
 *
 * @event core.posting_modify_template_vars
+* @var	array	post_data	Array with post data
+* @var	array	moderators	Array with forum moderators
+* @var	string	mode		What action to take if the form is submitted
+*				post|reply|quote|edit|delete|bump|smilies|popup
+* @var	string	page_title	Title of the mode page
+* @var	bool	s_topic_icons	Whether or not to show the topic icons
+* @var	string	form_enctype	If attachments are allowed for this form
+*				"multipart/form-data" or empty string
+* @var	string	s_action	The URL to submit the POST data to
+* @var	string	s_hidden_fields	Concatenated hidden input tags of posting form
 * @var	int	post_id		ID of the post
 * @var	int	topic_id	ID of the topic
 * @var	int	forum_id	ID of the forum
@@ -1559,26 +1569,24 @@ $page_data = array(
 * @var	bool	cancel		Whether or not to cancel the form (returns to
 *				viewtopic or viewforum depending on if the user
 *				is posting a new topic or editing a post)
-* @var	bool	refresh		Whether or not to retain previously submitted data
-* @var	string	mode		What action to take if the form has been sumitted
-*				post|reply|quote|edit|delete|bump|smilies|popup
 * @var	array	error		Any error strings; a non-empty array aborts
 *				form submission.
 *				NOTE: Should be actual language strings, NOT
 *				language keys.
-* @var	array	s_hidden_fields	Hidden fields of posting form
-* @var	array	post_data	Post data of the post to create, edit, etc.
+* @var	bool	refresh		Whether or not to retain previously submitted data
 * @var	array	page_data	Posting page data that should be passed to the
 *				posting page via $template->assign_vars()
 * @var	object	message_parser	The message parser object
 * @since 3.1-A1
-* @changed 3.1.0-b3 Introduced variables passed to listener
+* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
+*		s_topic_icons, form_enctype, s_action, s_hidden_fields
+* @change 3.1.0-b3 Added vars post_id, topic_id, forum_id, submit, preview,
+*		save, load, delete, cancel, refresh, error, page_data,
+*		message_parser
 */
-$vars = array('post_id', 'topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error', 's_hidden_fields', 'post_data', 'page_data', 'message_parser');
+$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype', 's_action', 's_hidden_fields', 'post_id');
+$vars += array('topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'error', 'page_data', 'message_parser');
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
-
-// Start assigning vars for main posting page ...
-$template->assign_vars($page_data);
 
 // Build custom bbcodes array
 display_custom_bbcodes();
