@@ -14,7 +14,7 @@ namespace phpbb\feed;
 *
 * @package phpBB3
 */
-abstract class topic_base extends \phpbb\feed\base
+abstract class topic_base extends \phpbb\feed\attachments_base
 {
 	var $num_items = 'feed_limit_topic';
 

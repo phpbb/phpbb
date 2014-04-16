@@ -83,6 +83,8 @@ class topic extends \phpbb\feed\post_base
 
 			unset($forum_ids_passworded);
 		}
+
+		$this->fetch_attachments();
 	}
 
 	function get_sql()
