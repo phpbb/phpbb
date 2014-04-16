@@ -14,6 +14,7 @@ class phpbb_database_test_connection_manager
 {
 	private $config;
 	private $dbms;
+	/** @var PDO */
 	private $pdo;
 
 	/**
@@ -363,9 +364,21 @@ class phpbb_database_test_connection_manager
 				$table_name,
 				$table_data
 			);
+
 			foreach ($queries as $query)
 			{
-				$this->pdo->exec($query);
+				if ($query === 'begin')
+				{
+					$this->pdo->beginTransaction();
+				}
+				else if ($query === 'commit')
+				{
+					$this->pdo->commit();
+				}
+				else
+				{
+					$this->pdo->exec($query);
+				}
 			}
 		}
 	}
