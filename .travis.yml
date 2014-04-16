@@ -40,3 +40,5 @@ matrix:
       env: DB=mariadb
     - php: 5.4
       env: DB=postgres
+  allow_failures:
+    - php: hhvm
