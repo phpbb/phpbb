@@ -73,9 +73,6 @@ if ($feed === false)
 	trigger_error('NO_FEED');
 }
 
-// Get attachments for this feed
-$feed->fetch_attachments();
-
 // Open Feed
 $feed->open();
 
@@ -111,7 +108,15 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text($phpbb_feed_helper->generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : array()))),
+		'description'	=> censor_text(
+			$phpbb_feed_helper->generate_content(
+				$row[$feed->get('text')],
+				$row[$feed->get('bbcode_uid')],
+				$row[$feed->get('bitfield')],
+				$options, $row['forum_id'],
+				((isset($row['post_attachment']) && $row['post_attachment']) ? $feed->attachments[$row['post_id']] : array())
+			)
+		),
 		'statistics'	=> '',
 	);
 

@@ -19,6 +19,12 @@ abstract class post_base extends \phpbb\feed\base
 	var $num_items = 'feed_limit_post';
 	var $attachments = array();
 
+	function open()
+	{
+		// Get attachments for this feed
+		$this->fetch_attachments();
+	}
+
 	function set_keys()
 	{
 		$this->set('title',		'post_subject');
