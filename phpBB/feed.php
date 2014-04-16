@@ -71,9 +71,6 @@ if ($feed === false)
 	trigger_error('NO_FEED');
 }
 
-// Get attachments for this feed
-$feed->fetch_attachments();
-
 // Open Feed
 $feed->open();
 
@@ -109,7 +106,7 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : array()))),
+		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], ((isset($row['post_attachment']) && $row['post_attachment']) ? $feed->get_attachment($row['post_id']) : array()))),
 		'statistics'	=> '',
 	);
 
@@ -674,46 +671,17 @@ class phpbb_feed_base
 }
 
 /**
-* Abstract class for post based feeds
-*
-* @package phpBB3
-*/
-class phpbb_feed_post_base extends phpbb_feed_base
+ * abstract class for feeds displaying attachments
+ *
+ * @package phpBB3
+ */
+class phpbb_feed_attachments_base extends phpbb_feed_base
 {
-	var $num_items = 'feed_limit_post';
 	var $attachments = array();
 
-	function set_keys()
+	function open()
 	{
-		$this->set('title',		'post_subject');
-		$this->set('title2',	'topic_title');
-
-		$this->set('author_id',	'user_id');
-		$this->set('creator',	'username');
-		$this->set('published',	'post_time');
-		$this->set('updated',	'post_edit_time');
-		$this->set('text',		'post_text');
-
-		$this->set('bitfield',	'bbcode_bitfield');
-		$this->set('bbcode_uid','bbcode_uid');
-
-		$this->set('enable_bbcode',		'enable_bbcode');
-		$this->set('enable_smilies',	'enable_smilies');
-		$this->set('enable_magic_url',	'enable_magic_url');
-	}
-
-	function adjust_item(&$item_row, &$row)
-	{
-		global $phpEx, $config, $user;
-
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
-
-		if ($config['feed_item_statistics'])
-		{
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
-				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
-		}
+		$this->fetch_attachments();
 	}
 
 	function fetch_attachments()
@@ -754,6 +722,54 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		}
 		$db->sql_freeresult($result);
 	}
+
+	function get_attachment($post_id)
+	{
+		return $this->attachments[$post_id];
+	}
+}
+
+/**
+* Abstract class for post based feeds
+*
+* @package phpBB3
+*/
+class phpbb_feed_post_base extends phpbb_feed_attachments_base
+{
+	var $num_items = 'feed_limit_post';
+
+	function set_keys()
+	{
+		$this->set('title',		'post_subject');
+		$this->set('title2',	'topic_title');
+
+		$this->set('author_id',	'user_id');
+		$this->set('creator',	'username');
+		$this->set('published',	'post_time');
+		$this->set('updated',	'post_edit_time');
+		$this->set('text',		'post_text');
+
+		$this->set('bitfield',	'bbcode_bitfield');
+		$this->set('bbcode_uid','bbcode_uid');
+
+		$this->set('enable_bbcode',		'enable_bbcode');
+		$this->set('enable_smilies',	'enable_smilies');
+		$this->set('enable_magic_url',	'enable_magic_url');
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		global $phpEx, $config, $user;
+
+		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
+
+		if ($config['feed_item_statistics'])
+		{
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('published')])
+				. (($this->is_moderator_approve_forum($row['forum_id']) && !$row['post_approved']) ? ' ' . $this->separator_stats . ' ' . $user->lang['POST_UNAPPROVED'] : '');
+		}
+	}
 }
 
 /**
@@ -761,7 +777,7 @@ class phpbb_feed_post_base extends phpbb_feed_base
 *
 * @package phpBB3
 */
-class phpbb_feed_topic_base extends phpbb_feed_base
+class phpbb_feed_topic_base extends phpbb_feed_attachments_base
 {
 	var $num_items = 'feed_limit_topic';
 
@@ -954,6 +970,8 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 
 			unset($forum_ids_passworded);
 		}
+
+		$this->fetch_attachments();
 	}
 
 	function get_sql()
@@ -1146,6 +1164,8 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 				unset($forum_ids_passworded);
 			}
 		}
+
+		$this->fetch_attachments();
 	}
 
 	function get_sql()
