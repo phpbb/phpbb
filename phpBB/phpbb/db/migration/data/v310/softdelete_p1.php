@@ -149,6 +149,15 @@ class softdelete_p1 extends \phpbb\db\migration\migration
 		$limit = 10;
 		$converted_forums = 0;
 
+		if (!$start)
+		{
+			// Preserve the forum_posts value for link forums as it represents redirects.
+			$sql = 'UPDATE ' . $this->table_prefix . 'forums
+				SET forum_posts_approved = forum_posts
+				WHERE forum_type = ' . FORUM_LINK;
+			$this->db->sql_query($sql);
+		}
+
 		$sql = 'SELECT forum_id, topic_visibility, COUNT(topic_id) AS sum_topics, SUM(topic_posts_approved) AS sum_posts_approved, SUM(topic_posts_unapproved) AS sum_posts_unapproved
 			FROM ' . $this->table_prefix . 'topics
 			GROUP BY forum_id, topic_visibility
