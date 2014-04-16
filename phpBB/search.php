@@ -108,7 +108,7 @@ if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'activ
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
 		$template->assign_var('S_NO_SEARCH', true);
-		trigger_error('NO_SEARCH_TIME');
+		trigger_error($user->lang('NO_SEARCH_TIME', (int) ($user->data['user_last_search'] + $interval - time())));
 	}
 }
 
