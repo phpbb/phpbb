@@ -46,7 +46,7 @@ abstract class post_base extends \phpbb\feed\attachments_base
 		{
 			$item_row['statistics'] = $this->user->lang['POSTED'] . ' ' . $this->user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $this->user->format_date($row[$this->get('published')])
-				. (($this->is_moderator_approve_forum($row['forum_id']) && $row['post_visibility'] !== ITEM_APPROVED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POST_UNAPPROVED'] : '');
+				. (($this->is_moderator_approve_forum($row['forum_id']) && (int)$row['post_visibility'] !== ITEM_APPROVED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POST_UNAPPROVED'] : '');
 		}
 	}
 }
