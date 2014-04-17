@@ -1,0 +1,9 @@
+<?php
+
+/**
+* Description
+*
+* @event default.dispatch
+* @since 3.1.0-b2
+*/
+$phpbb_dispatcher->dispatch('default.dispatch');

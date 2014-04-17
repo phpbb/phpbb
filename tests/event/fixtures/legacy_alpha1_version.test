@@ -1,0 +1,9 @@
+<?php
+
+/**
+* Description
+*
+* @event legacy_alpha1_version.dispatch
+* @since 3.1-A1
+*/
+$phpbb_dispatcher->dispatch('legacy_alpha1_version.dispatch');
