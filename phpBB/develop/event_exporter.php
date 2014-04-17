@@ -117,31 +117,10 @@ class event_exporter
 					$event_line = $i;
 					$event_name = $this->get_trigger_event_name($file, $lines[$event_line]);
 
-					// Find $vars array
+					// Find variables of the event
 					$arguments = $this->get_vars_from_array($file, $event_name, $lines, $event_line);
-
-					// Validate $vars array with @var
-					$find_vars_line = 3;
-					$doc_vars = array();
-					while (strpos(trim($lines[$event_line - $find_vars_line]), '*') === 0)
-					{
-						$var_line = trim($lines[$event_line - $find_vars_line]);
-						$var_line = preg_replace('!\s+!', ' ', $var_line);
-						if (strpos($var_line, '* @var ') === 0)
-						{
-							$doc_line = explode(' ', $var_line);
-							if (isset($doc_line[3]))
-							{
-								$doc_vars[] = $doc_line[3];
-							}
-						}
-						$find_vars_line++;
-					}
-
-					if (sizeof($arguments) !== sizeof($doc_vars) && array_intersect($arguments, $doc_vars))
-					{
-						throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
-					}
+					$doc_vars = $this->get_vars_from_docblock($file, $event_name, $lines, $event_line);
+					$this->validate_vars_docblock_array($file, $event_name, $arguments, $doc_vars);
 				}
 				else
 				{
@@ -277,7 +256,71 @@ class event_exporter
 			}
 		}
 
+		sort($vars_array);
 		return $vars_array;
+	}
+
+	/**
+	* Find the $vars array
+	*
+	* @param string $file
+	* @param string $event_name
+	* @param array $lines
+	* @param int $event_line		Index of the event call in $lines
+	* @return array		List of variables
+	*/
+	public function get_vars_from_docblock($file, $event_name, $lines, $event_line)
+	{
+		$doc_vars = array();
+		$current_doc_line = 1;
+		$found_comment_end = false;
+		while (ltrim($lines[$event_line - $current_doc_line], "\t") !== '/**')
+		{
+			if (ltrim($lines[$event_line - $current_doc_line], "\t") === '*/')
+			{
+				$found_comment_end = true;
+			}
+
+			if ($found_comment_end)
+			{
+				$var_line = trim($lines[$event_line - $current_doc_line]);
+				$var_line = preg_replace('!\s+!', ' ', $var_line);
+				if (strpos($var_line, '* @var ') === 0)
+				{
+					$doc_line = explode(' ', $var_line, 5);
+					if (sizeof($doc_line) !== 5)
+					{
+						throw new LogicException('Found invalid line "' . $lines[$event_line - $current_doc_line]
+							. '" for event "' . $event_name . '" in file "' . $file . '"', 1);
+					}
+					$doc_vars[] = $doc_line[3];
+				}
+			}
+
+			$current_doc_line++;
+			if ($current_doc_line > $event_line)
+			{
+				// Reached the start of the file
+				throw new LogicException('Can not find end of docblock for event "' . $event_name . '" in file "' . $file . '"', 2);
+			}
+		}
+
+		if (empty($doc_vars))
+		{
+			// Reached the start of the file
+			throw new LogicException('Can not find @var lines for event "' . $event_name . '" in file "' . $file . '"', 3);
+		}
+
+		foreach ($doc_vars as $var)
+		{
+			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
+			{
+				throw new LogicException('Found invalid @var "' . $var . '" in docblock for event "' . $event_name . '" in file "' . $file . '"', 4);
+			}
+		}
+
+		sort($doc_vars);
+		return $doc_vars;
 	}
 
 	/**
@@ -441,6 +484,27 @@ class event_exporter
 		}
 
 		return $event;
+	}
+
+	/**
+	* Validates that two arrays contain the same strings
+	*
+	* @param string $file
+	* @param string $event_name
+	* @param array $vars_array		Variables found in the array line
+	* @param array $vars_docblock	Variables found in the doc block
+	* @return null
+	*/
+	public function validate_vars_docblock_array($file, $event_name, $vars_array, $vars_docblock)
+	{
+		$vars_array = array_unique($vars_array);
+		$vars_docblock = array_unique($vars_docblock);
+		$sizeof_vars_array = sizeof($vars_array);
+
+		if ($sizeof_vars_array !== sizeof($vars_docblock) || $sizeof_vars_array !== sizeof(array_intersect($vars_array, $vars_docblock)))
+		{
+			throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
+		}
 	}
 
 	/**
