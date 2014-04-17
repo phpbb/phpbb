@@ -105,45 +105,26 @@ class event_exporter
 		$events = array();
 		$content = file_get_contents($this->root_path . $file);
 
-		if (strpos($content, "phpbb_dispatcher->trigger_event('") || strpos($content, "phpbb_dispatcher->dispatch('"))
+		if (strpos($content, "dispatcher->trigger_event('") || strpos($content, "dispatcher->dispatch('"))
 		{
 			$lines = explode("\n", $content);
 			for ($i = 0, $num_lines = sizeof($lines); $i < $num_lines; $i++)
 			{
 				$event_line = 0;
-				$found_trigger_event = strpos($lines[$i], "phpbb_dispatcher->trigger_event('");
+				$found_trigger_event = strpos($lines[$i], "dispatcher->trigger_event('");
 				if ($found_trigger_event !== false)
 				{
 					$event_line = $i;
-					$event_name = $lines[$event_line];
-					$event_name = substr($event_name, $found_trigger_event + strlen("phpbb_dispatcher->trigger_event('"));
-					$event_name = substr($event_name, 0, strpos($event_name, "'"));
+					$event_name = $this->get_trigger_event_name($file, $lines[$event_line]);
 
-					$current_line = trim($lines[$event_line]);
-					$arguments = array();
-					$found_inline_array = strpos($current_line, "', compact(array('");
-					if ($found_inline_array !== false)
+					// Find $vars array lines
+					$vars_line = ltrim($lines[$event_line - 1], "\t");
+					if (strpos($vars_line, "\$vars = array('") !== 0)
 					{
-						$varsarray = substr($current_line, $found_inline_array + strlen("', compact(array('"), -6);
-						$arguments = explode("', '", $varsarray);
+						throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
 					}
-
-					if (empty($arguments))
-					{
-						// Find $vars array lines
-						$find_varsarray_line = 1;
-						while (strpos($lines[$event_line - $find_varsarray_line], "\$vars = array('") === false)
-						{
-							$find_varsarray_line++;
-
-							if ($find_varsarray_line > min(50, $event_line))
-							{
-								throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
-							}
-						}
-						$varsarray = substr(trim($lines[$event_line - $find_varsarray_line]), strlen("\$vars = array('"), -3);
-						$arguments = explode("', '", $varsarray);
-					}
+					$varsarray = substr($vars_line, strlen("\$vars = array('"), 0 - strlen('\');'));
+					$arguments = explode("', '", $varsarray);
 
 					// Validate $vars array with @var
 					$find_vars_line = 3;
@@ -167,14 +148,16 @@ class event_exporter
 						throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
 					}
 				}
-				$found_dispatch = strpos($lines[$i], "phpbb_dispatcher->dispatch('");
-				if ($found_dispatch !== false)
+
+				if (!$event_line)
 				{
-					$event_line = $i;
-					$event_name = $lines[$event_line];
-					$event_name = substr($event_name, $found_dispatch + strlen("phpbb_dispatcher->dispatch('"));
-					$event_name = substr($event_name, 0, strpos($event_name, "'"));
-					$arguments = array();
+					$found_dispatch = strpos($lines[$i], "dispatcher->dispatch('");
+					if ($found_dispatch !== false)
+					{
+						$event_line = $i;
+						$event_name = $this->get_dispatch_name($file, $lines[$event_line]);
+						$arguments = array();
+					}
 				}
 
 				if ($event_line)
@@ -203,6 +186,68 @@ class event_exporter
 		}
 
 		return $events;
+	}
+
+	/**
+	* Find the name of the event inside the dispatch() line
+	*
+	* @param string $file
+	* @param string $event_line
+	* @return int Absolute line number
+	*/
+	public function get_dispatch_name($file, $event_line)
+	{
+		$event_line = ltrim($event_line, "\t");
+
+		$regex = '#\$([a-z](?:[a-z0-9_]|->)*)';
+		$regex .= '->dispatch\(';
+		$regex .= '\'' . $this->preg_match_event_name() . '\'';
+		$regex .= '\);#';
+
+		$match = array();
+		preg_match($regex, $event_line, $match);
+		if (!isset($match[2]))
+		{
+			throw new LogicException('Can not find event name in line "' . $event_line . '" in file "' . $file . '"', 1);
+		}
+
+		return $match[2];
+	}
+
+	/**
+	* Find the name of the event inside the trigger_event() line
+	*
+	* @param string $file
+	* @param string $event_line
+	* @return int Absolute line number
+	*/
+	public function get_trigger_event_name($file, $event_line)
+	{
+		$event_line = ltrim($event_line, "\t");
+
+		$regex = '#extract\(\$([a-z](?:[a-z0-9_]|->)*)';
+		$regex .= '->trigger_event\(';
+		$regex .= '\'' . $this->preg_match_event_name() . '\'';
+		$regex .= ', compact\(\$vars\)\)\);#';
+
+		$match = array();
+		preg_match($regex, $event_line, $match);
+		if (!isset($match[2]))
+		{
+			throw new LogicException('Can not find event name in line "' . $event_line . '" in file "' . $file . '"', 1);
+		}
+
+		return $match[2];
+	}
+
+	/**
+	* Find the name of the event inside the trigger_event() line
+	*
+	* @return string Returns a regex match for the event name
+	*/
+	protected function preg_match_event_name()
+	{
+		return '([a-z][a-z0-9_]*(?:\.[a-z][a-z0-9_]*)+)';
 	}
 
 	/**
