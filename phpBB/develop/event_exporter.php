@@ -110,21 +110,15 @@ class event_exporter
 			$lines = explode("\n", $content);
 			for ($i = 0, $num_lines = sizeof($lines); $i < $num_lines; $i++)
 			{
-				$event_line = 0;
+				$event_line = false;
 				$found_trigger_event = strpos($lines[$i], "dispatcher->trigger_event('");
 				if ($found_trigger_event !== false)
 				{
 					$event_line = $i;
 					$event_name = $this->get_trigger_event_name($file, $lines[$event_line]);
 
-					// Find $vars array lines
-					$vars_line = ltrim($lines[$event_line - 1], "\t");
-					if (strpos($vars_line, "\$vars = array('") !== 0)
-					{
-						throw new LogicException('Can not find "$vars = array()"-line for event "' . $event_name . '" in file "' . $file . '"');
-					}
-					$varsarray = substr($vars_line, strlen("\$vars = array('"), 0 - strlen('\');'));
-					$arguments = explode("', '", $varsarray);
+					// Find $vars array
+					$arguments = $this->get_vars_from_array($file, $event_name, $lines, $event_line);
 
 					// Validate $vars array with @var
 					$find_vars_line = 3;
@@ -143,13 +137,13 @@ class event_exporter
 						}
 						$find_vars_line++;
 					}
+
 					if (sizeof($arguments) !== sizeof($doc_vars) && array_intersect($arguments, $doc_vars))
 					{
 						throw new LogicException('$vars array does not match the list of @var tags for event "' . $event_name . '" in file "' . $file . '"');
 					}
 				}
-
-				if (!$event_line)
+				else
 				{
 					$found_dispatch = strpos($lines[$i], "dispatcher->dispatch('");
 					if ($found_dispatch !== false)
@@ -251,11 +245,47 @@ class event_exporter
 	}
 
 	/**
+	* Find the $vars array
+	*
+	* @param string $file
+	* @param string $event_name
+	* @param array $lines
+	* @param int $event_line		Index of the event call in $lines
+	* @return array		List of variables
+	*/
+	public function get_vars_from_array($file, $event_name, $lines, $event_line)
+	{
+		$vars_line = ltrim($lines[$event_line - 1], "\t");
+		if (strpos($vars_line, "\$vars = array('") !== 0 || substr($vars_line, -3) !== '\');')
+		{
+			throw new LogicException('Can not find "$vars = array();"-line for event "' . $event_name . '" in file "' . $file . '"', 1);
+		}
+
+		$vars_array = substr($vars_line, strlen("\$vars = array('"), 0 - strlen('\');'));
+		if ($vars_array === '')
+		{
+			throw new LogicException('Found empty $vars array for event "' . $event_name . '" in file "' . $file . '"', 2);
+		}
+
+		$vars_array = explode("', '", $vars_array);
+
+		foreach ($vars_array as $var)
+		{
+			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
+			{
+				throw new LogicException('Found invalid var "' . $var . '" in array for event "' . $event_name . '" in file "' . $file . '"', 3);
+			}
+		}
+
+		return $vars_array;
+	}
+
+	/**
 	* Find the "@since" Information line
 	*
 	* @param string $file
 	* @param string $event_name
-	* @param string $lines
+	* @param array $lines
 	* @param int $event_line		Index of the event call in $lines
 	* @return int Absolute line number
 	*/
@@ -269,7 +299,7 @@ class event_exporter
 	*
 	* @param string $file
 	* @param string $event_name
-	* @param string $lines
+	* @param array $lines
 	* @param int $event_line		Index of the event call in $lines
 	* @return int Absolute line number
 	*/
@@ -283,7 +313,7 @@ class event_exporter
 	*
 	* @param string $file
 	* @param string $event_name
-	* @param string $lines
+	* @param array $lines
 	* @param int $event_line		Index of the event call in $lines
 	* @param string $find_tag		Name of the tag we are trying to find
 	* @param array $disallowed_tags		List of tags that must not appear between
@@ -332,7 +362,7 @@ class event_exporter
 	*
 	* @param string $file
 	* @param string $event_name
-	* @param string $lines
+	* @param array $lines
 	* @param int $event_line		Index of the event call in $lines
 	* @return int Absolute line number
 	*/
