@@ -2345,7 +2345,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	string		url						The "Return to topic" URL
 	* @var	array		data					Array of post data about the
 	*											submitted post
-	* @since 3.1-A3
+	* @since 3.1.0-a3
 	*/
 	$vars = array('url', 'data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_end', compact($vars)));
