@@ -1497,7 +1497,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	bool	update_search_index	Flag indicating if the search index will be updated
 	* @since 3.1.0-a4
 	*/
-	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact(array('mode', 'subject', 'username', 'topic_type', 'poll', 'data', 'update_message', 'update_search_index'))));
+	$vars = array('mode', 'subject', 'username', 'topic_type', 'poll', 'data', 'update_message', 'update_search_index');
+	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact($vars)));
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')

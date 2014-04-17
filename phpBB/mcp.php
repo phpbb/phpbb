@@ -197,7 +197,8 @@ if ($quickmod)
 			* @var	bool	is_valid_action	Flag indicating if the action was handled properly
 			* @since 3.1.0-a4
 			*/
-			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact(array('module', 'action', 'is_valid_action'))));
+			$vars = array('module', 'action', 'is_valid_action');
+			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact($vars)));
 
 			if (!$is_valid_action)
 			{
