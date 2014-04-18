@@ -1078,7 +1078,7 @@ form > p.post-notice strong {
 
 .dropdown-extended .footer {
 	text-align: center;
-	font-size: 1.2em;
+	font-size: 1.1em;
 }
 
 .dropdown-extended ul li a, .notification_list dt > a, .dropdown-extended .footer > a {
@@ -1096,6 +1096,7 @@ form > p.post-notice strong {
 
 .notification_list ul li p {
 	margin: 0;
+	font-size: 1em;
 }
 
 .notification_list div.notifications {
