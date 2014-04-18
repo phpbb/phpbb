@@ -3,7 +3,7 @@
 	/**
 	* Event after the post data has been assigned to the template
 	*
-	* @event core.trigger
+	* @event duplicate.trigger
 	* @var	int		start				Start item of this page
 	* @var	int		current_row_number	Number of the post on this page
 	* @var	int		end					Number of posts on this page
@@ -11,7 +11,16 @@
 	* @var	array	cp_row				Custom profile field data of the poster
 	* @var	array	attachments			List of attachments
 	* @var	array	user_poster_data	Poster's data from user cache
+	* @var	array	post_row			Template block array of the post
 	* @since 3.1.0-a3
 	*/
 	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row', 'attachments', 'user_poster_data', 'post_row');
-	extract($phpbb_dispatcher->trigger_event('core.trigger', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('duplicate.trigger', compact($vars)));
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event duplicate.trigger
+	* @since 3.1.0-b1
+	*/
+	$phpbb_dispatcher->dispatch('duplicate.trigger');
