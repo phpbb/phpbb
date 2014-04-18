@@ -13,7 +13,7 @@ if (php_sapi_name() != 'cli')
 
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 $phpbb_root_path = __DIR__ . '/../';
-require __DIR__ . '/event_exporter.' . $phpEx;
+require __DIR__ . '/../phpbb/event/exporter.' . $phpEx;
 
 function usage()
 {
@@ -41,7 +41,7 @@ function validate_argument_count($arguments, $count)
 validate_argument_count($argc, 1);
 
 $action = $argv[1];
-$exporter = new \event_exporter($phpbb_root_path);
+$exporter = new \phpbb\event\exporter($phpbb_root_path);
 
 switch ($action)
 {

@@ -7,8 +7,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/develop/event_exporter.php';
-
 class phpbb_event_exporter_test extends phpbb_test_case
 {
 	/** @var \event_exporter */
@@ -17,7 +15,7 @@ class phpbb_event_exporter_test extends phpbb_test_case
 	public function setUp()
 	{
 		parent::setUp();
-		$this->exporter = new \event_exporter(dirname(__FILE__) . '/fixtures/');
+		$this->exporter = new \phpbb\event\exporter(dirname(__FILE__) . '/fixtures/');
 	}
 
 	static public function crawl_php_file_data()
@@ -669,7 +667,7 @@ class phpbb_event_exporter_test extends phpbb_test_case
 	public function test_crawl_phpbb_directory_php()
 	{
 		global $phpbb_root_path;
-		$exporter = new \event_exporter($phpbb_root_path);
+		$exporter = new \phpbb\event\exporter($phpbb_root_path);
 		$this->assertGreaterThan(0, $exporter->crawl_phpbb_directory_php());
 	}
 }

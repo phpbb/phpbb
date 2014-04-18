@@ -7,7 +7,9 @@
 *
 */
 
-class event_exporter
+namespace phpbb\event;
+
+class exporter
 {
 	/** @var string */
 	protected $root_path;
@@ -146,7 +148,7 @@ class event_exporter
 		{
 			$iterator = new \DirectoryIterator($dir);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return array();
 		}
@@ -213,7 +215,7 @@ class event_exporter
 
 	/**
 	* @param $file
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function crawl_php_file($file)
 	{
@@ -228,6 +230,7 @@ class event_exporter
 			{
 				$event_line = false;
 				$found_trigger_event = strpos($this->file_lines[$i], "dispatcher->trigger_event('");
+				$arguments = array();
 				if ($found_trigger_event !== false)
 				{
 					$event_line = $i;
@@ -245,7 +248,6 @@ class event_exporter
 					{
 						$event_line = $i;
 						$this->set_current_event($this->get_dispatch_name($this->file_lines[$event_line]), $event_line);
-						$arguments = array();
 					}
 				}
 
@@ -265,7 +267,7 @@ class event_exporter
 
 					if (isset($this->events['php'][$this->current_event]))
 					{
-						throw new LogicException('The event "' . $this->current_event . '" from file "' . $this->current_file
+						throw new \LogicException('The event "' . $this->current_event . '" from file "' . $this->current_file
 							. '" already exists in file "'. $this->events['php'][$this->current_event]['file'] . '"', 10);
 					}
 
@@ -286,7 +288,7 @@ class event_exporter
 	*
 	* @param string $event_line
 	* @return int Absolute line number
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function get_dispatch_name($event_line)
 	{
@@ -301,7 +303,7 @@ class event_exporter
 		preg_match($regex, $event_line, $match);
 		if (!isset($match[2]))
 		{
-			throw new LogicException('Can not find event name in line "' . $event_line . '" in file "' . $this->current_file . '"', 1);
+			throw new \LogicException('Can not find event name in line "' . $event_line . '" in file "' . $this->current_file . '"', 1);
 		}
 
 		return $match[2];
@@ -312,7 +314,7 @@ class event_exporter
 	*
 	* @param string $event_line
 	* @return int Absolute line number
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function get_trigger_event_name($event_line)
 	{
@@ -327,7 +329,7 @@ class event_exporter
 		preg_match($regex, $event_line, $match);
 		if (!isset($match[2]))
 		{
-			throw new LogicException('Can not find event name in line "' . $event_line . '" in file "' . $this->current_file . '"', 1);
+			throw new \LogicException('Can not find event name in line "' . $event_line . '" in file "' . $this->current_file . '"', 1);
 		}
 
 		return $match[2];
@@ -347,20 +349,20 @@ class event_exporter
 	* Find the $vars array
 	*
 	* @return array		List of variables
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function get_vars_from_array()
 	{
 		$vars_line = ltrim($this->file_lines[$this->current_event_line - 1], "\t");
 		if (strpos($vars_line, "\$vars = array('") !== 0 || substr($vars_line, -3) !== '\');')
 		{
-			throw new LogicException('Can not find "$vars = array();"-line for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
+			throw new \LogicException('Can not find "$vars = array();"-line for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
 		}
 
 		$vars_array = substr($vars_line, strlen("\$vars = array('"), 0 - strlen('\');'));
 		if ($vars_array === '')
 		{
-			throw new LogicException('Found empty $vars array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+			throw new \LogicException('Found empty $vars array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
 		}
 
 		$vars_array = explode("', '", $vars_array);
@@ -369,7 +371,7 @@ class event_exporter
 		{
 			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
 			{
-				throw new LogicException('Found invalid var "' . $var . '" in array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
+				throw new \LogicException('Found invalid var "' . $var . '" in array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
 			}
 		}
 
@@ -381,7 +383,7 @@ class event_exporter
 	* Find the $vars array
 	*
 	* @return array		List of variables
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function get_vars_from_docblock()
 	{
@@ -404,7 +406,7 @@ class event_exporter
 					$doc_line = explode(' ', $var_line, 5);
 					if (sizeof($doc_line) !== 5)
 					{
-						throw new LogicException('Found invalid line "' . $this->file_lines[$this->current_event_line - $current_doc_line]
+						throw new \LogicException('Found invalid line "' . $this->file_lines[$this->current_event_line - $current_doc_line]
 							. '" for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
 					}
 					$doc_vars[] = $doc_line[3];
@@ -415,21 +417,21 @@ class event_exporter
 			if ($current_doc_line > $this->current_event_line)
 			{
 				// Reached the start of the file
-				throw new LogicException('Can not find end of docblock for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+				throw new \LogicException('Can not find end of docblock for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
 			}
 		}
 
 		if (empty($doc_vars))
 		{
 			// Reached the start of the file
-			throw new LogicException('Can not find @var lines for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
+			throw new \LogicException('Can not find @var lines for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
 		}
 
 		foreach ($doc_vars as $var)
 		{
 			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
 			{
-				throw new LogicException('Found invalid @var "' . $var . '" in docblock for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 4);
+				throw new \LogicException('Found invalid @var "' . $var . '" in docblock for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 4);
 			}
 		}
 
@@ -441,7 +443,7 @@ class event_exporter
 	* Find the "@since" Information line
 	*
 	* @return int Absolute line number
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function find_since()
 	{
@@ -465,7 +467,7 @@ class event_exporter
 	* @param array $disallowed_tags		List of tags that must not appear between
 	*									the tag and the actual event
 	* @return int Absolute line number
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function find_tag($find_tag, $disallowed_tags)
 	{
@@ -476,7 +478,7 @@ class event_exporter
 			if ($found_comment_end && ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t") === '/**')
 			{
 				// Reached the start of this doc block
-				throw new LogicException('Can not find @' . $find_tag . ' information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
+				throw new \LogicException('Can not find @' . $find_tag . ' information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
 			}
 
 			foreach ($disallowed_tags as $disallowed_tag)
@@ -484,7 +486,7 @@ class event_exporter
 				if ($found_comment_end && strpos(ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t"), '* @' . $disallowed_tag) === 0)
 				{
 					// Found @var after the @since
-					throw new LogicException('Found @' . $disallowed_tag . ' information after @' . $find_tag . ' for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
+					throw new \LogicException('Found @' . $disallowed_tag . ' information after @' . $find_tag . ' for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
 				}
 			}
 
@@ -497,7 +499,7 @@ class event_exporter
 			if ($find_tag_line >= $this->current_event_line)
 			{
 				// Reached the start of the file
-				throw new LogicException('Can not find @' . $find_tag . ' information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+				throw new \LogicException('Can not find @' . $find_tag . ' information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
 			}
 		}
 
@@ -508,7 +510,7 @@ class event_exporter
 	* Find a "@*" Information line
 	*
 	* @return int Absolute line number
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function find_description()
 	{
@@ -519,7 +521,7 @@ class event_exporter
 			if ($find_desc_line > $this->current_event_line)
 			{
 				// Reached the start of the file
-				throw new LogicException('Can not find a description for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
+				throw new \LogicException('Can not find a description for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
 			}
 		}
 
@@ -529,7 +531,7 @@ class event_exporter
 		if (strpos($desc, '* @') === 0 || $desc[0] !== '*' || substr($desc, 1) == '')
 		{
 			// First line of the doc block is a @-line, empty or only contains "*"
-			throw new LogicException('Can not find a description for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+			throw new \LogicException('Can not find a description for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
 		}
 
 		return $find_desc_line;
@@ -540,7 +542,7 @@ class event_exporter
 	*
 	* @param string $line
 	* @return string
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function validate_since($line)
 	{
@@ -548,14 +550,14 @@ class event_exporter
 
 		if ($since !== trim($since))
 		{
-			throw new LogicException('Invalid @since information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
+			throw new \LogicException('Invalid @since information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
 		}
 
 		$since = ($since === '3.1-A1') ? '3.1.0-a1' : $since;
 
 		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?$#', $since))
 		{
-			throw new LogicException('Invalid @since information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+			throw new \LogicException('Invalid @since information for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
 		}
 
 		return $since;
@@ -567,7 +569,7 @@ class event_exporter
 	* @param string $event_name
 	* @param string $line
 	* @return string
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function validate_event($event_name, $line)
 	{
@@ -575,12 +577,12 @@ class event_exporter
 
 		if ($event !== trim($event))
 		{
-			throw new LogicException('Invalid @event information for event "' . $event_name . '" in file "' . $this->current_file . '"', 1);
+			throw new \LogicException('Invalid @event information for event "' . $event_name . '" in file "' . $this->current_file . '"', 1);
 		}
 
 		if ($event !== $event_name)
 		{
-			throw new LogicException('Event name does not match @event tag for event "' . $event_name . '" in file "' . $this->current_file . '"', 2);
+			throw new \LogicException('Event name does not match @event tag for event "' . $event_name . '" in file "' . $this->current_file . '"', 2);
 		}
 
 		return $event;
@@ -592,7 +594,7 @@ class event_exporter
 	* @param array $vars_array		Variables found in the array line
 	* @param array $vars_docblock	Variables found in the doc block
 	* @return null
-	* @throws LogicException
+	* @throws \LogicException
 	*/
 	public function validate_vars_docblock_array($vars_array, $vars_docblock)
 	{
@@ -602,7 +604,7 @@ class event_exporter
 
 		if ($sizeof_vars_array !== sizeof($vars_docblock) || $sizeof_vars_array !== sizeof(array_intersect($vars_array, $vars_docblock)))
 		{
-			throw new LogicException('$vars array does not match the list of @var tags for event "' . $this->current_event . '" in file "' . $this->current_file . '"');
+			throw new \LogicException('$vars array does not match the list of @var tags for event "' . $this->current_event . '" in file "' . $this->current_file . '"');
 		}
 	}
 }
