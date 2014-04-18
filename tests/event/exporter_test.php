@@ -20,7 +20,7 @@ class phpbb_event_exporter_test extends phpbb_test_case
 		$this->exporter = new \event_exporter(dirname(__FILE__) . '/fixtures/');
 	}
 
-	static public function check_for_events_data()
+	static public function crawl_php_file_data()
 	{
 		return array(
 			array(
@@ -67,15 +67,17 @@ class phpbb_event_exporter_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider check_for_events_data
+	* @dataProvider crawl_php_file_data
 	*/
-	public function test_check_for_events($file, $expected)
+	public function test_crawl_php_file($file, $expected)
 	{
-		$this->exporter->check_for_events($file);
-		$this->assertEquals($expected, $this->exporter->get_events());
+		$this->exporter->crawl_php_file($file);
+		$events = $this->exporter->get_events();
+		$this->assertArrayHasKey('php', $events);
+		$this->assertEquals($expected, $events['php']);
 	}
 
-	static public function check_for_events_throws_data()
+	static public function crawl_php_file_throws_data()
 	{
 		return array(
 			array('missing_var.test', null),
@@ -84,12 +86,12 @@ class phpbb_event_exporter_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider check_for_events_throws_data
+	* @dataProvider crawl_php_file_throws_data
 	*/
-	public function test_check_for_events_throws($file, $exception_code)
+	public function test_crawl_php_file_throws($file, $exception_code)
 	{
 		$this->setExpectedException('LogicException', '', $exception_code);
-		$this->assertNull($this->exporter->check_for_events($file));
+		$this->exporter->crawl_php_file($file);
 	}
 
 	static public function validate_since_data()
@@ -662,5 +664,12 @@ class phpbb_event_exporter_test extends phpbb_test_case
 		$this->exporter->set_current_event('', $event_line);
 		$this->exporter->set_content($lines);
 		$this->exporter->find_description();
+	}
+
+	public function test_crawl_phpbb_directory_php()
+	{
+		global $phpbb_root_path;
+		$exporter = new \event_exporter($phpbb_root_path);
+		$this->assertGreaterThan(0, $exporter->crawl_phpbb_directory_php());
 	}
 }

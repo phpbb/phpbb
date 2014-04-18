@@ -54,7 +54,8 @@ switch ($action)
 		break;
 
 	case 'php':
-		$exporter->export_from_php();
+		$exporter->crawl_phpbb_directory_php();
+		echo $exporter->export_php_events_for_wiki();
 		break;
 
 	default:

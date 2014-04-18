@@ -34,6 +34,7 @@ class event_exporter
 	{
 		$this->root_path = $phpbb_root_path;
 		$this->events = $this->file_lines = array();
+		$this->events['php'] = array();
 		$this->current_file = $this->current_event = '';
 		$this->current_event_line = 0;
 	}
@@ -97,23 +98,6 @@ class event_exporter
 		}
 	}
 
-	function export_from_php()
-	{
-		$files = $this->get_file_list($this->root_path);
-		$this->events = array();
-		foreach ($files as $file)
-		{
-			$this->check_for_events($file);
-		}
-		ksort($this->events);
-
-		foreach ($this->events as $event)
-		{
-			echo '|- id="' . $event['event'] . '"' . "\n";
-			echo '| [[#' . $event['event'] . '|' . $event['event'] . ']] || ' . $event['file'] . ' || ' . implode(', ', $event['arguments']) . ' || ' . $event['since'] . ' || ' . $event['description'] . "\n";
-		}
-	}
-
 	public function get_events()
 	{
 		return $this->events;
@@ -131,10 +115,107 @@ class event_exporter
 	}
 
 	/**
+	* Crawl the phpBB/ directory for php events
+	* @return int	The number of events found
+	*/
+	public function crawl_phpbb_directory_php()
+	{
+		$files = $this->get_recursive_file_list($this->root_path);
+		$this->events['php'] = array();
+		foreach ($files as $file)
+		{
+			$this->crawl_php_file($file);
+		}
+		ksort($this->events['php']);
+
+		return sizeof($this->events['php']);
+	}
+
+	/**
+	* Returns a list of files in $dir
+	*
+	* Works recursive with any depth
+	*
+	* @param	string	$dir	Directory to go through
+	* @param	string	$path	Path from root to $dir
+	* @return	array	List of files (including directories)
+	*/
+	public function get_recursive_file_list($dir, $path = '')
+	{
+		try
+		{
+			$iterator = new \DirectoryIterator($dir);
+		}
+		catch (Exception $e)
+		{
+			return array();
+		}
+
+		$files = array();
+		foreach ($iterator as $file_info)
+		{
+			/** @var \DirectoryIterator $file_info */
+			if ($file_info->isDot())
+			{
+				continue;
+			}
+
+			// Do not scan some directories
+			if ($file_info->isDir() && (
+					($path == '' && in_array($file_info->getFilename(), array(
+						'cache',
+						'develop',
+						'ext',
+						'files',
+						'language',
+						'store',
+						'vendor',
+					)))
+					|| ($path == '/includes' && in_array($file_info->getFilename(), array('utf')))
+					|| ($path == '/phpbb/db/migration' && in_array($file_info->getFilename(), array('data')))
+					|| ($path == '/phpbb' && in_array($file_info->getFilename(), array('event')))
+				))
+			{
+				continue;
+			}
+			else if ($file_info->isDir())
+			{
+				$sub_dir = $this->get_recursive_file_list($file_info->getPath() . '/' . $file_info->getFilename(), $path . '/' . $file_info->getFilename());
+				foreach ($sub_dir as $file)
+				{
+					$files[] = $file_info->getFilename() . '/' . $file;
+				}
+			}
+			else if ($file_info->getExtension() == 'php')
+			{
+				$files[] = $file_info->getFilename();
+			}
+		}
+
+		return $files;
+	}
+
+	/**
+	* Format the php events as a wiki table
+	* @return string
+	*/
+	public function export_php_events_for_wiki()
+	{
+		$wiki_page = '';
+		foreach ($this->events['php'] as $event)
+		{
+			$wiki_page .= '|- id="' . $event['event'] . '"' . "\n";
+			$wiki_page .= '| [[#' . $event['event'] . '|' . $event['event'] . ']] || ' . $event['file'] . ' || ' . implode(', ', $event['arguments']) . ' || ' . $event['since'] . ' || ' . $event['description'] . "\n";
+		}
+
+		return $wiki_page;
+	}
+
+	/**
 	* @param $file
 	* @throws LogicException
 	*/
-	public function check_for_events($file)
+	public function crawl_php_file($file)
 	{
 		$this->current_file = $file;
 		$this->file_lines = array();
@@ -182,13 +263,13 @@ class event_exporter
 					$description_line_num = $this->find_description();
 					$description = substr(trim($this->file_lines[$description_line_num]), strlen('* '));
 
-					if (isset($this->events[$this->current_event]))
+					if (isset($this->events['php'][$this->current_event]))
 					{
 						throw new LogicException('The event "' . $this->current_event . '" from file "' . $this->current_file
-							. '" already exists in file "'. $this->events[$this->current_event]['file'] . '"', 10);
+							. '" already exists in file "'. $this->events['php'][$this->current_event]['file'] . '"', 10);
 					}
 
-					$this->events[$this->current_event] = array(
+					$this->events['php'][$this->current_event] = array(
 						'event'			=> $this->current_event,
 						'file'			=> $this->current_file,
 						'arguments'		=> $arguments,
@@ -523,60 +604,5 @@ class event_exporter
 		{
 			throw new LogicException('$vars array does not match the list of @var tags for event "' . $this->current_event . '" in file "' . $this->current_file . '"');
 		}
-	}
-
-	/**
-	 * Returns a list of files in that directory
-	 *
-	 * Works recursive with any depth
-	 *
-	 * @param	string	$dir	Directory to go through
-	 * @param	string	$path	Path from root to $dir
-	 * @return	array	List of files (including directories from within $dir
-	 */
-	function get_file_list($dir, $path = '')
-	{
-		try
-		{
-			$iterator = new \DirectoryIterator($dir);
-		}
-		catch (Exception $e)
-		{
-			return array();
-		}
-
-		$files = array();
-		foreach ($iterator as $file_info)
-		{
-			if ($file_info->isDot())
-			{
-				continue;
-			}
-
-			// Do not scan some directories
-			if ($file_info->isDir() && (
-					($path == '' && in_array($file_info->getFilename(), array('cache', 'develop', 'ext', 'files', 'language', 'store', 'vendor')))
-					|| ($path == '/includes' && in_array($file_info->getFilename(), array('utf')))
-					|| ($path == '/phpbb/db/migration' && in_array($file_info->getFilename(), array('data')))
-					|| ($path == '/phpbb' && in_array($file_info->getFilename(), array('event')))
-				))
-			{
-				continue;
-			}
-			else if ($file_info->isDir())
-			{
-				$sub_dir = $this->get_file_list($file_info->getPath() . '/' . $file_info->getFilename(), $path . '/' . $file_info->getFilename());
-				foreach ($sub_dir as $file)
-				{
-					$files[] = $file_info->getFilename() . '/' . $file;
-				}
-			}
-			else if (substr($file_info->getFilename(), -4) == '.php')
-			{
-				$files[] = $file_info->getFilename();
-			}
-		}
-
-		return $files;
 	}
 }
