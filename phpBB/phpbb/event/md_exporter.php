@@ -59,7 +59,10 @@ class md_exporter
 		foreach ($events as $event)
 		{
 			// Last row of the file
-			if (strpos($event, "\n===\n") === false) continue;
+			if (strpos($event, "\n===\n") === false)
+			{
+				continue;
+			}
 
 			list($event_name, $details) = explode("\n===\n", $event, 2);
 			$this->validate_event_name($event_name);
@@ -70,8 +73,11 @@ class md_exporter
 				throw new \LogicException('The event "' . $this->current_event . '" is defined multiple times');
 			}
 
-			if ($this->filter == 'adm' && strpos($this->current_event, 'acp_') !== 0) continue;
-			if ($this->filter == 'styles' && strpos($this->current_event, 'acp_') === 0) continue;
+			if (($this->filter == 'adm' && strpos($this->current_event, 'acp_') !== 0)
+				|| ($this->filter == 'styles' && strpos($this->current_event, 'acp_') === 0))
+			{
+				continue;
+			}
 
 			list($file_details, $details) = explode("\n* Since: ", $details, 2);
 			list($since, $description) = explode("\n* Purpose: ", $details, 2);
