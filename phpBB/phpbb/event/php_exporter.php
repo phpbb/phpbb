@@ -9,7 +9,13 @@
 
 namespace phpbb\event;
 
-class exporter
+/**
+* Class php_exporter
+* Crawls through a list of files and grabs all php-events
+*
+* @package phpbb\event
+*/
+class php_exporter
 {
 	/** @var string */
 	protected $root_path;
@@ -36,68 +42,8 @@ class exporter
 	{
 		$this->root_path = $phpbb_root_path;
 		$this->events = $this->file_lines = array();
-		$this->events['php'] = array();
 		$this->current_file = $this->current_event = '';
 		$this->current_event_line = 0;
-	}
-
-	function export_from_eventsmd($filter)
-	{
-		$file_content = file_get_contents($this->root_path . 'docs/events.md');
-
-		$events = explode("\n\n", $file_content);
-		foreach ($events as $event)
-		{
-			// Last row of the file
-			if (strpos($event, "\n===\n") === false) continue;
-
-			list($event_name, $details) = explode("\n===\n", $event);
-
-			if ($filter == 'acp' && strpos($event_name, 'acp_') !== 0) continue;
-			if ($filter == 'styles' && strpos($event_name, 'acp_') === 0) continue;
-
-			list($file_details, $details) = explode("\n* Since: ", $details);
-			list($version, $explanition) = explode("\n* Purpose: ", $details);
-
-			echo "|- id=\"{$event_name}\"\n";
-			echo "| [[#{$event_name}|{$event_name}]] || ";
-
-			if (strpos($file_details, "* Locations:\n    + ") === 0)
-			{
-				$file_details = substr($file_details, strlen("* Locations:\n    + "));
-				$files = explode("\n    + ", $file_details);
-				$prosilver = $subsilver2 = $adm = array();
-				foreach ($files as $file)
-				{
-					if (strpos($file, 'styles/prosilver/template/') === 0)
-					{
-						$prosilver[] = substr($file, strlen('styles/prosilver/template/'));
-					}
-					if (strpos($file, 'styles/subsilver2/template/') === 0)
-					{
-						$subsilver2[] = substr($file, strlen('styles/subsilver2/template/'));
-					}
-					if (strpos($file, 'adm/style/') === 0)
-					{
-						$adm[] = substr($file, strlen('adm/style/'));
-					}
-				}
-				if ($filter == 'acp')
-				{
-					echo implode(', ', $adm);
-				}
-				else
-				{
-					echo implode(', ', $prosilver) . ' || ' . implode(', ', $subsilver2);
-				}
-			}
-			else if ($filter == 'acp')
-			{
-				echo substr($file_details, strlen("* Location: adm/style/"));
-			}
-			echo " || {$version} || " . str_replace("\n", ' ', $explanition) . "\n";
-
-		}
 	}
 
 	public function get_events()
@@ -123,14 +69,14 @@ class exporter
 	public function crawl_phpbb_directory_php()
 	{
 		$files = $this->get_recursive_file_list($this->root_path);
-		$this->events['php'] = array();
+		$this->events = array();
 		foreach ($files as $file)
 		{
 			$this->crawl_php_file($file);
 		}
-		ksort($this->events['php']);
+		ksort($this->events);
 
-		return sizeof($this->events['php']);
+		return sizeof($this->events);
 	}
 
 	/**
@@ -201,14 +147,17 @@ class exporter
 	* Format the php events as a wiki table
 	* @return string
 	*/
-	public function export_php_events_for_wiki()
+	public function export_events_for_wiki()
 	{
-		$wiki_page = '';
-		foreach ($this->events['php'] as $event)
+		$wiki_page = '= PHP Events (Hook Locations) =' . "\n";
+		$wiki_page .= '{| class="sortable zebra" cellspacing="0" cellpadding="5"' . "\n";
+		$wiki_page .= '! Identifier !! Placement !! Arguments !! Added in Release !! Explanation' . "\n";
+		foreach ($this->events as $event)
 		{
 			$wiki_page .= '|- id="' . $event['event'] . '"' . "\n";
 			$wiki_page .= '| [[#' . $event['event'] . '|' . $event['event'] . ']] || ' . $event['file'] . ' || ' . implode(', ', $event['arguments']) . ' || ' . $event['since'] . ' || ' . $event['description'] . "\n";
 		}
+		$wiki_page .= '|}' . "\n";
 
 		return $wiki_page;
 	}
@@ -265,13 +214,13 @@ class exporter
 					$description_line_num = $this->find_description();
 					$description = substr(trim($this->file_lines[$description_line_num]), strlen('* '));
 
-					if (isset($this->events['php'][$this->current_event]))
+					if (isset($this->events[$this->current_event]))
 					{
 						throw new \LogicException('The event "' . $this->current_event . '" from file "' . $this->current_file
-							. '" already exists in file "'. $this->events['php'][$this->current_event]['file'] . '"', 10);
+							. '" already exists in file "'. $this->events[$this->current_event]['file'] . '"', 10);
 					}
 
-					$this->events['php'][$this->current_event] = array(
+					$this->events[$this->current_event] = array(
 						'event'			=> $this->current_event,
 						'file'			=> $this->current_file,
 						'arguments'		=> $arguments,
@@ -336,9 +285,9 @@ class exporter
 	}
 
 	/**
-	* Find the name of the event inside the trigger_event() line
+	* Returns a regex match for the event name
 	*
-	* @return string Returns a regex match for the event name
+	* @return string
 	*/
 	protected function preg_match_event_name()
 	{
