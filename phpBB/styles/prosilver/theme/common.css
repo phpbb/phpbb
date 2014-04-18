@@ -1096,6 +1096,7 @@ form > p.post-notice strong {
 
 .notification_list ul li p {
 	margin: 0;
+	font-size: 1em;
 }
 
 .notification_list div.notifications {
