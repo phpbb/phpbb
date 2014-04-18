@@ -13,20 +13,23 @@ if (php_sapi_name() != 'cli')
 
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 $phpbb_root_path = __DIR__ . '/../';
-require __DIR__ . '/../phpbb/event/exporter.' . $phpEx;
 
 function usage()
 {
 	echo "Usage: export_events_for_wiki.php COMMAND\n";
 	echo "\n";
-	echo "acp:\n";
-	echo "    Export all events for files in the acp style.\n";
-	echo "\n";
-	echo "styles:\n";
-	echo "    Export all events for files in the prosilver and subsilver2 styles.\n";
+	echo "all:\n";
+	echo "    Generate the complete wikipage for https://wiki.phpbb.com/Event_List\n";
 	echo "\n";
 	echo "php:\n";
-	echo "    Export all events for php-files.\n";
+	echo "    Generate the PHP event section of Event_List\n";
+	echo "\n";
+	echo "acp:\n";
+	echo "    Generate the ACP Template event section of Event_List\n";
+	echo "\n";
+	echo "styles:\n";
+	echo "    Generate the Styles Template event section of Event_List\n";
+	echo "\n";
 	exit(2);
 }
 
@@ -41,22 +44,48 @@ function validate_argument_count($arguments, $count)
 validate_argument_count($argc, 1);
 
 $action = $argv[1];
-$exporter = new \phpbb\event\exporter($phpbb_root_path);
+require __DIR__ . '/../phpbb/event/php_exporter.' . $phpEx;
+require __DIR__ . '/../phpbb/event/md_exporter.' . $phpEx;
 
 switch ($action)
 {
-	case 'acp':
-		$exporter->export_from_eventsmd('acp');
-		break;
-
-	case 'styles':
-		$exporter->export_from_eventsmd('styles');
-		break;
+	case 'all':
+		echo '__FORCETOC__' . "\n";
 
 	case 'php':
+		$exporter = new \phpbb\event\php_exporter($phpbb_root_path);
 		$exporter->crawl_phpbb_directory_php();
-		echo $exporter->export_php_events_for_wiki();
-		break;
+		echo $exporter->export_events_for_wiki();
+
+		if ($action === 'php')
+		{
+			break;
+		}
+		echo "\n";
+		// no break;
+
+	case 'styles':
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
+		$exporter->crawl_eventsmd('docs/events.md', 'styles');
+		echo $exporter->export_events_for_wiki();
+
+		if ($action === 'styles')
+		{
+			break;
+		}
+		echo "\n";
+		// no break;
+
+	case 'adm':
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
+		$exporter->crawl_eventsmd('docs/events.md', 'adm');
+		echo $exporter->export_events_for_wiki();
+
+		if ($action === 'all')
+		{
+			echo "\n" . '[[Category:Events and Listeners]]' . "\n";
+		}
+	break;
 
 	default:
 		usage();
