@@ -1011,7 +1011,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	folder_img		The folder image of the topic
 			* @var	string	folder_alt		The alt attribute of the topic folder img
 			* @var	int		topic_type		The topic type
-			* @var	int		unread_topic	Whether the topic has unread posts
+			* @var	bool	unread_topic	Whether the topic has unread posts
 			* @var	bool	topic_unapproved	Whether the topic is unapproved
 			* @var	int		posts_unapproved	The number of unapproved posts
 			* @var	bool	topic_deleted	Whether the topic has been deleted
