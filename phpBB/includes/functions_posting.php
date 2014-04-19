@@ -2293,11 +2293,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit_topic':
 			case 'edit_first_post':
 				$phpbb_notifications->add_notifications('topic_in_queue', $notification_data);
+
+				// Delete the approve_post notification so we can notify the user again,
+				// when his post got reapproved
+				$phpbb_notifications->delete_notifications('approve_post', $notification_data['post_id']);
 			break;
 
 			case 'edit':
 			case 'edit_last_post':
 				$phpbb_notifications->add_notifications('post_in_queue', $notification_data);
+
+				// Delete the approve_post notification so we can notify the user again,
+				// when his post got reapproved
+				$phpbb_notifications->delete_notifications('approve_post', $notification_data['post_id']);
 			break;
 
 			case 'post':
