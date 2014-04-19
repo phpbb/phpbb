@@ -1012,9 +1012,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	folder_alt		The alt attribute of the topic folder img
 			* @var	int		topic_type		The topic type
 			* @var	int		unread_topic	Whether the topic has unread posts
-			* @var	int		topic_unapproved	Whether the topic is unapproved
+			* @var	bool	topic_unapproved	Whether the topic is unapproved
 			* @var	int		posts_unapproved	The number of unapproved posts
-			* @var	int		topic_deleted	Whether the topic has been deleted
+			* @var	bool	topic_deleted	Whether the topic has been deleted
 			* @var	string	u_mcp_queue		The URL to the corresponding MCP queue page
 			* @var	array	zebra			The zebra data of the current user
 			* @var	array	attachments		All the attachments of the search results
