@@ -522,8 +522,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_email' => 'nobody@example.com',
 			'user_type' => 0,
 			'user_lang' => 'en',
-			'user_timezone' => 0,
-			'user_dateformat' => '',
+			'user_timezone' => 'UTC',
+			'user_dateformat' => 'r',
 			'user_password' => $passwords_manager->hash($username . $username),
 		);
 		return user_add($user_row);
