@@ -51,9 +51,27 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 					'core.trigger'	=> array(
 						'event'			=> 'core.trigger',
 						'file'			=> 'trigger.test',
-						'arguments'		=> array('attachments', 'cp_row', 'current_row_number', 'end', 'post_row', 'row', 'start', 'user_poster_data'),
+						'arguments'		=> array('cp_row', 'current_row_number', 'end', 'row', 'start'),
 						'since'			=> '3.1.0-a3',
 						'description'	=> 'Event after the post data has been assigned to the template',
+					),
+				),
+			),
+			array(
+				'trigger_many_vars.test',
+				array(
+					'core.posting_modify_template_vars'	=> array(
+						'event'			=> 'core.posting_modify_template_vars',
+						'file'			=> 'trigger_many_vars.test',
+						'arguments'		=> array(
+							'cancel', 'delete', 'error', 'form_enctype', 'forum_id',
+							'load', 'message_parser', 'mode', 'moderators', 'page_data',
+							'page_title', 'post_data', 'post_id', 'preview', 'refresh',
+							's_action', 's_hidden_fields', 's_topic_icons', 'save',
+							'submit', 'topic_id',
+						),
+						'since'			=> '3.1.0-a1',
+						'description'	=> 'This event allows you to modify template variables for the posting screen',
 					),
 				),
 			),
@@ -321,11 +339,20 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				array(
 					'/**',
 					'*/',
+					'$phpbb_dispatcher->dispatch(\'test\');',
+				),
+				2,
+				3,
+			),
+			array(
+				array(
+					'/**',
+					'*/',
 					'$vars = $bertie;',
 					'$phpbb_dispatcher->dispatch(\'test\');',
 				),
 				3,
-				1,
+				3,
 			),
 			array(
 				array(
@@ -335,17 +362,17 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 					'$phpbb_dispatcher->dispatch(\'test\');',
 				),
 				3,
-				1,
+				3,
 			),
 			array(
 				array(
 					'/**',
 					'*/',
-					'$vars = array(\'\');',
+					'$vars = array(\'test2\', \'\');',
 					'$phpbb_dispatcher->dispatch(\'test\');',
 				),
 				3,
-				2,
+				4,
 			),
 			array(
 				array(

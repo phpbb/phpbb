@@ -302,25 +302,43 @@ class php_exporter
 	*/
 	public function get_vars_from_array()
 	{
-		$vars_line = ltrim($this->file_lines[$this->current_event_line - 1], "\t");
-		if (strpos($vars_line, "\$vars = array('") !== 0 || substr($vars_line, -3) !== '\');')
+		$vars_array_line = 1;
+		$found_vars_array = false;
+		$vars_array = array();
+		while (ltrim($this->file_lines[$this->current_event_line - $vars_array_line], "\t") !== '*/')
 		{
-			throw new \LogicException('Can not find "$vars = array();"-line for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
+			$line = ltrim($this->file_lines[$this->current_event_line - $vars_array_line], "\t");
+			$match = array();
+			preg_match('#^\$vars (?:\+)?= array\(\'([a-zA-Z0-9_\' ,]+)\'\);$#', $line, $match);
+
+			if (isset($match[1]))
+			{
+				$found_vars_array = true;
+				if (strlen($match[1]) > 90)
+				{
+					throw new \LogicException('Should use multiple lines for $vars definition'
+						. ' for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 1);
+				}
+				$vars_array = array_merge($vars_array, explode("', '", $match[1]));
+			}
+
+			$vars_array_line++;
+			if ($this->current_event_line - $vars_array_line === 0)
+			{
+				throw new \LogicException('Can not find "$vars = array();"-line for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+			}
 		}
 
-		$vars_array = substr($vars_line, strlen("\$vars = array('"), 0 - strlen('\');'));
-		if ($vars_array === '')
+		if (!$found_vars_array)
 		{
-			throw new \LogicException('Found empty $vars array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 2);
+			throw new \LogicException('Can not find "$vars = array();"-line for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
 		}
-
-		$vars_array = explode("', '", $vars_array);
 
 		foreach ($vars_array as $var)
 		{
 			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
 			{
-				throw new \LogicException('Found invalid var "' . $var . '" in array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 3);
+				throw new \LogicException('Found invalid var "' . $var . '" in array for event "' . $this->current_event . '" in file "' . $this->current_file . '"', 4);
 			}
 		}
 
