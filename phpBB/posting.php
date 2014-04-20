@@ -82,7 +82,9 @@ $current_time = time();
 *							language keys.
 * @since 3.1-A1
 */
-$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick');
+$vars = array_merge($vars, array('submit', 'preview', 'save', 'load', 'delete'));
+$vars = array_merge($vars, array('cancel', 'refresh', 'mode', 'error'));
 extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
@@ -1561,7 +1563,8 @@ $template->assign_vars(array(
 * @since 3.1-A1
 * @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title, s_topic_icons, form_enctype, s_action, s_hidden_fields
 */
-$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype', 's_action', 's_hidden_fields');
+$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons');
+$vars = array_merge($vars, array('form_enctype', 's_action', 's_hidden_fields'));
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
 
 // Build custom bbcodes array

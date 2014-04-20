@@ -405,7 +405,9 @@ class log implements \phpbb\log\log_interface
 		*								e.g.: 'AND l.forum_id = 1'
 		* @since 3.1-A1
 		*/
-		$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id', 'user_id', 'log_time', 'sort_by', 'keywords', 'profile_url', 'log_type', 'sql_additional');
+		$vars = array('mode', 'count_logs', 'limit', 'offset', 'forum_id', 'topic_id');
+		$vars = array_merge($vars, array('user_id', 'log_time', 'sort_by', 'keywords'));
+		$vars = array_merge($vars, array('profile_url', 'log_type', 'sql_additional'));
 		extract($this->dispatcher->trigger_event('core.get_logs_modify_type', compact($vars)));
 
 		if ($log_type === false)

@@ -755,7 +755,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
 	*/
-	$vars = array('where_type', 'where_ids', 'auto_sync', 'posted_sync', 'post_count_sync', 'call_delete_topics', 'delete_notifications_types');
+	$vars = array('where_type', 'where_ids', 'auto_sync', 'posted_sync', 'post_count_sync');
+	$vars = array_merge($vars, array('call_delete_topics', 'delete_notifications_types'));
 	extract($phpbb_dispatcher->trigger_event('core.delete_posts_before', compact($vars)));
 
 	if ($where_type === 'range')
@@ -912,7 +913,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
 	*/
-	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type', 'where_ids', 'delete_notifications_types');
+	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type');
+	$vars = array_merge($vars, array('where_ids', 'delete_notifications_types'));
 	extract($phpbb_dispatcher->trigger_event('core.delete_posts_in_transaction', compact($vars)));
 
 	$db->sql_transaction('commit');
@@ -930,7 +932,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
 	*/
-	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type', 'where_ids', 'delete_notifications_types');
+	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type');
+	$vars = array_merge($vars, array('where_ids', 'delete_notifications_types'));
 	extract($phpbb_dispatcher->trigger_event('core.delete_posts_after', compact($vars)));
 
 	// Resync topics_posted table

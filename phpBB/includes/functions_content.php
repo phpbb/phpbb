@@ -1410,7 +1410,8 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	* @var array _profile_cache		Array of original return templates
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string', '_profile_cache');
+	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username');
+	$vars = array_merge($vars, array('custom_profile_url', 'username_string', '_profile_cache'));
 	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;

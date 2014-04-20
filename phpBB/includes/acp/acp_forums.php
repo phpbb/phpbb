@@ -707,7 +707,8 @@ class acp_forums
 				* @var	array	template_data	Array with new forum data
 				* @since 3.1-A1
 				*/
-				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list', 'errors', 'template_data');
+				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data');
+				$vars = array_merge($vars, array('parents_list', 'errors', 'template_data'));
 				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_display_form', compact($vars)));
 
 				$template->assign_vars($template_data);
