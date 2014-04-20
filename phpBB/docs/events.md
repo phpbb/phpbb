@@ -455,6 +455,22 @@ topiclist_row_append
 * Since: 3.1.0-a1
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
+ucp_pm_viewmessage_contact_fields_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-b1
+* Purpose: Add data after the contact fields on the user profile when viewing
+a private message
+
+ucp_pm_viewmessage_contact_fields_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-b1
+* Purpose: Add data before the contact fields on the user profile when viewing
+a private message
+
 ucp_pm_viewmessage_custom_fields_after
 ===
 * Locations:
