@@ -15,7 +15,17 @@
 		</div>
 	<!-- ENDIF -->
 
-	<!-- INCLUDE viewtopic_topic_tools.html -->
+	<!-- IF not S_IS_BOT and U_PRINT_PM -->
+		<div class="dropdown-container dropdown-button-control topic-tools">
+			<span title="{L_PM_TOOLS}" class="dropdown-trigger dropdown-select dropdown-select-icon tools-icon"><span></span></span>
+			<div class="dropdown hidden">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents">
+					<!-- IF U_PRINT_PM --><li class="small-icon icon-print"><a href="{U_PRINT_PM}" title="{L_PRINT_PM}" accesskey="p">{L_PRINT_PM}</a></li><!-- ENDIF -->
+				</ul>
+			</div>
+		</div>
+	<!-- ENDIF -->
 
 	<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
 	<ul class="linklist">

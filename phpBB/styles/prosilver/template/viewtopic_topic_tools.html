@@ -1,4 +1,4 @@
-<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or S_HAS_ATTACHMENTS or U_EMAIL_TOPIC or U_PRINT_TOPIC or U_PRINT_PM or S_DISPLAY_TOPIC_TOOLS) -->
+<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or S_HAS_ATTACHMENTS or U_EMAIL_TOPIC or U_PRINT_TOPIC or S_DISPLAY_TOPIC_TOOLS) -->
 	<div class="dropdown-container dropdown-button-control topic-tools">
 		<span title="{L_TOPIC_TOOLS}" class="dropdown-trigger dropdown-select dropdown-select-icon tools-icon"><span></span></span>
 		<div class="dropdown hidden">
@@ -22,7 +22,6 @@
 				<!-- IF U_BUMP_TOPIC --><li class="small-icon icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_EMAIL_TOPIC --><li class="small-icon icon-sendemail"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_PRINT_TOPIC --><li class="small-icon icon-print"><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p">{L_PRINT_TOPIC}</a></li><!-- ENDIF -->
-				<!-- IF U_PRINT_PM --><li class="small-icon icon-print"><a href="{U_PRINT_PM}" title="{L_PRINT_PM}" accesskey="p">{L_PRINT_PM}</a></li><!-- ENDIF -->
 				<!-- IF S_HAS_ATTACHMENTS -->
 					<li class="small-icon icon-download">
 						<a class="dropdown-toggle-submenu" href="{U_DOWNLOAD_ALL_ATTACHMENTS}" title="{L_DOWNLOAD_ALL_ATTACHMENTS}">{L_DOWNLOAD_ALL_ATTACHMENTS}</a>
