@@ -28,7 +28,7 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 		$this->assertGreaterThan(0, $exporter->crawl_eventsmd('docs/events.md', $filter));
 	}
 
-	static public function crawl_adm_files_data()
+	static public function crawl_template_file_data()
 	{
 		global $phpbb_root_path;
 		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
@@ -52,9 +52,9 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 	}
 
 	/**
-	 * @dataProvider crawl_adm_files_data
+	 * @dataProvider crawl_template_file_data
 	 */
-	public function test_crawl_adm_files($filter, $file)
+	public function test_crawl_template_file($filter, $file)
 	{
 		global $phpbb_root_path;
 		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
