@@ -38,8 +38,9 @@ class sqlite extends \phpbb\db\driver\driver
 
 	function delete_result($result_id)
 	{
-		if (isset($this->query_result_objs[$result_id]) && is_object($this->query_result_objs[$result_id]))
+		if (isset($this->query_result_objs[$result_id]) && is_object($this->query_result_objs[$result_id])) {
 			$this->query_result_objs[$result_id]->finalize();
+		}
 		unset($this->query_result_objs[$result_id]);
 	}
 	/**
@@ -146,8 +147,9 @@ class sqlite extends \phpbb\db\driver\driver
 							$this->db->busyTimeout($this->n_msec);
 							$this->int_query = $query;
 							$err_level = 0;
-							if ($this->return_on_error)
+							if ($this->return_on_error) {
 								$err_level = error_reporting(0);
+							}
 							if (strpos($query, 'SELECT') !== 0 && strpos($query, 'PRAGMA') !== 0)
 							{
 								//$err_level = 0;
@@ -170,15 +172,17 @@ class sqlite extends \phpbb\db\driver\driver
 								$was_error = !(isset($res) && is_object($res));
 								$this->set_result( $res, $this->query_result);
 							}
-							if ($this->return_on_error && $nc >= $this->n_count -1)
+							if ($this->return_on_error && $nc >= $this->n_count -1) {
 								error_reporting($err_level);
+							}
 						} catch (Exception $error) {
 							//if ($nc >= $this->n_count -1 )
 							//	$this->sql_error($query);
 							$was_error = true;
 						}
-						if (!$was_error)
+						if (!$was_error) {
 							break;
+						}
 
 						$was_error = false;
 					}
@@ -210,8 +214,9 @@ class sqlite extends \phpbb\db\driver\driver
 				return false;
 			}
 
-			if ($was_error)
+			if ($was_error) {
 				return false;
+			}
 
 			if( $this->query_result && $this->get_result($this->query_result) )
 			{
@@ -220,8 +225,9 @@ class sqlite extends \phpbb\db\driver\driver
 
 			$error_returned = $this->_sql_error();
 			$error_code = $error_returned['code'];
-			if ($error_code == 0)
+			if ($error_code == 0) {
 				return true;
+			}
 			return false;
 	}
 
