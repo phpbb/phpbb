@@ -607,7 +607,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 	padding: 0 0.5em;
 }
 
-.breadcrumbs .crumb:first-of-type:before {
+.breadcrumbs .crumb:first-child:before {
 	content: '';
 	content: none;
 }
