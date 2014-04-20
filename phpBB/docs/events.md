@@ -91,7 +91,7 @@ acp_users_signature_editor_buttons_before
 * Purpose: Add content before BBCode posting buttons in the ACP user signature
 
 forumlist_body_category_header_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -99,7 +99,7 @@ forumlist_body_category_header_after
 * Purpose: Add content after the header of the category on the forum list.
 
 forumlist_body_category_header_before
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -107,7 +107,7 @@ forumlist_body_category_header_before
 * Purpose: Add content before the header of the category on the forum list.
 
 forumlist_body_last_post_title_prepend
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -115,7 +115,7 @@ forumlist_body_last_post_title_prepend
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
 forumlist_body_subforums_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -123,7 +123,7 @@ forumlist_body_subforums_after
 * Purpose: Add content after the list of subforums (if any) for each forum on the forum list.
 
 forumlist_body_subforums_before
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -131,7 +131,7 @@ forumlist_body_subforums_before
 * Purpose: Add content before the list of subforums (if any) for each forum on the forum list.
 
 forumlist_body_last_row_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
