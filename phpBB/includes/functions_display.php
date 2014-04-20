@@ -792,7 +792,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		}
 		else
 		{
-			$group_name = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
+			$group_name = phpbb_get_groupname_string($row['group_name'], $user);
 
 			if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
 			{

@@ -1461,7 +1461,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 				{
 					if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 					{
-						$address[] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+						$address[] = phpbb_get_groupname_string($row['group_name'], $user);
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1481,7 +1481,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 					{
 						if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 						{
-							$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+							$row['group_name'] = phpbb_get_groupname_string($row['group_name'], $user);
 							$address['group'][$row['group_id']] = array('name' => $row['group_name'], 'colour' => $row['group_colour']);
 						}
 					}
@@ -2159,7 +2159,7 @@ function get_recipient_strings($pm_by_id)
 			{
 				if ($ug_type == 'g')
 				{
-					$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+					$row['name'] = phpbb_get_groupname_string($row['name'], $user);
 				}
 
 				$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);

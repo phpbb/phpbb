@@ -187,7 +187,7 @@ function group_select_options($group_id, $exclude_ids = false, $manage_founder =
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$selected = ($row['group_id'] == $group_id) ? ' selected="selected"' : '';
-		$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . $selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . $selected . '>' . phpbb_get_groupname_string($row['group_name'], $user) . '</option>';
 	}
 	$db->sql_freeresult($result);
 

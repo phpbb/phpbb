@@ -3219,19 +3219,19 @@ function get_group_name($group_id)
 {
 	global $db, $user;
 
-	$sql = 'SELECT group_name, group_type
+	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . '
 		WHERE group_id = ' . (int) $group_id;
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || ($row['group_type'] == GROUP_SPECIAL && empty($user->lang)))
+	if (!$row)
 	{
 		return '';
 	}
 
-	return ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+	return phpbb_get_groupname_string($row['group_name'], $user);
 }
 
 /**

@@ -295,7 +295,7 @@ class auth_admin extends \phpbb\auth\auth
 		$ug_names_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['ug_name']] : $row['ug_name']);
+			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : phpbb_get_groupname_string($row['ug_name'], $user);
 		}
 		$db->sql_freeresult($result);
 
