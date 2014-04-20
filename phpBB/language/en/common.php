@@ -740,6 +740,7 @@ $lang = array_merge($lang, array(
 	'TOPIC_REVIEW'		=> 'Topic review',
 	'TOPIC_TITLE'		=> 'Topic title',
 	'TOPIC_UNAPPROVED'	=> 'This topic has not been approved',
+	'TOPIC_DELETED'		=> 'Deleted topic:',
 	'TOTAL_ATTACHMENTS'	=> 'Attachment(s)',
 	'TOTAL_LOGS'		=> array(
 		1	=> '%d log',
