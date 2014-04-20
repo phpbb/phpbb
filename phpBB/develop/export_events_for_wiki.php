@@ -24,7 +24,7 @@ function usage()
 	echo "php:\n";
 	echo "    Generate the PHP event section of Event_List\n";
 	echo "\n";
-	echo "acp:\n";
+	echo "adm:\n";
 	echo "    Generate the ACP Template event section of Event_List\n";
 	echo "\n";
 	echo "styles:\n";
@@ -66,7 +66,7 @@ switch ($action)
 
 	case 'styles':
 		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
-		$exporter->crawl_eventsmd('docs/events.md', 'styles');
+		$exporter->crawl_phpbb_directory_styles('docs/events.md');
 		echo $exporter->export_events_for_wiki();
 
 		if ($action === 'styles')
@@ -78,7 +78,7 @@ switch ($action)
 
 	case 'adm':
 		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
-		$exporter->crawl_eventsmd('docs/events.md', 'adm');
+		$exporter->crawl_phpbb_directory_adm('docs/events.md');
 		echo $exporter->export_events_for_wiki();
 
 		if ($action === 'all')
