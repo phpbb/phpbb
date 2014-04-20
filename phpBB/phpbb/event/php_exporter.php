@@ -218,8 +218,9 @@ class php_exporter
 
 					if (isset($this->events[$this->current_event]))
 					{
-						throw new \LogicException('The event "' . $this->current_event . '" from file "' . $this->current_file
-							. '" already exists in file "'. $this->events[$this->current_event]['file'] . '"', 10);
+						throw new \LogicException("The event '{$this->current_event}' from file "
+							. "'{$this->current_file}:{$event_line_num}' already exists in file "
+							. "'{$this->events[$this->current_event]['file']}'", 10);
 					}
 
 					$this->events[$this->current_event] = array(
@@ -308,7 +309,7 @@ class php_exporter
 				$found_vars_array = true;
 				if (strlen($match[1]) > 90)
 				{
-					throw new \LogicException('Should use multiple lines for $vars definition'
+					throw new \LogicException('Should use multiple lines for $vars definition '
 						. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
 				}
 				$vars_array = array_merge($vars_array, explode("', '", $match[1]));
@@ -365,7 +366,7 @@ class php_exporter
 					$doc_line = explode(' ', $var_line, 5);
 					if (sizeof($doc_line) !== 5)
 					{
-						throw new \LogicException("Found invalid line '{$this->file_lines[$this->current_event_line - $current_doc_line]}'"
+						throw new \LogicException("Found invalid line '{$this->file_lines[$this->current_event_line - $current_doc_line]}' "
 						. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 1);
 					}
 					$doc_vars[] = $doc_line[3];
@@ -550,7 +551,7 @@ class php_exporter
 
 		if ($event !== $event_name)
 		{
-			throw new \LogicException("Event name does not match '@event' tag for event"
+			throw new \LogicException("Event name does not match '@event' tag for event "
 				. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
 		}
 
@@ -573,7 +574,7 @@ class php_exporter
 
 		if ($sizeof_vars_array !== sizeof($vars_docblock) || $sizeof_vars_array !== sizeof(array_intersect($vars_array, $vars_docblock)))
 		{
-			throw new \LogicException("\$vars array does not match the list of '@var' tags for event"
+			throw new \LogicException("\$vars array does not match the list of '@var' tags for event "
 				. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'");
 		}
 	}
