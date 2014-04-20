@@ -608,7 +608,6 @@ ul.linklist.bulletin li.no-bulletin:before {
 }
 
 .breadcrumbs .crumb:first-child:before {
-	content: '';
 	content: none;
 }
 
