@@ -1579,10 +1579,9 @@ $page_data = array(
 * @var	object	message_parser	The message parser object
 * @since 3.1-A1
 * @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
-*		s_topic_icons, form_enctype, s_action, s_hidden_fields
-* @change 3.1.0-b3 Added vars post_id, topic_id, forum_id, submit, preview,
-*		save, load, delete, cancel, refresh, error, page_data,
-*		message_parser
+*		s_topic_icons, form_enctype, s_action, s_hidden_fields,
+*		post_id, topic_id, forum_id, submit, preview, save, load,
+*		delete, cancel, refresh, error, page_data, message_parser
 */
 $vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype', 's_action', 's_hidden_fields', 'post_id');
 $vars += array('topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'error', 'page_data', 'message_parser');
