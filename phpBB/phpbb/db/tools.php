@@ -2572,12 +2572,6 @@ class tools
 					AND sc.colid = (SELECT colid FROM syscolumns
 						WHERE id = object_id('{$table_name}')
 							AND name = '{$column_name}')";
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
-			}
-			$this->db->sql_freeresult($result);
 		}
 		else
 		{
@@ -2587,13 +2581,14 @@ class tools
 				WHERE col.object_id = object_id('{$table_name}')
 					AND col.name = '{$column_name}'
 					AND dobj.name IS NOT NULL";
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
-			}
-			$this->db->sql_freeresult($result);
 		}
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+		}
+		$this->db->sql_freeresult($result);
 
 		return $statements;
 	}
@@ -2627,36 +2622,6 @@ class tools
 						AND cols.id = ix.id
 				WHERE ix.id = object_id('{$table_name}')
 					AND cols.name = '{$column_name}'";
-			$result = $this->db->sql_query($sql);
-			$existing_indexes = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$existing_indexes[$row['phpbb_index_name']] = array();
-			}
-			$this->db->sql_freeresult($result);
-
-			if (empty($existing_indexes))
-			{
-				return array();
-			}
-
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-				FROM sysindexes ix
-				INNER JOIN sysindexkeys ixc
-					ON ixc.id = ix.id
-						AND ixc.indid = ix.indid
-				INNER JOIN syscolumns cols
-					ON cols.colid = ixc.colid
-						AND cols.id = ix.id
-				WHERE ix.id = object_id('{$table_name}')
-					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
-			}
-			$this->db->sql_freeresult($result);
 		}
 		else
 		{
@@ -2670,19 +2635,36 @@ class tools
 						AND cols.object_id = ix.object_id
 				WHERE ix.object_id = object_id('{$table_name}')
 					AND cols.name = '{$column_name}'";
-			$result = $this->db->sql_query($sql);
-			$existing_indexes = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$existing_indexes[$row['phpbb_index_name']] = array();
-			}
-			$this->db->sql_freeresult($result);
+		}
 
-			if (empty($existing_indexes))
-			{
-				return array();
-			}
+		$result = $this->db->sql_query($sql);
+		$existing_indexes = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$existing_indexes[$row['phpbb_index_name']] = array();
+		}
+		$this->db->sql_freeresult($result);
 
+		if (empty($existing_indexes))
+		{
+			return array();
+		}
+
+		if ($mssql_server_properties['mssql_version'][0] == '8')	// SQL Server 2000
+		{
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+				FROM sysindexes ix
+				INNER JOIN sysindexkeys ixc
+					ON ixc.id = ix.id
+						AND ixc.indid = ix.indid
+				INNER JOIN syscolumns cols
+					ON cols.colid = ixc.colid
+						AND cols.id = ix.id
+				WHERE ix.id = object_id('{$table_name}')
+					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+		}
+		else
+		{
 			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
 				FROM sys.indexes ix
 				INNER JOIN sys.index_columns ixc
@@ -2693,14 +2675,15 @@ class tools
 						AND cols.object_id = ix.object_id
 				WHERE ix.object_id = object_id('{$table_name}')
 					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
-			}
-			$this->db->sql_freeresult($result);
 		}
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
+		}
+		$this->db->sql_freeresult($result);
 
 		return $existing_indexes;
 	}
