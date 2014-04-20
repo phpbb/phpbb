@@ -23,7 +23,7 @@ class sqlite extends \phpbb\db\driver\driver
 	var $query_result_objs = array();
 	var $query_result_counter = 0;
 	var $int_query;
-	var $n_count = 2;		/* count of attepmts */
+	var $n_count = 2;		/* count of attempts */
 	var $n_msec = 250000;	/* time-out in millisecons (bisyTimeout)*/
 
 	function set_result($result, $result_id)
