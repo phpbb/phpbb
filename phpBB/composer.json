@@ -3,7 +3,6 @@
 		"You MUST update the clean-vendor-dir target in build/build.xml",
 		"accordingly when adding or upgrading dependencies."
 	],
-	"minimum-stability": "beta",
 	"require": {
 		"lusitanian/oauth": "0.2.*",
 		"symfony/config": "2.3.*",
