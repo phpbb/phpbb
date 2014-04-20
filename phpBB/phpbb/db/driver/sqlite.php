@@ -51,22 +51,19 @@ class sqlite extends \phpbb\db\driver\driver
 		//$cache = NULL;
 
 		$this->persistency = $persistency;
-        $this->user = $sqluser;
-        $this->server = $sqlserver . (($port) ? ':' . $port : '');
-        $this->dbname = $database;
+		$this->user = $sqluser;
+		$this->server = $sqlserver . (($port) ? ':' . $port : '');
+		$this->dbname = $database;
 
 		try{
 			$this->db = new \SQLite3($this->server);
-            $this->db_connect_id = 1;
+			$this->db_connect_id = 1;
 			$this->db->exec('PRAGMA short_column_names = 1');
 			} catch (Exception $error) {
-			
 				$this->connect_error = $error;
 				return array('message' => $error);
-				
 			}
-            return true;
-
+			return true;
 	}
 
 	/**
@@ -80,7 +77,7 @@ class sqlite extends \phpbb\db\driver\driver
 		global $cache;
 
 		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('sqlite_version')) === false)
-		{ 
+		{
 			$vers = $this->db->version();
 			$this->sql_server_version = $vers["versionString"];
 			if (!empty($cache) && $use_cache)
@@ -100,15 +97,15 @@ class sqlite extends \phpbb\db\driver\driver
 		switch ($status)
 		{
 			case 'begin':
-                        return $this->db->query('BEGIN');
+				return $this->db->query('BEGIN');
 			break;
 
 			case 'commit':
-                        return $this->db->query('COMMIT');
+				return $this->db->query('COMMIT');
 			break;
 
 			case 'rollback':
-                        return $this->db->query('ROLLBACK');
+				return $this->db->query('ROLLBACK');
 			break;
 		}
 
@@ -128,20 +125,20 @@ class sqlite extends \phpbb\db\driver\driver
 	{
 			$was_error = false;
 
-            if ($query != '')
+			if ($query != '')
             {
-                  global $cache;
+				global $cache;
 
-                  // EXPLAIN only in extra debug mode
-                  if (defined('DEBUG_EXTRA'))
-                  {
-                        $this->sql_report('start', $query);
-                  }
+				// EXPLAIN only in extra debug mode
+				if (defined('DEBUG_EXTRA'))
+				{
+					$this->sql_report('start', $query);
+				}
 
-                  $this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
-                  $this->sql_add_num_queries($this->query_result);
-                  if ($this->query_result === false)
-                  {
+				$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+				$this->sql_add_num_queries($this->query_result);
+				if ($this->query_result === false)
+				{
 					$nc=0;
 					for( $nc=0; $nc< $this->n_count; $nc++)
 					{
@@ -160,7 +157,7 @@ class sqlite extends \phpbb\db\driver\driver
 								$was_error = !($this->db->exec( $query ));
 								$this->query_result_counter++;
 								$this->query_result = $this->query_result_counter;
-								$this->set_result( NULL, $this->query_result);
+								$this->set_result( null, $this->query_result);
 								//if( $this->return_on_error
 								//	&& $nc >= $this->n_count -1 )
 								//	error_reporting($err_level);
@@ -180,7 +177,7 @@ class sqlite extends \phpbb\db\driver\driver
 							//if ($nc >= $this->n_count -1 )
 							//	$this->sql_error($query);
 							$was_error = true;
-                        }
+						}
 						if( $was_error === false)
 							break;
 							
@@ -189,38 +186,39 @@ class sqlite extends \phpbb\db\driver\driver
 
 					if (defined('DEBUG_EXTRA'))
 					{
-						  $this->sql_report('stop', $query);
+						$this->sql_report('stop', $query);
 					}
 
 					if ($cache_ttl && method_exists($cache, 'sql_save'))
 					{
-						 $this->open_queries[(int) $this->query_result] = $this->query_result;
-						 $cache->sql_save($query, $this->query_result, $cache_ttl);
+						$this->open_queries[(int) $this->query_result] = $this->query_result;
+						$cache->sql_save($query, $this->query_result, $cache_ttl);
 					}
 					else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 					{
-						 $this->open_queries[(int) $this->query_result] = $this->query_result;
-						  //$this->query_result_id++;
+						$this->open_queries[(int) $this->query_result] = $this->query_result;
+						//$this->query_result_id++;
 					}
 
-                }
-                else if (defined('DEBUG_EXTRA'))
-                {
-                    $this->sql_report('fromcache', $query);
-                }
-            }
-            else
-            {
-                  return false;
-            }
+				}
+				else if (defined('DEBUG_EXTRA'))
+				{
+					$this->sql_report('fromcache', $query);
+				}
+			}
+			else
+			{
+				return false;
+			}
 
 			if( $was_error == true)
 				return false;
+			
 			if( $this->query_result && $this->get_result($this->query_result) )
 			{
 				return $this->query_result;
 			}
-			
+
 			$error_returned = $this->_sql_error();
 			$error_code = $error_returned['code'];
 			if( $error_code == 0)
@@ -251,7 +249,7 @@ class sqlite extends \phpbb\db\driver\driver
 	*/
 	function sql_affectedrows()
 	{
-            return ($this->db_connect_id) ? $this->db->changes() : false;
+		return ($this->db_connect_id) ? $this->db->changes() : false;
 	}
 
 	/**
@@ -271,24 +269,23 @@ class sqlite extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-            if( $query_id === false)
+			if( $query_id === false)
 			{
-                  return false;
+				return false;
 			}
-			
+
 			$query_result_obj = $this->get_result($query_id);
 			if( isset($query_result_obj) && is_object($query_result_obj))
 			{
-				try{	
-						$row = $query_result_obj->fetchArray(SQLITE3_ASSOC);
-					
-					} catch (Exception $error) {
-				   $this->sql_error($this->int_query);
+				try{
+					$row = $query_result_obj->fetchArray(SQLITE3_ASSOC);
+				} catch (Exception $error) {
+					$this->sql_error($this->int_query);
 				}
 			}
 			else
 			{
-                  return false;
+				return false;
 			}
 
             if ( !$row || !sizeof($row) || !is_array($row))
@@ -296,22 +293,22 @@ class sqlite extends \phpbb\db\driver\driver
 				return $row;
 			}
 
-			  $rowx = array();
-			  foreach ($row as $key => $value)
-			  {
-				 $pos = strpos($key, '.');
-				 if( $pos >0 )
-				 {
-					   $keyx = substr($key, $pos+1);
-					   $rowx[$keyx] = $value;
-				 }
-				 else
-				 {
-					   $rowx[$key] = $value;
-				 }
-			  }
-				  
-                  return $rowx;
+			$rowx = array();
+			foreach ($row as $key => $value)
+			{
+				$pos = strpos($key, '.');
+				if( $pos >0 )
+				{
+					$keyx = substr($key, $pos+1);
+					$rowx[$keyx] = $value;
+				}
+				else
+				{
+					$rowx[$key] = $value;
+				}
+			}
+
+			return $rowx;
 	}
 
 	/**
@@ -327,12 +324,11 @@ class sqlite extends \phpbb\db\driver\driver
 			$query_id = $this->query_result;
 		}
 
- 			if (isset($cashe) && isset($cache->sql_rowset[$query_id]))
+		if (isset($cashe) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
-
-			return true; //($query_id !== false) ? @sqlite_seek($query_id, $rownum) : false;
+		return true; //($query_id !== false) ? @sqlite_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -370,10 +366,10 @@ class sqlite extends \phpbb\db\driver\driver
 	*/
 	function sql_escape($msg)
 	{
-            return $this->db->escapeString($msg);
-      }
+		return $this->db->escapeString($msg);
+	}
 
-      /**
+	/**
 	* {@inheritDoc}
 	*/
 	function sql_lower_text($column_name)
@@ -404,10 +400,10 @@ class sqlite extends \phpbb\db\driver\driver
 	function _sql_error()
 	{
 		if( $this->connect_error == '' ) {
-            $error = array(
-                  'message'      => $this->db->lastErrorMsg(),
-                  'code'            => $this->db->lastErrorCode()
-            );
+			$error = array(
+				'message'	=> $this->db->lastErrorMsg(),
+				'code'		=> $this->db->lastErrorCode()
+			);
 		}
 		else {
 			$error = array(
@@ -433,7 +429,7 @@ class sqlite extends \phpbb\db\driver\driver
 	*/
 	function _sql_close()
 	{
-            return $this->db->close(); //@sqlite3_close($this->db_connect_id);
+		return $this->db->close(); //@sqlite3_close($this->db_connect_id);
 	}
 
 	/**
@@ -444,49 +440,47 @@ class sqlite extends \phpbb\db\driver\driver
 	{
             switch ($mode)
             {
-                  case 'start':
-                  break;
+				case 'start':
+				break;
 
-                  case 'fromcache':
-                        $endtime = explode(' ', microtime());
-                        $endtime = $endtime[0] + $endtime[1];
+				case 'fromcache':
+					$endtime = explode(' ', microtime());
+					$endtime = $endtime[0] + $endtime[1];
 
-                        $results = $this->db->query( $query);
-                        while ($result= $results->fetchArray(SQLITE3_ASSOC))
-                        {
-                              // Take the time spent on parsing rows into account
-                        }
+					$results = $this->db->query( $query);
+					while ($result= $results->fetchArray(SQLITE3_ASSOC))
+					{
+						// Take the time spent on parsing rows into account
+					}
 
-                        $splittime = explode(' ', microtime());
-                        $splittime = $splittime[0] + $splittime[1];
+					$splittime = explode(' ', microtime());
+					$splittime = $splittime[0] + $splittime[1];
 
-                        $this->sql_report('record_fromcache', $query, $endtime, $splittime);
-						
-						$results->finalize();
+					$this->sql_report('record_fromcache', $query, $endtime, $splittime);
 
-                  break;
-            }
+					$results->finalize();
+
+					break;
+			}
 	}
 
-      /**
-      * Return column types
-      */
+	/**
+	* Return column types
+	*/
 
-      function fetch_column_types($table_name)
-      {
-                  $col_types = array();
-                  $col_info_res  = $this->db->query( "PRAGMA table_info('". $table_name . "')");
-                  
-                  while ($col_info = $col_info_res->fetchArray(SQLITE3_ASSOC))
-                  {
-                        $column_name = $col_info['name'];
-                        $column_type = $col_info['type'];
-                        $col_types[$column_name] = $column_type;
-                  }
-				  $col_info_res->finalize();
-                  return $col_types;
-      }
+	function fetch_column_types($table_name)
+	{
+		$col_types = array();
+		$col_info_res  = $this->db->query( "PRAGMA table_info('". $table_name . "')");
+
+		while ($col_info = $col_info_res->fetchArray(SQLITE3_ASSOC))
+		{
+			$column_name = $col_info['name'];
+			$column_type = $col_info['type'];
+			$col_types[$column_name] = $column_type;
+		}
+		$col_info_res->finalize();
+		return $col_types;
+	}
 
 }
-
-?>
