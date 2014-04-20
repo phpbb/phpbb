@@ -198,7 +198,6 @@ class md_exporter
 			$files = explode("\n    + ", $file_details);
 			foreach ($files as $file)
 			{
-
 				if (($this->filter !== 'adm') && strpos($file, 'styles/prosilver/template/') === 0)
 				{
 					$files_list['prosilver'][] = substr($file, strlen('styles/prosilver/template/'));
@@ -253,9 +252,13 @@ class md_exporter
 		$file_content = file_get_contents($this->root_path . $file);
 		foreach ($events as $event)
 		{
-			if (strpos($file_content, '<!-- EVENT ' . $event . ' -->') === false)
+			if (($this->filter !== 'adm') && strpos($file, 'adm/style/') !== 0
+				|| ($this->filter === 'adm') && strpos($file, 'adm/style/') === 0)
 			{
-				throw new \LogicException("Event '{$event}' not found in file '{$file}'", 2);
+				if (strpos($file_content, '<!-- EVENT ' . $event . ' -->') === false)
+				{
+					throw new \LogicException("Event '{$event}' not found in file '{$file}'", 2);
+				}
 			}
 		}
 	}
