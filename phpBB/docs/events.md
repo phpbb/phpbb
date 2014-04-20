@@ -66,13 +66,13 @@ acp_simple_header_body_before
 
 acp_simple_header_head_append
 ===
-* Location: adm/style/overall_header.html
+* Location: adm/style/simple_header.html
 * Since: 3.1.0-a1
 * Purpose: Add assets within the `<head>` tags in the simple header of the ACP
 
 acp_users_overview_options_append
 ===
-* Location: adm/style/acp_users.html
+* Location: adm/style/acp_users_overview.html
 * Since: 3.1.0-a1
 * Purpose: Add options and settings on user overview page
 
