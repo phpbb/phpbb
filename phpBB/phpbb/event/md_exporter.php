@@ -51,6 +51,54 @@ class md_exporter
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
+	public function crawl_phpbb_directory_adm($md_file)
+	{
+		$this->crawl_eventsmd($md_file, 'adm');
+
+		$file_list = $this->get_recursive_file_list($this->root_path . 'adm/style/', 'adm/style/');
+		foreach ($file_list as $file)
+		{
+			$file_name = 'adm/style/' . $file;
+			$this->validate_events_from_file($file_name, $this->crawl_file_for_events($file_name));
+		}
+
+		return sizeof($this->events);
+	}
+
+	/**
+	* @param string $md_file
+	* @param string $filter
+	* @return int		Number of events found
+	* @throws \LogicException
+	*/
+	public function crawl_phpbb_directory_styles($md_file)
+	{
+		$this->crawl_eventsmd($md_file, 'styles');
+
+		$styles = array('prosilver', 'subsilver2');
+		foreach ($styles as $style)
+		{
+			$file_list = $this->get_recursive_file_list(
+				$this->root_path . 'styles/' . $style . '/template/',
+				'styles/' . $style . '/template/'
+			);
+
+			foreach ($file_list as $file)
+			{
+				$file_name = 'styles/' . $style . '/template/' . $file;
+				$this->validate_events_from_file($file_name, $this->crawl_file_for_events($file_name));
+			}
+		}
+
+		return sizeof($this->events);
+	}
+
+	/**
+	* @param string $md_file
+	* @param string $filter
+	* @return int		Number of events found
+	* @throws \LogicException
+	*/
 	public function crawl_eventsmd($md_file, $filter)
 	{
 		$file_content = file_get_contents($this->root_path . $md_file);
@@ -92,11 +140,6 @@ class md_exporter
 				'since'			=> $since,
 				'description'	=> $description,
 			);
-		}
-
-		foreach ($this->events_by_file as $file => $events)
-		{
-			$this->validate_events_for_file($file, $events);
 		}
 
 		return sizeof($this->events);
@@ -233,33 +276,126 @@ class md_exporter
 		return $files_list;
 	}
 
+	public function crawl_file_for_events($file)
+	{
+		if (!file_exists($this->root_path . $file))
+		{
+			throw new \LogicException("File '{$file}' does not exist", 1);
+		}
+
+		$event_list = array();
+		$file_content = file_get_contents($this->root_path . $file);
+
+		$events = explode('<!-- EVENT ', $file_content);
+		// Remove the code before the first event
+		array_shift($events);
+		foreach ($events as $event)
+		{
+			list($event_name, $null) = explode(' -->', $event, 2);
+			$event_list[] = $event_name;
+		}
+
+		return $event_list;
+	}
+
 	/**
-	* Validates whether a list of events is named in $file
+	* Validates whether all events from $file are in the md file and vice-versa
 	*
 	* @param string $file
 	* @param array $events
 	* @return null
 	* @throws \LogicException
 	*/
-	public function validate_events_for_file($file, array $events)
+	public function validate_events_from_file($file, array $events)
 	{
-		if (!file_exists($this->root_path . $file))
+		if (empty($this->events_by_file[$file]) && empty($events))
 		{
-			$event_list = implode("', '", $events);
-			throw new \LogicException("File '{$file}' not found for event '{$event_list}'", 1);
+			return true;
+		}
+		else if (empty($events))
+		{
+			$event_list = implode("', '", $this->events_by_file[$file]);
+			throw new \LogicException("File '{$file}' contains no events, but should contain: "
+				. "'{$event_list}'", 1);
 		}
 
-		$file_content = file_get_contents($this->root_path . $file);
-		foreach ($events as $event)
+		$missing_events_from_file = array();
+		foreach ($this->events_by_file[$file] as $event)
 		{
-			if (($this->filter !== 'adm') && strpos($file, 'adm/style/') !== 0
-				|| ($this->filter === 'adm') && strpos($file, 'adm/style/') === 0)
+			if (!in_array($event, $events))
 			{
-				if (strpos($file_content, '<!-- EVENT ' . $event . ' -->') === false)
-				{
-					throw new \LogicException("Event '{$event}' not found in file '{$file}'", 2);
-				}
+				$missing_events_from_file[] = $event;
 			}
 		}
+
+		if (!empty($missing_events_from_file))
+		{
+			$event_list = implode("', '", $missing_events_from_file);
+			throw new \LogicException("File '{$file}' does not contain events: '{$event_list}'", 2);
+		}
+
+		$missing_events_from_md = array();
+		foreach ($events as $event)
+		{
+			if (!in_array($event, $this->events_by_file[$file]))
+			{
+				$missing_events_from_md[] = $event;
+			}
+		}
+
+		if (!empty($missing_events_from_md))
+		{
+			$event_list = implode("', '", $missing_events_from_md);
+			throw new \LogicException("File '{$file}' contains additional events: '{$event_list}'", 3);
+		}
+
+		return true;
+	}
+
+	/**
+	* Returns a list of files in $dir
+	*
+	* Works recursive with any depth
+	*
+	* @param	string	$dir	Directory to go through
+	* @param	string	$path	Path from root to $dir
+	* @return	array	List of files (including directories)
+	*/
+	public function get_recursive_file_list($dir, $path = '')
+	{
+		try
+		{
+			$iterator = new \DirectoryIterator($dir);
+		}
+		catch (\Exception $e)
+		{
+			return array();
+		}
+
+		$files = array();
+		foreach ($iterator as $file_info)
+		{
+			/** @var \DirectoryIterator $file_info */
+			if ($file_info->isDot())
+			{
+				continue;
+			}
+
+			// Do not scan some directories
+			if ($file_info->isDir())
+			{
+				$sub_dir = $this->get_recursive_file_list($file_info->getPath() . '/' . $file_info->getFilename(), $path . '/' . $file_info->getFilename());
+				foreach ($sub_dir as $file)
+				{
+					$files[] = $file_info->getFilename() . '/' . $file;
+				}
+			}
+			else if (substr($file_info->getFilename(), -5) == '.html')
+			{
+				$files[] = $file_info->getFilename();
+			}
+		}
+
+		return $files;
 	}
 }
