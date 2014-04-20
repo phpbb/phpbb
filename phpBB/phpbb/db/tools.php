@@ -1770,7 +1770,7 @@ class tools
 					return $column_name . ' ' . $column_data['column_type_sql'];
 				}
 
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
+				if (version_compare(sqlite3_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
 						FROM sqlite_master

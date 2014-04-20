@@ -15,7 +15,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-function sqlite_libversion()
+function sqlite3_libversion()
 {
 	global $db;
 	return $db->sql_server_info(true);
@@ -299,7 +299,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 			break;
 
 			case 'phpbb\db\driver\sqlite':
-				if (version_compare(sqlite_libversion(), '3.0', '<'))
+				if (version_compare(sqlite3_libversion(), '3.0', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
 				}
