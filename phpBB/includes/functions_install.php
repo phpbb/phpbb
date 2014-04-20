@@ -15,6 +15,12 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+function sqlite_libversion()
+{
+	global $db;
+	return $db->sql_server_info(true);
+}
+
 /**
 * Returns an array of available DBMS with some data, if a DBMS is specified it will only
 * return data for that DBMS and will load its extension if necessary.
@@ -100,7 +106,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 		'sqlite'		=> array(
 			'LABEL'			=> 'SQLite',
 			'SCHEMA'		=> 'sqlite',
-			'MODULE'		=> 'sqlite',
+			'MODULE'		=> 'sqlite3',
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\sqlite',
 			'AVAILABLE'		=> true,
@@ -197,7 +203,7 @@ function get_tables(&$db)
 */
 function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
-	global $phpbb_root_path, $phpEx, $config, $lang;
+	global $phpbb_root_path, $phpEx, $config, $lang, $db;
 
 	$dbms = $dbms_details['DRIVER'];
 
@@ -293,7 +299,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 			break;
 
 			case 'phpbb\db\driver\sqlite':
-				if (version_compare(sqlite_libversion(), '2.8.2', '<'))
+				if (version_compare(sqlite_libversion(), '3.0', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
 				}

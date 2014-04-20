@@ -1013,15 +1013,49 @@ class sqlite_extractor extends base_extractor
 	function write_data($table_name)
 	{
 		global $db;
+		static $proper;
 
-		$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
+		if (is_null($proper))
+		{
+			$proper = version_compare(PHP_VERSION, '5.1.3', '>=');
+		}
+
+		if ($proper)
+		{
+			$col_types = $db->fetch_column_types($table_name); 
+		}
+		else
+		{
+			$sql = "SELECT sql
+				FROM sqlite_master
+				WHERE type = 'table'
+					AND name = '" . $table_name . "'";
+			$table_data = sqlite_single_query($db->db_connect_id, $sql);
+			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
+			$table_data = trim($table_data);
+
+			preg_match('#\((.*)\)#s', $table_data, $matches);
+
+			$table_cols = explode(',', trim($matches[1]));
+			foreach ($table_cols as $declaration)
+			{
+				$entities = preg_split('#\s+#', trim($declaration));
+				$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
+
+				// Hit a primary key, those are not what we need :D
+				if (empty($entities[1]) || (strtolower($entities[0]) === 'primary' && strtolower($entities[1]) === 'key'))
+				{
+					continue;
+				}
+				$col_types[$column_name] = $entities[1];
+			}
+		}
 
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = sqlite_unbuffered_query($db->db_connect_id, $sql);
-		$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
+		$result = $db->sql_query($sql);
 		$sql_insert = 'INSERT INTO ' . $table_name . ' (' . implode(', ', array_keys($col_types)) . ') VALUES (';
-		foreach ($rows as $row)
+		while ($row = $db->sql_fetchrow($result))
 		{
 			foreach ($row as $column_name => $column_data)
 			{
@@ -1029,7 +1063,7 @@ class sqlite_extractor extends base_extractor
 				{
 					$row[$column_name] = 'NULL';
 				}
-				else if ($column_data == '')
+				else if ($column_data == '' && stripos($col_types[$column_name], 'int') === false)
 				{
 					$row[$column_name] = "''";
 				}

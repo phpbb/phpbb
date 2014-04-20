@@ -211,7 +211,7 @@ $lang = array_merge($lang, array(
 	<ul>
 		<li>MySQL 3.23 or above (MySQLi supported)</li>
 		<li>PostgreSQL 8.3+</li>
-		<li>SQLite 2.8.2+</li>
+		<li>SQLite 3.7.7+</li>
 		<li>Firebird 2.1+</li>
 		<li>MS SQL Server 2000 or above (directly or via ODBC)</li>
 		<li>MS SQL Server 2005 or above (native)</li>
