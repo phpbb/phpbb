@@ -36,6 +36,7 @@ class md_exporter
 	{
 		$this->root_path = $phpbb_root_path;
 		$this->events = array();
+		$this->events_by_file = array();
 		$this->filter = $this->current_event = '';
 	}
 
@@ -70,7 +71,7 @@ class md_exporter
 
 			if (isset($this->events[$this->current_event]))
 			{
-				throw new \LogicException('The event "' . $this->current_event . '" is defined multiple times');
+				throw new \LogicException("The event '{$this->current_event}' is defined multiple times");
 			}
 
 			if (($this->filter == 'adm' && strpos($this->current_event, 'acp_') !== 0)
@@ -91,6 +92,11 @@ class md_exporter
 				'since'			=> $since,
 				'description'	=> $description,
 			);
+		}
+
+		foreach ($this->events_by_file as $file => $events)
+		{
+			$this->validate_events_for_file($file, $events);
 		}
 
 		return sizeof($this->events);
@@ -147,7 +153,7 @@ class md_exporter
 	{
 		if (!preg_match('#^([a-z][a-z0-9]*(?:_[a-z][a-z0-9]*)+)$#', $event_name))
 		{
-			throw new \LogicException('Found invalid event name "' . $event_name . '"');
+			throw new \LogicException("Invalid event name '{$event_name}'");
 		}
 	}
 
@@ -164,7 +170,7 @@ class md_exporter
 
 		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?$#', $since))
 		{
-			throw new \LogicException('Invalid since information for event "' . $this->current_event . '"');
+			throw new \LogicException("Invalid since information found for event '{$this->current_event}'");
 		}
 
 		return $since;
@@ -192,10 +198,6 @@ class md_exporter
 			$files = explode("\n    + ", $file_details);
 			foreach ($files as $file)
 			{
-				if (!file_exists($this->root_path . $file))
-				{
-					throw new \LogicException('File "' . $file . '" not found for event "' . $this->current_event . '"', 2);
-				}
 
 				if (($this->filter !== 'adm') && strpos($file, 'styles/prosilver/template/') === 0)
 				{
@@ -211,19 +213,50 @@ class md_exporter
 				}
 				else
 				{
-					throw new \LogicException('Invalid file "' . $file . '" found for event "' . $this->current_event . '"', 2);
+					throw new \LogicException("Invalid file '{$file}' not found for event '{$this->current_event}'", 2);
 				}
+
+				$this->events_by_file[$file][] = $this->current_event;
 			}
 		}
 		else if ($this->filter == 'adm')
 		{
-			$files_list['adm'][] =  substr($file_details, strlen("* Location: adm/style/"));
+			$file = substr($file_details, strlen('* Location: '));
+			$files_list['adm'][] =  substr($file, strlen('adm/style/'));
+
+			$this->events_by_file[$file][] = $this->current_event;
 		}
 		else
 		{
-			throw new \LogicException('Invalid file list found for event "' . $this->current_event . '"', 2);
+			throw new \LogicException("Invalid file list found for event '{$this->current_event}'", 2);
 		}
 
 		return $files_list;
+	}
+
+	/**
+	* Validates whether a list of events is named in $file
+	*
+	* @param string $file
+	* @param array $events
+	* @return null
+	* @throws \LogicException
+	*/
+	public function validate_events_for_file($file, array $events)
+	{
+		if (!file_exists($this->root_path . $file))
+		{
+			$event_list = implode("', '", $events);
+			throw new \LogicException("File '{$file}' not found for event '{$event_list}'", 1);
+		}
+
+		$file_content = file_get_contents($this->root_path . $file);
+		foreach ($events as $event)
+		{
+			if (strpos($file_content, '<!-- EVENT ' . $event . ' -->') === false)
+			{
+				throw new \LogicException("Event '{$event}' not found in file '{$file}'", 2);
+			}
+		}
 	}
 }
