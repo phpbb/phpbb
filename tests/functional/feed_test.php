@@ -14,8 +14,110 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 {
 	protected $data = array();
 
-	public function test_setup_forums()
+	private $init_values = array();
+
+	public function test_setup_config_before_state()
 	{
+		$this->login();
+		$this->admin_login();
+
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
+
+		$form = $crawler->selectButton('Submit')->form();
+		$values = $form->getValues();
+
+		$this->init_values['post_base_items'] = (int)$values['config[feed_limit_post]'];
+		$this->init_values['topic_base_items'] = (int)$values['config[feed_limit_topic]'];
+
+		// Enable all feeds
+		$values["config[feed_enable]"] = true;
+		$values["config[feed_forum]"] = true;
+		$values["config[feed_item_statistics]"] = true;
+		$values["config[feed_overall]"] = true;
+		$values["config[feed_overall_forums]"] = true;
+		$values["config[feed_topic]"] = true;
+		$values["config[feed_topics_active]"] = true;
+		$values["config[feed_topics_new]"] = true;
+
+		$form->setValues($values);
+
+		$crawler = self::submit($form);
+		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
+
+		// Special config (Guest can't see attachments)
+		$this->add_lang('acp/permissions');
+
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&sid={$this->sid}&icat=16&mode=setting_group_global&group_id[0]=1");
+		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
+
+		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
+		$form["setting[1][0][u_download]"]->select(-1);
+
+		$crawler = self::submit($form);
+		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
+
+		return $this->init_values;
+	}
+
+	/**
+	 * @depends test_setup_config_before_state
+	 */
+	public function test_dump_board_state($init_values)
+	{
+		$this->init_values = $init_values;
+
+		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
+		self::assert_response_xml();
+		$this->init_values['disapprove_user']['forums_value'] = (int)$crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
+		self::assert_response_xml();
+		$this->init_values['disapprove_user']['overall_value'] = $crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
+		self::assert_response_xml();
+		$this->init_values['disapprove_user']['topics_value'] = $crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
+		self::assert_response_xml();
+		$this->init_values['disapprove_user']['topics_new_value'] = $crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
+		self::assert_response_xml();
+		$this->init_values['disapprove_user']['topics_active_value'] = $crawler->filterXPath("//entry")->count();
+
+		$this->login();
+
+		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
+		self::assert_response_xml();
+		$this->init_values['admin']['forums_value'] = (int)$crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
+		self::assert_response_xml();
+		$this->init_values['admin']['overall_value'] = $crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
+		self::assert_response_xml();
+		$this->init_values['admin']['topics_value'] = $crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
+		self::assert_response_xml();
+		$this->init_values['admin']['topics_new_value'] = $crawler->filterXPath("//entry")->count();
+
+		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
+		self::assert_response_xml();
+		$this->init_values['admin']['topics_active_value'] = $crawler->filterXPath("//entry")->count();
+
+		return $this->init_values;
+	}
+
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_setup_forums($init_values)
+	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->admin_login();
 		$this->create_user("disapprove_user");
@@ -71,8 +173,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 	}
 
-	public function test_setup_config()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_setup_config_after_forums($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->admin_login();
 
@@ -86,19 +193,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
 
 		$form = $crawler->selectButton('Submit')->form();
-		$values = $form->getValues();
-
-		// Enable all feeds
-		$values["config[feed_enable]"] = true;
-		$values["config[feed_forum]"] = true;
-		$values["config[feed_item_statistics]"] = true;
-		$values["config[feed_overall]"] = true;
-		$values["config[feed_overall_forums]"] = true;
-		$values["config[feed_topic]"] = true;
-		$values["config[feed_topics_active]"] = true;
-		$values["config[feed_topics_new]"] = true;
-
-		$form->setValues($values);
 
 		// News/Exclude's forums config
 		$form['feed_news_id']->select(array($this->data['forums']['Feeds #news']));
@@ -106,22 +200,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		$crawler = self::submit($form);
 		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
-
-		// News special config (Guest can't see attachments)
-		$this->add_lang('acp/permissions');
-
-		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&sid={$this->sid}&icat=16&mode=setting_group_global&group_id[0]=1");
-		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
-
-		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
-		$form["setting[1][0][u_download]"]->select(-1);
-
-		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
 	}
 
-	public function test_feeds_empty()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_empty($init_values)
 	{
+		$this->init_values = $init_values;
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -143,7 +229,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'forums' => array(
 				array(
-					'nb_entries' => 4,
+					'nb_entries' => 3,
 					'xpath' => array(
 						'//entry/category[@label="Feeds #exclude"]' => 0,
 					),
@@ -157,8 +243,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_create_exclude_topic()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_exclude_topic($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -170,8 +261,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['topics']['Feeds #exclude - Topic #1'] = (int) $post['topic_id'];
 	}
 
-	public function test_feeds_exclude()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_exclude($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #exclude',
@@ -199,7 +295,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 1,
+					'nb_entries' => 0,
 					'xpath' => array(
 						'//entry/title[contains(., "#exclude")]' => 0,
 					),
@@ -207,7 +303,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 1,
+					'nb_entries' => 0,
 					'xpath' => array(
 						'//entry/title[contains(., "#exclude")]' => 0,
 					),
@@ -215,7 +311,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 1,
+					'nb_entries' => 0,
 					'xpath' => array(
 						'//entry/title[contains(., "#exclude")]' => 0,
 					),
@@ -223,7 +319,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 1,
+					'nb_entries' => 0,
 					'xpath' => array(
 						'//entry/title[contains(., "#exclude")]' => 0,
 					),
@@ -232,8 +328,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_create_news_topics()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_news_topics($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -259,8 +360,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['posts']['Re: Feeds #news - Topic #2'] = (int) $post2['post_id'];
 	}
 
-	public function test_feeds_news_admin()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_news_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #news',
@@ -304,7 +410,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 4,
+					'nb_entries' => 3,
 					'xpath' => array(
 						'//entry/title[contains(., "#news")]' => 3,
 					),
@@ -312,7 +418,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 3,
+					'nb_entries' => 2,
 					'xpath' => array(
 						'//entry/title[contains(., "#news")]' => 2,
 					),
@@ -320,7 +426,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 3,
+					'nb_entries' => 2,
 					'xpath' => array(
 						'//entry/title[contains(., "#news")]' => 2,
 					),
@@ -328,7 +434,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 3,
+					'nb_entries' => 2,
 					'xpath' => array(
 						'//entry/title[contains(., "#news")]' => 2,
 					),
@@ -337,8 +443,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_feeds_news_guest()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_news_guest($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'posts' => array(
 				'Feeds #news - Topic #2',
@@ -359,8 +470,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		));
 	}
 
-	public function test_create_sub_forum_topic()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_sub_forum_topic($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -376,8 +492,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['topics']['Feeds #1.1 - Topic #1'] = (int) $post['topic_id'];
 	}
 
-	public function test_feeds_sub_forum()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_sub_forum($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -395,8 +516,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_create_softdelete_post()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_softdelete_post($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -415,8 +541,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['posts']['Re: Feeds #1 - Topic #2'] = (int) $post2['post_id'];
 	}
 
-	public function test_softdelete_post()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_softdelete_post($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -442,8 +573,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
 	}
 
-	public function test_feeds_softdeleted_post_admin()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_softdeleted_post_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -475,7 +611,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 8,
+					'nb_entries' => 7,
 					'contents_lang' => array(
 						1 => 'POST_DELETED',
 					),
@@ -484,8 +620,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_feeds_softdeleted_post_guest()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_softdeleted_post_guest($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -511,14 +652,19 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 7,
+					'nb_entries' => 6,
 				),
 			),
 		));
 	}
 
-	public function test_softdelete_topic()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_softdelete_topic($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -546,8 +692,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->assertContains('Feeds #1 - Topic #2', $crawler->filter('h2')->text());
 	}
 
-	public function test_feeds_softdeleted_topic_admin()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_softdeleted_topic_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -581,7 +732,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 8,
+					'nb_entries' => 7,
 					'contents_lang' => array(
 						1 => 'POST_DELETED',
 						2 => 'POST_DELETED',
@@ -590,7 +741,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 					'contents_lang' => array(
 						1 => 'TOPIC_DELETED',
 					),
@@ -598,7 +749,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 					'contents_lang' => array(
 						1 => 'TOPIC_DELETED',
 					),
@@ -606,7 +757,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 					'contents_lang' => array(
 						1 => 'TOPIC_DELETED',
 					),
@@ -615,8 +766,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_feeds_softdeleted_topic_guest()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_softdeleted_topic_guest($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -642,29 +798,34 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 				),
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 4,
 				),
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 4,
 				),
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 4,
 				),
 			),
 		));
 	}
 
-	public function test_create_unapproved_post()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_unapproved_post($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -684,8 +845,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->assertNotContains('Re: Feeds #1.1 - Topic #2', $crawler->filter('html')->text());
 	}
 
-	public function test_feeds_unapproved_post_admin()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_unapproved_post_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -717,7 +883,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 10,
+					'nb_entries' => 9,
 					'contents_lang' => array(
 						1 => 'POST_UNAPPROVED',
 					),
@@ -726,8 +892,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_feeds_unapproved_post_disapprove_user()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_unapproved_post_disapprove_user($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -753,14 +924,19 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 7,
+					'nb_entries' => 6,
 				),
 			),
 		), 'disapprove_user');
 	}
 
-	public function test_create_unapproved_topic()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_unapproved_topic($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -778,8 +954,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->assertNotContains('Feeds #1.1 - Topic #3', $crawler->filter('html')->text());
 	}
 
-	public function test_feeds_unapproved_topic_admin()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_unapproved_topic_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -811,7 +992,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 11,
+					'nb_entries' => 10,
 					'contents_lang' => array(
 						1 => 'POST_UNAPPROVED',
 					),
@@ -819,7 +1000,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 8,
+					'nb_entries' => 7,
 					'contents_lang' => array(
 						1 => 'TOPIC_UNAPPROVED',
 					),
@@ -827,7 +1008,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 8,
+					'nb_entries' => 7,
 					'contents_lang' => array(
 						1 => 'TOPIC_UNAPPROVED',
 					),
@@ -835,7 +1016,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 8,
+					'nb_entries' => 7,
 					'contents_lang' => array(
 						1 => 'TOPIC_UNAPPROVED',
 					),
@@ -844,8 +1025,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_feeds_unapproved_topic_disapprove_user()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_unapproved_topic_disapprove_user($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -871,29 +1057,34 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 7,
+					'nb_entries' => 6,
 				),
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 				),
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 				),
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 5,
 				),
 			),
 		), 'disapprove_user');
 	}
 
-	public function test_create_attachment_topic()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_create_attachment_topic($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -909,8 +1100,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['topics']['Feeds #1 - Topic #3'] = (int) $post['topic_id'];
 	}
 
-	public function test_feeds_attachment_admin()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_attachment_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -955,7 +1151,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 12,
+					'nb_entries' => 11,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -968,7 +1164,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 9,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -981,7 +1177,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 9,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -994,7 +1190,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 9,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1008,8 +1204,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		), 'admin');
 	}
 
-	public function test_feeds_attachment_guest()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	public function test_feeds_attachment_guest($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -1054,7 +1255,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 8,
+					'nb_entries' => 7,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1067,7 +1268,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 7,
+					'nb_entries' => 6,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1080,7 +1281,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 7,
+					'nb_entries' => 6,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1093,7 +1294,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 7,
+					'nb_entries' => 6,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1108,8 +1309,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	}
 
 	// Disabled until PHPBB3-12418 is fixed and merged
-	/*public function test_create_missing_attachment_post()
+	/**
+	 * @depends test_dump_board_state
+	 */
+	/*public function test_create_missing_attachment_post($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -1128,8 +1334,13 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['posts']['Re: Feeds #1 - Topic #3-1'] = (int) $post2['post_id'];
 	}
 
-	public function test_feeds_missing_attachment_admin()
+	/**
+	 * @depends test_dump_board_state
+	 * /
+	public function test_feeds_missing_attachment_admin($init_values)
 	{
+		$this->init_values = $init_values;
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -1213,6 +1424,11 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		if ($username)
 		{
 			$this->login($username);
+			$init_values = $this->init_values[$username];
+		}
+		else
+		{
+			$init_values = $this->init_values['disapprove_user'];
 		}
 
 		foreach ($data as $mode => $feeds)
@@ -1226,6 +1442,28 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				}
 				else
 				{
+					switch ($mode) {
+						case 'forums':
+							$feed_data['nb_entries'] = ((int)$feed_data['nb_entries'] + $init_values['forums_value']);
+							break;
+						case 'overall':
+							$feed_data['nb_entries'] = min($feed_data['nb_entries'] + $init_values['overall_value'], $this->init_values['post_base_items']);
+							break;
+						case 'topics':
+							$feed_data['nb_entries'] = min($feed_data['nb_entries'] + $init_values['topics_value'],  $this->init_values['topic_base_items']);
+							break;
+						case 'topics_new':
+							$feed_data['nb_entries'] = min($feed_data['nb_entries'] + $init_values['topics_new_value'],  $this->init_values['topic_base_items']);
+							break;
+						case 'topics_active':
+							$feed_data['nb_entries'] = min($feed_data['nb_entries'] + $init_values['topics_active_value'], $this->init_values['topic_base_items']);
+							break;
+						case 'news':
+							break;
+						default:
+							$this->fail('Unsupported feed.');
+					}
+
 					$params = "?mode={$mode}";
 					$this->assert_feed($params, $feed_data);
 				}
