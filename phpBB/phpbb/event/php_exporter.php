@@ -163,7 +163,8 @@ class php_exporter
 	}
 
 	/**
-	* @param $file
+	* @param string $file
+	* @return int Number of events found in this file
 	* @throws \LogicException
 	*/
 	public function crawl_php_file($file)
@@ -171,6 +172,7 @@ class php_exporter
 		$this->current_file = $file;
 		$this->file_lines = array();
 		$content = file_get_contents($this->root_path . $this->current_file);
+		$num_events_found = 0;
 
 		if (strpos($content, "dispatcher->trigger_event('") || strpos($content, "dispatcher->dispatch('"))
 		{
@@ -227,9 +229,12 @@ class php_exporter
 						'since'			=> $since,
 						'description'	=> $description,
 					);
+					$num_events_found++;
 				}
 			}
 		}
+
+		return $num_events_found;
 	}
 
 	/**

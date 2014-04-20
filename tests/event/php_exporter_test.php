@@ -688,11 +688,4 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 		$this->exporter->set_content($lines);
 		$this->exporter->find_description();
 	}
-
-	public function test_crawl_phpbb_directory_php()
-	{
-		global $phpbb_root_path;
-		$exporter = new \phpbb\event\php_exporter($phpbb_root_path);
-		$this->assertGreaterThan(0, $exporter->crawl_phpbb_directory_php());
-	}
 }
