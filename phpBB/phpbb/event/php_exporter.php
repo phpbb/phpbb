@@ -185,7 +185,7 @@ class php_exporter
 				if ($found_trigger_event !== false)
 				{
 					$event_line = $i;
-					$this->set_current_event($this->get_trigger_event_name($event_line), $event_line);
+					$this->set_current_event($this->get_event_name($event_line, false), $event_line);
 
 					// Find variables of the event
 					$arguments = $this->get_vars_from_array();
@@ -198,7 +198,7 @@ class php_exporter
 					if ($found_dispatch !== false)
 					{
 						$event_line = $i;
-						$this->set_current_event($this->get_dispatch_name($event_line), $event_line);
+						$this->set_current_event($this->get_event_name($event_line, true), $event_line);
 					}
 				}
 
@@ -241,46 +241,29 @@ class php_exporter
 	* Find the name of the event inside the dispatch() line
 	*
 	* @param int $event_line
+	* @param bool $is_dispatch Do we look for dispatch() or trigger_event() ?
 	* @return int Absolute line number
 	* @throws \LogicException
 	*/
-	public function get_dispatch_name($event_line)
+	public function get_event_name($event_line, $is_dispatch)
 	{
 		$event_text_line = $this->file_lines[$event_line];
 		$event_text_line = ltrim($event_text_line, "\t");
 
-		$regex = '#\$([a-z](?:[a-z0-9_]|->)*)';
-		$regex .= '->dispatch\(';
-		$regex .= '\'' . $this->preg_match_event_name() . '\'';
-		$regex .= '\);#';
-
-		$match = array();
-		preg_match($regex, $event_text_line, $match);
-		if (!isset($match[2]))
+		if ($is_dispatch)
 		{
-			throw new \LogicException("Can not find event name in line '{$event_text_line}' "
-				. "in file '{$this->current_file}:{$event_line}'", 1);
+			$regex = '#\$([a-z](?:[a-z0-9_]|->)*)';
+			$regex .= '->dispatch\(';
+			$regex .= '\'' . $this->preg_match_event_name() . '\'';
+			$regex .= '\);#';
 		}
-
-		return $match[2];
-	}
-
-	/**
-	* Find the name of the event inside the trigger_event() line
-	*
-	* @param int $event_line
-	* @return int Absolute line number
-	* @throws \LogicException
-	*/
-	public function get_trigger_event_name($event_line)
-	{
-		$event_text_line = $this->file_lines[$event_line];
-		$event_text_line = ltrim($event_text_line, "\t");
-
-		$regex = '#extract\(\$([a-z](?:[a-z0-9_]|->)*)';
-		$regex .= '->trigger_event\(';
-		$regex .= '\'' . $this->preg_match_event_name() . '\'';
-		$regex .= ', compact\(\$vars\)\)\);#';
+		else
+		{
+			$regex = '#extract\(\$([a-z](?:[a-z0-9_]|->)*)';
+			$regex .= '->trigger_event\(';
+			$regex .= '\'' . $this->preg_match_event_name() . '\'';
+			$regex .= ', compact\(\$vars\)\)\);#';
+		}
 
 		$match = array();
 		preg_match($regex, $event_text_line, $match);

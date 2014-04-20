@@ -233,7 +233,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_get_dispatch_name($event_line, $expected)
 	{
-		$this->assertEquals($expected, $this->exporter->get_dispatch_name($event_line));
+		$this->exporter->set_content(array($event_line));
+		$this->assertEquals($expected, $this->exporter->get_event_name(0, true));
 	}
 
 	static public function get_dispatch_name_throws_data()
@@ -252,7 +253,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_get_dispatch_name_throws($event_line)
 	{
-		$this->exporter->get_dispatch_name($event_line);
+		$this->exporter->set_content(array($event_line));
+		$this->exporter->get_event_name(0, true);
 	}
 
 	static public function get_trigger_event_name_data()
@@ -270,7 +272,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_get_trigger_event_name($event_line, $expected)
 	{
-		$this->assertEquals($expected, $this->exporter->get_trigger_event_name($event_line));
+		$this->exporter->set_content(array($event_line));
+		$this->assertEquals($expected, $this->exporter->get_event_name(0, false));
 	}
 
 	static public function get_trigger_event_name_throws_data()
@@ -293,7 +296,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	*/
 	public function test_get_trigger_event_name_throws($event_line)
 	{
-		$this->exporter->get_trigger_event_name($event_line);
+		$this->exporter->set_content(array($event_line));
+		$this->exporter->get_event_name(0, false);
 	}
 
 	static public function get_vars_from_array_data()
