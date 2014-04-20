@@ -423,6 +423,7 @@ simple_footer_after
 ===
 * Locations:
     + styles/prosilver/template/simple_footer.html
+    + styles/subsilver2/template/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
