@@ -454,40 +454,35 @@ class sqlite extends \phpbb\db\driver\driver
 			{
 				case 'start':
 
-
-				$explain_query = $query;
-				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-				else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-
-
-				if (preg_match('/^SELECT/', $explain_query))
-				{
-					$html_table = false;
-
-
-					if ($result = $this->dbo->query("EXPLAIN QUERY PLAN $explain_query"))
+					$explain_query = $query;
+					if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
 					{
-						while ($row = $result->fetchArray(SQLITE3_ASSOC))
+						$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+					}
+					else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+					{
+						$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+					}
+
+					if (preg_match('/^SELECT/', $explain_query))
+					{
+						$html_table = false;
+
+						if ($result = $this->dbo->query("EXPLAIN QUERY PLAN $explain_query"))
 						{
-							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+							while ($row = $result->fetchArray(SQLITE3_ASSOC))
+							{
+								$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+							}
+						}
+
+						if ($html_table)
+						{
+							$this->html_hold .= '</table>';
 						}
 					}
 
-
-					if ($html_table)
-					{
-						$this->html_hold .= '</table>';
-					}
-				}
-
-
-				break;
+					break;
 
 				case 'fromcache':
 					$endtime = explode(' ', microtime());
