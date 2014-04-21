@@ -72,6 +72,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
+			$this->getMock('\phpbb\request\request'),
+			new \phpbb\config\config(array()),
 			$phpbb_root_path,
 			$phpEx
 		);

@@ -24,6 +24,12 @@ class path_helper
 	/** @var \phpbb\filesystem */
 	protected $filesystem;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -41,13 +47,17 @@ class path_helper
 	*
 	* @param \phpbb\symfony_request $symfony_request
 	* @param \phpbb\filesystem $filesystem
+	* @param \phpbb\request\request $request
+	* @param \phpbb\config\config $config
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP extension (php)
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request $request, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;
+		$this->request = $request;
+		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->adm_relative_path = $adm_relative_path;
@@ -170,7 +180,47 @@ class path_helper
 			return $this->web_root_path = $this->phpbb_root_path;
 		}
 
-		// How many corrections might we need?
+		/*
+		* Check AJAX request
+		*/
+		if ($this->request->is_ajax())
+		{
+			// Check referer
+			$referer = strtolower($this->request->header('Referer'));
+
+			// Count chars
+			$chars = strlen($this->config['server_name'] . $this->config['script_path']) - 1;
+
+			/*
+			* Return string without server name and script path
+			*	e.g. 'http://localhost/phpBB/app.php', where server name is 'localhost'
+			*	and script path is '/phpBB', will be cut to '/app.php'
+			*/ 
+			$ref = substr(strstr($referer, strtolower($this->config['server_name'] . $this->config['script_path'])), $chars);
+
+			// How many slashes does the referer used?
+			$count_slashes = substr_count($ref, '/');
+
+			/*
+			* If the shorten referer has only 1 slash,
+			*	return default path
+			*/
+			if ($count_slashes == 1)
+			{
+				return $this->web_root_path = $this->phpbb_root_path;
+			}
+			/*
+			* Otherwise we are on routed page so we must correct the relative path
+			*	for web URLs. We must append ../ to the end of the root path
+			*	as many times as / exists in shorten referer less one time
+			*/
+			else
+			{
+				return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $count_slashes - 1);
+			}
+		}
+
+		// How many corrections might we need? 
 		$corrections = substr_count($path_info, '/');
 
 		/*

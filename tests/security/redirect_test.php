@@ -63,6 +63,8 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 					new phpbb_mock_request()
 				),
 				new \phpbb\filesystem(),
+				$this->getMock('\phpbb\request\request'),
+				new \phpbb\config\config(array()),
 				$this->phpbb_root_path,
 				'php'
 			);
