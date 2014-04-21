@@ -21,6 +21,9 @@ class path_helper
 	/** @var \phpbb\filesystem */
 	protected $filesystem;
 
+	/** @var \phpbb\request\request */
+	protected $request;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -41,10 +44,11 @@ class path_helper
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP extension (php)
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;
+		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->adm_relative_path = $adm_relative_path;
@@ -163,6 +167,14 @@ class path_helper
 		*	a route like app.php/foo/bar
 		*/
 		if ($path_info === '/')
+		{
+			return $this->web_root_path = $this->phpbb_root_path;
+		}
+
+		/*
+		* If it is ajax request, don't use a route 
+		*/
+		if ($this->request->is_ajax())
 		{
 			return $this->web_root_path = $this->phpbb_root_path;
 		}
