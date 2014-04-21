@@ -8,12 +8,13 @@
 *
 */
 
+
 namespace phpbb\db\driver;
 
+
 /**
-* Sqlite Database Abstraction Layer
-* Minimum Requirement: 2.8.2+
-* But really support 3.7.7 only!
+* SQLite3 Database Abstraction Layer
+* Minimum Requirement: 3.6.15+
 * @package dbal
 */
 class sqlite extends \phpbb\db\driver\driver
@@ -56,13 +57,19 @@ class sqlite extends \phpbb\db\driver\driver
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
+		if (!class_exists('SQLite3', false))
+		{
+			$this->connect_error = 'SQLite3 not found, is the extension installed?';
+			return $this->sql_error('');
+		}
+
 		try{
-			$this->db = new \SQLite3($this->server);
+			$this->db = new \SQLite3($this->server, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			$this->db_connect_id = 1;
 			$this->db->exec('PRAGMA short_column_names = 1');
 			} catch (Exception $error) {
 				$this->connect_error = $error;
-				return array('message' => $error);
+				return array('message' => $error>getMessage());
 			}
 			return true;
 	}
@@ -98,15 +105,15 @@ class sqlite extends \phpbb\db\driver\driver
 		switch ($status)
 		{
 			case 'begin':
-				return $this->db->query('BEGIN');
+				return $this->db->exec('BEGIN IMMEDIATE');
 			break;
 
 			case 'commit':
-				return $this->db->query('COMMIT');
+				return $this->db->exec('COMMIT');
 			break;
 
 			case 'rollback':
-				return $this->db->query('ROLLBACK');
+				return $this->db->exec('ROLLBACK')
 			break;
 		}
 
@@ -131,7 +138,7 @@ class sqlite extends \phpbb\db\driver\driver
 				global $cache;
 
 				// EXPLAIN only in extra debug mode
-				if (defined('DEBUG_EXTRA'))
+				if (defined('DEBUG'))
 				{
 					$this->sql_report('start', $query);
 				}
@@ -187,7 +194,7 @@ class sqlite extends \phpbb\db\driver\driver
 						$was_error = false;
 					}
 
-					if (defined('DEBUG_EXTRA'))
+					if (defined('DEBUG'))
 					{
 						$this->sql_report('stop', $query);
 					}
@@ -204,7 +211,7 @@ class sqlite extends \phpbb\db\driver\driver
 					}
 
 				}
-				else if (defined('DEBUG_EXTRA'))
+				else if (defined('DEBUG'))
 				{
 					$this->sql_report('fromcache', $query);
 				}
@@ -274,7 +281,7 @@ class sqlite extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-			if( $query_id === false)
+			if( !$query_id)
 			{
 				return false;
 			}
@@ -446,6 +453,40 @@ class sqlite extends \phpbb\db\driver\driver
 			switch ($mode)
 			{
 				case 'start':
+
+
+				$explain_query = $query;
+				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+				else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+
+
+				if (preg_match('/^SELECT/', $explain_query))
+				{
+					$html_table = false;
+
+
+					if ($result = $this->dbo->query("EXPLAIN QUERY PLAN $explain_query"))
+					{
+						while ($row = $result->fetchArray(SQLITE3_ASSOC))
+						{
+							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+						}
+					}
+
+
+					if ($html_table)
+					{
+						$this->html_hold .= '</table>';
+					}
+				}
+
+
 				break;
 
 				case 'fromcache':
