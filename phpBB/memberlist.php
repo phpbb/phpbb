@@ -1032,11 +1032,14 @@ switch ($mode)
 		$field			= request_var('field', '');
 		$select_single 	= request_var('select_single', false);
 
+		//Get Lang ID
+		$lang_id_rq = $db->sql_fetchrow($db->sql_query_limit("SELECT lang_id FROM  " . LANG_TABLE . " WHERE lang_iso = '".$user->data['user_lang']."'", 1));
+		$lang_id = $lang_id_rq['lang_id'];
 		//expand filter to include custom profile fields
 		$sql = "SELECT pf.field_id as field_id, pf.field_ident as field_ident, pf.field_type as field_type, pf.field_length as field_length, pf.field_novalue as field_novalue, pl.lang_name as lang_name 
 			FROM " . PROFILE_FIELDS_TABLE . " as pf
-			JOIN " . PROFILE_FIELDS_LANG_TABLE . " as pl on (pf.field_id = pl.field_id)
-			WHERE `pf`.`field_show_on_ml` = '1' AND `pl`.`lang_id` = (SELECT `lang_id` FROM  " . LANG_TABLE . " WHERE `lang_iso` = '".$user->data['user_lang']."' LIMIT 1) ";
+			JOIN " . PROFILE_LANG_TABLE . " as pl on (pf.field_id = pl.field_id)
+			WHERE pf.field_show_on_ml = '1' AND pl.lang_id = ".$lang_id;
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result)) {
 			$additional[] = array(
@@ -1048,7 +1051,6 @@ switch ($mode)
 				'lang_name' => $user->lang[$row['lang_name']] ? $user->lang[$row['lang_name']] : $row['lang_name'],
 			);
 		}
-
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
@@ -1133,16 +1135,16 @@ switch ($mode)
 			if (count($additional) > 0) {
 				foreach ($additional as $VAR) {
 					if ($VAR['field_type'] == 'profilefields.type.dropdown') {
-						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? " AND `pd`.`pf_".$VAR['field_ident']."` = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? " AND pd.pf_".$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.url') {
-						$sql_where .= ($$VAR['field_ident']) ? ' AND `pd`.`pf_'.$VAR['field_ident'].'` ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($$VAR['field_ident']))) : '';
+						$sql_where .= ($$VAR['field_ident']) ? ' AND pd.pf_'.$VAR['field_ident'].' ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($$VAR['field_ident']))) : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.bool') {
-						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? ' AND `pd`.`pf_'.$VAR['field_ident']."` = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.int') {
-						$sql_where .= (is_numeric($$VAR['field_ident'])) ? ' AND `pd`.`pf_'.$VAR['field_ident']."` = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= (is_numeric($$VAR['field_ident'])) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 				}
 			}
@@ -1348,7 +1350,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT COUNT(u.user_id) AS total_users
 				FROM ' . USERS_TABLE . " u$sql_from
-				LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " as `pd` ON (`u`.`user_id` = `pd`.`user_id`)
+				LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " as pd ON (u.user_id = pd.user_id)
 				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where";
 			$result = $db->sql_query($sql);
@@ -1532,7 +1534,7 @@ switch ($mode)
 					$output = '';
 					if ($VAR['field_type'] == 'profilefields.type.dropdown') {
 						$output = '<select name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'">';
-						$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE `field_id` = '".$VAR['field_id']."' AND `lang_id` = (SELECT `lang_id` FROM  " . LANG_TABLE . " WHERE `lang_iso` = '".$user->data['user_lang']."' LIMIT 1)  ORDER BY `option_id` ASC";
+						$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
 						$result = $db->sql_query($sql);
 						while ($row = $db->sql_fetchrow($result)) {
 							$output .= '<option value="'.($row['option_id'] + 1).'"';
@@ -1563,7 +1565,7 @@ switch ($mode)
 								$output .= ' checked="checked"';
 							}
 							$output .= '>'.$user->lang['CANCEL'].'</input>';
-							$sql = "SELECT * FROM `phpbb_profile_fields_lang` WHERE `field_id` = '".$VAR['field_id']."' AND `lang_id` = (SELECT `lang_id` FROM  `phpbb_lang` WHERE `lang_iso` = '".$user->data['user_lang']."' LIMIT 1)  ORDER BY `option_id` ASC";
+							$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
 							$result = $db->sql_query($sql);
 							while ($row = $db->sql_fetchrow($result)) {
 								$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="'.($row['option_id'] + 1).'"';
@@ -1601,7 +1603,7 @@ switch ($mode)
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE ." as `pd` ON (`u`.`user_id` = `pd`.`user_id`)
+			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE ." as pd ON (u.user_id = pd.user_id)
 			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where
 			ORDER BY $order_by";
