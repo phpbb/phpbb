@@ -113,7 +113,7 @@ class sqlite extends \phpbb\db\driver\driver
 			break;
 
 			case 'rollback':
-				return $this->db->exec('ROLLBACK')
+				return $this->db->exec('ROLLBACK');
 			break;
 		}
 
