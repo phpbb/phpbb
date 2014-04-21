@@ -433,11 +433,11 @@ ul.linklist.bulletin li:before {
 }
 
 ul.linklist.bulletin li:first-child:before, ul.linklist.bulletin li.rightside:last-child:before {
-	display: none;
+	content: none;
 }
 
 ul.linklist.bulletin li.no-bulletin:before {
-	display: none;
+	content: none;
 }
 
 .responsive-menu:before {
