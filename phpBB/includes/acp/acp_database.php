@@ -1014,14 +1014,13 @@ class sqlite_extractor extends base_extractor
 	{
 		global $db;
 
-		$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
+		$col_types = $db->fetch_column_types($table_name); 
 
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = sqlite_unbuffered_query($db->db_connect_id, $sql);
-		$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
+		$result = $db->sql_query($sql);
 		$sql_insert = 'INSERT INTO ' . $table_name . ' (' . implode(', ', array_keys($col_types)) . ') VALUES (';
-		foreach ($rows as $row)
+		while ($row = $db->sql_fetchrow($result))
 		{
 			foreach ($row as $column_name => $column_data)
 			{
@@ -1029,7 +1028,7 @@ class sqlite_extractor extends base_extractor
 				{
 					$row[$column_name] = 'NULL';
 				}
-				else if ($column_data == '')
+				else if ($column_data == '' && stripos($col_types[$column_name], 'int') === false)
 				{
 					$row[$column_name] = "''";
 				}
