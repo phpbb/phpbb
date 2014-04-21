@@ -1048,7 +1048,7 @@ switch ($mode)
 				'field_type' => $row['field_type'],
 				'field_length' => $row['field_length'],
 				'field_novalue' => $row['field_novalue'],
-				'lang_name' => $user->lang[$row['lang_name']] ? $user->lang[$row['lang_name']] : $row['lang_name'],
+				'lang_name' => (isset($user->lang[$row['lang_name']])) ? $user->lang[$row['lang_name']] : $row['lang_name'],
 			);
 		}
 		// Search URL parameters, if any of these are in the URL we do a search
@@ -1144,7 +1144,7 @@ switch ($mode)
 						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.int') {
-						$sql_where .= (is_numeric($$VAR['field_ident'])) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= (isset($$VAR['field_ident'])) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 				}
 			}
@@ -1388,7 +1388,7 @@ switch ($mode)
 		);
 		if (count($additional) > 0) {
 			foreach ($additional AS $VAR) {
-				$check_params[$VAR['field_ident']] = array($VAR['field_ident'], ($$VAR['field_ident']) ? $$VAR['field_ident'] : '');
+				$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
 			}
 		}
 
@@ -1531,68 +1531,70 @@ switch ($mode)
 			//let's assign some template vars
 			if (count($additional) > 0) {
 				foreach ($additional AS $VAR) {
-					$output = '';
-					if ($VAR['field_type'] == 'profilefields.type.dropdown') {
-						$output = '<select name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'">';
-						$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
-						$result = $db->sql_query($sql);
-						while ($row = $db->sql_fetchrow($result)) {
-							$output .= '<option value="'.($row['option_id'] + 1).'"';
-							if ($$VAR['field_ident'] == ($row['option_id'] + 1)) {
-								$output .= ' selected="selected"';
-							}
-							$output .= '>'.$row['lang_value'].'</option>';
-						}
-						$output .= '</select>';
-						$template->assign_block_vars('searchrow', array(
-							'S_FIELDNAME'	=>	$VAR['lang_name'],
-							'U_OUTPUT'	=> $output,	
-						));
-					}
-					
-					if ($VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.url') {
-						$output = '<input type="text" class="inputbox autowidth" id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" value="'.$$VAR['field_ident'].'">';
-						$template->assign_block_vars('searchrow', array(
-							'S_FIELDNAME'	=>	$VAR['lang_name'],
-							'U_OUTPUT'	=> $output,	
-						));
-					}
-					
-					if ($VAR['field_type'] == 'profilefields.type.bool') {
-						if ($VAR['field_length'] == '1') {
-							$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="0"';
-							if ($$VAR['field_ident'] == '0' OR !$$VAR['field_ident']) {
-								$output .= ' checked="checked"';
-							}
-							$output .= '>'.$user->lang['CANCEL'].'</input>';
+					if (isset($$VAR['field_ident'])) {
+						$output = '';
+						if ($VAR['field_type'] == 'profilefields.type.dropdown') {
+							$output = '<select name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'">';
 							$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
 							$result = $db->sql_query($sql);
 							while ($row = $db->sql_fetchrow($result)) {
-								$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="'.($row['option_id'] + 1).'"';
+								$output .= '<option value="'.($row['option_id'] + 1).'"';
 								if ($$VAR['field_ident'] == ($row['option_id'] + 1)) {
+									$output .= ' selected="selected"';
+								}
+								$output .= '>'.$row['lang_value'].'</option>';
+							}
+							$output .= '</select>';
+							$template->assign_block_vars('searchrow', array(
+								'S_FIELDNAME'	=>	$VAR['lang_name'],
+								'U_OUTPUT'	=> $output,	
+							));
+						}
+						
+						if ($VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.url') {
+							$output = '<input type="text" class="inputbox autowidth" id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" value="'.$$VAR['field_ident'].'">';
+							$template->assign_block_vars('searchrow', array(
+								'S_FIELDNAME'	=>	$VAR['lang_name'],
+								'U_OUTPUT'	=> $output,	
+							));
+						}
+						
+						if ($VAR['field_type'] == 'profilefields.type.bool') {
+							if ($VAR['field_length'] == '1') {
+								$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="0"';
+								if ($$VAR['field_ident'] == '0' OR !$$VAR['field_ident']) {
 									$output .= ' checked="checked"';
 								}
-								$output .= '>'.$row['lang_value'].'</input>';
+								$output .= '>'.$user->lang['CANCEL'].'</input>';
+								$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
+								$result = $db->sql_query($sql);
+								while ($row = $db->sql_fetchrow($result)) {
+									$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="'.($row['option_id'] + 1).'"';
+									if ($$VAR['field_ident'] == ($row['option_id'] + 1)) {
+										$output .= ' checked="checked"';
+									}
+									$output .= '>'.$row['lang_value'].'</input>';
+								}
 							}
-						}
-						if ($VAR['field_length'] == '2') {
-							$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="checkbox"';
-							if ($$VAR['field_ident'] == '1') {
-								$output .= ' checked="checked"';
+							if ($VAR['field_length'] == '2') {
+								$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="checkbox"';
+								if ($$VAR['field_ident'] == '1') {
+									$output .= ' checked="checked"';
+								}
+								$output .= '></input>';
 							}
-							$output .= '></input>';
+							$template->assign_block_vars('searchrow', array(
+								'S_FIELDNAME'	=>	$VAR['lang_name'],
+								'U_OUTPUT'	=> $output,	
+							));
 						}
-						$template->assign_block_vars('searchrow', array(
-							'S_FIELDNAME'	=>	$VAR['lang_name'],
-							'U_OUTPUT'	=> $output,	
-						));
-					}
-					if ($VAR['field_type'] == 'profilefields.type.int') {
-						$output = '<input min="0" max="100" class="inputbox autowidth" name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'" size="'.$VAR['field_length'].'" value="'.$$VAR['field_ident'].'" type="number">';
-						$template->assign_block_vars('searchrow', array(
-							'S_FIELDNAME'	=>	$VAR['lang_name'],
-							'U_OUTPUT'	=> $output,	
-						));
+						if ($VAR['field_type'] == 'profilefields.type.int') {
+							$output = '<input min="0" max="100" class="inputbox autowidth" name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'" size="'.$VAR['field_length'].'" value="'.$$VAR['field_ident'].'" type="number">';
+							$template->assign_block_vars('searchrow', array(
+								'S_FIELDNAME'	=>	$VAR['lang_name'],
+								'U_OUTPUT'	=> $output,	
+							));
+						}
 					}
 				}
 			}
