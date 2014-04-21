@@ -277,6 +277,7 @@ services:
         arguments:
             - @symfony_request
             - @filesystem
+            - @request
             - %core.root_path%
             - %core.php_ext%
             - %core.adm_relative_path%
