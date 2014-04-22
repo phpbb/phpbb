@@ -2344,10 +2344,9 @@ function reapply_sid($url)
 */
 function build_url($strip_vars = false)
 {
-	global $config, $user, $phpbb_container;
+	global $config, $user, $phpbb_path_helper;
 
-	$path_helper = $phpbb_container->get('path_helper');
-	$php_ext = $path_helper->get_php_ext();
+	$php_ext = $phpbb_path_helper->get_php_ext();
 	$page = $user->page['page'];
 
 	// We need to be cautious here.
@@ -2365,7 +2364,7 @@ function build_url($strip_vars = false)
 			$page = substr($page, strlen('app.' . $php_ext . '/'));
 		}
 
-		$page = $path_helper->get_phpbb_root_path() . $page;
+		$page = $phpbb_path_helper->get_phpbb_root_path() . $page;
 	}
 
 	// Append SID
@@ -2373,7 +2372,7 @@ function build_url($strip_vars = false)
 
 	if ($strip_vars !== false)
 	{
-		$redirect = $path_helper->strip_url_params($redirect, $strip_vars, false);
+		$redirect = $phpbb_path_helper->strip_url_params($redirect, $strip_vars, false);
 	}
 
 	return $redirect . ((strpos($redirect, '?') === false) ? '?' : '');
