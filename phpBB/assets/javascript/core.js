@@ -917,9 +917,10 @@ phpbb.toggleDropdown = function() {
 	// Check dimensions when showing dropdown
 	// !visible because variable shows state of dropdown before it was toggled
 	if (!visible) {
+		var windowWidth = $(window).width();
+
 		options.dropdown.find('.dropdown-contents').each(function() {
-			var $this = $(this),
-				windowWidth = $(window).width();
+			var $this = $(this);
 
 			$this.css({
 				marginLeft: 0,
@@ -937,6 +938,13 @@ phpbb.toggleDropdown = function() {
 				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
 			}
 		});
+		var freeSpace = parent.offset().left - 4;
+
+		if (direction == 'left') {
+			options.dropdown.css('margin-left', '-' + freeSpace + 'px');
+		} else {
+			options.dropdown.css('margin-right', '-' + (windowWidth + freeSpace) + 'px');
+		}
 	}
 
 	// Prevent event propagation

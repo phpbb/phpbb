@@ -1582,6 +1582,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		!$row['post_edit_locked']
 	)));
 
+	$u_pm = '';
+
+	if (($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm')
+		&& ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))))
+	{
+		$u_pm = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']);
+	}
+
 	//
 	$post_row = array(
 		'POST_AUTHOR_FULL'		=> ($poster_id != ANONYMOUS) ? $user_cache[$poster_id]['author_full'] : get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1621,7 +1629,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
-		'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
+		'U_PM'			=> $u_pm,
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
@@ -1694,11 +1702,46 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $post_row);
 
+	$contact_fields = array(
+		array(
+			'ID'		=> 'pm',
+			'NAME' 		=> $user->lang['PRIVATE_MESSAGES'],
+			'U_CONTACT'	=> $u_pm,
+		),
+		array(
+			'ID'		=> 'email',
+			'NAME'		=> $user->lang['SEND_EMAIL'],
+			'U_CONTACT'	=> $user_cache[$poster_id]['email'],
+		),
+		array(
+			'ID'		=> 'jabber',
+			'NAME'		=> $user->lang['JABBER'],
+			'U_CONTACT'	=> $user_cache[$poster_id]['jabber'],
+		),
+	);
+
+	foreach ($contact_fields as $field)
+	{
+		if ($field['U_CONTACT'])
+		{
+			$template->assign_block_vars('postrow.contact', $field);
+		}
+	}
+
 	if (!empty($cp_row['blockrow']))
 	{
 		foreach ($cp_row['blockrow'] as $field_data)
 		{
 			$template->assign_block_vars('postrow.custom_fields', $field_data);
+
+			if ($field_data['S_PROFILE_CONTACT'])
+			{
+				$template->assign_block_vars('postrow.contact', array(
+					'ID'		=> $field_data['PROFILE_FIELD_IDENT'],
+					'NAME'		=> $field_data['PROFILE_FIELD_NAME'],
+					'U_CONTACT'	=> $field_data['PROFILE_FIELD_CONTACT'],
+				));
+			}
 		}
 	}
 
