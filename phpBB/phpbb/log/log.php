@@ -643,9 +643,23 @@ class log implements \phpbb\log\log_interface
 			$operations = array();
 			foreach ($this->user->lang as $key => $value)
 			{
-				if (substr($key, 0, 4) == 'LOG_' && preg_match($keywords_pattern, $value))
+				if (substr($key, 0, 4) == 'LOG_')
 				{
-					$operations[] = $key;
+					if (is_array($value))
+					{
+						foreach ($value as $plural_value)
+						{
+							if (preg_match($keywords_pattern, $plural_value))
+							{
+								$operations[] = $key;
+								break;
+							}
+						}
+					}
+					else if (preg_match($keywords_pattern, $value))
+					{
+						$operations[] = $key;
+					}
 				}
 			}
 
