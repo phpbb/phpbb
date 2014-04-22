@@ -1115,11 +1115,6 @@ class acp_attachments
 				if ($stats_error)
 				{
 					$error[] = $stats_error;
-
-					// Show option to resync stats
-					$this->template->assign_vars(array(
-						'S_ACTION_OPTIONS'	=>	$auth->acl_get('a_board'),
-					));
 				}
 
 				$template->assign_vars(array(
@@ -1321,7 +1316,15 @@ class acp_attachments
 
 		if (($num_files != $stats['num_files']) || ($total_size != $stats['upload_dir_size']))
 		{
-			return $this->user->lang('FILES_STATS_WRONG', (int) $stats['num_files'], get_formatted_filesize($stats['upload_dir_size']));
+			$u_resync = $this->u_action . '&amp;action=stats';
+
+			return $this->user->lang(
+				'FILES_STATS_WRONG',
+				(int) $stats['num_files'],
+				get_formatted_filesize($stats['upload_dir_size']),
+				'<a href="' . $u_resync . '">',
+				'</a>'
+			);
 		}
 		return false;
 	}
