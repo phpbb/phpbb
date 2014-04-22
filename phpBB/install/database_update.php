@@ -169,6 +169,8 @@ header('Content-type: text/html; charset=UTF-8');
 
 <?php
 
+define('IN_DB_UPDATE', true);
+
 /**
 * @todo firebird/mysql update?
 */
