@@ -350,6 +350,11 @@ span.imageset {
 	padding-left: 16px;
 	padding-top: 14px;
 }
+.imageset.icon_topic_poll {
+	background-image: url("./images/icon_topic_poll.png");
+	padding-left: 1px;
+	padding-top: 1px;
+}
 .imageset.icon_user_warn {
 	background-image: url("./images/icon_user_warn.gif");
 	padding-left: 20px;
