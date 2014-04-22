@@ -10,9 +10,11 @@
 		<!-- ENDIF -->
 		<!-- EVENT overall_footer_timezone_prepend -->
 		<li class="rightside">{S_TIMEZONE}</li>
-		<!-- IF not S_IS_BOT --><li class="rightside"><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
-		<!-- IF U_TEAM --><li class="rightside"><a href="{U_TEAM}">{L_THE_TEAM}</a></li><!-- ENDIF -->
 		<!-- EVENT overall_footer_timezone_append -->
+		<!-- IF not S_IS_BOT --><li class="rightside"><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
+		<!-- EVENT overall_footer_teamlink_prepend -->
+		<!-- IF U_TEAM --><li class="rightside"><a href="{U_TEAM}">{L_THE_TEAM}</a></li><!-- ENDIF -->
+		<!-- EVENT overall_footer_teamlink_append -->
 	</ul>
 
 	</div>
