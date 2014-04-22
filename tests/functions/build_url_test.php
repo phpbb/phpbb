@@ -13,7 +13,7 @@ class phpbb_build_url_test extends phpbb_test_case
 {
 	protected function setUp()
 	{
-		global $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path;
+		global $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpbb_path_helper;
 
 		parent::setUp();
 
@@ -21,7 +21,7 @@ class phpbb_build_url_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$path_helper = new \phpbb\path_helper(
+		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
