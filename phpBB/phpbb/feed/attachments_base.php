@@ -21,15 +21,10 @@ abstract class attachments_base extends \phpbb\feed\base
 	*/
 	protected $attachments = array();
 
-	function open()
-	{
-		$this->fetch_attachments();
-	}
-
 	/**
 	* Retrieve the list of attachments that may be displayed
 	*/
-	function fetch_attachments()
+	protected function fetch_attachments()
 	{
 		global $db;
 
@@ -68,13 +63,18 @@ abstract class attachments_base extends \phpbb\feed\base
 		$db->sql_freeresult($result);
 	}
 
+	public function open()
+	{
+		$this->fetch_attachments();
+	}
+
 	/**
 	* Get attachments related to a given post
 	*
-	* @param $post_id  Post id
-	* @return mixed    Attachments related to $post_id
+	* @param $post_id  int  Post id
+	* @return mixed Attachments related to $post_id
 	*/
-	function get_attachments($post_id)
+	public function get_attachments($post_id)
 	{
 		return $this->attachments[$post_id];
 	}
