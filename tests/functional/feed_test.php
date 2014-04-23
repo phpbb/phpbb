@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* @package testing
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package testing
+ * @copyright (c) 2014 phpBB Group
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ *
+ */
 
 /**
-* @group functional
-*/
+ * @group functional
+ */
 class phpbb_functional_feed_test extends phpbb_functional_test_case
 {
 	protected $data = array();
@@ -320,8 +320,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post = $this->create_topic($this->data['forums']['Feeds #news'], 'Feeds #news - Topic #1', 'This is a test topic posted by the testing framework.');
 		$this->data['topics']['Feeds #news - Topic #1'] = (int) $post['topic_id'];
 
+		// Travis is too fast, so we have to wait
+		sleep(1);
+
 		$post = $this->create_topic($this->data['forums']['Feeds #news'], 'Feeds #news - Topic #2', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+
+		// Travis is too fast, so we have to wait
+		sleep(1);
 
 		$this->assertContains('Feeds #news - Topic #2', $crawler->filter('html')->text());
 		$this->data['topics']['Feeds #news - Topic #2'] = (int) $post['topic_id'];
@@ -448,6 +454,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post = $this->create_topic($this->data['forums']['Feeds #1'], 'Feeds #1 - Topic #1', 'This is a test topic posted by the testing framework.');
 		$this->data['topics']['Feeds #1 - Topic #1'] = (int) $post['topic_id'];
 
+		// Travis is too fast, so we have to wait
+		sleep(1);
+
 		$post = $this->create_topic($this->data['forums']['Feeds #1.1'], 'Feeds #1.1 - Topic #1', 'This is a test topic posted by the testing framework.');
 		$this->data['topics']['Feeds #1.1 - Topic #1'] = (int) $post['topic_id'];
 	}
@@ -482,6 +491,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		$post = $this->create_topic($this->data['forums']['Feeds #1'], 'Feeds #1 - Topic #2', 'This is a test topic posted by the testing framework.');
 		$this->data['topics']['Feeds #1 - Topic #2'] = (int) $post['topic_id'];
+
+		// Travis is too fast, so we have to wait
+		sleep(1);
 
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Feeds #1'], $post['topic_id'], 'Re: Feeds #1 - Topic #2', 'This is a test post posted by the testing framework.');
