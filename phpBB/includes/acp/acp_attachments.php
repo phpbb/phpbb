@@ -1029,7 +1029,7 @@ class acp_attachments
 							$space_taken += $row['filesize'];
 							$files_added++;
 
-							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], utf8_wordwrap(utf8_basename((string) $row['real_filename']), 40, '<br />', true));
+							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], $row['real_filename']);
 						}
 						$db->sql_freeresult($result);
 
