@@ -49,7 +49,7 @@ class path_helper
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP extension (php)
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request $request, \phpbb\config\config $config $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request $request, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;
