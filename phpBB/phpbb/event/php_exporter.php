@@ -302,17 +302,17 @@ class php_exporter
 		{
 			$line = ltrim($this->file_lines[$this->current_event_line - $vars_array_line], "\t");
 			$match = array();
-			preg_match('#^\$vars (?:\+)?= array\(\'([a-zA-Z0-9_\' ,]+)\'\);$#', $line, $match);
+			preg_match('#^\$vars = (array_merge\(\$vars, )?array\(\'([a-zA-Z0-9_\' ,]+)\'\)(?(1)\));$#', $line, $match);
 
-			if (isset($match[1]))
+			if (isset($match[2]))
 			{
 				$found_vars_array = true;
-				if (strlen($match[1]) > 90)
+				if (strlen($match[2]) > 90)
 				{
 					throw new \LogicException('Should use multiple lines for $vars definition '
 						. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
 				}
-				$vars_array = array_merge($vars_array, explode("', '", $match[1]));
+				$vars_array = array_merge($vars_array, explode("', '", $match[2]));
 			}
 
 			$vars_array_line++;
