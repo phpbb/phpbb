@@ -34,6 +34,12 @@ class tools
 	var $dbms_type_map = array();
 
 	/**
+	* Is the used MS SQL Server a SQL Server 2000?
+	* @var bool
+	*/
+	protected $is_sql_server_2000;
+
+	/**
 	* Get the column types for every database we support
 	*
 	* @return array
@@ -2676,8 +2682,6 @@ class tools
 
 		return $existing_indexes;
 	}
-
-	protected $is_sql_server_2000;
 
 	/**
 	* Is the used MS SQL Server a SQL Server 2000?
