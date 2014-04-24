@@ -260,6 +260,14 @@ memberlist_view_content_append
 * Since: 3.1.0-b2
 * Purpose: Add custom content to the user profile view after the main content
 
+memberlist_view_content_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+    + styles/subsilver2/template/memberlist_view.html
+* Since: 3.1.0-b3
+* Purpose: Add custom content to the user profile view before the main content
+
 memberlist_view_user_statistics_after
 ===
 * Locations:
