@@ -398,6 +398,7 @@ class p_master
 			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
 			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
 			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
+			'authmethod_([a-z0-9_\\\\]+)'		=> '($config[\'auth_method\'] === \'\\1\')',
 		);
 
 		/**
