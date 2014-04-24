@@ -1869,7 +1869,7 @@ class tools
 				}
 
 				// Drop default value constraint
-				$result = $this->mssql_drop_default_constraints($table_name, $column_name);
+				$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
 				$statements = array_merge($statements, $result);
 
 				// Remove the column
@@ -2384,7 +2384,7 @@ class tools
 				}
 
 				// Drop default value constraint
-				$result = $this->mssql_drop_default_constraints($table_name, $column_name);
+				$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
 				$statements = array_merge($statements, $result);
 
 				// Change the column
@@ -2542,7 +2542,7 @@ class tools
 	}
 
 	/**
-	* Drop the default constraints of a column
+	* Get queries to drop the default constraints of a column
 	*
 	* We need to drop the default constraints of a column,
 	* before being able to change their type or deleting them.
@@ -2551,16 +2551,10 @@ class tools
 	* @param string $column_name
 	* @return array		Array with SQL statements
 	*/
-	protected function mssql_drop_default_constraints($table_name, $column_name)
+	protected function mssql_get_drop_default_constraints_queries($table_name, $column_name)
 	{
 		$statements = array();
-		$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-		$result = $this->db->sql_query($sql);
-		$mssql_server_properties = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		// Remove default constraints
-		if ($mssql_server_properties['mssql_version'][0] == '8')	// SQL Server 2000
+		if ($this->mssql_is_sql_server_2000())
 		{
 			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
 			// Deprecated in SQL Server 2005
@@ -2603,12 +2597,7 @@ class tools
 	protected function mssql_get_existing_indexes($table_name, $column_name)
 	{
 		$existing_indexes = array();
-		$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-		$result = $this->db->sql_query($sql);
-		$mssql_server_properties = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if ($mssql_server_properties['mssql_version'][0] == '8')	// SQL Server 2000
+		if ($this->mssql_is_sql_server_2000())
 		{
 			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
 			// Deprecated in SQL Server 2005
@@ -2650,7 +2639,7 @@ class tools
 			return array();
 		}
 
-		if ($mssql_server_properties['mssql_version'][0] == '8')	// SQL Server 2000
+		if ($this->mssql_is_sql_server_2000())
 		{
 			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
 				FROM sysindexes ix
@@ -2686,5 +2675,26 @@ class tools
 		$this->db->sql_freeresult($result);
 
 		return $existing_indexes;
+	}
+
+	protected $is_sql_server_2000;
+
+	/**
+	* Is the used MS SQL Server a SQL Server 2000?
+	*
+	* @return bool
+	*/
+	protected function mssql_is_sql_server_2000()
+	{
+		if ($this->is_sql_server_2000 === null)
+		{
+			$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
+			$result = $this->db->sql_query($sql);
+			$properties = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+			$this->is_sql_server_2000 = $properties['mssql_version'][0] == '8';
+		}
+
+		return $this->is_sql_server_2000;
 	}
 }
