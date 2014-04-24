@@ -43,4 +43,12 @@ abstract class base implements driver_interface
 	{
 		return true;
 	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function is_legacy()
+	{
+		return false;
+	}
 }

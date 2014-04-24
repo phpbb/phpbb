@@ -24,6 +24,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
+			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
 		);
 	}
 
@@ -81,5 +82,37 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			$settings
 		);
 		$this->assertEquals(false, $this->passwords_drivers['passwords.driver.salted_md5']->get_hash_settings(false));
+	}
+
+	public function data_hash_sha1_smf()
+	{
+		return array(
+			array(false, 'test', array()),
+			array(false, 'test', ''),
+			array('6f9e2a1899e1f15708fd2e554103480eb53e8b57', 'foobar', array('login_name' => 'test')),
+		);
+	}
+
+	/**
+	* @dataProvider data_hash_sha1_smf
+	*/
+	public function test_hash_sha1_smf($expected, $password, $user_row)
+	{
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.sha1_smf']->hash($password, $user_row));
+	}
+
+	public function data_get_settings()
+	{
+		return array(
+			array(false, '6f9e2a1899e1f15708fd2e554103480eb53e8b57', 'passwords.driver.sha1_smf'),
+		);
+	}
+
+	/**
+	* @dataProvider data_get_settings
+	*/
+	public function test_get_settings_only($expected, $hash, $driver)
+	{
+		$this->assertSame($expected, $this->passwords_drivers[$driver]->get_settings_only($hash));
 	}
 }

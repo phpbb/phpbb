@@ -23,6 +23,13 @@ interface driver_interface
 	public function is_supported();
 
 	/**
+	* Check if hash type is a legacy hash type
+	*
+	* @return bool		True if it's a legacy hash type, false if not
+	*/
+	public function is_legacy();
+
+	/**
 	* Returns the hash prefix
 	*
 	* @return string	Hash prefix
