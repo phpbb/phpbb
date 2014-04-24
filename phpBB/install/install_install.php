@@ -1669,11 +1669,23 @@ class install_install extends module
 					WHERE module_basename = 'ucp_notifications'
 						AND module_class = 'ucp'
 						AND module_mode = 'notification_options'";
-				$result = $db->sql_query($sql);
+                $result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
 				$_module->move_module_by($row, 'move_down', 4);
+
+                // Move OAuth module 5 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'ucp_auth_link'
+						AND module_class = 'ucp'
+						AND module_mode = 'auth_link'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 5);
 			}
 
 			// And now for the special ones
