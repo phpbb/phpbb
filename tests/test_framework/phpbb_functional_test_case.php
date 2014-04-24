@@ -422,7 +422,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		else
 		{
-			$db->sql_multi_insert(STYLES_TABLE, array(
+			$db->sql_multi_insert(STYLES_TABLE, array(array(
 				'style_id' => $style_id,
 				'style_name' => $style_path,
 				'style_copyright' => '',
@@ -431,7 +431,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'bbcode_bitfield' => 'kNg=',
 				'style_parent_id' => $parent_style_id,
 				'style_parent_tree' => $parent_style_path,
-			));
+			)));
 		}
 	}
 
