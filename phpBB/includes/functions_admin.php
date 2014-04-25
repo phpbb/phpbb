@@ -2581,20 +2581,6 @@ function phpbb_cache_moderators($db, $cache, $auth)
 }
 
 /**
-* Cache moderators. Called whenever permissions are changed
-* via admin_permissions. Changes of usernames and group names
-* must be carried through for the moderators table.
-*
-* @deprecated 3.1
-* @return null
-*/
-function cache_moderators()
-{
-	global $db, $cache, $auth;
-	return phpbb_cache_moderators($db, $cache, $auth);
-}
-
-/**
 * View log
 *
 * @param	string	$mode			The mode defines which log_type is used and from which log the entry is retrieved
@@ -2741,20 +2727,6 @@ function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 		$db->sql_query($sql);
 	}
 	unset($perms);
-}
-
-/**
-* Removes moderators and administrators from foe lists.
-*
-* @deprecated 3.1
-* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
-* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
-* @return null
-*/
-function update_foes($group_id = false, $user_id = false)
-{
-	global $db, $auth;
-	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
 
 /**
