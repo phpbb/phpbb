@@ -58,7 +58,7 @@ $lang = array_merge($lang, array(
 		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
 		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
 	),
-	'EMAIL_TOPIC'			=> 'Email friend',
+	'EMAIL_TOPIC'			=> 'Email topic',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
