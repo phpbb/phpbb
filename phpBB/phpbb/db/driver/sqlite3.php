@@ -16,15 +16,20 @@ namespace phpbb\db\driver;
 */
 class sqlite3 extends \phpbb\db\driver\driver
 {
-	var $connect_error = '';
+	/**
+	* @var	string		Stores errors during connection setup in case the driver is not available
+	*/
+	protected $connect_error = '';
 
-	/** @var \SQLite3 */
-	var $dbo = null;
+	/**
+	* @var	\SQLite3	The SQLite3 database object to operate against
+	*/
+	protected $dbo = null;
 
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
+	public function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = false;
 		$this->user = $sqluser;
@@ -53,7 +58,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_server_info($raw = false, $use_cache = true)
+	public function sql_server_info($raw = false, $use_cache = true)
 	{
 		global $cache;
 
@@ -74,9 +79,12 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 	/**
 	* SQL Transaction
-	* @access private
+	*
+	* @param	string	$status		Should be one of the following strings:
+	*								begin, commit, rollback
+	* @return	bool	Success/failure of the transaction query
 	*/
-	function _sql_transaction($status = 'begin')
+	protected function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
@@ -99,7 +107,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_query($query = '', $cache_ttl = 0)
+	public function sql_query($query = '', $cache_ttl = 0)
 	{
 		if ($query != '')
 		{
@@ -147,8 +155,15 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 	/**
 	* Build LIMIT query
+	*
+	* @param	string	$query		The SQL query to execute
+	* @param	int		$total		The number of rows to select
+	* @param	int		$offset
+	* @param	int		$cache_ttl	Either 0 to avoid caching or
+	*				the time in seconds which the result shall be kept in cache
+	* @return	mixed	Buffered, seekable result handle, false on error
 	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	protected function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
@@ -166,7 +181,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_affectedrows()
+	public function sql_affectedrows()
 	{
 		return ($this->db_connect_id) ? $this->dbo->changes() : false;
 	}
@@ -174,7 +189,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_fetchrow($query_id = false)
+	public function sql_fetchrow($query_id = false)
 	{
 		global $cache;
 
@@ -194,7 +209,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_nextid()
+	public function sql_nextid()
 	{
 		return ($this->db_connect_id) ? $this->dbo->lastInsertRowID() : false;
 	}
@@ -202,7 +217,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_freeresult($query_id = false)
+	public function sql_freeresult($query_id = false)
 	{
 		global $cache;
 
@@ -225,7 +240,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_escape($msg)
+	public function sql_escape($msg)
 	{
 		return \SQLite3::escapeString($msg);
 	}
@@ -235,7 +250,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	*
 	* For SQLite an underscore is a not-known character...
 	*/
-	function sql_like_expression($expression)
+	public function sql_like_expression($expression)
 	{
 		// Unlike LIKE, GLOB is case sensitive (unfortunatly). SQLite users need to live with it!
 		// We only catch * and ? here, not the character map possible on file globbing.
@@ -249,9 +264,10 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 	/**
 	* return sql error array
-	* @access private
+	*
+	* @return array
 	*/
-	function _sql_error()
+	protected function _sql_error()
 	{
 		if (class_exists('SQLite3', false))
 		{
@@ -273,27 +289,36 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 	/**
 	* Build db-specific query data
-	* @access private
+	*
+	* @param	string	$stage		Available stages: FROM, WHERE
+	* @param	mixed	$data		A string containing the CROSS JOIN query or an array of WHERE clauses
+	*
+	* @return	string	The db-specific query fragment
 	*/
-	function _sql_custom_build($stage, $data)
+	protected function _sql_custom_build($stage, $data)
 	{
 		return $data;
 	}
 
 	/**
 	* Close sql connection
-	* @access private
+	*
+	* @return	bool		False if failure
 	*/
-	function _sql_close()
+	protected function _sql_close()
 	{
 		return $this->dbo->close();
 	}
 
 	/**
 	* Build db-specific report
-	* @access private
+	*
+	* @param	string	$mode		Available modes: display, start, stop,
+	*								add_select_row, fromcache, record_fromcache
+	* @param	string	$query		The Query that should be explained
+	* @return	mixed		Either a full HTML page, boolean or null
 	*/
-	function _sql_report($mode, $query = '')
+	protected function _sql_report($mode, $query = '')
 	{
 		switch ($mode)
 		{
