@@ -30,6 +30,8 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
+			$request,
+			$config
 			$this->phpbb_root_path,
 			$this->phpEx
 		);
