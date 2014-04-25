@@ -24,7 +24,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
-			$request
+			$request,
 			$config,
 			$phpbb_root_path,
 			$phpEx
