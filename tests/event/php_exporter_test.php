@@ -343,47 +343,77 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				array(
 					'/**',
 					'*/',
-					'$phpbb_dispatcher->dispatch(\'test\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
 				),
 				2,
-				3,
+				1,
 			),
 			array(
 				array(
 					'/**',
 					'*/',
 					'$vars = $bertie;',
-					'$phpbb_dispatcher->dispatch(\'test\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
 				),
 				3,
-				3,
-			),
-			array(
-				array(
-					'/**',
-					'*/',
-					'$vars = array();',
-					'$phpbb_dispatcher->dispatch(\'test\');',
-				),
-				3,
-				3,
-			),
-			array(
-				array(
-					'/**',
-					'*/',
-					'$vars = array(\'test2\', \'\');',
-					'$phpbb_dispatcher->dispatch(\'test\');',
-				),
-				3,
-				4,
+				1,
 			),
 			array(
 				array(
 					'/**',
 					'*/',
 					'$vars = array(\'$bertie\');',
-					'$phpbb_dispatcher->dispatch(\'test\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
+				),
+				3,
+				1,
+			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$vars = array();',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
+				),
+				3,
+				1,
+			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$vars = array(\'t1\', \'t2\', \'t3\', \'t4\', \'t5\', \'t6\', \'t7\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
+				),
+				3,
+				2,
+			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$vars = array(\'test2\', \'\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
+				),
+				3,
+				3,
+			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$vars = array(\'bertie\'\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
+				),
+				3,
+				3,
+			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$vars = array(\'bertie\',\'basically_valid\');',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
 				),
 				3,
 				3,

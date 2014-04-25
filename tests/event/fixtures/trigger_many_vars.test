@@ -39,7 +39,27 @@
 	*		post_id, topic_id, forum_id, submit, preview, save, load,
 	*		delete, cancel, refresh, error, page_data, message_parser
 	*/
-	$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype');
-	$vars = array_merge($vars, array('s_action', 's_hidden_fields', 'post_id', 'topic_id', 'forum_id', 'submit', 'preview'));
-	$vars = array_merge($vars, array('save', 'load', 'delete', 'cancel', 'refresh', 'error', 'page_data', 'message_parser'));
+	$vars = array(
+		'post_data',
+		'moderators',
+		'mode',
+		'page_title',
+		's_topic_icons',
+		'form_enctype',
+		's_action',
+		's_hidden_fields',
+		'post_id',
+		'topic_id',
+		'forum_id',
+		'submit',
+		'preview',
+		'save',
+		'load',
+		'delete',
+		'cancel',
+		'refresh',
+		'error',
+		'page_data',
+		'message_parser',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
