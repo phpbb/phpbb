@@ -527,7 +527,15 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_smilies	Whether or not to parse Smilies
 	* @since 3.1-A1
 	*/
-	$vars = array('text', 'uid', 'bitfield', 'flags', 'allow_bbcode', 'allow_urls', 'allow_smilies');
+	$vars = array(
+		'text',
+		'uid',
+		'bitfield',
+		'flags',
+		'allow_bbcode',
+		'allow_urls',
+		'allow_smilies',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
 	$uid = $bitfield = '';
@@ -1410,8 +1418,16 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	* @var array _profile_cache		Array of original return templates
 	* @since 3.1-A1
 	*/
-	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username');
-	$vars = array_merge($vars, array('custom_profile_url', 'username_string', '_profile_cache'));
+	$vars = array(
+		'mode',
+		'user_id',
+		'username',
+		'username_colour',
+		'guest_username',
+		'custom_profile_url',
+		'username_string',
+		'_profile_cache',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;

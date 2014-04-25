@@ -267,7 +267,16 @@ if (!$user_id && $username == '')
 * @var	int			id				Parent module id
 * @since 3.1.0-b2
 */
-$vars = array('module', 'mode', 'user_id', 'forum_id', 'topic_id', 'post_id', 'username', 'id');
+$vars = array(
+	'module',
+	'mode',
+	'user_id',
+	'forum_id',
+	'topic_id',
+	'post_id',
+	'username',
+	'id',
+);
 extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
 
 // Load and execute the relevant module

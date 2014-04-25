@@ -604,8 +604,16 @@ switch ($mode)
 		* @since 3.1-A1
 		* @changed 3.1.0-b2 Added friend and foe status
 		*/
-		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled', 'zebra_enabled');
-		$vars = array_merge($vars, array('friends_enabled', 'foes_enabled', 'friend', 'foe'));
+		$vars = array(
+			'member',
+			'user_notes_enabled',
+			'warn_user_enabled',
+			'zebra_enabled',
+			'friends_enabled',
+			'foes_enabled',
+			'friend',
+			'foe',
+		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
 
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));

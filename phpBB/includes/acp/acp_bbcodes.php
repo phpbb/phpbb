@@ -159,9 +159,16 @@ class acp_bbcodes
 				*									submitting form when $warn_text is true
 				* @since 3.1.0-a3
 				*/
-				$vars = array('action', 'sql_ary', 'bbcode_id', 'display_on_posting');
-				$vars = array_merge($vars, array('bbcode_match', 'bbcode_tpl'));
-				$vars = array_merge($vars, array('bbcode_helpline', 'hidden_fields'));
+				$vars = array(
+					'action',
+					'sql_ary',
+					'bbcode_id',
+					'display_on_posting',
+					'bbcode_match',
+					'bbcode_tpl',
+					'bbcode_helpline',
+					'hidden_fields',
+				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
 				$warn_text = preg_match('%<[^>]*\{text[\d]*\}[^>]*>%i', $bbcode_tpl);
