@@ -167,12 +167,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		FROM ' . TOPICS_TABLE . ' t
 		WHERE
 			 ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . " 
-			' . $limit_access_check. ' AND
-				(t.topic_poster = ' . $user->data['user_id'] . ' OR 1='. (($auth->acl_get('f_read_other', $forum_id))? '1' : '0') . ')
-				)
-				AND ' : '') . '
-			t.forum_id = ' . $forum_id . '
-			' . $limit_access_check. '
+			$limit_access_check
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
