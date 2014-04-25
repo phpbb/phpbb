@@ -779,6 +779,17 @@ div.dl_links {
 	display: inline-block;
 }
 
+.attachment-filename {
+	width: 100%;
+}
+
+.ellipsis-text {
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 /* Show scrollbars for items with overflow on iOS devices
 ----------------------------------------*/
 .postbody .content::-webkit-scrollbar, #topicreview::-webkit-scrollbar, #post_details::-webkit-scrollbar, .codebox code::-webkit-scrollbar, .attachbox dd::-webkit-scrollbar, .attach-image::-webkit-scrollbar, .dropdown-extended ul::-webkit-scrollbar {
