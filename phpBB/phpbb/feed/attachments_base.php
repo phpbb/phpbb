@@ -26,8 +26,6 @@ abstract class attachments_base extends \phpbb\feed\base
 	*/
 	protected function fetch_attachments()
 	{
-		global $db;
-
 		$sql_array = array(
 			'SELECT'   => 'a.*',
 			'FROM'     => array(
@@ -39,7 +37,7 @@ abstract class attachments_base extends \phpbb\feed\base
 
 		if (isset($this->topic_id))
 		{
-			$sql_array['WHERE'] .= 'AND a.topic_id = ' . (int)$this->topic_id;
+			$sql_array['WHERE'] .= 'AND a.topic_id = ' . (int) $this->topic_id;
 		}
 		else if (isset($this->forum_id))
 		{
@@ -49,22 +47,25 @@ abstract class attachments_base extends \phpbb\feed\base
 					'ON'   => 'a.topic_id = t.topic_id',
 				)
 			);
-			$sql_array['WHERE'] .= 'AND t.forum_id = ' . (int)$this->forum_id;
+			$sql_array['WHERE'] .= 'AND t.forum_id = ' . (int) $this->forum_id;
 		}
 
-		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query($sql);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql);
 
 		// Set attachments in feed items
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->attachments[$row['post_msg_id']][] = $row;
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
-
+	/**
+	* {@inheritDoc}
+	*/
 	public function open()
 	{
+		parent::open();
 		$this->fetch_attachments();
 	}
 

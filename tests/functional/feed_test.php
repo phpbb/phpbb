@@ -1,15 +1,15 @@
 <?php
 /**
- *
- * @package testing
- * @copyright (c) 2014 phpBB Group
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
- *
- */
+*
+* @package testing
+* @copyright (c) 2014 phpBB Group
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+*/
 
 /**
- * @group functional
- */
+* @group functional
+*/
 class phpbb_functional_feed_test extends phpbb_functional_test_case
 {
 	protected $data = array();
