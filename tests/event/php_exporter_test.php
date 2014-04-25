@@ -114,7 +114,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array('* @since 3.1.0-a1', '3.1.0-a1'),
 			array('* @since 3.1.0-b3', '3.1.0-b3'),
 			array('	* @since 3.1.0-b3', '3.1.0-b3'),
-			array('* @since 3.1-A1', '3.1.0-a1'),
 		);
 	}
 
@@ -129,12 +128,11 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	static public function validate_since_throws_data()
 	{
 		return array(
-			array(' * @since 3.1.0-a1', 1),
-			array('* @since 3.1.0-a1 ', 1),
-			array('* @since 3.1.0-a1 bertie is cool', 2),
-			array('bertie* @since 3.1.0-a1', 2),
-			array('* @since 3.1-A2', 2),
-			array('* @since 3.1-B3', 2),
+			array(' * @since 3.1.0-a1'),
+			array('* @since 3.1.0-a1 '),
+			array('* @since 3.1.0-a1 bertie is cool'),
+			array('bertie* @since 3.1.0-a1'),
+			array('* @since 3.1-A2'),
 		);
 	}
 
@@ -142,9 +140,8 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	* @dataProvider validate_since_throws_data
 	* @expectedException LogicException
 	*/
-	public function test_validate_since_throws($since, $exception_code)
+	public function test_validate_since_throws($since)
 	{
-		$this->setExpectedException('LogicException', '', $exception_code);
 		$this->exporter->validate_since($since);
 	}
 

@@ -544,23 +544,15 @@ class php_exporter
 	*/
 	public function validate_since($line)
 	{
-		$since = substr(ltrim($line, "\t"), strlen('* @since '));
-
-		if ($since !== trim($since))
+		$match = array();
+		preg_match('#^\* @since (\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?)$#', ltrim($line, "\t"), $match);
+		if (!isset($match[1]))
 		{
 			throw new \LogicException("Invalid '@since' information for event "
-				. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 1);
+				. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'");
 		}
 
-		$since = ($since === '3.1-A1') ? '3.1.0-a1' : $since;
-
-		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?$#', $since))
-		{
-			throw new \LogicException("Invalid '@since' information for event "
-				. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
-		}
-
-		return $since;
+		return $match[1];
 	}
 
 	/**
