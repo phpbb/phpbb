@@ -22,9 +22,9 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
+			new \phpbb\filesystem(),
 			new phpbb_mock_request(),
 			$config,
-			new \phpbb\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
