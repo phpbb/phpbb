@@ -76,5 +76,6 @@
 }
 
 .file-name {
-	width: 350px;
+	max-width: 65%;
+	vertical-align: bottom;
 }
