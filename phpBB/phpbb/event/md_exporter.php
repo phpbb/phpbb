@@ -209,8 +209,6 @@ class md_exporter
 	*/
 	public function validate_since($since)
 	{
-		$since = ($since === '3.1-A1') ? '3.1.0-a1' : $since;
-
 		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?$#', $since))
 		{
 			throw new \LogicException("Invalid since information found for event '{$this->current_event}'");
