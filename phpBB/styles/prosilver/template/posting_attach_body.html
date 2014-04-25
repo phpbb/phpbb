@@ -35,7 +35,7 @@
 				<tbody class="responsive-skip-empty" id="file-list">
 					<tr class="attach-row" id="attach-row-tpl">
 							<td class="attach-name">
-								<span class="file-name"></span>
+								<span class="file-name ellipsis-text"></span>
 								<span class="attach-controls">
 									<input type="button" value="{L_PLACE_INLINE}" class="button2 hidden file-inline-bbcode" />&nbsp;
 									<input type="button" value="{L_DELETE_FILE}" class="button2 file-delete" />
@@ -58,7 +58,7 @@
 					<!-- BEGIN attach_row -->
 						<tr class="attach-row" data-attach-id="{attach_row.ATTACH_ID}">
 							<td class="attach-name">
-								<span class="file-name"><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></span>
+								<span class="file-name ellipsis-text"><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></span>
 								<span class="attach-controls">
 									<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" class="button2 file-inline-bbcode" />&nbsp; <!-- ENDIF -->
 									<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button2 file-delete" />

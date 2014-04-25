@@ -2082,7 +2082,7 @@ class acp_users
 					}
 
 					$template->assign_block_vars('attach', array(
-						'REAL_FILENAME'		=> $row['real_filename'],
+						'REAL_FILENAME'		=> utf8_wordwrap(utf8_basename((string) $row['real_filename']), 40, '<br />', true),
 						'COMMENT'			=> nl2br($row['attach_comment']),
 						'EXTENSION'			=> $row['extension'],
 						'SIZE'				=> get_formatted_filesize($row['filesize']),
