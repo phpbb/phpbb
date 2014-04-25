@@ -780,8 +780,11 @@ div.dl_links {
 }
 
 .attachment-filename {
-	display: inline-block;
 	width: 100%;
+}
+
+.ellipsis-text {
+	display: inline-block;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
