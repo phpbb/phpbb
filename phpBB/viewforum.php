@@ -387,7 +387,7 @@ $sql_array = array(
 *
 * @event core.viewforum_get_topic_data
 * @var	array	sql_array		The SQL array to get the data of all topics
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $vars = array('sql_array');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
@@ -582,7 +582,7 @@ if (sizeof($shadow_topic_list))
 	*
 	* @event core.viewforum_get_shadowtopic_data
 	* @var	array	sql_array		SQL array to get the data of any shadowtopics
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('sql_array');
 	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
@@ -819,7 +819,7 @@ if (sizeof($topic_list))
 		* @event core.viewforum_modify_topicrow
 		* @var	array	row			Array with topic data
 		* @var	array	topic_row	Template array with topic data
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));

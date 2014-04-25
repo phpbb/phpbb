@@ -445,7 +445,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	* @var string	bitfield		The BBCode Bitfield
 	* @var int		flags			The BBCode Flags
 	* @var bool		censor_text		Whether or not to apply word censors
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
@@ -487,7 +487,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	* @var string	uid			The BBCode UID
 	* @var string	bitfield	The BBCode Bitfield
 	* @var int		flags		The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_after', compact($vars)));
@@ -525,7 +525,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_bbcode	Whether or not to parse BBCode
 	* @var bool		allow_urls		Whether or not to parse URLs
 	* @var bool		allow_smilies	Whether or not to parse Smilies
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array(
 		'text',
@@ -573,7 +573,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var string	uid				The BBCode UID
 	* @var string	bitfield		The BBCode Bitfield
 	* @var int		flags			The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
@@ -596,7 +596,7 @@ function generate_text_for_edit($text, $uid, $flags)
 	* @var string	text			The text to parse
 	* @var string	uid				The BBCode UID
 	* @var int		flags			The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_before', compact($vars)));
@@ -609,7 +609,7 @@ function generate_text_for_edit($text, $uid, $flags)
 	* @event core.modify_text_for_edit_after
 	* @var string	text			The text to parse
 	* @var int		flags			The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_after', compact($vars)));
@@ -1416,7 +1416,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	*								profile url.
 	* @var string username_string	The string that has been generated
 	* @var array _profile_cache		Array of original return templates
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array(
 		'mode',

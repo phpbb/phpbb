@@ -143,7 +143,7 @@ function user_update_name($old_name, $new_name)
 	* @event core.update_username
 	* @var	string	old_name	The old username that is replaced
 	* @var	string	new_name	The new username
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('old_name', 'new_name');
 	extract($phpbb_dispatcher->trigger_event('core.update_username', compact($vars)));
@@ -259,7 +259,7 @@ function user_add($user_row, $cp_data = false)
 	*
 	* @event core.user_add_modify_data
 	* @var array	sql_ary		Array of data to be inserted when a user is added
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
@@ -386,7 +386,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* @var	array	user_ids	IDs of the deleted user
 	* @var	mixed	retain_username	True if username should be retained
 	*				or false if not
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
@@ -615,7 +615,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* @var	array	user_ids	IDs of the deleted user
 	* @var	mixed	retain_username	True if username should be retained
 	*				or false if not
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('mode', 'user_ids', 'retain_username');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
@@ -2504,7 +2504,7 @@ function group_delete($group_id, $group_name = false)
 	* @event core.delete_group_after
 	* @var	int		group_id	ID of the deleted group
 	* @var	string	group_name	Name of the deleted group
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('group_id', 'group_name');
 	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
@@ -2752,7 +2752,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	* @var	string	group_name		Name of the group
 	* @var	array	user_id_ary		IDs of the users which are removed
 	* @var	array	username_ary	names of the users which are removed
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
 	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_before', compact($vars)));
@@ -3198,7 +3198,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	* @var	array	group_attributes	Group attributes which were changed
 	* @var	array	update_listing		Update the list of moderators and foes
 	* @var	array	sql_ary				User attributes which were changed
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.user_set_default_group', compact($vars)));

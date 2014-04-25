@@ -248,7 +248,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var	array	message_row	Array with message data
 	* @var	array	cp_row		Array with senders custom profile field data
 	* @var	array	msg_data	Template array with message data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array(
 		'id',

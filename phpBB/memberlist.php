@@ -601,7 +601,7 @@ switch ($mode)
 		*										enabled?
 		* @var	bool    friend					Is the user friend?
 		* @var	bool	foe						Is the user foe?
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		* @changed 3.1.0-b2 Added friend and foe status
 		*/
 		$vars = array(
@@ -1764,7 +1764,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	* @event core.memberlist_prepare_profile_data
 	* @var	array	data				Array with user's data
 	* @var	array	template_data		Template array with user's data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('data', 'template_data');
 	extract($phpbb_dispatcher->trigger_event('core.memberlist_prepare_profile_data', compact($vars)));

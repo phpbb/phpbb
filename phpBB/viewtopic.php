@@ -997,7 +997,7 @@ $sql_ary = array(
 * @var	string	sort_dir	Direction the posts are sorted by
 * @var	int		start		Pagination information
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
-* @since 3.1-A1
+* @since 3.1.0-a1
 * @change 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
 */
 $vars = array(
@@ -1083,7 +1083,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @event core.viewtopic_post_rowset_data
 	* @var	array	rowset_data	Array with the rowset data for this post
 	* @var	array	row			Array with original user and post data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('rowset_data', 'row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_rowset_data', compact($vars)));
@@ -1139,7 +1139,7 @@ while ($row = $db->sql_fetchrow($result))
 			* @var	array	user_cache_data	Array with the user's data
 			* @var	int		poster_id		Poster's user id
 			* @var	array	row				Array with original user and post data
-			* @since 3.1-A1
+			* @since 3.1.0-a1
 			*/
 			$vars = array('user_cache_data', 'poster_id', 'row');
 			extract($phpbb_dispatcher->trigger_event('core.viewtopic_cache_guest_data', compact($vars)));
@@ -1199,7 +1199,7 @@ while ($row = $db->sql_fetchrow($result))
 			* @var	array	user_cache_data	Array with the user's data
 			* @var	int		poster_id		Poster's user id
 			* @var	array	row				Array with original user and post data
-			* @since 3.1-A1
+			* @since 3.1.0-a1
 			*/
 			$vars = array('user_cache_data', 'poster_id', 'row');
 			extract($phpbb_dispatcher->trigger_event('core.viewtopic_cache_user_data', compact($vars)));
@@ -1685,7 +1685,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	user_poster_data	Poster's data from user cache
 	* @var	array	post_row			Template block array of the post
 	* @var	array	topic_data			Array with topic data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	* @change 3.1.0-b3 Added topic_data array, total_posts
 	*/
@@ -1916,7 +1916,7 @@ $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang
 * @var	array	topic_data		Array with topic data
 * @var	int		forum_id		Forum ID of the topic
 * @var	int		start			Start offset used to calculate the page
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $vars = array('page_title', 'topic_data', 'forum_id', 'start');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_page_title', compact($vars)));

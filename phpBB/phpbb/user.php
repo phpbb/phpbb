@@ -143,7 +143,7 @@ class user extends \phpbb\session
 		* 					that are absolutely needed globally using this
 		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array(
 			'user_data',

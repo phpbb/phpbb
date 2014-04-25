@@ -80,7 +80,7 @@ $current_time = time();
 *							form submission.
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $vars = array(
 	'post_id',
@@ -1573,7 +1573,7 @@ $template->assign_vars(array(
 *								this is "multipart/form-data" else it is the empty string
 * @var	string	s_action		The URL to submit the POST data to
 * @var	string	s_hidden_fields The concatenated input tags of the form's hidden fields
-* @since 3.1-A1
+* @since 3.1.0-a1
 * @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title, s_topic_icons, form_enctype, s_action, s_hidden_fields
 */
 $vars = array(

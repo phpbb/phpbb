@@ -2022,7 +2022,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	*											the global one (false)
 	* @var	bool|string	append_sid_overwrite	Overwrite function (string
 	*											URL) or not (false)
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite');
 	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
@@ -4735,7 +4735,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	* @var	int		item_id				Restrict online users to item id
 	* @var	bool	page_header_override	Shall we return instead of running
 	*										the rest of page_header()
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
@@ -5100,7 +5100,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	* @var	bool	run_cron			Shall we run cron tasks
 	* @var	bool	page_footer_override	Shall we return instead of running
 	*										the rest of page_footer()
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('run_cron', 'page_footer_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_footer', compact($vars)));
@@ -5208,7 +5208,7 @@ function garbage_collection()
 		* Unload some objects, to free some memory, before we finish our task
 		*
 		* @event core.garbage_collection
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}

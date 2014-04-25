@@ -133,7 +133,7 @@ function generate_smilies($mode, $forum_id)
 	* @var	string	mode			Mode of the smilies: window|inline
 	* @var	int		forum_id		The forum ID we are currently in
 	* @var	bool	display_link	Shall we display the "more smilies" link?
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('mode', 'forum_id', 'display_link');
 	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));

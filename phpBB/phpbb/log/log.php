@@ -305,7 +305,7 @@ class log implements \phpbb\log\log_interface
 		* @var	array	sql_ary			Array with log data we insert into the
 		*							database. If sql_ary[log_type] is not set,
 		*							we won't add the entry to the database.
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array(
 			'mode',
@@ -411,7 +411,7 @@ class log implements \phpbb\log\log_interface
 		*							is false, no entries will be returned.
 		* @var	string	sql_additional	Additional conditions for the entries,
 		*								e.g.: 'AND l.forum_id = 1'
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array(
 			'mode',
@@ -521,7 +521,7 @@ class log implements \phpbb\log\log_interface
 			* @event core.get_logs_modify_entry_data
 			* @var	array	row			Entry data from the database
 			* @var	array	log_entry_data	Entry's data which is returned
-			* @since 3.1-A1
+			* @since 3.1.0-a1
 			*/
 			$vars = array('row', 'log_entry_data');
 			extract($this->dispatcher->trigger_event('core.get_logs_modify_entry_data', compact($vars)));
@@ -598,7 +598,7 @@ class log implements \phpbb\log\log_interface
 		*									get the permission data
 		* @var	array	reportee_id_list	Array of additional user IDs we
 		*									get the username strings for
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('log', 'topic_id_list', 'reportee_id_list');
 		extract($this->dispatcher->trigger_event('core.get_logs_get_additional_data', compact($vars)));

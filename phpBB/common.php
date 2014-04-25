@@ -151,6 +151,6 @@ if (!$config['use_system_cron'])
 *		please use the core.user_setup event instead!
 *
 * @event core.common
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $phpbb_dispatcher->dispatch('core.common');
