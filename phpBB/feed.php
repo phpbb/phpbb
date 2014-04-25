@@ -37,7 +37,7 @@ if (!empty($config['feed_http_auth']) && request_var('auth', '') == 'http')
 }
 
 $auth->acl($user->data);
-$user->setup();
+$user->setup('viewtopic');
 
 // Initial var setup
 $forum_id	= request_var('f', 0);
