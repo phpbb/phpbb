@@ -193,7 +193,7 @@ class path_helper
 			*	e.g. 'http://localhost/phpBB/app.php', where server name is 'localhost'
 			*	and script path is '/phpBB', will be cut to '/app.php'
 			*/ 
-			$ref = substr(strstr($referer, $this->config['server_name'] . $this->config['script_path']), $chars);
+			$ref = substr(strstr($referer, strtolower($this->config['server_name'] . $this->config['script_path'])), $chars);
 
 			// How many slashes does the referer used?
 			$count_slashes = substr_count($ref, '/');
