@@ -31,7 +31,7 @@ class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
 			),
 			new \phpbb\filesystem(),
 			$request,
-			$config
+			$config,
 			$this->phpbb_root_path,
 			$this->phpEx
 		);
