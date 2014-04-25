@@ -1005,24 +1005,6 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 }
 
 /**
-* Pick a timezone
-*
-* @param	string		$default			A timezone to select
-* @param	boolean		$truncate			Shall we truncate the options text
-*
-* @return		string		Returns the options for timezone selector only
-*
-* @deprecated
-*/
-function tz_select($default = '', $truncate = false)
-{
-	global $user;
-
-	$timezone_select = phpbb_timezone_select($user, $default, $truncate);
-	return $timezone_select['tz_select'];
-}
-
-/**
 * Options to pick a timezone and date/time
 *
 * @param	\phpbb\user	$user				Object of the current user
