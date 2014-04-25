@@ -295,48 +295,80 @@ class php_exporter
 	*/
 	public function get_vars_from_array()
 	{
-		$vars_array_line = 1;
-		$found_vars_array = false;
-		$vars_array = array();
-		while (ltrim($this->file_lines[$this->current_event_line - $vars_array_line], "\t") !== '*/')
+		$line = ltrim($this->file_lines[$this->current_event_line - 1], "\t");
+		if ($line === ');')
 		{
-			$line = ltrim($this->file_lines[$this->current_event_line - $vars_array_line], "\t");
-			$match = array();
-			preg_match('#^\$vars = (array_merge\(\$vars, )?array\(\'([a-zA-Z0-9_\' ,]+)\'\)(?(1)\));$#', $line, $match);
-
-			if (isset($match[2]))
-			{
-				$found_vars_array = true;
-				if (strlen($match[2]) > 90)
-				{
-					throw new \LogicException('Should use multiple lines for $vars definition '
-						. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
-				}
-				$vars_array = array_merge($vars_array, explode("', '", $match[2]));
-			}
-
-			$vars_array_line++;
-			if ($this->current_event_line - $vars_array_line === 0)
-			{
-				throw new \LogicException("Can not find '\$vars = array();'-line for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
-			}
+			$vars_array = $this->get_vars_from_multi_line_array();
 		}
-
-		if (!$found_vars_array)
+		else
 		{
-			throw new \LogicException("Can not find '\$vars = array();'-line for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
+			$vars_array = $this->get_vars_from_single_line_array($line);
 		}
 
 		foreach ($vars_array as $var)
 		{
 			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
 			{
-				throw new \LogicException("Found invalid var '{$var}' in array for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 4);
+				throw new \LogicException("Found invalid var '{$var}' in array for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
 			}
 		}
 
 		sort($vars_array);
 		return $vars_array;
+	}
+
+	/**
+	* Find the variables in single line array
+	*
+	* @param	string	$line
+	* @return array		List of variables
+	* @throws \LogicException
+	*/
+	public function get_vars_from_single_line_array($line, $throw_multiline = true)
+	{
+		$match = array();
+		preg_match('#^\$vars = array\(\'([a-zA-Z0-9_\' ,]+)\'\);$#', $line, $match);
+
+		if (isset($match[1]))
+		{
+			$vars_array = explode("', '", $match[1]);
+			if ($throw_multiline && sizeof($vars_array) > 6)
+			{
+				throw new \LogicException('Should use multiple lines for $vars definition '
+					. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
+			}
+			return $vars_array;
+		}
+		else
+		{
+			throw new \LogicException("Can not find '\$vars = array();'-line for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 1);
+		}
+	}
+
+	/**
+	* Find the variables in single line array
+	*
+	* @param	string	$line
+	* @return array		List of variables
+	* @throws \LogicException
+	*/
+	public function get_vars_from_multi_line_array()
+	{
+		$current_vars_line = 2;
+		$var_lines = array();
+		while (ltrim($this->file_lines[$this->current_event_line - $current_vars_line], "\t") !== '$vars = array(')
+		{
+			$var_lines[] = substr(trim($this->file_lines[$this->current_event_line - $current_vars_line]), 0, -1);
+
+			$current_vars_line++;
+			if ($current_vars_line > $this->current_event_line)
+			{
+				// Reached the start of the file
+				throw new \LogicException("Can not find end of \$vars array for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
+			}
+		}
+
+		return $this->get_vars_from_single_line_array('$vars = array(' . implode(", ", $var_lines) . ');', false);
 	}
 
 	/**
