@@ -17,13 +17,14 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
+		$request = $this->getMock('\phpbb\request\request');
 
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
-			new phpbb_mock_request(),
+			$request
 			$config,
 			$phpbb_root_path,
 			$phpEx
