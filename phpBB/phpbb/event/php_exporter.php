@@ -223,6 +223,7 @@ class php_exporter
 							. "'{$this->events[$this->current_event]['file']}'", 10);
 					}
 
+					sort($arguments);
 					$this->events[$this->current_event] = array(
 						'event'			=> $this->current_event,
 						'file'			=> $this->current_file,
