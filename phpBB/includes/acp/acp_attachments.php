@@ -1058,7 +1058,7 @@ class acp_attachments
 					$template->assign_block_vars('orphan', array(
 						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
 						'FILETIME'			=> $user->format_date($row['filetime']),
-						'REAL_FILENAME'		=> utf8_basename((string) $row['real_filename']),
+						'REAL_FILENAME'		=> utf8_basename($row['real_filename']),
 						'PHYSICAL_FILENAME'	=> utf8_basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
