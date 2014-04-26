@@ -334,10 +334,10 @@
 	<table class="table1 zebra-table fixed-width-table">
 	<thead>
 	<tr>
-		<th style="width: 25%;">{L_FILENAME}</th>
+		<th>{L_FILENAME}</th>
 		<th style="width: 15%;">{L_FILEDATE}</th>
 		<th style="width: 15%;">{L_FILESIZE}</th>
-		<th style="width: 150px;">{L_ATTACH_POST_ID}</th>
+		<th style="width: 15%">{L_ATTACH_POST_ID}</th>
 		<th style="width: 15%;">{L_ATTACH_TO_POST}</th>
 		<th style="width: 15%;">{L_DELETE}</th>
 	</tr>
@@ -348,7 +348,7 @@
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" name="post_id[{orphan.ATTACH_ID}]" maxlength="10" value="{orphan.POST_ID}" style="width: 75%;" /></td>
 			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
 			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>
