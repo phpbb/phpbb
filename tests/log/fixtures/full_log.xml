@@ -131,7 +131,7 @@
 			<value>LOG_SINGULAR_PLURAL</value>
 			<value>a:1:{i:0;i:2;}</value>
 		</row>
-        <row>
+		<row>
 			<value>11</value>
 			<value>1</value>
 			<value>1</value>
@@ -142,7 +142,7 @@
 			<value>1</value>
 			<value>LOG_MOD3</value>
 			<value>a:1:{i:0;s:5:"guest";}</value>
-        </row>
+		</row>
 	</table>
 	<table name="phpbb_users">
 		<column>user_id</column>
