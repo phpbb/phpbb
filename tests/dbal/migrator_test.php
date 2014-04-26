@@ -174,9 +174,13 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function test_revert()
 	{
+		global $migrator_test_revert_counter;
+
 		// Make sure there are no other migrations in the db, this could cause issues
 		$this->db->sql_query("DELETE FROM phpbb_migrations");
 		$this->migrator->load_migration_state();
+
+		$migrator_test_revert_counter = 0;
 
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_revert', 'phpbb_dbal_migration_revert_with_dependency'));
 
@@ -218,6 +222,11 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		if (isset($row['bar_column']))
 		{
 			$this->fail('Revert did not remove test_column.');
+		}
+
+		if ($migrator_test_revert_counter != 1)
+		{
+			$this->fail('Revert did not recall the customs functions.');
 		}
 	}
 
