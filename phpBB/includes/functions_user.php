@@ -1326,9 +1326,18 @@ function validate_data($data, $val_ary)
 		{
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
-			$function_prefix = (function_exists('phpbb_validate_' . $function)) ? 'phpbb_validate_' : 'validate_';
 
-			if ($result = call_user_func_array($function_prefix . $function, $validate))
+			if (is_array($function))
+			{
+				$result = call_user_func_array($function[0], 'validate_' . $function[1], $validate);
+			}
+			else
+			{
+				$function_prefix = (function_exists('phpbb_validate_' . $function)) ? 'phpbb_validate_' : 'validate_';
+				$result = call_user_func_array($function_prefix . $function, $validate);
+			}
+
+			if ($result)
 			{
 				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
 				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
