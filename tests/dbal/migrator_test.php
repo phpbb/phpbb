@@ -224,10 +224,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->fail('Revert did not remove test_column.');
 		}
 
-		if ($migrator_test_revert_counter != 1)
-		{
-			$this->fail('Revert did not recall the customs functions.');
-		}
+		$this->assertEquals(1, $migrator_test_revert_counter, 'Revert did call custom function again');
 	}
 
 	public function test_fail()
