@@ -913,7 +913,6 @@ table.styles td.users, table td.mark {
 
 table.fixed-width-table {
 	table-layout: fixed;
-	width: 100%;
 }
 
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
