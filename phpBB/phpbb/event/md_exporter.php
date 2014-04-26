@@ -40,6 +40,11 @@ class md_exporter
 		$this->filter = $this->current_event = '';
 	}
 
+	/**
+	* Get the list of all events
+	*
+	* @return array		Array with events: name => details
+	*/
 	public function get_events()
 	{
 		return $this->events;
@@ -47,7 +52,6 @@ class md_exporter
 
 	/**
 	* @param string $md_file
-	* @param string $filter
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
@@ -67,7 +71,6 @@ class md_exporter
 
 	/**
 	* @param string $md_file
-	* @param string $filter
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
@@ -279,6 +282,13 @@ class md_exporter
 		return $files_list;
 	}
 
+	/**
+	* Get all template events in a template file
+	*
+	* @param string $file
+	* @return array
+	* @throws \LogicException
+	*/
 	public function crawl_file_for_events($file)
 	{
 		if (!file_exists($this->root_path . $file))
@@ -294,8 +304,8 @@ class md_exporter
 		array_shift($events);
 		foreach ($events as $event)
 		{
-			list($event_name, $null) = explode(' -->', $event, 2);
-			$event_list[] = $event_name;
+			$event = explode(' -->', $event, 2);
+			$event_list[] = array_shift($event);
 		}
 
 		return $event_list;
@@ -306,7 +316,7 @@ class md_exporter
 	*
 	* @param string $file
 	* @param array $events
-	* @return null
+	* @return true
 	* @throws \LogicException
 	*/
 	public function validate_events_from_file($file, array $events)

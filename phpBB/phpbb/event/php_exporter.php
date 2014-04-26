@@ -46,17 +46,35 @@ class php_exporter
 		$this->current_event_line = 0;
 	}
 
+	/**
+	* Get the list of all events
+	*
+	* @return array		Array with events: name => details
+	*/
 	public function get_events()
 	{
 		return $this->events;
 	}
 
+	/**
+	* Set current event data
+	*
+	* @param string	$name	Name of the current event (used for error messages)
+	* @param int	$line	Line where the current event is placed in
+	* @return null
+	*/
 	public function set_current_event($name, $line)
 	{
 		$this->current_event = $name;
 		$this->current_event_line = $line;
 	}
 
+	/**
+	* Set the content of this file
+	*
+	* @param array $content		Array with the lines of the file
+	* @return null
+	*/
 	public function set_content($content)
 	{
 		$this->file_lines = $content;
@@ -322,6 +340,8 @@ class php_exporter
 	* Find the variables in single line array
 	*
 	* @param	string	$line
+	* @param	bool	$throw_multiline	Throw an exception when there are too
+	*										many arguments in one line.
 	* @return array		List of variables
 	* @throws \LogicException
 	*/
@@ -349,7 +369,6 @@ class php_exporter
 	/**
 	* Find the variables in single line array
 	*
-	* @param	string	$line
 	* @return array		List of variables
 	* @throws \LogicException
 	*/
