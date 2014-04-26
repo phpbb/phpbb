@@ -104,6 +104,11 @@ if ($post_id)
 	}
 	unset($acl_check_ary);
 
+	if ((int) $user->data['user_id'] != $report_data['topic_poster'] && !$auth->acl_get('f_read_other', $forum_id))
+	{
+		trigger_error('USER_CANNOT_READ_TOPIC');
+	}
+
 	if ($report_data['post_reported'])
 	{
 		$message = $user->lang['ALREADY_REPORTED'];

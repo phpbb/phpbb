@@ -180,6 +180,11 @@ class mcp_queue
 
 				$post_info = $post_info[$post_id];
 
+				if ((int) $user->data['user_id'] != $post_info['topic_poster'] && !$auth->acl_get('f_read_other', $post_info['forum_id']) )
+				{
+					trigger_error('SORRY_AUTH_TOPIC');
+				}
+
 				if ($post_info['topic_first_post_id'] != $post_id && topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
 				{
 					$template->assign_vars(array(
@@ -420,6 +425,8 @@ class mcp_queue
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . '
 						WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
 							AND p.post_visibility = ' . $visibility_const . '
+							AND (t.topic_poster = ' . (int) $user->data['user_id'] . '
+								OR  ' . $db->sql_in_set('t.forum_id', get_forum_list('f_read_other', true, true)) . ')
 							' . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
@@ -443,6 +450,8 @@ class mcp_queue
 						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
+								AND (t.topic_poster = ' . (int) $user->data['user_id'] . '
+									OR  ' . $db->sql_in_set('t.forum_id', get_forum_list('f_read_other', true, true)) . ')
 								AND t.topic_id = p.topic_id
 								AND u.user_id = p.poster_id
 							ORDER BY ' . $sort_order_sql;
@@ -474,6 +483,8 @@ class mcp_queue
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
 							AND topic_visibility = ' . $visibility_const . "
 							AND topic_delete_user <> 0
+							AND (t.topic_poster = " . (int) $user->data['user_id'] . '
+								OR  ' . $db->sql_in_set('t.forum_id', get_forum_list('f_read_other', true, true), false, true) . ")
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);

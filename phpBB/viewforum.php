@@ -266,14 +266,35 @@ $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
 // Limit topics to certain time frame, obtain correct topic count
-if ($sort_days)
+// global announcements must not be counted, normal announcements have to
+// be counted, as forum_topics(_real) includes them
+// If the user has limited access to the topics he can see, the number also has to be recounted
+if ($sort_days || !$auth->acl_get('f_read_other', $forum_id))
 {
-	$min_post_time = time() - ($sort_days * 86400);
+	$sql_limit_time = '';
+	$min_post_time = 0;
+
+	if ($sort_days)
+	{
+		$min_post_time = time() - ($sort_days * 86400);
+		$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
+
+		// Make sure we have information about day selection ready
+		$template->assign_var('S_SORT_DAYS', true);
+	}
+
+	$user_check = '';
+	if (!$auth->acl_get('f_read_other', $forum_id))
+	{
+		$user_check = ' AND topic_poster = '. $user->data['user_id'];
+	}
 
 	$sql = 'SELECT COUNT(topic_id) AS num_topics
 		FROM ' . TOPICS_TABLE . "
 		WHERE forum_id = $forum_id
-			AND (topic_last_post_time >= $min_post_time
+			AND (
+				( topic_last_post_time >= $min_post_time
+					$user_check)
 				OR topic_type = " . POST_ANNOUNCE . '
 				OR topic_type = ' . POST_GLOBAL . ')
 			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id);
@@ -285,10 +306,6 @@ if ($sort_days)
 	{
 		$start = 0;
 	}
-	$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
-
-	// Make sure we have information about day selection ready
-	$template->assign_var('S_SORT_DAYS', true);
 }
 else
 {
@@ -503,25 +520,60 @@ else
 	$sql_start = $start;
 }
 
+$topics_from_others_filter = '';
 if ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary))
 {
+	if (!$auth->acl_get('f_read_other', $forum_id))
+	{
+		$topics_from_others_filter = " AND " . (int) $user->data['user_id'] . " = t.topic_poster";
+	}
 	$sql_where = 't.forum_id = ' . $forum_id;
 }
 else if (empty($active_forum_ary['exclude_forum_id']))
 {
+	$read_other_forums = array_keys($auth->acl_getf('f_read_other', true));
+	if (count($read_other_forums) > 0)
+	{
+		$forum_id_limited_intersect = array_intersect($active_forum_ary['forum_id'], $read_other_forums);
+		if (count($forum_id_limited_intersect) > 0)
+		{
+			$topics_from_others_filter = " AND (" . $db->sql_in_set('t.forum_id', $forum_id_limited_intersect) ."
+				OR " . (int) $user->data['user_id'] . " = t.topic_poster ) ";
+		}
+	}
 	$sql_where = $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id']);
 }
 else
 {
+	$read_other_forums = array_keys($auth->acl_getf('f_read_other', true));
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
-	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+	// If the forum does not use this funcitonality, the intersection is not required.
+	if (count($read_other_forums) > 0)
+	{
+		$forum_id_limited_intersect = array_intersect($get_forum_ids, $read_other_forums);
+		if (count($forum_id_limited_intersect) > 0)
+		{
+			$topics_from_others_filter = " AND (" . $db->sql_in_set('t.forum_id', $forum_id_limited_intersect) ."
+				OR " . (int) $user->data['user_id'] . " = t.topic_poster ) ";
+		}
+	}
+	if (sizeof($get_forum_ids))
+	{
+		$sql_where = $db->sql_in_set('t.forum_id', $get_forum_ids);
+	}
+	else
+	{
+		$sql_where = 't.forum_id = ' . $forum_id;
+	}
 }
 
 // Grab just the sorted topic ids
+// Do not include the topic ids from the topics that the user is unable to see
 $sql = 'SELECT t.topic_id
 	FROM ' . TOPICS_TABLE . " t
 	WHERE $sql_where
 		AND t.topic_type IN (" . POST_NORMAL . ', ' . POST_STICKY . ")
+		$topics_from_others_filter
 		$sql_approved
 		$sql_limit_time
 	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
@@ -606,7 +658,8 @@ if (sizeof($shadow_topic_list))
 		}
 
 		// Do not include those topics the user has no permission to access
-		if (!$auth->acl_get('f_read', $row['forum_id']))
+		if (!$auth->acl_get('f_read', $row['forum_id']) &&
+			(int) $user->data['user_id'] != $topic_data['topic_poster'] && !$auth->acl_get('f_read_other', $forum_id) )
 		{
 			// We need to remove any trace regarding this topic. :)
 			unset($rowset[$orig_topic_id]);

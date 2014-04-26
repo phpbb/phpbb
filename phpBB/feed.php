@@ -237,3 +237,38 @@ echo '</feed>';
 
 garbage_collection();
 exit_handler();
+
+
+	/**
+	* This calculates which forums is the current user able to read all the
+	* topics given a list of forums that the user is able to read some topics
+	* (permission f_read) this takes f_read_other in account.
+	* Note: If readable_forum_ids contains a forum_id that the user is unable
+	* to see (does not have f_read permission), the result is undefined
+	*
+	* @param array $readable_forum_ids	A list of forums in which the user has
+	* 									the f_read permission but may or may
+	* 									not also have the f_read_other
+	* 									permission
+	*									Use false if you don't have such
+	*									information
+	*									Defaults to false
+	*
+	* @return array An array with the forum_id's of the forums where the user
+	* 				has permission to read all the topics without exceptions
+	*
+	*/
+	function get_unlimited_reading_forums(array $readable_forum_ids = NULL)
+	{
+		global $auth;
+		static $forum_ids;
+
+		$readable_forum_ids ?: $this->get_readable_forums();
+		if (!isset($forum_ids))
+		{
+			$forum_ids = array_keys($auth->acl_getf('f_read_other', true));
+		}
+
+		// if the user cannot read, he cannot read without limits
+		return array_intersect($forum_ids, $readable_forum_ids);
+	}

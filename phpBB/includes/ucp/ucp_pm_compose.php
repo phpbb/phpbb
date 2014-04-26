@@ -159,7 +159,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			if ($action == 'quotepost')
 			{
-				$sql = 'SELECT p.post_id as msg_id, p.forum_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
+				$sql = 'SELECT p.post_id as msg_id, p.forum_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, t.topic_poster AS topic_poster, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 					WHERE p.post_id = $msg_id
 						AND t.topic_id = p.topic_id
@@ -258,7 +258,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		if ($action == 'quotepost')
 		{
-			if (($post['forum_id'] && !$auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))
+			if (($post['forum_id'] &&
+				(!$auth->acl_get('f_read', $post['forum_id']) ||
+					((int) $user->data['user_id'] != $post['topic_poster'] &&
+					!$auth->acl_get('f_read_other', $post['forum_id']))
+				)
+				) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))
 			{
 				trigger_error('NOT_AUTHORISED');
 			}

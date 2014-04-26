@@ -155,10 +155,19 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
+	$limit_access_check = '';
+	if (!$auth->acl_get('f_read_other', $forum_id))
+	{
+		$limit_access_check =	' AND (t.topic_poster = ' . (int) $user->data['user_id'] . ' OR
+									(t.topic_type <> ' . POST_NORMAL . ' AND t.topic_type <> ' . POST_STICKY . ')
+								) ';
+	}
+
 	$sql = 'SELECT t.topic_id
 		FROM ' . TOPICS_TABLE . ' t
-		WHERE t.forum_id = ' . $forum_id . '
-			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . "
+		WHERE
+			 ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . " 
+			$limit_access_check
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);

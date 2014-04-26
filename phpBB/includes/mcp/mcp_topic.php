@@ -38,6 +38,16 @@ function mcp_topic_view($id, $mode, $action)
 
 	$topic_info = $topic_info[$topic_id];
 
+	if ((int) $user->data['user_id'] != $topic_info['topic_poster'] &&
+		!$auth->acl_get('f_read_other', $topic_info['forum_id']))
+	{
+		if ($user->data['user_id'] != ANONYMOUS)
+		{
+			trigger_error('SORRY_AUTH_TOPIC');
+		}
+		login_box('', $user->lang['LOGIN_VIEWFORUM']);
+	}
+
 	// Set up some vars
 	$icon_id		= request_var('icon', 0);
 	$subject		= utf8_normalize_nfc(request_var('subject', '', true));

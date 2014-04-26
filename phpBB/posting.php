@@ -269,6 +269,20 @@ if (!$auth->acl_get('f_read', $forum_id))
 	login_box('', $message);
 }
 
+// Is the user able to read the quoted post?
+// Is the user able to reply to this topic?
+if (($mode == 'quote' || $mode == 'reply' || $mode == 'edit' || $mode == 'delete') &&
+	$post_data['topic_poster'] != (int) $user->data['user_id'] && !$auth->acl_get('f_read_other', $forum_id) 
+	)
+{
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		trigger_error('USER_CANNOT_READ_TOPIC');
+	}
+
+	login_box('', $user->lang['LOGIN_EXPLAIN_POST']);
+}
+
 // Permission to do the action asked?
 $is_authed = false;
 

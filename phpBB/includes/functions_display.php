@@ -222,7 +222,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$row['forum_topics'] = $phpbb_content_visibility->get_count('forum_topics', $row, $forum_id);
 
 		// Display active topics from this forum?
-		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
+		if ($show_active && $row['forum_type'] == FORUM_POST && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) &&
+			$auth->acl_get('f_read', $forum_id) && $auth->acl_get('f_read_other', $forum_id))
 		{
 			if (!isset($active_forum_ary['forum_topics']))
 			{
@@ -541,6 +542,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang[$folder_alt] : '',
 			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
+			'FORUM_PRIVATE'			=> !$auth->acl_get('f_read_other', $row['forum_id']),
 			'LAST_POST_SUBJECT'		=> (!$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? censor_text($last_post_subject) : "",
 			'LAST_POST_SUBJECT_TRUNCATED'	=> (!$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? $last_post_subject_truncated : "",
 			'LAST_POST_TIME'		=> $last_post_time,
@@ -1058,6 +1060,7 @@ function display_user_activity(&$userdata)
 	{
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
+	// Please check if this leaks data on letting users view the existance of topics they should not be able to see
 		// Obtain active forum
 		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
@@ -1081,6 +1084,7 @@ function display_user_activity(&$userdata)
 		}
 
 		// Obtain active topic
+	// Please check if this leaks data on letting users view the existance of topics they should not be able to see
 		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
 			WHERE poster_id = ' . $userdata['user_id'] . '
@@ -1094,11 +1098,14 @@ function display_user_activity(&$userdata)
 
 		if (!empty($active_t_row))
 		{
-			$sql = 'SELECT topic_title
-				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id = ' . $active_t_row['topic_id'];
-			$result = $db->sql_query($sql);
-			$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+			$sql = 'SELECT topic_title, topic_poster, forum_id
+					FROM ' . TOPICS_TABLE . '
+					WHERE topic_id = ' . $active_t_row['topic_id'];
+				$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow();
+			$active_t_row['topic_title'] = (string) $row['topic_title'];
+			$active_t_row['topic_poster'] = (int) $row['topic_poster'];
+			$active_t_row['forum_id'] = (int) $row['forum_id'];
 			$db->sql_freeresult($result);
 		}
 	}
@@ -1116,7 +1123,10 @@ function display_user_activity(&$userdata)
 	}
 
 	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
-	if (!empty($active_t_row['num_posts']))
+
+	if (!empty($active_t_row['num_posts']) &&
+		((int) $user->data['user_id'] == $active_t_row['topic_poster'] ||
+		$auth->acl_get('f_read_other', $active_t_row['forum_id'])))
 	{
 		$active_t_name = $active_t_row['topic_title'];
 		$active_t_id = $active_t_row['topic_id'];
@@ -1154,7 +1164,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 	$is_watching = 0;
 
-	// Is user watching this thread?
+	// Is user watching this topic?
 	if ($user_id != ANONYMOUS)
 	{
 		$can_watch = true;
