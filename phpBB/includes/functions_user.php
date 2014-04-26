@@ -1329,7 +1329,7 @@ function validate_data($data, $val_ary)
 
 			if (is_array($function))
 			{
-				$result = call_user_func_array($function[0], 'validate_' . $function[1], $validate);
+				$result = call_user_func_array(array($function[0], 'validate_' . $function[1]), $validate);
 			}
 			else
 			{
