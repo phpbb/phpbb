@@ -377,14 +377,21 @@ class md_exporter
 	* Works recursive with any depth
 	*
 	* @param	string	$dir	Directory to go through
-	* @param	string	$path	Path from root to $dir
 	* @return	array	List of files (including directories)
 	*/
-	public function get_recursive_file_list($dir, $path = '')
+	public function get_recursive_file_list($dir)
 	{
 		try
 		{
-			$iterator = new \DirectoryIterator($dir);
+			$iterator = new \RecursiveIteratorIterator(
+				new \phpbb\recursive_dot_prefix_filter_iterator(
+					new \RecursiveDirectoryIterator(
+						$dir,
+						\FilesystemIterator::SKIP_DOTS
+					)
+				),
+				\RecursiveIteratorIterator::SELF_FIRST
+			);
 		}
 		catch (\Exception $e)
 		{
@@ -394,24 +401,17 @@ class md_exporter
 		$files = array();
 		foreach ($iterator as $file_info)
 		{
-			/** @var \DirectoryIterator $file_info */
-			if ($file_info->isDot())
+			/** @var \RecursiveDirectoryIterator $file_info */
+			if ($file_info->isDir())
 			{
 				continue;
 			}
 
-			// Do not scan some directories
-			if ($file_info->isDir())
+			$relative_path = $iterator->getInnerIterator()->getSubPathname();
+
+			if (substr($relative_path, -5) == '.html')
 			{
-				$sub_dir = $this->get_recursive_file_list($file_info->getPath() . '/' . $file_info->getFilename(), $path . '/' . $file_info->getFilename());
-				foreach ($sub_dir as $file)
-				{
-					$files[] = $file_info->getFilename() . '/' . $file;
-				}
-			}
-			else if (substr($file_info->getFilename(), -5) == '.html')
-			{
-				$files[] = $file_info->getFilename();
+				$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
 			}
 		}
 
