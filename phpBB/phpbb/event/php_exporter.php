@@ -100,17 +100,22 @@ class php_exporter
 	/**
 	* Returns a list of files in $dir
 	*
-	* Works recursive with any depth
-	*
 	* @param	string	$dir	Directory to go through
-	* @param	string	$path	Path from root to $dir
-	* @return	array	List of files (including directories)
+	* @return	array	List of files (including the path)
 	*/
-	public function get_recursive_file_list($dir, $path = '')
+	public function get_recursive_file_list($dir)
 	{
 		try
 		{
-			$iterator = new \DirectoryIterator($dir);
+			$iterator = new \RecursiveIteratorIterator(
+				new \phpbb\event\recursive_event_filter_iterator(
+					new \RecursiveDirectoryIterator(
+						$dir,
+						\FilesystemIterator::SKIP_DOTS
+					)
+				),
+				\RecursiveIteratorIterator::LEAVES_ONLY
+			);
 		}
 		catch (\Exception $e)
 		{
@@ -120,42 +125,9 @@ class php_exporter
 		$files = array();
 		foreach ($iterator as $file_info)
 		{
-			/** @var \DirectoryIterator $file_info */
-			if ($file_info->isDot())
-			{
-				continue;
-			}
-
-			// Do not scan some directories
-			if ($file_info->isDir() && (
-					($path == '' && in_array($file_info->getFilename(), array(
-						'cache',
-						'develop',
-						'ext',
-						'files',
-						'language',
-						'store',
-						'vendor',
-					)))
-					|| ($path == '/includes' && in_array($file_info->getFilename(), array('utf')))
-					|| ($path == '/phpbb/db/migration' && in_array($file_info->getFilename(), array('data')))
-					|| ($path == '/phpbb' && in_array($file_info->getFilename(), array('event')))
-				))
-			{
-				continue;
-			}
-			else if ($file_info->isDir())
-			{
-				$sub_dir = $this->get_recursive_file_list($file_info->getPath() . '/' . $file_info->getFilename(), $path . '/' . $file_info->getFilename());
-				foreach ($sub_dir as $file)
-				{
-					$files[] = $file_info->getFilename() . '/' . $file;
-				}
-			}
-			else if (substr($file_info->getFilename(), -4) == '.php')
-			{
-				$files[] = $file_info->getFilename();
-			}
+			/** @var \RecursiveDirectoryIterator $file_info */
+			$relative_path = $iterator->getInnerIterator()->getSubPathname();
+			$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
 		}
 
 		return $files;
