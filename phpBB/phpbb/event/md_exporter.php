@@ -59,7 +59,7 @@ class md_exporter
 	{
 		$this->crawl_eventsmd($md_file, 'adm');
 
-		$file_list = $this->get_recursive_file_list($this->root_path . 'adm/style/', 'adm/style/');
+		$file_list = $this->get_recursive_file_list($this->root_path . 'adm/style/');
 		foreach ($file_list as $file)
 		{
 			$file_name = 'adm/style/' . $file;
@@ -82,8 +82,7 @@ class md_exporter
 		foreach ($styles as $style)
 		{
 			$file_list = $this->get_recursive_file_list(
-				$this->root_path . 'styles/' . $style . '/template/',
-				'styles/' . $style . '/template/'
+				$this->root_path . 'styles/' . $style . '/template/'
 			);
 
 			foreach ($file_list as $file)
