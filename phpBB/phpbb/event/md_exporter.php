@@ -154,7 +154,7 @@ class md_exporter
 	*/
 	public function export_events_for_wiki()
 	{
-		if ($this->filter === 'acp')
+		if ($this->filter === 'adm')
 		{
 			$wiki_page = '= ACP Template Events =' . "\n";
 			$wiki_page .= '{| class="zebra sortable" cellspacing="0" cellpadding="5"' . "\n";
