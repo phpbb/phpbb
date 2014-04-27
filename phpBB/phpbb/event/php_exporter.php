@@ -112,7 +112,8 @@ class php_exporter
 					new \RecursiveDirectoryIterator(
 						$dir,
 						\FilesystemIterator::SKIP_DOTS
-					)
+					),
+					$dir
 				),
 				\RecursiveIteratorIterator::LEAVES_ONLY
 			);
