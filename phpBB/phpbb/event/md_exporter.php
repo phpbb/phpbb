@@ -259,7 +259,7 @@ class md_exporter
 			$files = explode("\n    + ", $file_details);
 			foreach ($files as $file)
 			{
-				if (!file_exists($this->path . $file))
+				if (!file_exists($this->path . $file) || substr($file, -5) !== '.html')
 				{
 					throw new \LogicException("Invalid file '{$file}' not found for event '{$this->current_event}'", 1);
 				}
