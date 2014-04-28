@@ -55,6 +55,7 @@ class recursive_event_filter_iterator extends \RecursiveFilterIterator
 			&& $filename[0] !== '.'
 			&& strpos($relative_path, $this->root_path . 'cache/') !== 0
 			&& strpos($relative_path, $this->root_path . 'develop/') !== 0
+			&& strpos($relative_path, $this->root_path . 'docs/') !== 0
 			&& strpos($relative_path, $this->root_path . 'ext/') !== 0
 			&& strpos($relative_path, $this->root_path . 'files/') !== 0
 			&& strpos($relative_path, $this->root_path . 'includes/utf/') !== 0
@@ -62,6 +63,7 @@ class recursive_event_filter_iterator extends \RecursiveFilterIterator
 			&& strpos($relative_path, $this->root_path . 'phpbb/db/migration/data/') !== 0
 			&& strpos($relative_path, $this->root_path . 'phpbb/event/') !== 0
 			&& strpos($relative_path, $this->root_path . 'store/') !== 0
+			&& strpos($relative_path, $this->root_path . 'tests/') !== 0
 			&& strpos($relative_path, $this->root_path . 'vendor/') !== 0
 		;
 	}
