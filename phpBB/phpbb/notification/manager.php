@@ -728,7 +728,7 @@ class manager
 		{
 			foreach ($this->get_default_methods() as $method_name)
 			{
-				$this->add_subscription($item_type, $item_id, $method_name, $user_id);
+				$this->delete_subscription($item_type, $item_id, $method_name, $user_id);
 			}
 
 			return;
