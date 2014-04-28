@@ -813,9 +813,9 @@ INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_len
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_googleplus', 'profilefields.type.googleplus', 'phpbb_googleplus', '20', '3', '255', '', '', '[\w]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 13, 1, 'VIEW_GOOGLEPLUS_PROFILE', 'http://plus.google.com/%s');
 
 # User Notification Options (for first user)
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, 'in_board');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('post', 0, 2, 'email');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, 'in_board');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('topic', 0, 2, 'email');
 
 # POSTGRES COMMIT #
