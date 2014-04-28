@@ -227,9 +227,13 @@ $lang = array_merge($lang, array(
 	'STYLES_TIP'				=> 'Tip: Styles can be applied quickly to selected text.',
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',
+	'TOO_FEW_CHARS_CONTAINS'	=> array(
+		1	=> 'Your message contains %1$d character.',
+		2	=> 'Your message contains %1$d characters.',
+	),
 	'TOO_FEW_CHARS_LIMIT'		=> array(
-		1	=> 'Your message contains %1$d character. The minimum number of characters you need to enter is %2$d.',
-		2	=> 'Your message contains %1$d characters. The minimum number of characters you need to enter is %2$d.',
+		1	=> 'You need to enter at least %1$d character.',
+		2	=> 'You need to enter at least %1$d characters.',
 	),
 	'TOO_FEW_POLL_OPTIONS'		=> 'You must enter at least two poll options.',
 	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maximum.',
