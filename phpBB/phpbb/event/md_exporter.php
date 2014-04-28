@@ -67,7 +67,7 @@ class md_exporter
 			$this->path .= 'ext/' . $extension . '/';
 		}
 
-		$this->crawl_eventsmd($md_file, 'adm', $extension);
+		$this->crawl_eventsmd($this->path . $md_file, 'adm', $extension);
 
 		$file_list = $this->get_recursive_file_list($this->path  . 'adm/style/');
 		foreach ($file_list as $file)
@@ -93,7 +93,7 @@ class md_exporter
 			$this->path .= 'ext/' . $extension . '/';
 		}
 
-		$this->crawl_eventsmd($md_file, 'styles', $extension);
+		$this->crawl_eventsmd($this->path . $md_file, 'styles', $extension);
 
 		$styles = array('prosilver', 'subsilver2');
 		foreach ($styles as $style)
@@ -121,7 +121,12 @@ class md_exporter
 	*/
 	public function crawl_eventsmd($md_file, $filter, $extension = null)
 	{
-		$file_content = file_get_contents($this->root_path . $md_file);
+		if (!file_exists($md_file))
+		{
+			throw new \LogicException("The event docs file '{$md_file}' could not be found");
+		}
+
+		$file_content = file_get_contents($md_file);
 		$this->filter = $filter;
 
 		$events = explode("\n\n", $file_content);
