@@ -40,14 +40,21 @@ class php_exporter
 
 	/**
 	* @param string $phpbb_root_path
+	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	*/
-	public function __construct($phpbb_root_path)
+	public function __construct($phpbb_root_path, $extension = null)
 	{
 		$this->root_path = $phpbb_root_path;
 		$this->path = $phpbb_root_path;
 		$this->events = $this->file_lines = array();
 		$this->current_file = $this->current_event = '';
 		$this->current_event_line = 0;
+
+		$this->path = $this->root_path;
+		if ($extension)
+		{
+			$this->path .= 'ext/' . $extension . '/';
+		}
 	}
 
 	/**
@@ -86,17 +93,10 @@ class php_exporter
 
 	/**
 	* Crawl the phpBB/ directory for php events
-	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int	The number of events found
 	*/
-	public function crawl_phpbb_directory_php($extension = null)
+	public function crawl_phpbb_directory_php()
 	{
-		$this->path = $this->root_path;
-		if ($extension)
-		{
-			$this->path .= 'ext/' . $extension . '/';
-		}
-
 		$files = $this->get_recursive_file_list();
 		$this->events = array();
 		foreach ($files as $file)

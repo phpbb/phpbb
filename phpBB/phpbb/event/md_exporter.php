@@ -34,10 +34,17 @@ class md_exporter
 
 	/**
 	* @param string $phpbb_root_path
+	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	*/
-	public function __construct($phpbb_root_path)
+	public function __construct($phpbb_root_path, $extension = null)
 	{
 		$this->root_path = $phpbb_root_path;
+		$this->path = $this->root_path;
+		if ($extension)
+		{
+			$this->path .= 'ext/' . $extension . '/';
+		}
+
 		$this->events = array();
 		$this->events_by_file = array();
 		$this->filter = $this->current_event = '';
@@ -55,19 +62,12 @@ class md_exporter
 
 	/**
 	* @param string $md_file	Relative from phpBB root
-	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
-	public function crawl_phpbb_directory_adm($md_file, $extension = null)
+	public function crawl_phpbb_directory_adm($md_file)
 	{
-		$this->path = $this->root_path;
-		if ($extension)
-		{
-			$this->path .= 'ext/' . $extension . '/';
-		}
-
-		$this->crawl_eventsmd($this->path . $md_file, 'adm', $extension);
+		$this->crawl_eventsmd($md_file, 'adm');
 
 		$file_list = $this->get_recursive_file_list($this->path  . 'adm/style/');
 		foreach ($file_list as $file)
@@ -81,19 +81,12 @@ class md_exporter
 
 	/**
 	* @param string $md_file	Relative from phpBB root
-	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
-	public function crawl_phpbb_directory_styles($md_file, $extension = null)
+	public function crawl_phpbb_directory_styles($md_file)
 	{
-		$this->path = $this->root_path;
-		if ($extension)
-		{
-			$this->path .= 'ext/' . $extension . '/';
-		}
-
-		$this->crawl_eventsmd($this->path . $md_file, 'styles', $extension);
+		$this->crawl_eventsmd($md_file, 'styles');
 
 		$styles = array('prosilver', 'subsilver2');
 		foreach ($styles as $style)
@@ -115,18 +108,17 @@ class md_exporter
 	/**
 	* @param string $md_file	Relative from phpBB root
 	* @param string $filter		Should be 'styles' or 'adm'
-	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
-	public function crawl_eventsmd($md_file, $filter, $extension = null)
+	public function crawl_eventsmd($md_file, $filter)
 	{
-		if (!file_exists($md_file))
+		if (!file_exists($this->path . $md_file))
 		{
 			throw new \LogicException("The event docs file '{$md_file}' could not be found");
 		}
 
-		$file_content = file_get_contents($md_file);
+		$file_content = file_get_contents($this->path . $md_file);
 		$this->filter = $filter;
 
 		$events = explode("\n\n", $file_content);

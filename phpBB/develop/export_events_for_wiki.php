@@ -61,8 +61,8 @@ switch ($action)
 		echo '__FORCETOC__' . "\n";
 
 	case 'php':
-		$exporter = new \phpbb\event\php_exporter($phpbb_root_path);
-		$exporter->crawl_phpbb_directory_php($extension);
+		$exporter = new \phpbb\event\php_exporter($phpbb_root_path, $extension);
+		$exporter->crawl_phpbb_directory_php();
 		echo $exporter->export_events_for_wiki();
 
 		if ($action === 'php')
@@ -73,8 +73,8 @@ switch ($action)
 		// no break;
 
 	case 'styles':
-		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
-		$exporter->crawl_phpbb_directory_styles('docs/events.md', $extension);
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension);
+		$exporter->crawl_phpbb_directory_styles('docs/events.md');
 		echo $exporter->export_events_for_wiki();
 
 		if ($action === 'styles')
@@ -85,8 +85,8 @@ switch ($action)
 		// no break;
 
 	case 'adm':
-		$exporter = new \phpbb\event\md_exporter($phpbb_root_path);
-		$exporter->crawl_phpbb_directory_adm('docs/events.md', $extension);
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension);
+		$exporter->crawl_phpbb_directory_adm('docs/events.md');
 		echo $exporter->export_events_for_wiki();
 
 		if ($action === 'all')
