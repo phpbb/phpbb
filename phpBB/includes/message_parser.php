@@ -1128,7 +1128,7 @@ class parse_message extends bbcode_firstpass
 		// Maximum message length check. 0 disables this check completely.
 		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
 		{
-			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length, (int) $config['max_' . $mode . '_chars']);
+			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length) . ' ' . $user->lang('TOO_MANY_CHARS_LIMIT', (int) $config['max_' . $mode . '_chars']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 

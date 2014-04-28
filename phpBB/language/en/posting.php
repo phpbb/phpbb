@@ -238,11 +238,14 @@ $lang = array_merge($lang, array(
 	'TOO_FEW_POLL_OPTIONS'		=> 'You must enter at least two poll options.',
 	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maximum.',
 	'TOO_MANY_CHARS'			=> 'Your message contains too many characters.',
+	'TOO_MANY_CHARS_LIMIT'		=> array(
+		2	=> 'The maximum number of allowed characters is %1$d.',
+	),
 	'TOO_MANY_CHARS_POST'		=> array(
-		2	=> 'Your message contains %1$d characters. The maximum number of allowed characters is %2$d.',
+		2	=> 'Your message contains %1$d characters.',
 	),
 	'TOO_MANY_CHARS_SIG'		=> array(
-		2	=> 'Your signature contains %1$d characters. The maximum number of allowed characters is %2$d.',
+		2	=> 'Your signature contains %1$d characters.',
 	),
 	'TOO_MANY_POLL_OPTIONS'		=> 'You have tried to enter too many poll options.',
 	'TOO_MANY_SMILIES'			=> 'Your message contains too many smilies. The maximum number of smilies allowed is %d.',
