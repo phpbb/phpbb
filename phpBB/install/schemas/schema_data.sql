@@ -107,6 +107,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_si
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_mod_rewrite', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_board_notifications', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
@@ -813,9 +814,9 @@ INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_len
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_googleplus', 'profilefields.type.googleplus', 'phpbb_googleplus', '20', '3', '255', '', '', '[\w]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 13, 1, 'VIEW_GOOGLEPLUS_PROFILE', 'http://plus.google.com/%s');
 
 # User Notification Options (for first user)
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.post', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.post', 0, 2, 'notification.method.board');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.post', 0, 2, 'notification.method.email');
-INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.topic', 0, 2, '');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.topic', 0, 2, 'notification.method.board');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.topic', 0, 2, 'notification.method.email');
 
 # POSTGRES COMMIT #

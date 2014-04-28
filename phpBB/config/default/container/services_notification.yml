@@ -14,7 +14,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
 
 # ----- Notification's types -----
@@ -39,7 +38,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -57,7 +55,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -75,7 +72,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -93,7 +89,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -111,7 +106,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -129,7 +123,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -147,7 +140,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -165,7 +157,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -183,7 +174,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -201,7 +191,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -219,7 +208,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         calls:
             - [set_utils, [@text_formatter.utils]]
@@ -239,7 +227,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -257,7 +244,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -275,7 +261,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -293,7 +278,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -311,7 +295,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -329,7 +312,6 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
@@ -347,11 +329,10 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.notifications%
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
-            
+
 # ----- Notification's methods -----
 # Scope MUST be prototype for all the plugins to work.
     notification.method_collection:
@@ -360,6 +341,23 @@ services:
             - @service_container
         tags:
             - { name: service_collection, tag: notification.method }
+
+    notification.method.board:
+        class: phpbb\notification\method\board
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.notifications%
+        tags:
+            - { name: notification.method }
 
     notification.method.email:
         class: phpbb\notification\method\email

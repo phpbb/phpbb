@@ -263,13 +263,7 @@ class topic extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -290,6 +284,6 @@ class topic extends \phpbb\notification\type\base
 			$this->notification_read = true;
 		}
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

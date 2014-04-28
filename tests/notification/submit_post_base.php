@@ -50,7 +50,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 	{
 		parent::setUp();
 
-		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user, $request, $phpEx, $phpbb_root_path;
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user, $request, $phpEx, $phpbb_root_path, $user_loader;
 
 		// Database
 		$this->db = $this->new_dbal();
@@ -69,7 +69,11 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			)));
 
 		// Config
-		$config = new \phpbb\config\config(array('num_topics' => 1,'num_posts' => 1,));
+		$config = new \phpbb\config\config(array(
+			'num_topics' => 1,
+			'num_posts' => 1,
+			'allow_board_notifications'	=> true,
+		));
 
 		$cache = new \phpbb\cache\service(
 			new \phpbb\cache\driver\dummy(),
@@ -111,28 +115,44 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$notification_types_array = array();
 		foreach ($notification_types as $type)
 		{
-			$class_name = '\phpbb\notification\type\\' . $type;
-			$class = new $class_name(
-				$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
-				$phpbb_root_path, $phpEx,
-				NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
-
-			if ($type === 'quote')
-			{
-				$class->set_utils(new \phpbb\textformatter\s9e\utils);
-			}
-
-			$phpbb_container->set('notification.type.' . $type, $class);
-
+			$class = $this->build_type($type);
+			$phpbb_container->set('notification.type.' . $type, array(array($this, 'build_type'), array($type)));
 			$notification_types_array['notification.type.' . $type] = $class;
 		}
 
+		// Methods Types
+		$class_name = 'phpbb\notification\method\board';
+		$class = new $class_name(
+			$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
+			$phpbb_root_path, $phpEx,
+			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE);
+		$phpbb_container->set('notification.method.board', $class);
+		$notification_methods_array = array('notification.method.board' => $class);
+
 		// Notification Manager
-		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, array(),
+		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, $notification_methods_array,
 			$phpbb_container, $user_loader, $config, $phpbb_dispatcher, $db, $cache, $user,
 			$phpbb_root_path, $phpEx,
-			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
+			NOTIFICATION_TYPES_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
+	}
+
+	public function build_type($type)
+	{
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user, $request, $phpEx, $phpbb_root_path, $user_loader;
+
+		$class_name = '\phpbb\notification\type\\' . $type;
+		$class = new $class_name(
+			$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
+			$phpbb_root_path, $phpEx,
+			NOTIFICATION_TYPES_TABLE, USER_NOTIFICATIONS_TABLE);
+
+		if ($type === 'quote')
+		{
+			$class->set_utils(new \phpbb\textformatter\s9e\utils);
+		}		
+
+		return $class;
 	}
 
 	/**
@@ -156,5 +176,12 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals($expected_after, $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
+	}
+
+	protected function build_method($method)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		return new $method($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
 	}
 }
