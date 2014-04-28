@@ -110,4 +110,14 @@ abstract class base implements \phpbb\notification\method\method_interface
 	{
 		$this->queue = array();
 	}
+
+	/**
+	* Is the method enable by default?
+	*
+	* @return bool
+	*/
+	public function is_enabled_by_default()
+	{
+		return false;
+	}
 }

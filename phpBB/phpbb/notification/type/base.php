@@ -227,7 +227,10 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 			'notification_data'					=> array(),
 		), $this->data);
+	}
 
+	public function get_insert_array()
+	{
 		$data = $this->data;
 
 		$data['notification_data'] = serialize($data['notification_data']);
@@ -244,7 +247,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function create_update_array($type_data)
 	{
-		$data = $this->create_insert_array($type_data);
+		$this->create_insert_array($type_data);
+		$data = $this->get_insert_array();
 
 		// Unset data unique to each row
 		unset(
@@ -497,8 +501,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 		{
 			if (!in_array($user_id, $resulting_user_ids) && !isset($options['ignore_users'][$user_id]))
 			{
-				// No rows at all for this user, default to ''
-				$rowset[$user_id] = array('');
+				// No rows at all for this user, default to in_board
+				$rowset[$user_id] = $this->notification_manager->get_default_methods();
 			}
 		}
 

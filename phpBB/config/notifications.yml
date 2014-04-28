@@ -337,6 +337,21 @@ services:
         tags:
             - { name: notification.type }
 
+    notification.method.in_board:
+        class: phpbb\notification\method\in_board
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @user_loader
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @config
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: notification.method }
+
     notification.method.email:
         class: phpbb\notification\method\email
         scope: prototype # scope MUST be prototype for this to work!

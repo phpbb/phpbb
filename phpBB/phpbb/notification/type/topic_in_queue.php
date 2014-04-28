@@ -133,9 +133,15 @@ class topic_in_queue extends \phpbb\notification\type\topic
 	*/
 	public function create_insert_array($topic, $pre_create_data = array())
 	{
-		$data = parent::create_insert_array($topic, $pre_create_data);
+		parent::create_insert_array($topic, $pre_create_data);
 
-		$this->notification_time = $data['notification_time'] = time();
+		$this->notification_time = time();
+	}
+
+	public function get_insert_array()
+	{
+		$data = parent::get_insert_array();
+		$data['notification_time'] = $this->notification_time;
 
 		return $data;
 	}

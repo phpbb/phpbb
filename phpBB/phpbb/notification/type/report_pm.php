@@ -252,6 +252,6 @@ class report_pm extends \phpbb\notification\type\pm
 		$this->set_data('reason_description', $post['reason_description']);
 		$this->set_data('report_text', $post['report_text']);
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

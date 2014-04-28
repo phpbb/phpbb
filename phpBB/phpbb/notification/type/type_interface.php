@@ -185,7 +185,7 @@ interface type_interface
 	* @return array Array of data ready to be inserted into the database
 	*/
 	public function create_insert_array($type_data, $pre_create_data);
-
+	public function get_insert_array();
 	/**
 	* Function for preparing the data for update in an SQL query
 	* (The service handles insertion)

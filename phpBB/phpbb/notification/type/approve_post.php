@@ -79,7 +79,7 @@ class approve_post extends \phpbb\notification\type\post
 		), $options);
 
 		$users = array();
-		$users[$post['poster_id']] = array('');
+		$users[$post['poster_id']] = $this->notification_manager->get_default_methods();
 
 		$auth_read = $this->auth->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
 
@@ -126,9 +126,15 @@ class approve_post extends \phpbb\notification\type\post
 	{
 		$this->set_data('post_subject', $post['post_subject']);
 
-		$data = parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 
-		$this->notification_time = $data['notification_time'] = time();
+		$this->notification_time = time();
+	}
+
+	public function get_insert_array()
+	{
+		$data = parent::get_insert_array();
+		$data['notification_time'] = $this->notification_time;
 
 		return $data;
 	}

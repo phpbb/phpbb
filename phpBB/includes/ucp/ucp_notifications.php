@@ -67,15 +67,6 @@ class ucp_notifications
 									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
-
-							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->add_subscription($type);
-							}
-							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->delete_subscription($type);
-							}
 						}
 					}
 
@@ -203,8 +194,6 @@ class ucp_notifications
 
 					'NAME'				=> $user->lang($data['lang']),
 					'EXPLAIN'			=> (isset($user->lang[$data['lang'] . '_EXPLAIN'])) ? $user->lang($data['lang'] . '_EXPLAIN') : '',
-
-					'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
 				));
 
 				foreach($notification_methods as $method => $method_data)

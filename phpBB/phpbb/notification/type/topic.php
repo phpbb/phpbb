@@ -301,6 +301,6 @@ class topic extends \phpbb\notification\type\base
 			$this->notification_read = true;
 		}
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

@@ -156,6 +156,6 @@ class group_request extends \phpbb\notification\type\base
 	{
 		$this->set_data('group_name', $group['group_name']);
 
-		return parent::create_insert_array($group, $pre_create_data);
+		parent::create_insert_array($group, $pre_create_data);
 	}
 }
