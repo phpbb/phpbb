@@ -47,12 +47,13 @@ class test extends \phpbb\notification\type\base
 	{
 		$this->notification_time = $post['post_time'];
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 
 	public function create_update_array($type_data)
 	{
-		$data = $this->create_insert_array($type_data);
+		$this->create_insert_array($type_data);
+		$data = $this->get_insert_array();
 
 		// Unset data unique to each row
 		unset(
