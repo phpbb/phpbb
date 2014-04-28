@@ -287,6 +287,11 @@ class md_exporter
 		else if ($this->filter == 'adm')
 		{
 			$file = substr($file_details, strlen('* Location: '));
+			if (!file_exists($this->path . $file) || substr($file, -5) !== '.html')
+			{
+				throw new \LogicException("Invalid file '{$file}' not found for event '{$this->current_event}'", 1);
+			}
+
 			$files_list['adm'][] =  substr($file, strlen('adm/style/'));
 
 			$this->events_by_file[$file][] = $this->current_event;
