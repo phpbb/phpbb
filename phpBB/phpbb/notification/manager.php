@@ -666,8 +666,18 @@ class manager
 	* @param string $method The method of the notification e.g. 'in_board', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function add_subscription($item_type, $item_id = 0, $method, $user_id = false)
+	public function add_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
 	{
+		if ($method === null)
+		{
+			foreach ($this->get_default_methods() as $method_name)
+			{
+				$this->add_subscription($item_type, $item_id, $method_name, $user_id);
+			}
+
+			return;
+		}
+
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'SELECT notify
@@ -712,8 +722,18 @@ class manager
 	* @param string $method The method of the notification e.g. 'in_board', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function delete_subscription($item_type, $item_id = 0, $method = 'in_board', $user_id = false)
+	public function delete_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
 	{
+		if ($method === null)
+		{
+			foreach ($this->get_default_methods() as $method_name)
+			{
+				$this->add_subscription($item_type, $item_id, $method_name, $user_id);
+			}
+
+			return;
+		}
+
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
 
 		$sql = 'UPDATE ' . $this->user_notifications_table . "
