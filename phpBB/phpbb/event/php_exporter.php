@@ -245,7 +245,7 @@ class php_exporter
 	*
 	* @param int $event_line
 	* @param bool $is_dispatch Do we look for dispatch() or trigger_event() ?
-	* @return int Absolute line number
+	* @return string	Name of the event
 	* @throws \LogicException
 	*/
 	public function get_event_name($event_line, $is_dispatch)
