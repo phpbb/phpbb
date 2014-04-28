@@ -647,6 +647,11 @@ class manager
 						$subscriptions[$id][] = $user_notification['method'];
 					}
 				}
+
+				if (empty($subscriptions[$id]))
+				{
+					unset($subscriptions[$id]);
+				}
 			}
 		}
 
