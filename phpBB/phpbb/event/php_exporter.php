@@ -17,7 +17,10 @@ namespace phpbb\event;
 */
 class php_exporter
 {
-	/** @var string */
+	/** @var string Path where we look for files*/
+	protected $path;
+
+	/** @var string phpBB Root Path */
 	protected $root_path;
 
 	/** @var string */
@@ -41,6 +44,7 @@ class php_exporter
 	public function __construct($phpbb_root_path)
 	{
 		$this->root_path = $phpbb_root_path;
+		$this->path = $phpbb_root_path;
 		$this->events = $this->file_lines = array();
 		$this->current_file = $this->current_event = '';
 		$this->current_event_line = 0;
@@ -82,11 +86,18 @@ class php_exporter
 
 	/**
 	* Crawl the phpBB/ directory for php events
+	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int	The number of events found
 	*/
-	public function crawl_phpbb_directory_php()
+	public function crawl_phpbb_directory_php($extension = null)
 	{
-		$files = $this->get_recursive_file_list($this->root_path);
+		$this->path = $this->root_path;
+		if ($extension)
+		{
+			$this->path .= 'ext/' . $extension . '/';
+		}
+
+		$files = $this->get_recursive_file_list();
 		$this->events = array();
 		foreach ($files as $file)
 		{
@@ -100,20 +111,19 @@ class php_exporter
 	/**
 	* Returns a list of files in $dir
 	*
-	* @param	string	$dir	Directory to go through
 	* @return	array	List of files (including the path)
 	*/
-	public function get_recursive_file_list($dir)
+	public function get_recursive_file_list()
 	{
 		try
 		{
 			$iterator = new \RecursiveIteratorIterator(
 				new \phpbb\event\recursive_event_filter_iterator(
 					new \RecursiveDirectoryIterator(
-						$dir,
+						$this->path,
 						\FilesystemIterator::SKIP_DOTS
 					),
-					$dir
+					$this->path
 				),
 				\RecursiveIteratorIterator::LEAVES_ONLY
 			);
@@ -162,7 +172,7 @@ class php_exporter
 	{
 		$this->current_file = $file;
 		$this->file_lines = array();
-		$content = file_get_contents($this->root_path . $this->current_file);
+		$content = file_get_contents($this->path . $this->current_file);
 		$num_events_found = 0;
 
 		if (strpos($content, "dispatcher->trigger_event('") || strpos($content, "dispatcher->dispatch('"))

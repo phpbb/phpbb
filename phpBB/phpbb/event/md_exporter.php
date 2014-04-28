@@ -17,7 +17,10 @@ namespace phpbb\event;
 */
 class md_exporter
 {
-	/** @var string */
+	/** @var string Path where we look for files*/
+	protected $path;
+
+	/** @var string phpBB Root Path */
 	protected $root_path;
 
 	/** @var string */
@@ -51,15 +54,22 @@ class md_exporter
 	}
 
 	/**
-	* @param string $md_file
+	* @param string $md_file	Relative from phpBB root
+	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
-	public function crawl_phpbb_directory_adm($md_file)
+	public function crawl_phpbb_directory_adm($md_file, $extension = null)
 	{
-		$this->crawl_eventsmd($md_file, 'adm');
+		$this->path = $this->root_path;
+		if ($extension)
+		{
+			$this->path .= 'ext/' . $extension . '/';
+		}
 
-		$file_list = $this->get_recursive_file_list($this->root_path . 'adm/style/');
+		$this->crawl_eventsmd($md_file, 'adm', $extension);
+
+		$file_list = $this->get_recursive_file_list($this->path  . 'adm/style/');
 		foreach ($file_list as $file)
 		{
 			$file_name = 'adm/style/' . $file;
@@ -70,19 +80,26 @@ class md_exporter
 	}
 
 	/**
-	* @param string $md_file
+	* @param string $md_file	Relative from phpBB root
+	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
-	public function crawl_phpbb_directory_styles($md_file)
+	public function crawl_phpbb_directory_styles($md_file, $extension = null)
 	{
-		$this->crawl_eventsmd($md_file, 'styles');
+		$this->path = $this->root_path;
+		if ($extension)
+		{
+			$this->path .= 'ext/' . $extension . '/';
+		}
+
+		$this->crawl_eventsmd($md_file, 'styles', $extension);
 
 		$styles = array('prosilver', 'subsilver2');
 		foreach ($styles as $style)
 		{
 			$file_list = $this->get_recursive_file_list(
-				$this->root_path . 'styles/' . $style . '/template/'
+				$this->path . 'styles/' . $style . '/template/'
 			);
 
 			foreach ($file_list as $file)
@@ -96,12 +113,13 @@ class md_exporter
 	}
 
 	/**
-	* @param string $md_file
-	* @param string $filter
+	* @param string $md_file	Relative from phpBB root
+	* @param string $filter		Should be 'styles' or 'adm'
+	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
 	* @return int		Number of events found
 	* @throws \LogicException
 	*/
-	public function crawl_eventsmd($md_file, $filter)
+	public function crawl_eventsmd($md_file, $filter, $extension = null)
 	{
 		$file_content = file_get_contents($this->root_path . $md_file);
 		$this->filter = $filter;
@@ -241,7 +259,7 @@ class md_exporter
 			$files = explode("\n    + ", $file_details);
 			foreach ($files as $file)
 			{
-				if (!file_exists($this->root_path . $file))
+				if (!file_exists($this->path . $file))
 				{
 					throw new \LogicException("Invalid file '{$file}' not found for event '{$this->current_event}'", 1);
 				}
@@ -290,13 +308,13 @@ class md_exporter
 	*/
 	public function crawl_file_for_events($file)
 	{
-		if (!file_exists($this->root_path . $file))
+		if (!file_exists($this->path . $file))
 		{
 			throw new \LogicException("File '{$file}' does not exist", 1);
 		}
 
 		$event_list = array();
-		$file_content = file_get_contents($this->root_path . $file);
+		$file_content = file_get_contents($this->path . $file);
 
 		$events = explode('<!-- EVENT ', $file_content);
 		// Remove the code before the first event
