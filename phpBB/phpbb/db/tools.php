@@ -34,6 +34,12 @@ class tools
 	var $dbms_type_map = array();
 
 	/**
+	* Is the used MS SQL Server a SQL Server 2000?
+	* @var bool
+	*/
+	protected $is_sql_server_2000;
+
+	/**
 	* Get the column types for every database we support
 	*
 	* @return array
@@ -1846,50 +1852,46 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				// We need the data here
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
 
-				// Remove default constraints
-				if ($row['mssql_version'][0] == '8')	// SQL Server 2000
-				{
-					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-					// Deprecated in SQL Server 2005
-					$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-						SET @drop_default_name =
-							(SELECT so.name FROM sysobjects so
-							JOIN sysconstraints sc ON so.id = sc.constid
-							WHERE object_name(so.parent_obj) = '{$table_name}'
-								AND so.xtype = 'D'
-								AND sc.colid = (SELECT colid FROM syscolumns
-									WHERE id = object_id('{$table_name}')
-										AND name = '{$column_name}'))
-						IF @drop_default_name <> ''
-						BEGIN
-							SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-							EXEC(@cmd)
-						END";
-				}
-				else
-				{
-					$sql = "SELECT dobj.name AS def_name
-					FROM sys.columns col 
-						LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
-					WHERE col.object_id = object_id('{$table_name}') 
-					AND col.name = '{$column_name}'
-					AND dobj.name IS NOT NULL";
-					$result = $this->db->sql_query($sql);
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
+				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
 
-					if ($row)
+				// Drop any indexes
+				$recreate_indexes = array();
+				if (!empty($indexes))
+				{
+					foreach ($indexes as $index_name => $index_data)
 					{
-						$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+						$result = $this->sql_index_drop($table_name, $index_name);
+						$statements = array_merge($statements, $result);
+						if (sizeof($index_data) > 1)
+						{
+							// Remove this column from the index and recreate it
+							$recreate_indexes[$index_name] = array_diff($index_data, array($column_name));
+						}
 					}
 				}
 
+				// Drop default value constraint
+				$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
+				$statements = array_merge($statements, $result);
+
+				// Remove the column
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
+
+				if (!empty($recreate_indexes))
+				{
+					// Recreate indexes after we removed the column
+					foreach ($recreate_indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_create_index($table_name, $index_name, $index_data);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				$this->return_statements = $old_return_statements;
 			break;
 
 			case 'mysql_40':
@@ -2371,53 +2373,46 @@ class tools
 
 			case 'mssql':
 			case 'mssqlnative':
+				// We need the data here
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
+
+				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+
+				// Drop any indexes
+				if (!empty($indexes))
+				{
+					foreach ($indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_index_drop($table_name, $index_name);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				// Drop default value constraint
+				$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
+				$statements = array_merge($statements, $result);
+
+				// Change the column
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
 				if (!empty($column_data['default']))
 				{
-					$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-					$result = $this->db->sql_query($sql);
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
+					// Add new default value constraint
+					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
+				}
 
-					// Using TRANSACT-SQL for this statement because we do not want to have colliding data if statements are executed at a later stage
-					if ($row['mssql_version'][0] == '8')	// SQL Server 2000
+				if (!empty($indexes))
+				{
+					// Recreate indexes after we changed the column
+					foreach ($indexes as $index_name => $index_data)
 					{
-						$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-							SET @drop_default_name =
-								(SELECT so.name FROM sysobjects so
-								JOIN sysconstraints sc ON so.id = sc.constid
-								WHERE object_name(so.parent_obj) = '{$table_name}'
-									AND so.xtype = 'D'
-									AND sc.colid = (SELECT colid FROM syscolumns
-										WHERE id = object_id('{$table_name}')
-											AND name = '{$column_name}'))
-							IF @drop_default_name <> ''
-							BEGIN
-								SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-								EXEC(@cmd)
-							END
-							SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
-							EXEC(@cmd)";
-					}
-					else
-					{
-						$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-							SET @drop_default_name =
-								(SELECT dobj.name FROM sys.columns col 
-									LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
-								WHERE col.object_id = object_id('{$table_name}') 
-								AND col.name = '{$column_name}'
-								AND dobj.name IS NOT NULL)
-							IF @drop_default_name <> ''
-							BEGIN
-								SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-								EXEC(@cmd)
-							END
-							SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
-							EXEC(@cmd)";
+						$result = $this->sql_create_index($table_name, $index_name, $index_data);
+						$statements = array_merge($statements, $result);
 					}
 				}
+
+				$this->return_statements = $old_return_statements;
 			break;
 
 			case 'mysql_40':
@@ -2550,5 +2545,160 @@ class tools
 		}
 
 		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	* Get queries to drop the default constraints of a column
+	*
+	* We need to drop the default constraints of a column,
+	* before being able to change their type or deleting them.
+	*
+	* @param string $table_name
+	* @param string $column_name
+	* @return array		Array with SQL statements
+	*/
+	protected function mssql_get_drop_default_constraints_queries($table_name, $column_name)
+	{
+		$statements = array();
+		if ($this->mssql_is_sql_server_2000())
+		{
+			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+			// Deprecated in SQL Server 2005
+			$sql = "SELECT so.name AS def_name
+				FROM sysobjects so
+				JOIN sysconstraints sc ON so.id = sc.constid
+				WHERE object_name(so.parent_obj) = '{$table_name}'
+					AND so.xtype = 'D'
+					AND sc.colid = (SELECT colid FROM syscolumns
+						WHERE id = object_id('{$table_name}')
+							AND name = '{$column_name}')";
+		}
+		else
+		{
+			$sql = "SELECT dobj.name AS def_name
+				FROM sys.columns col
+					LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
+				WHERE col.object_id = object_id('{$table_name}')
+					AND col.name = '{$column_name}'
+					AND dobj.name IS NOT NULL";
+		}
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+		}
+		$this->db->sql_freeresult($result);
+
+		return $statements;
+	}
+
+	/**
+	* Get a list with existing indexes for the column
+	*
+	* @param string $table_name
+	* @param string $column_name
+	* @return array		Array with Index name => columns
+	*/
+	protected function mssql_get_existing_indexes($table_name, $column_name)
+	{
+		$existing_indexes = array();
+		if ($this->mssql_is_sql_server_2000())
+		{
+			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+			// Deprecated in SQL Server 2005
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+				FROM sysindexes ix
+				INNER JOIN sysindexkeys ixc
+					ON ixc.id = ix.id
+						AND ixc.indid = ix.indid
+				INNER JOIN syscolumns cols
+					ON cols.colid = ixc.colid
+						AND cols.id = ix.id
+				WHERE ix.id = object_id('{$table_name}')
+					AND cols.name = '{$column_name}'";
+		}
+		else
+		{
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+				FROM sys.indexes ix
+				INNER JOIN sys.index_columns ixc
+					ON ixc.object_id = ix.object_id
+						AND ixc.index_id = ix.index_id
+				INNER JOIN sys.columns cols
+					ON cols.column_id = ixc.column_id
+						AND cols.object_id = ix.object_id
+				WHERE ix.object_id = object_id('{$table_name}')
+					AND cols.name = '{$column_name}'";
+		}
+
+		$result = $this->db->sql_query($sql);
+		$existing_indexes = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$existing_indexes[$row['phpbb_index_name']] = array();
+		}
+		$this->db->sql_freeresult($result);
+
+		if (empty($existing_indexes))
+		{
+			return array();
+		}
+
+		if ($this->mssql_is_sql_server_2000())
+		{
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+				FROM sysindexes ix
+				INNER JOIN sysindexkeys ixc
+					ON ixc.id = ix.id
+						AND ixc.indid = ix.indid
+				INNER JOIN syscolumns cols
+					ON cols.colid = ixc.colid
+						AND cols.id = ix.id
+				WHERE ix.id = object_id('{$table_name}')
+					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+		}
+		else
+		{
+			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+				FROM sys.indexes ix
+				INNER JOIN sys.index_columns ixc
+					ON ixc.object_id = ix.object_id
+						AND ixc.index_id = ix.index_id
+				INNER JOIN sys.columns cols
+					ON cols.column_id = ixc.column_id
+						AND cols.object_id = ix.object_id
+				WHERE ix.object_id = object_id('{$table_name}')
+					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+		}
+
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
+		}
+		$this->db->sql_freeresult($result);
+
+		return $existing_indexes;
+	}
+
+	/**
+	* Is the used MS SQL Server a SQL Server 2000?
+	*
+	* @return bool
+	*/
+	protected function mssql_is_sql_server_2000()
+	{
+		if ($this->is_sql_server_2000 === null)
+		{
+			$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
+			$result = $this->db->sql_query($sql);
+			$properties = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+			$this->is_sql_server_2000 = $properties['mssql_version'][0] == '8';
+		}
+
+		return $this->is_sql_server_2000;
 	}
 }

@@ -320,6 +320,18 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				"barbarbar1bar1",
 			),
+			array(
+				'loop_nested_include.html',
+				array(),
+				array(
+					'test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1')),
+					'test_loop.inner' => array(array('myinner' => 'works')),
+				),
+				array(),
+				"[bar|[bar|]][bar1|[bar1|[bar1|works]]]",
+				array(),
+				'Included files are missing opened parent loops: PHPBB3-12382',
+			),
 			/* Does not pass with the current implementation.
 			array(
 				'loop_reuse.html',
@@ -363,8 +375,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array())
+	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array(), $incomplete_message = '')
 	{
+		if ($incomplete_message)
+		{
+			$this->markTestIncomplete($incomplete_message);
+		}
+
 		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $lang_vars);
 	}
 

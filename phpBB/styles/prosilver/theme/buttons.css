@@ -101,27 +101,6 @@
 .dropdown-visible .dropdown-select.tools-icon:before,
 .nojs .dropdown-container:hover .dropdown-select.tools-icon:before { background-position: -80px -20px; }
 
-/* Sub-header (navigation bar)
---------------------------------------------- */
-a.print, a.sendemail {
-	display: block;
-	overflow: hidden;
-	height: 18px;
-	text-indent: -5000px;
-	text-align: left;
-	background-repeat: no-repeat;
-}
-
-a.print {
-	background-image: none;
-	width: 22px;
-}
-
-a.sendemail {
-	background-image: none;
-	width: 22px;
-}
-
 /* Icon images
 ---------------------------------------- */
 .small-icon {
