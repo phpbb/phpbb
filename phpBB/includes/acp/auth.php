@@ -139,7 +139,6 @@ class auth_admin extends \phpbb\auth\auth
 					$auth2 = &$auth;
 				}
 
-
 				$hold_ary[$userdata['user_id']] = array();
 				foreach ($forum_ids as $f_id)
 				{

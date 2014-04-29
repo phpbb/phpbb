@@ -104,7 +104,7 @@ class bbcode_firstpass extends bbcode
 	function bbcode_init($allow_custom_bbcode = true)
 	{
 		global $phpbb_dispatcher;
-		
+
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this

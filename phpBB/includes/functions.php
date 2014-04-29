@@ -2694,7 +2694,6 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
 
-
 	if ($request->is_ajax())
 	{
 		$u_action .= '&confirm_uid=' . $user->data['user_id'] . '&sess=' . $user->session_id . '&sid=' . $user->session_id;

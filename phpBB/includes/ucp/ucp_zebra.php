@@ -224,15 +224,15 @@ class ucp_zebra
 							}
 						}
 					}
-					
+
 					if ($request->is_ajax())
 					{
 						$message = ($updated) ? $user->lang[$l_mode . '_UPDATED'] : implode('<br />', $error);
-						
+
 						$json_response = new \phpbb\json_response;
 						$json_response->send(array(
 							'success' => $updated,
-							
+
 							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
 							'MESSAGE_TEXT'	=> $message,
 							'REFRESH_DATA'	=> array(

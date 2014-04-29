@@ -485,7 +485,6 @@ class acp_profile
 					}
 					$db->sql_freeresult($result);
 
-
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
 						FROM ' . PROFILE_LANG_TABLE . '
 						WHERE lang_id <> ' . $this->edit_lang_id . "
@@ -1115,7 +1114,6 @@ class acp_profile
 				}
 			}
 		}
-
 
 		$db->sql_transaction('begin');
 

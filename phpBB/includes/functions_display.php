@@ -900,7 +900,6 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 			$folder_new .= '_locked';
 		}
 
-
 		$folder_img = ($unread_topic) ? $folder_new : $folder;
 		$folder_alt = ($unread_topic) ? 'UNREAD_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
 
