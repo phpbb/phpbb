@@ -62,7 +62,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'allow_bookmarks'		=> true,
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
-			'enable_notifications_board'	=> true,
+			'allow_board_notifications'	=> true,
 		));
 		$user = $this->user = new \phpbb\user();
 		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');

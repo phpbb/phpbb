@@ -72,7 +72,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$config = new \phpbb\config\config(array(
 			'num_topics' => 1,
 			'num_posts' => 1,
-			'enable_notifications_board'	=> true,
+			'allow_board_notifications'	=> true,
 		));
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
