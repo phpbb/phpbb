@@ -16,7 +16,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	static public $init_values = array();
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	public function __construct($name = null, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
 
@@ -35,18 +35,18 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
-		self::$init_values['post_base_items'] = (int)$values['config[feed_limit_post]'];
-		self::$init_values['topic_base_items'] = (int)$values['config[feed_limit_topic]'];
+		self::$init_values['post_base_items'] = (int) $values['config[feed_limit_post]'];
+		self::$init_values['topic_base_items'] = (int) $values['config[feed_limit_topic]'];
 
 		// Enable all feeds
-		$values["config[feed_enable]"] = true;
-		$values["config[feed_forum]"] = true;
-		$values["config[feed_item_statistics]"] = true;
-		$values["config[feed_overall]"] = true;
-		$values["config[feed_overall_forums]"] = true;
-		$values["config[feed_topic]"] = true;
-		$values["config[feed_topics_active]"] = true;
-		$values["config[feed_topics_new]"] = true;
+		$values['config[feed_enable]'] = true;
+		$values['config[feed_forum]'] = true;
+		$values['config[feed_item_statistics]'] = true;
+		$values['config[feed_overall]'] = true;
+		$values['config[feed_overall_forums]'] = true;
+		$values['config[feed_topic]'] = true;
+		$values['config[feed_topics_active]'] = true;
+		$values['config[feed_topics_new]'] = true;
 
 		$form->setValues($values);
 
@@ -60,7 +60,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
-		$form["setting[1][0][u_download]"]->select(-1);
+		$form['setting[1][0][u_download]']->select(-1);
 
 		$crawler = self::submit($form);
 		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
@@ -72,45 +72,45 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
 		self::assert_response_xml();
-		self::$init_values['disapprove_user']['forums_value'] = (int)$crawler->filterXPath("//entry")->count();
+		self::$init_values['disapprove_user']['forums_value'] = (int)$crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
 		self::assert_response_xml();
-		self::$init_values['disapprove_user']['overall_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['disapprove_user']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
 		self::assert_response_xml();
-		self::$init_values['disapprove_user']['topics_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['disapprove_user']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
 		self::assert_response_xml();
-		self::$init_values['disapprove_user']['topics_new_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['disapprove_user']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
 		self::assert_response_xml();
-		self::$init_values['disapprove_user']['topics_active_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['disapprove_user']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 
 		$this->login();
 
 		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
 		self::assert_response_xml();
-		self::$init_values['admin']['forums_value'] = (int)$crawler->filterXPath("//entry")->count();
+		self::$init_values['admin']['forums_value'] = (int)$crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
 		self::assert_response_xml();
-		self::$init_values['admin']['overall_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['admin']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
 		self::assert_response_xml();
-		self::$init_values['admin']['topics_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['admin']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
 		self::assert_response_xml();
-		self::$init_values['admin']['topics_new_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['admin']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
 		self::assert_response_xml();
-		self::$init_values['admin']['topics_active_value'] = $crawler->filterXPath("//entry")->count();
+		self::$init_values['admin']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 
 
 	}
@@ -119,7 +119,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		$this->admin_login();
-		$this->create_user("disapprove_user");
+		$this->create_user('disapprove_user');
 		$this->add_user_group('NEWLY_REGISTERED', array('disapprove_user'));
 
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
@@ -765,7 +765,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->logout();
 
 		// Test creating a reply
-		$this->login("disapprove_user");
+		$this->login('disapprove_user');
 		$post2 = $this->create_post($this->data['forums']['Feeds #1.1'], $post['topic_id'], 'Re: Feeds #1.1 - Topic #2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Feeds #1.1 - Topic #2']}&sid={$this->sid}");
@@ -858,7 +858,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		// We have to wait because of the flood interval.
 		sleep(15);
 
-		$this->login("disapprove_user");
+		$this->login('disapprove_user');
 		$post = $this->create_topic($this->data['forums']['Feeds #1.1'], 'Feeds #1.1 - Topic #3', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
 		$this->data['topics']['Feeds #1 - Topic #3'] = (int) $post['topic_id'];
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Feeds #1.1']}&sid={$this->sid}");
@@ -1197,7 +1197,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_create_missing_attachment_post()
 	{
-		$this->markIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
+		$this->markTestIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -1218,7 +1218,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_missing_attachment_admin()
 	{
-		$this->markIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
+		$this->markTestIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
