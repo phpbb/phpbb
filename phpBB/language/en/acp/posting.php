@@ -109,8 +109,6 @@ $lang = array_merge($lang, array(
 	'DISPLAY_POSTING'			=> 'On posting page',
 	'DISPLAY_POSTING_NO'		=> 'Not on posting page',
 
-
-
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
 	'EMOTION'					=> 'Emotion',
