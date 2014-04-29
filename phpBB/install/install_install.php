@@ -1647,6 +1647,45 @@ class install_install extends module
 				$_module->move_module_by($row, 'move_up', 5);
 			}
 
+			if ($module_class == 'mcp')
+			{
+				// Move pm report details module 3 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'mcp_pm_reports'
+						AND module_class = 'mcp'
+						AND module_mode = 'pm_report_details'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 3);
+
+				// Move closed pm reports module 3 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'mcp_pm_reports'
+						AND module_class = 'mcp'
+						AND module_mode = 'pm_reports_closed'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 3);
+
+				// Move open pm reports module 3 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'mcp_pm_reports'
+						AND module_class = 'mcp'
+						AND module_mode = 'pm_reports'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 3);
+			}
+
 			if ($module_class == 'ucp')
 			{
 				// Move attachment module 4 down...
