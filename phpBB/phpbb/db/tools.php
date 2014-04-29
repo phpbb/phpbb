@@ -2048,7 +2048,7 @@ class tools
 			case 'oracle':
 			case 'postgres':
 			case 'sqlite':
-			case' sqlite3':
+			case 'sqlite3':
 				$statements[] = 'DROP INDEX ' . $table_name . '_' . $index_name;
 			break;
 		}
