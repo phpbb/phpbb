@@ -207,12 +207,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $type_data Data unique to this notification type
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($type_data, $pre_create_data = array())
 	{
@@ -229,6 +224,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 		), $this->data);
 	}
 
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_insert_array()
 	{
 		$data = $this->data;

@@ -144,13 +144,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $pm PM Data
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($pm, $pre_create_data = array())
 	{
@@ -161,6 +155,9 @@ class report_pm_closed extends \phpbb\notification\type\pm
 		$this->notification_time = time();
 	}
 
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_insert_array()
 	{
 		$data = parent::get_insert_array();
