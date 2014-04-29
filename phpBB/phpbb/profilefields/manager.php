@@ -389,7 +389,7 @@ class manager
 		{
 			$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
 			$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
-			$valueid = (!$ident_ary['value'] && !$ident_ary['data']['field_show_novalue']) ? $ident_ary['data']['field_novalue'] : $ident_ary['value'];
+			$valueid = $profile_field->get_profile_valueid($ident_ary['value'], $ident_ary['data']);
 
 			if ($value === null)
 			{
