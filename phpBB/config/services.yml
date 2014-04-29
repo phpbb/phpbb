@@ -109,7 +109,7 @@ services:
         class: phpbb\controller\provider
         arguments:
             - null
-            - null
+            - array()
             - @service_container
         calls:
             - [find, [%core.root_path%]]
