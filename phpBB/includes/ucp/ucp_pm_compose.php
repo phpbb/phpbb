@@ -586,7 +586,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				);
 				$s_hidden_fields .= build_address_field($address_list);
 
-
 				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 			}
 		}
@@ -747,7 +746,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
 			$return_box_lang = ($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX';
-
 
 			$save_message = ($action === 'edit') ? $user->lang['MESSAGE_EDITED'] : $user->lang['MESSAGE_STORED'];
 			$message = $save_message . '<br /><br />' . $user->lang('VIEW_PRIVATE_MESSAGE', '<a href="' . $return_message_url . '">', '</a>');
@@ -1005,7 +1003,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	// Build hidden address list
 	$s_hidden_address_field = build_address_field($address_list);
-
 
 	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
 	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);

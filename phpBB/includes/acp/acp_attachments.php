@@ -147,7 +147,6 @@ class acp_attachments
 						'secure_allow_empty_referer'	=> array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'check_attachment_content' 		=> array('lang' => 'CHECK_CONTENT', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
-
 						'legend2'					=> $l_legend_cat_images,
 						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -1287,7 +1286,7 @@ class acp_attachments
 	/**
 	* Set config attachment stat values
 	*
-	* @param $stats array	Array of config key => value pairs to set.	
+	* @param $stats array	Array of config key => value pairs to set.
 	* @return null
 	*/
 	public function set_attachment_stats($stats)
@@ -1301,7 +1300,7 @@ class acp_attachments
 	/**
 	* Check accuracy of attachment statistics.
 	*
-	* @param $resync bool	Resync stats if they're incorrect.	
+	* @param $resync bool	Resync stats if they're incorrect.
 	* @return bool|string	Returns false if stats are correct or error message
 	*	otherwise.
 	*/
@@ -1312,7 +1311,7 @@ class acp_attachments
 
 		// Get current files stats
 		$num_files = (int) $this->config['num_files'];
-		$total_size = (float) $this->config['upload_dir_size'];	
+		$total_size = (float) $this->config['upload_dir_size'];
 
 		if (($num_files != $stats['num_files']) || ($total_size != $stats['upload_dir_size']))
 		{

@@ -99,7 +99,7 @@ class ucp_notifications
 
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
-						
+
 						if ($request->is_ajax())
 						{
 							$json_response = new \phpbb\json_response();

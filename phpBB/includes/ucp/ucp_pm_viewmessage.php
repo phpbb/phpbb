@@ -274,7 +274,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			$template->assign_block_vars('dl_method', $method);
 		}
-	
+
 		foreach ($attachments as $attachment)
 		{
 			$template->assign_block_vars('attachment', array(

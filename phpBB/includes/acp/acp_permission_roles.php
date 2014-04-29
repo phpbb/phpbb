@@ -270,7 +270,7 @@ class acp_permission_roles
 			case 'edit':
 
 				if ($action == 'edit')
-				{					
+				{
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;

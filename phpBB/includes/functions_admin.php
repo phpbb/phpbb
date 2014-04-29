@@ -746,7 +746,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* Perform additional actions before post(s) deletion
 	*
 	* @event core.delete_posts_before
-	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	string	where_type					Variable containing posts deletion mode
 	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
 	* @var	bool	auto_sync					Flag indicating if topics/forums should be synchronized
 	* @var	bool	posted_sync					Flag indicating if topics_posted table should be resynchronized
@@ -907,7 +907,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	poster_ids					Array with deleted posts' author ids
 	* @var	array	topic_ids					Array with deleted posts' topic ids
 	* @var	array	forum_ids					Array with deleted posts' forum ids
-	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	string	where_type					Variable containing posts deletion mode
 	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
@@ -925,7 +925,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	poster_ids					Array with deleted posts' author ids
 	* @var	array	topic_ids					Array with deleted posts' topic ids
 	* @var	array	forum_ids					Array with deleted posts' forum ids
-	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	string	where_type					Variable containing posts deletion mode
 	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
@@ -2901,7 +2901,7 @@ function get_database_size()
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			
+
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
 
@@ -2910,7 +2910,7 @@ function get_database_size()
 				// Azure stats are stored elsewhere
 				if (strpos($row['mssql_version'], 'SQL Azure') !== false)
 				{
-					$sql = 'SELECT ((SUM(reserved_page_count) * 8.0) * 1024.0) as dbsize 
+					$sql = 'SELECT ((SUM(reserved_page_count) * 8.0) * 1024.0) as dbsize
 					FROM sys.dm_db_partition_stats';
 				}
 			}
