@@ -1195,9 +1195,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		));
 	}
 
-	// Disabled until PHPBB3-12418 is fixed and merged
-	/*public function test_create_missing_attachment_post()
+	public function test_create_missing_attachment_post()
 	{
+		$this->markIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -1218,6 +1218,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_missing_attachment_admin()
 	{
+		$this->markIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -1294,7 +1295,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				),
 			),
 		), 'admin');
-	}*/
+	}
 
 	protected function assert_feeds($data, $username = false)
 	{
@@ -1338,7 +1339,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 						case 'news':
 							break;
 						default:
-							$this->fail('Unsupported feed.');
+							$this->fail('Unsupported feed mode: ' . $mode);
 					}
 
 					$params = "?mode={$mode}";
@@ -1352,19 +1353,22 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'feed.php' . $params, array(), false);
 
-		if (!(isset($data['invalid']) && $data['invalid']))
+		if (empty($data['invalid']))
 		{
 			self::assert_response_xml();
 			$this->assertEquals($data['nb_entries'], $crawler->filter('entry')->count(), "Tested feed : 'feed.php{$params}'");
 
-			if (sizeof($data['xpath'])) {
+			if (!empty($data['xpath']))
+			{
+
 				foreach($data['xpath'] as $xpath => $count_expected)
 				{
 					$this->assertCount($count_expected, $crawler->filterXPath($xpath), "Tested feed : 'feed.php{$params}', Search for {$xpath}");
 				}
 			}
 
-			if (sizeof($data['contents'])) {
+			if (!empty($data['contents']))
+			{
 				foreach($data['contents'] as $entry_id => $string)
 				{
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
@@ -1372,7 +1376,8 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				}
 			}
 
-			if (sizeof($data['contents_lang'])) {
+			if (!empty($data['contents_lang']))
+			{
 				foreach($data['contents_lang'] as $entry_id => $string)
 				{
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
@@ -1380,7 +1385,8 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				}
 			}
 
-			if (sizeof($data['attachments'])) {
+			if (!empty($data['attachments']))
+			{
 				foreach($data['attachments'] as $entry_id => $attachments)
 				{
 					foreach ($attachments as $i => $attachment)
@@ -1408,10 +1414,11 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		{
 			self::assert_response_html();
 
-			if (sizeof($data['contents_lang'])) {
+			if (!empty($data['contents_lang']))
+			{
 				foreach($data['contents_lang'] as $string)
 				{
-					$content = $crawler->filter("html")->text();
+					$content = $crawler->filter('html')->text();
 					$this->assertContainsLang($string, $content, "Tested feed : 'feed.php{$params}'");
 				}
 			}

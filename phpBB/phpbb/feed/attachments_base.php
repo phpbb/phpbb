@@ -60,6 +60,7 @@ abstract class attachments_base extends \phpbb\feed\base
 		}
 		$this->db->sql_freeresult($result);
 	}
+
 	/**
 	* {@inheritDoc}
 	*/
