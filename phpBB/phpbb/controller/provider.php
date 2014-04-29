@@ -38,7 +38,7 @@ class provider
 	*							to YAML files holding route information
 	* @param ContainerInterface      $service_container
 	*/
-	public function __construct(\phpbb\extension\finder $finder, $routing_files = array(), ContainerInterface $service_container = null)
+	public function __construct(\phpbb\extension\finder $finder = null, $routing_files = array(), ContainerInterface $service_container = null)
 	{
 		$this->routing_files = $routing_files;
 
