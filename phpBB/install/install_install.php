@@ -217,7 +217,6 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
-
 		// Check for getimagesize
 		if (@function_exists('getimagesize'))
 		{
@@ -534,7 +533,6 @@ class install_install extends module
 
 		$url = (!in_array(false, $passed)) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
 		$submit = (!in_array(false, $passed)) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
-
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $submit,

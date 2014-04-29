@@ -298,7 +298,6 @@ class mcp_queue
 
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
-
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
 					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
 					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang['RETURN_TOPIC_SIMPLE'], '<a href="' . $topic_url . '">', '</a>'),
@@ -1126,7 +1125,6 @@ class mcp_queue
 						$post_data['disapprove_reason'] .= ($reason) ? "\n\n" . $reason : '';
 					}
 
-
 					if ($disapprove_all_posts_in_topic && $topic_information[$topic_id]['topic_posts_unapproved'] == 1)
 					{
 						// If there is only 1 post when disapproving the topic,
@@ -1143,7 +1141,6 @@ class mcp_queue
 			}
 
 			unset($lang_reasons, $post_info, $disapprove_reason, $disapprove_reason_lang);
-
 
 			if ($num_disapproved_topics)
 			{

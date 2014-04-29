@@ -98,10 +98,10 @@ class mcp_reports
 
 				$post_id = $report['post_id'];
 				$report_id = $report['report_id'];
-				
+
 				$parse_post_flags = $report['reported_post_enable_bbcode'] ? OPTION_FLAG_BBCODE : 0;
 				$parse_post_flags += $report['reported_post_enable_smilies'] ? OPTION_FLAG_SMILIES : 0;
-				$parse_post_flags += $report['reported_post_enable_magic_url'] ? OPTION_FLAG_LINKS : 0; 
+				$parse_post_flags += $report['reported_post_enable_magic_url'] ? OPTION_FLAG_LINKS : 0;
 
 				$post_info = get_post_data(array($post_id), 'm_report', true);
 
@@ -143,7 +143,6 @@ class mcp_reports
 				}
 
 				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
-
 
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
@@ -577,7 +576,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 					WHERE ' . $db->sql_in_set('report_id', $report_id_list);
 			}
 			$db->sql_query($sql);
-
 
 			if (sizeof($close_report_posts))
 			{

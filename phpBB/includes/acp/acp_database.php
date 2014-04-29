@@ -1180,7 +1180,6 @@ class postgres_extractor extends base_extractor
 		}
 		$db->sql_freeresult($result);
 
-
 		// Get the listing of primary keys.
 		$sql_pri_keys = "SELECT ic.relname as index_name, bc.relname as tab_name, ta.attname as column_name, i.indisunique as unique_key, i.indisprimary as primary_key
 			FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
@@ -1279,7 +1278,6 @@ class postgres_extractor extends base_extractor
 		{
 			$ary_type[] = pg_field_type($result, $i);
 			$ary_name[] = pg_field_name($result, $i);
-
 
 			$sql = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
 				FROM pg_attrdef d, pg_class c

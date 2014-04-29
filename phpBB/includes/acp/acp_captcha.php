@@ -36,7 +36,6 @@ class acp_captcha
 		$selected = (isset($captchas['available'][$selected]) || isset($captchas['unavailable'][$selected])) ? $selected : $config['captcha_plugin'];
 		$configure = request_var('configure', false);
 
-
 		// Oh, they are just here for the view
 		if (isset($_GET['captcha_demo']))
 		{

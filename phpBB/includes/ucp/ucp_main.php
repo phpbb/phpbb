@@ -619,7 +619,6 @@ class ucp_main
 			break;
 		}
 
-
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
@@ -690,7 +689,6 @@ class ucp_main
 				'WHERE'		=> 'tw.user_id = ' . $user->data['user_id'] . '
 					AND t.topic_id = tw.topic_id
 					AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
-
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
 			);

@@ -451,7 +451,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
 	if ($censor_text)
-	{		
+	{
 		$text = censor_text($text);
 	}
 
@@ -499,7 +499,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
 * Expects $text to be the value directly from request_var() and in it's non-parsed form
-* 
+*
 * @param string $text The text to be replaced with the parsed one
 * @param string $uid The BBCode uid for this parse
 * @param string $bitfield The BBCode bitfield for this parse
@@ -1392,7 +1392,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	{
 		$username_string = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
 	}
-	
+
 	/**
 	* Use this event to change the output of get_username_string()
 	*
