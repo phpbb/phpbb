@@ -203,7 +203,6 @@ class acp_icons
 						unset($_images[$row[$fields . '_url']]);
 					}
 
-
 					if ($row[$fields . '_id'] == $icon_id)
 					{
 						$after = true;
@@ -781,7 +780,7 @@ class acp_icons
 
 					$cache->destroy('_icons');
 					$cache->destroy('sql', $table);
-					
+
 					if ($request->is_ajax())
 					{
 						$json_response = new \phpbb\json_response;

@@ -330,7 +330,6 @@ class acp_permissions
 			}
 		}
 
-
 		// Setting permissions screen
 		$s_hidden_fields = build_hidden_fields(array(
 			'user_id'		=> $user_id,

@@ -22,18 +22,6 @@
  <!-- PHP keywords MUST be in lower case. -->
  <rule ref="Generic.PHP.LowerCaseKeyword" />
 
- <!-- There MUST NOT be trailing whitespace at the end of lines. -->
- <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
-
- <!-- There MUST NOT be whitespace before the first content of a file -->
- <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.StartFile" />
-
- <!-- There MUST NOT be whitespace after the last content of a file -->
- <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EndFile" />
-
- <!-- Functions MUST NOT contain multiple empty lines in a row -->
- <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines" />
-
  <!-- Classes etc. MUST be namespaced -->
  <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace" />
 

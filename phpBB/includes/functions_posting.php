@@ -173,7 +173,6 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$ids = array($ids);
 	}
 
-
 	$update_sql = $empty_forums = $not_empty_forums = array();
 
 	if ($type != 'topic')

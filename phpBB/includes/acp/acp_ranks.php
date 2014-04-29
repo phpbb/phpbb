@@ -214,7 +214,6 @@ class acp_ranks
 					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0)
 				);
 
-
 				return;
 
 			break;

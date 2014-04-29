@@ -735,7 +735,6 @@ class acp_users
 								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
-
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
 
@@ -1329,7 +1328,6 @@ class acp_users
 						}
 					}
 
-
 					$template->assign_block_vars('warn', array(
 						'ID'		=> $row['warning_id'],
 						'USERNAME'	=> ($row['log_operation']) ? get_username_string('full', $row['mod_user_id'], $row['mod_username'], $row['mod_user_colour']) : '-',
@@ -1378,7 +1376,6 @@ class acp_users
 				$data['bday_month']		= request_var('bday_month', $data['bday_month']);
 				$data['bday_year']		= request_var('bday_year', $data['bday_year']);
 				$data['user_birthday']	= sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
-
 
 				if ($submit)
 				{
@@ -2242,7 +2239,6 @@ class acp_users
 
 					$error = array();
 				}
-
 
 				$sql = 'SELECT ug.*, g.*
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug

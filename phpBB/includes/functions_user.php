@@ -2086,7 +2086,6 @@ function get_avatar_filename($avatar_entry)
 {
 	global $config;
 
-
 	if ($avatar_entry[0] === 'g')
 	{
 		$avatar_group = true;

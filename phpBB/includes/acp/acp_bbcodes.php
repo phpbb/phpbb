@@ -142,7 +142,7 @@ class acp_bbcodes
 			case 'create':
 
 				$sql_ary = $hidden_fields = array();
-				
+
 				/**
 				* Modify custom bbcode data before the modify/create action
 				*
@@ -209,7 +209,6 @@ class acp_bbcodes
 					{
 						trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-
 
 					if (strlen($bbcode_helpline) > 255)
 					{
@@ -311,7 +310,7 @@ class acp_bbcodes
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
-						
+
 						if ($request->is_ajax())
 						{
 							$json_response = new \phpbb\json_response;
