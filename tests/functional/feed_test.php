@@ -63,9 +63,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form['setting[1][0][u_download]']->select(-1);
 
 		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
-
-
+		$this->assertContainsLang('AUTH_UPDATED', $crawler->filter('.successbox')->text());
 	}
 
 	public function test_dump_board_state()
