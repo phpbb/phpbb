@@ -15,7 +15,7 @@ namespace phpbb\notification\method;
 *
 * @package notifications
 */
-class in_board extends \phpbb\notification\method\base
+class board extends \phpbb\notification\method\base
 {
 
 	/**
@@ -35,7 +35,7 @@ class in_board extends \phpbb\notification\method\base
 	*/
 	public function get_type()
 	{
-		return 'in_board';
+		return 'board';
 	}
 
 	/**

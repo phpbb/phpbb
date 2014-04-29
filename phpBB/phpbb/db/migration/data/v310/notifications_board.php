@@ -9,7 +9,7 @@
 
 namespace phpbb\db\migration\data\v310;
 
-class notifications_in_board extends \phpbb\db\migration\migration
+class notifications_board extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -27,7 +27,7 @@ class notifications_in_board extends \phpbb\db\migration\migration
 	public function update_user_subscriptions()
 	{
 		$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-		SET method = 'in_board'
+		SET method = 'board'
 		WHERE method = ''";
 		$this->sql_query($sql);
 	}
@@ -43,7 +43,7 @@ class notifications_in_board extends \phpbb\db\migration\migration
 	{
 		$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
 		SET method = ''
-		WHERE method = 'in_board'";
+		WHERE method = 'board'";
 		$this->sql_query($sql);
 	}
 

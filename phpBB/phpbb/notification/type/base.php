@@ -499,7 +499,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 		{
 			if (!in_array($user_id, $resulting_user_ids) && !isset($options['ignore_users'][$user_id]))
 			{
-				// No rows at all for this user, default to in_board
+				// No rows at all for this user, use the default methods
 				$rowset[$user_id] = $this->notification_manager->get_default_methods();
 			}
 		}

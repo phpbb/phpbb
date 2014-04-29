@@ -337,8 +337,8 @@ services:
         tags:
             - { name: notification.type }
 
-    notification.method.in_board:
-        class: phpbb\notification\method\in_board
+    notification.method.board:
+        class: phpbb\notification\method\board
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
             - @user_loader

@@ -663,7 +663,7 @@ class manager
 	*
 	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
-	* @param string $method The method of the notification e.g. 'in_board', 'email', or 'jabber'
+	* @param string $method The method of the notification e.g. 'board', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
 	public function add_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
@@ -719,7 +719,7 @@ class manager
 	*
 	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
-	* @param string $method The method of the notification e.g. 'in_board', 'email', or 'jabber'
+	* @param string $method The method of the notification e.g. 'board', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
 	public function delete_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
