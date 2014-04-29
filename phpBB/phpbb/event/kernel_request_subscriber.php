@@ -45,6 +45,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	*/
 	public function __construct(ContainerInterface $service_container, $root_path, $php_ext)
 	{
+		$this->phpbb_container = $service_container;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
 	}
