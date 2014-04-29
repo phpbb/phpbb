@@ -2006,7 +2006,12 @@ class tools
 
 				$columns = implode(',', $column_list);
 
-				$new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
+				$new_table_cols = trim(preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols));
+				if (substr($new_table_cols, -1) === ',')
+				{
+					// Remove the comma from the last entry again
+					$new_table_cols = substr($new_table_cols, 0, -1);
+				}
 
 				// create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
