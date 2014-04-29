@@ -37,8 +37,6 @@ class topic extends \phpbb\feed\post_base
 
 	function open()
 	{
-		parent::open();
-
 		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_views, t.topic_posts_approved, t.topic_type
 			FROM ' . TOPICS_TABLE . ' t
 			LEFT JOIN ' . FORUMS_TABLE . ' f
@@ -85,6 +83,8 @@ class topic extends \phpbb\feed\post_base
 
 			unset($forum_ids_passworded);
 		}
+
+		parent::open();
 	}
 
 	function get_sql()

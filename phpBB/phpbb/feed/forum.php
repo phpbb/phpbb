@@ -37,8 +37,6 @@ class forum extends \phpbb\feed\post_base
 
 	function open()
 	{
-		parent::open();
-
 		// Check if forum exists
 		$sql = 'SELECT forum_id, forum_name, forum_password, forum_type, forum_options
 			FROM ' . FORUMS_TABLE . '
@@ -82,6 +80,8 @@ class forum extends \phpbb\feed\post_base
 
 			unset($forum_ids_passworded);
 		}
+
+		parent::open();
 	}
 
 	function get_sql()
