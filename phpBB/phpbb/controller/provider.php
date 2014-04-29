@@ -12,6 +12,7 @@ namespace phpbb\controller;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
 * Controller interface
@@ -32,14 +33,19 @@ class provider
 	protected $routes;
 
 	/**
-	* Construct method
-	*
-	* @param array() $routing_files Array of strings containing paths
+	* @param \phpbb\extension\finder $finder
+	* @param array                   $routing_files     Array of strings containing paths
 	*							to YAML files holding route information
+	* @param ContainerInterface      $service_container
 	*/
-	public function __construct(\phpbb\extension\finder $finder = null, $routing_files = array())
+	public function __construct(\phpbb\extension\finder $finder, $routing_files = array(), ContainerInterface $service_container = null)
 	{
 		$this->routing_files = $routing_files;
+
+		if ($service_container && ! $finder)
+		{
+			$finder = $service_container->get('ext.finder');
+		}
 
 		if ($finder)
 		{

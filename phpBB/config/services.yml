@@ -108,7 +108,9 @@ services:
     controller.provider:
         class: phpbb\controller\provider
         arguments:
-            - @ext.finder
+            - null
+            - null
+            - @service_container
         calls:
             - [find, [%core.root_path%]]
 
@@ -177,6 +179,7 @@ services:
 
     ext.finder:
         class: phpbb\extension\finder
+        scope: prototype
         arguments:
             - @ext.manager
             - @filesystem
@@ -217,7 +220,7 @@ services:
     kernel_request_subscriber:
         class: phpbb\event\kernel_request_subscriber
         arguments:
-            - @ext.finder
+            - @service_container
             - %core.root_path%
             - %core.php_ext%
         tags:
