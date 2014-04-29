@@ -109,5 +109,5 @@ $help = array(
 	array(
 		0 => 'Can I add my own tags?',
 		1 => 'If you are an administrator on this board and have the proper permissions, you can add further BBCodes through the Custom BBCodes section.'
-	)
+	),
 );

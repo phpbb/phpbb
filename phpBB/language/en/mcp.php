@@ -426,6 +426,6 @@ $lang = array_merge($lang, array(
 			'SPAM'		=> 'The reported message has the only purpose to advertise for a website or another product.',
 			'OFF_TOPIC'	=> 'The reported message is off topic.',
 			'OTHER'		=> 'The reported message does not fit into any other category, please use the further information field.',
-		)
+		),
 	),
 ));
