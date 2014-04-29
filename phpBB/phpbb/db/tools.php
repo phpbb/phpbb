@@ -1820,68 +1820,63 @@ class tools
 			break;
 
 			case 'sqlite':
-			case 'sqlite3':
-
 				if ($inline && $this->return_statements)
 				{
 					return $column_name . ' ' . $column_data['column_type_sql'];
 				}
 
-				if (version_compare($this->db->sql_server_info(true), '3.0') == -1)
+				$recreate_queries = $this->sqlite_get_recreate_table_queries($table_name);
+				if (empty($recreate_queries))
 				{
-					$sql = "SELECT sql
-						FROM sqlite_master
-						WHERE type = 'table'
-							AND name = '{$table_name}'
-						ORDER BY type DESC, name;";
-					$result = $this->db->sql_query($sql);
-
-					if (!$result)
-					{
-						break;
-					}
-
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					$statements[] = 'begin';
-
-					// Create a backup table and populate it, destroy the existing one
-					$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
-					$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
-					$statements[] = 'DROP TABLE ' . $table_name;
-
-					preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-					$new_table_cols = trim($matches[1]);
-					$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
-					$column_list = array();
-
-					foreach ($old_table_cols as $declaration)
-					{
-						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities[0] == 'PRIMARY')
-						{
-							continue;
-						}
-						$column_list[] = $entities[0];
-					}
-
-					$columns = implode(',', $column_list);
-
-					$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
-
-					// create a new table and fill it up. destroy the temp one
-					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
-					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
-					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
-
-					$statements[] = 'commit';
+					break;
 				}
-				else
+
+				$statements[] = 'begin';
+
+				$sql_create_table = array_shift($recreate_queries);
+
+				// Create a backup table and populate it, destroy the existing one
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $sql_create_table);
+				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+				$statements[] = 'DROP TABLE ' . $table_name;
+
+				preg_match('#\((.*)\)#s', $sql_create_table, $matches);
+
+				$new_table_cols = trim($matches[1]);
+				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+				$column_list = array();
+
+				foreach ($old_table_cols as $declaration)
 				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY')
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
 				}
+
+				$columns = implode(',', $column_list);
+
+				$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
+
+				// create a new table and fill it up. destroy the temp one
+				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+				$statements = array_merge($statements, $recreate_queries);
+
+				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+				$statements[] = 'commit';
+			break;
+
+			case 'sqlite3':
+				if ($inline && $this->return_statements)
+				{
+					return $column_name . ' ' . $column_data['column_type_sql'];
+				}
+
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			break;
 		}
 
@@ -1966,29 +1961,22 @@ class tools
 					return $column_name;
 				}
 
-				$sql = "SELECT sql
-					FROM sqlite_master
-					WHERE type = 'table'
-						AND name = '{$table_name}'
-					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
-
-				if (!$result)
+				$recreate_queries = $this->sqlite_get_recreate_table_queries($table_name, $column_name);
+				if (empty($recreate_queries))
 				{
 					break;
 				}
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
 				$statements[] = 'begin';
 
+				$sql_create_table = array_shift($recreate_queries);
+
 				// Create a backup table and populate it, destroy the existing one
-				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $sql_create_table);
 				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
 				$statements[] = 'DROP TABLE ' . $table_name;
 
-				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+				preg_match('#\((.*)\)#s', $sql_create_table, $matches);
 
 				$new_table_cols = trim($matches[1]);
 				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
@@ -2015,6 +2003,8 @@ class tools
 
 				// create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+				$statements = array_merge($statements, $recreate_queries);
+
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
 
@@ -2162,29 +2152,22 @@ class tools
 					return $column;
 				}
 
-				$sql = "SELECT sql
-					FROM sqlite_master
-					WHERE type = 'table'
-						AND name = '{$table_name}'
-					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
-
-				if (!$result)
+				$recreate_queries = $this->sqlite_get_recreate_table_queries($table_name);
+				if (empty($recreate_queries))
 				{
 					break;
 				}
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
 				$statements[] = 'begin';
 
+				$sql_create_table = array_shift($recreate_queries);
+
 				// Create a backup table and populate it, destroy the existing one
-				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $sql_create_table);
 				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
 				$statements[] = 'DROP TABLE ' . $table_name;
 
-				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+				preg_match('#\((.*)\)#s', $sql_create_table, $matches);
 
 				$new_table_cols = trim($matches[1]);
 				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
@@ -2204,6 +2187,8 @@ class tools
 
 				// create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ', PRIMARY KEY (' . implode(', ', $column) . '));';
+				$statements = array_merge($statements, $recreate_queries);
+
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
 
@@ -2551,29 +2536,22 @@ class tools
 					return $column_name . ' ' . $column_data['column_type_sql'];
 				}
 
-				$sql = "SELECT sql
-					FROM sqlite_master
-					WHERE type = 'table'
-						AND name = '{$table_name}'
-					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
-
-				if (!$result)
+				$recreate_queries = $this->sqlite_get_recreate_table_queries($table_name);
+				if (empty($recreate_queries))
 				{
 					break;
 				}
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
 				$statements[] = 'begin';
 
+				$sql_create_table = array_shift($recreate_queries);
+
 				// Create a temp table and populate it, destroy the existing one
-				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $sql_create_table);
 				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
 				$statements[] = 'DROP TABLE ' . $table_name;
 
-				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+				preg_match('#\((.*)\)#s', $sql_create_table, $matches);
 
 				$new_table_cols = trim($matches[1]);
 				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
@@ -2591,8 +2569,10 @@ class tools
 
 				$columns = implode(',', $column_list);
 
-				// create a new table and fill it up. destroy the temp one
+				// Create a new table and fill it up. destroy the temp one
 				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . implode(',', $old_table_cols) . ');';
+				$statements = array_merge($statements, $recreate_queries);
+
 				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
 				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
 
@@ -2757,5 +2737,78 @@ class tools
 		}
 
 		return $this->is_sql_server_2000;
+	}
+
+	/**
+	* Returns the Queries which are required to recreate a table including indexes
+	*
+	* @param string $table_name
+	* @param string $remove_column	When we drop a column, we remove the column
+	*								from all indexes. If the index has no other
+	*								column, we drop it completly.
+	* @return array
+	*/
+	protected function sqlite_get_recreate_table_queries($table_name, $remove_column = '')
+	{
+		$queries = array();
+
+		$sql = "SELECT sql
+			FROM sqlite_master
+			WHERE type = 'table'
+				AND name = '{$table_name}'
+			ORDER BY type DESC, name;";
+		$result = $this->db->sql_query($sql);
+		$sql_create_table = $this->db->sql_fetchfield('sql');
+		$this->db->sql_freeresult($result);
+
+		if (!$sql_create_table)
+		{
+			return array();
+		}
+		$queries[] = $sql_create_table;
+
+		$sql = "SELECT sql
+			FROM sqlite_master
+			WHERE type = 'index'
+				AND tbl_name = '{$table_name}'
+			ORDER BY type DESC, name;";
+		$result = $this->db->sql_query($sql);
+		while ($sql_create_index = $this->db->sql_fetchfield('sql'))
+		{
+			if ($remove_column)
+			{
+				$match = array();
+				preg_match('#(?:[\w ]+)\((.*)\)#', $sql_create_index, $match);
+				if (!isset($match[1]))
+				{
+					continue;
+				}
+
+				// Find and remove $remove_column from the index
+				$columns = explode(', ', $match[1]);
+				$found_column = array_search($remove_column, $columns);
+				if ($found_column !== false)
+				{
+					unset($columns[$found_column]);
+
+					// If the column list is not empty add the index to the list
+					if (!empty($columns))
+					{
+						$queries[] = str_replace($match[1], implode(', ', $columns), $sql_create_index);
+					}
+				}
+				else
+				{
+					$queries[] = $sql_create_index;
+				}
+			}
+			else
+			{
+				$queries[] = $sql_create_index;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return $queries;
 	}
 }
