@@ -72,7 +72,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
 		self::assert_response_xml();
-		self::$init_values['disapprove_user']['forums_value'] = (int)$crawler->filterXPath('//entry')->count();
+		self::$init_values['disapprove_user']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
 		self::assert_response_xml();
@@ -94,7 +94,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
 		self::assert_response_xml();
-		self::$init_values['admin']['forums_value'] = (int)$crawler->filterXPath('//entry')->count();
+		self::$init_values['admin']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
 		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
 		self::assert_response_xml();
