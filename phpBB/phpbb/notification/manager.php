@@ -853,7 +853,7 @@ class manager
 
 		foreach ($this->notification_methods as $method_name => $method)
 		{
-			if ($method->is_enabled_by_default())
+			if ($method->is_enabled_by_default() && $method->is_available())
 			{
 				$default_methods[] = $method->get_type();
 			}
