@@ -19,7 +19,7 @@ class notifications_in_board extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.add', array('enable_notifications_in_board', 1)),
+			array('config.add', array('allow_board_notifications', 1)),
 			array('custom', array(array($this, 'update_user_subscriptions'))),
 		);
 	}

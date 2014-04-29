@@ -44,7 +44,7 @@ class in_board extends \phpbb\notification\method\base
 	*/
 	public function is_available()
 	{
-		return $this->config['enable_notifications_in_board'];
+		return $this->config['allow_board_notifications'];
 	}
 
 	/**

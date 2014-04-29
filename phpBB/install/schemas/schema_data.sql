@@ -107,7 +107,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_si
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_mod_rewrite', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_notifications_in_board', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_board_notifications', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_enable', '1');
