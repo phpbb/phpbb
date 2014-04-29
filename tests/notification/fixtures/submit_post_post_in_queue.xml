@@ -110,49 +110,49 @@
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>2</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>1</value>
 		</row>
 		<row>
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>3</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>1</value>
 		</row>
 		<row>
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>4</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>1</value>
 		</row>
 		<row>
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>5</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>1</value>
 		</row>
 		<row>
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>6</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>1</value>
 		</row>
 		<row>
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>7</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>0</value>
 		</row>
 		<row>
 			<value>needs_approval</value>
 			<value>0</value>
 			<value>9</value>
-			<value>in_board</value>
+			<value>board</value>
 			<value>1</value>
 		</row>
 	</table>

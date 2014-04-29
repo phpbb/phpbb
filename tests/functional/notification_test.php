@@ -21,15 +21,15 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		return array(
 			// Rows inserted by phpBB/install/schemas/schema_data.sql
 			// Also see PHPBB3-11460
-			array('post_in_board', true),
-			array('topic_in_board', true),
+			array('post_board', true),
+			array('topic_board', true),
 			array('post_email', true),
 			array('topic_email', true),
 
 			// Default behaviour for in-board notifications:
 			// If user did not opt-out, in-board notifications are on.
-			array('bookmark_in_board', true),
-			array('quote_in_board', true),
+			array('bookmark_board', true),
+			array('quote_board', true),
 
 			// Default behaviour for email notifications:
 			// If user did not opt-in, email notifications are off.

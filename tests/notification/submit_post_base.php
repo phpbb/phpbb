@@ -72,7 +72,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$config = new \phpbb\config\config(array(
 			'num_topics' => 1,
 			'num_posts' => 1,
-			'enable_notifications_in_board'	=> true,
+			'enable_notifications_board'	=> true,
 		));
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
@@ -119,13 +119,13 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		}
 
 		// Methods Types
-		$class_name = 'phpbb\notification\method\in_board';
+		$class_name = 'phpbb\notification\method\board';
 		$class = new $class_name(
 			$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
 			$phpbb_root_path, $phpEx,
 			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
-		$phpbb_container->set('notification.method.in_board', $class);
-		$notification_methods_array = array('notification.method.in_board' => $class);
+		$phpbb_container->set('notification.method.board', $class);
+		$notification_methods_array = array('notification.method.board' => $class);
 
 		// Notification Manager
 		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, $notification_methods_array,
