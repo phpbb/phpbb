@@ -100,7 +100,7 @@ interface type_interface
 	* @param array	$field_data			Array with requirements of the field
 	* @return mixed		Field value ID to display
 	*/
-	public function get_profile_valueid($field_value, $field_data);
+	public function get_profile_value_raw($field_value, $field_data);
 
 	/**
 	* Get Profile Value for display

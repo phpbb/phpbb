@@ -189,7 +189,7 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_profile_valueid($field_value, $field_data)
+	public function get_profile_value_raw($field_value, $field_data)
 	{
 		if ($field_value == $field_data['field_novalue'] && !$field_data['field_show_novalue'])
 		{

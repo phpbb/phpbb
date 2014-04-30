@@ -110,7 +110,7 @@ abstract class type_string_common extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_profile_valueid($field_value, $field_data)
+	public function get_profile_value_raw($field_value, $field_data)
 	{
 		if (!$field_value && !$field_data['field_show_novalue'])
 		{
