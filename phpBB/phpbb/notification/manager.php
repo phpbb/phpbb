@@ -56,14 +56,6 @@ class manager
 	/** @var string */
 	protected $notifications_table;
 
-	/**
-	* @return string
-	*/
-	public function getNotificationsTable()
-	{
-		return $this->notifications_table;
-	}
-
 	/** @var string */
 	protected $user_notifications_table;
 
@@ -109,6 +101,7 @@ class manager
 	/**
 	* Load the user's notifications
 	*
+	* @param string $method_name
 	* @param array $options Optional options to control what notifications are loaded
 	*				notification_id		Notification id to load (or array of notification ids)
 	*				user_id				User id to load notifications for (Default: $user->data['user_id'])
@@ -124,138 +117,10 @@ class manager
 	*	'unread_count'		number of unread notifications the user has if count_unread is true in the options
 	*	'total_count'		number of notifications the user has if count_total is true in the options
 	*/
-	public function load_notifications(array $options = array())
+	public function load_notifications($method_name, array $options = array())
 	{
-		// Merge default options
-		$options = array_merge(array(
-			'notification_id'	=> false,
-			'user_id'			=> $this->user->data['user_id'],
-			'order_by'			=> 'notification_time',
-			'order_dir'			=> 'DESC',
-			'limit'				=> 0,
-			'start'				=> 0,
-			'all_unread'		=> false,
-			'count_unread'		=> false,
-			'count_total'		=> false,
-		), $options);
-
-		// If all_unread, count_unread must be true
-		$options['count_unread'] = ($options['all_unread']) ? true : $options['count_unread'];
-
-		// Anonymous users and bots never receive notifications
-		if ($options['user_id'] == $this->user->data['user_id'] && ($this->user->data['user_id'] == ANONYMOUS || $this->user->data['user_type'] == USER_IGNORE))
-		{
-			return array(
-				'notifications'		=> array(),
-				'unread_count'		=> 0,
-				'total_count'		=> 0,
-			);
-		}
-
-		$notifications = $user_ids = array();
-		$load_special = array();
-		$total_count = $unread_count = 0;
-
-		if ($options['count_unread'])
-		{
-			// Get the total number of unread notifications
-			$sql = 'SELECT COUNT(n.notification_id) AS unread_count
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND n.notification_read = 0
-					AND nt.notification_type_id = n.notification_type_id
-					AND nt.notification_type_enabled = 1';
-			$result = $this->db->sql_query($sql);
-			$unread_count = (int) $this->db->sql_fetchfield('unread_count');
-			$this->db->sql_freeresult($result);
-		}
-
-		if ($options['count_total'])
-		{
-			// Get the total number of notifications
-			$sql = 'SELECT COUNT(n.notification_id) AS total_count
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND nt.notification_type_id = n.notification_type_id
-					AND nt.notification_type_enabled = 1';
-			$result = $this->db->sql_query($sql);
-			$total_count = (int) $this->db->sql_fetchfield('total_count');
-			$this->db->sql_freeresult($result);
-		}
-
-		if (!$options['count_total'] || $total_count)
-		{
-			$rowset = array();
-
-			// Get the main notifications
-			$sql = 'SELECT n.*, nt.notification_type_name
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] .
-					(($options['notification_id']) ? ((is_array($options['notification_id'])) ? ' AND ' . $this->db->sql_in_set('n.notification_id', $options['notification_id']) : ' AND n.notification_id = ' . (int) $options['notification_id']) : '') . '
-					AND nt.notification_type_id = n.notification_type_id
-					AND nt.notification_type_enabled = 1
-				ORDER BY n.' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
-			$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$rowset[$row['notification_id']] = $row;
-			}
-			$this->db->sql_freeresult($result);
-
-			// Get all unread notifications
-			if ($unread_count && $options['all_unread'] && !empty($rowset))
-			{
-				$sql = 'SELECT n.*, nt.notification_type_name
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-					WHERE n.user_id = ' . (int) $options['user_id'] . '
-						AND n.notification_read = 0
-						AND ' . $this->db->sql_in_set('n.notification_id', array_keys($rowset), true) . '
-						AND nt.notification_type_id = n.notification_type_id
-						AND nt.notification_type_enabled = 1
-					ORDER BY n.' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
-				$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
-
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					$rowset[$row['notification_id']] = $row;
-				}
-				$this->db->sql_freeresult($result);
-			}
-
-			foreach ($rowset as $row)
-			{
-				$notification = $this->get_item_type_class($row['notification_type_name'], $row);
-
-				// Array of user_ids to query all at once
-				$user_ids = array_merge($user_ids, $notification->users_to_query());
-
-				// Some notification types also require querying additional tables themselves
-				if (!isset($load_special[$row['notification_type_name']]))
-				{
-					$load_special[$row['notification_type_name']] = array();
-				}
-				$load_special[$row['notification_type_name']] = array_merge($load_special[$row['notification_type_name']], $notification->get_load_special());
-
-				$notifications[$row['notification_id']] = $notification;
-			}
-
-			$this->user_loader->load_users($user_ids);
-
-			// Allow each type to load its own special items
-			foreach ($load_special as $item_type => $data)
-			{
-				$item_class = $this->get_item_type_class($item_type);
-
-				$item_class->load_special($data, $notifications);
-			}
-		}
-
-		return array(
-			'notifications'		=> $notifications,
-			'unread_count'		=> $unread_count,
-			'total_count'		=> $total_count,
-		);
+		$method = $this->get_method_class($method_name);
+		return $method->load_notifications($options);
 	}
 
 	/**

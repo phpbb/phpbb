@@ -120,4 +120,16 @@ abstract class base implements \phpbb\notification\method\method_interface
 	{
 		return false;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function load_notifications(array $options = array())
+	{
+		return array(
+			'notifications'		=> array(),
+			'unread_count'		=> 0,
+			'total_count'		=> 0,
+		);
+	}
 }

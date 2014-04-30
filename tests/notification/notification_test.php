@@ -128,7 +128,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notifications'		=> array(),
 				'unread_count'		=> 0,
 				'total_count'		=> 0,
-		), $this->notifications->load_notifications(array(
+		), $this->notifications->load_notifications('board', array(
 			'count_unread'	=> true,
 		)));
 

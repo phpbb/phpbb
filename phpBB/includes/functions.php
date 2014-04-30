@@ -4891,11 +4891,11 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	// Output the notifications
 	$notifications = false;
-	if ($config['load_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
+	if ($config['load_notifications'] && $config['allow_board_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
 	{
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-		$notifications = $phpbb_notifications->load_notifications(array(
+		$notifications = $phpbb_notifications->load_notifications('board', array(
 			'all_unread'	=> true,
 			'limit'			=> 5,
 		));

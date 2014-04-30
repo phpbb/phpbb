@@ -141,7 +141,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 	protected function assert_notifications($expected, $options = array())
 	{
-		$notifications = $this->notifications->load_notifications(array_merge(array(
+		$notifications = $this->notifications->load_notifications('board', array_merge(array(
 			'count_unread'	=> true,
 			'order_by'		=> 'notification_time',
 			'order_dir'		=> 'ASC',
