@@ -108,8 +108,8 @@ services:
     controller.provider:
         class: phpbb\controller\provider
         calls:
-            - [find, [%core.root_path%]]
             - [setExtFinder, ["@ext.finder="]]
+            - [find, [%core.root_path%]]
 
     cron.task_collection:
         class: phpbb\di\service_collection
