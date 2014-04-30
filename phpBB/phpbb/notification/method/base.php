@@ -168,4 +168,18 @@ abstract class base implements \phpbb\notification\method\method_interface
 	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
 	{
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function purge_notifications($notification_type_name)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function prune_notifications($timestamp, $only_read = true)
+	{
+	}
 }

@@ -336,4 +336,35 @@ class board extends \phpbb\notification\method\base
 			(($parent_id !== false) ? ' AND ' . ((is_array($parent_id) ? $this->db->sql_in_set('item_parent_id', $parent_id) : 'item_parent_id = ' . (int) $parent_id)) : '');
 		$this->db->sql_query($sql);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function purge_notifications($notification_type_name)
+	{
+		$notification_type_id = $this->notification_manager->get_notification_type_id($notification_type_name);
+
+		$sql = 'DELETE FROM ' . $this->notifications_table . '
+			WHERE notification_type_id = ' . (int) $notification_type_id;
+		$this->db->sql_query($sql);
+
+		$sql = 'DELETE FROM ' . $this->notification_types_table . '
+			WHERE notification_type_id = ' . (int) $notification_type_id;
+		$this->db->sql_query($sql);
+
+		$this->cache->destroy('notification_type_ids');
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function prune_notifications($timestamp, $only_read = true)
+	{
+		$sql = 'DELETE FROM ' . $this->notifications_table . '
+			WHERE notification_time < ' . (int) $timestamp .
+			(($only_read) ? ' AND notification_read = 1' : '');
+		$this->db->sql_query($sql);
+
+		$this->config->set('read_notification_last_gc', time(), false);
+	}
 }

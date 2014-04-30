@@ -1,13 +1,6 @@
 <?php
 /**
 *
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
 *
 */
 
@@ -682,29 +675,9 @@ class manager
 	*/
 	public function purge_notifications($notification_type_name)
 	{
-		// If a notification is never used, its type will not be added to the database
-		// nor its id cached. If this method is called by an extension during the
-		// purge step, and that extension never used its notifications,
-		// get_notification_type_id() will throw an exception. However,
-		// because no notification type was added to the database,
-		// there is nothing to delete, so we can silently drop the exception.
-		try
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$notification_type_id = $this->get_notification_type_id($notification_type_name);
-
-			$sql = 'DELETE FROM ' . $this->notifications_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id;
-			$this->db->sql_query($sql);
-
-			$sql = 'DELETE FROM ' . $this->notification_types_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id;
-			$this->db->sql_query($sql);
-
-			$this->cache->destroy('notification_type_ids');
-		}
-		catch (\phpbb\notification\exception $e)
-		{
-			// Continue
+			$method->purge_notifications($notification_type_name);
 		}
 	}
 
@@ -733,12 +706,10 @@ class manager
 	*/
 	public function prune_notifications($timestamp, $only_read = true)
 	{
-		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_time < ' . (int) $timestamp .
-				(($only_read) ? ' AND notification_read = 1' : '');
-		$this->db->sql_query($sql);
-
-		$this->config->set('read_notification_last_gc', time(), false);
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$method->prune_notifications($timestamp, $only_read);
+		}
 	}
 
 	/**

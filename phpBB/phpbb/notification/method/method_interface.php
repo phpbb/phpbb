@@ -115,4 +115,22 @@ interface method_interface
 	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
 	*/
 	public function delete_notifications($notification_type_name, $item_id, $parent_id = false);
+
+	/**
+	* Purge all notifications of a certain type
+	*
+	* This should be called when an extension which has notification types
+	* is purged so that all those notifications are removed
+	*
+	* @param string $notification_type_name Type identifier of the subscription
+	*/
+	public function purge_notifications($notification_type_name);
+
+	/**
+	* Delete all notifications older than a certain time
+	*
+	* @param int $timestamp Unix timestamp to delete all notifications that were created before
+	* @param bool $only_read True (default) to only prune read notifications
+	*/
+	public function prune_notifications($timestamp, $only_read = true);
 }
