@@ -389,7 +389,7 @@ class manager
 		{
 			$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
 			$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
-			$valueid = $profile_field->get_profile_valueid($ident_ary['value'], $ident_ary['data']);
+			$value_raw = $profile_field->get_profile_value_raw($ident_ary['value'], $ident_ary['data']);
 
 			if ($value === null)
 			{
@@ -415,7 +415,7 @@ class manager
 			$tpl_fields['row'] += array(
 				'PROFILE_' . strtoupper($ident) . '_IDENT'		=> $ident,
 				'PROFILE_' . strtoupper($ident) . '_VALUE'		=> $value,
-				'PROFILE_' . strtoupper($ident) . '_VALUEID'	=> $valueid,
+				'PROFILE_' . strtoupper($ident) . '_VALUE_RAW'	=> $value_raw,
 				'PROFILE_' . strtoupper($ident) . '_CONTACT'	=> $contact_url,
 				'PROFILE_' . strtoupper($ident) . '_DESC'		=> $field_desc,
 				'PROFILE_' . strtoupper($ident) . '_TYPE'		=> $ident_ary['data']['field_type'],
@@ -427,14 +427,14 @@ class manager
 			);
 
 			$tpl_fields['blockrow'][] = array(
-				'PROFILE_FIELD_IDENT'	=> $ident,
-				'PROFILE_FIELD_VALUE'	=> $value,
-				'PROFILE_FIELD_VALUEID'	=> $valueid,
-				'PROFILE_FIELD_CONTACT'	=> $contact_url,
-				'PROFILE_FIELD_DESC'	=> $field_desc,
-				'PROFILE_FIELD_TYPE'	=> $ident_ary['data']['field_type'],
-				'PROFILE_FIELD_NAME'	=> $this->user->lang($ident_ary['data']['lang_name']),
-				'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($ident_ary['data']['lang_explain']),
+				'PROFILE_FIELD_IDENT'		=> $ident,
+				'PROFILE_FIELD_VALUE'		=> $value,
+				'PROFILE_FIELD_VALUE_RAW'	=> $value_raw,
+				'PROFILE_FIELD_CONTACT'		=> $contact_url,
+				'PROFILE_FIELD_DESC'		=> $field_desc,
+				'PROFILE_FIELD_TYPE'		=> $ident_ary['data']['field_type'],
+				'PROFILE_FIELD_NAME'		=> $this->user->lang($ident_ary['data']['lang_name']),
+				'PROFILE_FIELD_EXPLAIN'		=> $this->user->lang($ident_ary['data']['lang_explain']),
 
 				'S_PROFILE_CONTACT'						=> $ident_ary['data']['field_is_contact'],
 				'S_PROFILE_' . strtoupper($ident)		=> true,
