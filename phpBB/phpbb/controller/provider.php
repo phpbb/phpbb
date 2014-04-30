@@ -12,7 +12,6 @@ namespace phpbb\controller;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
 * Controller interface

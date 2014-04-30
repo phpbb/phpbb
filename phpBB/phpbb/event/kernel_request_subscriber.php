@@ -14,13 +14,12 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class kernel_request_subscriber implements EventSubscriberInterface
 {
 	/**
-	* \phpbb\extension\finder object
-	* @var ContainerInterface
+	* Extension finder object
+	* @var \phpbb\extension\finder
 	*/
 	protected $finder;
 
