@@ -322,4 +322,18 @@ class board extends \phpbb\notification\method\base
 
 		return $notified_users;
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
+	{
+		$notification_type_id = $this->notification_manager->get_notification_type_id($notification_type_name);
+
+		$sql = 'DELETE FROM ' . $this->notifications_table . '
+			WHERE notification_type_id = ' . (int) $notification_type_id . '
+				AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) .
+			(($parent_id !== false) ? ' AND ' . ((is_array($parent_id) ? $this->db->sql_in_set('item_parent_id', $parent_id) : 'item_parent_id = ' . (int) $parent_id)) : '');
+		$this->db->sql_query($sql);
+	}
 }

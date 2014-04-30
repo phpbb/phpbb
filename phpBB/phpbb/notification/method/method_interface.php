@@ -106,4 +106,13 @@ interface method_interface
 	* @return array User
 	*/
 	public function get_notified_users($notification_type_id, $item_id);
+
+	/**
+	* Delete a notification
+	*
+	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
+	* @param int|array $item_id Identifier within the type (or array of ids)
+	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	*/
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false);
 }
