@@ -108,7 +108,7 @@ services:
     controller.provider:
         class: phpbb\controller\provider
         calls:
-            - [setExtFinder, ["@ext.finder="]]
+            - [set_ext_finder, ["@ext.finder="]]
             - [find, [%core.root_path%]]
 
     cron.task_collection:
@@ -221,7 +221,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
         calls:
-            - [setExtFinder, ["@ext.finder="]]
+            - [set_ext_finder, ["@ext.finder="]]
         tags:
             - { name: kernel.event_subscriber }
 

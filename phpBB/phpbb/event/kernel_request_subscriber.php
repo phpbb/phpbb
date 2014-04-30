@@ -47,7 +47,11 @@ class kernel_request_subscriber implements EventSubscriberInterface
 		$this->php_ext = $php_ext;
 	}
 
-	public function setExtFinder(\phpbb\extension\finder $finder = null)
+	/**
+	* @param \phpbb\extension\finder $finder
+	* @return null
+	*/
+	public function set_ext_finder(\phpbb\extension\finder $finder = null)
 	{
 		$this->finder = $finder;
 	}
@@ -65,7 +69,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	{
 		if ($this->finder === null)
 		{
-			throw new \BadMethodCallException("The finder should not be null");
+			throw new \BadMethodCallException('The finder should not be null');
 		}
 
 		$request = $event->getRequest();

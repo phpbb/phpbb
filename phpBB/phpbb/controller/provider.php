@@ -32,6 +32,8 @@ class provider
 	protected $routes;
 
 	/**
+	* Construct method
+	*
 	* @param array  $routing_files  Array of strings containing paths to YAML files holding route information
 	*/
 	public function __construct($routing_files = array())
@@ -41,8 +43,9 @@ class provider
 
 	/**
 	* @param \phpbb\extension\finder $finder
+	* @return null
 	*/
-	public function setExtFinder(\phpbb\extension\finder $finder = null)
+	public function set_ext_finder(\phpbb\extension\finder $finder = null)
 	{
 		if ($finder)
 		{
