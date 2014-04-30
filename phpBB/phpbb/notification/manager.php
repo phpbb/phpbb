@@ -87,7 +87,6 @@ class manager
 		$this->php_ext = $php_ext;
 
 		$this->notification_types_table = $notification_types_table;
-		$this->notifications_table = $notifications_table;
 		$this->user_notifications_table = $user_notifications_table;
 	}
 
@@ -321,6 +320,11 @@ class manager
 			}
 
 			return;
+		}
+
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$method->update_notifications($notification_type_name, $data);
 		}
 
 		$notification = $this->get_item_type_class($notification_type_name);

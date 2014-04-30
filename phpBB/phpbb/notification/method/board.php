@@ -367,4 +367,32 @@ class board extends \phpbb\notification\method\base
 
 		$this->config->set('read_notification_last_gc', time(), false);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function update_notifications($notification_type_name, $data)
+	{
+		$notification = $this->notification_manager->get_item_type_class($notification_type_name);
+
+		// Allow the notifications class to over-ride the update_notifications functionality
+		if (method_exists($notification, 'update_notifications'))
+		{
+			// Return False to over-ride the rest of the update
+			if ($notification->update_notifications($data) === false)
+			{
+				return;
+			}
+		}
+
+		$notification_type_id = $this->notification_manager->get_notification_type_id($notification_type_name);
+		$item_id = $notification->get_item_id($data);
+		$update_array = $notification->create_update_array($data);
+
+		$sql = 'UPDATE ' . $this->notifications_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', $update_array) . '
+			WHERE notification_type_id = ' . (int) $notification_type_id . '
+				AND item_id = ' . (int) $item_id;
+		$this->db->sql_query($sql);
+	}
 }

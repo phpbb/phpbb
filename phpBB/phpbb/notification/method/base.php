@@ -182,4 +182,11 @@ abstract class base implements \phpbb\notification\method\method_interface
 	public function prune_notifications($timestamp, $only_read = true)
 	{
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function update_notifications($notification_type_name, $data)
+	{
+	}
 }

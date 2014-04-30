@@ -133,4 +133,12 @@ interface method_interface
 	* @param bool $only_read True (default) to only prune read notifications
 	*/
 	public function prune_notifications($timestamp, $only_read = true);
+
+	/**
+	* Update a notification
+	*
+	* @param string $notification_type_name Type identifier of item types
+	* @param array $data Data specific for this type that will be updated
+	*/
+	public function update_notifications($notification_type_name, $data);
 }
