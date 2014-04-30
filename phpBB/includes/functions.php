@@ -4930,7 +4930,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
 		'U_MARK_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_list&amp;mark=all&amp;token=' . $notification_mark_hash),
 		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
-		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
+		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'] && $config['allow_board_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
