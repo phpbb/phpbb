@@ -39,7 +39,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$provider = new \phpbb\controller\provider();
-		$provider->setExtFinder($this->finder);
+		$provider->set_ext_finder($this->finder);
 		$provider->find(dirname(__FILE__) . '/');
 		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, $provider, '', 'php');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
