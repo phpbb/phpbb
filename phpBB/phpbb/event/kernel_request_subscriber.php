@@ -19,10 +19,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class kernel_request_subscriber implements EventSubscriberInterface
 {
 	/**
-	* ContainerInterface object
+	* \phpbb\extension\finder object
 	* @var ContainerInterface
 	*/
-	protected $phpbb_container;
+	protected $finder;
 
 	/**
 	* PHP extension
@@ -39,15 +39,18 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	/**
 	* Construct method
 	*
-	* @param ContainerInterface $service_container
 	* @param string $root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(ContainerInterface $service_container, $root_path, $php_ext)
+	public function __construct($root_path, $php_ext)
 	{
-		$this->phpbb_container = $service_container;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	public function setExtFinder(\phpbb\extension\finder $finder = null)
+	{
+		$this->finder = $finder;
 	}
 
 	/**
@@ -56,17 +59,21 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	* This is responsible for setting up the routing information
 	*
 	* @param GetResponseEvent $event
+	* @throws \BadMethodCallException
 	* @return null
 	*/
 	public function on_kernel_request(GetResponseEvent $event)
 	{
-		$finder = $this->phpbb_container->get('ext.finder');
+		if ($this->finder === null)
+		{
+			throw new \BadMethodCallException("The finder should not be null");
+		}
 
 		$request = $event->getRequest();
 		$context = new RequestContext();
 		$context->fromRequest($request);
 
-		$matcher = phpbb_get_url_matcher($finder, $context, $this->root_path, $this->php_ext);
+		$matcher = phpbb_get_url_matcher($this->finder, $context, $this->root_path, $this->php_ext);
 		$router_listener = new RouterListener($matcher, $context);
 		$router_listener->onKernelRequest($event);
 	}
