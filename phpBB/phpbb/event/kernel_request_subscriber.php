@@ -69,7 +69,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	{
 		if ($this->finder === null)
 		{
-			throw new \BadMethodCallException('The finder should not be null');
+			throw new \BadMethodCallException('The finder must not be null');
 		}
 
 		$request = $event->getRequest();
