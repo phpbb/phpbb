@@ -132,4 +132,33 @@ abstract class base implements \phpbb\notification\method\method_interface
 			'total_count'		=> 0,
 		);
 	}
+
+	/**
+	* {@inheritdoc
+	*/
+	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_read_by_id($notification_id, $time = false)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_notified_users($notification_type_id, $item_id)
+
+		return array();
+	}
 }

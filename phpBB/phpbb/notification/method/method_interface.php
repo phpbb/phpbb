@@ -69,4 +69,41 @@ interface method_interface
 	*	'total_count'		number of notifications the user has if count_total is true in the options
 	*/
 	public function load_notifications(array $options = array());
+
+	/**
+	* Mark notifications read
+	*
+	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
+	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
+	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	*/
+	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false);
+
+	/**
+	* Mark notifications read from a parent identifier
+	*
+	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
+	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
+	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	*/
+	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false);
+
+	/**
+	* Mark notifications read
+	*
+	* @param int|array $notification_id Notification id or array of notification ids.
+	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	*/
+	public function mark_notifications_read_by_id($notification_id, $time = false);
+
+	/**
+	* Return the list of the users already notified
+	*
+	* @param int $notification_type_id Type of the notification
+	* @param int $item_id
+	* @return array User
+	*/
+	public function get_notified_users($notification_type_id, $item_id);
 }

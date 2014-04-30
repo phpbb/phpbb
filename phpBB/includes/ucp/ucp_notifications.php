@@ -129,7 +129,7 @@ class ucp_notifications
 
 					if (!empty($mark_read))
 					{
-						$phpbb_notifications->mark_notifications_read_by_id($mark_read, $form_time);
+						$phpbb_notifications->mark_notifications_read_by_id('board', $mark_read, $form_time);
 					}
 				}
 

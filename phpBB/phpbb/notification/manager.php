@@ -99,7 +99,7 @@ class manager
 	}
 
 	/**
-	* Load the user's notifications
+	* Load the user's notifications for a given method
 	*
 	* @param string $method_name
 	* @param array $options Optional options to control what notifications are loaded
@@ -120,11 +120,24 @@ class manager
 	public function load_notifications($method_name, array $options = array())
 	{
 		$method = $this->get_method_class($method_name);
-		return $method->load_notifications($options);
+
+		if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
+		{
+			return $method->load_notifications($options);
+		}
+		else
+		{
+			// TODO: throw error?
+			return array(
+				'notifications'		=> array(),
+				'unread_count'		=> 0,
+				'total_count'		=> 0,
+			);
+		}
 	}
 
 	/**
-	* Mark notifications read
+	* Mark notifications read for all available methods
 	*
 	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
@@ -133,20 +146,14 @@ class manager
 	*/
 	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
 	{
-		$time = ($time !== false) ? $time : time();
-
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time .
-				(($notification_type_name !== false) ? ' AND ' .
-					(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->get_notification_type_id($notification_type_name)) : '') .
-				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
-				(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
-		$this->db->sql_query($sql);
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$method->mark_notifications_read($notification_type_name, $item_id, $user_id, $time);
+		}
 	}
 
 	/**
-	* Mark notifications read from a parent identifier
+	* Mark notifications read from a parent identifier for all available methods
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
@@ -155,33 +162,27 @@ class manager
 	*/
 	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
 	{
-		$time = ($time !== false) ? $time : time();
-
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time .
-				(($notification_type_name !== false) ? ' AND ' .
-					(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->get_notification_type_id($notification_type_name)) : '') .
-				(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
-				(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
-		$this->db->sql_query($sql);
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$method->mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time);
+		}
 	}
 
 	/**
-	* Mark notifications read
+	* Mark notifications read for a given method
 	*
+	* @param string $method_name
 	* @param int|array $notification_id Notification id or array of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	*/
-	public function mark_notifications_read_by_id($notification_id, $time = false)
+	public function mark_notifications_read_by_id($method_name, $notification_id, $time = false)
 	{
-		$time = ($time !== false) ? $time : time();
+		$method = $this->get_method_class($method_name);
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time . '
-				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id);
-		$this->db->sql_query($sql);
+		if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
+		{
+			$method->mark_notifications_read_by_id($notification_id, $time);
+		}
 	}
 
 	/**
@@ -256,18 +257,15 @@ class manager
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
-		$sql = 'SELECT n.user_id
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $notification_type_id . '
-				AND n.item_id = ' . (int) $item_id . '
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		// We remove each user which was already notified by at least one method.
+		foreach ($this->get_subscription_methods_instances() as $method_name => $method)
 		{
-			unset($notify_users[$row['user_id']]);
+			$notified_users = $method->get_notified_users($notification_type_id, $item_id);
+			foreach ($notified_users as $user)
+			{
+				unset($notify_users[$user]);
+			}
 		}
-		$this->db->sql_freeresult($result);
 
 		if (!sizeof($notify_users))
 		{
@@ -428,16 +426,53 @@ class manager
 	{
 		$subscription_methods = array();
 
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$subscription_methods[$method_name] = array(
+				'id'		=> $method->get_type(),
+				'lang'		=> 'NOTIFICATION_METHOD_' . strtoupper($method->get_type()),
+			);
+		}
+
+		return $subscription_methods;
+	}
+
+	/**
+	* Get all of the subscription methods
+	*
+	* @return array Array of method's instances
+	*/
+	private function get_subscription_methods_instances()
+	{
+		$subscription_methods = array();
+
 		foreach ($this->notification_methods as $method_name => $data)
 		{
 			$method = $this->get_method_class($method_name);
 
-			if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
+			if ($method instanceof \phpbb\notification\method\method_interface)
 			{
-				$subscription_methods[$method_name] = array(
-					'id'		=> $method->get_type(),
-					'lang'		=> 'NOTIFICATION_METHOD_' . strtoupper($method->get_type()),
-				);
+				$subscription_methods[$method_name] = $method;
+			}
+		}
+
+		return $subscription_methods;
+	}
+
+	/**
+	* Get all of the available subscription methods
+	*
+	* @return array Array of method's instances
+	*/
+	private function get_available_subscription_methods()
+	{
+		$subscription_methods = array();
+
+		foreach ($this->get_subscription_methods_instances() as $method_name => $method)
+		{
+			if ($method->is_available())
+			{
+				$subscription_methods[$method_name] = $method;
 			}
 		}
 

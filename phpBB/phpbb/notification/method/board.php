@@ -252,4 +252,74 @@ class board extends \phpbb\notification\method\base
 			'total_count'		=> $total_count,
 		);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	{
+		$time = ($time !== false) ? $time : time();
+
+		$sql = 'UPDATE ' . $this->notifications_table . "
+			SET notification_read = 1
+			WHERE notification_time <= " . (int) $time .
+			(($notification_type_name !== false) ? ' AND ' .
+				(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->notification_manager->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->notification_manager->get_notification_type_id($notification_type_name)) : '') .
+			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
+			(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	{
+		$time = ($time !== false) ? $time : time();
+
+		$sql = 'UPDATE ' . $this->notifications_table . "
+			SET notification_read = 1
+			WHERE notification_time <= " . (int) $time .
+			(($notification_type_name !== false) ? ' AND ' .
+				(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->notification_manager->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->notification_manager->get_notification_type_id($notification_type_name)) : '') .
+			(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
+			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_read_by_id($notification_id, $time = false)
+	{
+		$time = ($time !== false) ? $time : time();
+
+		$sql = 'UPDATE ' . $this->notifications_table . "
+			SET notification_read = 1
+			WHERE notification_time <= " . (int) $time . '
+				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id);
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_notified_users($notification_type_id, $item_id)
+	{
+		$notified_users = array();
+		$sql = 'SELECT n.user_id
+			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
+			WHERE n.notification_type_id = ' . (int) $notification_type_id . '
+				AND n.item_id = ' . (int) $item_id . '
+				AND nt.notification_type_id = n.notification_type_id
+				AND nt.notification_type_enabled = 1';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$notified_users[] = $row['user_id'];
+		}
+		$this->db->sql_freeresult($result);
+
+		return $notified_users;
+	}
 }
