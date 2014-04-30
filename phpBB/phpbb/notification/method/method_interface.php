@@ -73,7 +73,7 @@ interface method_interface
 	/**
 	* Mark notifications read
 	*
-	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
+	* @param bool|string $notification_type_name Type identifier of item types. False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
@@ -83,7 +83,7 @@ interface method_interface
 	/**
 	* Mark notifications read from a parent identifier
 	*
-	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
+	* @param string $notification_type_name Type identifier of item types
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
@@ -93,7 +93,7 @@ interface method_interface
 	/**
 	* Mark notifications read
 	*
-	* @param int|array $notification_id Notification id or array of notification ids.
+	* @param int $notification_id Notification id of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	*/
 	public function mark_notifications_read_by_id($notification_id, $time = false);
@@ -110,7 +110,7 @@ interface method_interface
 	/**
 	* Delete a notification
 	*
-	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
+	* @param string $notification_type_name Type identifier of item types
 	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
 	*/
