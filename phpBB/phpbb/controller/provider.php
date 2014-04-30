@@ -33,20 +33,18 @@ class provider
 	protected $routes;
 
 	/**
-	* @param \phpbb\extension\finder $finder
-	* @param array                   $routing_files     Array of strings containing paths
-	*							to YAML files holding route information
-	* @param ContainerInterface      $service_container
+	* @param array  $routing_files  Array of strings containing paths to YAML files holding route information
 	*/
-	public function __construct(\phpbb\extension\finder $finder = null, $routing_files = array(), ContainerInterface $service_container = null)
+	public function __construct($routing_files = array())
 	{
 		$this->routing_files = $routing_files;
+	}
 
-		if ($service_container && ! $finder)
-		{
-			$finder = $service_container->get('ext.finder');
-		}
-
+	/**
+	* @param \phpbb\extension\finder $finder
+	*/
+	public function setExtFinder(\phpbb\extension\finder $finder = null)
+	{
 		if ($finder)
 		{
 			// We hardcode the path to the core config directory

@@ -107,12 +107,9 @@ services:
 
     controller.provider:
         class: phpbb\controller\provider
-        arguments:
-            - null
-            - []
-            - @service_container
         calls:
             - [find, [%core.root_path%]]
+            - [setExtFinder, ["@ext.finder="]]
 
     cron.task_collection:
         class: phpbb\di\service_collection
