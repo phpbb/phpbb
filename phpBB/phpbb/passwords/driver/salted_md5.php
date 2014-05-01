@@ -92,7 +92,7 @@ class salted_md5 extends base
 	/**
 	* @inheritdoc
 	*/
-	public function check($password, $hash)
+	public function check($password, $hash, $user_row = array())
 	{
 		if (strlen($hash) !== 34)
 		{

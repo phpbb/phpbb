@@ -141,7 +141,7 @@ class manager
 		*/
 		if (!preg_match('#^\$([a-zA-Z0-9\\\]*?)\$#', $hash, $match))
 		{
-			return $this->get_algorithm('$H$');
+			return false;
 		}
 
 		// Be on the lookout for multiple hashing algorithms
@@ -224,9 +224,10 @@ class manager
 	*
 	* @param string $password Password that should be checked
 	* @param string $hash Stored hash
+	* @param array	$user_row User's row in users table
 	* @return string|bool True if password is correct, false if not
 	*/
-	public function check($password, $hash)
+	public function check($password, $hash, $user_row = array())
 	{
 		if (strlen($password) > 4096)
 		{
@@ -235,10 +236,27 @@ class manager
 			return false;
 		}
 
+		// Empty hashes can't be checked
+		if (empty($hash))
+		{
+			return false;
+		}
+
 		// First find out what kind of hash we're dealing with
 		$stored_hash_type = $this->detect_algorithm($hash);
 		if ($stored_hash_type == false)
 		{
+			// Might be a legacy hash type. Check all legacy
+			// hash types and set convert flag to true if password
+			// is correct
+			foreach ($this->type_map as $algorithm)
+			{
+				if ($algorithm->is_legacy() && $algorithm->check($password, $hash, $user_row) === true)
+				{
+					$this->convert_flag = true;
+					return true;
+				}
+			}
 			return false;
 		}
 

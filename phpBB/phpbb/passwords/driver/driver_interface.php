@@ -51,10 +51,11 @@ interface driver_interface
 	*
 	* @param string		$password The password to check
 	* @param string		$hash The password hash to check against
+	* @param string		$user_row User's row in users table
 	*
 	* @return bool		True if password is correct, else false
 	*/
-	public function check($password, $hash);
+	public function check($password, $hash, $user_row = array());
 
 	/**
 	* Get only the settings of the specified hash
