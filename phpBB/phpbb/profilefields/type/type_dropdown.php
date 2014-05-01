@@ -216,6 +216,37 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['field_default_value'];
+
+		$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) :  $default_value;
+		
+		if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
+		{
+			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
+		}
+
+		$profile_row['field_value'] = (int) $value;
+		$this->template->assign_block_vars('dropdown', array_change_key_case($profile_row, CASE_UPPER));
+
+		$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
+
+		foreach ($options as $option_id => $option_value)
+		{
+			$this->template->assign_block_vars('dropdown.options', array(
+				'OPTION_ID'	=> $option_id,
+				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
+				'VALUE'		=> $option_value,
+			));
+		}
+	}
+	
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_database_column_type()
 	{
 		return 'UINT';

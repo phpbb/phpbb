@@ -1031,31 +1031,28 @@ switch ($mode)
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
 		$select_single 	= request_var('select_single', false);
-
-		//Get Lang ID
-		$lang_id_rq = $db->sql_fetchrow($db->sql_query_limit("SELECT lang_id FROM  " . LANG_TABLE . " WHERE lang_iso = '".$user->data['user_lang']."'", 1));
-		$lang_id = $lang_id_rq['lang_id'];
-		//expand filter to include custom profile fields
-		$sql = "SELECT pf.field_id as field_id, pf.field_ident as field_ident, pf.field_type as field_type, pf.field_length as field_length, pf.field_novalue as field_novalue, pl.lang_name as lang_name 
-			FROM " . PROFILE_FIELDS_TABLE . " as pf
-			JOIN " . PROFILE_LANG_TABLE . " as pl on (pf.field_id = pl.field_id)
-			WHERE pf.field_show_on_ml = '1' AND pl.lang_id = ".$lang_id;
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result)) {
-			$additional[] = array(
-				'field_id' => $row['field_id'],
-				'field_ident' => $row['field_ident'],
-				'field_type' => $row['field_type'],
-				'field_length' => $row['field_length'],
-				'field_novalue' => $row['field_novalue'],
-				'lang_name' => (isset($user->lang[$row['lang_name']])) ? $user->lang[$row['lang_name']] : $row['lang_name'],
-			);
-		}
+		
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
-
+		
+		//get user lang ID
+		$sql = $db->sql_query_limit("SELECT lang_id FROM  " . LANG_TABLE . " WHERE lang_iso = '".$user->data['user_lang']."'", 1);
+		$lang_id_rq = $db->sql_fetchrow($sql);
+		$lang_id = $lang_id_rq['lang_id'];
+		
+		//Build additional search parameter array
+		if ($config['load_cpf_memberlist'])
+		{
+			$cp = $phpbb_container->get('profilefields.manager');
+			$additional = $cp->build_custom_fields_search_array(); 
+			
+			//Let's get search fields up
+			$cp->generate_search_fields();
+			
+		}
 		//expand search URL parameters
-		if (count($additional) > 0) {
+		if (!empty($additional))
+		{
 			foreach ($additional AS $VAR) {
 				$search_params[] = $VAR['field_ident'];
 			}
@@ -1085,7 +1082,8 @@ switch ($mode)
 			//time to add aditional search parameters
 			//With some specific cases.
 			//TODO: Get Date field working
-			if (count($additional) > 0) {
+			if (!empty($additional))
+			{
 				foreach ($additional as $VAR) {
 					//for checkboxes we have special translation for the get
 					if ($VAR['field_type'] == 'profilefields.type.bool' AND $VAR['field_length'] == 2){
@@ -1098,9 +1096,19 @@ switch ($mode)
 						$$VAR['field_ident'] = request_var($VAR['field_ident'], '');
 						if (!is_numeric($$VAR['field_ident'])) { unset($$VAR['field_ident']); }
 					}
+					//for date type we actualy expect 2 variables - Disposition (BEFORE/AFTER)
+					//and the date it self
+					else if ($VAR['field_type'] == 'profilefields.type.date') {
+						${$VAR['field_ident'] . '_disp'} = request_var($VAR['field_ident'].'_disp', 'lt');
+						$$VAR['field_ident'] = explode('-', request_var($VAR['field_ident'], ''));
+					}
+					else if ($VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.url') {
+						$$VAR['field_ident'] = request_var($VAR['field_ident'], $VAR['field_novalue'], true);
+					}
 					else {
 						$$VAR['field_ident'] = request_var($VAR['field_ident'], $VAR['field_novalue']);
 					}	
+
 				}
 			}
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
@@ -1132,20 +1140,29 @@ switch ($mode)
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			//now to build the additional sql_where
-			if (count($additional) > 0) {
+			if (!empty($additional))
+			{
 				foreach ($additional as $VAR) {
 					if ($VAR['field_type'] == 'profilefields.type.dropdown') {
-						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? " AND pd.pf_".$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? " AND pd.".$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.url') {
-						$sql_where .= ($$VAR['field_ident']) ? ' AND pd.pf_'.$VAR['field_ident'].' ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($$VAR['field_ident']))) : '';
+						$sql_where .= ($$VAR['field_ident']) ? ' AND pd.'.$VAR['field_ident'].' ' . $db->sql_like_expression(str_replace('*', $db->any_char, $$VAR['field_ident'])) : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.bool') {
-						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? ' AND pd.'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
 					if ($VAR['field_type'] == 'profilefields.type.int') {
-						$sql_where .= (isset($$VAR['field_ident'])) ? ' AND pd.pf_'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
+						$sql_where .= (isset($$VAR['field_ident'])) ? ' AND pd.'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
 					}
+					
+					/*Date fields are not working for the moment
+					if ($VAR['field_type'] == 'profilefields.type.date' AND sizeof($$VAR['field_ident']) == 3) {
+						$test_date = ((${$VAR['field_ident']}[2][0] == '0') ? str_replace('0', ' ', ${$VAR['field_ident']}[2]) :  ${$VAR['field_ident']}[2]) . '-' . ((${$VAR['field_ident']}[1][0] == '0') ? str_replace('0', ' ', ${$VAR['field_ident']}[1]) :  ${$VAR['field_ident']}[1]) . '-' . ${$VAR['field_ident']}[0];
+						$sql_where .= " AND pd.pf_" . $VAR['field_ident'] .  " " . $find_key_match[${$VAR['field_ident'] . '_disp'}] . " '" . $test_date . "'";
+						unset($test_date);
+					}
+					*/
 				}
 			}
 			
@@ -1386,9 +1403,16 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
-		if (count($additional) > 0) {
+		if (!empty($additional))
+		{
 			foreach ($additional AS $VAR) {
-				$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
+				if ($VAR['field_type'] == 'profilefields.type.date') {
+					$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? implode('-', $$VAR['field_ident']) : '');
+					$check_params[${$VAR['field_ident'] . '_disp'}] = array(${$VAR['field_ident'] . '_disp'}, ${$VAR['field_ident'] . '_disp'});
+				}
+				else {
+					$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
+				}
 			}
 		}
 
@@ -1528,79 +1552,9 @@ switch ($mode)
 				'S_GROUP_SELECT'		=> $s_group_select,
 				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
 			);
-			//let's assign some template vars
-			if (count($additional) > 0) {
-				foreach ($additional AS $VAR) {
-					if (isset($$VAR['field_ident'])) {
-						$output = '';
-						if ($VAR['field_type'] == 'profilefields.type.dropdown') {
-							$output = '<select name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'">';
-							$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
-							$result = $db->sql_query($sql);
-							while ($row = $db->sql_fetchrow($result)) {
-								$output .= '<option value="'.($row['option_id'] + 1).'"';
-								if ($$VAR['field_ident'] == ($row['option_id'] + 1)) {
-									$output .= ' selected="selected"';
-								}
-								$output .= '>'.$row['lang_value'].'</option>';
-							}
-							$output .= '</select>';
-							$template->assign_block_vars('searchrow', array(
-								'S_FIELDNAME'	=>	$VAR['lang_name'],
-								'U_OUTPUT'	=> $output,	
-							));
-						}
-						
-						if ($VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.url') {
-							$output = '<input type="text" class="inputbox autowidth" id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" value="'.$$VAR['field_ident'].'">';
-							$template->assign_block_vars('searchrow', array(
-								'S_FIELDNAME'	=>	$VAR['lang_name'],
-								'U_OUTPUT'	=> $output,	
-							));
-						}
-						
-						if ($VAR['field_type'] == 'profilefields.type.bool') {
-							if ($VAR['field_length'] == '1') {
-								$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="0"';
-								if ($$VAR['field_ident'] == '0' OR !$$VAR['field_ident']) {
-									$output .= ' checked="checked"';
-								}
-								$output .= '>'.$user->lang['CANCEL'].'</input>';
-								$sql = "SELECT * FROM " . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = '".$VAR['field_id']."' AND lang_id = ".$lang_id." ORDER BY option_id ASC";
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result)) {
-									$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="radio" value="'.($row['option_id'] + 1).'"';
-									if ($$VAR['field_ident'] == ($row['option_id'] + 1)) {
-										$output .= ' checked="checked"';
-									}
-									$output .= '>'.$row['lang_value'].'</input>';
-								}
-							}
-							if ($VAR['field_length'] == '2') {
-								$output .= '<input id="'.$VAR['field_ident'].'" name="'.$VAR['field_ident'].'" type="checkbox"';
-								if ($$VAR['field_ident'] == '1') {
-									$output .= ' checked="checked"';
-								}
-								$output .= '></input>';
-							}
-							$template->assign_block_vars('searchrow', array(
-								'S_FIELDNAME'	=>	$VAR['lang_name'],
-								'U_OUTPUT'	=> $output,	
-							));
-						}
-						if ($VAR['field_type'] == 'profilefields.type.int') {
-							$output = '<input min="0" max="100" class="inputbox autowidth" name="'.$VAR['field_ident'].'" id="'.$VAR['field_ident'].'" size="'.$VAR['field_length'].'" value="'.$$VAR['field_ident'].'" type="number">';
-							$template->assign_block_vars('searchrow', array(
-								'S_FIELDNAME'	=>	$VAR['lang_name'],
-								'U_OUTPUT'	=> $output,	
-							));
-						}
-					}
-				}
-			}
 		}
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
-
+		
 		// Get us some users :D
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
@@ -1621,9 +1575,8 @@ switch ($mode)
 		// Load custom profile fields
 		if ($config['load_cpf_memberlist'])
 		{
-			$cp = $phpbb_container->get('profilefields.manager');
-
 			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
+			
 			foreach ($cp_row as $profile_field)
 			{
 				$template->assign_block_vars('custom_fields', $profile_field);

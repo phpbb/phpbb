@@ -119,6 +119,23 @@ class type_text extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$field_length = explode('|', $profile_row['field_length']);
+		$profile_row['field_rows'] = $field_length[0];
+		$profile_row['field_cols'] = $field_length[1];
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['lang_default_value'];
+
+		$profile_row['field_value'] = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value, true) :  $default_value;
+
+		$this->template->assign_block_vars('text', array_change_key_case($profile_row, CASE_UPPER));
+	}
+	
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_database_column_type()
 	{
 		return 'MTEXT';

@@ -185,6 +185,28 @@ class type_int extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['field_default_value'];
+
+		if ($this->request->is_set($field_ident))
+		{
+			$value = ($this->request->variable($field_ident, '') === '') ? null : $this->request->variable($field_ident, $default_value);
+		}
+		else
+		{
+			$value = $default_value;
+		}
+		$profile_row['field_value'] = (is_null($value) || $value === '') ? '' : (int) $value;
+
+		$this->template->assign_block_vars('int', array_change_key_case($profile_row, CASE_UPPER));
+	}
+	
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return 'pf_' . $field_data['field_ident'];

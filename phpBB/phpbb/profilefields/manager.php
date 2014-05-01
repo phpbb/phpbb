@@ -434,4 +434,65 @@ class manager
 
 		return $cp_data;
 	}
+	/**
+	* Build Array for user search filter extension
+	*/
+	public function build_custom_fields_search_array()
+	{
+		$custom_search_array = array();
+
+		//expand filter to include custom profile fields
+		$sql = 'SELECT pf.field_id as field_id, pf.field_ident as field_ident, pf.field_type as field_type, pf.field_length as field_length, pf.field_novalue as field_novalue, pl.lang_name as lang_name 
+			FROM ' . $this->fields_table . ' as pf
+			JOIN ' . $this->fields_language_table . ' as pl on (pf.field_id = pl.field_id)
+			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result)) {
+			$custom_search_array[] = array(
+				'field_ident' => 'pf_' . $row['field_ident'],
+				'field_type' => $row['field_type'],
+				'field_length' => $row['field_length'],
+				'field_novalue' => $row['field_novalue'],
+			);
+		}
+
+		return $custom_search_array;
+
+	}
+	
+	/**
+	* Build and define templates for search form
+	* TO DO
+	* Date is not working duew problems with custom field type date DB column format
+	* String/textarea/url not fully working as the custom fields are not searchable as fulltext
+	*/
+	public function generate_search_fields()
+	{
+		//Lets get fields
+		$sql = 'SELECT l.*, f.*
+			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
+			WHERE f.field_active = 1 AND f.field_show_on_ml = 1
+				AND l.lang_id = ' . $this->user->get_iso_lang_id() . '
+				AND l.field_id = f.field_id
+			ORDER BY f.field_order';
+		$result = $this->db->sql_query($sql);
+		
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			// Return templated field
+			$profile_field = $this->type_collection[$row['field_type']];
+			$tpl_snippet = $profile_field->process_search_field_row($row);
+
+			$this->template->assign_block_vars('search_fields', array(
+				'LANG_NAME'		=> $this->user->lang($row['lang_name']),
+				'LANG_EXPLAIN'	=> $this->user->lang($row['lang_explain']),
+				'FIELD'			=> $tpl_snippet,
+				'FIELD_ID'		=> $profile_field->get_field_ident($row),
+				'S_REQUIRED'	=> ($row['field_required']) ? true : false,
+			));
+		}
+		$this->db->sql_freeresult($result);
+
+	}
+	
 }

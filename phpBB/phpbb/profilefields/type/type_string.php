@@ -115,6 +115,19 @@ class type_string extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['lang_default_value'];
+		$profile_row['field_value'] = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value, true) : $default_value;
+
+		$this->template->assign_block_vars($this->get_name_short(), array_change_key_case($profile_row, CASE_UPPER));
+	}
+	
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_database_column_type()
 	{
 		return 'VCHAR';
