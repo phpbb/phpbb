@@ -139,15 +139,18 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 			array('foobar', '$H$kklk938d023k//k3023', false),
 			array('foobar', '$H$3PtYMgXb39lrIWkgoxYLWtRkZtY3AY/', false),
 			array('foobar', '$2a$kwiweorurlaeirw', false),
+			array('foobar', '6f9e2a1899e1f15708fd2e554103480eb53e8b57', false),
+			array('foobar', '6f9e2a1899e1f15708fd2e554103480eb53e8b57', true, array('login_name' => 'test')),
+			array('foobar', '6f9e2a1899', false, array('login_name' => 'test')),
 		);
 	}
 
 	/**
 	* @dataProvider check_hash_exceptions_data
 	*/
-	public function test_check_hash_exceptions($password, $hash, $expected)
+	public function test_check_hash_exceptions($password, $hash, $expected, $user_row = array())
 	{
-		$this->assertEquals($expected, $this->manager->check($password, $hash));
+		$this->assertEquals($expected, $this->manager->check($password, $hash, $user_row));
 	}
 
 	public function data_hash_password_length()
