@@ -207,6 +207,39 @@ class type_int extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_search_array($profile_row)
+	{
+		$output = array(
+			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
+			'field_novalue'	=> $profile_row['field_novalue'],
+			'field_multibyte'	=> true,
+		);
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function make_sql_where($profile_row, $db_obj)
+	{
+		// Let's check if the value is set ... and is it diferent from novalue
+		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['field_novalue'];
+		$field_value = $this->request->variable($field_ident, $default_value);
+		$output = '';
+
+		if ($this->request->is_set($field_ident) && $field_value != '')
+		{
+			$output = ' AND pd.' . $field_ident . ' = '. $field_value;
+		}
+
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return 'pf_' . $field_data['field_ident'];

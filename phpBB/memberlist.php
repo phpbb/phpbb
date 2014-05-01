@@ -1031,29 +1031,25 @@ switch ($mode)
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
 		$select_single 	= request_var('select_single', false);
-		
+
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
-		
-		//get user lang ID
-		$sql = $db->sql_query_limit("SELECT lang_id FROM  " . LANG_TABLE . " WHERE lang_iso = '".$user->data['user_lang']."'", 1);
-		$lang_id_rq = $db->sql_fetchrow($sql);
-		$lang_id = $lang_id_rq['lang_id'];
-		
+
 		//Build additional search parameter array
 		if ($config['load_cpf_memberlist'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
-			$additional = $cp->build_custom_fields_search_array(); 
+			$additional_search_parms = $cp->build_custom_fields_search_array(); 
 			
 			//Let's get search fields up
 			$cp->generate_search_fields();
 			
 		}
 		//expand search URL parameters
-		if (!empty($additional))
+		if (!empty($additional_search_parms))
 		{
-			foreach ($additional AS $VAR) {
+			foreach ($additional_search_parms AS $VAR) 
+			{
 				$search_params[] = $VAR['field_ident'];
 			}
 		}
@@ -1079,36 +1075,12 @@ switch ($mode)
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
-			//time to add aditional search parameters
-			//With some specific cases.
-			//TODO: Get Date field working
-			if (!empty($additional))
+			// Time to add aditional search parameters
+			// TODO: Get Date field working
+			if (!empty($additional_search_parms))
 			{
-				foreach ($additional as $VAR) {
-					//for checkboxes we have special translation for the get
-					if ($VAR['field_type'] == 'profilefields.type.bool' AND $VAR['field_length'] == 2){
-						$test_checkbox = request_var($VAR['field_ident'], '');
-						$$VAR['field_ident'] = ($test_checkbox == 'on') ? 1 : '';
-					}
-					//for numbers we will have to take default as null as the novalue is ... 0
-					//as this field accepts only numbers ... drop var is non numeric is given
-					else if ($VAR['field_type'] == 'profilefields.type.int') {
-						$$VAR['field_ident'] = request_var($VAR['field_ident'], '');
-						if (!is_numeric($$VAR['field_ident'])) { unset($$VAR['field_ident']); }
-					}
-					//for date type we actualy expect 2 variables - Disposition (BEFORE/AFTER)
-					//and the date it self
-					else if ($VAR['field_type'] == 'profilefields.type.date') {
-						${$VAR['field_ident'] . '_disp'} = request_var($VAR['field_ident'].'_disp', 'lt');
-						$$VAR['field_ident'] = explode('-', request_var($VAR['field_ident'], ''));
-					}
-					else if ($VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.url') {
-						$$VAR['field_ident'] = request_var($VAR['field_ident'], $VAR['field_novalue'], true);
-					}
-					else {
-						$$VAR['field_ident'] = request_var($VAR['field_ident'], $VAR['field_novalue']);
-					}	
-
+				foreach ($additional_search_parms as $VAR) {
+					$$VAR['field_ident'] = request_var($VAR['field_ident'], $VAR['field_novalue'], $VAR['field_multibyte']);
 				}
 			}
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
@@ -1139,31 +1111,10 @@ switch ($mode)
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
-			//now to build the additional sql_where
-			if (!empty($additional))
+			// Now to build the additional sql_where
+			if (!empty($additional_search_parms))
 			{
-				foreach ($additional as $VAR) {
-					if ($VAR['field_type'] == 'profilefields.type.dropdown') {
-						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? " AND pd.".$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
-					}
-					if ($VAR['field_type'] == 'profilefields.type.string' OR $VAR['field_type'] == 'profilefields.type.text' OR $VAR['field_type'] == 'profilefields.type.url') {
-						$sql_where .= ($$VAR['field_ident']) ? ' AND pd.'.$VAR['field_ident'].' ' . $db->sql_like_expression(str_replace('*', $db->any_char, $$VAR['field_ident'])) : '';
-					}
-					if ($VAR['field_type'] == 'profilefields.type.bool') {
-						$sql_where .= ($$VAR['field_ident'] AND $$VAR['field_ident'] != $VAR['field_novalue']) ? ' AND pd.'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
-					}
-					if ($VAR['field_type'] == 'profilefields.type.int') {
-						$sql_where .= (isset($$VAR['field_ident'])) ? ' AND pd.'.$VAR['field_ident']." = '".$$VAR['field_ident']."'" : '';
-					}
-					
-					/*Date fields are not working for the moment
-					if ($VAR['field_type'] == 'profilefields.type.date' AND sizeof($$VAR['field_ident']) == 3) {
-						$test_date = ((${$VAR['field_ident']}[2][0] == '0') ? str_replace('0', ' ', ${$VAR['field_ident']}[2]) :  ${$VAR['field_ident']}[2]) . '-' . ((${$VAR['field_ident']}[1][0] == '0') ? str_replace('0', ' ', ${$VAR['field_ident']}[1]) :  ${$VAR['field_ident']}[1]) . '-' . ${$VAR['field_ident']}[0];
-						$sql_where .= " AND pd.pf_" . $VAR['field_ident'] .  " " . $find_key_match[${$VAR['field_ident'] . '_disp'}] . " '" . $test_date . "'";
-						unset($test_date);
-					}
-					*/
-				}
+				$sql_where .= $cp->generate_sql_where();
 			}
 			
 			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
@@ -1367,7 +1318,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT COUNT(u.user_id) AS total_users
 				FROM ' . USERS_TABLE . " u$sql_from
-				LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " as pd ON (u.user_id = pd.user_id)
+				LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " pd ON (u.user_id = pd.user_id)
 				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where";
 			$result = $db->sql_query($sql);
@@ -1403,16 +1354,11 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
-		if (!empty($additional))
+		if (!empty($additional_search_parms))
 		{
-			foreach ($additional AS $VAR) {
-				if ($VAR['field_type'] == 'profilefields.type.date') {
-					$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? implode('-', $$VAR['field_ident']) : '');
-					$check_params[${$VAR['field_ident'] . '_disp'}] = array(${$VAR['field_ident'] . '_disp'}, ${$VAR['field_ident'] . '_disp'});
-				}
-				else {
-					$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
-				}
+			foreach ($additional_search_parms AS $VAR) 
+			{
+				$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
 			}
 		}
 
@@ -1553,13 +1499,14 @@ switch ($mode)
 				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
 			);
 		}
+
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
-		
+
 		// Get us some users :D
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE ." as pd ON (u.user_id = pd.user_id)
+			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " AS pd ON (u.user_id = pd.user_id)
 			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where
 			ORDER BY $order_by";

@@ -434,41 +434,38 @@ class manager
 
 		return $cp_data;
 	}
+
 	/**
 	* Build Array for user search filter extension
+	* @return array
 	*/
 	public function build_custom_fields_search_array()
 	{
 		$custom_search_array = array();
 
-		//expand filter to include custom profile fields
-		$sql = 'SELECT pf.field_id as field_id, pf.field_ident as field_ident, pf.field_type as field_type, pf.field_length as field_length, pf.field_novalue as field_novalue, pl.lang_name as lang_name 
-			FROM ' . $this->fields_table . ' as pf
-			JOIN ' . $this->fields_language_table . ' as pl on (pf.field_id = pl.field_id)
+		// Expand filter to include custom profile fields
+		$sql = 'SELECT pf.field_id AS field_id, pf.field_ident AS field_ident, pf.field_type AS field_type, pf.field_length AS field_length, pf.field_novalue AS field_novalue, pl.lang_name AS lang_name 
+			FROM ' . $this->fields_table . ' AS pf
+			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
 			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result)) {
-			$custom_search_array[] = array(
-				'field_ident' => 'pf_' . $row['field_ident'],
-				'field_type' => $row['field_type'],
-				'field_length' => $row['field_length'],
-				'field_novalue' => $row['field_novalue'],
-			);
+		while ($row = $this->db->sql_fetchrow($result)) 
+		{
+			$profile_field = $this->type_collection[$row['field_type']];
+			$custom_search_array[] = $profile_field->get_search_array($row);
 		}
 
 		return $custom_search_array;
-
 	}
 
 	/**
 	* Build and define templates for search form
 	* TO DO
-	* Date is not working duew problems with custom field type date DB column format
-	* String/textarea/url not fully working as the custom fields are not searchable as fulltext
+	* Date is not working due problems with custom field type date DB column format
 	*/
 	public function generate_search_fields()
 	{
-		//Lets get fields
+		// Lets get fields
 		$sql = 'SELECT l.*, f.*
 			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
 			WHERE f.field_active = 1 AND f.field_show_on_ml = 1
@@ -493,5 +490,29 @@ class manager
 		}
 		$this->db->sql_freeresult($result);
 
+	}
+
+	/**
+	* Build and add $sql_where query
+	* @return string
+	*/
+	public function generate_sql_where()
+	{
+		$sql_where_addition = '';
+		// Get us the fields again.
+		$sql = 'SELECT pf.field_id AS field_id, pf.field_ident AS field_ident, pf.field_type AS field_type, pf.field_length AS field_length, pf.field_novalue AS field_novalue, pl.lang_name AS lang_name 
+			FROM ' . $this->fields_table . ' AS pf
+			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
+			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result)) 
+		{
+			$profile_field = $this->type_collection[$row['field_type']];
+			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
+			// If somene can tell me I will redo it.
+			$sql_where_addition .= $profile_field->make_sql_where($row, $this->db);
+		}
+
+		return $sql_where_addition;
 	}
 }
