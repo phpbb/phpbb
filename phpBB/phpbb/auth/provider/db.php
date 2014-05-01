@@ -201,7 +201,8 @@ class db extends \phpbb\auth\provider\base
 				// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
 				// plain md5 support left in for conversions from other systems.
 				if ((strlen($row['user_password']) == 34 && ($this->passwords_manager->check(md5($password_old_format), $row['user_password']) || $this->passwords_manager->check(md5(utf8_to_cp1252($password_old_format)), $row['user_password'])))
-					|| (strlen($row['user_password']) == 32  && (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])))
+					|| (strlen($row['user_password']) == 32  && (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password']))
+					|| ($this->passwords_manager->check($password_old_format, $row['user_password']) || $this->passwords_manager->check($password_new_format, $row['user_password'])))
 				{
 					$hash = $this->passwords_manager->hash($password_new_format);
 

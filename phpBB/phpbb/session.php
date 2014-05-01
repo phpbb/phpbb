@@ -410,7 +410,14 @@ class session
 					// Check whether the session is still valid if we have one
 					$method = basename(trim($config['auth_method']));
 
-					$provider = $phpbb_container->get('auth.provider.' . $method);
+					$provider_collection = $phpbb_container->get('auth.provider_collection');
+
+					// Revert to db auth provider if selected method does not exist
+					if (!isset($provider_collection['auth.provider.' . $method]))
+					{
+						$method = 'db';
+					}
+					$provider = $provider_collection['auth.provider.' . $method];
 
 					if (!($provider instanceof \phpbb\auth\provider\provider_interface))
 					{
@@ -579,7 +586,14 @@ class session
 
 		$method = basename(trim($config['auth_method']));
 
-		$provider = $phpbb_container->get('auth.provider.' . $method);
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
+
+		// Revert to db auth provider if selected method does not exist
+		if (!isset($provider_collection['auth.provider.' . $method]))
+		{
+			$method = 'db';
+		}
+		$provider = $provider_collection['auth.provider.' . $method];
 		$this->data = $provider->autologin();
 
 		if (sizeof($this->data))

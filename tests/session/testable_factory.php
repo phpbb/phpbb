@@ -96,6 +96,10 @@ class phpbb_session_testable_factory
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()
 		);
+		$phpbb_container->set(
+			'auth.provider_collection',
+			array('auth.provider.db' => $phpbb_container->get('auth.provider.db'))
+		);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;
