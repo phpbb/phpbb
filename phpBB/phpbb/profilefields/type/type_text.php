@@ -132,7 +132,7 @@ class type_text extends type_string_common
 
 		$this->template->assign_block_vars('text', array_change_key_case($profile_row, CASE_UPPER));
 	}
-	
+
 	/**
 	* {@inheritDoc}
 	*/

@@ -459,7 +459,7 @@ class manager
 		return $custom_search_array;
 
 	}
-	
+
 	/**
 	* Build and define templates for search form
 	* TO DO
@@ -476,7 +476,7 @@ class manager
 				AND l.field_id = f.field_id
 			ORDER BY f.field_order';
 		$result = $this->db->sql_query($sql);
-		
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Return templated field
@@ -494,5 +494,4 @@ class manager
 		$this->db->sql_freeresult($result);
 
 	}
-	
 }

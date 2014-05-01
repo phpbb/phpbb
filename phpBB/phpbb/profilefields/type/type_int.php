@@ -203,7 +203,7 @@ class type_int extends type_base
 
 		$this->template->assign_block_vars('int', array_change_key_case($profile_row, CASE_UPPER));
 	}
-	
+
 	/**
 	* {@inheritDoc}
 	*/

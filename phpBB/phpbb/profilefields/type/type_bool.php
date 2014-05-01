@@ -264,7 +264,7 @@ class type_bool extends type_base
 			}
 		}
 	}
-	
+
 	/**
 	* {@inheritDoc}
 	*/

@@ -264,7 +264,7 @@ class type_date extends type_base
 	{
 		return 0;
 	}
-	
+
 	/**
 	* {@inheritDoc}
 	*/

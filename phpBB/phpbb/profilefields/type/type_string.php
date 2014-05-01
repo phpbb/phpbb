@@ -124,7 +124,7 @@ class type_string extends type_string_common
 
 		$this->template->assign_block_vars($this->get_name_short(), array_change_key_case($profile_row, CASE_UPPER));
 	}
-	
+
 	/**
 	* {@inheritDoc}
 	*/

@@ -223,7 +223,7 @@ class type_dropdown extends type_base
 		$default_value = $profile_row['field_default_value'];
 
 		$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) :  $default_value;
-		
+
 		if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 		{
 			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
@@ -243,7 +243,7 @@ class type_dropdown extends type_base
 			));
 		}
 	}
-	
+
 	/**
 	* {@inheritDoc}
 	*/
