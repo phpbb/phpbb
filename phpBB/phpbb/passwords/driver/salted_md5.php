@@ -56,6 +56,14 @@ class salted_md5 extends base
 	/**
 	* @inheritdoc
 	*/
+	public function is_legacy()
+	{
+		return true;
+	}
+
+	/**
+	* @inheritdoc
+	*/
 	public function hash($password, $setting = '')
 	{
 		if ($setting)
