@@ -449,7 +449,7 @@ class manager
 			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
 			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result)) 
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			$custom_search_array[] = $profile_field->get_search_array($row);
@@ -505,7 +505,7 @@ class manager
 			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
 			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result)) 
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
