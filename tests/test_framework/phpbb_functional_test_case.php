@@ -64,6 +64,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
+	/**
+	* @return array List of extensions that should be set up
+	*/
+	static protected function setup_extensions()
+	{
+		return array();
+	}
+
 	public function setUp()
 	{
 		parent::setUp();
@@ -81,6 +89,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->lang = array();
 		$this->add_lang('common');
 		$this->purge_cache();
+
+		$db = $this->get_db();
+
+		foreach (static::setup_extensions() as $extension)
+		{
+			$sql = 'SELECT ext_active
+				FROM ' . EXT_TABLE . "
+				WHERE ext_name = '" . $db->sql_escape($extension). "'";
+			$result = $db->sql_query($sql);
+			$status = (bool) $db->sql_fetchfield('ext_active');
+			$db->sql_freeresult($result);
+
+			if (!$status)
+			{
+				$this->install_ext($extension);
+			}
+		}
 	}
 
 	/**
@@ -356,6 +381,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::assertContains('You have successfully installed', $crawler->text());
 
 		copy($config_file, $config_file_test);
+	}
+
+	public function install_ext($extension)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$ext_path = str_replace('/', '%2F', $extension);
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertGreaterThan(0, $crawler->filter('div.errorbox')->count());
+
+		$form = $crawler->selectButton('Enable')->form();
+		$crawler = self::submit($form);
+		$this->assertGreaterThan(0, $crawler->filter('div.successbox')->count());
+
+		$this->logout();
 	}
 
 	static private function recreate_database($config)
@@ -703,6 +745,30 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		$lang_path = __DIR__ . "/../../phpBB/language/en/$lang_file.php";
+
+		$lang = array();
+
+		if (file_exists($lang_path))
+		{
+			include($lang_path);
+		}
+
+		$this->lang = array_merge($this->lang, $lang);
+	}
+
+	protected function add_lang_ext($ext_name, $lang_file)
+	{
+		if (is_array($lang_file))
+		{
+			foreach ($lang_file as $file)
+			{
+				$this->add_lang_ext($ext_name, $file);
+			}
+
+			return;
+		}
+
+		$lang_path = __DIR__ . "/../../phpBB/ext/{$ext_name}/language/en/$lang_file.php";
 
 		$lang = array();
 
