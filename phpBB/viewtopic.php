@@ -1621,7 +1621,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])
 	);
 
-    $u_pm = '';
+	$u_pm = '';
 
 	if ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && $can_receive_pm)
 	{
