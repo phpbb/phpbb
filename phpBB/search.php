@@ -677,7 +677,21 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	int		start			The starting id of the results
 			* @since 3.1.0-b3
 			*/
-			$vars = array('sql_array', 'zebra', 'total_match_count', 'keywords', 'sort_by_sql', 's_sort_dir', 's_sort_key', 's_limit_days', 'ex_fid_ary', 'author_id_ary', 'search_fields', 'search_id', 'start');
+			$vars = array(
+				'sql_array',
+				'zebra',
+				'total_match_count',
+				'keywords',
+				'sort_by_sql',
+				's_sort_dir',
+				's_sort_key',
+				's_limit_days',
+				'ex_fid_ary',
+				'author_id_ary',
+				'search_fields',
+				'search_id',
+				'start'
+			);
 			extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
 
 			$sql = $db->sql_build_query('SELECT', $sql_array);
