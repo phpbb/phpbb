@@ -677,7 +677,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 		case 'unapproved_posts':
 		case 'deleted_posts':
-			$visibility_const = ($mode == 'unapproved_posts') ? ITEM_UNAPPROVED : ITEM_DELETED;
+			$visibility_const = ($mode == 'unapproved_posts') ? array(ITEM_UNAPPROVED, ITEM_REAPPROVE) : ITEM_DELETED;
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -686,7 +686,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(p.post_id) AS total
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND p.post_visibility = ' . $visibility_const . '
+					AND ' . $db->sql_in_set('p.post_visibility', $visibility_const) .'
 					AND t.topic_id = p.topic_id
 					AND t.topic_visibility <> p.post_visibility';
 
@@ -698,7 +698,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 		case 'unapproved_topics':
 		case 'deleted_topics':
-			$visibility_const = ($mode == 'unapproved_topics') ? ITEM_UNAPPROVED : ITEM_DELETED;
+			$visibility_const = ($mode == 'unapproved_topics') ? array(ITEM_UNAPPROVED, ITEM_REAPPROVE) : ITEM_DELETED;
 			$type = 'topics';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -706,7 +706,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND topic_visibility = ' . $visibility_const;
+					AND ' . $db->sql_in_set('topic_visibility', $visibility_const);
 
 			if ($min_time)
 			{

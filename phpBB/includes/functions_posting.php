@@ -1295,7 +1295,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				{
 					$sql_data[FORUMS_TABLE] .= 'forum_posts_approved = forum_posts_approved - 1, forum_topics_approved = forum_topics_approved - 1';
 				}
-				else if ($data['topic_visibility'] == ITEM_UNAPPROVED)
+				else if ($data['topic_visibility'] == ITEM_UNAPPROVED || $data['post_visibility'] == ITEM_REAPPROVE)
 				{
 					$sql_data[FORUMS_TABLE] .= 'forum_posts_unapproved = forum_posts_unapproved - 1, forum_topics_unapproved = forum_topics_unapproved - 1';
 				}
@@ -1402,7 +1402,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				$phpbb_content_visibility->remove_post_from_statistic($data, $sql_data);
 			}
-			else if ($data['post_visibility'] == ITEM_UNAPPROVED)
+			else if ($data['post_visibility'] == ITEM_UNAPPROVED || $data['post_visibility'] == ITEM_REAPPROVE)
 			{
 				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_unapproved = forum_posts_unapproved - 1';
 				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_unapproved = topic_posts_unapproved - 1';
@@ -1554,16 +1554,25 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		// Post not approved, but in queue
 		$post_visibility = ITEM_UNAPPROVED;
+		switch ($post_mode)
+		{
+			case 'edit_first_post':
+			case 'edit':
+			case 'edit_last_post':
+			case 'edit_topic':
+				$post_visibility = ITEM_REAPPROVE;
+			break;
+		}
 	}
 
 	// MODs/Extensions are able to force any visibility on posts
 	if (isset($data['force_approved_state']))
 	{
-		$post_visibility = (in_array((int) $data['force_approved_state'], array(ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED))) ? (int) $data['force_approved_state'] : $post_visibility;
+		$post_visibility = (in_array((int) $data['force_approved_state'], array(ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED, ITEM_REAPPROVE))) ? (int) $data['force_approved_state'] : $post_visibility;
 	}
 	if (isset($data['force_visibility']))
 	{
-		$post_visibility = (in_array((int) $data['force_visibility'], array(ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED))) ? (int) $data['force_visibility'] : $post_visibility;
+		$post_visibility = (in_array((int) $data['force_visibility'], array(ITEM_APPROVED, ITEM_UNAPPROVED, ITEM_DELETED, ITEM_REAPPROVE))) ? (int) $data['force_visibility'] : $post_visibility;
 	}
 
 	// Start the transaction here
@@ -2031,6 +2040,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$first_post_has_topic_info = ($post_mode == 'edit_first_post' &&
 			(($post_visibility == ITEM_DELETED && $data['topic_posts_softdeleted'] == 1) ||
 			($post_visibility == ITEM_UNAPPROVED && $data['topic_posts_unapproved'] == 1) ||
+			($post_visibility == ITEM_REAPPROVE && $data['topic_posts_unapproved'] == 1) ||
 			($post_visibility == ITEM_APPROVED && $data['topic_posts_approved'] == 1)));
 	// Fix the post's and topic's visibility and first/last post information, when the post is edited
 	if (($post_mode != 'post' && $post_mode != 'reply') && $data['post_visibility'] != $post_visibility)
@@ -2038,7 +2048,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		// If the post was not approved, it could also be the starter,
 		// so we sync the starter after approving/restoring, to ensure that the stats are correct
 		// Same applies for the last post
-		$is_starter = ($post_mode == 'edit_first_post' || $data['post_visibility'] != ITEM_APPROVED);
+		$is_starter = ($post_mode == 'edit_first_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 		$is_latest = ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
@@ -2271,16 +2281,36 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
-				if ($data['topic_visibility'] != ITEM_APPROVED)
-				{
-					$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
-				}
+				// Nothing to do here
+			break;
+		}
+	}
+	else if ($post_visibility == ITEM_REAPPROVE)
+	{
+		switch ($mode)
+		{
+			case 'edit_topic':
+			case 'edit_first_post':
+				$phpbb_notifications->add_notifications('topic_in_queue', $notification_data);
 
-				$phpbb_notifications->delete_notifications(array(
-					'quote',
-					'bookmark',
-					'post',
-				), $data['post_id']);
+				// Delete the approve_post notification so we can notify the user again,
+				// when his post got reapproved
+				$phpbb_notifications->delete_notifications('approve_post', $notification_data['post_id']);
+			break;
+
+			case 'edit':
+			case 'edit_last_post':
+				$phpbb_notifications->add_notifications('post_in_queue', $notification_data);
+
+				// Delete the approve_post notification so we can notify the user again,
+				// when his post got reapproved
+				$phpbb_notifications->delete_notifications('approve_post', $notification_data['post_id']);
+			break;
+
+			case 'post':
+			case 'reply':
+			case 'quote':
+				// Nothing to do here
 			break;
 		}
 	}
@@ -2291,23 +2321,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'post':
 			case 'reply':
 			case 'quote':
-				// Nothing to do here
-			break;
-
 			case 'edit_topic':
 			case 'edit_first_post':
 			case 'edit':
 			case 'edit_last_post':
-				if ($data['topic_visibility'] != ITEM_APPROVED)
-				{
-					$phpbb_notifications->delete_notifications('topic', $data['topic_id']);
-				}
-
-				$phpbb_notifications->delete_notifications(array(
-					'quote',
-					'bookmark',
-					'post',
-				), $data['post_id']);
+				// Nothing to do here
 			break;
 		}
 	}

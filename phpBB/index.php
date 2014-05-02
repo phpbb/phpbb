@@ -63,7 +63,7 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 				redirect(append_sid($phpbb_root_path . $redirect));
 			}
 
-			redirect($notification->get_url());
+			redirect($notification->get_redirect_url());
 		}
 	}
 }

@@ -493,7 +493,7 @@ function mcp_move_topic($topic_ids)
 			{
 				$topics_moved++;
 			}
-			elseif ($topic_info['topic_visibility'] == ITEM_UNAPPROVED)
+			elseif ($topic_info['topic_visibility'] == ITEM_UNAPPROVED || $topic_info['topic_visibility'] == ITEM_REAPPROVE)
 			{
 				$topics_moved_unapproved++;
 			}
@@ -1230,6 +1230,7 @@ function mcp_fork_topic($topic_ids)
 					$total_topics++;
 				break;
 				case ITEM_UNAPPROVED:
+				case ITEM_REAPPROVE:
 					$total_topics_unapproved++;
 				break;
 				case ITEM_DELETED:
@@ -1316,6 +1317,7 @@ function mcp_fork_topic($topic_ids)
 						$total_posts++;
 					break;
 					case ITEM_UNAPPROVED:
+					case ITEM_REAPPROVE:
 						$total_posts_unapproved++;
 					break;
 					case ITEM_DELETED:

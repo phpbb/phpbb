@@ -10,7 +10,7 @@
 /**
 * @group functional
 */
-class phpbb_functional_disapprove_test extends phpbb_functional_test_case
+class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_case
 {
 	protected $data = array();
 

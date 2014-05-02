@@ -110,10 +110,14 @@ class bookmark extends \phpbb\notification\type\post
 			unset($notify_users[$row['user_id']]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
-			$sql = 'UPDATE ' . $this->notifications_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
-				WHERE notification_id = ' . $row['notification_id'];
-			$this->db->sql_query($sql);
+			$update_responders = $notification->add_responders($post);
+			if (!empty($update_responders))
+			{
+				$sql = 'UPDATE ' . $this->notifications_table . '
+					SET ' . $this->db->sql_build_array('UPDATE', $update_responders) . '
+					WHERE notification_id = ' . $row['notification_id'];
+				$this->db->sql_query($sql);
+			}
 		}
 		$this->db->sql_freeresult($result);
 

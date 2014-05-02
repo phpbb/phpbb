@@ -91,6 +91,7 @@ define('ITEM_MOVED', 2);
 define('ITEM_UNAPPROVED', 0); // => has not yet been approved
 define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
 define('ITEM_DELETED', 2); // => has been soft deleted
+define('ITEM_REAPPROVE', 3); // => has been edited and needs to be re-approved
 
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);
