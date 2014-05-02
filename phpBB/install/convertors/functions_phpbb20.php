@@ -1843,6 +1843,7 @@ function phpbb_create_userconv_table()
 		break;
 
 		case 'sqlite':
+		case 'sqlite3':
 			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id INTEGER NOT NULL DEFAULT \'0\',
 				username_clean varchar(255) NOT NULL DEFAULT \'\'

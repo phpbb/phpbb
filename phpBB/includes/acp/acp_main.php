@@ -271,6 +271,7 @@ class acp_main
 						switch ($db->sql_layer)
 						{
 							case 'sqlite':
+							case 'sqlite3':
 							case 'firebird':
 								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 							break;
@@ -376,6 +377,7 @@ class acp_main
 							switch ($db->sql_layer)
 							{
 								case 'sqlite':
+								case 'sqlite3':
 								case 'firebird':
 									$db->sql_query("DELETE FROM $table");
 								break;

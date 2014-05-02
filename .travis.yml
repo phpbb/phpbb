@@ -40,5 +40,7 @@ matrix:
       env: DB=mariadb
     - php: 5.4
       env: DB=postgres
+    - php: 5.4
+      env: DB=sqlite3
   allow_failures:
     - php: hhvm
