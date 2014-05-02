@@ -5,9 +5,10 @@
 </script>
 
 	<form id="user_prefs" method="post" action="{U_ACTION}">
-
+	<!-- EVENT acp_users_prefs_prepend -->
 	<fieldset>
 		<legend>{L_UCP_PREFS_PERSONAL}</legend>
+	<!-- EVENT acp_users_prefs_personal_prepend -->
 	<dl> 
 		<dt><label for="viewemail">{L_SHOW_EMAIL}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="viewemail" value="1"<!-- IF VIEW_EMAIL --> id="viewemail" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -53,10 +54,12 @@
 		<dd><select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){phpbb.toggleDisplay('custom_date',1);}else{phpbb.toggleDisplay('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = default_dateformat; } else { document.getElementById('dateformat').value = this.value; }">{S_DATEFORMAT_OPTIONS}</select></dd>
 		<dd><div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="30" /></div></dd>
 	</dl>
+	<!-- EVENT acp_users_prefs_personal_append -->
 	</fieldset>
 
 	<fieldset>
 		<legend>{L_UCP_PREFS_POST}</legend>
+	<!-- EVENT acp_users_prefs_post_prepend -->
 	<dl> 
 		<dt><label for="bbcode">{L_DEFAULT_BBCODE}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="bbcode" value="1"<!-- IF BBCODE --> id="bbcode" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -77,10 +80,12 @@
 		<dd><label><input type="radio" class="radio" name="notify" value="1"<!-- IF NOTIFY --> id="notify" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="notify" value="0"<!-- IF not NOTIFY --> id="notify" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
+	<!-- EVENT acp_users_prefs_post_append -->
 	</fieldset>
 
 	<fieldset>
 		<legend>{L_UCP_PREFS_VIEW}</legend>
+	<!-- EVENT acp_users_prefs_view_prepend -->
 	<dl> 
 		<dt><label for="view_images">{L_VIEW_IMAGES}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="view_images" value="1"<!-- IF VIEW_IMAGES --> id="view_images" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -135,8 +140,9 @@
 		<dt><label>{L_VIEW_POSTS_DIR}{L_COLON}</label></dt>
 		<dd>{S_POST_SORT_DIR}</dd>
 	</dl>
+	<!-- EVENT acp_users_prefs_view_append -->
 	</fieldset>
-
+	<!-- EVENT acp_users_prefs_append -->
 	<fieldset class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 		{S_FORM_TOKEN}
