@@ -1049,7 +1049,7 @@ switch ($mode)
 		//expand search URL parameters
 		if (!empty($additional_search_parms))
 		{
-			foreach ($additional_search_parms AS $VAR) 
+			foreach ($additional_search_parms as $VAR) 
 			{
 				$search_params[] = $VAR['field_ident'];
 			}
@@ -1357,7 +1357,7 @@ switch ($mode)
 		);
 		if (!empty($additional_search_parms))
 		{
-			foreach ($additional_search_parms AS $VAR) 
+			foreach ($additional_search_parms as $VAR) 
 			{
 				$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
 			}

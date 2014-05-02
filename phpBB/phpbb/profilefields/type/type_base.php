@@ -191,7 +191,7 @@ abstract class type_base implements type_interface
 
 	/**
 	* Return templated value/field for search
-	**/
+	*/
 	public function process_search_field_row($profile_row)
 	{
 		// set template filename

@@ -444,10 +444,15 @@ class manager
 		$custom_search_array = array();
 
 		// Expand filter to include custom profile fields
-		$sql = 'SELECT pf.field_id AS field_id, pf.field_ident AS field_ident, pf.field_type AS field_type, pf.field_length AS field_length, pf.field_novalue AS field_novalue, pl.lang_name AS lang_name 
-			FROM ' . $this->fields_table . ' AS pf
-			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
-			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
+		$sql_array = array (
+                        'SELECT'        => 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
+                        'FROM'          => array(
+                                $this->fields_table     => 'pf',
+                                $this->fields_language_table    => 'pl',
+                        ),
+                        'WHERE'         => 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
+                );
+                $sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, 300);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -500,10 +505,15 @@ class manager
 	{
 		$sql_where_addition = '';
 		// Get us the fields again.
-		$sql = 'SELECT pf.field_id AS field_id, pf.field_ident AS field_ident, pf.field_type AS field_type, pf.field_length AS field_length, pf.field_novalue AS field_novalue, pl.lang_name AS lang_name 
-			FROM ' . $this->fields_table . ' AS pf
-			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
-			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
+		$sql_array = array (
+			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
+			'FROM'		=> array(
+				$this->fields_table	=> 'pf',
+				$this->fields_language_table	=> 'pl',
+			),
+			'WHERE'		=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
+		);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, 300);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
