@@ -34,6 +34,18 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.db.migrate:
+        class: phpbb\console\command\db\migrate
+        arguments:
+            - @migrator
+            - @ext.manager
+            - @config
+            - @cache
+            - @log
+            - @user
+        tags:
+            - { name: console.command }
+
     console.command.extension.disable:
         class: phpbb\console\command\extension\disable
         arguments:
