@@ -1731,7 +1731,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		$data['user_type'] != USER_IGNORE &&
 
 		// They must not be deactivated by the administrator
-		($data['user_type'] != USER_INACTIVE && $data['user_inactive_reason'] == INACTIVE_MANUAL) &&
+		($data['user_type'] != USER_INACTIVE || $data['user_inactive_reason'] != INACTIVE_MANUAL) &&
 
 		// They must be able to read PMs
 		sizeof($auth->acl_get_list($user_id, 'u_readpm')) &&
