@@ -262,7 +262,7 @@ class type_date extends type_base
 	*/
 	public function generate_search_field($profile_row, $preview_options = false)
 	{
-		return 0;
+		return '';
 	}
 
 	/**
@@ -281,9 +281,9 @@ class type_date extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $db_obj)
+	public function make_sql_where($profile_row)
 	{
-		return 0;
+		return '';
 	}
 	/**
 	* {@inheritDoc}
