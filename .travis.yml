@@ -44,3 +44,4 @@ matrix:
       env: DB=sqlite3
   allow_failures:
     - php: hhvm
+  fast_finish: true
