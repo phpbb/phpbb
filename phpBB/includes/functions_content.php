@@ -190,7 +190,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			'S_IS_CAT'		=> ($row['forum_type'] == FORUM_CAT) ? true : false,
 			'S_IS_LINK'		=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_IS_POST'		=> ($row['forum_type'] == FORUM_POST) ? true : false,
-			'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $forum_id)),
+			'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $row['forum_id'])),
 		));
 
 		for ($i = 0; $i < $padding; $i++)
