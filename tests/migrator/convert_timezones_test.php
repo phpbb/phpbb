@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_dbal_convert_timezones_test extends phpbb_database_test_case
+class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 {
 	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
