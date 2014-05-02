@@ -53,6 +53,7 @@ class phpbb_database_test_connection_manager
 		switch ($this->dbms['PDO'])
 		{
 			case 'sqlite2':
+			case 'sqlite':	// SQLite3 driver
 				$dsn .= $this->config['dbhost'];
 			break;
 
@@ -191,6 +192,7 @@ class phpbb_database_test_connection_manager
 		switch ($this->config['dbms'])
 		{
 			case 'phpbb\db\driver\sqlite':
+			case 'phpbb\db\driver\sqlite3':
 			case 'phpbb\db\driver\firebird':
 				$this->connect();
 				// Drop all of the tables
@@ -270,6 +272,13 @@ class phpbb_database_test_connection_manager
 				$sql = 'SELECT name
 					FROM sqlite_master
 					WHERE type = "table"';
+			break;
+
+			case 'phpbb\db\driver\sqlite3':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"
+						AND name <> "sqlite_sequence"';
 			break;
 
 			case 'phpbb\db\driver\mssql':
@@ -435,6 +444,11 @@ class phpbb_database_test_connection_manager
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
+			),
+			'phpbb\db\driver\sqlite3'		=> array(
+				'SCHEMA'		=> 'sqlite',
+				'DELIM'			=> ';',
+				'PDO'			=> 'sqlite',
 			),
 		);
 
@@ -622,6 +636,14 @@ class phpbb_database_test_connection_manager
 				{
 					$queries[] = 'SELECT ' . implode(', ', $setval_queries);
 				}
+			break;
+
+			case 'phpbb\db\driver\sqlite3':
+				/**
+				* Just delete all of the sequences. When an insertion occurs, the sequence will be automatically
+				* re-created from the key with the AUTOINCREMENT attribute
+				*/
+				$queries[] = 'DELETE FROM sqlite_sequence';
 			break;
 		}
 

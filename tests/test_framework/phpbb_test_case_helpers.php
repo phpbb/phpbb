@@ -104,7 +104,19 @@ class phpbb_test_case_helpers
 	{
 		$config = array();
 
-		if (extension_loaded('sqlite') && version_compare(PHPUnit_Runner_Version::id(), '3.4.15', '>='))
+
+		if (extension_loaded('sqlite3'))
+		{
+			$config = array_merge($config, array(
+				'dbms'		=> 'phpbb\db\driver\sqlite3',
+				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite3', // filename
+				'dbport'	=> '',
+				'dbname'	=> '',
+				'dbuser'	=> '',
+				'dbpasswd'	=> '',
+			));
+		}
+		else if (extension_loaded('sqlite'))
 		{
 			$config = array_merge($config, array(
 				'dbms'		=> 'phpbb\db\driver\sqlite',

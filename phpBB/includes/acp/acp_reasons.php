@@ -253,6 +253,7 @@ class acp_reasons
 						case 'oracle':
 						case 'firebird':
 						case 'sqlite':
+						case 'sqlite3':
 							// Change the reports using this reason to 'other'
 							$sql = 'UPDATE ' . REPORTS_TABLE . '
 								SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($reason_row['reason_description']) . "\n\n' || report_text
