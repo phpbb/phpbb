@@ -2755,8 +2755,7 @@ class tools
 		$sql = "SELECT sql
 			FROM sqlite_master
 			WHERE type = 'table'
-				AND name = '{$table_name}'
-			ORDER BY type DESC, name;";
+				AND name = '{$table_name}'";
 		$result = $this->db->sql_query($sql);
 		$sql_create_table = $this->db->sql_fetchfield('sql');
 		$this->db->sql_freeresult($result);
@@ -2770,8 +2769,7 @@ class tools
 		$sql = "SELECT sql
 			FROM sqlite_master
 			WHERE type = 'index'
-				AND tbl_name = '{$table_name}'
-			ORDER BY type DESC, name;";
+				AND tbl_name = '{$table_name}'";
 		$result = $this->db->sql_query($sql);
 		while ($sql_create_index = $this->db->sql_fetchfield('sql'))
 		{

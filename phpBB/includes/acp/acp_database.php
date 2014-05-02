@@ -1081,7 +1081,7 @@ class sqlite3_extractor extends base_extractor
 			FROM sqlite_master
 			WHERE type = 'table'
 				AND name = '" . $db->sql_escape($table_name) . "'
-			ORDER BY type DESC, name;";
+			ORDER BY name ASC;";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
