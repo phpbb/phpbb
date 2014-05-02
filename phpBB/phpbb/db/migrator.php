@@ -509,10 +509,17 @@ class migrator
 					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_CUSTOM_NOT_CALLABLE', $step);
 				}
 
-				return array(
-					$parameters[0],
-					array($last_result),
-				);
+				if ($reverse)
+				{
+					return false;
+				}
+				else
+				{
+					return array(
+						$parameters[0],
+						array($last_result),
+					);
+				}
 			break;
 
 			default:
