@@ -64,7 +64,7 @@ class ucp_prefs
 				* @var	bool	submit		Do we display the form only
 				*							or did the user press submit
 				* @var	array	data		Array with current ucp options data
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
 				$vars = array('submit', 'data');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
@@ -113,7 +113,7 @@ class ucp_prefs
 						* @event core.ucp_prefs_personal_update_data
 						* @var	array	data		Submitted display options data
 						* @var	array	sql_ary		Display options data we udpate
-						* @since 3.1-A1
+						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_update_data', compact($vars)));
@@ -243,7 +243,7 @@ class ucp_prefs
 				* @var	bool	submit		Do we display the form only
 				*							or did the user press submit
 				* @var	array	data		Array with current ucp options data
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
 				$vars = array('submit', 'data');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_data', compact($vars)));
@@ -292,7 +292,7 @@ class ucp_prefs
 						* @event core.ucp_prefs_view_update_data
 						* @var	array	data		Submitted display options data
 						* @var	array	sql_ary		Display options data we udpate
-						* @since 3.1-A1
+						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_update_data', compact($vars)));
@@ -394,7 +394,7 @@ class ucp_prefs
 				* @var	bool	submit		Do we display the form only
 				*							or did the user press submit
 				* @var	array	data		Array with current ucp options data
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
 				$vars = array('submit', 'data');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_data', compact($vars)));
@@ -418,7 +418,7 @@ class ucp_prefs
 						* @event core.ucp_prefs_post_update_data
 						* @var	array	data		Submitted display options data
 						* @var	array	sql_ary		Display options data we udpate
-						* @since 3.1-A1
+						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_post_update_data', compact($vars)));

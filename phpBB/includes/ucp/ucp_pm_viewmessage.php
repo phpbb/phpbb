@@ -248,9 +248,18 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var	array	message_row	Array with message data
 	* @var	array	cp_row		Array with senders custom profile field data
 	* @var	array	msg_data	Template array with message data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
-	$vars = array('id', 'mode', 'folder_id', 'msg_id', 'folder', 'message_row', 'cp_row', 'msg_data');
+	$vars = array(
+		'id',
+		'mode',
+		'folder_id',
+		'msg_id',
+		'folder',
+		'message_row',
+		'cp_row',
+		'msg_data',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
 
 	$template->assign_vars($msg_data);

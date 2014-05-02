@@ -197,7 +197,8 @@ if ($quickmod)
 			* @var	bool	is_valid_action	Flag indicating if the action was handled properly
 			* @since 3.1.0-a4
 			*/
-			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact(array('module', 'action', 'is_valid_action'))));
+			$vars = array('module', 'action', 'is_valid_action');
+			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact($vars)));
 
 			if (!$is_valid_action)
 			{
@@ -266,7 +267,16 @@ if (!$user_id && $username == '')
 * @var	int			id				Parent module id
 * @since 3.1.0-b2
 */
-$vars = array('module', 'mode', 'user_id', 'forum_id', 'topic_id', 'post_id', 'username', 'id');
+$vars = array(
+	'module',
+	'mode',
+	'user_id',
+	'forum_id',
+	'topic_id',
+	'post_id',
+	'username',
+	'id',
+);
 extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
 
 // Load and execute the relevant module

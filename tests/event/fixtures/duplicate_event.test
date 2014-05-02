@@ -1,0 +1,19 @@
+<?php
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event duplicate.trigger
+	* @var	int		start				Start item of this page
+	* @since 3.1.0-a3
+	*/
+	$vars = array('start');
+	extract($phpbb_dispatcher->trigger_event('duplicate.trigger', compact($vars)));
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event duplicate.trigger
+	* @since 3.1.0-b1
+	*/
+	$phpbb_dispatcher->dispatch('duplicate.trigger');

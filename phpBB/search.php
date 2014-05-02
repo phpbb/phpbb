@@ -681,7 +681,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	sql_select		The SQL SELECT string used by search to get topic data
 			* @var	string	sql_from		The SQL FROM string used by search to get topic data
 			* @var	string	sql_where		The SQL WHERE string used by search to get topic data
-			* @since 3.1-A1
+			* @since 3.1.0-a1
 			*/
 			$vars = array('sql_select', 'sql_from', 'sql_where');
 			extract($phpbb_dispatcher->trigger_event('core.search_get_topic_data', compact($vars)));
@@ -1004,7 +1004,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @event core.search_modify_tpl_ary
 			* @var	array	row			Array with topic data
 			* @var	array	tpl_ary		Template block array with topic data
-			* @since 3.1-A1
+			* @since 3.1.0-a1
 			*/
 			$vars = array('row', 'tpl_ary');
 			extract($phpbb_dispatcher->trigger_event('core.search_modify_tpl_ary', compact($vars)));

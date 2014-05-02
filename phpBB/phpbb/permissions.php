@@ -57,7 +57,7 @@ class permissions
 		*			'lang'	=> 'ACL_U_VIEWPROFILE',
 		*			'cat'	=> 'profile',
 		*		),
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('types', 'categories', 'permissions');
 		extract($phpbb_dispatcher->trigger_event('core.permissions', compact($vars)));

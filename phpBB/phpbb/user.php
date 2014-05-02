@@ -143,9 +143,17 @@ class user extends \phpbb\session
 		* 					that are absolutely needed globally using this
 		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
-		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'lang_set_ext', 'style_id');
+		$vars = array(
+			'user_data',
+			'user_lang_name',
+			'user_date_format',
+			'user_timezone',
+			'lang_set',
+			'lang_set_ext',
+			'style_id',
+		);
 		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
 
 		$this->data = $user_data;

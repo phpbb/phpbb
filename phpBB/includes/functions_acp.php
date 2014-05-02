@@ -41,7 +41,7 @@ function adm_page_header($page_title)
 	* @var	string	page_title			Page title
 	* @var	bool	adm_page_header_override	Shall we return instead of
 	*									running the rest of adm_page_header()
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('page_title', 'adm_page_header_override');
 	extract($phpbb_dispatcher->trigger_event('core.adm_page_header', compact($vars)));
@@ -132,7 +132,7 @@ function adm_page_footer($copyright_html = true)
 	* @var	bool	copyright_html			Shall we display the copyright?
 	* @var	bool	adm_page_footer_override	Shall we return instead of
 	*									running the rest of adm_page_footer()
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('copyright_html', 'adm_page_footer_override');
 	extract($phpbb_dispatcher->trigger_event('core.adm_page_footer', compact($vars)));
@@ -396,7 +396,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	* @var	string	name		Should be used for the name attribute
 	* @var	array	vars		Array with the options for the config
 	* @var	string	tpl			The resulting html code we display
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
@@ -606,7 +606,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				* @var	array	error		Array of errors, the errors should
 				*							be strings only, language keys are
 				*							not replaced afterwards
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
 				$vars = array('cfg_array', 'config_name', 'config_definition', 'error');
 				extract($phpbb_dispatcher->trigger_event('core.validate_config_variable', compact($vars)));
