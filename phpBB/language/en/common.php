@@ -431,7 +431,7 @@ $lang = array_merge($lang, array(
 	// A and B replied...
 	// A, B and C replied...
 	// A, B, C and 2 others replied...
-	// A, B, C and many others replied...
+	// A, B, C and others replied...
 	'NOTIFICATION_BOOKMARK'				=> array(
 		1	=> '%1$s replied to the topic “%2$s” you have bookmarked.',
 	),
@@ -457,7 +457,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_NOT_EXIST'		=> 'The notification type "%s" is missing from the file system.',
 	'NOTIFICATION_ADMIN_ACTIVATE_USER'	=> 'The user “%1$s” is newly registered and requires activation.',
 	// Used in conjuction with NOTIFICATION_BOOKMARK and NOTIFICATION_POST.
-	'NOTIFICATION_MANY_OTHERS'			=> 'many others',
+	'NOTIFICATION_MANY_OTHERS'			=> 'others',
 	'NOTIFICATION_X_OTHERS'				=> array(
 		2	=> '%d others',
 	),
