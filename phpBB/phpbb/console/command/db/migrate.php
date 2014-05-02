@@ -65,7 +65,7 @@ class migrate extends \phpbb\console\command\command
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				$output->writeln($e->getLocalisedMessage($this->user));
+				$output->writeln('<error>' . $e->getLocalisedMessage($this->user) . '</error>');
 				$this->finalise_update();
 				return 1;
 			}
