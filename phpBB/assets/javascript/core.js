@@ -26,6 +26,7 @@ phpbb.loadingIndicator = function() {
 	if (!loadingIndicator.is(':visible')) {
 		loadingIndicator.fadeIn(phpbb.alertTime);
 		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		phpbb.clearLoadingTimeout();
 		phpbbAlertTimer = setTimeout(function() {
 			if (loadingIndicator.is(':visible')) {
 				phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
@@ -315,7 +316,7 @@ phpbb.ajaxify = function(options) {
 						refresh = false;
 					}
 
-					setTimeout(function() {
+					phpbbAlertTimer = setTimeout(function() {
 						if (refresh) {
 							window.location = res.REFRESH_DATA.url;
 						}
