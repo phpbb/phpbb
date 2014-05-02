@@ -448,13 +448,14 @@ class manager
 			FROM ' . $this->fields_table . ' AS pf
 			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
 			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 300);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			$custom_search_array[] = $profile_field->get_search_array($row);
 		}
 
+		$this->db->sql_freeresult($result);
 		return $custom_search_array;
 	}
 
@@ -472,7 +473,7 @@ class manager
 				AND l.lang_id = ' . $this->user->get_iso_lang_id() . '
 				AND l.field_id = f.field_id
 			ORDER BY f.field_order';
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 300);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -489,7 +490,6 @@ class manager
 			));
 		}
 		$this->db->sql_freeresult($result);
-
 	}
 
 	/**
@@ -504,15 +504,15 @@ class manager
 			FROM ' . $this->fields_table . ' AS pf
 			JOIN ' . $this->fields_language_table . ' AS pl on (pf.field_id = pl.field_id)
 			WHERE pf.field_show_on_ml = 1 AND pl.lang_id = '.$this->user->get_iso_lang_id();
-		$result = $this->db->sql_query($sql);
+		$result = $this->db->sql_query($sql, 300);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
 			// If somene can tell me I will redo it.
-			$sql_where_addition .= $profile_field->make_sql_where($row, $this->db);
+			$sql_where_addition .= $profile_field->make_sql_where($row);
 		}
-
+		$this->db->sql_freeresult($result);
 		return $sql_where_addition;
 	}
 }

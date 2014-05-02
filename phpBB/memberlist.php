@@ -1036,6 +1036,7 @@ switch ($mode)
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		//Build additional search parameter array
+		$additional_search_parms = array();
 		if ($config['load_cpf_memberlist'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
@@ -1506,7 +1507,7 @@ switch ($mode)
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " AS pd ON (u.user_id = pd.user_id)
+			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " pd ON (u.user_id = pd.user_id)
 			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
 				$sql_where
 			ORDER BY $order_by";

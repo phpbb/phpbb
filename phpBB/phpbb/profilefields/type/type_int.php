@@ -220,7 +220,7 @@ class type_int extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $db_obj)
+	public function make_sql_where($profile_row)
 	{
 		// Let's check if the value is set ... and is it diferent from novalue
 		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
@@ -231,7 +231,7 @@ class type_int extends type_base
 
 		if ($this->request->is_set($field_ident) && $field_value != '')
 		{
-			$output = ' AND pd.' . $field_ident . ' = '. $field_value;
+			$output = ' AND pd.' . $field_ident . ' = '. (int) $field_value;
 		}
 
 		return $output;

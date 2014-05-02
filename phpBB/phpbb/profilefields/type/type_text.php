@@ -30,18 +30,26 @@ class type_text extends type_string_common
 	protected $user;
 
 	/**
+	* Database object
+	* @var \phpbb\db\driver\driver_interface
+	*/
+	protected $db;
+
+	/**
 	* Construct
 	*
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
+	* @param	\phpbb\db\driver\driver_interface	$db			Database object
 	* @param	string		$language_table		Table where the language strings are stored
 	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->db = $db;
 	}
 
 	/**
@@ -128,7 +136,7 @@ class type_text extends type_string_common
 		$field_ident = $profile_row['field_ident'];
 		$default_value = $profile_row['lang_default_value'];
 
-		$profile_row['field_value'] = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value, true) :  $default_value;
+		$profile_row['field_value'] = $this->request->variable($field_ident, $default_value, true);
 
 		$this->template->assign_block_vars('text', array_change_key_case($profile_row, CASE_UPPER));
 	}
@@ -149,7 +157,7 @@ class type_text extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $db_obj)
+	public function make_sql_where($profile_row)
 	{
 		// Let's check if the value is set ... and is it diferent from novalue
 		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
@@ -157,12 +165,11 @@ class type_text extends type_string_common
 		$default_value = $profile_row['field_novalue'];
 		$field_value = $this->request->variable($field_ident, $default_value);
 		$output = '';
-		$db = $db_obj;
 
 		if ($this->request->is_set($field_ident) && $field_value != $default_value)
 		{
 			// Normaly we should use utf8_clean_string(), but if we do this we will have problems with key sensetivity
-			$output = ' AND pd.' . $field_ident . ' ' . $db->sql_like_expression(str_replace('*', $db->any_char, $field_value));
+			$output = ' AND pd.' . $field_ident . ' ' . $this->db->sql_like_expression(str_replace('*', $this->db->any_char, $field_value));
 		}
 		return $output;
 	}

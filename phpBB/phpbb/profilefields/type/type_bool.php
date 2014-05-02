@@ -35,20 +35,28 @@ class type_bool extends type_base
 	protected $user;
 
 	/**
+	* Database object
+	* @var \phpbb\db\driver\driver_interface
+	*/
+	protected $db;
+
+	/**
 	* Construct
 	*
 	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
+	* @param	\phpbb\db\driver\driver_interface	$db			Database object
 	* @param	string		$language_table		Table where the language strings are stored
 	*/
-	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->lang_helper = $lang_helper;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->db = $db;
 	}
 
 	/**
@@ -223,14 +231,14 @@ class type_bool extends type_base
 		$field_ident = $profile_row['field_ident'];
 		$default_value = $profile_row['field_default_value'];
 
-		// checkbox - set the value to "true" if it has been set to 1
+		// checkbox - set the value to "true" if it has been set to on
 		if ($profile_row['field_length'] == 2)
 		{
 			$value = ($this->request->is_set($field_ident) && $this->request->variable($field_ident, $default_value) == 'on') ? true : $default_value;
 		}
 		else
 		{
-			$value = ($this->request->is_set($field_ident)) ? $this->request->variable($field_ident, $default_value) : $default_value;
+			$value = $this->request->variable($field_ident, $default_value);
 		}
 
 		$profile_row['field_value'] = (int) $value;
@@ -277,7 +285,7 @@ class type_bool extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $db_obj)
+	public function make_sql_where($profile_row)
 	{
 		// Let's check if the value is set ... and is it diferent from novalue
 		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
@@ -286,13 +294,13 @@ class type_bool extends type_base
 		$field_value = $this->request->variable($field_ident, $default_value);
 		$output = '';
 
-		if ($profile_row['field_length'] == 2 && $this->request->is_set($field_ident) && $this->request->variable($field_ident, $default_value) == 'on')
+		if ($profile_row['field_length'] == 2 && $this->request->is_set($field_ident) && $field_value == 'on')
 		{
 			$output = ' AND pd.' . $field_ident . ' = 1';
 		}
 		else if ($this->request->is_set($field_ident) && $field_value != $profile_row['field_novalue'] && $field_value!= 0 )
 		{
-			$output = ' AND pd.' . $field_ident . ' = ' . $field_value;
+			$output = ' AND pd.' . $field_ident . ' = ' . $this->db->sql_escape($field_value);
 		}
 		return $output;
 	}
