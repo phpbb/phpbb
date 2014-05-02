@@ -690,7 +690,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'author_id_ary',
 				'search_fields',
 				'search_id',
-				'start'
+				'start',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
 
