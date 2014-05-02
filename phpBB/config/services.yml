@@ -95,6 +95,7 @@ services:
             - @user
             - @config
             - @controller.provider
+            - @ext.manager
             - %core.root_path%
             - %core.php_ext%
 
@@ -107,8 +108,6 @@ services:
 
     controller.provider:
         class: phpbb\controller\provider
-        arguments:
-            - @ext.finder
         calls:
             - [find, [%core.root_path%]]
 
@@ -175,16 +174,6 @@ services:
             - %core.php_ext%
             - @cache.driver
 
-    ext.finder:
-        class: phpbb\extension\finder
-        arguments:
-            - @ext.manager
-            - @filesystem
-            - %core.root_path%
-            - @cache.driver
-            - %core.php_ext%
-            - _ext_finder
-
     filesystem:
         class: phpbb\filesystem
 
@@ -217,7 +206,7 @@ services:
     kernel_request_subscriber:
         class: phpbb\event\kernel_request_subscriber
         arguments:
-            - @ext.finder
+            - @ext.manager
             - %core.root_path%
             - %core.php_ext%
         tags:

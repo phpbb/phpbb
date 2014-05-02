@@ -56,16 +56,18 @@ class helper
 	* @param \phpbb\user $user User object
 	* @param \phpbb\config\config $config Config object
 	* @param \phpbb\controller\provider $provider Path provider
+	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$provider->set_ext_finder($manager->get_finder());
 		$this->route_collection = $provider->get_routes();
 	}
 
