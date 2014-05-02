@@ -51,7 +51,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form->setValues($values);
 
 		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 
 		// Special config (Guest can't see attachments)
 		$this->add_lang('acp/permissions');
@@ -191,7 +191,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form['feed_exclude_id']->select(array($this->data['forums']['Feeds #exclude']));
 
 		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 	}
 
 	public function test_feeds_empty()
