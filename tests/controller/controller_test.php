@@ -43,6 +43,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller2'));
 		$this->assertEquals('/foo/bar', $routes->get('controller2')->getPath());
+
+		$this->assertNull($routes->get('controller_noroute'));
 	}
 
 	public function test_controller_resolver()
