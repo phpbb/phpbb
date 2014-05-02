@@ -484,7 +484,7 @@ class messenger
 			$use_queue = true;
 		}
 
-		$board_contact = '"' . mail_encode(htmlspecialchars($config['sitename'])) . '" <' . $config['board_contact'] . '>';
+		$board_contact = (($config['board_contact_name'] !== '') ? '"' . mail_encode($config['board_contact_name']) . '" ' : '') . '<' . $config['board_contact'] . '>';
 
 		if (empty($this->replyto))
 		{
