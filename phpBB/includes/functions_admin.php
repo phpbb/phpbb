@@ -736,8 +736,6 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	// Notifications types to delete
 	$delete_notifications_types = array(
 		'quote',
-		'bookmark',
-		'post',
 		'approve_post',
 		'post_in_queue',
 	);
@@ -1489,7 +1487,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				ITEM_DELETED	=> (!empty($topics_softdeleted)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_softdeleted) : '',
 			);
 
-			foreach ($topic_visiblities as $visibility => $sql_where)
+			foreach ($update_ary as $visibility => $sql_where)
 			{
 				if ($sql_where)
 				{
@@ -1778,7 +1776,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$forum_data[$forum_id]['topics_approved'] = $row['total_topics'];
 					}
-					else if ($row['topic_visibility'] == ITEM_UNAPPROVED)
+					else if ($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE)
 					{
 						$forum_data[$forum_id]['topics_unapproved'] = $row['total_topics'];
 					}
@@ -2001,7 +1999,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$topic_data[$topic_id]['posts_approved'] = $row['total_posts'];
 					}
-					else if ($row['post_visibility'] == ITEM_UNAPPROVED)
+					else if ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE)
 					{
 						$topic_data[$topic_id]['posts_unapproved'] = $row['total_posts'];
 					}
@@ -2023,7 +2021,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						$topic_data[$topic_id]['first_post_id'] = (!empty($topic_data[$topic_id]['first_post_id'])) ? min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']) : $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = max($topic_data[$topic_id]['last_post_id'], $row['last_post_id']);
 
-						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED)
+						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED || $topic_data[$topic_id]['visibility'] == ITEM_REAPPROVE)
 						{
 							// Soft delete status is stronger than unapproved.
 							$topic_data[$topic_id]['visibility'] = $row['post_visibility'];

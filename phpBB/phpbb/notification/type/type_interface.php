@@ -99,6 +99,13 @@ interface type_interface
 	public function get_url();
 
 	/**
+	* Get the url to redirect after the item has been marked as read
+	*
+	* @return string URL
+	*/
+	public function get_redirect_url();
+
+	/**
 	* URL to unsubscribe to this notification
 	*
 	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
