@@ -731,6 +731,20 @@ fieldset.polls dd div {
 	height: auto !important;
 }
 
+dd.profile-contact {
+	overflow: visible;
+}
+
+.profile-contact .dropdown-container {
+	display: inline-block;
+	text-align: left;
+	width: 30px;
+}
+
+.profile-contact .icon_contact {
+	vertical-align: middle;
+}
+
 .online {
 	background-image: none;
 	background-position: 100% 0;
