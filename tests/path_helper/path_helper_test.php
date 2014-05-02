@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_path_helper_web_root_path_test extends phpbb_test_case
+class phpbb_path_helper_test extends phpbb_test_case
 {
 	protected $path_helper;
 	protected $phpbb_root_path = '';
@@ -175,5 +175,156 @@ class phpbb_path_helper_web_root_path_test extends phpbb_test_case
 	public function test_clean_url($input, $expected)
 	{
 		$this->assertEquals($expected, $this->path_helper->clean_url($input));
+	}
+
+	public function glue_url_params_data()
+	{
+		return array(
+			array(
+				array(),
+				'',
+			),
+			array(
+				array('test' => 'xyz'),
+				'test=xyz',
+			),
+			array(
+				array('test' => 'xyz', 'var' => 'value'),
+				'test=xyz&amp;var=value',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider glue_url_params_data
+	*/
+	public function test_glue_url_params($params, $expected)
+	{
+		$this->assertEquals($expected, $this->path_helper->glue_url_params($params));
+	}
+
+	public function get_url_parts_data()
+	{
+		return array(
+			array(
+				'viewtopic.php',
+				true,
+				array('base' => 'viewtopic.php', 'params' => array()),
+			),
+			array(
+				'./viewtopic.php?t=5&amp;f=6',
+				true,
+				array('base' => './viewtopic.php', 'params' => array('t' => '5', 'f' => '6')),
+			),
+			array(
+				'viewtopic.php?t=5&f=6',
+				false,
+				array('base' => 'viewtopic.php', 'params' => array('t' => '5', 'f' => '6')),
+			),
+			array(
+				'https://phpbb.com/community/viewtopic.php?t=5&amp;f=6',
+				true,
+				array('base' => 'https://phpbb.com/community/viewtopic.php', 'params' => array('t' => '5', 'f' => '6')),
+			),
+			array(
+				'test.php?topic=post=5&amp;f=3',
+				true,
+				array('base' => 'test.php', 'params' => array('topic' => 'post=5', 'f' => '3')),
+			),
+			array(
+				'mcp.php?&amp;t=4&amp;f=3',
+				true,
+				array('base' => 'mcp.php', 'params' => array('t' => '4', 'f' => '3')),
+			),
+			array(
+				'mcp.php?=4&amp;f=3',
+				true,
+				array('base' => 'mcp.php', 'params' => array('f' => '3')),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider get_url_parts_data
+	*/
+	public function test_get_url_parts($url, $is_amp, $expected)
+	{
+		$this->assertEquals($expected, $this->path_helper->get_url_parts($url, $is_amp));
+	}
+
+	public function strip_url_params_data()
+	{
+		return array(
+			array(
+				'viewtopic.php',
+				'sid',
+				false,
+				'viewtopic.php',
+			),
+			array(
+				'./viewtopic.php?t=5&amp;f=6',
+				'f',
+				true,
+				'./viewtopic.php?t=5',
+			),
+			array(
+				'viewtopic.php?t=5&f=6&sid=19adc288814103cbb4625e74e77455aa',
+				array('t'),
+				false,
+				'viewtopic.php?f=6&amp;sid=19adc288814103cbb4625e74e77455aa',
+			),
+			array(
+				'https://phpbb.com/community/viewtopic.php?t=5&amp;f=6',
+				array('t', 'f'),
+				true,
+				'https://phpbb.com/community/viewtopic.php',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider strip_url_params_data
+	*/
+	public function test_strip_url_params($url, $strip, $is_amp, $expected)
+	{
+		$this->assertEquals($expected, $this->path_helper->strip_url_params($url, $strip, $is_amp));
+	}
+
+	public function append_url_params_data()
+	{
+		return array(
+			array(
+				'viewtopic.php',
+				array(),
+				false,
+				'viewtopic.php',
+			),
+			array(
+				'./viewtopic.php?t=5&amp;f=6',
+				array('t' => '7'),
+				true,
+				'./viewtopic.php?t=7&amp;f=6',
+			),
+			array(
+				'viewtopic.php?t=5&f=6&sid=19adc288814103cbb4625e74e77455aa',
+				array('p' => '5'),
+				false,
+				'viewtopic.php?t=5&amp;f=6&amp;p=5&amp;sid=19adc288814103cbb4625e74e77455aa',
+			),
+			array(
+				'https://phpbb.com/community/viewtopic.php',
+				array('t' => '7', 'f' => '8'),
+				true,
+				'https://phpbb.com/community/viewtopic.php?t=7&amp;f=8',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider append_url_params_data
+	*/
+	public function test_append_url_params($url, $params, $is_amp, $expected)
+	{
+		$this->assertEquals($expected, $this->path_helper->append_url_params($url, $params, $is_amp));
 	}
 }
