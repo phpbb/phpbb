@@ -14,13 +14,13 @@ services:
   - redis-server
 
 install:
-  - travis/install-setup-phpbb.sh $DB $TRAVIS_PHP_VERSION
+  - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION
 
 before_script:
   - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION
 
 script:
-  - travis/phing-code-sniff.sh $DB $TRAVIS_PHP_VERSION
+  - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysql' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
 

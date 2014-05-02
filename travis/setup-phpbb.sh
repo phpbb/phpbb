@@ -16,7 +16,7 @@ fi
 
 if [ "$TRAVIS_PHP_VERSION" == "hhvm" ]
 then
-	travis/setup-php-extensions.sh
+	stravis/setup-php-extensions.sh
 fi
 
 if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` == "1" ]
