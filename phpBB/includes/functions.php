@@ -2326,8 +2326,9 @@ function reapply_sid($url)
 */
 function build_url($strip_vars = false)
 {
-	global $config, $user, $phpEx, $phpbb_root_path;
+	global $config, $user, $phpbb_path_helper;
 
+	$php_ext = $phpbb_path_helper->get_php_ext();
 	$page = $user->page['page'];
 
 	// We need to be cautious here.
@@ -2340,71 +2341,23 @@ function build_url($strip_vars = false)
 	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 	{
 		// Remove 'app.php/' from the page, when rewrite is enabled
-		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $phpEx . '/') === 0)
+		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $php_ext . '/') === 0)
 		{
-			$page = substr($page, strlen('app.' . $phpEx . '/'));
+			$page = substr($page, strlen('app.' . $php_ext . '/'));
 		}
 
-		$page = $phpbb_root_path . $page;
+		$page = $phpbb_path_helper->get_phpbb_root_path() . $page;
 	}
 
 	// Append SID
 	$redirect = append_sid($page, false, false);
 
-	// Add delimiter if not there...
-	if (strpos($redirect, '?') === false)
+	if ($strip_vars !== false)
 	{
-		$redirect .= '?';
+		$redirect = $phpbb_path_helper->strip_url_params($redirect, $strip_vars, false);
 	}
 
-	// Strip vars...
-	if ($strip_vars !== false && strpos($redirect, '?') !== false)
-	{
-		if (!is_array($strip_vars))
-		{
-			$strip_vars = array($strip_vars);
-		}
-
-		$query = $_query = array();
-
-		$args = substr($redirect, strpos($redirect, '?') + 1);
-		$args = ($args) ? explode('&', $args) : array();
-		$redirect = substr($redirect, 0, strpos($redirect, '?'));
-
-		foreach ($args as $argument)
-		{
-			$arguments = explode('=', $argument);
-			$key = $arguments[0];
-			unset($arguments[0]);
-
-			if ($key === '')
-			{
-				continue;
-			}
-
-			$query[$key] = implode('=', $arguments);
-		}
-
-		// Strip the vars off
-		foreach ($strip_vars as $strip)
-		{
-			if (isset($query[$strip]))
-			{
-				unset($query[$strip]);
-			}
-		}
-
-		// Glue the remaining parts together... already urlencoded
-		foreach ($query as $key => $value)
-		{
-			$_query[] = $key . '=' . $value;
-		}
-		$query = implode('&', $_query);
-
-		$redirect .= ($query) ? '?' . $query : '';
-	}
-
-	return str_replace('&', '&amp;', $redirect);
+	return $redirect . ((strpos($redirect, '?') === false) ? '?' : '');
 }
 
 /**
@@ -4902,7 +4855,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -4919,7 +4871,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
-		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',

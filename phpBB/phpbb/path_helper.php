@@ -216,4 +216,120 @@ class path_helper
 
 		return $scheme . $this->filesystem->clean_path($path);
 	}
+
+	/**
+	* Glue URL parameters together
+	*
+	* @param array $params URL parameters in the form of array(name => value)
+	* @return string Returns the glued string, e.g. name1=value1&amp;name2=value2
+	*/
+	public function glue_url_params($params)
+	{
+		$_params = array();
+
+		foreach ($params as $key => $value)
+		{
+			$_params[] = $key . '=' . $value;
+		}
+		return implode('&amp;', $_params);
+	}
+
+	/**
+	* Get the base and parameters of a URL
+	*
+	* @param string $url URL to break apart
+	* @param bool $is_amp Is the parameter separator &amp;. Defaults to true.
+	* @return array Returns the base and parameters in the form of array('base' => string, 'params' => array(name => value))
+	*/
+	public function get_url_parts($url, $is_amp = true)
+	{
+		$separator = ($is_amp) ? '&amp;' : '&';
+		$params = array();
+
+		if (strpos($url, '?') !== false)
+		{
+			$base = substr($url, 0, strpos($url, '?'));
+			$args = substr($url, strlen($base) + 1);
+			$args = ($args) ? explode($separator, $args) : array();
+
+			foreach ($args as $argument)
+			{
+				if (empty($argument))
+				{
+					continue;
+				}
+				list($key, $value) = explode('=', $argument, 2);
+
+				if ($key === '')
+				{
+					continue;
+				}
+
+				$params[$key] = $value;
+			}
+		}
+		else
+		{
+			$base = $url;
+		}
+
+		return array(
+			'base'		=> $base,
+			'params'	=> $params,
+		);
+	}
+
+	/**
+	* Strip parameters from an already built URL.
+	*
+	* @param string $url URL to strip parameters from
+	* @param array|string $strip Parameters to strip.
+	* @param bool $is_amp Is the parameter separator &amp;. Defaults to true.
+	* @return string Returns the new URL.
+	*/
+	public function strip_url_params($url, $strip, $is_amp = true)
+	{
+		$url_parts = $this->get_url_parts($url, $is_amp);
+		$params = $url_parts['params'];
+
+		if (!is_array($strip))
+		{
+			$strip = array($strip);
+		}
+
+		if (!empty($params))
+		{
+			// Strip the parameters off
+			foreach ($strip as $param)
+			{
+				unset($params[$param]);
+			}
+		}
+
+		return $url_parts['base'] . (($params) ? '?' . $this->glue_url_params($params) : '');
+	}
+
+	/**
+	* Append parameters to an already built URL.
+	*
+	* @param string $url URL to append parameters to
+	* @param array $new_params Parameters to add in the form of array(name => value)
+	* @param string $is_amp Is the parameter separator &amp;. Defaults to true.
+	* @return string Returns the new URL.
+	*/
+	public function append_url_params($url, $new_params, $is_amp = true)
+	{
+		$url_parts = $this->get_url_parts($url, $is_amp);
+		$params = array_merge($url_parts['params'], $new_params);
+
+		// Move the sid to the end if it's set
+		if (isset($params['sid']))
+		{
+			$sid = $params['sid'];
+			unset($params['sid']);
+			$params['sid'] = $sid;
+		}
+
+		return $url_parts['base'] . (($params) ? '?' . $this->glue_url_params($params) : '');
+	}
 }
