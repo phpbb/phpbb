@@ -1059,7 +1059,7 @@ class mcp_queue
 					if ($is_disapproving)
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED';
-						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason);
+						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason, $log_data['post_username']);
 					}
 					else
 					{
