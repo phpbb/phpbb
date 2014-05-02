@@ -477,6 +477,10 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	position: relative;
 }
 
+.dropdown-container-right {
+	float: right;
+}
+
 .nojs .dropdown-container:hover .dropdown {
 	display: block !important;
 }
