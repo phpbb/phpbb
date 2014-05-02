@@ -484,14 +484,16 @@ class messenger
 			$use_queue = true;
 		}
 
+		$board_contact = (($config['board_contact_name'] !== '') ? '"' . mail_encode($config['board_contact_name']) . '" ' : '') . '<' . $config['board_contact'] . '>';
+
 		if (empty($this->replyto))
 		{
-			$this->replyto = '<' . $config['board_contact'] . '>';
+			$this->replyto = $board_contact;
 		}
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_contact'] . '>';
+			$this->from = $board_contact;
 		}
 
 		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
