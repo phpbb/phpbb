@@ -10,8 +10,8 @@
 	*/
 	function change_language(lang_iso)
 	{
+		document.cookie = '{COOKIE_NAME}_lang=' + lang_iso + '; path={COOKIE_PATH}';
 		document.forms['register'].change_lang.value = lang_iso;
-		document.forms['register'].language.value = lang_iso;
 		document.forms['register'].submit();
 	}
 
