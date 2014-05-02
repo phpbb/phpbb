@@ -191,9 +191,16 @@ class lexer extends \Twig_Lexer
 		$parent_class = $this;
 		$callback = function ($matches) use ($parent_class, $parent_nodes)
 		{
-			$name = $matches[1];
-			$subset = trim(substr($matches[2], 1, -1)); // Remove parenthesis
-			$body = $matches[3];
+			$hard_parents = explode('.', $matches[1]);
+			array_pop($hard_parents); // ends with .
+			if ($hard_parents)
+			{
+				$parent_nodes = array_merge($hard_parents, $parent_nodes);
+			}
+
+			$name = $matches[2];
+			$subset = trim(substr($matches[3], 1, -1)); // Remove parenthesis
+			$body = $matches[4];
 
 			// Replace <!-- BEGINELSE -->
 			$body = str_replace('<!-- BEGINELSE -->', '{% else %}', $body);
@@ -242,7 +249,7 @@ class lexer extends \Twig_Lexer
 			return "{% for {$name} in {$parent}{$name}{$subset} %}{$body}{% endfor %}";
 		};
 
-		return preg_replace_callback('#<!-- BEGIN ([!a-zA-Z0-9_]+)(\([0-9,\-]+\))? -->(.+?)<!-- END \1 -->#s', $callback, $code);
+		return preg_replace_callback('#<!-- BEGIN ((?:[a-zA-Z0-9_]+\.)*)([!a-zA-Z0-9_]+)(\([0-9,\-]+\))? -->(.+?)<!-- END \1\2 -->#s', $callback, $code);
 	}
 
 	/**
