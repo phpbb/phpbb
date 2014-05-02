@@ -407,7 +407,7 @@ class post extends \phpbb\notification\type\base
 
 		$responders = ($responders === null) ? array() : $responders;
 
-		// Do not add more then 25 responder,
+		// Do not add more than 25 responders,
 		// we trim the username list to "a, b, c and x others" anyway
 		// so there is no use to add all of them anyway.
 		if (sizeof($responders) > 25)
