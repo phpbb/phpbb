@@ -35,3 +35,4 @@ matrix:
       env: DB=postgres
   allow_failures:
     - php: hhvm
+  fast_finish: true
