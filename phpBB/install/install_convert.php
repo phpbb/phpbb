@@ -249,6 +249,7 @@ class install_convert extends module
 				switch ($db->sql_layer)
 				{
 					case 'sqlite':
+					case 'sqlite3':
 					case 'firebird':
 						$db->sql_query('DELETE FROM ' . SESSIONS_KEYS_TABLE);
 						$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
@@ -696,6 +697,7 @@ class install_convert extends module
 		switch ($src_db->sql_layer)
 		{
 			case 'sqlite':
+			case 'sqlite3':
 			case 'firebird':
 				$convert->src_truncate_statement = 'DELETE FROM ';
 			break;
@@ -728,6 +730,7 @@ class install_convert extends module
 		switch ($db->sql_layer)
 		{
 			case 'sqlite':
+			case 'sqlite3':
 			case 'firebird':
 				$convert->truncate_statement = 'DELETE FROM ';
 			break;

@@ -8,7 +8,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="true"
-		 strict="true"
+         strict="true"
          verbose="true"
          bootstrap="../tests/bootstrap.php">
 	<testsuites>
@@ -29,12 +29,12 @@
 	</groups>
 
 	<php>
-		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\postgres"/>
-		<server name="PHPBB_TEST_DBHOST" value="localhost" />
-		<server name="PHPBB_TEST_DBPORT" value="5432" />
-		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />
-		<server name="PHPBB_TEST_DBUSER" value="postgres" />
-		<server name="PHPBB_TEST_DBPASSWD" value="" />
+		<!--server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\sqlite3" /-->
+		<!--server name="PHPBB_TEST_DBHOST" value="../phpbb_unit_tests.sqlite3" /-->
+		<!--server name="PHPBB_TEST_DBPORT" value="" /-->
+		<!--server name="PHPBB_TEST_DBNAME" value="" /-->
+		<!--server name="PHPBB_TEST_DBUSER" value="" /-->
+		<!--server name="PHPBB_TEST_DBPASSWD" value="" /-->
 		<server name="PHPBB_TEST_REDIS_HOST" value="localhost" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
 		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
