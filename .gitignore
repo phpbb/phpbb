@@ -4,9 +4,7 @@
 /phpBB/cache/*.php
 /phpBB/cache/*.lock
 /phpBB/composer.phar
-/phpBB/config.php
-/phpBB/config_dev.php
-/phpBB/config_test.php
+/phpBB/config*.php
 /phpBB/ext/*
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
@@ -14,5 +12,5 @@
 /phpBB/store/*
 /phpBB/vendor
 /tests/phpbb_unit_tests.sqlite2
-/tests/test_config.php
+/tests/test_config*.php
 /tests/tmp/*
