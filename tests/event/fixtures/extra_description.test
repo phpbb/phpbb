@@ -1,0 +1,11 @@
+<?php
+
+/**
+* Description
+*
+* NOTE: This will not be exported
+*
+* @event extra_description.dispatch
+* @since 3.1.0-b2
+*/
+$phpbb_dispatcher->dispatch('extra_description.dispatch');
