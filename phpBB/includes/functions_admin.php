@@ -1959,7 +1959,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			$db->sql_transaction('begin');
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_visibility, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_name_clean, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);
@@ -2091,7 +2091,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics, $delete_topic_ids);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour, u.username_clean
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 					AND u.user_id = p.poster_id';
@@ -2107,6 +2107,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$topic_data[$topic_id]['time'] = $row['post_time'];
 					$topic_data[$topic_id]['poster'] = $row['poster_id'];
 					$topic_data[$topic_id]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+					$topic_data[$topic_id]['first_poster_name_clean'] = ($row['poster_id'] == ANONYMOUS) ? utf8_clean_string($row['post_username']) : $row['username_clean'];
 					$topic_data[$topic_id]['first_poster_colour'] = $row['user_colour'];
 				}
 
@@ -2164,7 +2165,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$sync_shadow_topics = array();
 				if (sizeof($post_ids))
 				{
-					$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+					$sql = 'SELECT p.post_id, p.topic_id, p.post_visibility, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour, u.username_clean
 						FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 						WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 							AND u.user_id = p.poster_id';
@@ -2191,6 +2192,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 								$sync_shadow_topics[$orig_topic_id]['topic_time'] = $row['post_time'];
 								$sync_shadow_topics[$orig_topic_id]['topic_poster'] = $row['poster_id'];
 								$sync_shadow_topics[$orig_topic_id]['topic_first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+								$sync_shadow_topics[$orig_topic_id]['topic_first_poster_name_clean'] = ($row['poster_id'] == ANONYMOUS) ? utf8_clean_string($row['post_username']) : $row['username_clean'];
 								$sync_shadow_topics[$orig_topic_id]['topic_first_poster_colour'] = $row['user_colour'];
 							}
 
@@ -2232,7 +2234,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'visibility', 'posts_approved', 'posts_unapproved', 'posts_softdeleted', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_name_clean', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{

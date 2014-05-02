@@ -2097,11 +2097,11 @@
                 "MTEXT",
                 ""
             ],
-            "pf_phpbb_icq": [
+            "pf_phpbb_location": [
                 "VCHAR",
                 ""
             ],
-            "pf_phpbb_location": [
+            "pf_phpbb_icq": [
                 "VCHAR",
                 ""
             ],
@@ -2762,6 +2762,10 @@
             "poll_vote_change": [
                 "BOOL",
                 0
+            ],
+            "topic_first_poster_name_clean": [
+                "VCHAR_UNI:255",
+                ""
             ],
             "topic_visibility": [
                 "TINT:3",

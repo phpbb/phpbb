@@ -86,6 +86,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$user->data = array(
 			'user_id'		=> 2,
 			'username'		=> 'user-name',
+			'username_clean'=> 'user-name',
 			'is_registered'	=> true,
 			'user_colour'	=> '',
 		);
