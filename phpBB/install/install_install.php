@@ -290,8 +290,8 @@ class install_install extends module
 			$checks = array(
 				array('func_overload', '&', MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING),
 				array('encoding_translation', '!=', 0),
-				array('http_input', '!=', 'pass'),
-				array('http_output', '!=', 'pass')
+				array('http_input', '!=', array('pass', '')),
+				array('http_output', '!=', array('pass', ''))
 			);
 
 			foreach ($checks as $mb_checks)
@@ -312,7 +312,8 @@ class install_install extends module
 					break;
 
 					case '!=':
-						if ($ini_val != $mb_checks[2])
+						if (!is_array($mb_checks[2]) && $ini_val != $mb_checks[2] ||
+							is_array($mb_checks[2]) && !in_array($ini_val, $mb_checks[2]))
 						{
 							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 							$passed['mbstring'] = false;
