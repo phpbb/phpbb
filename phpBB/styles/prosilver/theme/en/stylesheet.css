@@ -7,16 +7,10 @@ ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
 .online { background-image: url("./icon_user_online.gif"); }
 
 /* Icon images */
-.pm-icon, .pm-icon a				{ background-image: url("./icon_contact_pm.gif"); }
 .quote-icon, .quote-icon a		{ background-image: url("./icon_post_quote.gif"); }
 .edit-icon, .edit-icon a			{ background-image: url("./icon_post_edit.gif"); }
 
 /* EN Language Pack */
-.imageset.icon_contact_pm {
-	background-image: url("./icon_contact_pm.gif");
-	padding-left: 28px;
-	padding-top: 20px;
-}
 .imageset.icon_post_edit {
 	background-image: url("./icon_post_edit.gif");
 	padding-left: 42px;
