@@ -114,7 +114,8 @@ class migrate extends \phpbb\console\command\command
 	{
 		$migrations = $this->extension_manager
 			->get_finder()
-			->core_path('phpbb/db/migration/data/')
+            ->core_path('phpbb/db/migration/data/')
+            ->extension_directory('/migrations')
 			->get_classes();
 		$this->migrator->set_migrations($migrations);
 	}
