@@ -29,8 +29,6 @@
 	</groups>
 
 	<php>
-		<!-- "Real" test database -->
-		<!-- uncomment, otherwise sqlite memory runs -->
 		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\postgres"/>
 		<server name="PHPBB_TEST_DBHOST" value="localhost" />
 		<server name="PHPBB_TEST_DBPORT" value="5432" />

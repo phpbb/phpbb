@@ -29,8 +29,6 @@
 	</groups>
 
 	<php>
-		<!-- "Real" test database -->
-		<!-- uncomment, otherwise sqlite memory runs -->
 		<!--server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\sqlite3" /-->
 		<!--server name="PHPBB_TEST_DBHOST" value="../phpbb_unit_tests.sqlite3" /-->
 		<!--server name="PHPBB_TEST_DBPORT" value="" /-->
