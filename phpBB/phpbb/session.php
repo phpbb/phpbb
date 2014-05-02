@@ -1045,7 +1045,7 @@ class session
 	* @param string $name		Name of the cookie, will be automatically prefixed with the phpBB cookie name. track becomes [cookie_name]_track then.
 	* @param string $cookiedata	The data to hold within the cookie
 	* @param int $cookietime	The expiration time as UNIX timestamp. If 0 is provided, a session cookie is set.
-	* @param int $httponly		Use HttpOnly. Defaults to true. Use false to make cookie accessible by client-side scripts.
+	* @param bool $httponly		Use HttpOnly. Defaults to true. Use false to make cookie accessible by client-side scripts.
 	*/
 	function set_cookie($name, $cookiedata, $cookietime, $httponly = true)
 	{
