@@ -12,6 +12,6 @@
 /phpBB/images/avatars/upload/*
 /phpBB/store/*
 /phpBB/vendor
-/tests/phpbb_unit_tests.sqlite2
+/tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*
