@@ -330,7 +330,6 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				"[bar|[bar|]][bar1|[bar1|[bar1|works]]]",
 				array(),
-				'Included files are missing opened parent loops: PHPBB3-12382',
 			),
 			/* Does not pass with the current implementation.
 			array(

@@ -102,7 +102,6 @@ Zeta test event in all',
 				),
 				array(),
 				'event_loop[0[subloop:0]]',
-				'Event files are missing opened parent loops: PHPBB3-12382',
 			),
 		);
 	}
