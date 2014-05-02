@@ -325,8 +325,8 @@ class manager
 		* Event to modify profile fields data retrieved from the database
 		*
 		* @event core.grab_profile_fields_data
-		* @var	array	$user_ids		Single user id or an array of ids 
-		* @var	array	$field_data		Array with profile fields data
+		* @var	array	user_ids		Single user id or an array of ids 
+		* @var	array	field_data		Array with profile fields data
 		* @since 3.1.0-b3
 		*/
 		$vars = array('user_ids', 'field_data');
