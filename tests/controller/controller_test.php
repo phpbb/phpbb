@@ -8,8 +8,6 @@
 */
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -43,6 +41,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller2'));
 		$this->assertEquals('/foo/bar', $routes->get('controller2')->getPath());
+
+		$this->assertNull($routes->get('controller_noroute'));
 	}
 
 	public function test_controller_resolver()
