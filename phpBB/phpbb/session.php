@@ -1045,8 +1045,9 @@ class session
 	* @param string $name		Name of the cookie, will be automatically prefixed with the phpBB cookie name. track becomes [cookie_name]_track then.
 	* @param string $cookiedata	The data to hold within the cookie
 	* @param int $cookietime	The expiration time as UNIX timestamp. If 0 is provided, a session cookie is set.
+	* @param int $httponly		Use HttpOnly. Defaults to true. Use false to make cookie accessible by client-side scripts.
 	*/
-	function set_cookie($name, $cookiedata, $cookietime)
+	function set_cookie($name, $cookiedata, $cookietime, $httponly = true)
 	{
 		global $config;
 
@@ -1054,7 +1055,7 @@ class session
 		$expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $cookietime);
 		$domain = (!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain'];
 
-		header('Set-Cookie: ' . $name_data . (($cookietime) ? '; expires=' . $expire : '') . '; path=' . $config['cookie_path'] . $domain . ((!$config['cookie_secure']) ? '' : '; secure') . '; HttpOnly', false);
+		header('Set-Cookie: ' . $name_data . (($cookietime) ? '; expires=' . $expire : '') . '; path=' . $config['cookie_path'] . $domain . ((!$config['cookie_secure']) ? '' : '; secure') . ';' . (($httponly) ? ' HttpOnly' : ''), false);
 	}
 
 	/**

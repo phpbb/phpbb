@@ -80,10 +80,18 @@ class user extends \phpbb\session
 		}
 		else
 		{
-			$change_lang = $request->variable($config['cookie_name'] . '_lang', '', true, \phpbb\request\request_interface::COOKIE);
-			if ($change_lang)
+			$lang_override = $request->variable('language', '');
+			if ($lang_override)
 			{
-				$use_lang = basename($change_lang);
+				$this->set_cookie('lang', $lang_override, 0, false);
+			}
+			else
+			{
+				$lang_override = $request->variable($config['cookie_name'] . '_lang', '', true, \phpbb\request\request_interface::COOKIE);
+			}
+			if ($lang_override)
+			{
+				$use_lang = basename($lang_override);
 				$user_lang_name = (file_exists($this->lang_path . $use_lang . "/common.$phpEx")) ? $use_lang : basename($config['default_lang']);
 				$this->data['user_lang'] = $user_lang_name;
 			}
