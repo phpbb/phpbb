@@ -520,7 +520,7 @@ class log implements \phpbb\log\log_interface
 					$num_args = 0;
 					if (!is_array($this->user->lang[$row['log_operation']]))
 					{
-						$num_args = substr_count($log[$i]['action'], '%');
+						$num_args = substr_count($this->user->lang[$row['log_operation']], '%');
 					}
 					else
 					{
