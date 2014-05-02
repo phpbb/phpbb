@@ -133,7 +133,7 @@ function generate_smilies($mode, $forum_id)
 	* @var	string	mode			Mode of the smilies: window|inline
 	* @var	int		forum_id		The forum ID we are currently in
 	* @var	bool	display_link	Shall we display the "more smilies" link?
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('mode', 'forum_id', 'display_link');
 	extract($phpbb_dispatcher->trigger_event('core.generate_smilies_after', compact($vars)));
@@ -1496,7 +1496,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	bool	update_search_index	Flag indicating if the search index will be updated
 	* @since 3.1.0-a4
 	*/
-	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact(array('mode', 'subject', 'username', 'topic_type', 'poll', 'data', 'update_message', 'update_search_index'))));
+	$vars = array(
+		'mode',
+		'subject',
+		'username',
+		'topic_type',
+		'poll',
+		'data',
+		'update_message',
+		'update_search_index',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact($vars)));
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -2362,7 +2372,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	string		url						The "Return to topic" URL
 	* @var	array		data					Array of post data about the
 	*											submitted post
-	* @since 3.1-A3
+	* @since 3.1.0-a3
 	*/
 	$vars = array('url', 'data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_end', compact($vars)));

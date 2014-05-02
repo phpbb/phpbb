@@ -66,13 +66,13 @@ acp_simple_header_body_before
 
 acp_simple_header_head_append
 ===
-* Location: adm/style/overall_header.html
+* Location: adm/style/simple_header.html
 * Since: 3.1.0-a1
 * Purpose: Add assets within the `<head>` tags in the simple header of the ACP
 
 acp_users_overview_options_append
 ===
-* Location: adm/style/acp_users.html
+* Location: adm/style/acp_users_overview.html
 * Since: 3.1.0-a1
 * Purpose: Add options and settings on user overview page
 
@@ -91,7 +91,7 @@ acp_users_signature_editor_buttons_before
 * Purpose: Add content before BBCode posting buttons in the ACP user signature
 
 forumlist_body_category_header_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -99,7 +99,7 @@ forumlist_body_category_header_after
 * Purpose: Add content after the header of the category on the forum list.
 
 forumlist_body_category_header_before
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -107,7 +107,7 @@ forumlist_body_category_header_before
 * Purpose: Add content before the header of the category on the forum list.
 
 forumlist_body_last_post_title_prepend
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -115,7 +115,7 @@ forumlist_body_last_post_title_prepend
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
 forumlist_body_subforums_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -123,7 +123,7 @@ forumlist_body_subforums_after
 * Purpose: Add content after the list of subforums (if any) for each forum on the forum list.
 
 forumlist_body_subforums_before
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -131,7 +131,7 @@ forumlist_body_subforums_before
 * Purpose: Add content before the list of subforums (if any) for each forum on the forum list.
 
 forumlist_body_last_row_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -455,6 +455,7 @@ simple_footer_after
 ===
 * Locations:
     + styles/prosilver/template/simple_footer.html
+    + styles/subsilver2/template/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
@@ -485,6 +486,22 @@ topiclist_row_append
     + styles/subsilver2/template/viewforum_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
+
+ucp_pm_viewmessage_contact_fields_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-b1
+* Purpose: Add data after the contact fields on the user profile when viewing
+a private message
+
+ucp_pm_viewmessage_contact_fields_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-b1
+* Purpose: Add data before the contact fields on the user profile when viewing
+a private message
 
 ucp_pm_viewmessage_custom_fields_after
 ===
@@ -581,16 +598,16 @@ Display Options screen
 ucp_friend_list_before
 ===
 * Locations:
-	+ styles/prosilver/template/ucp_zebra_friends.html
-	+ styles/subsilver2/template/ucp_zebra_friends.html
+    + styles/prosilver/template/ucp_zebra_friends.html
+    + styles/subsilver2/template/ucp_zebra_friends.html
 * Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
 
 ucp_friend_list_after
 ===
 * Locations:
-	+ styles/prosilver/template/ucp_zebra_friends.html
-	+ styles/subsilver2/template/ucp_zebra_friends.html
+    + styles/prosilver/template/ucp_zebra_friends.html
+    + styles/subsilver2/template/ucp_zebra_friends.html
 * Since: 3.1.0-a4
 * Purpose: Add optional elements after list of friends in UCP
 

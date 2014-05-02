@@ -772,7 +772,7 @@ class acp_users
 							* @event core.acp_users_overview_run_quicktool
 							* @var	array	user_row	Current user data
 							* @var	string	action		Quick tool that should be run
-							* @since 3.1-A1
+							* @since 3.1.0-a1
 							*/
 							$vars = array('action', 'user_row');
 							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
@@ -893,7 +893,7 @@ class acp_users
 						* @var	array	user_row	Current user data
 						* @var	array	data		Submitted user data
 						* @var	array	sql_ary		User data we udpate
-						* @since 3.1-A1
+						* @since 3.1.0-a1
 						*/
 						$vars = array('user_row', 'data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
@@ -1008,7 +1008,7 @@ class acp_users
 				* @event core.acp_users_display_overview
 				* @var	array	user_row			Array with user data
 				* @var	array	quick_tool_ary		Ouick tool options
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
 				$vars = array('user_row', 'quick_tool_ary');
 				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));

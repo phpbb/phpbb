@@ -1587,7 +1587,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	/**
 	* Get all parts of the PM that are to be submited to the DB.
 	*
-	* @event	core.submit_pm_before
+	* @event core.submit_pm_before
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
 	* @var	array	data	The whole row data of the PM.
