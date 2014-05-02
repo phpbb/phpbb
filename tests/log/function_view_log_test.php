@@ -225,6 +225,27 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'viewforum'			=> '',
 				'action'			=> 'LOG_SINGULAR_PLURAL 2',
 			),
+			11 => array(
+				'id'				=> 11,
+
+				'reportee_id'			=> 0,
+				'reportee_username'		=> '',
+				'reportee_username_full'=> '',
+
+				'user_id'			=> 1,
+				'username'			=> 'Anonymous',
+				'username_full'		=> 'Anonymous',
+
+				'ip'				=> '127.0.0.1',
+				'time'				=> 1,
+				'forum_id'			=> 15,
+				'topic_id'			=> 3,
+
+				'viewforum'			=> '',
+				'action'			=> 'LOG_MOD3 guest ',
+				'viewtopic'			=> '',
+				'viewlogs'			=> '',
+			),
 		);
 
 		$test_cases = array(
@@ -310,6 +331,11 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'expected_returned'	=> 0,
 				'user', false, 5, 0, 0, 0, 0, 0, 'l.log_id ASC', 'plural',
 			),
+			array(
+				'expected'			=> array(11),
+				'expected_returned'	=> 0,
+				'mod', 0, 5, 0, 15, 3,
+			),
 		);
 
 		foreach ($test_cases as $case => $case_data)
@@ -362,6 +388,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 			'LOG_INSTALL_INSTALLED'		=> 'installed: %s',
 			'LOG_USER'					=> 'User<br /> %s',
 			'LOG_MOD2'					=> 'Mod2',
+			'LOG_MOD3'		            => 'Mod3: %1$s, %2$s',
 			'LOG_SINGULAR_PLURAL'		=> array(
 				1	=> 'singular',
 				2	=> 'plural (%d)',
