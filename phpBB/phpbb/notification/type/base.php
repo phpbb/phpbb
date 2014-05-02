@@ -276,6 +276,14 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return $this->get_url();
+	}
+
+	/**
 	* Prepare to output the notification to the template
 	*
 	* @return array Template variables

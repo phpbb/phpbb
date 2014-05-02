@@ -212,7 +212,7 @@ function mcp_topic_view($id, $mode, $action)
 			parse_attachments($topic_info['forum_id'], $message, $attachments[$row['post_id']], $update_count);
 		}
 
-		if ($row['post_visibility'] == ITEM_UNAPPROVED)
+		if ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE)
 		{
 			$has_unapproved_posts = true;
 		}
@@ -239,7 +239,7 @@ function mcp_topic_view($id, $mode, $action)
 			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 
 			'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $topic_info['forum_id'])),
-			'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
+			'S_POST_UNAPPROVED'	=> (($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE) && $auth->acl_get('m_approve', $topic_info['forum_id'])),
 			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
 			'S_CHECKED'			=> (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
@@ -462,7 +462,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// If split from selected post (split_beyond), we split the unapproved items too.
-				if ($row['post_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+				if (($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE) && !$auth->acl_get('m_approve', $row['forum_id']))
 				{
 //					continue;
 				}

@@ -266,7 +266,7 @@ if ($topic_data['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_appro
 if ($post_id)
 {
 	// are we where we are supposed to be?
-	if ($topic_data['post_visibility'] == ITEM_UNAPPROVED && !$auth->acl_get('m_approve', $topic_data['forum_id']))
+	if (($topic_data['post_visibility'] == ITEM_UNAPPROVED || $topic_data['post_visibility'] == ITEM_REAPPROVE) && !$auth->acl_get('m_approve', $topic_data['forum_id']))
 	{
 		// If post_id was submitted, we try at least to display the topic as a last resort...
 		if ($topic_id)
@@ -1028,7 +1028,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		$attach_list[] = (int) $row['post_id'];
 
-		if ($row['post_visibility'] == ITEM_UNAPPROVED)
+		if ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE)
 		{
 			$has_attachments = true;
 		}
@@ -1642,7 +1642,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 		'S_MULTIPLE_ATTACHMENTS'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
-		'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_UNAPPROVED) ? true : false,
+		'S_POST_UNAPPROVED'	=> ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE) ? true : false,
 		'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
 		'L_POST_DELETED_MESSAGE'	=> $l_deleted_message,
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
