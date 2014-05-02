@@ -14,7 +14,7 @@ namespace phpbb\feed;
 *
 * @package phpBB3
 */
-abstract class post_base extends \phpbb\feed\base
+abstract class post_base extends \phpbb\feed\attachments_base
 {
 	var $num_items = 'feed_limit_post';
 	var $attachments = array();
@@ -48,42 +48,5 @@ abstract class post_base extends \phpbb\feed\base
 				. ' ' . $this->separator_stats . ' ' . $this->user->format_date($row[$this->get('published')])
 				. (($this->is_moderator_approve_forum($row['forum_id']) && $row['post_visibility'] !== ITEM_APPROVED) ? ' ' . $this->separator_stats . ' ' . $this->user->lang['POST_UNAPPROVED'] : '');
 		}
-	}
-
-	function fetch_attachments()
-	{
-		$sql_array = array(
-			'SELECT'	=> 'a.*',
-			'FROM'		=> array(
-				ATTACHMENTS_TABLE	=>	'a'
-			),
-			'WHERE'		=> 'a.in_message = 0 ',
-			'ORDER_BY'	=> 'a.filetime DESC, a.post_msg_id ASC',
-		);
-
-		if (isset($this->topic_id))
-		{
-			$sql_array['WHERE'] .= 'AND a.topic_id = ' . (int) $this->topic_id;
-		}
-		else if (isset($this->forum_id))
-		{
-			$sql_array['LEFT_JOIN'] = array(
-				array(
-					'FROM'  => array(TOPICS_TABLE => 't'),
-					'ON'    => 'a.topic_id = t.topic_id',
-				)
-			);
-			$sql_array['WHERE'] .= 'AND t.forum_id = ' . (int) $this->forum_id;
-		}
-
-		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql);
-
-		// Set attachments in feed items
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$this->attachments[$row['post_msg_id']][] = $row;
-		}
-		$this->db->sql_freeresult($result);
 	}
 }

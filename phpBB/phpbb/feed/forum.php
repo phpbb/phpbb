@@ -80,6 +80,8 @@ class forum extends \phpbb\feed\post_base
 
 			unset($forum_ids_passworded);
 		}
+
+		parent::open();
 	}
 
 	function get_sql()
