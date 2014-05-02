@@ -1019,7 +1019,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	array	zebra			The zebra data of the current user
 			* @var	array	attachments		All the attachments of the search results
 			* @since 3.1.0-a1
-			* @changed 3.1.0-b3 Added many vars
+			* @changed 3.1.0-b3 Added vars show_results, topic_title, replies,
+			*		view_topic_url, folder_img, folder_alt, topic_type, unread_topic,
+			*		topic_unapproved, posts_unapproved, topic_deleted, u_mcp_queue,
+			*		zebra, attachments
 			*/
 			$vars = array(
 				'row',
@@ -1037,7 +1040,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'topic_deleted',
 				'u_mcp_queue',
 				'zebra',
-				'attachments'
+				'attachments',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.search_modify_tpl_ary', compact($vars)));
 
