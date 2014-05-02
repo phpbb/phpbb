@@ -1618,7 +1618,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		!in_array($poster_id, $permanently_banned_users) &&
 
 		// They must allow users to contact via PM
-		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])
+		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $user_cache[$poster_id]['allow_pm'])
 	);
 
 	$u_pm = '';
