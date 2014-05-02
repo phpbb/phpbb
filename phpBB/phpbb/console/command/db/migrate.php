@@ -65,7 +65,7 @@ class migrate extends \phpbb\console\command\command
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				$output->writeln($e->getLocalisedMessage($this->user));
+				$output->writeln('<error>' . $e->getLocalisedMessage($this->user) . '</error>');
 				$this->finalise_update();
 				return 1;
 			}
@@ -103,7 +103,7 @@ class migrate extends \phpbb\console\command\command
 
 		if ($orig_version != $this->config['version'])
 		{
-			$log->add('admin', 'LOG_UPDATE_DATABASE', $orig_version, $this->config['version']);
+			$this->log->add('admin', 'LOG_UPDATE_DATABASE', $orig_version, $this->config['version']);
 		}
 
 		$this->finalise_update();
