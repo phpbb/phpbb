@@ -102,7 +102,6 @@ class ucp_register
 
 			$s_hidden_fields = array_merge($s_hidden_fields, array(
 				'change_lang'	=> '',
-				'language'		=> ($user_lang != $config['default_lang']) ? $user_lang : '',
 			));
 
 			// If we change the language, we want to pass on some more possible parameter.
@@ -150,6 +149,9 @@ class ucp_register
 					'S_SHOW_COPPA'		=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+
+					'COOKIE_NAME'		=> $config['cookie_name'],
+					'COOKIE_PATH'		=> $config['cookie_path'],
 				));
 			}
 			else
@@ -162,6 +164,9 @@ class ucp_register
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_coppa),
+
+					'COOKIE_NAME'		=> $config['cookie_name'],
+					'COOKIE_PATH'		=> $config['cookie_path'],
 					)
 				);
 			}
@@ -410,7 +415,6 @@ class ucp_register
 		$s_hidden_fields = array_merge($s_hidden_fields, array(
 			'agreed'		=> 'true',
 			'change_lang'	=> 0,
-			'language'		=> ($user_lang != $config['default_lang']) ? $user_lang : '',
 		));
 
 		if ($config['coppa_enable'])
@@ -467,6 +471,9 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+
+			'COOKIE_NAME'		=> $config['cookie_name'],
+			'COOKIE_PATH'		=> $config['cookie_path'],
 		));
 
 		//

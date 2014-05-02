@@ -80,16 +80,12 @@ class user extends \phpbb\session
 		}
 		else
 		{
-			$change_lang = $request->variable('language', '');
+			$change_lang = $request->variable($config['cookie_name'] . '_lang', '', true, \phpbb\request\request_interface::COOKIE);
 			if ($change_lang)
 			{
-				global $SID, $_EXTRA_URL;
-
 				$use_lang = basename($change_lang);
 				$user_lang_name = (file_exists($this->lang_path . $use_lang . "/common.$phpEx")) ? $use_lang : basename($config['default_lang']);
 				$this->data['user_lang'] = $user_lang_name;
-				$SID .= '&amp;language=' . $user_lang_name;
-				$_EXTRA_URL[] = 'language=' . $user_lang_name;
 			}
 			else
 			{
@@ -203,7 +199,7 @@ class user extends \phpbb\session
 
 			$style_id = $style_request;
 			$SID .= '&amp;style=' . $style_id;
-			$_EXTRA_URL[] = 'style=' . $style_id;
+			$_EXTRA_URL = array('style=' . $style_id);
 		}
 		else
 		{
