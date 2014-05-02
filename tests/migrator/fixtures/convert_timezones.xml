@@ -6,8 +6,6 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<column>user_timezone</column>
 		<column>user_dst</column>
 		<row>
@@ -16,8 +14,6 @@
 			<value>1</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 			<value>-12</value>
 			<value>0</value>
 		</row>
@@ -25,8 +21,6 @@
 			<value>2</value>
 			<value>2</value>
 			<value>2</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 			<value>-12</value>
@@ -38,8 +32,6 @@
 			<value>3</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 			<value>3</value>
 			<value>0</value>
 		</row>
@@ -49,8 +41,6 @@
 			<value>4</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 			<value>3</value>
 			<value>1</value>
 		</row>
@@ -58,8 +48,6 @@
 			<value>5</value>
 			<value>5</value>
 			<value>5</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 			<value>-3.5</value>
@@ -69,8 +57,6 @@
 			<value>6</value>
 			<value>6</value>
 			<value>6</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 			<value>8.75</value>
