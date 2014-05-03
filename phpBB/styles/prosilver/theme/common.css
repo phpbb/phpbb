@@ -473,6 +473,10 @@ ul.linklist.bulletin li.no-bulletin:before {
 	margin-right: -500px;
 }
 
+.dropdown.live-search {
+	top: auto;
+}
+
 .dropdown-container.topic-tools {
 	float: left;
 }

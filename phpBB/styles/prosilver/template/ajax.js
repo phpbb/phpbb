@@ -315,13 +315,17 @@ $('.poll_view_results a').click(function(e) {
 $('[data-ajax]').each(function() {
 	var $this = $(this),
 		ajax = $this.attr('data-ajax'),
+		filter = $this.attr('data-filter'),
 		fn;
 
 	if (ajax !== 'false') {
 		fn = (ajax !== 'true') ? ajax : null;
+		filter = (filter !== undefined) ? phpbb.getFunctionByName(filter) : null;
+
 		phpbb.ajaxify({
 			selector: this,
 			refresh: $this.attr('data-refresh') !== undefined,
+			filter: filter,
 			callback: fn
 		});
 	}
