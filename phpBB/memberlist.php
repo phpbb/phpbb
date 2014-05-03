@@ -40,7 +40,7 @@ if ($mode == 'leaders')
 }
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team', 'livesearch')))
 {
 	trigger_error('NO_MODE');
 }
@@ -49,6 +49,13 @@ switch ($mode)
 {
 	case 'email':
 	break;
+
+	case 'livesearch':
+		if (!$config['allow_live_searches'])
+		{
+			trigger_error('LIVE_SEARCHES_NOT_ALLOWED');
+		}
+		// No break
 
 	default:
 		// Can this user view profiles/memberlist?
@@ -990,6 +997,35 @@ switch ($mode)
 
 	break;
 
+	case 'livesearch':
+
+		$username_chars = $request->variable('username', '', true);
+
+		$sql = 'SELECT username, user_id, user_colour
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
+				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->any_char);
+		$result = $db->sql_query_limit($sql, 10);
+		$user_list = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_list[] = array(
+				'user_id'		=> (int) $row['user_id'],
+				'result'		=> $row['username'],
+				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
+			);
+		}
+		$db->sql_freeresult($result);
+		$json_response = new \phpbb\json_response();
+		$json_response->send(array(
+			'keyword' => $username_chars,
+			'results' => $user_list,
+		));
+
+	break;
+
 	case 'group':
 	default:
 		// The basic memberlist
@@ -1627,6 +1663,7 @@ switch ($mode)
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',
+			'U_LIVE_SEARCH'			=> ($config['allow_live_searches']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=livesearch') : false,
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_POSTS'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
