@@ -16,6 +16,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		global $phpbb_root_path, $phpEx, $user;
 
 		$defaults = $this->config_defaults();
+		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
@@ -23,7 +24,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			),
 			new \phpbb\filesystem(),
 			$this->getMock('\phpbb\request\request'),
-			$config,
+			new \phpbb\config\config(array()),
 			$phpbb_root_path,
 			$phpEx
 		);
