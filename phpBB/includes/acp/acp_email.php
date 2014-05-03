@@ -200,17 +200,8 @@ class acp_email
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);
 
-					if ($config['contact_admin_form_enable'])
-					{
-						$contact_link = generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin';
-					}
-					else
-					{
-						$contact_link = $config['board_contact'];
-					}
-
 					$messenger->assign_vars(array(
-						'CONTACT_EMAIL' => $contact_link,
+						'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
 						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 

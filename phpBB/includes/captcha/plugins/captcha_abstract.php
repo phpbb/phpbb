@@ -96,14 +96,7 @@ class phpbb_captcha_plugins_captcha_abstract
 		else
 		{
 			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
-			if ($config['contact_admin_form_enable'])
-			{
-				$contact_link = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
-			}
-			else
-			{
-				$contact_link = 'mailto:' . htmlspecialchars($config['board_contact']);
-			}
+			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
 			$template->assign_vars(array(
