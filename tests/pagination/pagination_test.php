@@ -42,7 +42,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$provider = new \phpbb\controller\provider();
 		$provider->set_ext_finder($this->finder);
 		$provider->find(dirname(__FILE__) . '/');
-		$this->helper = new \phpbb\controller\helper($this->template, $this->user, $this->config, $provider, $manager, '', 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, '', 'php', dirname(__FILE__) . '/');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
 
