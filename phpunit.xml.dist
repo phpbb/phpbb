@@ -13,7 +13,7 @@
 >
     <testsuites>
         <testsuite name="phpBB Test Suite">
-            <directory suffix="_test.php">./tests/</directory>
+            <directory suffix="_test.php">./tests</directory>
             <exclude>./tests/functional</exclude>
             <exclude>tests/lint_test.php</exclude>
         </testsuite>
@@ -34,7 +34,7 @@
 
     <filter>
         <blacklist>
-            <directory>./tests/</directory>
+            <directory>./tests</directory>
         </blacklist>
     </filter>
 </phpunit>
