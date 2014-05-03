@@ -11,6 +11,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/phpbb_testcase_extension_manager.php';
+
 abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_TestCase
 {
 	static private $already_connected;
