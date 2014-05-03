@@ -142,6 +142,7 @@ class topic_form extends form
 	{
 		parent::render($template);
 
+		$this->user->add_lang('viewtopic');
 		$template->assign_vars(array(
 			'EMAIL'				=> $this->recipient_address,
 			'NAME'				=> $this->recipient_name,
