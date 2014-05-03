@@ -1641,7 +1641,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_JOINED'		=> $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS'		=> $user_cache[$poster_id]['posts'],
 		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'],
-		'POSTER_WARNINGS'	=> $user_cache[$poster_id]['warnings'],
+		'POSTER_WARNINGS'	=> ($auth->acl_get('m_warn') && $poster_id != ANONYMOUS) ? $user_cache[$poster_id]['warnings'] : '',
 		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 
 		'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),

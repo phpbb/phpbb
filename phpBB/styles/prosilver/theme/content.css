@@ -731,6 +731,11 @@ fieldset.polls dd div {
 	height: auto !important;
 }
 
+dd.profile-warnings em {
+	font-style: normal;
+	font-weight: bold;
+}
+
 dd.profile-contact {
 	overflow: visible;
 }
