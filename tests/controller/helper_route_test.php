@@ -43,7 +43,8 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache()
 		);
-		$this->provider = new \phpbb\controller\provider($finder);
+		$this->provider = new \phpbb\controller\provider();
+		$this->provider->set_ext_finder($finder);
 		$this->provider->find(dirname(__FILE__) . '/');
 	}
 

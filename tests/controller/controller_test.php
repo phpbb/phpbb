@@ -29,7 +29,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 	public function test_provider()
 	{
-		$provider = new \phpbb\controller\provider($this->extension_manager->get_finder());
+		$provider = new \phpbb\controller\provider();
+		$provider->set_ext_finder($this->extension_manager->get_finder());
 		$routes = $provider->find(__DIR__)->get_routes();
 
 		// This will need to be updated if any new routes are defined

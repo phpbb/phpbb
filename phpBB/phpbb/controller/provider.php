@@ -34,13 +34,19 @@ class provider
 	/**
 	* Construct method
 	*
-	* @param array() $routing_files Array of strings containing paths
-	*							to YAML files holding route information
+	* @param array  $routing_files  Array of strings containing paths to YAML files holding route information
 	*/
-	public function __construct(\phpbb\extension\finder $finder = null, $routing_files = array())
+	public function __construct($routing_files = array())
 	{
 		$this->routing_files = $routing_files;
+	}
 
+	/**
+	* @param \phpbb\extension\finder $finder
+	* @return null
+	*/
+	public function set_ext_finder(\phpbb\extension\finder $finder = null)
+	{
 		if ($finder)
 		{
 			// We hardcode the path to the core config directory

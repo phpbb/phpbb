@@ -107,9 +107,8 @@ services:
 
     controller.provider:
         class: phpbb\controller\provider
-        arguments:
-            - @ext.finder
         calls:
+            - [set_ext_finder, ["@ext.finder="]]
             - [find, [%core.root_path%]]
 
     cron.task_collection:
@@ -175,8 +174,16 @@ services:
             - %core.php_ext%
             - @cache.driver
 
+    # The extension finder keeps state, so it should be in the prototype scope
+    # to be instantiated on each container request.
+    # But 'controller.provider' which is in scope container has a dependence
+    # to the extension finder. So to avoid the potential problems, we define
+    # 'ext.finder' as synchronized and we use a setter injection in
+    # 'controller.provider'
     ext.finder:
         class: phpbb\extension\finder
+        scope: prototype
+        synchronized: true
         arguments:
             - @ext.manager
             - @filesystem
@@ -217,9 +224,10 @@ services:
     kernel_request_subscriber:
         class: phpbb\event\kernel_request_subscriber
         arguments:
-            - @ext.finder
             - %core.root_path%
             - %core.php_ext%
+        calls:
+            - [set_ext_finder, ["@ext.finder="]]
         tags:
             - { name: kernel.event_subscriber }
 

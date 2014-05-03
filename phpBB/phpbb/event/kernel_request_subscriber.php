@@ -38,15 +38,22 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	/**
 	* Construct method
 	*
-	* @param \phpbb\extension\finder $finder Extension finder object
 	* @param string $root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\extension\finder $finder, $root_path, $php_ext)
+	public function __construct($root_path, $php_ext)
 	{
-		$this->finder = $finder;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+	}
+
+	/**
+	* @param \phpbb\extension\finder $finder
+	* @return null
+	*/
+	public function set_ext_finder(\phpbb\extension\finder $finder = null)
+	{
+		$this->finder = $finder;
 	}
 
 	/**
@@ -55,10 +62,16 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	* This is responsible for setting up the routing information
 	*
 	* @param GetResponseEvent $event
+	* @throws \BadMethodCallException
 	* @return null
 	*/
 	public function on_kernel_request(GetResponseEvent $event)
 	{
+		if ($this->finder === null)
+		{
+			throw new \BadMethodCallException('The finder must not be null');
+		}
+
 		$request = $event->getRequest();
 		$context = new RequestContext();
 		$context->fromRequest($request);
