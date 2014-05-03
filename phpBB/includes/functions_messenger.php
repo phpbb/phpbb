@@ -1131,7 +1131,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 /**
 * SMTP Class
 * Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
-* See docs/AUTHORS for more details
+* See docs/AUTHORS.md for more details
 * @package phpBB3
 */
 class smtp_class
