@@ -149,7 +149,16 @@ abstract class form
 				$this->message->cc_sender();
 			}
 
-			$this->message->send($messenger, $this->phpEx);
+
+			if ($this->config['contact_admin_form_enable'])
+			{
+				$board_contact = generate_board_url() . '/memberlist.' . $this->phpEx . '?mode=contactadmin';
+			}
+			else
+			{
+				$board_contact = $this->config['board_contact'];
+			}
+			$this->message->send($messenger, $board_contact);
 
 			meta_refresh(3, append_sid($this->phpbb_root_path . 'index.' . $this->phpEx));
 			trigger_error($this->user->lang['EMAIL_SENT'] . '<br /><br />' . $this->get_return_message());

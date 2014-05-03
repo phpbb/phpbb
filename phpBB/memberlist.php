@@ -392,8 +392,17 @@ switch ($mode)
 						$messenger->replyto($user->data['user_email']);
 						$messenger->set_addresses($row);
 
+						if ($config['contact_admin_form_enable'])
+						{
+							$contact_link = generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin';
+						}
+						else
+						{
+							$contact_link = $config['board_contact'];
+						}
+
 						$messenger->assign_vars(array(
-							'BOARD_CONTACT'	=> generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin',
+							'BOARD_CONTACT'	=> $contact_link,
 							'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 							'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
 							'MESSAGE'		=> htmlspecialchars_decode($message))

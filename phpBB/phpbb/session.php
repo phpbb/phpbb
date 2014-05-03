@@ -1233,7 +1233,15 @@ class session
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
-			$message = sprintf($this->lang[$message], $till_date, '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
+			if ($config['contact_admin_form_enable'])
+			{
+				$contact_link = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
+			}
+			else
+			{
+				$contact_link = 'mailto:' . htmlspecialchars($config['board_contact']);
+			}
+			$message = sprintf($this->lang[$message], $till_date, '<a href="' . $contact_link . '">', '</a>');
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
 			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
 

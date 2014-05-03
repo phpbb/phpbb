@@ -158,7 +158,15 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		}
 		else
 		{
-			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
+			if ($config['contact_admin_form_enable'])
+			{
+				$contact_link = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
+			}
+			else
+			{
+				$contact_link = 'mailto:' . htmlspecialchars($config['board_contact']);
+			}
+			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
 			$template->assign_vars(array(
 				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,

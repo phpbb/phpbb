@@ -234,7 +234,7 @@ class message
 	* @param string $phpEx
 	* @return null
 	*/
-	public function send(\messenger $messenger, $phpEx)
+	public function send(\messenger $messenger, $contact)
 	{
 		if (!sizeof($this->recipients))
 		{
@@ -263,7 +263,7 @@ class message
 			$messenger->subject(htmlspecialchars_decode($this->subject));
 
 			$messenger->assign_vars(array(
-				'BOARD_CONTACT'	=> generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin',
+				'BOARD_CONTACT'	=> $contact,
 				'TO_USERNAME'	=> htmlspecialchars_decode($recipient['to_name']),
 				'FROM_USERNAME'	=> htmlspecialchars_decode($this->sender_name),
 				'MESSAGE'		=> htmlspecialchars_decode($this->body))

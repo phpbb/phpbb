@@ -2814,11 +2814,20 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			break;
 
 			case LOGIN_ERROR_PASSWORD_CONVERT:
+				if ($config['contact_admin_form_enable'])
+				{
+					$contact_link = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword');
+				}
+				else
+				{
+					$contact_link = 'mailto:' . htmlspecialchars($config['board_contact']);
+				}
+
 				$err = sprintf(
 					$user->lang[$result['error_msg']],
 					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
-					'<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">',
+					'<a href="' . $contact_link . '">',
 					'</a>'
 				);
 			break;
