@@ -1326,11 +1326,12 @@ switch ($mode)
 				'FROM'		=> array(
 					USERS_TABLE	=> 'u',
 				),
-				'WHERE'	=> 'u.user_id = pd.user_id and u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
+				'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
 			);
 			if ($config['load_cpf_memberlist'])
 			{
 				$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+				$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
 			}
 			if (!empty($sql_from))
 			{
@@ -1527,12 +1528,13 @@ switch ($mode)
 			'FROM'		=> array(
 				USERS_TABLE	=> 'u',
 			),
-			'WHERE'	=> 'u.user_id = pd.user_id and u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where,
+			'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where,
 			'ORDER_BY'	=> $order_by,
 		);
 		if ($config['load_cpf_memberlist'])
 		{
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
 		}
 		if (!empty($sql_from))
 		{
