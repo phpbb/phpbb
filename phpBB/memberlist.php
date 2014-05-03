@@ -1142,7 +1142,9 @@ switch ($mode)
 
 			if ($search_group_id)
 			{
-				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+				$sql_from = array(
+					USER_GROUP_TABLE	=> 'ug',
+				);
 			}
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
@@ -1293,7 +1295,9 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+			$sql_from[] = array(
+				USER_GROUP_TABLE	=> 'ug'
+			);
 			$order_by = 'ug.group_leader DESC, ';
 
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
@@ -1317,11 +1321,22 @@ switch ($mode)
 		// Count the users ...
 		if ($sql_where)
 		{
-			$sql = 'SELECT COUNT(u.user_id) AS total_users
-				FROM ' . USERS_TABLE . " u$sql_from
-				LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " pd ON (u.user_id = pd.user_id)
-				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where";
+			$sql_array = array(
+				'SELECT'	=> 'COUNT(u.user_id) as total_users',
+				'FROM'		=> array(
+					USERS_TABLE	=> 'u',
+					PROFILE_FIELDS_DATA_TABLE	=> 'pd',
+				),
+				'WHERE'	=> 'u.user_id = pd.user_id and u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
+			);
+			if (!empty($sql_from))
+			{
+				foreach($sql_from as $table => $table_prefix)
+				{
+					$sql_array['FROM'][$table] = $table_prefix; 
+				}
+			}
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 			$total_users = (int) $db->sql_fetchfield('total_users');
 			$db->sql_freeresult($result);
@@ -1504,13 +1519,24 @@ switch ($mode)
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
 
 		// Get us some users :D
-		$sql = "SELECT u.user_id
-			FROM " . USERS_TABLE . " u
-				$sql_from
-			LEFT JOIN " . PROFILE_FIELDS_DATA_TABLE . " pd ON (u.user_id = pd.user_id)
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where
-			ORDER BY $order_by";
+		$sql_array = array(
+			'SELECT'	=> 'u.user_id',
+			'FROM'		=> array(
+				USERS_TABLE	=> 'u',
+				PROFILE_FIELDS_DATA_TABLE	=> 'pd',
+			),
+			'WHERE'	=> 'u.user_id = pd.user_id and u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where,
+			'ORDER_BY'	=> $order_by,
+		);
+		if (!empty($sql_from))
+		{
+			foreach($sql_from as $table => $table_prefix)
+			{
+				$sql_array['FROM'][$table] = $table_prefix; 
+			}
+		}
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		$user_list = array();
@@ -1553,12 +1579,21 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
-				$sql = "SELECT u.*
-						$sql_select
-					FROM " . USERS_TABLE . " u
-						$sql_from
-					WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-						$sql_where_data";
+				$sql_array = array(
+					'SELECT'	=> 'u.*',
+					'FROM'	=> array(
+						USERS_TABLE	=> 'u',
+					),
+					'WHERE'	=> $db->sql_in_set('u.user_id', $user_list) . ' ' . $sql_where_data
+				);
+				if (!empty($sql_from))
+				{
+					foreach($sql_from as $table => $table_prefix)
+					{
+						$sql_array['FROM'][$table] = $table_prefix; 
+					}
+				}
+				$sql = $db->sql_build_query('SELECT', $sql_array);
 			}
 			else
 			{

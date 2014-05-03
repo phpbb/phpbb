@@ -285,7 +285,7 @@ class type_bool extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row)
+	public function make_sql_where($profile_row, $table_prefix = 'pd')
 	{
 		// Let's check if the value is set ... and is it diferent from novalue
 		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
@@ -296,11 +296,11 @@ class type_bool extends type_base
 
 		if ($profile_row['field_length'] == 2 && $this->request->is_set($field_ident) && $field_value == 'on')
 		{
-			$output = ' AND pd.' . $field_ident . ' = 1';
+			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = 1';
 		}
 		else if ($this->request->is_set($field_ident) && $field_value != $profile_row['field_novalue'] && $field_value!= 0 )
 		{
-			$output = ' AND pd.' . $field_ident . ' = ' . $this->db->sql_escape($field_value);
+			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = ' . $this->db->sql_escape($field_value);
 		}
 		return $output;
 	}
