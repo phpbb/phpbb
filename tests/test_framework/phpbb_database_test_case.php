@@ -54,40 +54,48 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	static public function setUpBeforeClass()
 	{
-		$schema_md5 = md5(serialize(static::setup_extensions()));
-
-		self::$schema_file = __DIR__ . '/schemas/' . $schema_md5 . '.json';
-		self::$phpbb_schema_copy = __DIR__ . '/schemas/schema_phpbb_copy.json';
-		self::$install_schema_file = __DIR__ . '/../../../../../install/schemas/schema.json';
-
-		if (!file_exists(self::$schema_file))
+		$setup_extensions = static::setup_extensions();
+		self::$schema_file = '';
+		if (!empty($setup_extensions))
 		{
-			global $phpbb_root_path, $phpEx, $table_prefix;
+			$schema_md5 = md5(serialize($setup_extensions));
 
-			$finder = new \phpbb\extension\finder(new phpbb_testcase_extension_manager(static::setup_extensions()), new \phpbb\filesystem(), $phpbb_root_path);
-			$classes = $finder->core_path('phpbb/')
-				->core_directory('db/migration/data')
-				->extension_directory('migrations')
-				->get_classes();
+			self::$schema_file = __DIR__ . '/../tmp/' . $schema_md5 . '.json';
+			self::$phpbb_schema_copy = __DIR__ . '/../tmp/schema_phpbb_copy.json';
+			self::$install_schema_file = __DIR__ . '/../../phpBB/install/schemas/schema.json';
 
-			$db = new \phpbb\db\driver\sqlite();
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
-			$schema_data = $schema_generator->get_schema();
+			if (!file_exists(self::$schema_file))
+			{
+				global $phpbb_root_path, $phpEx, $table_prefix;
 
-			$fp = fopen(self::$schema_file, 'wb');
-			fwrite($fp, json_encode($schema_data));
-			fclose($fp);
+				$finder = new \phpbb\extension\finder(new phpbb_testcase_extension_manager(static::setup_extensions()), new \phpbb\filesystem(), $phpbb_root_path);
+				$classes = $finder->core_path('phpbb/')
+					->core_directory('db/migration/data')
+					->extension_directory('migrations')
+					->get_classes();
+
+				$db = new \phpbb\db\driver\sqlite();
+				$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+				$schema_data = $schema_generator->get_schema();
+
+				$fp = fopen(self::$schema_file, 'wb');
+				fwrite($fp, json_encode($schema_data));
+				fclose($fp);
+			}
+
+			copy(self::$install_schema_file, self::$phpbb_schema_copy);
+			copy(self::$schema_file, self::$install_schema_file);
 		}
-
-		copy(self::$install_schema_file, self::$phpbb_schema_copy);
-		copy(self::$schema_file, self::$install_schema_file);
 
 		parent::setUpBeforeClass();
 	}
 
 	static public function tearDownAfterClass()
 	{
-		copy(self::$phpbb_schema_copy, self::$install_schema_file);
+		if (self::$schema_file !== '')
+		{
+			copy(self::$phpbb_schema_copy, self::$install_schema_file);
+		}
 
 		parent::tearDownAfterClass();
 	}
