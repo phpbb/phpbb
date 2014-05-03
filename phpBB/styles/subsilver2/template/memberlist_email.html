@@ -8,8 +8,10 @@
 	<tr>
 	<!-- IF S_CONTACT_ADMIN-->
 		<th colspan="2">{L_CONTACT_ADMIN}</th>
-	<!-- ELSE -->
+	<!-- ELSEIF S_SEND_USER -->
 		<th colspan="2">{L_SEND_EMAIL_USER}</th>
+	<!-- ELSE -->
+		<th colspan="2">{L_EMAIL_TOPIC}</th>
 	<!-- ENDIF -->
 	</tr>
 	<!-- IF ERROR_MESSAGE -->

@@ -2,23 +2,29 @@
 
 <!-- IF S_CONTACT_ADMIN-->
 <h2 class="titlespace">{L_CONTACT_ADMIN}</h2>
-<!-- ELSE -->
+<!-- ELSEIF S_SEND_USER -->
 <h2 class="titlespace">{L_SEND_EMAIL_USER}</h2>
+<!-- ELSE -->
+<h2 class="titlespace">{L_EMAIL_TOPIC}</h2>
 <!-- ENDIF -->
 
 <form method="post" action="{S_POST_ACTION}" id="post">
 
-<div class="panel">
-	<div class="inner">
 	<!-- IF CONTACT_INFO -->
-		<div class="postbody">
-			<div class="content">
-				{CONTACT_INFO}
+	<div class="panel">
+		<div class="inner">
+			<div class="postbody">
+				<div class="content">
+					{CONTACT_INFO}
+				</div>
 			</div>
 		</div>
+	</div>
 		<br class="clear" />
 	<!-- ENDIF -->
 
+	<div class="panel">
+		<div class="inner">
 	<div class="content">
 
 		<!-- IF ERROR_MESSAGE --><p class="error">{ERROR_MESSAGE}</p><!-- ENDIF -->
