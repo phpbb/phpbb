@@ -121,7 +121,6 @@ $lang = array_merge($lang, array(
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
 	'SENDER_EMAIL_ADDRESS'	=> 'Your email address',
 	'SENDER_NAME'			=> 'Your name',
-	'SEND_AIM_MESSAGE'		=> 'Send AIM message',
 	'SEND_ICQ_MESSAGE'		=> 'Send ICQ message',
 	'SEND_IM'				=> 'Instant messaging',
 	'SEND_JABBER_MESSAGE'	=> 'Send Jabber message',
