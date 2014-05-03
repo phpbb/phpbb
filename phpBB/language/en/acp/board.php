@@ -352,6 +352,19 @@ $lang = array_merge($lang, array(
 	'SESSION_LENGTH_EXPLAIN'	=> 'Sessions will expire after this time, in seconds.',
 ));
 
+// Contact Settings
+$lang = array_merge($lang, array(
+	'ACP_CONTACT_SETTINGS_EXPLAIN'		=> 'Here you can enable and disable the “Contact Us” page and also add a text that is displayed on the page.',
+
+	'CONTACT_US_ENABLE'				=> 'Enable “Contact Us” page',
+	'CONTACT_US_ENABLE_EXPLAIN'		=> 'This page allows users to send emails to board administrators',
+
+	'CONTACT_US_INFO'				=> '“Contact Us” information',
+	'CONTACT_US_INFO_EXPLAIN'		=> 'The message is displayed on the “Contact Us” page',
+	'CONTACT_US_INFO_PREVIEW'		=> '“Contact Us” information - Preview',
+	'CONTACT_US_INFO_UPDATED'		=> '“Contact Us” information has been updated.',
+));
+
 // Load Settings
 $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
