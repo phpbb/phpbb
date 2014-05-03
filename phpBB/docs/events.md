@@ -406,16 +406,16 @@ overall_header_navigation_prepend
 overall_header_navlink_append
 ===
 * Locations:
-	+ styles/prosilver/template/navbar_header.html
-	+ styles/subsilver2/template/breadcrumbs.html
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-b3
 * Purpose: Add content after each individual navlink (breadcrumb)
 
 overall_header_navlink_prepend
 ===
 * Locations:
-	+ styles/prosilver/template/navbar_header.html
-	+ styles/subsilver2/template/breadcrumbs.html
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-b3
 * Purpose: Add content before each individual navlink (breadcrumb)
 
