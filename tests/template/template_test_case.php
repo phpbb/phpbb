@@ -69,7 +69,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			),
 			new \phpbb\filesystem(),
 			$this->getMock('\phpbb\request\request'),
-			new \phpbb\config\config(array()),
+			$config,
 			$phpbb_root_path,
 			$phpEx
 		);
