@@ -32,7 +32,7 @@ class user_form extends form
 	*/
 	protected function get_user_row($user_id)
 	{
-		$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
+		$sql = 'SELECT user_id, username, user_colour, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
 			FROM ' . USERS_TABLE . '
 			WHERE user_id = ' . (int) $user_id . '
 				AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
@@ -125,7 +125,8 @@ class user_form extends form
 			'S_SEND_USER'			=> true,
 			'S_POST_ACTION'			=> append_sid($this->phpbb_root_path . 'memberlist.' . $this->phpEx, 'mode=email&amp;u=' . $this->recipient_id),
 
-			'USERNAME'				=> $this->recipient_row['username'],
+			'L_SEND_EMAIL_USER'		=> $this->user->lang('SEND_EMAIL_USER', $this->recipient_row['username']),
+			'USERNAME_FULL'			=> get_username_string('full', $this->recipient_row['user_id'], $this->recipient_row['username'], $this->recipient_row['user_colour']),
 			'SUBJECT'				=> $this->subject,
 			'MESSAGE'				=> $this->body,
 		));

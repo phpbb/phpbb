@@ -667,6 +667,7 @@ switch ($mode)
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
+			'L_SEND_EMAIL_USER'	=> $user->lang('SEND_EMAIL_USER', $member['username']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
