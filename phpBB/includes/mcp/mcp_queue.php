@@ -653,34 +653,27 @@ class mcp_queue
 				// Handle notifications
 				foreach ($post_info as $post_id => $post_data)
 				{
-					// A single topic approval may also happen here.
+					// A single topic approval may also happen here, so handle deleting the respective notification.
 					if (!$post_data['topic_posts_approved'])
 					{
+						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
 						$topic_id_list[] = $post_data['topic_id'];
 					}
-<<<<<<< HEAD
-					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
-
-<<<<<<< HEAD
-					// Only add notifications, if we are not reapproving post
-					// When the topic was already approved, but was edited and
-					// now needs re-approval, we don't want to notify the users
-					// again.
-					if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
-=======
-					// Send post notification only if a topic notification will not be sent.
-					if (!$send_topic_notification)
->>>>>>> c3f1f31... [ticket/12270] Correct notifications for posts/topics now working
-=======
 					// Send post notification only if a topic notification will not be sent.
 					else
->>>>>>> a21cc11... [ticket/12270] Better structured code and no debug error message
 					{
-						$phpbb_notifications->add_notifications(array(
-							'quote',
-							'bookmark',
-							'post',
-						), $post_data);
+						// Only add notifications, if we are not reapproving post
+						// When the topic was already approved, but was edited and
+						// now needs re-approval, we don't want to notify the users
+						// again.
+						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+						{
+							$phpbb_notifications->add_notifications(array(
+								'quote',
+								'bookmark',
+								'post',
+							), $post_data);
+						}
 					}
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
