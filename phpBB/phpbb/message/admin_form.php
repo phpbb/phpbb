@@ -136,8 +136,16 @@ class admin_form extends form
 	*/
 	public function render(\phpbb\template\template $template)
 	{
-		// @todo Add option to fill the db with it and add migration
-		$l_admin_info = '';//$this->config_text['contact_admin_info'];
+		$l_admin_info = $this->config_text->get('contact_admin_info');
+		if ($l_admin_info)
+		{
+			$l_admin_info = generate_text_for_display(
+				$this->config_text->get('contact_admin_info'),
+				$this->config['contact_admin_info_uid'],
+				$this->config['contact_admin_info_bitfield'],
+				$this->config['contact_admin_info_flags']
+			);
+		}
 
 		$template->assign_vars(array(
 			'S_CONTACT_ADMIN'	=> true,
