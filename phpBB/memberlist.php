@@ -1325,10 +1325,13 @@ switch ($mode)
 				'SELECT'	=> 'COUNT(u.user_id) as total_users',
 				'FROM'		=> array(
 					USERS_TABLE	=> 'u',
-					PROFILE_FIELDS_DATA_TABLE	=> 'pd',
 				),
 				'WHERE'	=> 'u.user_id = pd.user_id and u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
 			);
+			if ($config['load_cpf_memberlist'])
+			{
+				$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+			}
 			if (!empty($sql_from))
 			{
 				foreach($sql_from as $table => $table_prefix)
@@ -1523,11 +1526,14 @@ switch ($mode)
 			'SELECT'	=> 'u.user_id',
 			'FROM'		=> array(
 				USERS_TABLE	=> 'u',
-				PROFILE_FIELDS_DATA_TABLE	=> 'pd',
 			),
 			'WHERE'	=> 'u.user_id = pd.user_id and u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where,
 			'ORDER_BY'	=> $order_by,
 		);
+		if ($config['load_cpf_memberlist'])
+		{
+			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+		}
 		if (!empty($sql_from))
 		{
 			foreach($sql_from as $table => $table_prefix)
