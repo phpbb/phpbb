@@ -1109,6 +1109,7 @@ while ($row = $db->sql_fetchrow($result))
 		if ($poster_id == ANONYMOUS)
 		{
 			$user_cache_data = array(
+				'user_type'		=> USER_IGNORE,
 				'joined'		=> '',
 				'posts'			=> '',
 
