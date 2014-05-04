@@ -565,8 +565,6 @@ switch ($mode)
 			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
-		$poster_avatar = phpbb_get_user_avatar($member);
-
 		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
 		$zebra_enabled = $friends_enabled = $foes_enabled = $user_notes_enabled = $warn_user_enabled = false;
 
@@ -591,25 +589,31 @@ switch ($mode)
 			unset($module);
 		}
 
+		// Custom Profile Fields
+		$profile_fields = array();
+		if ($config['load_cpf_viewprofile'])
+		{
+			$cp = $phpbb_container->get('profilefields.manager');
+			$profile_fields = $cp->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
+		}
+
 		/**
 		* Modify user data before we display the profile
 		*
 		* @event core.memberlist_view_profile
 		* @var	array	member					Array with user's data
-		* @var	bool	user_notes_enabled		Is the mcp user notes module
-		*										enabled?
-		* @var	bool	warn_user_enabled		Is the mcp warnings module
-		*										enabled?
-		* @var	bool	zebra_enabled			Is the ucp zebra module
-		*										enabled?
-		* @var	bool	friends_enabled			Is the ucp friends module
-		*										enabled?
-		* @var	bool	foes_enabled			Is the ucp foes module
-		*										enabled?
+		* @var	bool	user_notes_enabled		Is the mcp user notes module enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module enabled?
+		* @var	bool	zebra_enabled			Is the ucp zebra module enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module enabled?
 		* @var	bool    friend					Is the user friend?
 		* @var	bool	foe						Is the user foe?
+		* @var	array	profile_fields			Array with user's profile field data
 		* @since 3.1.0-a1
 		* @changed 3.1.0-b2 Added friend and foe status
+		* @changed 3.1.0-b3 Added profile fields data
 		*/
 		$vars = array(
 			'member',
@@ -620,19 +624,11 @@ switch ($mode)
 			'foes_enabled',
 			'friend',
 			'foe',
+			'profile_fields',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
 
 		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
-
-		// Custom Profile Fields
-		$profile_fields = array();
-		if ($config['load_cpf_viewprofile'])
-		{
-			$cp = $phpbb_container->get('profilefields.manager');
-			$profile_fields = $cp->grab_profile_fields_data($user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
-		}
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
@@ -659,7 +655,6 @@ switch ($mode)
 			'SIGNATURE'		=> $member['user_sig'],
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
-			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
