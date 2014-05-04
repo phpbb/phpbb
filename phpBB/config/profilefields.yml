@@ -4,6 +4,7 @@ services:
         arguments:
             - @auth
             - @dbal.conn
+            - @dispatcher
             - @request
             - @template
             - @profilefields.type_collection
