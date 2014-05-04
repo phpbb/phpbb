@@ -635,12 +635,66 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
-				FROM ' . POSTS_TABLE . ' p
-					LEFT JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
-					LEFT JOIN ' . FORUMS_TABLE . ' f ON (p.forum_id = f.forum_id)
-					LEFT JOIN ' . USERS_TABLE . " u ON (p.poster_id = u.user_id)
-				WHERE $sql_where";
+			$sql_array = array(
+				'SELECT'	=> 'p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour',
+				'FROM'		=> array(
+					POSTS_TABLE		=> 'p',
+				),
+				'LEFT_JOIN' => array(
+					array(
+						'FROM'	=> array(TOPICS_TABLE => 't'),
+						'ON'	=> 'p.topic_id = t.topic_id',
+					),
+					array(
+						'FROM'	=> array(FORUMS_TABLE => 'f'),
+						'ON'	=> 'p.forum_id = f.forum_id',
+					),
+					array(
+						'FROM'	=> array(USERS_TABLE => 'u'),
+						'ON'	=> 'p.poster_id = u.user_id',
+					),
+				),
+				'WHERE'	=> $sql_where,
+				'ORDER_BY' => $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC'),
+			);
+
+			/**
+			* Event to modify the SQL query before the posts data is retrieved
+			*
+			* @event core.search_get_posts_data
+			* @var	array	sql_array		The SQL array
+			* @var	array	zebra			Array of zebra data for the current user
+			* @var	int		total_match_count	The total number of search matches
+			* @var	string	keywords		String of the specified keywords
+			* @var	array	sort_by_sql		Array of SQL sorting instructions
+			* @var	string	s_sort_dir		The sort direction
+			* @var	string	s_sort_key		The sort key
+			* @var	string	s_limit_days	Limit the age of results
+			* @var	array	ex_fid_ary		Array of excluded forum ids
+			* @var	array	author_id_ary	Array of exclusive author ids
+			* @var	string	search_fields	The data fields to search in
+			* @var	int		search_id		The id of the search request
+			* @var	int		start			The starting id of the results
+			* @since 3.1.0-b3
+			*/
+			$vars = array(
+				'sql_array',
+				'zebra',
+				'total_match_count',
+				'keywords',
+				'sort_by_sql',
+				's_sort_dir',
+				's_sort_key',
+				's_limit_days',
+				'ex_fid_ary',
+				'author_id_ary',
+				'search_fields',
+				'search_id',
+				'start',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 		}
 		else
 		{
@@ -689,8 +743,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$sql = "SELECT $sql_select
 				FROM $sql_from
 				WHERE $sql_where";
+			$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		}
-		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
 
