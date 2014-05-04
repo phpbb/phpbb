@@ -403,6 +403,22 @@ overall_header_navigation_prepend
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
 
+overall_header_navlink_append
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add content after each individual navlink (breadcrumb)
+
+overall_header_navlink_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add content before each individual navlink (breadcrumb)
+
 overall_header_page_body_before
 ===
 * Locations:
