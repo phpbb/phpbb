@@ -660,7 +660,7 @@ fieldset.polls dd div {
 	background-image: url("./en/icon_user_online.gif");
 }
 
-dd.profile-warnings em {
+dd.profile-warnings {
 	color: #BC2A4D;
 }
 

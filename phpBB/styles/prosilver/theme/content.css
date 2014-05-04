@@ -731,8 +731,7 @@ fieldset.polls dd div {
 	height: auto !important;
 }
 
-dd.profile-warnings em {
-	font-style: normal;
+dd.profile-warnings {
 	font-weight: bold;
 }
 
