@@ -804,7 +804,7 @@ function phpbb_own_realpath($path)
 
 	$max = sizeof($bits) - 1;
 
-	// Check if we are able to resolve symlinks, Windows cannot.
+	// Check if we are able to resolve symlinks, Windows (prior to Vista and Server 2008) cannot.
 	$symlink_resolve = (function_exists('readlink')) ? true : false;
 
 	foreach ($bits as $i => $bit)
