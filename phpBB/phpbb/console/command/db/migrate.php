@@ -103,7 +103,7 @@ class migrate extends \phpbb\console\command\command
 
 		if ($orig_version != $this->config['version'])
 		{
-			$this->log->add('admin', 'LOG_UPDATE_DATABASE', $orig_version, $this->config['version']);
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_UPDATE_DATABASE', time(), array($orig_version, $this->config['version']));
 		}
 
 		$this->finalise_update();
