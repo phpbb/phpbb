@@ -563,6 +563,22 @@ quickreply_editor_message_before
 * Since: 3.1.0-a4
 * Purpose: Add content before the quick reply textbox
 
+search_results_post_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add data after search result posts
+
+search_results_post_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add data before search result posts
+
 simple_footer_after
 ===
 * Locations:
