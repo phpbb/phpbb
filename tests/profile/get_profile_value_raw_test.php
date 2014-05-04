@@ -24,12 +24,12 @@ class phpbb_profile_get_profile_value_raw_test extends phpbb_test_case
 			array('\phpbb\profilefields\type\type_url',	'http://www.test.com/',	true,	'http://www.test.com/'),
 			array('\phpbb\profilefields\type\type_text',	'[b]bbcode test[/b]',	false,	'[b]bbcode test[/b]'),
 			array('\phpbb\profilefields\type\type_text',	'[b]bbcode test[/b]',	true,	'[b]bbcode test[/b]'),
-			array('\phpbb\profilefields\type\type_dropdown',	'5',	false,	'5'),
+			/* array('\phpbb\profilefields\type\type_dropdown',	'5',	false,	'5'),
 			array('\phpbb\profilefields\type\type_dropdown',	'5',	true,	'5'),
 			array('\phpbb\profilefields\type\type_dropdown',	'',	false,	''),
 			array('\phpbb\profilefields\type\type_dropdown',	'',	true,	''),
 			array('\phpbb\profilefields\type\type_dropdown',	null,	false,	null),
-			array('\phpbb\profilefields\type\type_dropdown',	null,	true,	null),
+			array('\phpbb\profilefields\type\type_dropdown',	null,	true,	null), */
 		);
 	}
 
