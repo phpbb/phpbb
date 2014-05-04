@@ -119,7 +119,20 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-// Prevent date/time functions from throwing E_WARNING on PHP 5.3 by setting a default timezone
+// In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
+// because we show E_WARNING errors and do not set a default timezone.
+// This is because we have our own timezone handling and work in UTC only anyway.
+
+// So what we basically want to do is set our timezone to UTC,
+// but we don't know what other scripts (such as bridges) are involved,
+// so we check whether a timezone is already set by calling date_default_timezone_get().
+
+// Unfortunately, date_default_timezone_get() itself might throw E_WARNING
+// if no timezone has been set, so we have to keep it quiet with @.
+
+// date_default_timezone_get() tries to guess the correct timezone first
+// and then falls back to UTC when everything fails.
+// We just set the timezone to whatever date_default_timezone_get() returns.
 date_default_timezone_set(@date_default_timezone_get());
 
 // Autoloading of dependencies.
