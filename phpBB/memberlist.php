@@ -1035,16 +1035,22 @@ switch ($mode)
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
-		//Build additional search parameter array
+		// Build additional search parameter array
 		$additional_search_parms = array();
+		// and check if PROFILE_FIELDS_DATA is not empty
+		$additionals_exist = 0;
 		if ($config['load_cpf_memberlist'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
-			$additional_search_parms = $cp->build_custom_fields_search_array(); 
+			$additionals_exist = $cp->profile_fields_data_exists();
+
+			if ($additionals_exist > 0)
+			{
+				$additional_search_parms = $cp->build_custom_fields_search_array(); 
 			
-			//Let's get search fields up
-			$cp->generate_search_fields();
-			
+				//Let's get search fields up
+				$cp->generate_search_fields();
+			}
 		}
 		//expand search URL parameters
 		if (!empty($additional_search_parms))
@@ -1328,7 +1334,7 @@ switch ($mode)
 				),
 				'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
 			);
-			if ($config['load_cpf_memberlist'])
+			if ($config['load_cpf_memberlist'] && !empty($additional_search_parms))
 			{
 				$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 				$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
@@ -1531,7 +1537,8 @@ switch ($mode)
 			'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where,
 			'ORDER_BY'	=> $order_by,
 		);
-		if ($config['load_cpf_memberlist'])
+
+		if ($config['load_cpf_memberlist'] && $additionals_exist > 0)
 		{
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';

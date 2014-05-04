@@ -436,6 +436,19 @@ class manager
 	}
 
 	/**
+	* Check if there is any records in CUSTOM_PROFILE_FILEDS_DATA
+	* so we have any requests
+	*/
+	public function profile_fields_data_exists()
+	{
+		$sql = 'SELECT COUNT(user_id) as count
+				FROM ' . $this->fields_data_table;
+		$result = $this->db->sql_query($sql);
+		$count = (int) $this->db->sql_fetchfield('count');
+		return $count;
+	}
+
+	/**
 	* Build Array for user search filter extension
 	* @return array
 	*/
