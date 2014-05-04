@@ -66,3 +66,8 @@ dd.option {
 .icon-notification {
 	*z-index: 2;
 }
+
+/* Fixes header-avatar aspect-ratio in IE8 */
+.header-avatar img {
+	height: 25px;
+}
