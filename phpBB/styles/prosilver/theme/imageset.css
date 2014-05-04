@@ -351,9 +351,9 @@ span.imageset {
 	padding-top: 14px;
 }
 .imageset.icon_topic_poll {
-	background-image: url("./images/icon_topic_poll.png");
-	padding-left: 1px;
-	padding-top: 1px;
+	background-image: url("./images/icon_topic_poll.gif");
+	padding-left: 11px;
+	padding-top: 10px;
 }
 .imageset.icon_user_warn {
 	background-image: url("./images/icon_user_warn.gif");
