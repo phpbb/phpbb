@@ -637,6 +637,22 @@ topiclist_row_append
 * Since: 3.1.0-a1
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
+ucp_agreement_terms_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_agreement.html
+    + styles/subsilver2/template/ucp_agreement.html
+* Since: 3.1.0-b3
+* Purpose: Add content after the terms of agreement text at user registration
+
+ucp_agreement_terms_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_agreement.html
+    + styles/subsilver2/template/ucp_agreement.html
+* Since: 3.1.0-b3
+* Purpose: Add content before the terms of agreement text at user registration
+
 ucp_pm_viewmessage_contact_fields_after
 ===
 * Locations:
