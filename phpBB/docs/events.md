@@ -587,6 +587,20 @@ search_results_post_before
 * Since: 3.1.0-b3
 * Purpose: Add data before search result posts
 
+search_results_postprofile_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add content after the post author and stats in search results (posts view mode)
+
+search_results_postprofile_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly before the post author in search results (posts view mode)
+
 simple_footer_after
 ===
 * Locations:
