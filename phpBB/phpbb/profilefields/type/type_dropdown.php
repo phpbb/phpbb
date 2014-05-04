@@ -276,7 +276,7 @@ class type_dropdown extends type_base
 		$default_value = $profile_row['field_novalue'];
 		$field_value = $this->request->variable($field_ident, $default_value);
 		$output = '';
-		
+
 		if ($this->request->is_set($field_ident) && $field_value != $default_value)
 		{
 			$output = ' AND ' .$table_prefix. '.' . $field_ident . ' = '. $this->db->sql_escape($field_value);

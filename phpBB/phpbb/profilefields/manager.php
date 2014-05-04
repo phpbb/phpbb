@@ -458,14 +458,14 @@ class manager
 
 		// Expand filter to include custom profile fields
 		$sql_array = array (
-                        'SELECT'        => 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
-                        'FROM'          => array(
-                                $this->fields_table     => 'pf',
-                                $this->fields_language_table    => 'pl',
-                        ),
-                        'WHERE'         => 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
-                );
-                $sql = $this->db->sql_build_query('SELECT', $sql_array);
+			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
+			'FROM'	=> array(
+				$this->fields_table	=> 'pf',
+				$this->fields_language_table	=> 'pl',
+			),
+			'WHERE'	=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
+		);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, 300);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
