@@ -354,7 +354,7 @@ class build_package
 		return $result;
 	}
 
-	private function add_files_recursive(array &$result, $directory_absolute, $directory)
+	protected function add_files_recursive(array &$result, $directory_absolute, $directory)
 	{
 		$files = scandir($directory_absolute);
 		foreach ($files as $file)
