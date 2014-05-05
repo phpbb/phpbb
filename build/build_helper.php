@@ -328,8 +328,9 @@ class build_package
 			}
 
 			$line = str_replace('Only in ' . $package_name, '', $line);
+			$line = ltrim($line, '/');
 
-			if (substr(0, 1, $line) == '/')
+			if (substr($line, 0, 1) == ':')
 			{
 				$replace = '';
 			}
@@ -339,11 +340,36 @@ class build_package
 			}
 
 			$line = str_replace(': ', $replace, $line);
-			$line = ltrim($line, '/');
 
-			$result[] = $line;
+			if (is_dir("{$this->locations['old_versions']}{$package_name}/{$line}"))
+			{
+				$this->add_files_recursive($result, "{$this->locations['old_versions']}{$package_name}/{$line}", $line);
+			}
+			else
+			{
+				$result[] = $line;
+			}
 		}
 
 		return $result;
+	}
+
+	function add_files_recursive(array &$result, $directory_absolute, $directory)
+	{
+		$files = scandir($directory_absolute);
+		foreach ($files as $file)
+		{
+			if (is_dir($directory_absolute . '/' . $file))
+			{
+				if ($file != '.' && $file != '..')
+				{
+					$this->add_files_recursive($result, $directory_absolute . '/' . $file, $directory . '/' . $file);
+				}
+			}
+			else
+			{
+				$result[] = $directory . '/' . $file;
+			}
+		}
 	}
 }
