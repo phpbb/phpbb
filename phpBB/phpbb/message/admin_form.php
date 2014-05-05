@@ -101,9 +101,27 @@ class admin_form extends form
 			{
 				$this->errors[] = $this->user->lang['EMPTY_SENDER_NAME'];
 			}
-			if (!$this->sender_address || !preg_match('/^' . get_preg_expression('email') . '$/i', $this->sender_address))
+
+			if (!function_exists('validate_data'))
 			{
-				$this->errors[] = $this->user->lang['EMPTY_SENDER_EMAIL'];
+				require($this->phpbb_root_path . 'includes/functions_user.' . $this->phpEx);
+			}
+
+			$validate_array = validate_data(
+				array(
+					'email' => $this->sender_address,
+				),
+				array(
+					'email' => array(
+						array('string', false, 6, 60),
+						array('email'),
+					),
+				)
+			);
+
+			foreach ($validate_array as $error)
+			{
+				$this->errors[] = $this->user->lang[$error];
 			}
 
 			$this->message->set_sender($this->user->ip, $this->sender_name, $this->sender_address, $this->user->lang_name);
