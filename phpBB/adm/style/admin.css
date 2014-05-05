@@ -911,6 +911,11 @@ table.styles td.users, table td.mark {
 	text-align: center;
 }
 
+table.fixed-width-table {
+	table-layout: fixed;
+	word-break: break-word;
+}
+
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {

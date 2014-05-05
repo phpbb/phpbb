@@ -1222,7 +1222,7 @@ class acp_attachments
 						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
 						'FILESIZE'			=> get_formatted_filesize((int) $row['filesize']),
 						'FILETIME'			=> $user->format_date((int) $row['filetime']),
-						'REAL_FILENAME'		=> (!$row['in_message']) ? utf8_wordwrap(utf8_basename((string) $row['real_filename']), 40, '<br />', true) : '',
+						'REAL_FILENAME'		=> (!$row['in_message']) ? utf8_basename((string) $row['real_filename']) : '',
 						'PHYSICAL_FILENAME'	=> utf8_basename((string) $row['physical_filename']),
 						'EXT_GROUP_NAME'	=> (!empty($extensions[$row['extension']]['group_name'])) ? $user->lang['EXT_GROUP_' . $extensions[$row['extension']]['group_name']] : '',
 						'COMMENT'			=> $comment,
