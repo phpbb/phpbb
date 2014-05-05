@@ -11,13 +11,18 @@ require_once dirname(__FILE__) . '/driver/foobar.php';
 
 class phpbb_avatar_manager_test extends \phpbb_test_case
 {
+	/** @var \phpbb\avatar\manager */
+	protected $manager;
+	protected $avatar_foobar;
+	protected $avatar_barfoo;
+
 	public function setUp()
 	{
 		global $phpbb_root_path, $phpEx;
 
 		// Mock phpbb_container
-		$this->phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
-		$this->phpbb_container->expects($this->any())
+		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container->expects($this->any())
 			->method('get')
 			->will($this->returnArgument(0));
 
@@ -59,7 +64,7 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 		$config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
 
 		// Set up avatar manager
-		$this->manager = new \phpbb\avatar\manager($config, $avatar_drivers, $this->phpbb_container);
+		$this->manager = new \phpbb\avatar\manager($config, $avatar_drivers, $phpbb_container);
 	}
 
 	protected function avatar_drivers()
@@ -221,8 +226,6 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 	*/
 	public function test_clean_row(array $input, array $output, $prefix = '')
 	{
-		$cleaned_row = array();
-
 		$cleaned_row = \phpbb\avatar\manager::clean_row($input, $prefix);
 		foreach ($output as $key => $value)
 		{
