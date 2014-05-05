@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
+class phpbb_passwords_manager_test extends \phpbb_test_case
 {
 	protected $passwords_drivers;
 

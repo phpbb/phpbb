@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_passwords_helper_test extends PHPUnit_Framework_TestCase
+class phpbb_passwords_helper_test extends \phpbb_test_case
 {
 	public function setUp()
 	{

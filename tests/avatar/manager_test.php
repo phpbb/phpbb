@@ -9,7 +9,7 @@
 
 require_once dirname(__FILE__) . '/driver/foobar.php';
 
-class phpbb_avatar_manager_test extends PHPUnit_Framework_TestCase
+class phpbb_avatar_manager_test extends \phpbb_test_case
 {
 	public function setUp()
 	{
