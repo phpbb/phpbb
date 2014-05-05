@@ -312,4 +312,38 @@ class build_package
 
 		return $result;
 	}
+
+	function collect_deleted_files($deleted_filename, $package_name)
+	{
+		$result = array();
+		$file_contents = file($deleted_filename);
+
+		foreach ($file_contents as $line)
+		{
+			$line = trim($line);
+
+			if (!$line)
+			{
+				continue;
+			}
+
+			$line = str_replace('Only in ' . $package_name, '', $line);
+
+			if (substr(0, 1, $line) == '/')
+			{
+				$replace = '';
+			}
+			else
+			{
+				$replace = '/';
+			}
+
+			$line = str_replace(': ', $replace, $line);
+			$line = ltrim($line, '/');
+
+			$result[] = $line;
+		}
+
+		return $result;
+	}
 }
