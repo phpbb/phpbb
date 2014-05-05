@@ -1426,6 +1426,20 @@ phpbb.getFunctionByName = function (functionName) {
 };
 
 /**
+* Update browser history URL to point to specific post in viewtopic.php
+* when using view=unread#unread link.
+*
+* @return undefined
+*/
+phpbb.setUnreadUrl = function() {
+	var url = $('#unread[data-url]').data('url');
+
+	if (url && typeof history !== 'undefined' && typeof history.replaceState !== 'undefined') {
+		history.replaceState(null, document.title, url);
+	}
+};
+
+/**
 * Apply code editor to all textarea elements with data-bbcode attribute
 */
 $(document).ready(function() {
@@ -1444,6 +1458,8 @@ $(document).ready(function() {
 	$('#color_palette_placeholder').each(function() {
 		phpbb.registerPalette($(this));
 	});
+
+	phpbb.setUnreadUrl();
 });
 
 })(jQuery); // Avoid conflicts with other libraries
