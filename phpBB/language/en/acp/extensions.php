@@ -112,5 +112,4 @@ $lang = array_merge($lang, array(
 	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
 	'DOWNLOAD_LATEST'		=> 'Download Version',
 	'NO_VERSIONCHECK'		=> 'No informations about how get the latest version.',
-//	'NO_INFO'					=> 'Version server could not be contacted',
 ));
