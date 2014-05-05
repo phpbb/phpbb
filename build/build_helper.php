@@ -313,7 +313,7 @@ class build_package
 		return $result;
 	}
 
-	function collect_deleted_files($deleted_filename, $package_name)
+	public function collect_deleted_files($deleted_filename, $package_name)
 	{
 		$result = array();
 		$file_contents = file($deleted_filename);
@@ -354,7 +354,7 @@ class build_package
 		return $result;
 	}
 
-	function add_files_recursive(array &$result, $directory_absolute, $directory)
+	private function add_files_recursive(array &$result, $directory_absolute, $directory)
 	{
 		$files = scandir($directory_absolute);
 		foreach ($files as $file)
