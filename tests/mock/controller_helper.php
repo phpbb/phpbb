@@ -16,7 +16,7 @@ class phpbb_mock_controller_helper extends \phpbb\controller\helper
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$provider->set_ext_finder($manager->get_finder());
+		$provider->find_routing_files($manager->get_finder());
 		$this->route_collection = $provider->find($phpbb_root_path_ext)->get_routes();
 	}
 }

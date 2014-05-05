@@ -46,7 +46,7 @@ class provider
 	* @param \phpbb\extension\finder $finder
 	* @return null
 	*/
-	public function set_ext_finder(\phpbb\extension\finder $finder)
+	public function find_routing_files(\phpbb\extension\finder $finder)
 	{
 		// We hardcode the path to the core config directory
 		// because the finder cannot find it
