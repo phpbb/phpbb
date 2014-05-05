@@ -29,8 +29,8 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
-			$this->phpbb_root_path,
-			$this->phpEx
+			$phpbb_root_path,
+			$phpEx
 		);
 
 		// $this->avatar_foobar will be needed later on
