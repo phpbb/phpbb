@@ -23,7 +23,6 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 
 		// Prepare dependencies for avatar manager and driver
 		$config = new \phpbb\config\config(array());
-		$request = $this->getMock('\phpbb\request\request');
 		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
 		$path_helper =  new \phpbb\path_helper(
 			new \phpbb\symfony_request(
