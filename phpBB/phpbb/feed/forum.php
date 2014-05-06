@@ -132,6 +132,7 @@ class forum extends \phpbb\feed\post_base
 		parent::adjust_item($item_row, $row);
 
 		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
+		$item_row['forum_id'] = $this->forum_id;
 	}
 
 	function get_item()
