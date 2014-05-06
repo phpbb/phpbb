@@ -51,9 +51,8 @@ class topics_active extends \phpbb\feed\topic_base
 		// We really have to get the post ids first!
 		$sql = 'SELECT topic_last_post_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('forum_id', $in_fid_ary) . '
-				AND topic_moved_id = 0
-				AND topic_visibility = ' . ITEM_APPROVED . '
+			WHERE topic_moved_id = 0
+				AND ' . $this->content_visibility->get_forums_visibility_sql('topic', $in_fid_ary) . '
 				' . $last_post_time_sql . '
 			ORDER BY topic_last_post_time DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
@@ -74,7 +73,7 @@ class topics_active extends \phpbb\feed\topic_base
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_views,
 							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
-							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment',
+							p.post_id, p.post_time, p.post_edit_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, t.topic_visibility',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',

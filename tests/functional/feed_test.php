@@ -480,7 +480,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_create_softdelete_post()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -504,7 +503,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_softdelete_post()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -532,7 +530,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_softdeleted_post_admin()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -575,7 +572,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_softdeleted_post_guest()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -609,7 +605,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_softdelete_topic()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -639,7 +634,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_softdeleted_topic_admin()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -709,7 +703,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_softdeleted_topic_guest()
 	{
-		$this->markTestIncomplete('Softdeleted posts/topics are not marked in feeds yet, see PHPBB3-12460');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -758,7 +751,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_create_unapproved_post()
 	{
-		$this->markTestIncomplete('Unapproved posts/topics are not marked in feeds yet, see PHPBB3-12459');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -780,7 +772,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_unapproved_post_admin()
 	{
-		$this->markTestIncomplete('Unapproved posts/topics are not marked in feeds yet, see PHPBB3-12459');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -823,7 +814,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_unapproved_post_disapprove_user()
 	{
-		$this->markTestIncomplete('Unapproved posts/topics are not marked in feeds yet, see PHPBB3-12459');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -857,7 +847,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_create_unapproved_topic()
 	{
-		$this->markTestIncomplete('Unapproved posts/topics are not marked in feeds yet, see PHPBB3-12459');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -877,7 +866,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_unapproved_topic_admin()
 	{
-		$this->markTestIncomplete('Unapproved posts/topics are not marked in feeds yet, see PHPBB3-12459');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -944,7 +932,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_unapproved_topic_disapprove_user()
 	{
-		$this->markTestIncomplete('Unapproved posts/topics are not marked in feeds yet, see PHPBB3-12459');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1.1',
@@ -1026,7 +1013,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->assert_feeds(array(
 			'f' => array(
 				array(
-					'nb_entries' => 2,
+					'nb_entries' => 4,
 					'id' => $this->data['forums']['Feeds #1'],
 					'attachments' => array(
 						1 => array( // First entry
@@ -1054,7 +1041,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 11,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1067,7 +1054,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1080,7 +1067,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1093,7 +1080,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1153,7 +1140,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 6,
+					'nb_entries' => 7,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1166,7 +1153,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 6,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1179,7 +1166,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 6,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
@@ -1192,7 +1179,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 5,
+					'nb_entries' => 6,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
