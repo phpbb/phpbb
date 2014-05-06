@@ -32,7 +32,7 @@ ul.topiclist dt, ul.topiclist dd {
 
 ul.topiclist dt {
 	width: 100%;
-	margin-right: -410px;
+	margin-right: -440px;
 	font-size: 1.1em;
 }
 
@@ -49,7 +49,7 @@ ul.topiclist.two-columns dt {
 }
 
 ul.topiclist dt .list-inner {
-	margin-right: 410px;
+	margin-right: 440px;
 	padding-left: 5px;
 	padding-right: 5px;
 }
@@ -119,11 +119,11 @@ li.header dt, li.header dd {
 li.header dt {
 	font-weight: bold;
 	width: 100%;
-	margin-right: -410px;
+	margin-right: -440px;
 }
 
 li.header dt .list-inner {
-	margin-right: 410px;
+	margin-right: 440px;
 }
 
 li.header dd {
@@ -179,6 +179,10 @@ dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
 	text-align: center;
 	line-height: 2.2em;
 	font-size: 1.2em;
+}
+
+dd.posts, dd.topics, dd.views {
+	width: 95px;
 }
 
 /* List in forum description */
