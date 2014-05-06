@@ -313,6 +313,13 @@ class build_package
 		return $result;
 	}
 
+	/**
+	* Collect the list of the deleted files from a list of deleted files and folders.
+	*
+	* @param string $deleted_filename   The full path to a file containing the list of deleted files and directories
+	* @param string $package_name       The name of the package
+	* @return array
+	*/
 	public function collect_deleted_files($deleted_filename, $package_name)
 	{
 		$result = array();
@@ -343,7 +350,7 @@ class build_package
 
 			if (is_dir("{$this->locations['old_versions']}{$package_name}/{$line}"))
 			{
-				$this->add_files_recursive($result, "{$this->locations['old_versions']}{$package_name}/{$line}", $line);
+				$result = array_merge($result, $this->get_files_recursive("{$this->locations['old_versions']}{$package_name}/{$line}", $line));
 			}
 			else
 			{
@@ -354,16 +361,25 @@ class build_package
 		return $result;
 	}
 
-	protected function add_files_recursive(array &$result, $directory_absolute, $directory)
+	/**
+	* Get recursively the list of the files contained in a directory
+	*
+	* @param string $directory_absolute Absolute path to the directory
+	* @param string $directory          Relative path to the directory (used to prefixed the name of the files)
+	* @return array
+	*/
+	protected function get_files_recursive($directory_absolute, $directory)
 	{
+		$result = array();
 		$files = scandir($directory_absolute);
+
 		foreach ($files as $file)
 		{
 			if (is_dir($directory_absolute . '/' . $file))
 			{
 				if ($file != '.' && $file != '..')
 				{
-					$this->add_files_recursive($result, $directory_absolute . '/' . $file, $directory . '/' . $file);
+					$result = array_merge($result, $this->get_files_recursive($directory_absolute . '/' . $file, $directory . '/' . $file));
 				}
 			}
 			else
@@ -371,5 +387,7 @@ class build_package
 				$result[] = $directory . '/' . $file;
 			}
 		}
+
+		return $result;
 	}
 }
