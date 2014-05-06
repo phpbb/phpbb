@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_class_loader_test extends PHPUnit_Framework_TestCase
+class phpbb_class_loader_test extends \phpbb_test_case
 {
 	public function setUp()
 	{
