@@ -1,4 +1,15 @@
 services:
+    console.command.cache.purge:
+        class: phpbb\console\command\cache\purge
+        arguments:
+            - @cache.driver
+            - @dbal.conn
+            - @auth
+            - @log
+            - @user
+        tags:
+            - { name: console.command }
+
     console.command.config.delete:
         class: phpbb\console\command\config\delete
         arguments:
