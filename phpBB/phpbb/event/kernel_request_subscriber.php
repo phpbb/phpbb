@@ -18,10 +18,10 @@ use Symfony\Component\Routing\RequestContext;
 class kernel_request_subscriber implements EventSubscriberInterface
 {
 	/**
-	* Extension finder object
-	* @var \phpbb\extension\finder
+	* Extension manager object
+	* @var \phpbb\extension\manager
 	*/
-	protected $finder;
+	protected $manager;
 
 	/**
 	* PHP extension
@@ -38,15 +38,15 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	/**
 	* Construct method
 	*
-	* @param \phpbb\extension\finder $finder Extension finder object
+	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param string $root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\extension\finder $finder, $root_path, $php_ext)
+	public function __construct(\phpbb\extension\manager $manager, $root_path, $php_ext)
 	{
-		$this->finder = $finder;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+		$this->manager = $manager;
 	}
 
 	/**
@@ -55,6 +55,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	* This is responsible for setting up the routing information
 	*
 	* @param GetResponseEvent $event
+	* @throws \BadMethodCallException
 	* @return null
 	*/
 	public function on_kernel_request(GetResponseEvent $event)
@@ -63,7 +64,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 		$context = new RequestContext();
 		$context->fromRequest($request);
 
-		$matcher = phpbb_get_url_matcher($this->finder, $context, $this->root_path, $this->php_ext);
+		$matcher = phpbb_get_url_matcher($this->manager, $context, $this->root_path, $this->php_ext);
 		$router_listener = new RouterListener($matcher, $context);
 		$router_listener->onKernelRequest($event);
 	}
