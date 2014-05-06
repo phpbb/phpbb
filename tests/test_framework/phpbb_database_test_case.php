@@ -80,9 +80,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
 				$schema_data = $schema_generator->get_schema();
 
-				$fp = fopen(self::$schema_file, 'wb');
-				fwrite($fp, json_encode($schema_data));
-				fclose($fp);
+				file_put_contents(self::$schema_file, json_encode($schema_data));
 			}
 
 			copy(self::$install_schema_file, self::$phpbb_schema_copy);
