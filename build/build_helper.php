@@ -325,19 +325,19 @@ class build_package
 		$result = array();
 		$file_contents = file($deleted_filename);
 
-		foreach ($file_contents as $line)
+		foreach ($file_contents as $filename)
 		{
-			$line = trim($line);
+			$filename = trim($filename);
 
-			if (!$line)
+			if (!$filename)
 			{
 				continue;
 			}
 
-			$line = str_replace('Only in ' . $package_name, '', $line);
-			$line = ltrim($line, '/');
+			$filename = str_replace('Only in ' . $package_name, '', $filename);
+			$filename = ltrim($filename, '/');
 
-			if (substr($line, 0, 1) == ':')
+			if (substr($filename, 0, 1) == ':')
 			{
 				$replace = '';
 			}
@@ -346,45 +346,26 @@ class build_package
 				$replace = '/';
 			}
 
-			$line = str_replace(': ', $replace, $line);
+			$filename = str_replace(': ', $replace, $filename);
 
-			if (is_dir("{$this->locations['old_versions']}{$package_name}/{$line}"))
+			if (is_dir("{$this->locations['old_versions']}{$package_name}/{$filename}"))
 			{
-				$result = array_merge($result, $this->get_files_recursive("{$this->locations['old_versions']}{$package_name}/{$line}", $line));
-			}
-			else
-			{
-				$result[] = $line;
-			}
-		}
+				$iterator = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator(
+						"{$this->locations['old_versions']}{$package_name}/{$filename}",
+						\FilesystemIterator::UNIX_PATHS | \FilesystemIterator::SKIP_DOTS
+					),
+					\RecursiveIteratorIterator::LEAVES_ONLY
+				);
 
-		return $result;
-	}
-
-	/**
-	* Get recursively the list of the files contained in a directory
-	*
-	* @param string $directory_absolute Absolute path to the directory
-	* @param string $directory          Relative path to the directory (used to prefixed the name of the files)
-	* @return array
-	*/
-	protected function get_files_recursive($directory_absolute, $directory)
-	{
-		$result = array();
-		$files = scandir($directory_absolute);
-
-		foreach ($files as $file)
-		{
-			if (is_dir($directory_absolute . '/' . $file))
-			{
-				if ($file != '.' && $file != '..')
+				foreach ($iterator as $file_info)
 				{
-					$result = array_merge($result, $this->get_files_recursive($directory_absolute . '/' . $file, $directory . '/' . $file));
+					$result[] = "{$filename}/{$iterator->getSubPathname()}";
 				}
 			}
 			else
 			{
-				$result[] = $directory . '/' . $file;
+				$result[] = $filename;
 			}
 		}
 
