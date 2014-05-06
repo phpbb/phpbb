@@ -44,17 +44,9 @@ require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
-class phpbb_extension_empty_manager extends \phpbb\extension\manager
-{
-	public function __construct()
-	{
-		$this->extensions = array();
-	}
-}
-
-$finder = new \phpbb\extension\finder(new \phpbb_extension_empty_manager(), new \phpbb\filesystem(), $phpbb_root_path);
+$finder = new \phpbb\extension\finder(new \phpbb\filesystem(), $phpbb_root_path);
 $classes = $finder->core_path('phpbb/')
-	->directory('db/migration/data')
+	->directory('/db/migration/data')
 	->get_classes();
 
 $db = new \phpbb\db\driver\sqlite();

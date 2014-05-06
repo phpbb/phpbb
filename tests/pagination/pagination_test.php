@@ -35,16 +35,16 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
-		$this->finder = new \phpbb\extension\finder(
-			$manager,
+		$finder = new \phpbb\extension\finder(
 			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache()
 		);
+		$finder->set_extensions($manager->all_enabled());
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$provider = new \phpbb\controller\provider();
-		$provider->find_routing_files($this->finder);
+		$provider->find_routing_files($finder);
 		$provider->find(dirname(__FILE__) . '/');
 		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, '', 'php', dirname(__FILE__) . '/');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
