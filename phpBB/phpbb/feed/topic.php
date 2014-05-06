@@ -105,6 +105,13 @@ class topic extends \phpbb\feed\post_base
 		return true;
 	}
 
+	function adjust_item(&$item_row, &$row)
+	{
+		parent::adjust_item($item_row, $row);
+
+		$item_row['forum_id'] = $this->forum_id;
+	}
+
 	function get_item()
 	{
 		return ($row = parent::get_item()) ? array_merge($this->topic_data, $row) : $row;
