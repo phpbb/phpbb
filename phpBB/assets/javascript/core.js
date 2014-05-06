@@ -694,6 +694,74 @@ $('#phpbb').click(function(e) {
 	}
 });
 
+phpbb.history = {};
+
+/**
+* Check whether a method in the native history object is supported.
+*
+* @param string fn	Method name.
+* @return bool Returns true if the method is supported.
+*/
+phpbb.history.isSupported = function(fn) {
+	if (typeof history === 'undefined' || typeof history[fn] === 'undefined') {
+		return false;
+	}
+	return true;
+};
+
+/**
+* Wrapper for the pushState and replaceState methods of the
+* native history object.
+*
+* @param string mode	Mode. Either push or replace.
+* @param string url	New URL.
+* @param string title Optional page title.
+* @patam object obj	Optional state object.
+*
+* @return undefined
+*/
+phpbb.history.alterUrl = function(mode, url, title, obj) {
+	var fn = mode + 'State';
+
+	if (!url || !phpbb.history.isSupported(fn)) {
+		return;
+	}
+	if (!title) {
+		title = document.title;
+	}
+	if (!obj) {
+		obj = null;
+	}
+
+	history[fn](obj, title, url);
+};
+
+/**
+* Wrapper for the native history.replaceState method.
+*
+* @param string url	New URL.
+* @param string title Optional page title.
+* @patam object obj	Optional state object.
+*
+* @return undefined
+*/
+phpbb.history.replaceUrl = function(url, title, obj) {
+	phpbb.history.alterUrl('replace', url, title, obj);
+};
+
+/**
+* Wrapper for the native history.pushState method.
+*
+* @param string url	New URL.
+* @param string title Optional page title.
+* @patam object obj	Optional state object.
+*
+* @return undefined
+*/
+phpbb.history.pushUrl = function(url, title, obj) {
+	phpbb.history.alterUrl('push', url, title, obj);
+};
+
 /**
 * Hide the optgroups that are not the selected timezone
 *
@@ -1444,6 +1512,10 @@ $(document).ready(function() {
 	$('#color_palette_placeholder').each(function() {
 		phpbb.registerPalette($(this));
 	});
+
+	// Update browser history URL to point to specific post in viewtopic.php
+	// when using view=unread#unread link.
+	phpbb.history.replaceUrl($('#unread[data-url]').data('url'));
 });
 
 })(jQuery); // Avoid conflicts with other libraries
