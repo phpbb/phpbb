@@ -370,10 +370,8 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function update_notifications($notification_type_name, $data)
+	public function update_notification($notification, $data)
 	{
-		$notification = $this->notification_manager->get_item_type_class($notification_type_name);
-
 		// Allow the notifications class to over-ride the update_notifications functionality
 		if (method_exists($notification, 'update_notifications'))
 		{
@@ -384,7 +382,7 @@ class board extends \phpbb\notification\method\base
 			}
 		}
 
-		$notification_type_id = $this->notification_manager->get_notification_type_id($notification_type_name);
+		$notification_type_id = $this->notification_manager->get_notification_type_id($notification->get_type());
 		$item_id = $notification->get_item_id($data);
 		$update_array = $notification->create_update_array($data);
 

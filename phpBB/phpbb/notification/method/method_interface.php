@@ -137,8 +137,8 @@ interface method_interface
 	/**
 	* Update a notification
 	*
-	* @param string $notification_type_name Type identifier of item types
+	* @param \phpbb\notification\type\type_interface $notification Notification to update
 	* @param array $data Data specific for this type that will be updated
 	*/
-	public function update_notifications($notification_type_name, $data);
+	public function update_notification($notification, $data);
 }

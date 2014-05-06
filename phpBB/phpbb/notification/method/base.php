@@ -186,7 +186,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function update_notifications($notification_type_name, $data)
+	public function update_notification($notification, $data)
 	{
 	}
 }

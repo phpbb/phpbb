@@ -47,9 +47,6 @@ class manager
 	protected $notification_types_table;
 
 	/** @var string */
-	protected $notifications_table;
-
-	/** @var string */
 	protected $user_notifications_table;
 
 	/**
@@ -71,7 +68,7 @@ class manager
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
@@ -322,32 +319,12 @@ class manager
 			return;
 		}
 
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
-		{
-			$method->update_notifications($notification_type_name, $data);
-		}
-
 		$notification = $this->get_item_type_class($notification_type_name);
 
-		// Allow the notifications class to over-ride the update_notifications functionality
-		if (method_exists($notification, 'update_notifications'))
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			// Return False to over-ride the rest of the update
-			if ($notification->update_notifications($data) === false)
-			{
-				return;
-			}
+			$method->update_notification($notification, $data);
 		}
-
-		$notification_type_id = $this->get_notification_type_id($notification_type_name);
-		$item_id = $notification->get_item_id($data);
-		$update_array = $notification->create_update_array($data);
-
-		$sql = 'UPDATE ' . $this->notifications_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $update_array) . '
-			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND item_id = ' . (int) $item_id;
-		$this->db->sql_query($sql);
 	}
 
 	/**
