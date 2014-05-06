@@ -1195,7 +1195,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_create_missing_attachment_post()
 	{
-		$this->markTestIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
 		$this->login();
 		$this->load_ids(array(
 			'forums' => array(
@@ -1216,7 +1215,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_feeds_missing_attachment_admin()
 	{
-		$this->markTestIncomplete('Missing attachments in posts/topics are not marked in feeds yet, see PHPBB3-12418');
 		$this->load_ids(array(
 			'forums' => array(
 				'Feeds #1',
@@ -1252,7 +1250,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'overall' => array(
 				array(
-					'nb_entries' => 13,
+					'nb_entries' => 12,
 					'contents' => array(
 						1 => 'Attachment #0',
 					),
@@ -1260,12 +1258,12 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics' => array(
 				array(
-					'nb_entries' => 9,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
 								'id' => $this->data['attachments'][$this->data['posts']['Feeds #1 - Topic #3']][0],
-								'displayed' => false,
+								'displayed' => true,
 							),
 						),
 					),
@@ -1273,12 +1271,12 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_new' => array(
 				array(
-					'nb_entries' => 9,
+					'nb_entries' => 8,
 					'attachments' => array(
 						1 => array( // First entry
 							array( // First attachment to fetch
 								'id' => $this->data['attachments'][$this->data['posts']['Feeds #1 - Topic #3']][0],
-								'displayed' => false,
+								'displayed' => true,
 							),
 						),
 					),
@@ -1286,7 +1284,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 			'topics_active' => array(
 				array(
-					'nb_entries' => 9,
+					'nb_entries' => 8,
 					'contents' => array(
 						1 => 'Attachment #0',
 					),
@@ -1396,13 +1394,12 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 						if ($attachment['displayed'])
 						{
 							$this->assertContains($url, $content, "Tested feed : 'feed.php{$params}'");
-							// $this->assertNotContains($string, $content, "Tested feed : 'feed.php{$params}'");
+							$this->assertNotContains($string, $content, "Tested feed : 'feed.php{$params}'");
 						}
 						else
 						{
-							// Disabled until PHPBB3-12421 is fixed and merged
-							// $this->assertContains($string, $content, "Tested feed : 'feed.php{$params}'");
-							// $this->assertNotContains($url, $content, "Tested feed : 'feed.php{$params}'");
+							$this->assertContains($string, $content, "Tested feed : 'feed.php{$params}'");
+							$this->assertNotContains($url, $content, "Tested feed : 'feed.php{$params}'");
 						}
 					}
 				}

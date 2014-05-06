@@ -100,7 +100,7 @@ while ($row = $feed->get_item())
 	$published = ($feed->get('published') !== NULL) ? (int) $row[$feed->get('published')] : 0;
 	$updated = ($feed->get('updated') !== NULL) ? (int) $row[$feed->get('updated')] : 0;
 
-	$display_attachments = ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? true : false;
+	$display_attachments = ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && isset($row['post_attachment']) && $row['post_attachment']) ? true : false;
 
 	$item_row = array(
 		'author'		=> ($feed->get('creator') !== NULL) ? $row[$feed->get('creator')] : '',
