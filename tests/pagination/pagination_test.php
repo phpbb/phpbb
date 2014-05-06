@@ -35,7 +35,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
-		$finder = new \phpbb\extension\finder(
+		$finder = new \phpbb\finder(
 			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache()

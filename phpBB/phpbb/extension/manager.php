@@ -532,14 +532,14 @@ class manager
 	}
 
 	/**
-	* Instantiates a \phpbb\extension\finder.
+	* Instantiates a \phpbb\finder.
 	*
 	* @param bool $use_all_available Should we load all extensions, or just enabled ones
-	* @return \phpbb\extension\finder An extension finder instance
+	* @return \phpbb\finder An extension finder instance
 	*/
 	public function get_finder($use_all_available = false)
 	{
-		$finder = new \phpbb\extension\finder($this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
+		$finder = new \phpbb\finder($this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
 		if ($use_all_available)
 		{
 			$finder->set_extensions($this->all_available());

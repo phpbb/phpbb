@@ -201,7 +201,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new \phpbb\extension\finder(new \phpbb\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
+		$finder = new \phpbb\finder(new \phpbb\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
 		$finder->set_extensions($this->extension_manager->all_enabled());
 		$files = $finder->suffix('_class.php')->get_files();
 
@@ -240,7 +240,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'is_dir' => false,
 		);
 
-		$finder = new \phpbb\extension\finder(
+		$finder = new \phpbb\finder(
 			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache(array(

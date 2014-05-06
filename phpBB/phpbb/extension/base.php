@@ -23,7 +23,7 @@ class base implements \phpbb\extension\extension_interface
 	/** @var ContainerInterface */
 	protected $container;
 
-	/** @var \phpbb\extension\finder */
+	/** @var \phpbb\finder */
 	protected $finder;
 
 	/** @var \phpbb\db\migrator */
@@ -39,11 +39,11 @@ class base implements \phpbb\extension\extension_interface
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
-	* @param \phpbb\extension\finder $extension_finder
+	* @param \phpbb\finder $extension_finder
 	* @param string $extension_name Name of this extension (from ext.manager)
 	* @param string $extension_path Relative path to this extension
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\extension\finder $extension_finder, \phpbb\db\migrator $migrator, $extension_name, $extension_path)
+	public function __construct(ContainerInterface $container, \phpbb\finder $extension_finder, \phpbb\db\migrator $migrator, $extension_name, $extension_path)
 	{
 		$this->container = $container;
 		$this->extension_finder = $extension_finder;

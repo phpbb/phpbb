@@ -42,7 +42,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 			)
 		);
 
-		$finder = new \phpbb\extension\finder(
+		$finder = new \phpbb\finder(
 			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache()
