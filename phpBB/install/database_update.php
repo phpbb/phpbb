@@ -116,12 +116,12 @@ $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
-$orig_version = $this->cache->get('database_update_orig_version');
-if ($orig_version === false)
+if (!isset($config['version_update_from']))
 {
-	$orig_version = $config['version'];
-	$cache->put('database_update_orig_version', $orig_version, 86400);
+	$config->set('version_update_from', $config['version']);
 }
+
+$orig_version = $config['version_update_from'];
 
 $user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
 
@@ -293,6 +293,6 @@ else
 	echo $user->lang['COMPLETE_LOGIN_TO_BOARD'];
 }
 
-$cache->destroy('database_update_orig_version');
+$config->delete('version_update_from');
 
 phpbb_end_update($cache, $config);
