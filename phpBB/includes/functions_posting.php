@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 function generate_smilies($mode, $forum_id)
 {
 	global $db, $user, $config, $template, $phpbb_dispatcher;
-	global $phpEx, $phpbb_root_path, $phpbb_container;
+	global $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_path_helper;
 
 	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
 	$pagination = $phpbb_container->get('pagination');
@@ -111,7 +111,7 @@ function generate_smilies($mode, $forum_id)
 
 	if (sizeof($smilies))
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
 
 		foreach ($smilies as $row)
 		{
