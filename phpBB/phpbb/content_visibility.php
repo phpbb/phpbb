@@ -384,6 +384,7 @@ class content_visibility
 			$update_topic_postcount = false;
 		}
 
+		$topic_update_array = array();
 		// Update the topic's reply count and the forum's post count
 		if ($update_topic_postcount)
 		{
@@ -421,25 +422,66 @@ class content_visibility
 
 			if (sizeof($sql_ary))
 			{
-				$topic_sql = $forum_sql = array();
+				$forum_sql = array();
 
 				foreach ($sql_ary as $field => $value_change)
 				{
-					$topic_sql[] = 'topic_' . $field . ' = topic_' . $field . $value_change;
+					$topic_update_array[] = 'topic_' . $field . ' = topic_' . $field . $value_change;
 					$forum_sql[] = 'forum_' . $field . ' = forum_' . $field . $value_change;
 				}
-
-				// Update the number for replies and posts
-				$sql = 'UPDATE ' . $this->topics_table . '
-					SET ' . implode(', ', $topic_sql) . '
-					WHERE topic_id = ' . (int) $topic_id;
-				$this->db->sql_query($sql);
 
 				$sql = 'UPDATE ' . $this->forums_table . '
 					SET ' . implode(', ', $forum_sql) . '
 					WHERE forum_id = ' . (int) $forum_id;
 				$this->db->sql_query($sql);
 			}
+		}
+
+		$update_topic_attachments_flag = false;
+		if ($post_id)
+		{
+			if (is_array($post_id))
+			{
+				$where_clause = $this->db->sql_in_set('post_id', array_map('intval', $post_id), true);
+			}
+			else
+			{
+				$where_clause = 'post_id <> ' . (int) $post_id;
+			}
+
+			$sql = 'SELECT count(*) as nb_attachments
+				FROM ' . POSTS_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id . '
+					AND post_attachment = 1
+					AND post_visibility = ' . ITEM_APPROVED . '
+					AND ' . $where_clause;
+			$result = $this->db->sql_query($sql);
+
+			if ($row = $this->db->sql_fetchrow($result))
+			{
+				if ($row['nb_attachments'] == 0)
+				{
+					$update_topic_attachments_flag = true;
+					$topic_update_array[] = 'topic_attachment = 0';
+				}
+				else
+				{
+					if ($visibility == ITEM_APPROVED)
+					{
+						$update_topic_attachments_flag = true;
+						$topic_update_array[] = 'topic_attachment = 1';
+					}
+				}
+			}
+		}
+
+		if ($update_topic_postcount || $update_topic_attachments_flag)
+		{
+			// Update the number for replies and posts, and update the attachments flag
+			$sql = 'UPDATE ' . $this->topics_table . '
+						SET ' . implode(', ', $topic_update_array) . '
+						WHERE topic_id = ' . (int) $topic_id;
+			$this->db->sql_query($sql);
 		}
 
 		return $data;
