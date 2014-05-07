@@ -30,7 +30,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 			),
 			new \phpbb\filesystem(),
 			$this->getMock('\phpbb\request\request'),
-			new \phpbb\config\config(array()),
 			$this->phpbb_root_path,
 			'php'
 		);
@@ -161,7 +160,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 			$symfony_request,
 			new \phpbb\filesystem(),
 			$this->getMock('\phpbb\request\request'),
-			new \phpbb\config\config(array()),
 			$this->phpbb_root_path,
 			'php'
 		);

@@ -51,7 +51,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				),
 				new \phpbb\filesystem(),
 				$this->getMock('\phpbb\request\request'),
-				new \phpbb\config\config(array()),
 				$this->phpbb_root_path,
 				$this->phpEx
 			),

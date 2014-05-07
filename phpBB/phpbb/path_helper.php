@@ -27,9 +27,6 @@ class path_helper
 	/** @var \phpbb\request\request_interface */
 	protected $request;
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -47,17 +44,16 @@ class path_helper
 	*
 	* @param \phpbb\symfony_request $symfony_request
 	* @param \phpbb\filesystem $filesystem
-	* @param \phpbb\request\request $request
-	* @param \phpbb\config\config $config
+	* @param \phpbb\request\request_interface $request
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP extension (php)
+	* @param mixed $adm_relative_path Relative path admin path to adm/ root
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request $request, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;
 		$this->request = $request;
-		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->adm_relative_path = $adm_relative_path;

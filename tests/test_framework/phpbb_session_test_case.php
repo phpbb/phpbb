@@ -33,7 +33,6 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 			$symfony_request,
 			$phpbb_filesystem,
 			$this->getMock('\phpbb\request\request'),
-			new \phpbb\config\config(array()),
 			$phpbb_root_path,
 			$phpEx
 		);

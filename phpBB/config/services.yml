@@ -300,7 +300,6 @@ services:
             - @symfony_request
             - @filesystem
             - @request
-            - @config
             - %core.root_path%
             - %core.php_ext%
             - %core.adm_relative_path%

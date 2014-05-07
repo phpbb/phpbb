@@ -28,7 +28,6 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			),
 			new \phpbb\filesystem(),
 			$this->getMock('\phpbb\request\request'),
-			new \phpbb\config\config(array()),
 			$phpbb_root_path,
 			$phpEx
 		);
