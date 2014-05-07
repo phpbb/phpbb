@@ -24,7 +24,7 @@ class path_helper
 	/** @var \phpbb\filesystem */
 	protected $filesystem;
 
-	/** @var \phpbb\request\request */
+	/** @var \phpbb\request\request_interface */
 	protected $request;
 
 	/** @var \phpbb\config\config */
@@ -181,46 +181,32 @@ class path_helper
 		}
 
 		/*
-		* Check AJAX request
+		* Check AJAX request:
+		* If the current request is a AJAX we need to fix the paths.
+		* We need to get the root path based on the Referer, so we can use
+		* the generated URLs in the template of the Referer. If we do not
+		* generate the relative path based on the Referer, but based on the
+		* currently requested URL, the generated URLs will not point to the
+		* intended locations:
+		*	Referer				desired URL			desired relative root path
+		*	memberlist.php		faq.php				./
+		*	memberlist.php		app.php/foo/bar		./
+		*	app.php/foo			memberlist.php		../
+		*	app.php/foo			app.php/fox			../
+		*	app.php/foo/bar		memberlist.php		../../
+		*	../page.php			memberlist.php		./phpBB/
+		*	../sub/page.php		memberlist.php		./../phpBB/
 		*/
-		if ($this->request->is_ajax())
+		if ($this->request->is_ajax() && $this->request->header('Referer'))
 		{
-			// Check referer
-			$referer = strtolower($this->request->header('Referer'));
-
-			// Count chars
-			$chars = strlen($this->config['server_name'] . $this->config['script_path']) - 1;
-
-			/*
-			* Return string without server name and script path
-			*	e.g. 'http://localhost/phpBB/app.php', where server name is 'localhost'
-			*	and script path is '/phpBB', will be cut to '/app.php'
-			*/ 
-			$ref = substr(strstr($referer, strtolower($this->config['server_name'] . $this->config['script_path'])), $chars);
-
-			// How many slashes does the referer used?
-			$count_slashes = substr_count($ref, '/');
-
-			/*
-			* If the shorten referer has only 1 slash,
-			*	return default path
-			*/
-			if ($count_slashes == 1)
-			{
-				return $this->web_root_path = $this->phpbb_root_path;
-			}
-			/*
-			* Otherwise we are on routed page so we must correct the relative path
-			*	for web URLs. We must append ../ to the end of the root path
-			*	as many times as / exists in shorten referer less one time
-			*/
-			else
-			{
-				return $this->web_root_path = $this->phpbb_root_path . str_repeat('../', $count_slashes - 1);
-			}
+			$referer_web_root_path = $this->get_web_root_path_from_ajax_referer(
+				$this->request->header('Referer'),
+				$this->symfony_request->getUriForPath('')
+			);
+			return $this->web_root_path = $this->phpbb_root_path . $referer_web_root_path;
 		}
 
-		// How many corrections might we need? 
+		// How many corrections might we need?
 		$corrections = substr_count($path_info, '/');
 
 		/*
@@ -238,6 +224,65 @@ class path_helper
 			'./' . str_repeat('../', $corrections) . $this->phpbb_root_path
 		);
 		return $this->web_root_path;
+	}
+
+	/**
+	* Get the web root path of the referer form an ajax request
+	*
+	* @param string $absolute_referer_url
+	* @param string $absolute_board_url
+	* @return string
+	*/
+	public function get_web_root_path_from_ajax_referer($absolute_referer_url, $absolute_board_url)
+	{
+		// If the board URL is in the beginning of the referer, this means
+		// we the referer is in the board URL or a subdirectory of it.
+		// So we just need to count the / (slashes) in the left over part of
+		// the referer and prepend ../ the the current root_path, to get the
+		// web root path of the referer.
+		if (strpos($absolute_referer_url, $absolute_board_url) === 0)
+		{
+			$relative_referer_path = substr($absolute_referer_url, strlen($absolute_board_url));
+			$has_params = strpos($relative_referer_path, '?');
+			if ($has_params !== false)
+			{
+				$relative_referer_path = substr($relative_referer_path, 0, $has_params);
+			}
+			$corrections = substr_count($relative_referer_path, '/');
+			return $this->phpbb_root_path . str_repeat('../', $corrections - 1);
+		}
+
+		// If not, it's a bit more complicated. We go to the parent directory
+		// of the referer until we find the remaining referer in the board URL.
+		// Foreach directory we need to add a ../ to the fixed root_path.
+		// When we finally found it, we need to remove the remaining referer
+		// from the board URL, to get the boards root path.
+		// If the then append these two strings, we get our fixed web root path.
+		$fixed_root_path = '';
+		$referer_dir = $absolute_referer_url;
+		$has_params = strpos($referer_dir, '?');
+		if ($has_params !== false)
+		{
+			$referer_dir = substr($referer_dir, 0, $has_params);
+		}
+
+		// If we do not find a slash at the end of the referer, we come
+		// from a file. So the first dirname() does not need a traversal
+		// path correction.
+		if (substr($referer_dir, -1) !== '/')
+		{
+			$referer_dir = dirname($referer_dir);
+		}
+
+		while (strpos($absolute_board_url, $referer_dir) !== 0)
+		{
+			$fixed_root_path .= '../';
+			$referer_dir = dirname($referer_dir);
+		}
+
+		$fixed_root_path .= substr($absolute_board_url, strlen($referer_dir) + 1);
+		// Add trailing slash
+		return $this->phpbb_root_path . $fixed_root_path . '/';
 	}
 
 	/**
