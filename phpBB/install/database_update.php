@@ -115,7 +115,13 @@ request_var('', 0, false, false, $request); // "dependency injection" for a func
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
-$orig_version = $config['version'];
+
+$orig_version = $this->cache->get('database_update_orig_version');
+if ($orig_version === false)
+{
+	$orig_version = $config['version'];
+	$cache->put('database_update_orig_version', $orig_version, 86400);
+}
 
 $user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
 
@@ -286,5 +292,7 @@ else
 	echo '<div class="errorbox">' . $user->lang['UPDATE_FILES_NOTICE'] . '</div>';
 	echo $user->lang['COMPLETE_LOGIN_TO_BOARD'];
 }
+
+$cache->destroy('database_update_orig_version');
 
 phpbb_end_update($cache, $config);
