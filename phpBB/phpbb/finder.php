@@ -14,7 +14,7 @@
 namespace phpbb;
 
 /**
-* The extension finder provides a simple way to locate files in active extensions
+* The finder provides a simple way to locate files in the core and a set of extensions
 */
 class finder
 {
