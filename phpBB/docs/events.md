@@ -617,6 +617,14 @@ simple_header_body_before
 * Since: 3.1.0-b2
 * Purpose: Add content to the header body
 
+simple_header_head_append
+===
+* Locations:
+    + styles/prosilver/template/simple_header.html
+    + styles/subsilver2/template/simple_header.html
+* Since: 3.1.0-b4
+* Purpose: Add asset calls directly before the `</head>` tag
+
 topiclist_row_prepend
 ===
 * Locations:
