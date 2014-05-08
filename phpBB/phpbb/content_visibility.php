@@ -440,7 +440,7 @@ class content_visibility
 		$update_topic_attachments_flag = false;
 		if ($post_id)
 		{
-			$sql = 'SELECT 1 as nb_attachments
+			$sql = 'SELECT 1 as has_attachments
 				FROM ' . POSTS_TABLE . '
 				WHERE topic_id = ' . (int) $topic_id . '
 					AND post_attachment = 1
@@ -450,17 +450,18 @@ class content_visibility
 
 			if ($row = $this->db->sql_fetchrow($result))
 			{
-				if ($row['nb_attachments'] == 0)
-				{
-					$update_topic_attachments_flag = true;
-					$topic_update_array[] = 'topic_attachment = 0';
-				}
-				else if ($visibility == ITEM_APPROVED)
+				if ($visibility == ITEM_APPROVED)
 				{
 					$update_topic_attachments_flag = true;
 					$topic_update_array[] = 'topic_attachment = 1';
 				}
 			}
+			else
+			{
+				$update_topic_attachments_flag = true;
+				$topic_update_array[] = 'topic_attachment = 0';
+			}
+
 			$this->db->sql_freeresult($result);
 		}
 
@@ -468,8 +469,8 @@ class content_visibility
 		{
 			// Update the number for replies and posts, and update the attachments flag
 			$sql = 'UPDATE ' . $this->topics_table . '
-						SET ' . implode(', ', $topic_update_array) . '
-						WHERE topic_id = ' . (int) $topic_id;
+				SET ' . implode(', ', $topic_update_array) . '
+				WHERE topic_id = ' . (int) $topic_id;
 			$this->db->sql_query($sql);
 		}
 
