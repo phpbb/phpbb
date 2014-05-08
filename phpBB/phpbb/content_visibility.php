@@ -426,7 +426,7 @@ class content_visibility
 
 				foreach ($sql_ary as $field => $value_change)
 				{
-					$topic_update_array['topic_' . $field] = 'topic_' . $field . $value_change;
+					$topic_update_array[] = 'topic_' . $field . ' = topic_' . $field . $value_change;
 					$forum_sql[] = 'forum_' . $field . ' = forum_' . $field . $value_change;
 				}
 
@@ -453,12 +453,12 @@ class content_visibility
 				if ($row['nb_attachments'] == 0)
 				{
 					$update_topic_attachments_flag = true;
-					$topic_update_array['topic_attachment'] = 0;
+					$topic_update_array[] = 'topic_attachment = 0';
 				}
 				else if ($visibility == ITEM_APPROVED)
 				{
 					$update_topic_attachments_flag = true;
-					$topic_update_array['topic_attachment'] = 1;
+					$topic_update_array[] = 'topic_attachment = 1';
 				}
 			}
 			$this->db->sql_freeresult($result);
@@ -468,7 +468,7 @@ class content_visibility
 		{
 			// Update the number for replies and posts, and update the attachments flag
 			$sql = 'UPDATE ' . $this->topics_table . '
-						SET ' . $this->db->sql_build_array('UPDATE', $topic_update_array) . '
+						SET ' . implode(', ', $topic_update_array) . '
 						WHERE topic_id = ' . (int) $topic_id;
 			$this->db->sql_query($sql);
 		}
