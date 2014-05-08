@@ -456,7 +456,7 @@ class content_visibility
 				$update_topic_attachments_flag = true;
 				$topic_update_array[] = 'topic_attachment = 1';
 			}
-			else if (!$has_attachment)
+			else if (!$has_attachment && $visibility != ITEM_APPROVED)
 			{
 				$update_topic_attachments_flag = true;
 				$topic_update_array[] = 'topic_attachment = 0';
