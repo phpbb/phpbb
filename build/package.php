@@ -45,6 +45,10 @@ if (sizeof($package->old_packages))
 			$package->get('patch_directory') . '/phpBB-' . $dest_package_filename . $package->get('new_version_number') . '.patch',
 			$_package_name
 		);
+		$diff_file_changes[$_package_name]['deleted'] = $package->collect_deleted_files(
+			$package->get('patch_directory') . '/phpBB-' . $dest_package_filename . $package->get('new_version_number') . '.deleted',
+			$_package_name
+		);
 	}
 
 	// Now put those files determined within the correct directories
@@ -290,6 +294,15 @@ $update_info = array(
 		else
 		{
 			$index_contents .= "\t'binary'		=> array(),\n";
+		}
+
+		if (sizeof($file_contents['deleted']))
+		{
+			$index_contents .= "\t'deleted'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['deleted']) . "',\n\t),\n";
+		}
+		else
+		{
+			$index_contents .= "\t'deleted'		=> array(),\n";
 		}
 
 		$index_contents .= ");\n";

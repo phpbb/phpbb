@@ -141,6 +141,7 @@
 
 		<exec dir="build/old_versions" command="LC_ALL=C diff -crNEBwd release-${version} release-${newversion} >
 			../new_version/patches/phpBB-${version}_to_${newversion}.patch" escape="false" />
+		<exec dir="build/old_versions" command="LC_ALL=C diff -qr release-${version} release-${newversion} | grep 'Only in release-${version}' > ../new_version/patches/phpBB-${version}_to_${newversion}.deleted" escape="false" />
 	</target>
 
 	<target name="prepare-new-version">
