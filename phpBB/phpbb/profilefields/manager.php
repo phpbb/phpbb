@@ -536,6 +536,7 @@ class manager
 			$sql_where_addition .= $profile_field->make_sql_where($row);
 		}
 		$this->db->sql_freeresult($result);
+
 		return $sql_where_addition;
 	}
 }
