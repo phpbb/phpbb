@@ -16,7 +16,7 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log)
+	public function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log)
 	{
 		$this->manager = $manager;
 		$this->log = $log;
