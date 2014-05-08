@@ -780,19 +780,5 @@ $lang = array_merge($lang, array(
 
 	'LOG_EXT_ENABLE'	=> '<strong>Extension enabled</strong><br />» %s',
 	'LOG_EXT_DISABLE'	=> '<strong>Extension disabled</strong><br />» %s',
-	'LOG_EXT_PURGE'	=> '<strong>Extension’s data deleted</strong><br />» %s',
-
-	'LOG_EXT_ENABLE_ERROR'	=> '<strong>Error while enabling an extension</strong><br />» %s',
-	'LOG_EXT_DISABLE_ERROR'	=> '<strong>Error while disabling an extension</strong><br />» %s',
-	'LOG_EXT_PURGE_ERROR'	=> '<strong>Error while deleted the data of an extension</strong><br />» %s',
-
-	'LOG_EXT_ENABLE_DIR_INVALID_ERROR'		=> '<strong>Error while enabling the extension "%s"</strong><br />» Invalid directory structure.',
-	'LOG_EXT_ENABLE_NOT_AVAILABLE_ERROR'	=> '<strong>Error while enabling the extension "%s"</strong><br />» Extension unavailable for this board.',
-	'LOG_EXT_ENABLE_ALREADY_ENABLED_ERROR'	=> '<strong>Error while enabling the extension "%s"</strong><br />» Extension already enabled.',
-	'LOG_EXT_ENABLE_MIGRATION_ERROR'		=> '<strong>Error while enabling the extension "%s"</strong><br />» Migration error.',
-
-	'LOG_EXT_DISABLE_NOT_ENABLED_ERROR'	=> '<strong>Error while disabling the extension "%s"</strong><br />» Extension not enabled.',
-
-	'LOG_EXT_PURGE_ENABLED_ERROR'	=> '<strong>Error while deleting the data of the extension "%s"</strong><br />» Extension enabled.',
-	'LOG_EXT_PURGE_MIGRATION_ERROR'	=> '<strong>Error while deleting the data of the extension "%s"</strong><br />» Migration error.',
+	'LOG_EXT_PURGE'		=> '<strong>Extension’s data deleted</strong><br />» %s',
 ));

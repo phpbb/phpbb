@@ -41,7 +41,6 @@ class enable extends command
 		}
 		else
 		{
-			$this->log->add('critical', ANONYMOUS, '', 'LOG_EXT_ENABLE_ERROR', time(), array($name));
 			$output->writeln("<error>Could not enable extension $name</error>");
 			return 1;
 		}

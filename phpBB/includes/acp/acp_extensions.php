@@ -92,19 +92,16 @@ class acp_extensions
 			case 'enable_pre':
 				if (!$md_manager->validate_dir())
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_DIR_INVALID_ERROR', time(), array($ext_name));
 					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$md_manager->validate_enable())
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_NOT_AVAILABLE_ERROR', time(), array($ext_name));
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->enabled($ext_name))
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_ALREADY_ENABLED_ERROR', time(), array($ext_name));
 					redirect($this->u_action);
 				}
 
@@ -120,19 +117,16 @@ class acp_extensions
 			case 'enable':
 				if (!$md_manager->validate_dir())
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_DIR_INVALID_ERROR', time(), array($ext_name));
 					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$md_manager->validate_enable())
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_NOT_AVAILABLE_ERROR', time(), array($ext_name));
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->enabled($ext_name))
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_ALREADY_ENABLED_ERROR', time(), array($ext_name));
 					redirect($this->u_action);
 				}
 
@@ -152,7 +146,6 @@ class acp_extensions
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE_MIGRATION_ERROR', time(), array($ext_name));
 					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
@@ -166,7 +159,6 @@ class acp_extensions
 			case 'disable_pre':
 				if (!$phpbb_extension_manager->enabled($ext_name))
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_DISABLE_NOT_ENABLED_ERROR', time(), array($ext_name));
 					redirect($this->u_action);
 				}
 
@@ -182,7 +174,6 @@ class acp_extensions
 			case 'disable':
 				if (!$phpbb_extension_manager->enabled($ext_name))
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_DISABLE_NOT_ENABLED_ERROR', time(), array($ext_name));
 					redirect($this->u_action);
 				}
 
@@ -208,7 +199,6 @@ class acp_extensions
 			case 'delete_data_pre':
 				if ($phpbb_extension_manager->enabled($ext_name))
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_PURGE_ENABLED_ERROR', time(), array($ext_name));
 					redirect($this->u_action);
 				}
 				$this->tpl_name = 'acp_ext_delete_data';
@@ -223,7 +213,6 @@ class acp_extensions
 			case 'delete_data':
 				if ($phpbb_extension_manager->enabled($ext_name))
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_PURGE_ENABLED_ERROR', time(), array($ext_name));
 					redirect($this->u_action);
 				}
 
@@ -243,7 +232,6 @@ class acp_extensions
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					$this->log->add('critical', $user->data['user_id'], $user->ip, 'LOG_EXT_PURGE_MIGRATION_ERROR', time(), array($ext_name));
 					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
 				}
 
