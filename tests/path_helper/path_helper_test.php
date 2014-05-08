@@ -13,6 +13,7 @@
 
 class phpbb_path_helper_test extends phpbb_test_case
 {
+	/** @var \phpbb\path_helper */
 	protected $path_helper;
 	protected $phpbb_root_path = '';
 
@@ -42,7 +43,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function set_phpbb_root_path()
 	{
-		$this->phpbb_root_path = dirname(__FILE__) . './../../phpBB/';
+		$this->phpbb_root_path = dirname(__FILE__) . '/../../phpBB/';
 	}
 
 	public function test_get_web_root_path()
@@ -81,7 +82,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_basic_update_web_root_path($input, $expected)
 	{
-		$this->assertEquals($expected, $this->path_helper->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($expected, $this->path_helper->update_web_root_path($input));
 	}
 
 	public function update_web_root_path_data()
@@ -135,7 +136,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_update_web_root_path($input, $expected, $getPathInfo, $getRequestUri = null, $getScriptName = null)
 	{
-		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
+		$symfony_request = $this->getMock('\phpbb\symfony_request', array(), array(
 			new phpbb_mock_request(),
 		));
 		$symfony_request->expects($this->any())
