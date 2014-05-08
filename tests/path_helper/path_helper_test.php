@@ -340,4 +340,58 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		$this->assertEquals($expected, $this->path_helper->append_url_params($url, $params, $is_amp));
 	}
+
+	public function get_web_root_path_from_ajax_referer_data()
+	{
+		return array(
+			array(
+				'http://www.phpbb.com/community/route1/route2/',
+				'http://www.phpbb.com/community',
+				'../../',
+			),
+			array(
+				'http://www.phpbb.com/community/route1/route2',
+				'http://www.phpbb.com/community',
+				'../',
+			),
+			array(
+				'http://www.phpbb.com/community/route1',
+				'http://www.phpbb.com/community',
+				'',
+			),
+			array(
+				'http://www.phpbb.com/community/',
+				'http://www.phpbb.com/community',
+				'',
+			),
+			array(
+				'http://www.phpbb.com/notcommunity/route1/route2/',
+				'http://www.phpbb.com/community',
+				'../../../community/',
+			),
+			array(
+				'http://www.phpbb.com/notcommunity/route1/route2',
+				'http://www.phpbb.com/community',
+				'../../community/',
+			),
+			array(
+				'http://www.phpbb.com/notcommunity/route1',
+				'http://www.phpbb.com/community',
+				'../community/',
+			),
+			array(
+				'http://www.phpbb.com/notcommunity/',
+				'http://www.phpbb.com/community',
+				'../community/',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider get_web_root_path_from_ajax_referer_data
+	*/
+	public function test_get_web_root_path_from_ajax_referer($referer_url, $board_url, $expected)
+	{
+		$this->assertEquals($this->phpbb_root_path . $expected, $this->path_helper->get_web_root_path_from_ajax_referer($referer_url, $board_url));
+	}
 }
