@@ -894,10 +894,13 @@ if ($submit || $preview || $refresh)
 			$message_parser->warn_msg = array();
 		}
 
-		$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		if (!$preview || !empty($message_parser->message))
+		{
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		}
 
 		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && $refresh)
+		if (sizeof($message_parser->warn_msg) && $refresh && !$preview)
 		{
 			$message_parser->warn_msg = array();
 		}
