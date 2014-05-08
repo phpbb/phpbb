@@ -2356,6 +2356,10 @@ function build_url($strip_vars = false)
 	{
 		$redirect = $phpbb_path_helper->strip_url_params($redirect, $strip_vars, false);
 	}
+	else
+	{
+		$redirect = str_replace('&', '&amp;', $redirect);
+	}
 
 	return $redirect . ((strpos($redirect, '?') === false) ? '?' : '');
 }

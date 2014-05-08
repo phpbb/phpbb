@@ -45,6 +45,11 @@ class phpbb_build_url_test extends phpbb_test_case
 				'phpBB/index.php?',
 			),
 			array(
+				'viewtopic.php?t=5&f=4',
+				false,
+				'phpBB/viewtopic.php?t=5&amp;f=4',
+			),
+			array(
 				'viewtopic.php?f=2&style=1&t=6',
 				'f',
 				'phpBB/viewtopic.php?style=1&amp;t=6',
