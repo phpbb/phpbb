@@ -448,7 +448,8 @@ class content_visibility
 					AND ' . $this->db->sql_in_set('post_id', $post_id, true);
 			$result = $this->db->sql_query_limit($sql, 1);
 
-			if ($row = $this->db->sql_fetchrow($result))
+			$row = $this->db->sql_fetchrow($result);
+			if ($row != false)
 			{
 				if ($visibility == ITEM_APPROVED)
 				{
