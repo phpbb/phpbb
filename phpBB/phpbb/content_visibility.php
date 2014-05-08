@@ -426,7 +426,7 @@ class content_visibility
 
 				foreach ($sql_ary as $field => $value_change)
 				{
-					$topic_update_array[] = 'topic_' . $field . ' = topic_' . $field . $value_change;
+					$topic_update_array['topic_' . $field] = 'topic_' . $field . $value_change;
 					$forum_sql[] = 'forum_' . $field . ' = forum_' . $field . $value_change;
 				}
 
@@ -440,46 +440,35 @@ class content_visibility
 		$update_topic_attachments_flag = false;
 		if ($post_id)
 		{
-			if (is_array($post_id))
-			{
-				$where_clause = $this->db->sql_in_set('post_id', array_map('intval', $post_id), true);
-			}
-			else
-			{
-				$where_clause = 'post_id <> ' . (int) $post_id;
-			}
-
-			$sql = 'SELECT count(*) as nb_attachments
+			$sql = 'SELECT 1 as nb_attachments
 				FROM ' . POSTS_TABLE . '
 				WHERE topic_id = ' . (int) $topic_id . '
 					AND post_attachment = 1
 					AND post_visibility = ' . ITEM_APPROVED . '
-					AND ' . $where_clause;
-			$result = $this->db->sql_query($sql);
+					AND ' . $this->db->sql_in_set('post_id', $post_id, true);
+			$result = $this->db->sql_query_limit($sql, 1);
 
 			if ($row = $this->db->sql_fetchrow($result))
 			{
 				if ($row['nb_attachments'] == 0)
 				{
 					$update_topic_attachments_flag = true;
-					$topic_update_array[] = 'topic_attachment = 0';
+					$topic_update_array['topic_attachment'] = 0;
 				}
-				else
+				else if ($visibility == ITEM_APPROVED)
 				{
-					if ($visibility == ITEM_APPROVED)
-					{
-						$update_topic_attachments_flag = true;
-						$topic_update_array[] = 'topic_attachment = 1';
-					}
+					$update_topic_attachments_flag = true;
+					$topic_update_array['topic_attachment'] = 1;
 				}
 			}
+			$this->db->sql_freeresult($result);
 		}
 
 		if ($update_topic_postcount || $update_topic_attachments_flag)
 		{
 			// Update the number for replies and posts, and update the attachments flag
 			$sql = 'UPDATE ' . $this->topics_table . '
-						SET ' . implode(', ', $topic_update_array) . '
+						SET ' . $this->db->sql_build_array('UPDATE', $topic_update_array) . '
 						WHERE topic_id = ' . (int) $topic_id;
 			$this->db->sql_query($sql);
 		}
