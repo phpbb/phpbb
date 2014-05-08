@@ -1226,6 +1226,8 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	// Check for disallowed recipients
 	if (!empty($address_list['u']))
 	{
+		$can_ignore_allow_pm = $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_');
+
 		// Administrator deactivated users check and we need to check their
 		//		PM status (do they want to receive PM's?)
 		// 		Only check PM status if not a moderator or admin, since they
@@ -1233,14 +1235,11 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		$sql = 'SELECT user_id, user_allow_pm
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
-				AND (user_type = ' . USER_INACTIVE . '
-					AND user_inactive_reason = ' . INACTIVE_MANUAL . ')';
-
-		$can_ignore_allow_pm = ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'));
-		if (!$can_ignore_allow_pm)
-		{
-			$sql .= ' OR user_allow_pm = 0';
-		}
+				AND (
+						(user_type = ' . USER_INACTIVE . '
+						AND user_inactive_reason = ' . INACTIVE_MANUAL . ')
+						' . ($can_ignore_allow_pm ? '' : ' OR user_allow_pm = 0') . '
+					)';
 
 		$result = $db->sql_query($sql);
 
