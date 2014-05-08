@@ -111,5 +111,5 @@ $lang = array_merge($lang, array(
 	'UP_TO_DATE'			=> '%s is up to date',
 	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
 	'DOWNLOAD_LATEST'		=> 'Download Version',
-	'NO_VERSIONCHECK'		=> 'No informations about how get the latest version.',
+	'NO_VERSIONCHECK'		=> 'No information on how to check the version.',
 ));
