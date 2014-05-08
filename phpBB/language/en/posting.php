@@ -70,6 +70,14 @@ $lang = array_merge($lang, array(
 	'CANNOT_POST_ANNOUNCE'		=> 'Sorry but you cannot post announcements.',
 	'CANNOT_POST_STICKY'		=> 'Sorry but you cannot post sticky topics.',
 	'CHANGE_TOPIC_TO'			=> 'Change topic type to',
+	'CHARS_POST_CONTAINS'		=> array(
+		1	=> 'Your message contains %1$d character.',
+ 		2	=> 'Your message contains %1$d characters.',
+	),
+	'CHARS_SIG_CONTAINS'		=> array(
+		1	=> 'Your signature contains %1$d character.',
+		2	=> 'Your signature contains %1$d characters.',
+	),
 	'CLOSE_TAGS'				=> 'Close tags',
 	'CURRENT_TOPIC'				=> 'Current topic',
 
@@ -228,17 +236,14 @@ $lang = array_merge($lang, array(
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',
 	'TOO_FEW_CHARS_LIMIT'		=> array(
-		1	=> 'Your message contains %1$d character. The minimum number of characters you need to enter is %2$d.',
-		2	=> 'Your message contains %1$d characters. The minimum number of characters you need to enter is %2$d.',
+		1	=> 'You need to enter at least %1$d character.',
+		2	=> 'You need to enter at least %1$d characters.',
 	),
 	'TOO_FEW_POLL_OPTIONS'		=> 'You must enter at least two poll options.',
 	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maximum.',
 	'TOO_MANY_CHARS'			=> 'Your message contains too many characters.',
-	'TOO_MANY_CHARS_POST'		=> array(
-		2	=> 'Your message contains %1$d characters. The maximum number of allowed characters is %2$d.',
-	),
-	'TOO_MANY_CHARS_SIG'		=> array(
-		2	=> 'Your signature contains %1$d characters. The maximum number of allowed characters is %2$d.',
+	'TOO_MANY_CHARS_LIMIT'		=> array(
+		2	=> 'The maximum number of allowed characters is %1$d.',
 	),
 	'TOO_MANY_POLL_OPTIONS'		=> 'You have tried to enter too many poll options.',
 	'TOO_MANY_SMILIES'			=> 'Your message contains too many smilies. The maximum number of smilies allowed is %d.',
