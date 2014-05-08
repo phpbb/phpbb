@@ -448,22 +448,19 @@ class content_visibility
 					AND ' . $this->db->sql_in_set('post_id', $post_id, true);
 			$result = $this->db->sql_query_limit($sql, 1);
 
-			$row = $this->db->sql_fetchrow($result);
-			if ($row != false)
+			$has_attachment = (bool) $this->db->sql_fetchfield('has_attachments');
+			$this->db->sql_freeresult($result);
+
+			if ($has_attachment && $visibility == ITEM_APPROVED)
 			{
-				if ($visibility == ITEM_APPROVED)
-				{
-					$update_topic_attachments_flag = true;
-					$topic_update_array[] = 'topic_attachment = 1';
-				}
+				$update_topic_attachments_flag = true;
+				$topic_update_array[] = 'topic_attachment = 1';
 			}
-			else
+			else if (!$has_attachment)
 			{
 				$update_topic_attachments_flag = true;
 				$topic_update_array[] = 'topic_attachment = 0';
 			}
-
-			$this->db->sql_freeresult($result);
 		}
 
 		if ($update_topic_postcount || $update_topic_attachments_flag)
