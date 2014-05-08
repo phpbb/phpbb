@@ -35,11 +35,13 @@ class enable extends command
 
 		if ($this->manager->enabled($name))
 		{
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXTENSION_ENABLE', time(), array($name));
 			$output->writeln("<info>Successfully enabled extension $name</info>");
 			return 0;
 		}
 		else
 		{
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_EXT_ENABLE_ERROR', time(), array($name));
 			$output->writeln("<error>Could not enable extension $name</error>");
 			return 1;
 		}

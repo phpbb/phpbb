@@ -35,11 +35,13 @@ class disable extends command
 
 		if ($this->manager->enabled($name))
 		{
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_EXT_DISABLE_ERROR', time(), array($name));
 			$output->writeln("<error>Could not disable extension $name</error>");
 			return 1;
 		}
 		else
 		{
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_DISABLE', time(), array($name));
 			$output->writeln("<info>Successfully disabled extension $name</info>");
 			return 0;
 		}

@@ -61,6 +61,7 @@ services:
         class: phpbb\console\command\extension\disable
         arguments:
             - @ext.manager
+            - @log
         tags:
             - { name: console.command }
 
@@ -68,6 +69,7 @@ services:
         class: phpbb\console\command\extension\enable
         arguments:
             - @ext.manager
+            - @log
         tags:
             - { name: console.command }
 
@@ -75,6 +77,7 @@ services:
         class: phpbb\console\command\extension\purge
         arguments:
             - @ext.manager
+            - @log
         tags:
             - { name: console.command }
 

@@ -35,11 +35,13 @@ class purge extends command
 
 		if ($this->manager->enabled($name))
 		{
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_EXT_PURGE_ERROR', time(), array($name));
 			$output->writeln("<error>Could not purge extension $name</error>");
 			return 1;
 		}
 		else
 		{
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_PURGE', time(), array($name));
 			$output->writeln("<info>Successfully purge extension $name</info>");
 			return 0;
 		}
