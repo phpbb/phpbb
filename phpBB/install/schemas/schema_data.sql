@@ -21,6 +21,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_cdn', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_password_reset', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_live_searches', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mass_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars', 'USERNAME_CHARS_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange', '0');
@@ -56,6 +57,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_width',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path', 'images/avatars/upload');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_salt', 'phpbb_avatar');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact', 'contact@yourdomain.tld');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_disable_msg', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email', 'address@yourdomain.tld');
@@ -269,7 +271,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.1.0-b3-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.1.0-b4-dev');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 

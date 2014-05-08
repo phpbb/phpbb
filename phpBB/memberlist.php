@@ -40,7 +40,7 @@ if ($mode == 'leaders')
 }
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'team', 'livesearch')))
 {
 	trigger_error('NO_MODE');
 }
@@ -49,6 +49,13 @@ switch ($mode)
 {
 	case 'email':
 	break;
+
+	case 'livesearch':
+		if (!$config['allow_live_searches'])
+		{
+			trigger_error('LIVE_SEARCHES_NOT_ALLOWED');
+		}
+		// No break
 
 	default:
 		// Can this user view profiles/memberlist?
@@ -558,8 +565,6 @@ switch ($mode)
 			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
 
-		$poster_avatar = phpbb_get_user_avatar($member);
-
 		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
 		$zebra_enabled = $friends_enabled = $foes_enabled = $user_notes_enabled = $warn_user_enabled = false;
 
@@ -584,31 +589,6 @@ switch ($mode)
 			unset($module);
 		}
 
-		/**
-		* Modify user data before we display the profile
-		*
-		* @event core.memberlist_view_profile
-		* @var	array	member					Array with user's data
-		* @var	bool	user_notes_enabled		Is the mcp user notes module
-		*										enabled?
-		* @var	bool	warn_user_enabled		Is the mcp warnings module
-		*										enabled?
-		* @var	bool	zebra_enabled			Is the ucp zebra module
-		*										enabled?
-		* @var	bool	friends_enabled			Is the ucp friends module
-		*										enabled?
-		* @var	bool	foes_enabled			Is the ucp foes module
-		*										enabled?
-		* @var	bool    friend					Is the user friend?
-		* @var	bool	foe						Is the user foe?
-		* @since 3.1-A1
-		* @changed 3.1.0-b2 Added friend and foe status
-		*/
-		$vars = array('member', 'user_notes_enabled', 'warn_user_enabled', 'zebra_enabled', 'friends_enabled', 'foes_enabled', 'friend', 'foe');
-		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
-
-		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
-
 		// Custom Profile Fields
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
@@ -618,13 +598,45 @@ switch ($mode)
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
 		}
 
+		/**
+		* Modify user data before we display the profile
+		*
+		* @event core.memberlist_view_profile
+		* @var	array	member					Array with user's data
+		* @var	bool	user_notes_enabled		Is the mcp user notes module enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module enabled?
+		* @var	bool	zebra_enabled			Is the ucp zebra module enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module enabled?
+		* @var	bool    friend					Is the user friend?
+		* @var	bool	foe						Is the user foe?
+		* @var	array	profile_fields			Array with user's profile field data
+		* @since 3.1.0-a1
+		* @changed 3.1.0-b2 Added friend and foe status
+		* @changed 3.1.0-b3 Added profile fields data
+		*/
+		$vars = array(
+			'member',
+			'user_notes_enabled',
+			'warn_user_enabled',
+			'zebra_enabled',
+			'friends_enabled',
+			'foes_enabled',
+			'friend',
+			'foe',
+			'profile_fields',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
+
+		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
+
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
 		{
 			$sql = 'SELECT COUNT(post_id) as posts_in_queue
 				FROM ' . POSTS_TABLE . '
 				WHERE poster_id = ' . $user_id . '
-					AND post_visibility = ' . ITEM_UNAPPROVED;
+					AND ' . $db->sql_in_set('post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE));
 			$result = $db->sql_query($sql);
 			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 			$db->sql_freeresult($result);
@@ -643,7 +655,6 @@ switch ($mode)
 			'SIGNATURE'		=> $member['user_sig'],
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
-			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
@@ -978,6 +989,35 @@ switch ($mode)
 			'MESSAGE'			=> $message,
 			)
 		);
+
+	break;
+
+	case 'livesearch':
+
+		$username_chars = $request->variable('username', '', true);
+
+		$sql = 'SELECT username, user_id, user_colour
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
+				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->any_char);
+		$result = $db->sql_query_limit($sql, 10);
+		$user_list = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_list[] = array(
+				'user_id'		=> (int) $row['user_id'],
+				'result'		=> $row['username'],
+				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
+			);
+		}
+		$db->sql_freeresult($result);
+		$json_response = new \phpbb\json_response();
+		$json_response->send(array(
+			'keyword' => $username_chars,
+			'results' => $user_list,
+		));
 
 	break;
 
@@ -1618,6 +1658,7 @@ switch ($mode)
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',
+			'U_LIVE_SEARCH'			=> ($config['allow_live_searches']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=livesearch') : false,
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_POSTS'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1711,6 +1752,29 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		}
 	}
 
+	if (!function_exists('phpbb_get_banned_user_ids'))
+	{
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	}
+
+	// Can this user receive a Private Message?
+	$can_receive_pm = (
+		// They must be a "normal" user
+		$data['user_type'] != USER_IGNORE &&
+
+		// They must not be deactivated by the administrator
+		($data['user_type'] != USER_INACTIVE || $data['user_inactive_reason'] != INACTIVE_MANUAL) &&
+
+		// They must be able to read PMs
+		sizeof($auth->acl_get_list($user_id, 'u_readpm')) &&
+
+		// They must not be permanently banned
+		!sizeof(phpbb_get_banned_user_ids($user_id, false)) &&
+
+		// They must allow users to contact via PM
+		(($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')) || $data['user_allow_pm'])
+	);
+
 	// Dump it out to the template
 	$template_data = array(
 		'AGE'			=> $age,
@@ -1739,7 +1803,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
 		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
+		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && $can_receive_pm) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
 
@@ -1755,7 +1819,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 	* @event core.memberlist_prepare_profile_data
 	* @var	array	data				Array with user's data
 	* @var	array	template_data		Template array with user's data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('data', 'template_data');
 	extract($phpbb_dispatcher->trigger_event('core.memberlist_prepare_profile_data', compact($vars)));

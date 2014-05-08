@@ -177,6 +177,18 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 	}
 
+	$u_pm = $u_jabber = '';
+
+	if ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')))
+	{
+		$u_pm = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id);
+	}
+
+	if ($user_info['user_jabber'] && $auth->acl_get('u_sendim'))
+	{
+		$u_jabber = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id);
+	}
+
 	$msg_data = array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -208,8 +220,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EDITED_MESSAGE'	=> $l_edited_by,
 		'MESSAGE_ID'		=> $message_row['msg_id'],
 
-		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
-		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
+		'U_PM'			=>  $u_pm,
+		'U_JABBER'		=>  $u_jabber,
 
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EMAIL'			=> $user_info['email'],
@@ -248,12 +260,47 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var	array	message_row	Array with message data
 	* @var	array	cp_row		Array with senders custom profile field data
 	* @var	array	msg_data	Template array with message data
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
-	$vars = array('id', 'mode', 'folder_id', 'msg_id', 'folder', 'message_row', 'cp_row', 'msg_data');
+	$vars = array(
+		'id',
+		'mode',
+		'folder_id',
+		'msg_id',
+		'folder',
+		'message_row',
+		'cp_row',
+		'msg_data',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
 
 	$template->assign_vars($msg_data);
+
+	$contact_fields = array(
+		array(
+			'ID'		=> 'pm',
+			'NAME'		=> $user->lang['PRIVATE_MESSAGE'],
+			'U_CONTACT' => $u_pm,
+		),
+		array(
+			'ID'		=> 'email',
+			'NAME'		=> $user->lang['SEND_EMAIL'],
+			'U_CONTACT'	=> $user_info['email'],
+		),
+		array(
+			'ID'		=> 'jabber',
+			'NAME'		=> $user->lang['JABBER'],
+			'U_CONTACT'	=> $u_jabber,
+		),
+	);
+
+	foreach ($contact_fields as $field)
+	{
+		if ($field['U_CONTACT'])
+		{
+			$template->assign_block_vars('contact', $field);
+		}
+	}
 
 	// Display the custom profile fields
 	if (!empty($cp_row['row']))
@@ -263,6 +310,15 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		foreach ($cp_row['blockrow'] as $cp_block_row)
 		{
 			$template->assign_block_vars('custom_fields', $cp_block_row);
+
+			if ($cp_block_row['S_PROFILE_CONTACT'])
+			{
+				$template->assign_block_vars('contact', array(
+					'ID'		=> $cp_block_row['PROFILE_FIELD_IDENT'],
+					'NAME'		=> $cp_block_row['PROFILE_FIELD_NAME'],
+					'U_CONTACT'	=> $cp_block_row['PROFILE_FIELD_CONTACT'],
+				));
+			}
 		}
 	}
 
@@ -274,7 +330,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			$template->assign_block_vars('dl_method', $method);
 		}
-	
+
 		foreach ($attachments as $attachment)
 		{
 			$template->assign_block_vars('attachment', array(

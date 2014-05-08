@@ -356,13 +356,14 @@ span.imageset {
 	padding-top: 20px;
 }
 
+.imageset.icon_contact {
+	background-image: url("./images/icon_contact.png");
+	padding-left: 16px;
+	padding-top: 12px;
+}
+
 
 /* English images for fallback */
-.imageset.icon_contact_pm {
-	background-image: url("./en/icon_contact_pm.gif");
-	padding-left: 28px;
-	padding-top: 20px;
-}
 .imageset.icon_post_edit {
 	background-image: url("./en/icon_post_edit.gif");
 	padding-left: 42px;

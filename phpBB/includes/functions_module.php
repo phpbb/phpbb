@@ -398,6 +398,7 @@ class p_master
 			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
 			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
 			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
+			'authmethod_([a-z0-9_\\\\]+)'		=> '($config[\'auth_method\'] === \'\\1\')',
 		);
 
 		/**
@@ -409,7 +410,7 @@ class p_master
 		* @var	string	module_auth			The module_auth of the current
 		* 									module
 		* @var	int		forum_id			The current forum_id
-		* @since 3.1-A3
+		* @since 3.1.0-a3
 		*/
 		$vars = array('valid_tokens', 'module_auth', 'forum_id');
 		extract($phpbb_dispatcher->trigger_event('core.module_auth', compact($vars)));

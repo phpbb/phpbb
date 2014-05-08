@@ -69,7 +69,7 @@ class user extends \phpbb\session
 	*/
 	function setup($lang_set = false, $style_id = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $request, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 		global $phpbb_dispatcher;
 
 		if ($this->data['user_id'] != ANONYMOUS)
@@ -80,7 +80,25 @@ class user extends \phpbb\session
 		}
 		else
 		{
-			$user_lang_name = basename($config['default_lang']);
+			$lang_override = $request->variable('language', '');
+			if ($lang_override)
+			{
+				$this->set_cookie('lang', $lang_override, 0, false);
+			}
+			else
+			{
+				$lang_override = $request->variable($config['cookie_name'] . '_lang', '', true, \phpbb\request\request_interface::COOKIE);
+			}
+			if ($lang_override)
+			{
+				$use_lang = basename($lang_override);
+				$user_lang_name = (file_exists($this->lang_path . $use_lang . "/common.$phpEx")) ? $use_lang : basename($config['default_lang']);
+				$this->data['user_lang'] = $user_lang_name;
+			}
+			else
+			{
+				$user_lang_name = basename($config['default_lang']);
+			}
 			$user_date_format = $config['default_dateformat'];
 			$user_timezone = $config['board_timezone'];
 
@@ -143,9 +161,17 @@ class user extends \phpbb\session
 		* 					that are absolutely needed globally using this
 		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
-		$vars = array('user_data', 'user_lang_name', 'user_date_format', 'user_timezone', 'lang_set', 'lang_set_ext', 'style_id');
+		$vars = array(
+			'user_data',
+			'user_lang_name',
+			'user_date_format',
+			'user_timezone',
+			'lang_set',
+			'lang_set_ext',
+			'style_id',
+		);
 		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
 
 		$this->data = $user_data;
@@ -182,7 +208,7 @@ class user extends \phpbb\session
 		}
 		unset($lang_set_ext);
 
-		$style_request = request_var('style', 0);
+		$style_request = $request->variable('style', 0);
 		if ($style_request && (!$config['override_user_style'] || $auth->acl_get('a_styles')) && !defined('ADMIN_START'))
 		{
 			global $SID, $_EXTRA_URL;
@@ -769,8 +795,14 @@ class user extends \phpbb\session
 	*/
 	function img($img, $alt = '')
 	{
-		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
-		return '<span class="imageset ' . $img . '">' . $alt . '</span>';
+		$title = '';
+
+		if ($alt)
+		{
+			$alt = $this->lang($alt);
+			$title = ' title="' . $alt . '"';
+		}
+		return '<span class="imageset ' . $img . '"' . $title . '>' . $alt . '</span>';
 	}
 
 	/**

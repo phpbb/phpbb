@@ -62,7 +62,7 @@ class ucp_zebra
 						* @event core.ucp_remove_zebra
 						* @var	string	mode		Zebra type: friends|foes
 						* @var	array	user_ids	User ids we remove
-						* @since 3.1-A1
+						* @since 3.1.0-a1
 						*/
 						$vars = array('mode', 'user_ids');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_remove_zebra', compact($vars)));
@@ -207,7 +207,7 @@ class ucp_zebra
 									*							friends|foes
 									* @var	array	sql_ary		Array of
 									*							entries we add
-									* @since 3.1-A1
+									* @since 3.1.0-a1
 									*/
 									$vars = array('mode', 'sql_ary');
 									extract($phpbb_dispatcher->trigger_event('core.ucp_add_zebra', compact($vars)));
@@ -224,15 +224,15 @@ class ucp_zebra
 							}
 						}
 					}
-					
+
 					if ($request->is_ajax())
 					{
 						$message = ($updated) ? $user->lang[$l_mode . '_UPDATED'] : implode('<br />', $error);
-						
+
 						$json_response = new \phpbb\json_response;
 						$json_response->send(array(
 							'success' => $updated,
-							
+
 							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
 							'MESSAGE_TEXT'	=> $message,
 							'REFRESH_DATA'	=> array(

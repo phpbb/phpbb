@@ -412,6 +412,8 @@ $lang = array_merge($lang, array(
 	'PM_SENTBOX'				=> 'Sent messages',
 	'PM_SUBJECT'				=> 'Message subject',
 	'PM_TO'						=> 'Send to',
+	'PM_TOOLS'					=> 'Message tools',
+	'PM_USERS_REMOVED_NO_PERMISSION'	=> 'Some users couldn’t be added as they do not have permission to read private messages.',
 	'PM_USERS_REMOVED_NO_PM'	=> 'Some users couldn’t be added as they have disabled private message receipt.',
 	'POST_EDIT_PM'				=> 'Edit message',
 	'POST_FORWARD_PM'			=> 'Forward message',
@@ -602,14 +604,14 @@ $lang = array_merge($lang, array(
 		'PLACE_INTO_FOLDER'	=> 'Place into folder',
 		'MARK_AS_READ'		=> 'Mark as read',
 		'MARK_AS_IMPORTANT'	=> 'Mark message',
-		'DELETE_MESSAGE'	=> 'Delete message'
+		'DELETE_MESSAGE'	=> 'Delete message',
 	),
 	'PM_CHECK' => array(
 		'SUBJECT'	=> 'Subject',
 		'SENDER'	=> 'Sender',
 		'MESSAGE'	=> 'Message',
 		'STATUS'	=> 'Message status',
-		'TO'		=> 'Sent To'
+		'TO'		=> 'Sent To',
 	),
 	'PM_RULE' => array(
 		'IS_LIKE'		=> 'is like',
@@ -625,9 +627,8 @@ $lang = array_merge($lang, array(
 		'ANSWERED'		=> 'answered',
 		'FORWARDED'		=> 'forwarded',
 		'TO_GROUP'		=> 'to my default usergroup',
-		'TO_ME'			=> 'to me'
+		'TO_ME'			=> 'to me',
 	),
-
 
 	'GROUPS_EXPLAIN'	=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you additional permissions to view content or increase your capabilities in other areas.',
 	'GROUP_LEADER'		=> 'Leaderships',

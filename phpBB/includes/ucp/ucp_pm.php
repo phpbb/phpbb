@@ -172,7 +172,6 @@ class ucp_pm
 					trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
 				}
 
-
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
 				$move_pm		= (isset($_POST['move_pm'])) ? true : false;

@@ -114,6 +114,7 @@ class acp_profile
 					switch ($db->sql_layer)
 					{
 						case 'sqlite':
+						case 'sqlite3':
 							$sql = "SELECT sql
 								FROM sqlite_master
 								WHERE type = 'table'
@@ -484,7 +485,6 @@ class acp_profile
 						$l_lang_options[$row['lang_id']][$row['option_id']] = $row['lang_value'];
 					}
 					$db->sql_freeresult($result);
-
 
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
 						FROM ' . PROFILE_LANG_TABLE . '
@@ -1116,7 +1116,6 @@ class acp_profile
 			}
 		}
 
-
 		$db->sql_transaction('begin');
 
 		if ($action == 'create')
@@ -1206,7 +1205,8 @@ class acp_profile
 			break;
 
 			case 'sqlite':
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
+			case 'sqlite3':
+				if (version_compare($db->sql_server_info(true), '3.0') == -1)
 				{
 					$sql = "SELECT sql
 						FROM sqlite_master

@@ -8,7 +8,7 @@
 * @param int Delay in ms until darkenwrapper's click event is triggered
 */
 phpbb.closeDarkenWrapper = function(delay) {
-	setTimeout(function() {
+	phpbbAlertTimer = setTimeout(function() {
 		$('#darkenwrapper').trigger('click');
 	}, delay);
 };
@@ -244,10 +244,12 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var option = $(this);
 			var option_id = option.attr('data-poll-option-id');
 			var voted = (typeof res.user_votes[option_id] !== 'undefined') ? true : false;
+			var most_voted = (res.vote_counts[option_id] == most_votes) ? true : false;
 			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[option_id] / res.total_votes) * 100);
 			var percent_rel = (most_votes == 0) ? 0 : Math.round((res.vote_counts[option_id] / most_votes) * 100);
 
 			option.toggleClass('voted', voted);
+			option.toggleClass('most-votes', most_voted);
 
 			// Update the bars
 			var bar = option.find('.resultbar div');
@@ -313,13 +315,17 @@ $('.poll_view_results a').click(function(e) {
 $('[data-ajax]').each(function() {
 	var $this = $(this),
 		ajax = $this.attr('data-ajax'),
+		filter = $this.attr('data-filter'),
 		fn;
 
 	if (ajax !== 'false') {
 		fn = (ajax !== 'true') ? ajax : null;
+		filter = (filter !== undefined) ? phpbb.getFunctionByName(filter) : null;
+
 		phpbb.ajaxify({
 			selector: this,
 			refresh: $this.attr('data-refresh') !== undefined,
+			filter: filter,
 			callback: fn
 		});
 	}

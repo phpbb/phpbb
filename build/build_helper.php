@@ -312,4 +312,63 @@ class build_package
 
 		return $result;
 	}
+
+	/**
+	* Collect the list of the deleted files from a list of deleted files and folders.
+	*
+	* @param string $deleted_filename   The full path to a file containing the list of deleted files and directories
+	* @param string $package_name       The name of the package
+	* @return array
+	*/
+	public function collect_deleted_files($deleted_filename, $package_name)
+	{
+		$result = array();
+		$file_contents = file($deleted_filename);
+
+		foreach ($file_contents as $filename)
+		{
+			$filename = trim($filename);
+
+			if (!$filename)
+			{
+				continue;
+			}
+
+			$filename = str_replace('Only in ' . $package_name, '', $filename);
+			$filename = ltrim($filename, '/');
+
+			if (substr($filename, 0, 1) == ':')
+			{
+				$replace = '';
+			}
+			else
+			{
+				$replace = '/';
+			}
+
+			$filename = str_replace(': ', $replace, $filename);
+
+			if (is_dir("{$this->locations['old_versions']}{$package_name}/{$filename}"))
+			{
+				$iterator = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator(
+						"{$this->locations['old_versions']}{$package_name}/{$filename}",
+						\FilesystemIterator::UNIX_PATHS | \FilesystemIterator::SKIP_DOTS
+					),
+					\RecursiveIteratorIterator::LEAVES_ONLY
+				);
+
+				foreach ($iterator as $file_info)
+				{
+					$result[] = "{$filename}/{$iterator->getSubPathname()}";
+				}
+			}
+			else
+			{
+				$result[] = $filename;
+			}
+		}
+
+		return $result;
+	}
 }

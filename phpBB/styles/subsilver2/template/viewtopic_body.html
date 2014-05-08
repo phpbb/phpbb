@@ -15,7 +15,7 @@
 <!-- ENDIF -->
 
 <div id="pageheader">
-	<h2><!-- EVENT viewtopic_topic_title_prepend --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+	<h2><!-- EVENT viewtopic_topic_title_prepend --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- EVENT viewtopic_topic_title_append --></h2>
 
 <!-- IF MODERATORS -->
 	<p class="moderators"><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON} {MODERATORS}</p>
@@ -72,15 +72,16 @@
 
 			<table cellspacing="0" cellpadding="4" border="0" align="center">
 			<tr>
-				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
+				<td align="center"><span class="gen"><!-- EVENT viewtopic_body_poll_question_prepend --><b>{POLL_QUESTION}</b><!-- EVENT viewtopic_body_poll_question_append --></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
 			</tr>
 			<tr>
 				<td align="{S_CONTENT_FLOW_BEGIN}">
 					<table cellspacing="0" cellpadding="2" border="0">
 				<!-- BEGIN poll_option -->
 					<tr>
+					<!-- EVENT viewtopic_body_poll_option_before -->
 					<!-- IF S_CAN_VOTE -->
-						<td>
+						<td<!-- IF poll_option.POLL_OPTION_MOST_VOTES --> class="most-votes"<!-- ENDIF -->>
 							<!-- IF S_IS_MULTI_CHOICE -->
 								<input type="checkbox" class="radio" name="vote_id[]" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> />
 							<!-- ELSE -->
@@ -97,6 +98,7 @@
 								<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>
 							<!-- ENDIF -->
 						<!-- ENDIF -->
+					<!-- EVENT viewtopic_body_poll_option_after -->
 					</tr>
 				<!-- END poll_option -->
 					</table>
@@ -139,7 +141,7 @@
 
 	<!-- IF postrow.S_POST_HIDDEN -->
 			<td class="gensmall" colspan="2" height="25" align="center">
-				<!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF -->
+				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF -->
 				<a name="p{postrow.POST_ID}"></a>
 				<!-- IF postrow.S_POST_HIDDEN -->
 					<!-- IF postrow.S_POST_DELETED -->
@@ -153,7 +155,7 @@
 	<!-- ELSE -->
 
 			<td align="center" valign="middle">
-				<!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a>
+				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a>
 				<b class="postauthor"<!-- IF postrow.POST_AUTHOR_COLOUR --> style="color: {postrow.POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{postrow.POST_AUTHOR}</b>
 			</td>
 			<td width="100%" height="25">
@@ -202,6 +204,7 @@
 				<span class="postdetails">
 					<!-- IF postrow.POSTER_JOINED --><br /><b>{L_JOINED}{L_COLON}</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
 					<!-- IF postrow.POSTER_POSTS != '' --><br /><b>{L_POSTS}{L_COLON}</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
+					<!-- IF postrow.POSTER_WARNINGS --><br /><b>{L_WARNINGS}{L_COLON}</b> {postrow.POSTER_WARNINGS}<!-- ENDIF -->
 
 					<!-- IF postrow.S_PROFILE_FIELD1 -->
 						<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->

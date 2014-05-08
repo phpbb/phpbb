@@ -217,7 +217,6 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
-
 		// Check for getimagesize
 		if (@function_exists('getimagesize'))
 		{
@@ -291,8 +290,8 @@ class install_install extends module
 			$checks = array(
 				array('func_overload', '&', MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING),
 				array('encoding_translation', '!=', 0),
-				array('http_input', '!=', 'pass'),
-				array('http_output', '!=', 'pass')
+				array('http_input', '!=', array('pass', '')),
+				array('http_output', '!=', array('pass', ''))
 			);
 
 			foreach ($checks as $mb_checks)
@@ -313,7 +312,8 @@ class install_install extends module
 					break;
 
 					case '!=':
-						if ($ini_val != $mb_checks[2])
+						if (!is_array($mb_checks[2]) && $ini_val != $mb_checks[2] ||
+							is_array($mb_checks[2]) && !in_array($ini_val, $mb_checks[2]))
 						{
 							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 							$passed['mbstring'] = false;
@@ -534,7 +534,6 @@ class install_install extends module
 
 		$url = (!in_array(false, $passed)) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
 		$submit = (!in_array(false, $passed)) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
-
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $submit,
@@ -1649,6 +1648,45 @@ class install_install extends module
 				$_module->move_module_by($row, 'move_up', 5);
 			}
 
+			if ($module_class == 'mcp')
+			{
+				// Move pm report details module 3 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'mcp_pm_reports'
+						AND module_class = 'mcp'
+						AND module_mode = 'pm_report_details'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 3);
+
+				// Move closed pm reports module 3 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'mcp_pm_reports'
+						AND module_class = 'mcp'
+						AND module_mode = 'pm_reports_closed'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 3);
+
+				// Move open pm reports module 3 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'mcp_pm_reports'
+						AND module_class = 'mcp'
+						AND module_mode = 'pm_reports'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 3);
+			}
+
 			if ($module_class == 'ucp')
 			{
 				// Move attachment module 4 down...
@@ -1674,6 +1712,18 @@ class install_install extends module
 				$db->sql_freeresult($result);
 
 				$_module->move_module_by($row, 'move_down', 4);
+
+				// Move OAuth module 5 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'ucp_auth_link'
+						AND module_class = 'ucp'
+						AND module_mode = 'auth_link'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_down', 5);
 			}
 
 			// And now for the special ones

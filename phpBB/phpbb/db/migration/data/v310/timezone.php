@@ -39,23 +39,48 @@ class timezone extends \phpbb\db\migration\migration
 		);
 	}
 
-	public function update_timezones()
+	public function update_timezones($start)
 	{
-		// Update user timezones
-		$sql = 'SELECT user_dst, user_timezone
-			FROM ' . $this->table_prefix . 'users
-			GROUP BY user_timezone, user_dst';
-		$result = $this->db->sql_query($sql);
+		$start = (int) $start;
+		$limit = 500;
+		$converted = 0;
 
+		$update_blocks = array();
+
+		$sql = 'SELECT user_id, user_timezone, user_dst
+			FROM ' . $this->table_prefix . 'users
+			ORDER BY user_id ASC';
+		$result = $this->db->sql_query_limit($sql, $limit, $start);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$sql = 'UPDATE ' . $this->table_prefix . "users
-				SET user_timezone = '" . $this->db->sql_escape($this->convert_phpbb30_timezone($row['user_timezone'], $row['user_dst'])) . "'
-				WHERE user_timezone = '" . $this->db->sql_escape($row['user_timezone']) . "'
-					AND user_dst = " . (int) $row['user_dst'];
-			$this->sql_query($sql);
+			$converted++;
+
+			// In case this is somehow run twice on a row.
+			// Otherwise it would just end up as UTC on the second run
+			if (is_numeric($row['user_timezone']))
+			{
+				$update_blocks[$row['user_timezone'] . ':' . $row['user_dst']][] = (int) $row['user_id'];
+			}
 		}
 		$this->db->sql_freeresult($result);
+
+		// Update blocks of users who share the same timezone/dst
+		foreach ($update_blocks as $timezone => $user_ids)
+		{
+			$timezone = explode(':', $timezone);
+			$converted_timezone = $this->convert_phpbb30_timezone($timezone[0], $timezone[1]);
+
+			$sql = 'UPDATE ' . $this->table_prefix . "users
+				SET user_timezone = '" . $this->db->sql_escape($converted_timezone) . "'
+				WHERE " . $this->db->sql_in_set('user_id', $user_ids);
+			$this->sql_query($sql);
+		}
+
+		if ($converted == $limit)
+		{
+			// There are still more to convert
+			return $start + $limit;
+		}
 
 		// Update board default timezone
 		$sql = 'UPDATE ' . $this->table_prefix . "config

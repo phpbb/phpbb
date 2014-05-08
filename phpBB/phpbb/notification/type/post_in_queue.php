@@ -119,6 +119,14 @@ class post_in_queue extends \phpbb\notification\type\post
 	}
 
 	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return parent::get_url();
+	}
+
+	/**
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*

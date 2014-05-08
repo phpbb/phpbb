@@ -136,7 +136,7 @@ else
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
 		trigger_error($message);
 	}
-	
+
 	$reported_post_text 				= $report_data['message_text'];
 	$reported_post_bitfield				= $report_data['bbcode_bitfield'];
 	$reported_post_uid					= $report_data['bbcode_uid'];

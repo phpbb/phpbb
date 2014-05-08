@@ -479,7 +479,6 @@ class utf_normalizer
 					continue;
 				}
 
-
 				// STEP 1: Decompose current char
 
 				// We have found a character that is either:
@@ -526,7 +525,6 @@ class utf_normalizer
 					// The char is not decomposable
 					$utf_seq = array($utf_char);
 				}
-
 
 				// STEP 2: Capture the starter
 
@@ -683,7 +681,6 @@ class utf_normalizer
 					}
 				}
 
-
 				// STEP 3: Capture following combining modifiers
 
 				while ($pos < $len)
@@ -751,7 +748,6 @@ class utf_normalizer
 						break;
 					}
 				}
-
 
 				// STEP 4: Sort and combine
 
@@ -991,7 +987,6 @@ class utf_normalizer
 		$tmp_pos = $last_cc = $sort = $dump = 0;
 		$utf_sort = array();
 
-
 		// Main loop
 		do
 		{
@@ -1046,7 +1041,6 @@ class utf_normalizer
 
 					continue;
 				}
-
 
 				// STEP 1: Decide what to do with current char
 

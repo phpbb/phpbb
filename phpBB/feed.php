@@ -37,7 +37,7 @@ if (!empty($config['feed_http_auth']) && request_var('auth', '') == 'http')
 }
 
 $auth->acl($user->data);
-$user->setup();
+$user->setup('viewtopic');
 
 // Initial var setup
 $forum_id	= request_var('f', 0);
@@ -73,9 +73,6 @@ if ($feed === false)
 	trigger_error('NO_FEED');
 }
 
-// Get attachments for this feed
-$feed->fetch_attachments();
-
 // Open Feed
 $feed->open();
 
@@ -103,6 +100,8 @@ while ($row = $feed->get_item())
 	$published = ($feed->get('published') !== NULL) ? (int) $row[$feed->get('published')] : 0;
 	$updated = ($feed->get('updated') !== NULL) ? (int) $row[$feed->get('updated')] : 0;
 
+	$display_attachments = ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && isset($row['post_attachment']) && $row['post_attachment']) ? true : false;
+
 	$item_row = array(
 		'author'		=> ($feed->get('creator') !== NULL) ? $row[$feed->get('creator')] : '',
 		'published'		=> ($published > 0) ? $phpbb_feed_helper->format_date($published) : '',
@@ -111,7 +110,7 @@ while ($row = $feed->get_item())
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
 		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
-		'description'	=> censor_text($phpbb_feed_helper->generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], (($row['post_attachment']) ? $feed->attachments[$row['post_id']] : array()))),
+		'description'	=> censor_text($phpbb_feed_helper->generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options, $row['forum_id'], ($display_attachments ? $feed->get_attachments($row['post_id']) : array()))),
 		'statistics'	=> '',
 	);
 

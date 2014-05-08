@@ -71,7 +71,6 @@ function phpbb_insert_forums()
 	$prune_enabled = (int) $src_db->sql_fetchfield('config_value');
 	$src_db->sql_freeresult($result);
 
-
 	// Insert categories
 	$sql = 'SELECT cat_id, cat_title
 		FROM ' . $convert->src_table_prefix . 'categories
@@ -570,7 +569,6 @@ function phpbb_convert_authentication($mode)
 
 		// What we will do is handling all 2.0.x admins as founder to replicate what is common in 2.0.x.
 		// After conversion the main admin need to make sure he is removing permissions and the founder status if wanted.
-
 
 		// Grab user ids of users with user_level of ADMIN
 		$sql = "SELECT user_id
@@ -1845,6 +1843,7 @@ function phpbb_create_userconv_table()
 		break;
 
 		case 'sqlite':
+		case 'sqlite3':
 			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id INTEGER NOT NULL DEFAULT \'0\',
 				username_clean varchar(255) NOT NULL DEFAULT \'\'

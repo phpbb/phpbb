@@ -736,8 +736,6 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	// Notifications types to delete
 	$delete_notifications_types = array(
 		'quote',
-		'bookmark',
-		'post',
 		'approve_post',
 		'post_in_queue',
 	);
@@ -746,7 +744,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* Perform additional actions before post(s) deletion
 	*
 	* @event core.delete_posts_before
-	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	string	where_type					Variable containing posts deletion mode
 	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
 	* @var	bool	auto_sync					Flag indicating if topics/forums should be synchronized
 	* @var	bool	posted_sync					Flag indicating if topics_posted table should be resynchronized
@@ -755,7 +753,15 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
 	*/
-	$vars = array('where_type', 'where_ids', 'auto_sync', 'posted_sync', 'post_count_sync', 'call_delete_topics', 'delete_notifications_types');
+	$vars = array(
+		'where_type',
+		'where_ids',
+		'auto_sync',
+		'posted_sync',
+		'post_count_sync',
+		'call_delete_topics',
+		'delete_notifications_types',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.delete_posts_before', compact($vars)));
 
 	if ($where_type === 'range')
@@ -907,12 +913,20 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	poster_ids					Array with deleted posts' author ids
 	* @var	array	topic_ids					Array with deleted posts' topic ids
 	* @var	array	forum_ids					Array with deleted posts' forum ids
-	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	string	where_type					Variable containing posts deletion mode
 	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
 	*/
-	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type', 'where_ids', 'delete_notifications_types');
+	$vars = array(
+		'post_ids',
+		'poster_ids',
+		'topic_ids',
+		'forum_ids',
+		'where_type',
+		'where_ids',
+		'delete_notifications_types',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.delete_posts_in_transaction', compact($vars)));
 
 	$db->sql_transaction('commit');
@@ -925,12 +939,20 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	* @var	array	poster_ids					Array with deleted posts' author ids
 	* @var	array	topic_ids					Array with deleted posts' topic ids
 	* @var	array	forum_ids					Array with deleted posts' forum ids
-	* @var	string	where_type					Variable containing posts deletion mode 
+	* @var	string	where_type					Variable containing posts deletion mode
 	* @var	mixed	where_ids					Array or comma separated list of posts ids to delete
 	* @var	array	delete_notifications_types	Array with notifications types to delete
 	* @since 3.1.0-a4
 	*/
-	$vars = array('post_ids', 'poster_ids', 'topic_ids', 'forum_ids', 'where_type', 'where_ids', 'delete_notifications_types');
+	$vars = array(
+		'post_ids',
+		'poster_ids',
+		'topic_ids',
+		'forum_ids',
+		'where_type',
+		'where_ids',
+		'delete_notifications_types',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.delete_posts_after', compact($vars)));
 
 	// Resync topics_posted table
@@ -1489,7 +1511,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				ITEM_DELETED	=> (!empty($topics_softdeleted)) ? ' WHERE ' . $db->sql_in_set('topic_id', $topics_softdeleted) : '',
 			);
 
-			foreach ($topic_visiblities as $visibility => $sql_where)
+			foreach ($update_ary as $visibility => $sql_where)
 			{
 				if ($sql_where)
 				{
@@ -1778,7 +1800,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$forum_data[$forum_id]['topics_approved'] = $row['total_topics'];
 					}
-					else if ($row['topic_visibility'] == ITEM_UNAPPROVED)
+					else if ($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE)
 					{
 						$forum_data[$forum_id]['topics_unapproved'] = $row['total_topics'];
 					}
@@ -2001,7 +2023,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$topic_data[$topic_id]['posts_approved'] = $row['total_posts'];
 					}
-					else if ($row['post_visibility'] == ITEM_UNAPPROVED)
+					else if ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE)
 					{
 						$topic_data[$topic_id]['posts_unapproved'] = $row['total_posts'];
 					}
@@ -2023,7 +2045,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						$topic_data[$topic_id]['first_post_id'] = (!empty($topic_data[$topic_id]['first_post_id'])) ? min($topic_data[$topic_id]['first_post_id'], $row['first_post_id']) : $row['first_post_id'];
 						$topic_data[$topic_id]['last_post_id'] = max($topic_data[$topic_id]['last_post_id'], $row['last_post_id']);
 
-						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED)
+						if ($topic_data[$topic_id]['visibility'] == ITEM_UNAPPROVED || $topic_data[$topic_id]['visibility'] == ITEM_REAPPROVE)
 						{
 							// Soft delete status is stronger than unapproved.
 							$topic_data[$topic_id]['visibility'] = $row['post_visibility'];
@@ -2418,6 +2440,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	switch ($db->sql_layer)
 	{
 		case 'sqlite':
+		case 'sqlite3':
 		case 'firebird':
 			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
 		break;
@@ -2581,20 +2604,6 @@ function phpbb_cache_moderators($db, $cache, $auth)
 }
 
 /**
-* Cache moderators. Called whenever permissions are changed
-* via admin_permissions. Changes of usernames and group names
-* must be carried through for the moderators table.
-*
-* @deprecated 3.1
-* @return null
-*/
-function cache_moderators()
-{
-	global $db, $cache, $auth;
-	return phpbb_cache_moderators($db, $cache, $auth);
-}
-
-/**
 * View log
 *
 * @param	string	$mode			The mode defines which log_type is used and from which log the entry is retrieved
@@ -2741,20 +2750,6 @@ function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 		$db->sql_query($sql);
 	}
 	unset($perms);
-}
-
-/**
-* Removes moderators and administrators from foe lists.
-*
-* @deprecated 3.1
-* @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
-* @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
-* @return null
-*/
-function update_foes($group_id = false, $user_id = false)
-{
-	global $db, $auth;
-	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
 
 /**
@@ -2913,6 +2908,7 @@ function get_database_size()
 		break;
 
 		case 'sqlite':
+		case 'sqlite3':
 			global $dbhost;
 
 			if (file_exists($dbhost))
@@ -2929,7 +2925,7 @@ function get_database_size()
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			
+
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
 
@@ -2938,7 +2934,7 @@ function get_database_size()
 				// Azure stats are stored elsewhere
 				if (strpos($row['mssql_version'], 'SQL Azure') !== false)
 				{
-					$sql = 'SELECT ((SUM(reserved_page_count) * 8.0) * 1024.0) as dbsize 
+					$sql = 'SELECT ((SUM(reserved_page_count) * 8.0) * 1024.0) as dbsize
 					FROM sys.dm_db_partition_stats';
 				}
 			}

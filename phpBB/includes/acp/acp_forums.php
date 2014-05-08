@@ -158,7 +158,7 @@ class acp_forums
 					* @event core.acp_manage_forums_request_data
 					* @var	string	action		Type of the action: add|edit
 					* @var	array	forum_data	Array with new forum data
-					* @since 3.1-A1
+					* @since 3.1.0-a1
 					*/
 					$vars = array('action', 'forum_data');
 					extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_request_data', compact($vars)));
@@ -484,7 +484,7 @@ class acp_forums
 				*							empty when creating new forum
 				* @var	array	forum_data	Array with new forum data
 				* @var	string	parents_list	List of parent options
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
 				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list');
 				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_initialise_data', compact($vars)));
@@ -705,9 +705,18 @@ class acp_forums
 				*					ensure to update the template variables
 				*					S_ERROR and ERROR_MSG to display it
 				* @var	array	template_data	Array with new forum data
-				* @since 3.1-A1
+				* @since 3.1.0-a1
 				*/
-				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list', 'errors', 'template_data');
+				$vars = array(
+					'action',
+					'update',
+					'forum_id',
+					'row',
+					'forum_data',
+					'parents_list',
+					'errors',
+					'template_data',
+				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_display_form', compact($vars)));
 
 				$template->assign_vars($template_data);
@@ -946,7 +955,7 @@ class acp_forums
 		* @var	array	forum_data	Array with new forum data
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('forum_data', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
@@ -1054,7 +1063,7 @@ class acp_forums
 		* @var	array	forum_data_sql	Array with data we are going to update
 		*						If forum_data_sql[forum_id] is set, we update
 		*						that forum, otherwise a new one is created.
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('forum_data', 'forum_data_sql');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
@@ -1347,7 +1356,7 @@ class acp_forums
 		*								ensure to set forum_data_sql[forum_id]
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('forum_data', 'forum_data_sql', 'is_new_forum', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
@@ -1385,7 +1394,7 @@ class acp_forums
 		* @var	int		to_id		If of the new parent forum
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('from_id', 'to_id', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_children', compact($vars)));
@@ -1489,7 +1498,7 @@ class acp_forums
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key. If this array is not empty,
 		*							The content will not be moved.
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('from_id', 'to_id', 'sync', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content', compact($vars)));

@@ -102,6 +102,10 @@ hr {
 	height: 1px;
 }
 
+.centered-text {
+	text-align: center;
+}
+
 .small {
 	font-size: 0.85em;
 }
@@ -907,6 +911,11 @@ table.styles td.users, table td.mark {
 	text-align: center;
 }
 
+table.fixed-width-table {
+	table-layout: fixed;
+	word-break: break-word;
+}
+
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
 {
 	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
@@ -1126,11 +1135,14 @@ input.langvalue, textarea.langvalue {
 }
 
 optgroup, select {
+	background-color: #FAFAFA;
+	border: 1px solid #666666;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.85em;
 	font-weight: normal;
 	font-style: normal;
 	cursor: pointer;
+	padding: 1px;
 	vertical-align: middle;
 	width: auto;
 	color: #000;
@@ -1238,7 +1250,7 @@ fieldset.display-options {
 	border: none;
 	background-color: transparent;
 	text-align: center;
-	font-size: 0.75em;
+	font-size: 0.85em;
 }
 
 fieldset.display-options select, fieldset.display-options input, fieldset.display-options label {
@@ -1663,11 +1675,16 @@ input.button1:focus, input.button2:focus {
 /* Pagination
 ---------------------------------------- */
 .pagination {
+	font-size: .85em;
 	height: 1%; /* IE tweak (holly hack) */
 	width: auto;
 	text-align: right;
 	margin-top: 5px;
+}
+
+.top-pagination {
 	float: right;
+	margin: 15px 0 2px 0;
 }
 
 .rtl .pagination {

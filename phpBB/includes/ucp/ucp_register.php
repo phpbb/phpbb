@@ -64,10 +64,7 @@ class ucp_register
 					$agreed = false;
 				}
 
-				$user->lang_name = $user_lang = $use_lang;
-				$user->lang = array();
-				$user->data['user_lang'] = $user->lang_name;
-				$user->add_lang(array('common', 'ucp'));
+				$user_lang = $use_lang;
 			}
 			else
 			{
@@ -101,7 +98,6 @@ class ucp_register
 
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
-			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
 
 			$s_hidden_fields = array_merge($s_hidden_fields, array(
@@ -147,12 +143,15 @@ class ucp_register
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0' . $add_lang),
-					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $add_lang),
+					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0'),
+					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1'),
 
 					'S_SHOW_COPPA'		=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang),
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+
+					'COOKIE_NAME'		=> $config['cookie_name'],
+					'COOKIE_PATH'		=> $config['cookie_path'],
 				));
 			}
 			else
@@ -164,7 +163,10 @@ class ucp_register
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_coppa),
+
+					'COOKIE_NAME'		=> $config['cookie_name'],
+					'COOKIE_PATH'		=> $config['cookie_path'],
 					)
 				);
 			}
@@ -469,6 +471,9 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+
+			'COOKIE_NAME'		=> $config['cookie_name'],
+			'COOKIE_PATH'		=> $config['cookie_path'],
 		));
 
 		//

@@ -101,6 +101,10 @@ class acp_database
 								$extractor = new sqlite_extractor($format, $filename, $time, $download, $store);
 							break;
 
+							case 'sqlite3':
+								$extractor = new sqlite3_extractor($format, $filename, $time, $download, $store);
+							break;
+
 							case 'postgres':
 								$extractor = new postgres_extractor($format, $filename, $time, $download, $store);
 							break;
@@ -135,6 +139,7 @@ class acp_database
 								switch ($db->sql_layer)
 								{
 									case 'sqlite':
+									case 'sqlite3':
 									case 'firebird':
 										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
 									break;
@@ -325,6 +330,7 @@ class acp_database
 								case 'mysql4':
 								case 'mysqli':
 								case 'sqlite':
+								case 'sqlite3':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
 										$db->sql_query($sql);
@@ -1052,6 +1058,112 @@ class sqlite_extractor extends base_extractor
 /**
 * @package acp
 */
+class sqlite3_extractor extends base_extractor
+{
+	function write_start($prefix)
+	{
+		$sql_data = "--\n";
+		$sql_data .= "-- phpBB Backup Script\n";
+		$sql_data .= "-- Dump of tables for $prefix\n";
+		$sql_data .= "-- DATE : " . gmdate("d-m-Y H:i:s", $this->time) . " GMT\n";
+		$sql_data .= "--\n";
+		$sql_data .= "BEGIN TRANSACTION;\n";
+		$this->flush($sql_data);
+	}
+
+	function write_table($table_name)
+	{
+		global $db;
+		$sql_data = '-- Table: ' . $table_name . "\n";
+		$sql_data .= "DROP TABLE $table_name;\n";
+
+		$sql = "SELECT sql
+			FROM sqlite_master
+			WHERE type = 'table'
+				AND name = '" . $db->sql_escape($table_name) . "'
+			ORDER BY name ASC;";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Create Table
+		$sql_data .= $row['sql'] . ";\n";
+
+		$result = $db->sql_query("PRAGMA index_list('" . $db->sql_escape($table_name) . "');");
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (strpos($row['name'], 'autoindex') !== false)
+			{
+				continue;
+			}
+
+			$result2 = $db->sql_query("PRAGMA index_info('" . $db->sql_escape($row['name']) . "');");
+
+			$fields = array();
+			while ($row2 = $db->sql_fetchrow($result2))
+			{
+				$fields[] = $row2['name'];
+			}
+			$db->sql_freeresult($result2);
+
+			$sql_data .= 'CREATE ' . ($row['unique'] ? 'UNIQUE ' : '') . 'INDEX ' . $row['name'] . ' ON ' . $table_name . ' (' . implode(', ', $fields) . ");\n";
+		}
+		$db->sql_freeresult($result);
+
+		$this->flush($sql_data . "\n");
+	}
+
+	function write_data($table_name)
+	{
+		global $db;
+
+		$result = $db->sql_query("PRAGMA table_info('" . $db->sql_escape($table_name) . "');");
+
+		$col_types = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$col_types[$row['name']] = $row['type'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql_insert = 'INSERT INTO ' . $table_name . ' (' . implode(', ', array_keys($col_types)) . ') VALUES (';
+
+		$sql = "SELECT *
+			FROM $table_name";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			foreach ($row as $column_name => $column_data)
+			{
+				if (is_null($column_data))
+				{
+					$row[$column_name] = 'NULL';
+				}
+				else if ($column_data === '')
+				{
+					$row[$column_name] = "''";
+				}
+				else if (stripos($col_types[$column_name], 'text') !== false || stripos($col_types[$column_name], 'char') !== false || stripos($col_types[$column_name], 'blob') !== false)
+				{
+					$row[$column_name] = sanitize_data_generic(str_replace("'", "''", $column_data));
+				}
+			}
+			$this->flush($sql_insert . implode(', ', $row) . ");\n");
+		}
+	}
+
+	function write_end()
+	{
+		$this->flush("COMMIT;\n");
+		parent::write_end();
+	}
+}
+
+/**
+* @package acp
+*/
 class postgres_extractor extends base_extractor
 {
 	function write_start($prefix)
@@ -1180,7 +1292,6 @@ class postgres_extractor extends base_extractor
 		}
 		$db->sql_freeresult($result);
 
-
 		// Get the listing of primary keys.
 		$sql_pri_keys = "SELECT ic.relname as index_name, bc.relname as tab_name, ta.attname as column_name, i.indisunique as unique_key, i.indisprimary as primary_key
 			FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
@@ -1279,7 +1390,6 @@ class postgres_extractor extends base_extractor
 		{
 			$ary_type[] = pg_field_type($result, $i);
 			$ary_name[] = pg_field_name($result, $i);
-
 
 			$sql = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
 				FROM pg_attrdef d, pg_class c

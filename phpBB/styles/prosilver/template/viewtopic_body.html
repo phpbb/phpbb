@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 <!-- IF U_MCP or U_ACP --><p class="responsive-center">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}" title="{L_ACP}" data-responsive-text="{L_ACP_SHORT}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}" title="{L_MCP}" data-responsive-text="{L_MCP_SHORT}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p><!-- ENDIF -->
-<h2><!-- EVENT viewtopic_topic_title_prepend --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+<h2 class="topic-title"><!-- EVENT viewtopic_topic_title_prepend --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- EVENT viewtopic_topic_title_append --></h2>
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
 <!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 
@@ -67,17 +67,19 @@
 		<div class="inner">
 
 		<div class="content">
-			<h2>{POLL_QUESTION}</h2>
+			<h2 class="poll-title"><!-- EVENT viewtopic_body_poll_question_prepend -->{POLL_QUESTION}<!-- EVENT viewtopic_body_poll_question_append --></h2>
 			<p class="author">{L_POLL_LENGTH}<!-- IF S_CAN_VOTE and L_POLL_LENGTH --><br /><!-- ENDIF --><!-- IF S_CAN_VOTE --><span class="poll_max_votes">{L_MAX_VOTES}</span><!-- ENDIF --></p>
 
 			<fieldset class="polls">
 			<!-- BEGIN poll_option -->
-				<dl class="<!-- IF poll_option.POLL_OPTION_VOTED -->voted<!-- ENDIF -->"<!-- IF poll_option.POLL_OPTION_VOTED --> title="{L_POLL_VOTED_OPTION}"<!-- ENDIF --> data-poll-option-id="{poll_option.POLL_OPTION_ID}">
+				<!-- EVENT viewtopic_body_poll_option_before -->
+				<dl class="<!-- IF poll_option.POLL_OPTION_VOTED -->voted<!-- ENDIF --><!-- IF poll_option.POLL_OPTION_MOST_VOTES --> most-votes<!-- ENDIF -->"<!-- IF poll_option.POLL_OPTION_VOTED --> title="{L_POLL_VOTED_OPTION}"<!-- ENDIF --> data-poll-option-id="{poll_option.POLL_OPTION_ID}">
 					<dt><!-- IF S_CAN_VOTE --><label for="vote_{poll_option.POLL_OPTION_ID}">{poll_option.POLL_OPTION_CAPTION}</label><!-- ELSE -->{poll_option.POLL_OPTION_CAPTION}<!-- ENDIF --></dt>
 					<!-- IF S_CAN_VOTE --><dd style="width: auto;" class="poll_option_select"><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ELSE --><input type="radio" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></dd><!-- ENDIF -->
 					<dd class="resultbar<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->"><div class="<!-- IF poll_option.POLL_OPTION_PCT < 20 -->pollbar1<!-- ELSEIF poll_option.POLL_OPTION_PCT < 40 -->pollbar2<!-- ELSEIF poll_option.POLL_OPTION_PCT < 60 -->pollbar3<!-- ELSEIF poll_option.POLL_OPTION_PCT < 80 -->pollbar4<!-- ELSE -->pollbar5<!-- ENDIF -->" style="width:{poll_option.POLL_OPTION_PERCENT_REL};">{poll_option.POLL_OPTION_RESULT}</div></dd>
 					<dd class="poll_option_percent<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->"><!-- IF poll_option.POLL_OPTION_RESULT == 0 -->{L_NO_VOTES}<!-- ELSE -->{poll_option.POLL_OPTION_PERCENT}<!-- ENDIF --></dd>
 				</dl>
+				<!-- EVENT viewtopic_body_poll_option_after -->
 			<!-- END poll_option -->
 
 				<dl class="poll_total_votes<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->">
@@ -113,8 +115,8 @@
 
 <!-- BEGIN postrow -->
 	<!-- EVENT viewtopic_body_postrow_post_before -->
-	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread"></a><!-- ENDIF -->
-	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> online<!-- ENDIF -->">
+	<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF -->
+	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> online<!-- ENDIF --><!-- IF postrow.POSTER_WARNINGS --> warned<!-- ENDIF -->">
 		<div class="inner">
 
 		<dl class="postprofile" id="profile{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
@@ -129,6 +131,7 @@
 
 		<!-- IF postrow.POSTER_POSTS != '' --><dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> {postrow.POSTER_POSTS}</dd><!-- ENDIF -->
 		<!-- IF postrow.POSTER_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_WARNINGS --><dd class="profile-warnings"><strong>{L_WARNINGS}{L_COLON}</strong> {postrow.POSTER_WARNINGS}</dd><!-- ENDIF -->
 
 		<!-- IF postrow.S_PROFILE_FIELD1 -->
 			<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
@@ -143,26 +146,34 @@
 		<!-- END custom_fields -->
 		<!-- EVENT viewtopic_body_postrow_custom_fields_after -->
 
-		<!-- IF not S_IS_BOT -->
-		<!-- IF postrow.U_PM or postrow.U_EMAIL or postrow.U_JABBER -->
+		<!-- EVENT viewtopic_body_contact_fields_before -->
+		<!-- IF not S_IS_BOT and .postrow.contact -->
 			<dd class="profile-contact">
-				<ul class="profile-icons">
-					<!-- IF postrow.U_PM --><li class="pm-icon"><a href="{postrow.U_PM}" title="{L_PRIVATE_MESSAGE}"><span>{L_PRIVATE_MESSAGE}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_EMAIL --><li class="email-icon"><a href="{postrow.U_EMAIL}" title="{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}"><span>{L_SEND_EMAIL_USER} {postrow.POST_AUTHOR}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_JABBER --><li class="jabber-icon"><a href="{postrow.U_JABBER}" onclick="popup(this.href, 550, 320); return false;" title="{L_JABBER}"><span>{L_JABBER}</span></a></li><!-- ENDIF -->
-					<!-- BEGIN custom_fields -->
-						<!-- IF postrow.custom_fields.S_PROFILE_CONTACT -->
-							<li class="{postrow.custom_fields.PROFILE_FIELD_IDENT}-icon">
-								<a href="<!-- IF postrow.custom_fields.PROFILE_FIELD_CONTACT -->{postrow.custom_fields.PROFILE_FIELD_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->">
-									<span>{postrow.custom_fields.PROFILE_FIELD_NAME}</span>
-								</a>
-							</li>
-						<!-- ENDIF -->
-					<!-- END custom_fields -->
-				</ul>
+				<strong>{L_CONTACT_USER}{L_COLON}</strong>
+				<div class="dropdown-container dropdown-left">
+					<a href="#" class="dropdown-trigger"><span class="imageset icon_contact"></span></a>
+					<div class="dropdown hidden">
+						<div class="pointer"><div class="pointer-inner"></div></div>
+						<div class="dropdown-contents contact-icons">
+							<!-- BEGIN contact -->
+								{% set REMAINDER = postrow.contact.S_ROW_COUNT % 4 %}
+								<!-- DEFINE $S_LAST_CELL = ((REMAINDER eq 3) or (postrow.contact.S_LAST_ROW and postrow.contact.S_NUM_ROWS < 4)) -->
+								<!-- IF REMAINDER eq 0 -->
+									<div>
+								<!-- ENDIF -->
+									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 550, 320); return false;"<!-- ENDIF -->>
+										<span class="contact-icon {postrow.contact.ID}-icon"></span>
+									</a>
+								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
+									</div>
+								<!-- ENDIF -->
+							<!-- END contact -->
+						</div>
+					</div>
+				</div>
 			</dd>
 		<!-- ENDIF -->
-		<!-- ENDIF -->
+		<!-- EVENT viewtopic_body_contact_fields_after -->
 
 		</dl>
 
@@ -204,7 +215,7 @@
 			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice unapproved">
-					<strong>{L_POST_UNAPPROVED}</strong>
+					<strong>{L_POST_UNAPPROVED_ACTION}</strong>
 					<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 					<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
 					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
@@ -214,7 +225,7 @@
 			<!-- ELSEIF postrow.S_POST_DELETED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice deleted">
-					<strong>{L_POST_DELETED}</strong>
+					<strong>{L_POST_DELETED_ACTION}</strong>
 					<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" />
 					<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
 					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />

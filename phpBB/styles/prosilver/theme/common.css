@@ -261,7 +261,6 @@ a#logo:hover {
 }
 
 .navbar {
-	padding: 0 10px;
 	padding: 5px 10px 5px 10px;
 	border-radius: 7px;
 }
@@ -433,11 +432,11 @@ ul.linklist.bulletin li:before {
 }
 
 ul.linklist.bulletin li:first-child:before, ul.linklist.bulletin li.rightside:last-child:before {
-	display: none;
+	content: none;
 }
 
 ul.linklist.bulletin li.no-bulletin:before {
-	display: none;
+	content: none;
 }
 
 .responsive-menu:before {
@@ -470,6 +469,11 @@ ul.linklist.bulletin li.no-bulletin:before {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 9px 0 0;
+	margin-right: -500px;
+}
+
+.dropdown.live-search {
+	top: auto;
 }
 
 .dropdown-container.topic-tools {
@@ -485,6 +489,8 @@ ul.linklist.bulletin li.no-bulletin:before {
 .dropdown-left .dropdown, .nojs .rightside .dropdown {
 	left: auto;
 	right: 0;
+	margin-left: -500px;
+	margin-right: 0;
 }
 
 .dropdown-button-control .dropdown {
@@ -597,7 +603,18 @@ ul.linklist.bulletin li.no-bulletin:before {
 /* Responsive breadcrumbs
 ----------------------------------------*/
 .breadcrumbs .crumb {
+	float: left;
 	word-wrap: normal;
+}
+
+.breadcrumbs .crumb:before {
+	content: '‹';
+	font-weight: bold;
+	padding: 0 0.5em;
+}
+
+.breadcrumbs .crumb:first-child:before {
+	content: none;
 }
 
 .breadcrumbs .crumb a {
@@ -1078,7 +1095,7 @@ form > p.post-notice strong {
 
 .dropdown-extended .footer {
 	text-align: center;
-	font-size: 1.2em;
+	font-size: 1.1em;
 }
 
 .dropdown-extended ul li a, .notification_list dt > a, .dropdown-extended .footer > a {
@@ -1096,6 +1113,7 @@ form > p.post-notice strong {
 
 .notification_list ul li p {
 	margin: 0;
+	font-size: 1em;
 }
 
 .notification_list div.notifications {

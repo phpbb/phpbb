@@ -152,10 +152,14 @@ class post extends \phpbb\notification\type\base
 			unset($notify_users[$row['user_id']]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
-			$sql = 'UPDATE ' . $this->notifications_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $notification->add_responders($post)) . '
-				WHERE notification_id = ' . $row['notification_id'];
-			$this->db->sql_query($sql);
+			$update_responders = $notification->add_responders($post);
+			if (!empty($update_responders))
+			{
+				$sql = 'UPDATE ' . $this->notifications_table . '
+					SET ' . $this->db->sql_build_array('UPDATE', $update_responders) . '
+					WHERE notification_id = ' . $row['notification_id'];
+				$this->db->sql_query($sql);
+			}
 		}
 		$this->db->sql_freeresult($result);
 
@@ -206,7 +210,11 @@ class post extends \phpbb\notification\type\base
 			}
 		}
 
-		if ($trimmed_responders_cnt)
+		if ($trimmed_responders_cnt > 20)
+		{
+			$usernames[] = $this->user->lang('NOTIFICATION_MANY_OTHERS');
+		}
+		else if ($trimmed_responders_cnt)
 		{
 			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
@@ -267,6 +275,14 @@ class post extends \phpbb\notification\type\base
 	public function get_url()
 	{
 		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
+	}
+
+	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t={$this->item_parent_id}&amp;view=unread#unread");
 	}
 
 	/**
@@ -384,19 +400,27 @@ class post extends \phpbb\notification\type\base
 		// Do not add them as a responder if they were the original poster that created the notification
 		if ($this->get_data('poster_id') == $post['poster_id'])
 		{
-			return array('notification_data' => serialize($this->get_data(false)));
+			return array();
 		}
 
 		$responders = $this->get_data('responders');
 
 		$responders = ($responders === null) ? array() : $responders;
 
+		// Do not add more than 25 responders,
+		// we trim the username list to "a, b, c and x others" anyway
+		// so there is no use to add all of them anyway.
+		if (sizeof($responders) > 25)
+		{
+			return array();
+		}
+
 		foreach ($responders as $responder)
 		{
 			// Do not add them as a responder multiple times
 			if ($responder['poster_id'] == $post['poster_id'])
 			{
-				return array('notification_data' => serialize($this->get_data(false)));
+				return array();
 			}
 		}
 
@@ -407,6 +431,15 @@ class post extends \phpbb\notification\type\base
 
 		$this->set_data('responders', $responders);
 
-		return array('notification_data' => serialize($this->get_data(false)));
+		$serialized_data = serialize($this->get_data(false));
+
+		// If the data is longer then 4000 characters, it would cause a SQL error.
+		// We don't add the username to the list if this is the case.
+		if (utf8_strlen($serialized_data) >= 4000)
+		{
+			return array();
+		}
+
+		return array('notification_data' => $serialized_data);
 	}
 }

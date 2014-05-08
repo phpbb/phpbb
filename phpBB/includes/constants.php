@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.1.0-b3-dev');
+define('PHPBB_VERSION', '3.1.0-b4-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -46,10 +46,10 @@ define('USER_INACTIVE', 1);
 define('USER_IGNORE', 2);
 define('USER_FOUNDER', 3);
 
-define('INACTIVE_REGISTER', 1);
-define('INACTIVE_PROFILE', 2);
-define('INACTIVE_MANUAL', 3);
-define('INACTIVE_REMIND', 4);
+define('INACTIVE_REGISTER', 1); // Newly registered account
+define('INACTIVE_PROFILE', 2); // Profile details changed
+define('INACTIVE_MANUAL', 3); // Account deactivated by administrator
+define('INACTIVE_REMIND', 4); // Forced user account reactivation
 
 // ACL
 define('ACL_NEVER', 0);
@@ -91,6 +91,7 @@ define('ITEM_MOVED', 2);
 define('ITEM_UNAPPROVED', 0); // => has not yet been approved
 define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
 define('ITEM_DELETED', 2); // => has been soft deleted
+define('ITEM_REAPPROVE', 3); // => has been edited and needs to be re-approved
 
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);

@@ -1,6 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 
-<h2>{PAGE_TITLE}</h2>
+<h2 class="memberlist-title">{PAGE_TITLE}</h2>
+
+<!-- EVENT memberlist_view_content_prepend -->
 
 <form method="post" action="{S_PROFILE_ACTION}" id="viewprofile">
 <div class="panel bg1<!-- IF S_ONLINE --> online<!-- ENDIF -->">
@@ -50,14 +52,14 @@
 		<!-- ENDIF -->
 	</dl>
 
-	<span class="clear"></span></div>
+	</div>
 </div>
 
 <!-- EVENT memberlist_view_contact_before -->
 <div class="panel bg2">
 	<div class="inner">
-	<div class="column1">
 
+	<div class="column1">
 		<h3>{L_CONTACT_USER} {USERNAME}</h3>
 
 		<dl class="details">
@@ -103,7 +105,8 @@
 			<!-- EVENT memberlist_view_user_statistics_after -->
 		</dl>
 	</div>
-	<span class="clear"></span></div>
+
+	</div>
 </div>
 <!-- EVENT memberlist_view_contact_after -->
 
@@ -115,7 +118,7 @@
 
 		<div class="postbody"><div class="signature standalone">{SIGNATURE}</div></div>
 
-	<span class="clear"></span></div>
+	</div>
 </div>
 <!-- ENDIF -->
 

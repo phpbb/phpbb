@@ -66,15 +66,63 @@ acp_simple_header_body_before
 
 acp_simple_header_head_append
 ===
-* Location: adm/style/overall_header.html
+* Location: adm/style/simple_header.html
 * Since: 3.1.0-a1
 * Purpose: Add assets within the `<head>` tags in the simple header of the ACP
 
 acp_users_overview_options_append
 ===
-* Location: adm/style/acp_users.html
+* Location: adm/style/acp_users_overview.html
 * Since: 3.1.0-a1
 * Purpose: Add options and settings on user overview page
+
+acp_users_prefs_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users prefs settings
+
+acp_users_prefs_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users prefs settings
+
+acp_users_prefs_personal_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users personal prefs settings
+
+acp_users_prefs_personal_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users personal prefs settings
+
+acp_users_prefs_post_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users post prefs settings
+
+acp_users_prefs_post_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users post prefs settings
+
+acp_users_prefs_view_append
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the bottom of ACP users view prefs settings
+
+acp_users_prefs_view_prepend
+===
+* Location: adm/style/acp_users_prefs.html
+* Since: 3.1.0-b3
+* Purpose: Add user options fieldset to the top of ACP users view prefs settings
 
 acp_users_signature_editor_buttons_after
 ===
@@ -91,7 +139,7 @@ acp_users_signature_editor_buttons_before
 * Purpose: Add content before BBCode posting buttons in the ACP user signature
 
 forumlist_body_category_header_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -99,7 +147,7 @@ forumlist_body_category_header_after
 * Purpose: Add content after the header of the category on the forum list.
 
 forumlist_body_category_header_before
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -107,7 +155,7 @@ forumlist_body_category_header_before
 * Purpose: Add content before the header of the category on the forum list.
 
 forumlist_body_last_post_title_prepend
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -115,7 +163,7 @@ forumlist_body_last_post_title_prepend
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
 forumlist_body_subforums_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -123,7 +171,7 @@ forumlist_body_subforums_after
 * Purpose: Add content after the list of subforums (if any) for each forum on the forum list.
 
 forumlist_body_subforums_before
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
@@ -131,12 +179,60 @@ forumlist_body_subforums_before
 * Purpose: Add content before the list of subforums (if any) for each forum on the forum list.
 
 forumlist_body_last_row_after
-====
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
     + styles/subsilver2/template/forumlist_body.html
 * Since: 3.1.0-b2
 * Purpose: Add content after the very last row of the forum list.
+
+index_body_block_birthday_append
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Append content to the birthday list on the Board index
+
+index_body_block_birthday_prepend
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Prepend content to the birthday list on the Board index
+
+index_body_block_online_append
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Append content to the online list on the Board index
+
+index_body_block_online_prepend
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Prepend content to the online list on the Board index
+
+index_body_block_stats_append
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Append content to the statistics list on the Board index
+
+index_body_block_stats_prepend
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Prepend content to the statistics list on the Board index
 
 index_body_linklist_after
 ===
@@ -212,6 +308,14 @@ memberlist_view_content_append
 * Since: 3.1.0-b2
 * Purpose: Add custom content to the user profile view after the main content
 
+memberlist_view_content_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+    + styles/subsilver2/template/memberlist_view.html
+* Since: 3.1.0-b3
+* Purpose: Add custom content to the user profile view before the main content
+
 memberlist_view_user_statistics_after
 ===
 * Locations:
@@ -275,6 +379,38 @@ overall_footer_page_body_after
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-body, but before the footer
 
+overall_footer_teamlink_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Add contents after the team-link in the footer
+
+overall_footer_teamlink_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.0-b3
+* Purpose: Add contents before the team-link in the footer
+
+overall_footer_timezone_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add content to the navbar in the page footer, after "Timezone"
+
+overall_footer_timezone_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add content to the navbar in the page footer, before "Timezone"
+
 overall_header_body_before
 ===
 * Locations:
@@ -322,6 +458,22 @@ overall_header_navigation_prepend
     + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
+
+overall_header_navlink_append
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add content after each individual navlink (breadcrumb)
+
+overall_header_navlink_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-b3
+* Purpose: Add content before each individual navlink (breadcrumb)
 
 overall_header_page_body_before
 ===
@@ -419,10 +571,41 @@ quickreply_editor_message_before
 * Since: 3.1.0-a4
 * Purpose: Add content before the quick reply textbox
 
+search_results_post_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add data after search result posts
+
+search_results_post_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add data before search result posts
+
+search_results_postprofile_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add content after the post author and stats in search results (posts view mode)
+
+search_results_postprofile_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly before the post author in search results (posts view mode)
+
 simple_footer_after
 ===
 * Locations:
     + styles/prosilver/template/simple_footer.html
+    + styles/subsilver2/template/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content directly prior to the `</body>` tag of the simple footer
 
@@ -433,6 +616,14 @@ simple_header_body_before
     + styles/subsilver2/template/simple_header.html
 * Since: 3.1.0-b2
 * Purpose: Add content to the header body
+
+simple_header_head_append
+===
+* Locations:
+    + styles/prosilver/template/simple_header.html
+    + styles/subsilver2/template/simple_header.html
+* Since: 3.1.0-b4
+* Purpose: Add asset calls directly before the `</head>` tag
 
 topiclist_row_prepend
 ===
@@ -453,6 +644,38 @@ topiclist_row_append
     + styles/subsilver2/template/viewforum_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
+
+ucp_agreement_terms_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_agreement.html
+    + styles/subsilver2/template/ucp_agreement.html
+* Since: 3.1.0-b3
+* Purpose: Add content after the terms of agreement text at user registration
+
+ucp_agreement_terms_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_agreement.html
+    + styles/subsilver2/template/ucp_agreement.html
+* Since: 3.1.0-b3
+* Purpose: Add content before the terms of agreement text at user registration
+
+ucp_pm_viewmessage_contact_fields_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-b1
+* Purpose: Add data after the contact fields on the user profile when viewing
+a private message
+
+ucp_pm_viewmessage_contact_fields_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-b1
+* Purpose: Add data before the contact fields on the user profile when viewing
+a private message
 
 ucp_pm_viewmessage_custom_fields_after
 ===
@@ -549,18 +772,34 @@ Display Options screen
 ucp_friend_list_before
 ===
 * Locations:
-	+ styles/prosilver/template/ucp_zebra_friends.html
-	+ styles/subsilver2/template/ucp_zebra_friends.html
+    + styles/prosilver/template/ucp_zebra_friends.html
+    + styles/subsilver2/template/ucp_zebra_friends.html
 * Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
 
 ucp_friend_list_after
 ===
 * Locations:
-	+ styles/prosilver/template/ucp_zebra_friends.html
-	+ styles/subsilver2/template/ucp_zebra_friends.html
+    + styles/prosilver/template/ucp_zebra_friends.html
+    + styles/subsilver2/template/ucp_zebra_friends.html
 * Since: 3.1.0-a4
 * Purpose: Add optional elements after list of friends in UCP
+
+viewforum_forum_name_append
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly after the forum name link on the View forum screen
+
+viewforum_forum_name_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly before the forum name link on the View forum screen
 
 viewtopic_print_head_append
 ===
@@ -569,6 +808,22 @@ viewtopic_print_head_append
     + styles/subsilver2/template/viewtopic_print.html
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
+
+viewtopic_body_contact_fields_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add data after the contact fields on the user profile when viewing
+a post
+
+viewtopic_body_contact_fields_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add data before the contact fields on the user profile when viewing
+a post
 
 viewtopic_body_footer_before
 ===
@@ -579,6 +834,40 @@ viewtopic_body_footer_before
 * Purpose: Add content to the bottom of the View topic screen below the posts
 and quick reply, directly before the jumpbox in Prosilver, breadcrumbs in
 Subsilver2.
+
+viewtopic_body_poll_option_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content after the poll option
+the list.
+
+viewtopic_body_poll_option_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content before the poll option
+the list.
+
+viewtopic_body_poll_question_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly after the poll question on the View topic screen
+
+viewtopic_body_poll_question_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly before the poll question on the View topic screen
 
 viewtopic_body_post_buttons_after
 ===
@@ -655,6 +944,14 @@ viewtopic_body_topic_actions_before
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-a4
 * Purpose: Add data before the topic actions buttons (after the posts sorting options)
+
+viewtopic_topic_title_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-b3
+* Purpose: Add content directly after the topic title link on the View topic screen
 
 viewtopic_topic_title_prepend
 ===

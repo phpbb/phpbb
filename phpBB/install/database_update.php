@@ -115,7 +115,13 @@ request_var('', 0, false, false, $request); // "dependency injection" for a func
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
-$orig_version = $config['version'];
+
+if (!isset($config['version_update_from']))
+{
+	$config->set('version_update_from', $config['version']);
+}
+
+$orig_version = $config['version_update_from'];
 
 $user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
 
@@ -168,6 +174,8 @@ header('Content-type: text/html; charset=UTF-8');
 								<?php echo $user->lang['PREVIOUS_VERSION']; ?> :: <strong><?php echo $config['version']; ?></strong><br />
 
 <?php
+
+define('IN_DB_UPDATE', true);
 
 /**
 * @todo firebird/mysql update?
@@ -284,5 +292,7 @@ else
 	echo '<div class="errorbox">' . $user->lang['UPDATE_FILES_NOTICE'] . '</div>';
 	echo $user->lang['COMPLETE_LOGIN_TO_BOARD'];
 }
+
+$config->delete('version_update_from');
 
 phpbb_end_update($cache, $config);

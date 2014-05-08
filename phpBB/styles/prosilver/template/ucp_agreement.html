@@ -10,6 +10,7 @@
 	*/
 	function change_language(lang_iso)
 	{
+		document.cookie = '{COOKIE_NAME}_lang=' + lang_iso + '; path={COOKIE_PATH}';
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit();
 	}
@@ -33,8 +34,10 @@
 	<div class="panel">
 		<div class="inner">
 		<div class="content">
-			<h2>{SITENAME} - {L_REGISTRATION}</h2>
+			<h2 class="sitename-title">{SITENAME} - {L_REGISTRATION}</h2>
+			<!-- EVENT ucp_agreement_terms_before -->
 			<p><!-- IF S_SHOW_COPPA -->{L_COPPA_BIRTHDAY}<!-- ELSE -->{L_TERMS_OF_USE}<!-- ENDIF --></p>
+			<!-- EVENT ucp_agreement_terms_after -->
 		</div>
 		</div>
 	</div>
@@ -60,7 +63,7 @@
 	<div class="panel">
 		<div class="inner">
 		<div class="content">
-			<h2>{SITENAME} - {AGREEMENT_TITLE}</h2>
+			<h2 class="sitename-title">{SITENAME} - {AGREEMENT_TITLE}</h2>
 			<p>{AGREEMENT_TEXT}</p>
 			<hr class="dashed" />
 			<p><a href="{U_BACK}" class="button2">{L_BACK}</a></p>

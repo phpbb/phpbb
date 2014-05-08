@@ -80,9 +80,24 @@ $current_time = time();
 *							form submission.
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
-$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+$vars = array(
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'draft_id',
+	'lastclick',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'delete',
+	'cancel',
+	'refresh',
+	'mode',
+	'error',
+);
 extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
@@ -879,10 +894,13 @@ if ($submit || $preview || $refresh)
 			$message_parser->warn_msg = array();
 		}
 
-		$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		if (!$preview || !empty($message_parser->message))
+		{
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		}
 
 		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && $refresh)
+		if (sizeof($message_parser->warn_msg) && $refresh && !$preview)
 		{
 			$message_parser->warn_msg = array();
 		}
@@ -1554,6 +1572,7 @@ $page_data = array(
 *				post|reply|quote|edit|delete|bump|smilies|popup
 * @var	string	page_title	Title of the mode page
 * @var	bool	s_topic_icons	Whether or not to show the topic icons
+<<<<<<< HEAD
 * @var	string	form_enctype	If attachments are allowed for this form
 *				"multipart/form-data" or empty string
 * @var	string	s_action	The URL to submit the POST data to
@@ -1583,8 +1602,29 @@ $page_data = array(
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
 */
-$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype', 's_action', 's_hidden_fields', 'post_id');
-$vars += array('topic_id', 'forum_id', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'error', 'page_data', 'message_parser');
+$vars = array(
+	'post_data',
+	'moderators',
+	'mode',
+	'page_title',
+	's_topic_icons',
+	'form_enctype',
+	's_action',
+	's_hidden_fields',
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'delete',
+	'cancel',
+	'refresh',
+	'error',
+	'page_data',
+	'message_parser',
+);
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
 
 // Start assigning vars for main posting page ...

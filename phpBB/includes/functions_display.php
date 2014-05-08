@@ -138,7 +138,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	*
 	* @event core.display_forums_modify_sql
 	* @var	array	sql_ary		The SQL array to get the data of the forums
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_sql', compact($vars)));
@@ -161,7 +161,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		* @event core.display_forums_modify_row
 		* @var	int		branch_root_id	Last top-level forum
 		* @var	array	row				The data of the forum
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('branch_root_id', 'row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_row', compact($vars)));
@@ -318,7 +318,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		* @var	int		branch_root_id	Current top-level forum
 		* @var	int		parent_id		Current parent forum
 		* @var	array	row				The data of the forum
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('forum_rows', 'subforums', 'branch_root_id', 'parent_id', 'row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_forum_rows', compact($vars)));
@@ -568,7 +568,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		* @event core.display_forums_modify_template_vars
 		* @var	array	forum_row		Template data of the forum
 		* @var	array	row				The data of the forum
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('forum_row', 'row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
@@ -900,7 +900,6 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 			$folder_new .= '_locked';
 		}
 
-
 		$folder_img = ($unread_topic) ? $folder_new : $folder;
 		$folder_alt = ($unread_topic) ? 'UNREAD_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
 
@@ -975,7 +974,7 @@ function display_custom_bbcodes()
 		* @event core.display_custom_bbcodes_modify_row
 		* @var	array	custom_tags		Template data of the bbcode
 		* @var	array	row				The data of the bbcode
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('custom_tags', 'row');
 		extract($phpbb_dispatcher->trigger_event('core.display_custom_bbcodes_modify_row', compact($vars)));
@@ -990,7 +989,7 @@ function display_custom_bbcodes()
 	* Display custom bbcodes
 	*
 	* @event core.display_custom_bbcodes
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
 }

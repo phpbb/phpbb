@@ -422,7 +422,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		else
 		{
-			$db->sql_multi_insert(STYLES_TABLE, array(
+			$db->sql_multi_insert(STYLES_TABLE, array(array(
 				'style_id' => $style_id,
 				'style_name' => $style_path,
 				'style_copyright' => '',
@@ -431,7 +431,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'bbcode_bitfield' => 'kNg=',
 				'style_parent_id' => $parent_style_id,
 				'style_parent_tree' => $parent_style_path,
-			));
+			)));
 		}
 	}
 
@@ -522,8 +522,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			'user_email' => 'nobody@example.com',
 			'user_type' => 0,
 			'user_lang' => 'en',
-			'user_timezone' => 0,
-			'user_dateformat' => '',
+			'user_timezone' => 'UTC',
+			'user_dateformat' => 'r',
 			'user_password' => $passwords_manager->hash($username . $username),
 		);
 		return user_add($user_row);

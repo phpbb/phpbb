@@ -331,15 +331,15 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<table class="table1 zebra-table">
+	<table class="table1 zebra-table fixed-width-table">
 	<thead>
 	<tr>
 		<th>{L_FILENAME}</th>
-		<th>{L_FILEDATE}</th>
-		<th>{L_FILESIZE}</th>
-		<th>{L_ATTACH_POST_ID}</th>
-		<th>{L_ATTACH_TO_POST}</th>
-		<th>{L_DELETE}</th>
+		<th style="width: 15%;">{L_FILEDATE}</th>
+		<th style="width: 15%;">{L_FILESIZE}</th>
+		<th style="width: 15%;">{L_ATTACH_POST_ID}</th>
+		<th style="width: 15%;">{L_ATTACH_TO_POST}</th>
+		<th style="width: 15%;">{L_DELETE}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -348,7 +348,7 @@
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><strong>{L_ATTACH_ID}{L_COLON} </strong><input type="number" name="post_id[{orphan.ATTACH_ID}]" maxlength="10" value="{orphan.POST_ID}" style="width: 75%;" /></td>
 			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
 			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>
@@ -378,7 +378,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
-	<div class="pagination">
+	<div class="pagination top-pagination">
 	<!-- IF .pagination or TOTAL_FILES -->
 		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
 		<!-- IF .pagination -->
@@ -389,13 +389,14 @@
 	<!-- ENDIF -->
 	</div>
 
-	<table class="table1 zebra-table">
+<!-- IF .attachments -->
+	<table class="table1 zebra-table fixed-width-table">
 	<thead>
 	<tr>
 		<th>{L_FILENAME}</th>
-		<th>{L_POSTED}</th>
-		<th>{L_FILESIZE}</th>
-		<th>{L_DELETE}</th>
+		<th style="width: 15%;">{L_POSTED}</th>
+		<th style="width: 15%;" class="centered-text">{L_FILESIZE}</th>
+		<th style="width: 10%;" class="centered-text">{L_MARK}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -406,25 +407,19 @@
 				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
 			</td>
 			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
-			<td>{attachments.FILESIZE}</td>
-			<td><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
+			<td class="centered-text">{attachments.FILESIZE}</td>
+			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
 		</tr>
 	<!-- END attachments -->
-	<tr class="row4">
-		<td colspan="3">&nbsp;</td>
-		<td class="small"><a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a></td>
-	</tr>
 	</tbody>
 	</table>
+<!-- ELSE -->
+	<div class="errorbox">
+		<p>{L_NO_ATTACHMENTS}</p>
+	</div>
+<!-- ENDIF -->
 
 	<!-- IF TOTAL_FILES -->
-	<fieldset class="display-options">
-		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
-		<input class="button2" type="submit" value="{L_GO}" name="sort" />
-	</fieldset>
-
-	<hr />
-
 	<div class="pagination">
 		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
 		<!-- IF .pagination -->
@@ -435,10 +430,22 @@
 	</div>
 	<!-- ENDIF -->
 
-	<p class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-	</p>
+	<fieldset class="display-options">
+		{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+
+	<hr />
+
+<!-- IF .attachments -->
+	<fieldset class="quick">
+		<input class="button2" type="submit" name="submit" value="{L_DELETE_MARKED}" /><br />
+		<p class="small">
+			<a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> &bull;
+			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>		
+		</p>
+	</fieldset>
+<!-- ENDIF -->
 	{S_FORM_TOKEN}
 	</fieldset>
 	</form>

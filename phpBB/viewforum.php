@@ -387,7 +387,7 @@ $sql_array = array(
 *
 * @event core.viewforum_get_topic_data
 * @var	array	sql_array		The SQL array to get the data of all topics
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $vars = array('sql_array');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
@@ -582,7 +582,7 @@ if (sizeof($shadow_topic_list))
 	*
 	* @event core.viewforum_get_shadowtopic_data
 	* @var	array	sql_array		SQL array to get the data of any shadowtopics
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('sql_array');
 	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
@@ -749,7 +749,7 @@ if (sizeof($topic_list))
 		$view_topic_url_params = 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id;
 		$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
 
-		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $row['forum_id']));
+		$topic_unapproved = (($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE) && $auth->acl_get('m_approve', $row['forum_id']));
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id']));
 		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 
@@ -819,7 +819,7 @@ if (sizeof($topic_list))
 		* @event core.viewforum_modify_topicrow
 		* @var	array	row			Array with topic data
 		* @var	array	topic_row	Template array with topic data
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));

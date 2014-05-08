@@ -26,6 +26,7 @@ phpbb.loadingIndicator = function() {
 	if (!loadingIndicator.is(':visible')) {
 		loadingIndicator.fadeIn(phpbb.alertTime);
 		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		phpbb.clearLoadingTimeout();
 		phpbbAlertTimer = setTimeout(function() {
 			if (loadingIndicator.is(':visible')) {
 				phpbb.alert($('#phpbb_alert').attr('data-l-err'), $('#phpbb_alert').attr('data-l-timeout-processing-req'));
@@ -248,7 +249,16 @@ phpbb.ajaxify = function(options) {
 		callback = options.callback,
 		overlay = (typeof options.overlay !== 'undefined') ? options.overlay : true,
 		isForm = elements.is('form'),
-		eventName = isForm ? 'submit' : 'click';
+		isText = elements.is('input[type="text"], textarea'),
+		eventName;
+
+	if (isForm) {
+		eventName = 'submit';
+	} else if (isText) {
+		eventName = 'keyup';
+	} else {
+		eventName = 'click';
+	}
 
 	elements.bind(eventName, function(event) {
 		var action, method, data, submit, that = this, $this = $(this);
@@ -315,7 +325,7 @@ phpbb.ajaxify = function(options) {
 						refresh = false;
 					}
 
-					setTimeout(function() {
+					phpbbAlertTimer = setTimeout(function() {
 						if (refresh) {
 							window.location = res.REFRESH_DATA.url;
 						}
@@ -348,6 +358,7 @@ phpbb.ajaxify = function(options) {
 		// If the element is a form, POST must be used and some extra data must
 		// be taken from the form.
 		var runFilter = (typeof options.filter === 'function');
+		var data = {};
 
 		if (isForm) {
 			action = $this.attr('action').replace('&amp;', '&');
@@ -361,33 +372,41 @@ phpbb.ajaxify = function(options) {
 					value: submit.val()
 				});
 			}
+		} else if (isText) {
+			var name = ($this.attr('data-name') !== undefined) ? $this.attr('data-name') : this['name'];
+			action = $this.attr('data-url').replace('&amp;', '&');
+			data[name] = this.value;
+			method = 'POST';
 		} else {
 			action = this.href;
 			data = null;
 			method = 'GET';
 		}
 
+		var sendRequest = function() {
+			if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
+				phpbb.loadingIndicator();
+			}
+
+			var request = $.ajax({
+				url: action,
+				type: method,
+				data: data,
+				success: returnHandler,
+				error: errorHandler
+			});
+			request.always(function() {
+				loadingIndicator.fadeOut(phpbb.alertTime);
+			});
+		};
+
 		// If filter function returns false, cancel the AJAX functionality,
 		// and return true (meaning that the HTTP request will be sent normally).
-		if (runFilter && !options.filter.call(this, data)) {
+		if (runFilter && !options.filter.call(this, data, event, sendRequest)) {
 			return;
 		}
 
-		if (overlay && (typeof $this.attr('data-overlay') === 'undefined' || $this.attr('data-overlay') === 'true')) {
-			phpbb.loadingIndicator();
-		}
-
-		var request = $.ajax({
-			url: action,
-			type: method,
-			data: data,
-			success: returnHandler,
-			error: errorHandler
-		});
-		request.always(function() {
-			loadingIndicator.fadeOut(phpbb.alertTime);
-		});
-
+		sendRequest();
 		event.preventDefault();
 	});
 
@@ -401,6 +420,346 @@ phpbb.ajaxify = function(options) {
 	}
 
 	return this;
+};
+
+phpbb.search = {cache: {data: []}, tpl: [], container: []};
+
+/**
+ * Get cached search data. 
+ *
+ * @param string id		Search ID.
+ * @return bool|object.	Cached data object. Returns false if no data exists.
+ */
+phpbb.search.cache.get = function(id) {
+	if (this.data[id]) {
+		return this.data[id];
+	}
+	return false;
+};
+
+/**
+ * Set search cache data value. 
+ *
+ * @param string id		Search ID.
+ * @param string key	Data key.
+ * @param string value	Data value.
+ *
+ * @return undefined
+ */
+phpbb.search.cache.set = function(id, key, value) {
+	if (!this.data[id]) {
+		this.data[id] = {results: []};
+	}
+	this.data[id][key] = value;
+};
+
+/**
+ * Cache search result. 
+ *
+ * @param string id			Search ID.
+ * @param string keyword	Keyword.
+ * @param array results		Search results.
+ *
+ * @return undefined
+ */
+phpbb.search.cache.setResults = function(id, keyword, value) {
+	this.data[id]['results'][keyword] = value;
+};
+
+/**
+ * Trim spaces from keyword and lower its case.
+ *
+ * @param string keyword	Search keyword to clean.
+ * @return string Cleaned string.
+ */
+phpbb.search.cleanKeyword = function(keyword) {
+	return $.trim(keyword).toLowerCase();
+};
+
+/**
+ * Get clean version of search keyword. If textarea supports several keywords
+ * (one per line), it fetches the current keyword based on the caret position.
+ *
+ * @param jQuery el			Search input|textarea.
+ * @param string keyword	Input|textarea value.
+ * @param bool multiline	Whether textarea supports multiple search keywords.
+ *
+ * @return string Clean string.
+ */
+phpbb.search.getKeyword = function(el, keyword, multiline) {
+	if (multiline) {
+		var line = phpbb.search.getKeywordLine(el);
+		keyword = keyword.split("\n").splice(line, 1);
+	}
+	return phpbb.search.cleanKeyword(keyword);
+};
+
+/**
+ * Get the textarea line number on which the keyword resides - for textareas
+ * that support multiple keywords (one per line). 
+ *
+ * @param jQuery el	Search textarea.
+ * @return int
+ */
+phpbb.search.getKeywordLine = function (el) {
+	return el.val().substr(0, el.get(0).selectionStart).split("\n").length - 1;
+};
+
+/**
+ * Set the value on the input|textarea. If textarea supports multiple
+ * keywords, only the active keyword is replaced.
+ *
+ * @param jQuery el			Search input|textarea.
+ * @param string value		Value to set.
+ * @param bool multiline	Whether textarea supports multiple search keywords.	
+ *
+ * @return undefined
+ */
+phpbb.search.setValue = function(el, value, multiline) {
+	if (multiline) {
+		var line = phpbb.search.getKeywordLine(el),
+			lines = el.val().split("\n");
+		lines[line] = value;
+		value = lines.join("\n");
+	}
+	el.val(value);
+};
+
+/**
+ * Sets the onclick event to set the value on the input|textarea to the selected search result. 
+ *
+ * @param jQuery el		Search input|textarea.
+ * @param object value		Result object.
+ * @param object container	jQuery object for the search container.
+ *
+ * @return undefined
+ */
+phpbb.search.setValueOnClick = function(el, value, row, container) {
+	row.click(function() {
+		phpbb.search.setValue(el, value.result, el.attr('data-multiline'));
+		container.hide();
+	});
+};
+
+/**
+ * Runs before the AJAX search request is sent and determines whether
+ * there is a need to contact the server. If there are cached results
+ * already, those are displayed instead. Executes the AJAX request function
+ * itself due to the need to use a timeout to limit the number of requests.
+ *
+ * @param array data			Data to be sent to the server.
+ * @param object event			Onkeyup event object.
+ * @param function sendRequest	Function to execute AJAX request.
+ *
+ * @return bool Returns false.
+ */
+phpbb.search.filter = function(data, event, sendRequest) {
+	var el = $(this),
+		dataName = (el.attr('data-name') !== undefined) ? el.attr('data-name') : el.attr('name'),
+		minLength = parseInt(el.attr('data-min-length')),
+		searchID = el.attr('data-results'),
+		keyword = phpbb.search.getKeyword(el, data[dataName], el.attr('data-multiline')),
+		cache = phpbb.search.cache.get(searchID),
+		proceed = true;
+	data[dataName] = keyword;
+
+	if (cache['timeout']) {
+		clearTimeout(cache['timeout']);
+	}
+
+	var timeout = setTimeout(function() {
+		// Check min length and existence of cache.
+		if (minLength > keyword.length) {
+			proceed = false;
+		} else if (cache['last_search']) {
+			// Has the keyword actually changed?
+			if (cache['last_search'] === keyword) {
+				proceed = false;
+			} else {
+				// Do we already have results for this?
+				if (cache['results'][keyword]) {
+					var response = {keyword: keyword, results: cache['results'][keyword]};
+					phpbb.search.handleResponse(response, el, true);
+					proceed = false;
+				}
+
+				// If the previous search didn't yield results and the string only had characters added to it,
+				// then we won't bother sending a request.
+				if (keyword.indexOf(cache['last_search']) === 0 && cache['results'][cache['last_search']].length === 0) {
+					phpbb.search.cache.set(searchID, 'last_search', keyword);
+					phpbb.search.cache.setResults(searchID, keyword, []);
+					proceed = false;
+				}		
+			}		
+		}
+
+		if (proceed) {
+			sendRequest.call(this);
+		}
+	}, 350);
+	phpbb.search.cache.set(searchID, 'timeout', timeout);
+
+	return false;
+};
+
+/**
+ * Handle search result response. 
+ *
+ * @param object res		Data received from server.
+ * @param jQuery el			Search input|textarea.
+ * @param bool fromCache	Whether the results are from the cache.
+ * @param function callback	Optional callback to run when assigning each search result.
+ *
+ * @return undefined
+ */
+phpbb.search.handleResponse = function(res, el, fromCache, callback) {
+	if (typeof res !== 'object') {
+		return;
+	}
+
+	var searchID = el.attr('data-results'),
+		container = $(searchID);
+
+	if (this.cache.get(searchID)['callback']) {
+		callback = this.cache.get(searchID)['callback'];
+	} else if (typeof callback === 'function') {
+		this.cache.set(searchID, 'callback', callback);
+	}
+
+	if (!fromCache) {
+		this.cache.setResults(searchID, res.keyword, res.results);
+	}
+
+	this.cache.set(searchID, 'last_search', res.keyword);
+	this.showResults(res.results, el, container, callback);
+};
+
+/**
+ * Show search results.
+ *
+ * @param array results		Search results.
+ * @param jQuery el			Search input|textarea.
+ * @param jQuery container	Search results container element.
+ * @param function callback	Optional callback to run when assigning each search result.
+ *
+ * @return undefined
+ */
+phpbb.search.showResults = function(results, el, container, callback) {
+	var resultContainer = $('.search-results', container);
+	this.clearResults(resultContainer);
+
+	if (!results.length) {
+		container.hide();
+		return;
+	}
+
+	var searchID = container.attr('id'),
+		tpl,
+		row;
+
+	if (!this.tpl[searchID]) {
+		tpl = $('.search-result-tpl', container);
+		this.tpl[searchID] = tpl.clone().removeClass('search-result-tpl');
+		tpl.remove();
+	}
+	tpl = this.tpl[searchID];
+
+	$.each(results, function(i, item) {
+		row = tpl.clone();
+		row.find('.search-result').html(item.display);
+
+		if (typeof callback === 'function') {
+			callback.call(this, el, item, row, container);
+		}
+		row.appendTo(resultContainer).show();
+	});
+	container.show();
+};
+
+/**
+ * Clear search results.
+ *
+ * @param jQuery container	Search results container.
+ * @return undefined
+ */
+phpbb.search.clearResults = function(container) {
+	container.children(':not(.search-result-tpl)').remove();
+};
+
+$('#phpbb').click(function(e) {
+	var target = $(e.target);
+
+	if (!target.is('.live-search') && !target.parents().is('.live-search')) {
+		$('.live-search').hide();
+	}
+});
+
+phpbb.history = {};
+
+/**
+* Check whether a method in the native history object is supported.
+*
+* @param string fn	Method name.
+* @return bool Returns true if the method is supported.
+*/
+phpbb.history.isSupported = function(fn) {
+	if (typeof history === 'undefined' || typeof history[fn] === 'undefined') {
+		return false;
+	}
+	return true;
+};
+
+/**
+* Wrapper for the pushState and replaceState methods of the
+* native history object.
+*
+* @param string mode	Mode. Either push or replace.
+* @param string url	New URL.
+* @param string title Optional page title.
+* @patam object obj	Optional state object.
+*
+* @return undefined
+*/
+phpbb.history.alterUrl = function(mode, url, title, obj) {
+	var fn = mode + 'State';
+
+	if (!url || !phpbb.history.isSupported(fn)) {
+		return;
+	}
+	if (!title) {
+		title = document.title;
+	}
+	if (!obj) {
+		obj = null;
+	}
+
+	history[fn](obj, title, url);
+};
+
+/**
+* Wrapper for the native history.replaceState method.
+*
+* @param string url	New URL.
+* @param string title Optional page title.
+* @patam object obj	Optional state object.
+*
+* @return undefined
+*/
+phpbb.history.replaceUrl = function(url, title, obj) {
+	phpbb.history.alterUrl('replace', url, title, obj);
+};
+
+/**
+* Wrapper for the native history.pushState method.
+*
+* @param string url	New URL.
+* @param string title Optional page title.
+* @patam object obj	Optional state object.
+*
+* @return undefined
+*/
+phpbb.history.pushUrl = function(url, title, obj) {
+	phpbb.history.alterUrl('push', url, title, obj);
 };
 
 /**
@@ -542,6 +901,12 @@ phpbb.addAjaxCallback = function(id, callback) {
 	return this;
 };
 
+/**
+ * This callback handles live member searches.
+ */
+phpbb.addAjaxCallback('member_search', function(res) {
+	phpbb.search.handleResponse(res, $(this), false, phpbb.getFunctionByName('phpbb.search.setValueOnClick'));
+});
 
 /**
  * This callback alternates text - it replaces the current text with the text in
@@ -917,9 +1282,10 @@ phpbb.toggleDropdown = function() {
 	// Check dimensions when showing dropdown
 	// !visible because variable shows state of dropdown before it was toggled
 	if (!visible) {
+		var windowWidth = $(window).width();
+
 		options.dropdown.find('.dropdown-contents').each(function() {
-			var $this = $(this),
-				windowWidth = $(window).width();
+			var $this = $(this);
 
 			$this.css({
 				marginLeft: 0,
@@ -937,6 +1303,13 @@ phpbb.toggleDropdown = function() {
 				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
 			}
 		});
+		var freeSpace = parent.offset().left - 4;
+
+		if (direction == 'left') {
+			options.dropdown.css('margin-left', '-' + freeSpace + 'px');
+		} else {
+			options.dropdown.css('margin-right', '-' + (windowWidth + freeSpace) + 'px');
+		}
 	}
 
 	// Prevent event propagation
@@ -1103,6 +1476,24 @@ phpbb.toggleDisplay = function(id, action, type) {
 }
 
 /**
+* Get function from name.
+* Based on http://stackoverflow.com/a/359910
+*
+* @param string functionName Function to get.
+* @return function
+*/
+phpbb.getFunctionByName = function (functionName) {
+ 	var namespaces = functionName.split('.'),
+		func = namespaces.pop(),
+		context = window;
+
+	for (var i = 0; i < namespaces.length; i++) {
+		context = context[namespaces[i]];
+	}
+	return context[func];
+};
+
+/**
 * Apply code editor to all textarea elements with data-bbcode attribute
 */
 $(document).ready(function() {
@@ -1121,6 +1512,10 @@ $(document).ready(function() {
 	$('#color_palette_placeholder').each(function() {
 		phpbb.registerPalette($(this));
 	});
+
+	// Update browser history URL to point to specific post in viewtopic.php
+	// when using view=unread#unread link.
+	phpbb.history.replaceUrl($('#unread[data-url]').data('url'));
 });
 
 })(jQuery); // Avoid conflicts with other libraries

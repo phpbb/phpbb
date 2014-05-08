@@ -79,7 +79,7 @@ class acp_prune
 				$prune_posted = request_var('prune_days', 0);
 				$prune_viewed = request_var('prune_vieweddays', 0);
 				$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
-		
+
 				$prune_flags = 0;
 				$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;
 				$prune_flags += (request_var('prune_announce', 0)) ? 4 : 0;
@@ -109,7 +109,7 @@ class acp_prune
 					$p_result['topics'] = 0;
 					$p_result['posts'] = 0;
 					$log_data = '';
-			
+
 					do
 					{
 						if (!$auth->acl_get('f_list', $row['forum_id']))
@@ -129,7 +129,7 @@ class acp_prune
 								$p_result['topics'] += $return['topics'];
 								$p_result['posts'] += $return['posts'];
 							}
-			
+
 							if ($prune_viewed)
 							{
 								$return = prune($row['forum_id'], 'viewed', $prunedate_viewed, $prune_flags, false);
@@ -145,11 +145,11 @@ class acp_prune
 							'NUM_TOPICS'	=> $p_result['topics'],
 							'NUM_POSTS'		=> $p_result['posts'])
 						);
-		
+
 						$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
 					}
 					while ($row = $db->sql_fetchrow($result));
-		
+
 					// Sync all pruned forums at once
 					sync('forum', 'forum_id', $prune_ids, true, true);
 					add_log('admin', 'LOG_PRUNE', $log_data);
@@ -256,7 +256,7 @@ class acp_prune
 						if ($deleteposts)
 						{
 							user_delete('remove', $user_ids);
-							
+
 							$l_log = 'LOG_PRUNE_USER_DEL_DEL';
 						}
 						else
@@ -444,7 +444,7 @@ class acp_prune
 			if (sizeof($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
 			{
 				$where_sql .= ' AND user_lastvisit = 0';
-			}			
+			}
 			else if (sizeof($active) && $active_select != 'lt')
 			{
 				$where_sql .= ' AND user_lastvisit ' . $key_match[$active_select] . ' ' . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
@@ -533,7 +533,7 @@ class acp_prune
 				WHERE u.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER .
 					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
-					AND p.post_visibility = ' . ITEM_UNAPPROVED . '
+					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE)) . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;

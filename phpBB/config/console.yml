@@ -1,4 +1,15 @@
 services:
+    console.command.cache.purge:
+        class: phpbb\console\command\cache\purge
+        arguments:
+            - @cache.driver
+            - @dbal.conn
+            - @auth
+            - @log
+            - @user
+        tags:
+            - { name: console.command }
+
     console.command.config.delete:
         class: phpbb\console\command\config\delete
         arguments:
@@ -31,6 +42,18 @@ services:
         class: phpbb\console\command\config\set_atomic
         arguments:
             - @config
+        tags:
+            - { name: console.command }
+
+    console.command.db.migrate:
+        class: phpbb\console\command\db\migrate
+        arguments:
+            - @migrator
+            - @ext.manager
+            - @config
+            - @cache
+            - @log
+            - @user
         tags:
             - { name: console.command }
 

@@ -53,7 +53,6 @@ class acp_groups
 		$start		= request_var('start', 0);
 		$update		= (isset($_POST['update'])) ? true : false;
 
-
 		// Clear some vars
 		$group_row = array();
 
@@ -140,7 +139,7 @@ class acp_groups
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
-					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);	
+					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
@@ -330,7 +329,6 @@ class acp_groups
 						$avatar_data['id'] = 'g' . $group_id;
 					}
 				}
-
 
 				// Did we submit?
 				if ($update)

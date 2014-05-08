@@ -110,7 +110,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false, $force_display = false)
 {
-	global $config, $auth, $template, $user, $db;
+	global $config, $auth, $template, $user, $db, $phpbb_path_helper;
 
 	// We only return if the jumpbox is not forced to be displayed (in case it is needed for functionality)
 	if (!$config['load_jumpbox'] && $force_display === false)
@@ -196,10 +196,13 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	$db->sql_freeresult($result);
 	unset($padding_store);
 
+	$url_parts = $phpbb_path_helper->get_url_parts($action);
+
 	$template->assign_vars(array(
-		'S_DISPLAY_JUMPBOX'	=> $display_jumpbox,
-		'S_JUMPBOX_ACTION'	=> $action)
-	);
+		'S_DISPLAY_JUMPBOX'			=> $display_jumpbox,
+		'S_JUMPBOX_ACTION'			=> $action,
+		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> build_hidden_fields($url_parts['params']),
+	));
 
 	return;
 }
@@ -445,13 +448,13 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	* @var string	bitfield		The BBCode Bitfield
 	* @var int		flags			The BBCode Flags
 	* @var bool		censor_text		Whether or not to apply word censors
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
 	if ($censor_text)
-	{		
+	{
 		$text = censor_text($text);
 	}
 
@@ -487,7 +490,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	* @var string	uid			The BBCode UID
 	* @var string	bitfield	The BBCode Bitfield
 	* @var int		flags		The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_after', compact($vars)));
@@ -499,7 +502,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
 * Expects $text to be the value directly from request_var() and in it's non-parsed form
-* 
+*
 * @param string $text The text to be replaced with the parsed one
 * @param string $uid The BBCode uid for this parse
 * @param string $bitfield The BBCode bitfield for this parse
@@ -525,9 +528,17 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_bbcode	Whether or not to parse BBCode
 	* @var bool		allow_urls		Whether or not to parse URLs
 	* @var bool		allow_smilies	Whether or not to parse Smilies
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
-	$vars = array('text', 'uid', 'bitfield', 'flags', 'allow_bbcode', 'allow_urls', 'allow_smilies');
+	$vars = array(
+		'text',
+		'uid',
+		'bitfield',
+		'flags',
+		'allow_bbcode',
+		'allow_urls',
+		'allow_smilies',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
 	$uid = $bitfield = '';
@@ -565,7 +576,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var string	uid				The BBCode UID
 	* @var string	bitfield		The BBCode Bitfield
 	* @var int		flags			The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'bitfield', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
@@ -588,7 +599,7 @@ function generate_text_for_edit($text, $uid, $flags)
 	* @var string	text			The text to parse
 	* @var string	uid				The BBCode UID
 	* @var int		flags			The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'uid', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_before', compact($vars)));
@@ -601,7 +612,7 @@ function generate_text_for_edit($text, $uid, $flags)
 	* @event core.modify_text_for_edit_after
 	* @var string	text			The text to parse
 	* @var int		flags			The BBCode Flags
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('text', 'flags');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_edit_after', compact($vars)));
@@ -1392,7 +1403,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	{
 		$username_string = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
 	}
-	
+
 	/**
 	* Use this event to change the output of get_username_string()
 	*
@@ -1408,9 +1419,18 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	*								profile url.
 	* @var string username_string	The string that has been generated
 	* @var array _profile_cache		Array of original return templates
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
-	$vars = array('mode', 'user_id', 'username', 'username_colour', 'guest_username', 'custom_profile_url', 'username_string', '_profile_cache');
+	$vars = array(
+		'mode',
+		'user_id',
+		'username',
+		'username_colour',
+		'guest_username',
+		'custom_profile_url',
+		'username_string',
+		'_profile_cache',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_username_string', compact($vars)));
 
 	return $username_string;
