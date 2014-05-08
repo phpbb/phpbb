@@ -146,6 +146,7 @@ class acp_styles
 	{
 		global $db, $cache, $auth;
 
+		$this->config->increment('assets_version', 1);
 		$this->cache->purge();
 
 		// Clear permissions

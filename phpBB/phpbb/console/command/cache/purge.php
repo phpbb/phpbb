@@ -28,13 +28,17 @@ class purge extends \phpbb\console\command\command
 	/** @var \phpbb\user */
 	protected $user;
 
-	function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log $log, \phpbb\user $user)
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log $log, \phpbb\user $user, \phpbb\config\config $config)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->auth = $auth;
 		$this->log = $log;
 		$this->user = $user;
+		$this->config = $config;
 		$this->user->add_lang(array('acp/common'));
 		parent::__construct();
 	}
@@ -49,6 +53,7 @@ class purge extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$this->config->increment('assets_version', 1);
 		$this->cache->purge();
 
 		// Clear permissions
