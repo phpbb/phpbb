@@ -795,8 +795,14 @@ class user extends \phpbb\session
 	*/
 	function img($img, $alt = '')
 	{
-		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
-		return '<span class="imageset ' . $img . '">' . $alt . '</span>';
+		$title = '';
+
+		if ($alt)
+		{
+			$alt = $this->lang($alt);
+			$title = ' title="' . $alt . '"';
+		}
+		return '<span class="imageset ' . $img . '"' . $title . '>' . $alt . '</span>';
 	}
 
 	/**
