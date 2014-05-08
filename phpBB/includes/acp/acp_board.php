@@ -924,7 +924,7 @@ class acp_board
 	/**
 	* Get default guest style
 	*/
-	function guest_style_get()
+	public function guest_style_get()
 	{
 		global $db;
 
@@ -941,8 +941,10 @@ class acp_board
 
 	/**
 	* Set default guest style
+	*
+	* @param	int		$style_id	The style ID
 	*/
-	function guest_style_set($style_id)
+	public function guest_style_set($style_id)
 	{
 		global $db;
 
