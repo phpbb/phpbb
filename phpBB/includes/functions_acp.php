@@ -364,7 +364,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			if ($tpl_type[0] == 'select')
 			{
 				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
-				$data_toggle = (!empty($tpl_type[2])) ? ' data-toggable-settings="true"' : '';
+				$data_toggle = (!empty($tpl_type[2])) ? ' data-togglable-settings="true"' : '';
 
 				$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size > 1) ? ' size="' . $size . '"' : '') . $data_toggle . '>' . $return . '</select>';
 			}

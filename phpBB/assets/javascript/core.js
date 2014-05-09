@@ -1533,7 +1533,7 @@ $(document).ready(function() {
 	phpbb.history.replaceUrl($('#unread[data-url]').data('url'));
 
 	// Hide settings that are not selected via select element.
-	$('select[data-toggable-settings]').each(function() {
+	$('select[data-togglable-settings]').each(function() {
 		var select = $(this);
 
 		select.change(function() {
