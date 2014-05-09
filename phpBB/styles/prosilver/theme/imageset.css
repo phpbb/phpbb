@@ -369,16 +369,6 @@ span.imageset {
 
 
 /* English images for fallback */
-.imageset.icon_post_edit {
-	background-image: url("./en/icon_post_edit.gif");
-	padding-left: 42px;
-	padding-top: 20px;
-}
-.imageset.icon_post_quote {
-	background-image: url("./en/icon_post_quote.gif");
-	padding-left: 54px;
-	padding-top: 20px;
-}
 .imageset.icon_user_online {
 	background-image: url("./en/icon_user_online.gif");
 	padding-left: 58px;

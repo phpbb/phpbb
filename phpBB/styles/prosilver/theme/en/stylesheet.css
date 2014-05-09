@@ -1,21 +1,6 @@
 /* Online image */
 .online { background-image: url("./icon_user_online.gif"); }
 
-/* Icon images */
-.quote-icon, .quote-icon a		{ background-image: url("./icon_post_quote.gif"); }
-.edit-icon, .edit-icon a			{ background-image: url("./icon_post_edit.gif"); }
-
-/* EN Language Pack */
-.imageset.icon_post_edit {
-	background-image: url("./icon_post_edit.gif");
-	padding-left: 42px;
-	padding-top: 20px;
-}
-.imageset.icon_post_quote {
-	background-image: url("./icon_post_quote.gif");
-	padding-left: 54px;
-	padding-top: 20px;
-}
 .imageset.icon_user_online {
 	background-image: url("./icon_user_online.gif");
 	padding-left: 58px;
