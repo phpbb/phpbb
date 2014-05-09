@@ -437,7 +437,6 @@ class content_visibility
 			}
 		}
 
-		$update_topic_attachments_flag = false;
 		if ($post_id)
 		{
 			$sql = 'SELECT 1 as has_attachments
@@ -453,17 +452,15 @@ class content_visibility
 
 			if ($has_attachment && $visibility == ITEM_APPROVED)
 			{
-				$update_topic_attachments_flag = true;
 				$topic_update_array[] = 'topic_attachment = 1';
 			}
 			else if (!$has_attachment && $visibility != ITEM_APPROVED)
 			{
-				$update_topic_attachments_flag = true;
 				$topic_update_array[] = 'topic_attachment = 0';
 			}
 		}
 
-		if ($update_topic_postcount || $update_topic_attachments_flag)
+		if (!empty($topic_update_array))
 		{
 			// Update the number for replies and posts, and update the attachments flag
 			$sql = 'UPDATE ' . $this->topics_table . '
