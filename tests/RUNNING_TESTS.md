@@ -110,11 +110,15 @@ Slow tests
 --------------
 
 Certain tests, such as the UTF-8 normalizer or the DNS tests tend to be slow.
-Thus these tests are in the `slow` group, which is excluded by default. You can
-enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you
+Thus these tests are in the `slow` group, which is excluded by default. If you
 only want the slow tests, run:
 
     $ phpBB/vendor/bin/phpunit --group slow
+
+If you want all tests, run:
+
+    $ phpBB/vendor/bin/phpunit --group __nogroup__,functional,slow
+
 
 Functional tests
 -----------------
@@ -136,10 +140,10 @@ on which to run tests.
 
     $phpbb_functional_url = 'http://localhost/phpBB3/';
 
-To then run the tests, you run PHPUnit, but use the phpunit.xml.functional
-config file instead of the default one. Specify this through the "-c" option:
+Functional tests are automatically run, if '$phpbb_functional_url' is configured.
+If you only want the functional tests, run:
 
-    $ phpBB/vendor/bin/phpunit -c phpunit.xml.functional
+    $ phpBB/vendor/bin/phpunit --group functional
 
 This will change your board's config.php file, but it makes a backup at
 config_dev.php, so you can restore it after the test run is complete.
