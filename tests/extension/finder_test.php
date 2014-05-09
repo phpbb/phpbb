@@ -202,7 +202,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	{
 		$cache = new phpbb_mock_cache;
 		$finder = new \phpbb\finder(new \phpbb\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
-		$finder->set_extensions($this->extension_manager->all_enabled());
+		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 		$files = $finder->suffix('_class.php')->get_files();
 
 		$expected_files = array(
@@ -249,7 +249,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 				),
 			))
 		);
-		$finder->set_extensions($this->extension_manager->all_enabled());
+		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 
 		$classes = $finder
 			->core_path($query['core_path'])

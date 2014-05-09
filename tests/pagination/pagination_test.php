@@ -40,7 +40,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache()
 		);
-		$finder->set_extensions($manager->all_enabled());
+		$finder->set_extensions(array_keys($manager->all_enabled()));
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$provider = new \phpbb\controller\provider();

@@ -80,12 +80,20 @@ class finder
 	/**
 	* Set the array of extensions
 	*
-	* @param array $extensions A list of extensions that should be searched aswell
+	* @param array $extensions		A list of extensions that should be searched aswell
+	* @param bool $replace_list		Should the list be emptied before adding the extensions
 	* @return \phpbb\finder This object for chaining calls
 	*/
-	public function set_extensions(array $extensions)
+	public function set_extensions(array $extensions, $replace_list = true)
 	{
-		$this->extensions = $extensions;
+		if ($replace_list)
+		{
+			$this->extensions = array();
+		}
+		foreach ($extensions as $ext_name)
+		{
+			$this->extensions[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
+		}
 		return $this;
 	}
 

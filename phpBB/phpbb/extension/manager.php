@@ -542,11 +542,11 @@ class manager
 		$finder = new \phpbb\finder($this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
 		if ($use_all_available)
 		{
-			$finder->set_extensions($this->all_available());
+			$finder->set_extensions(array_keys($this->all_available()));
 		}
 		else
 		{
-			$finder->set_extensions($this->all_enabled());
+			$finder->set_extensions(array_keys($this->all_enabled()));
 		}
 		return $finder;
 	}
