@@ -14,7 +14,9 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_extension_finder_test extends phpbb_test_case
 {
+	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
+	/** @var \phpbb\finder */
 	protected $finder;
 
 	public function setUp()
@@ -54,6 +56,47 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			),
 			$classes
 		);
+	}
+
+	public function set_extensions_data()
+	{
+		return array(
+			array(
+				array(),
+				array('\phpbb\default\implementation'),
+			),
+			array(
+				array('vendor3/bar'),
+				array(
+					'\phpbb\default\implementation',
+					'\vendor3\bar\my\hidden_class',
+				),
+			),
+			array(
+				array('vendor2/foo', 'vendor3/bar'),
+				array(
+					'\phpbb\default\implementation',
+					'\vendor2\foo\a_class',
+					'\vendor2\foo\b_class',
+					'\vendor3\bar\my\hidden_class',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider set_extensions_data
+	 */
+	public function test_set_extensions($extensions, $expected)
+	{
+		$classes = $this->finder
+			->set_extensions($extensions)
+			->core_path('phpbb/default/')
+			->extension_suffix('_class')
+			->get_classes();
+
+		sort($classes);
+		$this->assertEquals($expected, $classes);
 	}
 
 	public function test_get_directories()
