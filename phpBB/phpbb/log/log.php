@@ -636,11 +636,12 @@ class log implements \phpbb\log\log_interface
 	/**
 	* Generates a sql condition for the specified keywords
 	*
-	* @param	string	$keywords	The keywords the user specified to search for
+	* @param	string	$keywords		The keywords the user specified to search for
+	* @param	string	$table_alias	The alias of the logs' table ('l.' by default)
 	*
 	* @return	string		Returns the SQL condition searching for the keywords
 	*/
-	protected function generate_sql_keyword($keywords)
+	public function generate_sql_keyword($keywords, $table_alias = 'l.')
 	{
 		// Use no preg_quote for $keywords because this would lead to sole
 		// backslashes being added. We also use an OR connection here for
@@ -688,9 +689,9 @@ class log implements \phpbb\log\log_interface
 			$sql_keywords = 'AND (';
 			if (!empty($operations))
 			{
-				$sql_keywords .= $this->db->sql_in_set('l.log_operation', $operations) . ' OR ';
+				$sql_keywords .= $this->db->sql_in_set($table_alias . 'log_operation', $operations) . ' OR ';
 			}
-			$sql_lower = $this->db->sql_lower_text('l.log_data');
+			$sql_lower = $this->db->sql_lower_text($table_alias . 'log_data');
 			$sql_keywords .= " $sql_lower " . implode(" OR $sql_lower ", $keywords) . ')';
 		}
 

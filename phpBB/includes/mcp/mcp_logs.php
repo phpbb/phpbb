@@ -33,7 +33,7 @@ class mcp_logs
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('acp/common');
 
@@ -121,9 +121,15 @@ class mcp_logs
 				}
 				else if ($deleteall)
 				{
+					$where_sql = ($sort_days) ? 'AND log_time >= ' . (time() - ($sort_days * 86400)) : '';
+					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+					$keywords_where = $phpbb_log->generate_sql_keyword($keywords, '');
+					$where_sql .= ' ' . $keywords_where;
+
 					$sql = 'DELETE FROM ' . LOG_TABLE . '
 						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list);
+							AND ' . $db->sql_in_set('forum_id', $forum_list) .
+							$where_sql;
 
 					if ($mode == 'topic_logs')
 					{

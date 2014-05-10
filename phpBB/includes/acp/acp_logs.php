@@ -26,7 +26,7 @@ class acp_logs
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request;
+		global $request, $phpbb_log;
 
 		$user->add_lang('mcp');
 
@@ -66,7 +66,15 @@ class acp_logs
 					unset($sql_in);
 				}
 
-				if ($where_sql || $deleteall)
+				if ($deleteall)
+				{
+					$where_sql = ($sort_days) ? 'AND log_time >= ' . (time() - ($sort_days * 86400)) : '';
+					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+					$keywords_where = $phpbb_log->generate_sql_keyword($keywords, '');
+					$where_sql .= ' ' . $keywords_where;
+				}
+
+				if ($where_sql)
 				{
 					$sql = 'DELETE FROM ' . LOG_TABLE . "
 						WHERE log_type = {$this->log_type}
