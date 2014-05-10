@@ -49,6 +49,13 @@ class null implements log_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function delete($mode, $conditions = array())
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 	{
 		return array();

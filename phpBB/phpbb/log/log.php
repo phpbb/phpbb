@@ -330,6 +330,54 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function delete($mode, $conditions = array())
+	{
+		$sql_where = '';
+		$started = false;
+		foreach ($conditions as $field => $field_value)
+		{
+			if ($started)
+			{
+				$sql_where .= ' AND ';
+			}
+			else
+			{
+				$sql_where = 'WHERE ';
+				$started = true;
+			}
+
+			if ($field == 'keywords')
+			{
+				$sql_where .= $this->generate_sql_keyword($field_value, '', '');
+			}
+			else
+			{
+				if (is_array($field_value) && sizeof($field_value) == 2)
+				{
+					$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
+				}
+				else if (is_array($field_value) && sizeof($field_value) > 2)
+				{
+					$sql_where .= $this->db->sql_in_set($field, $field_value);;
+				}
+				else
+				{
+					$sql_where .= $field . ' = ' . $field_value;
+				}
+
+			}
+		}
+
+		$sql = 'DELETE FROM ' . LOG_TABLE . "
+					$sql_where";
+		$this->db->sql_query($sql);
+
+		$this->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CLEAR_' . strtoupper($mode));
+	}
+
+	/**
 	* Grab the logs from the database
 	*
 	* {@inheritDoc}
@@ -636,12 +684,13 @@ class log implements \phpbb\log\log_interface
 	/**
 	* Generates a sql condition for the specified keywords
 	*
-	* @param	string	$keywords		The keywords the user specified to search for
-	* @param	string	$table_alias	The alias of the logs' table ('l.' by default)
+	* @param	string	$keywords			The keywords the user specified to search for
+	* @param	string	$table_alias		The alias of the logs' table ('l.' by default)
+	* @param	string	$statement_operator	The operator used to prefix the statement ('AND' by default)
 	*
 	* @return	string		Returns the SQL condition searching for the keywords
 	*/
-	public function generate_sql_keyword($keywords, $table_alias = 'l.')
+	protected function generate_sql_keyword($keywords, $table_alias = 'l.', $statement_operator = 'AND')
 	{
 		// Use no preg_quote for $keywords because this would lead to sole
 		// backslashes being added. We also use an OR connection here for
@@ -686,7 +735,7 @@ class log implements \phpbb\log\log_interface
 				}
 			}
 
-			$sql_keywords = 'AND (';
+			$sql_keywords = $statement_operator . ' (';
 			if (!empty($operations))
 			{
 				$sql_keywords .= $this->db->sql_in_set($table_alias . 'log_operation', $operations) . ' OR ';

@@ -111,33 +111,35 @@ class mcp_logs
 			{
 				if ($deletemark && sizeof($marked))
 				{
-					$sql = 'DELETE FROM ' . LOG_TABLE . '
-						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list) . '
-							AND ' . $db->sql_in_set('log_id', $marked);
-					$db->sql_query($sql);
+					$conditions = array(
+						'log_type'	=> LOG_MOD,
+						'forum_id'	=> $forum_list,
+						'log_id'	=> $marked,
+					);
 
-					add_log('admin', 'LOG_CLEAR_MOD');
+					$phpbb_log->delete('mod', $conditions);
 				}
 				else if ($deleteall)
 				{
-					$where_sql = ($sort_days) ? 'AND log_time >= ' . (time() - ($sort_days * 86400)) : '';
 					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
-					$keywords_where = $phpbb_log->generate_sql_keyword($keywords, '');
-					$where_sql .= ' ' . $keywords_where;
 
-					$sql = 'DELETE FROM ' . LOG_TABLE . '
-						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list) .
-							$where_sql;
+					$conditions = array(
+						'log_type'	=> LOG_MOD,
+						'forum_id'	=> $forum_list,
+						'keywords'	=> $keywords,
+					);
+
+					if ($sort_days)
+					{
+						$conditions['log_time'] = array('>=', time() - ($sort_days * 86400));
+					}
 
 					if ($mode == 'topic_logs')
 					{
-						$sql .= ' AND topic_id = ' . $topic_id;
+						$conditions['topic_logs'] = $topic_id;
 					}
-					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_CLEAR_MOD');
+					$phpbb_log->delete('mod', $conditions);
 				}
 			}
 			else

@@ -53,7 +53,7 @@ class acp_logs
 		{
 			if (confirm_box(true))
 			{
-				$where_sql = '';
+				$conditions = array();
 
 				if ($deletemark && sizeof($marked))
 				{
@@ -62,27 +62,23 @@ class acp_logs
 					{
 						$sql_in[] = $mark;
 					}
-					$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
+					$conditions['log_id'] = $sql_in;
 					unset($sql_in);
 				}
 
 				if ($deleteall)
 				{
-					$where_sql = ($sort_days) ? 'AND log_time >= ' . (time() - ($sort_days * 86400)) : '';
+					if ($sort_days)
+					{
+						$conditions['log_time'] = array('>=', time() - ($sort_days * 86400));
+					}
+
 					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
-					$keywords_where = $phpbb_log->generate_sql_keyword($keywords, '');
-					$where_sql .= ' ' . $keywords_where;
+					$conditions['keywords'] = $keywords;
 				}
 
-				if ($where_sql)
-				{
-					$sql = 'DELETE FROM ' . LOG_TABLE . "
-						WHERE log_type = {$this->log_type}
-						$where_sql";
-					$db->sql_query($sql);
-
-					add_log('admin', 'LOG_CLEAR_' . strtoupper($mode));
-				}
+				$conditions['log_type'] = $this->log_type;
+				$phpbb_log->delete($mode, $conditions);
 			}
 			else
 			{
