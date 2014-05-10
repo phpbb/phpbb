@@ -90,6 +90,7 @@ class finder
 		{
 			$this->extensions = array();
 		}
+
 		foreach ($extensions as $ext_name)
 		{
 			$this->extensions[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
