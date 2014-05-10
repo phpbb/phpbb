@@ -36,28 +36,20 @@ class type_dropdown extends type_base
 	protected $user;
 
 	/**
-	* Database object
-	* @var \phpbb\db\driver\driver_interface
-	*/
-	protected $db;
-
-	/**
 	* Construct
 	*
 	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
-	* @param	\phpbb\db\driver\driver_interface	$db			Database object
 	* @param	string		$language_table		Table where the language strings are stored
 	*/
-	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->lang_helper = $lang_helper;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
-		$this->db = $db;
 	}
 
 	/**
@@ -268,7 +260,7 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $table_prefix = 'pd')
+	public function make_sql_where($profile_row, $db_object, $table_prefix = 'pd')
 	{
 		// Let's check if the value is set ... and is it diferent from novalue
 		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
@@ -279,7 +271,7 @@ class type_dropdown extends type_base
 
 		if ($this->request->is_set($field_ident) && $field_value != $default_value)
 		{
-			$output = ' AND ' .$table_prefix. '.' . $field_ident . ' = '. $this->db->sql_escape($field_value);
+			$output = ' AND ' .$table_prefix. '.' . $field_ident . ' = '. $db_object->sql_escape($field_value);
 		}
 
 		return $output;
