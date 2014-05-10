@@ -67,7 +67,6 @@
 		<exec dir="."
 			command="phpBB/vendor/bin/phpunit
 			--log-junit build/logs/phpunit.xml
-			--configuration phpunit.xml.all
 			--group slow
 			--coverage-clover build/logs/clover-slow.xml
 			--coverage-html build/coverage-slow"
