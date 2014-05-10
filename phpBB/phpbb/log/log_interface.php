@@ -71,7 +71,7 @@ interface log_interface
 	*
 	* @param 	string	$mode		The mode defines which log_type is used and from which log the entries are deleted
 	* @param 	array	$conditions	An array of conditions, 3 different  forms are accepted
-	* 								1) <key> => 'value> transformed into 'AND <key> = <value>' (value should be an integer)
+	* 								1) <key> => <value> transformed into 'AND <key> = <value>' (value should be an integer)
 	*								2) <key> => array(<operator>, <value>) transformed into 'AND <key> <operator> <value>' (value should be an integer)
 	*								3) <key> => array(<values>) transformed into 'AND <key> IN <values>'
 	*								A special field, keywords, can also be defined. In this case only the log entries that have the keywords in log_operation or log_data will be deleted.
