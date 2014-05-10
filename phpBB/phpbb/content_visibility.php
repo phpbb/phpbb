@@ -439,7 +439,7 @@ class content_visibility
 
 		if ($post_id)
 		{
-			$sql = 'SELECT 1 as has_attachments
+			$sql = 'SELECT 1 AS has_attachments
 				FROM ' . POSTS_TABLE . '
 				WHERE topic_id = ' . (int) $topic_id . '
 					AND post_attachment = 1
