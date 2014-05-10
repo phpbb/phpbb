@@ -532,7 +532,7 @@ class manager
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
-			// If somene can tell me I will redo it.
+			// If somene can tell me I will redo it :D.
 			$db_object = $this->db;
 			$sql_where_addition .= $profile_field->make_sql_where($row, $db_object);
 		}
