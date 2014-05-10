@@ -578,7 +578,6 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
-		$topic_id_list = array();
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -657,9 +656,12 @@ class mcp_queue
 					if (!$post_data['topic_posts_approved'])
 					{
 						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
-						$topic_id_list[] = $post_data['topic_id'];
+						
+						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+						{
+							$phpbb_notifications->add_notifications(array('topic'), $post_data);
+						}
 					}
-					// Send post notification only if a topic notification will not be sent.
 					else
 					{
 						// Only add notifications, if we are not reapproving post
@@ -669,12 +671,12 @@ class mcp_queue
 						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
 						{
 							$phpbb_notifications->add_notifications(array(
-								'quote',
 								'bookmark',
 								'post',
 							), $post_data);
 						}
 					}
+					$phpbb_notifications->add_notifications(array('quote'), $post_data);
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 					$phpbb_notifications->mark_notifications_read(array(
@@ -691,13 +693,15 @@ class mcp_queue
 							continue;
 						}
 
-						$phpbb_notifications->add_notifications('approve_post', $post_data);
+						if (!$post_data['topic_posts_approved'])
+						{
+							$phpbb_notifications->add_notifications('approve_post', $post_data);
+						}
+						else
+						{
+							$phpbb_notifications->add_notifications('approve_topic', $post_data);
+						}
 					}
-				}
-
-				if (!empty($topic_id_list))
-				{
-					self::approve_topics($action, $topic_id_list, $id, $mode);
 				}
 			}
 
