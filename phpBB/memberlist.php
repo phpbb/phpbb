@@ -1087,7 +1087,7 @@ switch ($mode)
 			if (!empty($additional_search_parms))
 			{
 				foreach ($additional_search_parms as $search_parameter) {
-					$$search_parameter['field_ident'] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
+					$search_container[$search_parameter['field_ident']] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
 				}
 			}
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
@@ -1382,9 +1382,9 @@ switch ($mode)
 		);
 		if (!empty($additional_search_parms))
 		{
-			foreach ($additional_search_parms as $VAR) 
+			foreach ($additional_search_parms as $additional_search_parms) 
 			{
-				$check_params[$VAR['field_ident']] = array($VAR['field_ident'], (isset($$VAR['field_ident'])) ? $$VAR['field_ident'] : '');
+				$check_params[$additional_search_parms['field_ident']] = array($additional_search_parms['field_ident'], (isset($search_container[$additional_search_parms['field_ident']])) ? $search_container[$additional_search_parms['field_ident']] : '');
 			}
 		}
 
