@@ -467,8 +467,8 @@ class acp_permissions
 					'user_id'		=> $user_id,
 					'group_id'		=> $group_id,
 					'forum_id'		=> $forum_id,
-					'type'			=> $permission_type)
-			);
+					'type'			=> $permission_type,
+			));
 
 			$template->assign_vars(array(
 				'U_ACTION'				=> $this->u_action,
@@ -511,8 +511,8 @@ class acp_permissions
 				'user_id'		=> $user_id,
 				'group_id'		=> $group_id,
 				'forum_id'		=> $forum_id,
-				'type'			=> $permission_type)
-		);
+				'type'			=> $permission_type,
+		));
 
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (sizeof($forum_id) && !sizeof($user_id) && !sizeof($group_id))
