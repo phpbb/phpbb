@@ -1055,9 +1055,9 @@ switch ($mode)
 		//expand search URL parameters
 		if (!empty($additional_search_parms))
 		{
-			foreach ($additional_search_parms as $VAR) 
+			foreach ($additional_search_parms as $search_parameter) 
 			{
-				$search_params[] = $VAR['field_ident'];
+				$search_params[] = $search_parameter['field_ident'];
 			}
 		}
 		// We validate form and field here, only id/class allowed
@@ -1086,8 +1086,8 @@ switch ($mode)
 			// TODO: Get Date field working
 			if (!empty($additional_search_parms))
 			{
-				foreach ($additional_search_parms as $VAR) {
-					$$VAR['field_ident'] = request_var($VAR['field_ident'], $VAR['field_novalue'], $VAR['field_multibyte']);
+				foreach ($additional_search_parms as $search_parameter) {
+					$$search_parameter['field_ident'] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
 				}
 			}
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
@@ -1603,7 +1603,7 @@ switch ($mode)
 				);
 				if (!empty($sql_from))
 				{
-					foreach($sql_from as $table => $table_prefix)
+					foreach ($sql_from as $table => $table_prefix)
 					{
 						$sql_array['FROM'][$table] = $table_prefix; 
 					}

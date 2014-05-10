@@ -438,21 +438,16 @@ class manager
 	/**
 	* Check if there is any records in CUSTOM_PROFILE_FILEDS_DATA
 	* so we have any requests
+	* @return boolean
 	*/
 	public function profile_fields_data_exists()
 	{
-		$sql = 'SELECT COUNT(user_id) as count
+		$sql = 'SELECT 1 as data_exists
 				FROM ' . $this->fields_data_table;
-		$result = $this->db->sql_query($sql);
-		$count = (int) $this->db->sql_fetchfield('count');
-		if ($count > 0)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		$result = $this->db->sql_query_limit($sql, 1);
+		$count = (int) $this->db->sql_fetchfield('data_exists');
+
+		return $count;
 	}
 
 	/**
@@ -535,13 +530,12 @@ class manager
 		);
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, 300);
-		$db_object = $this->db;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
 			// If somene can tell me I will redo it.
-			$sql_where_addition .= $profile_field->make_sql_where($row, $db_object);
+			$sql_where_addition .= $profile_field->make_sql_where($row, $this->db);
 		}
 		$this->db->sql_freeresult($result);
 

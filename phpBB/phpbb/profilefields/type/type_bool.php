@@ -222,6 +222,7 @@ class type_bool extends type_base
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$field_ident = $profile_row['field_ident'];
 		$default_value = $profile_row['field_default_value'];
+		$no_value = $profile_row['field_novalue'];
 
 		// checkbox - set the value to "true" if it has been set to on
 		if ($profile_row['field_length'] == 2)
@@ -230,7 +231,7 @@ class type_bool extends type_base
 		}
 		else
 		{
-			$value = $this->request->variable($field_ident, $default_value);
+			$value = $this->request->variable($field_ident, $no_value);
 		}
 
 		$profile_row['field_value'] = (int) $value;
