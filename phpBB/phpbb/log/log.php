@@ -360,7 +360,7 @@ class log implements \phpbb\log\log_interface
 				}
 				else if (is_array($field_value) && sizeof($field_value) > 2)
 				{
-					$sql_where .= $this->db->sql_in_set($field, $field_value);;
+					$sql_where .= $this->db->sql_in_set($field, $field_value);
 				}
 				else
 				{
