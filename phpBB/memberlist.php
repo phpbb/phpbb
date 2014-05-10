@@ -1038,13 +1038,13 @@ switch ($mode)
 		// Build additional search parameter array
 		$additional_search_parms = array();
 		// and check if PROFILE_FIELDS_DATA is not empty
-		$additionals_exist = 0;
+		$additional_cpf_exist = false;
 		if ($config['load_cpf_memberlist'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
-			$additionals_exist = $cp->profile_fields_data_exists();
+			$additional_cpf_exist = $cp->profile_fields_data_exists();
 
-			if ($additionals_exist > 0)
+			if ($additional_cpf_exist)
 			{
 				$additional_search_parms = $cp->build_custom_fields_search_array(); 
 			
@@ -1538,7 +1538,7 @@ switch ($mode)
 			'ORDER_BY'	=> $order_by,
 		);
 
-		if ($config['load_cpf_memberlist'] && $additionals_exist > 0)
+		if ($config['load_cpf_memberlist'] && $additional_cpf_exist)
 		{
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';

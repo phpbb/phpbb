@@ -445,7 +445,14 @@ class manager
 				FROM ' . $this->fields_data_table;
 		$result = $this->db->sql_query($sql);
 		$count = (int) $this->db->sql_fetchfield('count');
-		return $count;
+		if ($count > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -528,12 +535,12 @@ class manager
 		);
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, 300);
+		$db_object = $this->db;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$profile_field = $this->type_collection[$row['field_type']];
 			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
-			// If somene can tell me I will redo it :D.
-			$db_object = $this->db;
+			// If somene can tell me I will redo it.
 			$sql_where_addition .= $profile_field->make_sql_where($row, $db_object);
 		}
 		$this->db->sql_freeresult($result);
