@@ -374,12 +374,20 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		return;
 	}
 
-	$topic_data = get_topic_data(array($to_topic_id), 'm_merge');
+	$sync_topics = array_merge($topic_ids, array($to_topic_id));
 
-	if (!sizeof($topic_data))
+	$topic_data = get_topic_data($sync_topics, 'm_merge');
+
+	if (!sizeof($topic_data) && empty($topic_data[$to_topic_id]))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
+	}
+
+	$sync_forums = array();
+	foreach ($topic_data as $data)
+	{
+		$sync_forums[$data['forum_id']] = $data['forum_id'];
 	}
 
 	$topic_data = $topic_data[$to_topic_id];
@@ -432,7 +440,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	{
 		$to_forum_id = $topic_data['forum_id'];
 
-		move_posts($post_id_list, $to_topic_id);
+		move_posts($post_id_list, $to_topic_id, false);
 		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $topic_data['topic_title']);
 
 		// Message and return links
@@ -448,6 +456,12 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 		// Update the bookmarks table.
 		phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', $topic_ids, $to_topic_id);
+
+		// Re-sync the topics and forums because the auto-sync was deactivated in the call of  move_posts()
+		sync('topic_reported', 'topic_id', $sync_topics);
+		sync('topic_attachment', 'topic_id', $sync_topics);
+		sync('topic', 'topic_id', $sync_topics, true);
+		sync('forum', 'forum_id', $sync_forums, true, true);
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
