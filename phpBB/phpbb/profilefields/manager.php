@@ -445,9 +445,9 @@ class manager
 		$sql = 'SELECT 1 as data_exists
 				FROM ' . $this->fields_data_table;
 		$result = $this->db->sql_query_limit($sql, 1);
-		$count = (int) $this->db->sql_fetchfield('data_exists');
+		$data_exists = (bool) $this->db->sql_fetchfield('data_exists');
 
-		return $count;
+		return $data_exists;
 	}
 
 	/**
@@ -481,18 +481,20 @@ class manager
 
 	/**
 	* Build and define templates for search form
-	* TO DO
-	* Date is not working due problems with custom field type date DB column format
 	*/
 	public function generate_search_fields()
 	{
 		// Lets get fields
-		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
-			WHERE f.field_active = 1 AND f.field_show_on_ml = 1
-				AND l.lang_id = ' . $this->user->get_iso_lang_id() . '
-				AND l.field_id = f.field_id
-			ORDER BY f.field_order';
+		$sql_array = array(
+			'SELECT'	=> 'l.*, f.*',
+			'FROM'	=> array(
+				$this->fields_language_table	=> 'l',
+				$this->fields_table	=> 'f'
+			),
+			'WHERE'	=> 'f.field_active = 1 AND f.field_show_on_ml = 1 AND l.lang_id = ' . $this->user->get_iso_lang_id() . ' AND l.field_id = f.field_id',
+			'ORDER_BY'	=> 'f.field_order'
+		);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql, 300);
 
 		while ($row = $this->db->sql_fetchrow($result))

@@ -291,7 +291,7 @@ class type_bool extends type_base
 		{
 			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = 1';
 		}
-		else if ($this->request->is_set($field_ident) && $field_value != $profile_row['field_novalue'] && $field_value!= 0 )
+		else if ($this->request->is_set($field_ident) && $field_value != $profile_row['field_novalue'] && $field_value != 0 )
 		{
 			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = ' . $db_object->sql_escape($field_value);
 		}

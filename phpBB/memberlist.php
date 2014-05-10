@@ -1025,7 +1025,8 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
+		$sql_select = $sql_where_data = $sql_where = $order_by = '';
+		$sql_from = array();
 
 
 		$form			= request_var('form', '');
@@ -1341,10 +1342,7 @@ switch ($mode)
 			}
 			if (!empty($sql_from))
 			{
-				foreach($sql_from as $table => $table_prefix)
-				{
-					$sql_array['FROM'][$table] = $table_prefix; 
-				}
+				$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 			}
 			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
@@ -1545,10 +1543,7 @@ switch ($mode)
 		}
 		if (!empty($sql_from))
 		{
-			foreach($sql_from as $table => $table_prefix)
-			{
-				$sql_array['FROM'][$table] = $table_prefix; 
-			}
+			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
@@ -1603,10 +1598,7 @@ switch ($mode)
 				);
 				if (!empty($sql_from))
 				{
-					foreach ($sql_from as $table => $table_prefix)
-					{
-						$sql_array['FROM'][$table] = $table_prefix; 
-					}
+					$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 				}
 				$sql = $db->sql_build_query('SELECT', $sql_array);
 			}
