@@ -1084,7 +1084,6 @@ switch ($mode)
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
 			// Time to add aditional search parameters
-			// TODO: Get Date field working
 			if (!empty($additional_search_parms))
 			{
 				foreach ($additional_search_parms as $search_parameter) {
