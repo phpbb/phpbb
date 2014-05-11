@@ -60,12 +60,14 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
+		$user = new \phpbb\user();
 
 		$this->extension_manager = new \phpbb\extension\manager(
 			$container,
 			$this->db,
 			$this->config,
 			new phpbb\filesystem(),
+			$user,
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',

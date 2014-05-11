@@ -71,7 +71,7 @@ class metadata_manager
 	*
 	* @param string				$ext_name			Name (including vendor) of the extension
 	* @param \phpbb\config\config		$config				phpBB Config instance
-	* @param \phpbb\extension\manager	$extension_manager	An instance of the phpBBb extension manager
+	* @param \phpbb\extension\manager	$extension_manager	An instance of the phpBB extension manager
 	* @param \phpbb\template\template	$template			phpBB Template instance
 	* @param \phpbb\user 		$user 				User instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
@@ -262,7 +262,7 @@ class metadata_manager
 		{
 			if (!isset($author['name']))
 			{
-			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'author name'));
+				throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'author name'));
 			}
 		}
 

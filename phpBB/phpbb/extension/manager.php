@@ -40,25 +40,25 @@ class manager
 	* @param \phpbb\db\driver\driver_interface $db A database connection
 	* @param \phpbb\config\config $config Config object
 	* @param \phpbb\filesystem $filesystem
+	* @param \phpbb\user $user User object
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
-	* @param \phpbb\user $user User object
 	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\user $user, \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem $filesystem, \phpbb\user $user, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
 	{
+		$this->cache = $cache;
+		$this->cache_name = $cache_name;
+		$this->config = $config;
 		$this->container = $container;
 		$this->db = $db;
-		$this->config = $config;
-		$this->filesystem = $filesystem;
 		$this->extension_table = $extension_table;
+		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->user = $user;
-		$this->cache = $cache;
-		$this->cache_name = $cache_name;
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 

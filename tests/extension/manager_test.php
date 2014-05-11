@@ -101,6 +101,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$php_ext = 'php';
 		$table_prefix = 'phpbb_';
+		$user = new \phpbb\user();
 
 		$migrator = new \phpbb\db\migrator(
 			$config,
@@ -121,6 +122,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$db,
 			$config,
 			new \phpbb\filesystem(),
+			$user,
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			$php_ext,
