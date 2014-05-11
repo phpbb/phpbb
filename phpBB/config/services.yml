@@ -173,6 +173,7 @@ services:
             - %tables.ext%
             - %core.root_path%
             - %core.php_ext%
+            - @user
             - @cache.driver
 
     filesystem:

@@ -37,6 +37,12 @@ class metadata_manager
 	protected $template;
 
 	/**
+	* phpBB User instance
+	* @var \phpbb\user
+	*/
+	protected $user;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -65,15 +71,17 @@ class metadata_manager
 	*
 	* @param string				$ext_name			Name (including vendor) of the extension
 	* @param \phpbb\config\config		$config				phpBB Config instance
-	* @param \phpbb\extension\manager	$extension_manager An instance of the phpBBb extension manager
-	* @param \phpbb\template\template		$template			phpBB Template instance
+	* @param \phpbb\extension\manager	$extension_manager	An instance of the phpBBb extension manager
+	* @param \phpbb\template\template	$template			phpBB Template instance
+	* @param \phpbb\user 		$user 				User instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->extension_manager = $extension_manager;
 		$this->template = $template;
+		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->ext_name = $ext_name;
@@ -141,7 +149,7 @@ class metadata_manager
 
 		if (!file_exists($this->metadata_file))
 		{
-			throw new \phpbb\extension\exception('The required file does not exist: ' . $this->metadata_file);
+			throw new \phpbb\extension\exception($this->user->lang('FILE_NOT_FOUND', $this->metadata_file));
 		}
 	}
 
@@ -154,18 +162,18 @@ class metadata_manager
 	{
 		if (!file_exists($this->metadata_file))
 		{
-			throw new \phpbb\extension\exception('The required file does not exist: ' . $this->metadata_file);
+			throw new \phpbb\extension\exception($this->user->lang('FILE_NOT_FOUND', $this->metadata_file));
 		}
 		else
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-				throw new \phpbb\extension\exception('file_get_contents failed on ' . $this->metadata_file);
+				throw new \phpbb\extension\exception($this->user->lang('FILE_CONTENT_ERR', $this->metadata_file));
 			}
 
 			if (($metadata = json_decode($file_contents, true)) === null)
 			{
-				throw new \phpbb\extension\exception('json_decode failed on ' . $this->metadata_file);
+				throw new \phpbb\extension\exception($this->user->lang('FILE_JSON_DECODE_ERR', $this->metadata_file));
 			}
 
 			$this->metadata = $metadata;
@@ -224,12 +232,12 @@ class metadata_manager
 				{
 					if (!isset($this->metadata[$name]))
 					{
-						throw new \phpbb\extension\exception("Required meta field '$name' has not been set.");
+						throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', $name));
 					}
 
 					if (!preg_match($fields[$name], $this->metadata[$name]))
 					{
-						throw new \phpbb\extension\exception("Meta field '$name' is invalid.");
+						throw new \phpbb\extension\exception($this->user->lang('META_FIELD_INVALID', $name));
 					}
 				}
 			break;
@@ -247,14 +255,14 @@ class metadata_manager
 	{
 		if (empty($this->metadata['authors']))
 		{
-			throw new \phpbb\extension\exception("Required meta field 'authors' has not been set.");
+			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'authors'));
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-				throw new \phpbb\extension\exception("Required meta field 'author name' has not been set.");
+			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'author name'));
 			}
 		}
 
