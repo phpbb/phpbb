@@ -143,6 +143,13 @@ class mcp_reports
 				}
 
 				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
+				$message = generate_text_for_display(
+					$report['reported_post_text'],
+					$report['reported_post_uid'],
+					$report['reported_post_bitfield'],
+					$parse_post_flags,
+					false
+				);
 
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
@@ -152,6 +159,7 @@ class mcp_reports
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
+							AND filetime <= ' . (int) $report['report_time'] . '
 						ORDER BY filetime DESC';
 					$result = $db->sql_query($sql);
 
@@ -164,7 +172,7 @@ class mcp_reports
 					if (sizeof($attachments))
 					{
 						$update_count = array();
-						parse_attachments($post_info['forum_id'], $report['reported_post_text'], $attachments, $update_count);
+						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
 					}
 
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
@@ -224,7 +232,7 @@ class mcp_reports
 					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
-					'POST_PREVIEW'			=> generate_text_for_display($report['reported_post_text'], $report['reported_post_uid'], $report['reported_post_bitfield'], $parse_post_flags, false),
+					'POST_PREVIEW'			=> $message,
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
