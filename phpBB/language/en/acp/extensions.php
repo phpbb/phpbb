@@ -107,7 +107,7 @@ $lang = array_merge($lang, array(
 	'AUTHOR_HOMEPAGE'		=> 'Homepage',
 	'AUTHOR_ROLE'			=> 'Role',
 
-	'NOT_UP_TO_DATE'			=> '%s is not up to date',
+	'NOT_UP_TO_DATE'		=> '%s is not up to date',
 	'UP_TO_DATE'			=> '%s is up to date',
 	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
 	'DOWNLOAD_LATEST'		=> 'Download Version',
