@@ -27,10 +27,10 @@
 	<tr>
 		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_TYPE}{L_COLON}</b></td>
 		<td class="row2">
-			<select name="avatar_driver" id="avatar_driver">
+			<select name="avatar_driver" id="avatar_driver" data-togglable-settings="true">
 				<option value="">{L_NO_AVATAR_CATEGORY}</option>
 				<!-- BEGIN avatar_drivers -->
-				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF --> data-toggle-setting=".avatar_option_{avatar_drivers.DRIVER}">{avatar_drivers.L_TITLE}</option>
 				<!-- END avatar_drivers -->
 			</select></td>
 	</tr>
@@ -47,7 +47,5 @@
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<!-- IF S_IN_AVATAR_GALLERY --><input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" /><!-- ELSE --><input class="btnlite" type="reset" value="{L_RESET}" name="reset" /><!-- ENDIF --></td>
 	</tr>
 </table>
-
-<!-- INCLUDEJS avatars.js -->
 
 <!-- INCLUDE ucp_footer.html -->
