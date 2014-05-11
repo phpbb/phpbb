@@ -71,6 +71,7 @@ $lang = array_merge($lang, array(
 	'LANG_LOCAL_NAME'					=> 'Local name',
 
 	'MISSING_LANGUAGE_FILE'		=> 'Missing language file: <strong style="color:red">%s</strong>',
+	'MISSING_LANG_FILES'		=> 'Missing language files',
 	'MISSING_LANG_VARIABLES'	=> 'Missing language variables',
 	'MODS_FILES'				=> 'MODs language files',
 

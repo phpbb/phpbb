@@ -110,6 +110,8 @@ class acp_language
 				$lang_entries = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
+				$lang_iso = $lang_entries['lang_iso'];
+
 				$template->assign_vars(array(
 					'S_DETAILS'			=> true,
 					'U_ACTION'			=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
@@ -117,10 +119,67 @@ class acp_language
 
 					'LANG_LOCAL_NAME'	=> $lang_entries['lang_local_name'],
 					'LANG_ENGLISH_NAME'	=> $lang_entries['lang_english_name'],
-					'LANG_ISO'			=> $lang_entries['lang_iso'],
+					'LANG_ISO'			=> $lang_iso,
 					'LANG_AUTHOR'		=> $lang_entries['lang_author'],
+					'L_MISSING_FILES'			=> $user->lang('THOSE_MISSING_LANG_FILES', $lang_entries['lang_local_name']),
+					'L_MISSING_VARS_EXPLAIN'	=> $user->lang('THOSE_MISSING_LANG_VARIABLES', $lang_entries['lang_local_name']),
 				));
 
+				// If current lang is different from the default lang, then highlight missing files and variables
+				if ($lang_iso != $config['default_lang'])
+				{
+					try
+					{
+						$iterator = new \RecursiveIteratorIterator(
+							new \phpbb\recursive_dot_prefix_filter_iterator(
+								new \RecursiveDirectoryIterator(
+									$phpbb_root_path . 'language/' . $config['default_lang'] . '/',
+									\FilesystemIterator::SKIP_DOTS
+								)
+							),
+							\RecursiveIteratorIterator::LEAVES_ONLY
+						);
+					}
+					catch (\Exception $e)
+					{
+						return array();
+					}
+
+					foreach ($iterator as $file_info)
+					{
+						/** @var \RecursiveDirectoryIterator $file_info */
+						$relative_path = $iterator->getInnerIterator()->getSubPathname();
+						$relative_path = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
+
+						if (file_exists($phpbb_root_path . 'language/' . $lang_iso . '/' . $relative_path))
+						{
+							if (substr($relative_path, 0 - strlen($phpEx)) === $phpEx)
+							{
+								$missing_vars = $this->compare_language_files($config['default_lang'], $lang_iso, $relative_path);
+
+								if (!empty($missing_vars))
+								{
+									$template->assign_block_vars('missing_varfile', array(
+										'FILE_NAME'			=> $relative_path,
+									));
+
+									foreach ($missing_vars as $var)
+									{
+										$template->assign_block_vars('missing_varfile.variable', array(
+												'VAR_NAME'			=> $var,
+										));
+									}
+								}
+							}
+						}
+						else
+						{
+							$template->assign_block_vars('missing_files', array(
+								'FILE_NAME' => $relative_path,
+							));
+						}
+					}
+				}
 				return;
 			break;
 
@@ -361,5 +420,33 @@ class acp_language
 		}
 
 		unset($new_ary);
+	}
+
+	/**
+	* Compare two language files
+	*/
+	function compare_language_files($source_lang, $dest_lang, $file)
+	{
+		global $phpbb_root_path;
+
+		$source_file = $phpbb_root_path . 'language/' . $source_lang . '/' . $file;
+		$dest_file = $phpbb_root_path . 'language/' . $dest_lang . '/' . $file;
+
+		if (!file_exists($dest_file))
+		{
+			return array();
+		}
+
+		$lang = array();
+		include($source_file);
+		$lang_entry_src = $lang;
+
+		$lang = array();
+		include($dest_file);
+		$lang_entry_dst = $lang;
+
+		unset($lang);
+
+		return array_diff(array_keys($lang_entry_src), array_keys($lang_entry_dst));
 	}
 }

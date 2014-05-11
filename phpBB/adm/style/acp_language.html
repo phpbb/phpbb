@@ -36,46 +36,32 @@
 	</fieldset>
 	</form>
 
-	<br /><br />
+	<!-- IF .missing_files -->
+		<h3 class="error">{L_MISSING_FILES}</h3>
 
-	<!-- IF S_MISSING_FILES -->
-		<div class="errorbox">
-			<h3>{L_MISSING_FILES}</h3>
-			<p>{MISSING_FILES}</p>
-		</div>
-		<br /><br />
+		<fieldset>
+			<legend>{L_MISSING_LANG_FILES}</legend>
+			<!-- BEGIN missing_files -->
+			&raquo; {missing_files.FILE_NAME}<br />
+			<!-- END missing_files -->
+		</fieldset>
 	<!-- ENDIF -->
 
-	<!-- IF S_MISSING_VARS -->
-		<h1>{L_MISSING_LANG_VARIABLES}</h1>
+	<!-- IF .missing_varfile -->
+		<h3 class="error">{L_MISSING_VARS_EXPLAIN}</h3>
 
-		<p>{L_MISSING_VARS_EXPLAIN}</p>
-
-		<form id="missing" method="post" action="{U_MISSING_ACTION}">
-
-		<table class="table1">
-		<thead>
-		<tr>
-			<th>{L_LANGUAGE_KEY}</th>
-			<th>{L_LANGUAGE_VARIABLE}</th>
-		</tr>
-		</thead>
-		<tbody>
-		<!-- BEGIN missing -->
-			<tr class="row4">
-				<td><strong>{missing.FILE}</strong></td>
-				<td style="text-align: right;"><input type="submit" name="missing_file[{missing.KEY}]" value="{L_SELECT}" class="button2" /></td>
-			</tr>
-			{missing.TPL}
-		<!-- END missing -->
-		</tbody>
-		</table>
-		<div>{S_FORM_TOKEN}</div>
-		</form>
-
-		<br /><br />
+		<fieldset>
+			<legend>{L_MISSING_LANG_VARIABLES}</legend>
+			<!-- BEGIN missing_varfile -->
+			<dl>
+				<dt><label>{missing_varfile.FILE_NAME}</label></dt>
+				<!-- BEGIN variable -->
+				<dd>{missing_varfile.variable.VAR_NAME}</dd>
+				<!-- END variable -->
+			</dl>
+			<!-- END missing_varfile -->
+		</fieldset>
 	<!-- ENDIF -->
-
 <!-- ELSE -->
 
 	<h1>{L_ACP_LANGUAGE_PACKS}</h1>
