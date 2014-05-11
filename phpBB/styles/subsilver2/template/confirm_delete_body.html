@@ -14,7 +14,7 @@
 			<p class="gen">{MESSAGE_TEXT}</p>
 			<br />
 
-			<!-- IF not S_SOFTDELETED and (S_DELETE_REASON or (S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE)) -->
+			<!-- IF not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
 				<table border="0" width="90%" cellspacing="2" cellpadding="1">
 				<!-- IF S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
 					<tr>
@@ -25,12 +25,10 @@
 						</td>
 					</tr>
 				<!-- ENDIF -->
-				<!-- IF S_DELETE_REASON -->
 					<tr>
 						<td class="row1" valign="top"><span class="gen"><b>{L_DELETE_REASON}{L_COLON}</b></span><br /><span class="gensmall">{L_DELETE_REASON_EXPLAIN}</span></td>
 						<td class="row1"><input type="text" name="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></td>
 					</tr>
-				<!-- ENDIF -->
 				</table>
 				<br />
 			<!-- ENDIF -->
