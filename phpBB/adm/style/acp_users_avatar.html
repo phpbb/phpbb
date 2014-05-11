@@ -13,10 +13,10 @@
 		<legend>{L_AVATAR_SELECT}</legend>
 		<dl>
 			<dt><label>{L_AVATAR_TYPE}</label></dt>
-			<dd><select name="avatar_driver" id="avatar_driver">
+			<dd><select name="avatar_driver" id="avatar_driver" data-togglable-settings="true">
 				<option value="">{L_NO_AVATAR_CATEGORY}</option>
 				<!-- BEGIN avatar_drivers -->
-				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF -->>{avatar_drivers.L_TITLE}</option>
+				<option value="{avatar_drivers.DRIVER}"<!-- IF avatar_drivers.SELECTED --> selected="selected"<!-- ENDIF --> data-toggle-setting="#avatar_option_{avatar_drivers.DRIVER}">{avatar_drivers.L_TITLE}</option>
 				<!-- END avatar_drivers -->
 			</select></dd>
 		</dl>
@@ -35,5 +35,3 @@
 	{S_FORM_TOKEN}
 	</fieldset>
 	</form>
-
-	<!-- INCLUDEJS avatars.js -->
