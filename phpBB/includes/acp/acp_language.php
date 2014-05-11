@@ -81,8 +81,12 @@ class acp_language
 		}
 		else
 		{
+			// Array values can either be strings or arrays
 			$language_file_type = 'normal';
-			$request_default = array('' => '');
+			$request_default = array(
+				array('' => ''),
+				array('' => array('' => '')),
+			);
 		}
 
 		$user->add_lang('acp/language');
@@ -218,7 +222,15 @@ class acp_language
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$entry_value = $request->variable('entry', $request_default, true, \phpbb\request\request_interface::POST);
+				if ($language_file_type == 'normal')
+				{
+					$entry_value = $request->variable('entry', $request_default[0], true, \phpbb\request\request_interface::POST);
+					$entry_value = $this->merge_entry_value($entry_value, $request->variable('entry', $request_default[1], true, \phpbb\request\request_interface::POST));
+				}
+				else
+				{
+					$entry_value = $request->variable('entry', $request_default, true, \phpbb\request\request_interface::POST);
+				}
 
 				if (!$lang_id || !$entry_value)
 				{
@@ -354,7 +366,7 @@ class acp_language
 							fwrite($fp, $entry);
 						}
 
-						$footer = ");\n\n?>";
+						$footer = ");\n";
 						fwrite($fp, $footer);
 					}
 					else if ($language_file_type == 'normal')
@@ -365,11 +377,27 @@ class acp_language
 
 						foreach ($entry_value as $key => $value)
 						{
-							$entry = $this->format_lang_array(htmlspecialchars_decode($key), htmlspecialchars_decode($value));
-							fwrite($fp, $entry);
+							if (!is_array($value))
+							{
+								$entry = $this->format_lang_array(htmlspecialchars_decode($key), htmlspecialchars_decode($value));
+								fwrite($fp, $entry);
+							}
+							else
+							{
+								$entry = "\t'$key'\t=> array(\n";
+								foreach ($value as $_key => $_value)
+								{
+									$_key = (is_int($_key)) ? $_key : "'$_key'";
+									$entry .= "\t\t" . $_key . "\t=> '" . $this->prepare_lang_entry(htmlspecialchars_decode($_value)) . "',\n";
+								}
+
+								$entry .= "\t),\n";
+
+								fwrite($fp, $entry);
+							}
 						}
 
-						$footer = "));\n\n?>";
+						$footer = "));\n";
 						fwrite($fp, $footer);
 					}
 				}
@@ -1428,5 +1456,31 @@ $lang = array_merge($lang, array(
 		}
 
 		return $entry;
+	}
+
+	/**
+	* Merge the entry_value acquired with string type values with the one
+	* with array type values.
+	*
+	* @param array $string_entry_value entry_value array acquired with
+	*					string type values
+	* @param array $arrays_entry_value entry_value array acquired with
+	*					array type values
+	*
+	* @return array	$string_entry_value array in which empty values are
+	*		replaced with the array type values if they are not
+	*		empty.
+	*/
+	function merge_entry_value($string_entry_value, $arrays_entry_value)
+	{
+		foreach ($string_entry_value as $key => $value)
+		{
+			if (empty($value) && isset($arrays_entry_value[$key]) && is_array($arrays_entry_value[$key]))
+			{
+				$string_entry_value[$key] = $arrays_entry_value[$key];
+			}
+		}
+
+		return $string_entry_value;
 	}
 }
