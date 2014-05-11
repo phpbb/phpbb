@@ -246,18 +246,9 @@ class manager
 		$stored_hash_type = $this->detect_algorithm($hash);
 		if ($stored_hash_type == false)
 		{
-			// Might be a legacy hash type. Check all legacy
-			// hash types and set convert flag to true if password
-			// is correct
-			foreach ($this->type_map as $algorithm)
-			{
-				if ($algorithm->is_legacy() && $algorithm->check($password, $hash, $user_row) === true)
-				{
-					$this->convert_flag = true;
-					return true;
-				}
-			}
-			return false;
+			// Still check MD5 hashes as that is what the installer
+			// will default to for the admin user
+			return $this->get_algorithm('$H$')->check($password, $hash);
 		}
 
 		// Multiple hash passes needed
@@ -275,6 +266,21 @@ class manager
 		else
 		{
 			$this->convert_flag = false;
+		}
+
+		if ($stored_hash_type->get_prefix() === '$CP$')
+		{
+			// Check all legacy hash types for this hash. Remove
+			// $CP$ prefix from beginning for proper checking.
+			$hash = substr($hash, 4);
+
+			foreach ($this->type_map as $algorithm)
+			{
+				if ($algorithm->is_legacy() && $algorithm->check($password, $hash, $user_row) === true)
+				{
+					return true;
+				}
+			}
 		}
 
 		return $stored_hash_type->check($password, $hash);
