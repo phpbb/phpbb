@@ -3030,7 +3030,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 				}
 				else if (stripos($line, '404 not found') !== false)
 				{
-					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
+					$errstr = $user->lang('FILE_NOT_FOUND',  $filename);
 					return false;
 				}
 			}
