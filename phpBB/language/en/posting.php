@@ -72,7 +72,7 @@ $lang = array_merge($lang, array(
 	'CHANGE_TOPIC_TO'			=> 'Change topic type to',
 	'CHARS_POST_CONTAINS'		=> array(
 		1	=> 'Your message contains %1$d character.',
- 		2	=> 'Your message contains %1$d characters.',
+		2	=> 'Your message contains %1$d characters.',
 	),
 	'CHARS_SIG_CONTAINS'		=> array(
 		1	=> 'Your signature contains %1$d character.',
