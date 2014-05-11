@@ -751,6 +751,7 @@ $lang = array_merge($lang, array(
 		1	=> '%d private message in total',
 		2	=> '%d private messages in total',
 	),
+	'TOPIC_POLL'		=> 'This topic has a poll.',
 	'TOTAL_POSTS'		=> 'Total posts',
 	'TOTAL_POSTS_COUNT'	=> array(
 		2	=> 'Total posts <strong>%d</strong>',

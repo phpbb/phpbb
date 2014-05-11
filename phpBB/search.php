@@ -613,6 +613,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 		'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
+		'POLL_IMG'			=> $user->img('icon_topic_poll', 'TOPIC_POLL'),
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 
 		'U_SEARCH_WORDS'	=> $u_search,
@@ -973,6 +974,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 					'S_TOPIC_DELETED'		=> $topic_deleted,
+					'S_HAS_POLL'			=> ($row['poll_start']) ? true : false,
 
 					'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
