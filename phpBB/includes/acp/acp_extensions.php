@@ -267,8 +267,8 @@ class acp_extensions
 				catch (\RuntimeException $e)
 				{
 					$template->assign_vars(array(
-						'S_VERSIONCHECK_FAIL'		=> true,
-						'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
+						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
 					));
 				}
 
@@ -283,11 +283,11 @@ class acp_extensions
 	}
 
 	/**
-	 * Lists all the enabled extensions and dumps to the template
-	 *
-	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @return null
-	 */
+	* Lists all the enabled extensions and dumps to the template
+	*
+	* @param  $phpbb_extension_manager     An instance of the extension manager
+	* @return null
+	*/
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$enabled_extension_meta_data = array();
@@ -323,7 +323,7 @@ class acp_extensions
 			}
 		}
 
-		uasort($enabled_extension_meta_data, array('self', 'sort_extension_meta_data_table'));
+		uasort($enabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
 		foreach ($enabled_extension_meta_data as $name => $infos)
 		{
@@ -339,11 +339,11 @@ class acp_extensions
 	}
 
 	/**
-	 * Lists all the disabled extensions and dumps to the template
-	 *
-	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @return null
-	 */
+	* Lists all the disabled extensions and dumps to the template
+	*
+	* @param  $phpbb_extension_manager     An instance of the extension manager
+	* @return null
+	*/
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$disabled_extension_meta_data = array();
@@ -379,7 +379,7 @@ class acp_extensions
 			}
 		}
 
-		uasort($disabled_extension_meta_data, array('self', 'sort_extension_meta_data_table'));
+		uasort($disabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
 		foreach ($disabled_extension_meta_data as $name => $infos)
 		{
@@ -396,11 +396,11 @@ class acp_extensions
 	}
 
 	/**
-	 * Lists all the available extensions and dumps to the template
-	 *
-	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @return null
-	 */
+	* Lists all the available extensions and dumps to the template
+	*
+	* @param  $phpbb_extension_manager     An instance of the extension manager
+	* @return null
+	*/
 	public function list_available_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
@@ -438,7 +438,7 @@ class acp_extensions
 			}
 		}
 
-		uasort($available_extension_meta_data, array('self', 'sort_extension_meta_data_table'));
+		uasort($available_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
 		foreach ($available_extension_meta_data as $name => $infos)
 		{
@@ -472,33 +472,33 @@ class acp_extensions
 	}
 
 	/**
-	 * Check the version and return the availables updates.
-	 *
-	 * @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
-	 * @param bool $force Ignores cached data. Default to false.
-	 */
-	private function version_check(\phpbb\extension\metadata_manager $md_manager, $force = false) 
+	* Check the version and return the availables updates.
+	*
+	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
+	* @param bool $force Ignores cached data. Default to false.
+	*/
+	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force = false)
 	{
 		$meta = $md_manager->get_metadata('all');
 
-		if (! isset($meta['extra']['version-check']))
+		if (!isset($meta['extra']['version-check']))
 		{
-			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'));
+			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
 		}
 
-		$meta_vc = $meta['extra']['version-check'];
+		$version_check  = $meta['extra']['version-check'];
 		
 		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
 		$version_helper->set_current_version($meta['version']);
-		$version_helper->set_file_location($meta_vc['host'], $meta_vc['directory'], $meta_vc['filename']);
+		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
 
 		return $updates = $version_helper->get_suggested_updates(true);
 	}
 
 	/**
-	 * Sort helper for the table containing the metadata about the extensions.
-	 */
-	static private function sort_extension_meta_data_table($val1, $val2)
+	* Sort helper for the table containing the metadata about the extensions.
+	*/
+	protected function sort_extension_meta_data_table($val1, $val2)
 	{
 		return strnatcasecmp($val1['META_DISPLAY_NAME'], $val2['META_DISPLAY_NAME']);
 	}

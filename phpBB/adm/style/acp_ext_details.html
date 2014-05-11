@@ -6,11 +6,15 @@
 
 	<h1>{L_EXTENSIONS_ADMIN}</h1>
 
-	<!-- IF S_VERSIONCHECK_FAIL -->
+	<!-- IF S_VERSIONCHECK_STATUS == 0 -->
 	<div class="errorbox notice">
 		<p>{L_VERSIONCHECK_FAIL}</p>
 		<p>{VERSIONCHECK_FAIL_REASON}</p>
 		<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+	<!-- ELSE IF S_VERSIONCHECK_STATUS == 1 -->
+	<div class="errorbox notice">
+		<p>{VERSIONCHECK_FAIL_REASON}</p>
 	</div>
 	<!-- ENDIF -->
 	<!-- IF S_VERSIONCHECK -->	
