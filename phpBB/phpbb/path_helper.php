@@ -98,7 +98,7 @@ class path_helper
 		{
 			$path = substr($path, strlen($this->phpbb_root_path));
 
-			return $this->get_web_root_path() . $path;
+			return $this->filesystem->clean_path($this->get_web_root_path() . $path);
 		}
 
 		return $path;
@@ -158,7 +158,7 @@ class path_helper
 		*/
 		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
 		{
-			return $this->web_root_path = $this->phpbb_root_path . '../';
+			return $this->web_root_path = $this->filesystem->clean_path('../' . $this->phpbb_root_path);
 		}
 
 		/*
