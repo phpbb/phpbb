@@ -384,7 +384,7 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 	$force_edit_allowed = false;
 
 	$s_cannot_edit = $user->data['user_id'] != $post_data['poster_id'];
-	$s_cannot_edit_time = !($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']);
+	$s_cannot_edit_time = $config['edit_time'] && $post_data['post_time'] <= time() - ($config['edit_time'] * 60);
 	$s_cannot_edit_locked = $post_data['post_edit_locked'];
 
 	/**
