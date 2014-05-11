@@ -349,7 +349,7 @@ class acp_main
 					break;
 
 					case 'purge_cache':
-						global $cache;
+						$config->increment('assets_version', 1);
 						$cache->purge();
 
 						// Clear permissions
