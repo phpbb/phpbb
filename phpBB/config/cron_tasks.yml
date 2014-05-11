@@ -31,6 +31,7 @@ services:
             - @config
             - @dbal.conn
             - @log
+            - @user
         calls:
             - [set_name, [cron.task.core.prune_shadow_topics]]
         tags:
