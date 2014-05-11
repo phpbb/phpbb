@@ -25,6 +25,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	protected $config;
 	protected $db;
 	protected $log;
+	protected $user;
 
 	/**
 	* If $forum_data is given, it is assumed to contain necessary information
@@ -44,14 +45,16 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver $db The db connection
 	* @param \phpbb\log\log $log The phpBB log system
+	* @param \phpbb\user $user The phpBB user object
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\log\log $log)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\log\log $log, \phpbb\user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->config = $config;
 		$this->db = $db;
 		$this->log = $log;
+		$this->user = $user;
 	}
 
 	/**
@@ -183,7 +186,10 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 				WHERE forum_id = $forum_id";
 			$this->db->sql_query($sql);
 
-			$this->log->add('admin', 'LOG_PRUNE_SHADOW', $row['forum_name']);
+			$user_id = (empty($this->user->data)) ? ANONYMOUS : $this->user->data['user_id'];
+			$user_ip = (empty($this->user->ip)) ? '' : $this->user->ip;
+
+			$this->log->add('admin', $user_id, $user_ip, 'LOG_PRUNE_SHADOW', false, array($row['forum_name']));
 		}
 
 		return;
