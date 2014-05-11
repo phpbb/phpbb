@@ -486,7 +486,7 @@ class acp_extensions
 			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
 		}
 
-		$version_check  = $meta['extra']['version-check'];
+		$version_check = $meta['extra']['version-check'];
 		
 		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
 		$version_helper->set_current_version($meta['version']);
