@@ -33,28 +33,36 @@ class resolver implements ControllerResolverInterface
 
 	/**
 	* phpbb\template\template object
-	* @var phpbb\template\template
+	* @var \phpbb\template\template
 	*/
 	protected $template;
+
+	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
 
 	/**
 	* Construct method
 	*
 	* @param \phpbb\user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
+	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param \phpbb\template\template $template
 	*/
-	public function __construct(\phpbb\user $user, ContainerInterface $container, \phpbb\template\template $template = null)
+	public function __construct(\phpbb\user $user, ContainerInterface $container, $phpbb_root_path, \phpbb\template\template $template = null)
 	{
 		$this->user = $user;
 		$this->container = $container;
 		$this->template = $template;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
 	* Load a controller callable
 	*
-	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
+	* @param \Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @return bool|Callable Callable or false
 	* @throws \phpbb\controller\exception
 	*/
@@ -94,7 +102,7 @@ class resolver implements ControllerResolverInterface
 		{
 			$controller_style_dir = 'ext/' . $controller_dir[0] . '/' . $controller_dir[1] . '/styles';
 
-			if (is_dir($controller_style_dir))
+			if (is_dir($this->phpbb_root_path . $controller_style_dir))
 			{
 				$this->template->set_style(array($controller_style_dir, 'styles'));
 			}
@@ -109,7 +117,7 @@ class resolver implements ControllerResolverInterface
 	* and should match the parameters of the method you are using as your
 	* controller.
 	*
-	* @param Symfony\Component\HttpFoundation\Request $request Symfony Request object
+	* @param \Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param mixed $controller A callable (controller class, method)
 	* @return bool False
 	* @throws \phpbb\controller\exception
