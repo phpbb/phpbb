@@ -235,7 +235,7 @@ class acp_language
 						'action'	=> $action,
 						'id'		=> $lang_id,
 					);
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+					confirm_box(false, $user->lang('DELETE_LANGUAGE_CONFIRM', $row['lang_english_name']), build_hidden_fields($s_hidden_fields));
 				}
 			break;
 
