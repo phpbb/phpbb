@@ -1740,14 +1740,12 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_sof
 
 			$can_delete = $auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id));
 			$can_softdelete = $auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id));
-			$display_reason = $auth->acl_get('m_softdelete', $forum_id) || ($can_delete && $can_softdelete);
 
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
 				'S_CHECKED_PERMANENT'	=> $request->is_set_post('delete_permanent') ? ' checked="checked"' : '',
 				'S_ALLOWED_DELETE'		=> $can_delete,
 				'S_ALLOWED_SOFTDELETE'	=> $can_softdelete,
-				'S_DELETE_REASON'		=> $display_reason,
 			));
 
 			$l_confirm = 'DELETE_POST';

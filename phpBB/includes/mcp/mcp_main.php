@@ -823,7 +823,6 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 			'S_TOPIC_MODE'			=> true,
 			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
 			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
-			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 		));
 
 		$l_confirm = (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
@@ -1060,7 +1059,6 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			'S_SOFTDELETED'			=> $only_softdeleted,
 			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
 			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
-			'S_DELETE_REASON'		=> $auth->acl_get('m_softdelete', $forum_id),
 		));
 
 		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
