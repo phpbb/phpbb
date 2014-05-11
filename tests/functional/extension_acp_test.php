@@ -180,7 +180,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	{
 		// test2 is not available (error)
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=test2&sid=' . $this->sid);
-		$this->assertContains('The required file does not exist', $crawler->filter('.errorbox')->text());
+		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('.errorbox')->text());
 
 		// foo is not disabled (redirect to list)
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=vendor2%2Ffoo&sid=' . $this->sid);

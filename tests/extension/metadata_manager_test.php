@@ -97,7 +97,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e){}
 
-		$this->assertEquals((string) $e, 'The required file does not exist: ' . $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json');
+		$this->assertEquals((string) $e, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
 	}
 
 	// Should be the same as a direct json_decode of the composer.json file
@@ -136,7 +136,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'name\' has not been set.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'name'));
 		}
 
 		try
@@ -147,7 +147,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'type\' has not been set.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'type'));
 		}
 
 		try
@@ -158,7 +158,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'license\' has not been set.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'license'));
 		}
 
 		try
@@ -169,7 +169,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'version\' has not been set.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'version'));
 		}
 
 		try
@@ -180,7 +180,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'authors\' has not been set.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'authors'));
 		}
 
 		$manager->merge_metadata(array(
@@ -197,7 +197,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Required meta field \'author name\' has not been set.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'author name'));
 		}
 	}
 
@@ -224,7 +224,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Meta field \'name\' is invalid.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_INVALID', 'name'));
 		}
 
 		try
@@ -235,7 +235,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Meta field \'type\' is invalid.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_INVALID', 'type'));
 		}
 
 		try
@@ -246,7 +246,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Meta field \'license\' is invalid.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_INVALID', 'license'));
 		}
 
 		try
@@ -257,7 +257,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, 'Meta field \'version\' is invalid.');
+			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_INVALID', 'version'));
 		}
 	}
 
