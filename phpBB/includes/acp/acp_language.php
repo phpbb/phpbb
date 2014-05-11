@@ -110,6 +110,11 @@ class acp_language
 				$lang_entries = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
+				if (!$lang_entries)
+				{
+					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$lang_iso = $lang_entries['lang_iso'];
 
 				$template->assign_vars(array(
