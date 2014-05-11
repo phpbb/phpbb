@@ -381,19 +381,46 @@ if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_statu
 // else it depends on editing times, lock status and if we're the correct user
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 {
-	if ($user->data['user_id'] != $post_data['poster_id'])
-	{
-		trigger_error('USER_CANNOT_EDIT');
-	}
+	$force_edit_allowed = false;
 
-	if (!($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']))
-	{
-		trigger_error('CANNOT_EDIT_TIME');
-	}
+	$s_cannot_edit = $user->data['user_id'] != $post_data['poster_id'];
+	$s_cannot_edit_time = !($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']);
+	$s_cannot_edit_locked = $post_data['post_edit_locked'];
 
-	if ($post_data['post_edit_locked'])
+	/**
+	* This event allows you to modify the conditions for the "cannot edit post" checks
+	*
+	* @event core.posting_modify_cannot_edit_conditions
+	* @var	array	post_data	Array with post data
+	* @var	bool	force_edit_allowed		Allow the user to edit the post (all permissions and conditions are ignored)
+	* @var	bool	s_cannot_edit			User can not edit the post because it's not his
+	* @var	bool	s_cannot_edit_locked	User can not edit the post because it's locked
+	* @var	bool	s_cannot_edit_time		User can not edit the post because edit_time has passed
+	* @since 3.1.0-b4
+	*/
+	$vars = array(
+		'post_data',
+		'force_edit_allowed',
+		's_cannot_edit',
+		's_cannot_edit_locked',
+		's_cannot_edit_time',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.posting_modify_cannot_edit_conditions', compact($vars)));
+
+	if (!$force_edit_allowed)
 	{
-		trigger_error('CANNOT_EDIT_POST_LOCKED');
+		if ($s_cannot_edit)
+		{
+			trigger_error('USER_CANNOT_EDIT');
+		}
+		else if ($s_cannot_edit_time)
+		{
+			trigger_error('CANNOT_EDIT_TIME');
+		}
+		else if ($s_cannot_edit_locked)
+		{
+			trigger_error('CANNOT_EDIT_POST_LOCKED');
+		}
 	}
 }
 
