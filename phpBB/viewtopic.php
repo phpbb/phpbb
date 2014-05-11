@@ -1585,7 +1585,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$force_edit_allowed = $force_delete_allowed = false;
 
 	$s_cannot_edit = !$auth->acl_get('f_edit', $forum_id) || $user->data['user_id'] != $poster_id;
-	$s_cannot_edit_time = !($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']);
+	$s_cannot_edit_time = $config['edit_time'] && $row['post_time'] <= time() - ($config['edit_time'] * 60);
 	$s_cannot_edit_locked = $topic_data['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'];
 
 	$s_cannot_delete = $user->data['user_id'] != $poster_id || (
@@ -1593,7 +1593,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			(!$auth->acl_get('f_softdelete', $forum_id) || $row['post_visibility'] == ITEM_DELETED)
 	);
 	$s_cannot_delete_lastpost = $topic_data['topic_last_post_id'] != $row['post_id'];
-	$s_cannot_delete_time = !($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']);
+	$s_cannot_delete_time = $config['delete_time'] && $row['post_time'] <= time() - ($config['delete_time'] * 60);
 	// we do not want to allow removal of the last post if a moderator locked it!
 	$s_cannot_delete_locked = $topic_data['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'];
 
