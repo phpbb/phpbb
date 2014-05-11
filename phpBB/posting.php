@@ -1596,7 +1596,7 @@ $page_data = array(
 * @var	array	page_data	Posting page data that should be passed to the
 *				posting page via $template->assign_vars()
 * @var	object	message_parser	The message parser object
-* @since 3.1-A1
+* @since 3.1.0-a1
 * @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
 *		s_topic_icons, form_enctype, s_action, s_hidden_fields,
 *		post_id, topic_id, forum_id, submit, preview, save, load,
