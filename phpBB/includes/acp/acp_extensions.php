@@ -305,7 +305,7 @@ class acp_extensions
 				);
 
 				$updates = $this->version_check($md_manager);
-	
+
 				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
@@ -360,7 +360,7 @@ class acp_extensions
 				);
 
 				$updates = $this->version_check($md_manager);
-	
+
 				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
@@ -486,7 +486,7 @@ class acp_extensions
 		}
 
 		$version_check = $meta['extra']['version-check'];
-		
+
 		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
 		$version_helper->set_current_version($meta['version']);
 		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
