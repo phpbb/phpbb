@@ -1582,27 +1582,67 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$s_first_unread = $first_unread = true;
 	}
 
-	$edit_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_edit', $forum_id) || (
-		$user->data['user_id'] == $poster_id &&
-		$auth->acl_get('f_edit', $forum_id) &&
-		$topic_data['topic_status'] != ITEM_LOCKED &&
-		!$row['post_edit_locked'] &&
-		($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
+	$force_edit_allowed = $force_delete_allowed = false;
+
+	$s_cannot_edit = !$auth->acl_get('f_edit', $forum_id) || $user->data['user_id'] != $poster_id;
+	$s_cannot_edit_time = !($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']);
+	$s_cannot_edit_locked = $topic_data['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'];
+
+	$s_cannot_delete = $user->data['user_id'] != $poster_id || (
+			!$auth->acl_get('f_delete', $forum_id) &&
+			(!$auth->acl_get('f_softdelete', $forum_id) || $row['post_visibility'] == ITEM_DELETED)
+	);
+	$s_cannot_delete_lastpost = $topic_data['topic_last_post_id'] != $row['post_id'];
+	$s_cannot_delete_time = !($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']);
+	// we do not want to allow removal of the last post if a moderator locked it!
+	$s_cannot_delete_locked = $topic_data['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'];
+
+	/**
+	* This event allows you to modify the conditions for the "can edit post" and "can delete post" checks
+	*
+	* @event core.viewtopic_modify_post_action_conditions
+	* @var	array	row			Array with post data
+	* @var	array	topic_data	Array with topic data
+	* @var	bool	force_edit_allowed		Allow the user to edit the post (all permissions and conditions are ignored)
+	* @var	bool	s_cannot_edit			User can not edit the post because it's not his
+	* @var	bool	s_cannot_edit_locked	User can not edit the post because it's locked
+	* @var	bool	s_cannot_edit_time		User can not edit the post because edit_time has passed
+	* @var	bool	force_delete_allowed		Allow the user to delete the post (all permissions and conditions are ignored)
+	* @var	bool	s_cannot_delete				User can not delete the post because it's not his
+	* @var	bool	s_cannot_delete_lastpost	User can not delete the post because it's not the last post of the topic
+	* @var	bool	s_cannot_delete_locked		User can not delete the post because it's locked
+	* @var	bool	s_cannot_delete_time		User can not delete the post because edit_time has passed
+	* @since 3.1.0-b4
+	*/
+	$vars = array(
+		'row',
+		'topic_data',
+		'force_edit_allowed',
+		's_cannot_edit',
+		's_cannot_edit_locked',
+		's_cannot_edit_time',
+		'force_delete_allowed',
+		's_cannot_delete',
+		's_cannot_delete_lastpost',
+		's_cannot_delete_locked',
+		's_cannot_delete_time',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_action_conditions', compact($vars)));
+
+	$edit_allowed = $force_edit_allowed || ($user->data['is_registered'] && ($auth->acl_get('m_edit', $forum_id) || (
+		!$s_cannot_edit &&
+		!$s_cannot_edit_time &&
+		!$s_cannot_edit_locked
 	)));
 
 	$quote_allowed = $auth->acl_get('m_edit', $forum_id) || ($topic_data['topic_status'] != ITEM_LOCKED &&
 		($user->data['user_id'] == ANONYMOUS || $auth->acl_get('f_reply', $forum_id))
 	);
 
-	$delete_allowed = ($user->data['is_registered'] && (($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) || (
-		$user->data['user_id'] == $poster_id &&
-		($auth->acl_get('f_delete', $forum_id) || ($auth->acl_get('f_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) &&
-		$topic_data['topic_status'] != ITEM_LOCKED &&
-		$topic_data['topic_last_post_id'] == $row['post_id'] &&
-		($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']) &&
-		// we do not want to allow removal of the last post if a moderator locked it!
-		!$row['post_edit_locked']
-	)));
+	$delete_allowed = $force_delete_allowed || ($user->data['is_registered'] && (
+		($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) ||
+		(!$s_cannot_delete && !$s_cannot_delete_lastpost && !$s_cannot_delete_time && !$s_cannot_delete_locked)
+	));
 
 	// Can this user receive a Private Message?
 	$can_receive_pm = (
