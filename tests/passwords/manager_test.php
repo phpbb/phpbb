@@ -30,6 +30,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
+			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
 		);
 
@@ -134,13 +135,16 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	{
 		return array(
 			array('foobar', '3858f62230ac3c915f300c664312c63f', true),
+			array('foobar', '$CP$3858f62230ac3c915f300c664312c63f', true),
+			array('foobar', '$CP$3858f62230ac3c915f300c', false),
 			array('foobar', '$S$b57a939fa4f2c04413a4eea9734a0903647b7adb93181295', false),
 			array('foobar', '$2a\S$kkkkaakdkdiej39023903204j2k3490234jk234j02349', false),
 			array('foobar', '$H$kklk938d023k//k3023', false),
 			array('foobar', '$H$3PtYMgXb39lrIWkgoxYLWtRkZtY3AY/', false),
 			array('foobar', '$2a$kwiweorurlaeirw', false),
 			array('foobar', '6f9e2a1899e1f15708fd2e554103480eb53e8b57', false),
-			array('foobar', '6f9e2a1899e1f15708fd2e554103480eb53e8b57', true, array('login_name' => 'test')),
+			array('foobar', '6f9e2a1899e1f15708fd2e554103480eb53e8b57', false, array('login_name' => 'test')),
+			array('foobar', '$CP$6f9e2a1899e1f15708fd2e554103480eb53e8b57', true, array('login_name' => 'test')),
 			array('foobar', '6f9e2a1899', false, array('login_name' => 'test')),
 		);
 	}
