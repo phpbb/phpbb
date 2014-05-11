@@ -472,10 +472,12 @@ class acp_extensions
 	}
 
 	/**
-	* Check the version and return the availables updates.
+	* Check the version and return the available updates.
 	*
 	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
 	* @param bool $force Ignores cached data. Default to false.
+	* @return string
+	* @throws RuntimeException
 	*/
 	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force = false)
 	{
@@ -492,7 +494,7 @@ class acp_extensions
 		$version_helper->set_current_version($meta['version']);
 		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
 
-		return $updates = $version_helper->get_suggested_updates(true);
+		return $updates = $version_helper->get_suggested_updates($force);
 	}
 
 	/**
