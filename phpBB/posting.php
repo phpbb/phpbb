@@ -1572,7 +1572,6 @@ $page_data = array(
 *				post|reply|quote|edit|delete|bump|smilies|popup
 * @var	string	page_title	Title of the mode page
 * @var	bool	s_topic_icons	Whether or not to show the topic icons
-<<<<<<< HEAD
 * @var	string	form_enctype	If attachments are allowed for this form
 *				"multipart/form-data" or empty string
 * @var	string	s_action	The URL to submit the POST data to
