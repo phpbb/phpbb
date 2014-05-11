@@ -103,6 +103,7 @@ services:
         class: phpbb\controller\resolver
         arguments:
             - @user
+            - %core.root_path%
             - @service_container
             - @template
 

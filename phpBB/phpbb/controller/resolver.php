@@ -38,17 +38,24 @@ class resolver implements ControllerResolverInterface
 	protected $template;
 
 	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
 	* Construct method
 	*
 	* @param \phpbb\user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
 	* @param \phpbb\template\template $template
 	*/
-	public function __construct(\phpbb\user $user, ContainerInterface $container, \phpbb\template\template $template = null)
+	public function __construct(\phpbb\user $user, $phpbb_root_path, ContainerInterface $container, \phpbb\template\template $template = null)
 	{
 		$this->user = $user;
 		$this->container = $container;
 		$this->template = $template;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -94,7 +101,7 @@ class resolver implements ControllerResolverInterface
 		{
 			$controller_style_dir = 'ext/' . $controller_dir[0] . '/' . $controller_dir[1] . '/styles';
 
-			if (is_dir($controller_style_dir))
+			if (is_dir($this->phpbb_root_path . $controller_style_dir))
 			{
 				$this->template->set_style(array($controller_style_dir, 'styles'));
 			}
