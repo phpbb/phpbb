@@ -309,7 +309,7 @@ class acp_extensions
 				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
-			}	
+			}
 			catch(\phpbb\extension\exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
@@ -325,12 +325,11 @@ class acp_extensions
 
 		uasort($enabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
-		foreach ($enabled_extension_meta_data as $name => $infos)
+		foreach ($enabled_extension_meta_data as $name => $block_vars)
 		{
-			$values = $infos;
-			$values['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
-			
-			$this->template->assign_block_vars('enabled', $values); 
+			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
+
+			$this->template->assign_block_vars('enabled', $block_vars);
 
 			$this->output_actions('enabled', array(
 				'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
@@ -381,12 +380,11 @@ class acp_extensions
 
 		uasort($disabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
-		foreach ($disabled_extension_meta_data as $name => $infos)
+		foreach ($disabled_extension_meta_data as $name => $block_vars)
 		{
-			$values = $infos;
-			$values['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
-			
-			$this->template->assign_block_vars('disabled', $values); 
+			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
+
+			$this->template->assign_block_vars('disabled', $block_vars);
 
 			$this->output_actions('disabled', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
@@ -440,12 +438,11 @@ class acp_extensions
 
 		uasort($available_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
-		foreach ($available_extension_meta_data as $name => $infos)
+		foreach ($available_extension_meta_data as $name => $block_vars)
 		{
-			$values = $infos;
-			$values['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
-			
-			$this->template->assign_block_vars('disabled', $values); 
+			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
+
+			$this->template->assign_block_vars('disabled', $block_vars);
 
 			$this->output_actions('disabled', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
