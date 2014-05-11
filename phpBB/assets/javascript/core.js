@@ -1476,6 +1476,21 @@ phpbb.toggleDisplay = function(id, action, type) {
 }
 
 /**
+* Toggle additional settings based on the selected
+* option of select element.
+*
+* @param jQuery el jQuery select element object.
+* @return undefined
+*/
+phpbb.toggleSelectSettings = function(el) {
+	el.children().each(function() {
+		var option = $(this),
+			setting = $(option.data('toggle-setting'));
+		setting.toggle(option.is(':selected'));
+	});
+};
+
+/**
 * Get function from name.
 * Based on http://stackoverflow.com/a/359910
 *
@@ -1516,6 +1531,16 @@ $(document).ready(function() {
 	// Update browser history URL to point to specific post in viewtopic.php
 	// when using view=unread#unread link.
 	phpbb.history.replaceUrl($('#unread[data-url]').data('url'));
+
+	// Hide settings that are not selected via select element.
+	$('select[data-togglable-settings]').each(function() {
+		var select = $(this);
+
+		select.change(function() {
+			phpbb.toggleSelectSettings(select);
+		});
+		phpbb.toggleSelectSettings(select);
+	});
 });
 
 })(jQuery); // Avoid conflicts with other libraries

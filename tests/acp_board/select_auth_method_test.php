@@ -18,8 +18,8 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 	public static function select_auth_method_data()
 	{
 		return array(
-			array('acp_board_valid', '<option value="acp_board_valid" selected="selected">Acp_board_valid</option>'),
-			array('acp_board_invalid', '<option value="acp_board_valid">Acp_board_valid</option>'),
+			array('acp_board_valid', '<option value="acp_board_valid" selected="selected" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'),
+			array('acp_board_invalid', '<option value="acp_board_valid" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'),
 		);
 	}
 
