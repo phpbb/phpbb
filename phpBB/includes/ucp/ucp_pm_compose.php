@@ -492,7 +492,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	if ($message_attachment && !$submit && !$refresh && !$preview && $action == 'edit')
 	{
 		// Do not change to SELECT *
-		$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
+		$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename, filesize
 			FROM ' . ATTACHMENTS_TABLE . "
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
