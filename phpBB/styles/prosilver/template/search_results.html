@@ -58,6 +58,7 @@
 		<ul class="topiclist topics">
 
 		<!-- BEGIN searchresults -->
+			<!-- EVENT search_results_topic_before -->
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="icon {searchresults.TOPIC_IMG_STYLE}">
 					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
@@ -97,6 +98,7 @@
 					</dd>
 				</dl>
 			</li>
+			<!-- EVENT search_results_topic_after -->
 		<!-- END searchresults -->
 		</ul>
 
