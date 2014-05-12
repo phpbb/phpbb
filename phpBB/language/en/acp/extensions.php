@@ -84,6 +84,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
 	'EXTENSION_ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable the “%s” extension?',
+	'EXTENSION_FORCE_UNSTABLE_CONFIRM'	=> 'Are you sure that you wish to force the use of unstable version?',
 
 	'RETURN_TO_EXTENSION_LIST'	=> 'Return to the extension list',
 
@@ -113,5 +114,7 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_LATEST'		=> 'Download Version',
 	'NO_VERSIONCHECK'		=> 'No version check information given.',
 
-	'VERSIONCHECK_FORCE_UPDATE_ALL'	=> 'Re-Check all',
+	'VERSIONCHECK_FORCE_UPDATE_ALL'		=> 'Re-Check all',
+	'FORCE_UNSTABLE'					=> 'Always check for unstable versions',
+	'EXTENSIONS_VERSION_CHECK_SETTINGS'	=> 'Version check settings',
 ));

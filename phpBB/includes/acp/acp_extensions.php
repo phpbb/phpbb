@@ -85,13 +85,43 @@ class acp_extensions
 		// What are we doing?
 		switch ($action)
 		{
+			case 'set_config_version_check_force_unstable':
+				$force_unstable = $this->request->variable('force_unstable', false);
+
+				if ($force_unstable)
+				{
+					$s_hidden_fields = build_hidden_fields(array(
+						'force_unstable'	=> $force_unstable,
+					));
+
+					confirm_box(false, $user->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+				}
+				else
+				{
+					$config->set('extension_force_unstable', false);
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				}
+				break;
+
 			case 'list':
 			default:
+				if (confirm_box(true))
+				{
+					$config->set('extension_force_unstable', true);
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				}
+
 				$this->list_enabled_exts($phpbb_extension_manager);
 				$this->list_disabled_exts($phpbb_extension_manager);
 				$this->list_available_exts($phpbb_extension_manager);
 
-				$this->template->assign_var('U_VERSIONCHECK_FORCE', $this->u_action . '&amp;action=list&amp;versioncheck_force=1');
+				$this->template->assign_vars(array(
+					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
+					'FORCE_UNSTABLE'		=> $config['extension_force_unstable'],
+					'U_ACTION' 				=> $this->u_action,
+				));
+
+				add_form_key('version_check_settings');
 
 				$this->tpl_name = 'acp_ext_list';
 			break;
