@@ -17,7 +17,7 @@
 		<dl>
 			<dt><label for="force_unstable">{L_FORCE_UNSTABLE}{L_COLON}</label></dt>
 			<dd>
-				<label><input type="radio" name="force_unstable" class="radio" value="1"<!-- IF FORCE_UNSTABLE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" id="force_unstable" name="force_unstable" class="radio" value="1"<!-- IF FORCE_UNSTABLE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" name="force_unstable" class="radio" value="0"<!-- IF not FORCE_UNSTABLE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 			</dd>
 		</dl>
@@ -44,7 +44,7 @@
 	<tbody>
 		<!-- IF .enabled -->
 		<tr>
-			<td class="row3" colspan="5"><strong>{L_EXTENSIONS_ENABLED}</strong></td>
+			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_ENABLED}</strong></td>
 		</tr>
 		<!-- BEGIN enabled -->
 		<tr class="ext_enabled">
