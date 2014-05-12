@@ -158,15 +158,16 @@ class version_helper
 	}
 
 	/**
-	 * Gets the latest version for the current branch the user is on
-	 *
-	 * @param bool $force_update Ignores cached data. Defaults to false.
-	 * @return string
-	 * @throws \RuntimeException
-	 */
-	public function get_latest_on_current_branch($force_update = false)
+	* Gets the latest version for the current branch the user is on
+	*
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @return string
+	* @throws \RuntimeException
+	*/
+	public function get_latest_on_current_branch($force_update = false, $force_cache = false)
 	{
-		$versions = $this->get_versions_matching_stability($force_update);
+		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
 
 		$self = $this;
 		$current_version = $this->current_version;
@@ -188,15 +189,16 @@ class version_helper
 	}
 
 	/**
-	 * Obtains the latest version information
-	 *
-	 * @param bool $force_update Ignores cached data. Defaults to false.
-	 * @return string
-	 * @throws \RuntimeException
-	 */
-	public function get_suggested_updates($force_update = false)
+	* Obtains the latest version information
+	*
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @return string
+	* @throws \RuntimeException
+	*/
+	public function get_suggested_updates($force_update = false, $force_cache = false)
 	{
-		$versions = $this->get_versions_matching_stability($force_update);
+		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
 
 		$self = $this;
 		$current_version = $this->current_version;
@@ -208,15 +210,16 @@ class version_helper
 	}
 
 	/**
-	 * Obtains the latest version information matching the stability of the current install
-	 *
-	 * @param bool $force_update Ignores cached data. Defaults to false.
-	 * @return string Version info
-	 * @throws \RuntimeException
-	 */
-	public function get_versions_matching_stability($force_update = false)
+	* Obtains the latest version information matching the stability of the current install
+	*
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @return string Version info
+	* @throws \RuntimeException
+	*/
+	public function get_versions_matching_stability($force_update = false, $force_cache = false)
 	{
-		$info = $this->get_versions($force_update);
+		$info = $this->get_versions($force_update, $force_cache);
 
 		if ($this->force_stability !== null)
 		{
@@ -227,19 +230,24 @@ class version_helper
 	}
 
 	/**
-	 * Obtains the latest version information
-	 *
-	 * @param bool $force_update Ignores cached data. Defaults to false.
-	 * @return string Version info, includes stable and unstable data
-	 * @throws \RuntimeException
-	 */
-	public function get_versions($force_update = false)
+	* Obtains the latest version information
+	*
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @return string Version info, includes stable and unstable data
+	* @throws \RuntimeException
+	*/
+	public function get_versions($force_update = false, $force_cache = false)
 	{
 		$cache_file = 'versioncheck_' . $this->host . $this->path . $this->file;
 
 		$info = $this->cache->get($cache_file);
 
-		if ($info === false || $force_update)
+		if ($info === false && $force_cache)
+		{
+			throw new \RuntimeException($this->user->lang('VERSIONCHECK_FAIL'));
+		}
+		else if ($info === false || $force_update)
 		{
 			$errstr = $errno = '';
 			$info = get_remote_file($this->host, $this->path, $this->file, $errstr, $errno);

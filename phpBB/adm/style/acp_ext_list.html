@@ -26,7 +26,9 @@
 			<td><strong>{enabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
-				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong> [&nbsp;<a href="{enabled.U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong>
+				<!-- ELSE -->
+				{enabled.META_VERSION}
 				<!-- ENDIF -->
 			</td>
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
@@ -49,7 +51,9 @@
 			<td><strong>{disabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
-				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong> [&nbsp;<a href="{disabled.U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong>
+				<!-- ELSE -->
+				{disabled.META_VERSION}
 				<!-- ENDIF -->
 			</td>
 			<td style="text-align: center;">

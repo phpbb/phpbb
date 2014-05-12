@@ -29,6 +29,7 @@ class acp_extensions
 	private $user;
 	private $cache;
 	private $log;
+	private $request;
 
 	function main()
 	{
@@ -40,6 +41,7 @@ class acp_extensions
 		$this->template = $template;
 		$this->user = $user;
 		$this->cache = $cache;
+		$this->request = $request;
 		$this->log = $phpbb_log;
 
 		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
@@ -304,7 +306,7 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$updates = $this->version_check($md_manager);
+				$updates = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
 
 				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
@@ -359,7 +361,7 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$updates = $this->version_check($md_manager);
+				$updates = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
 
 				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
@@ -417,7 +419,7 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$updates = $this->version_check($md_manager);
+				$updates = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
 
 				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
@@ -490,8 +492,9 @@ class acp_extensions
 		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
 		$version_helper->set_current_version($meta['version']);
 		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
+		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
 
-		return $updates = $version_helper->get_suggested_updates($force);
+		return $updates = $version_helper->get_suggested_updates($force, true);
 	}
 
 	/**
