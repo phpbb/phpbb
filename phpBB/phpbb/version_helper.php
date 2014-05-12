@@ -216,10 +216,19 @@ class version_helper
 
 		if ($this->force_stability !== null)
 		{
-			return ($this->force_stability === 'unstable') ? $info['unstable'] : $info['stable'];
+			$stability = ($this->force_stability === 'unstable') ? 'unstable' : 'stable';
+		}
+		else
+		{
+			$stability = $this->is_stable($this->current_version) ? 'stable' : 'unstable';
 		}
 
-		return ($this->is_stable($this->current_version)) ? $info['stable'] : $info['unstable'];
+		if (!isset($info[$stability]))
+		{
+			throw new \RuntimeException($this->user->lang('VERSIONCHECK_FAIL'));
+		}
+
+		return $info[$stability];
 	}
 
 	/**
@@ -247,7 +256,7 @@ class version_helper
 
 			$info = json_decode($info, true);
 
-			if (empty($info['stable']) || empty($info['unstable']))
+			if (empty($info['stable']) && empty($info['unstable']))
 			{
 				$this->user->add_lang('acp/common');
 
