@@ -332,6 +332,19 @@ memberlist_view_user_statistics_before
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
 
+navbar_header_username_append
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b4
+* Purpose: Add text and HTMl after the username shown in the navbar.
+
+navbar_header_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b4
+
 overall_footer_after
 ===
 * Locations:
@@ -755,7 +768,7 @@ ucp_prefs_view_radio_buttons_prepend
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the top of the radio buttons block of the Edit 
+* Purpose: Add options to the top of the radio buttons block of the Edit
 Display Options screen
 
 ucp_prefs_view_radio_buttons_append
@@ -764,7 +777,7 @@ ucp_prefs_view_radio_buttons_append
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the bottom of the radio buttons block of the Edit 
+* Purpose: Add options to the bottom of the radio buttons block of the Edit
 Display Options screen
 
 ucp_prefs_view_select_menu_prepend
@@ -773,7 +786,7 @@ ucp_prefs_view_select_menu_prepend
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the top of the drop-down lists block of the Edit 
+* Purpose: Add options to the top of the drop-down lists block of the Edit
 Display Options screen
 
 ucp_prefs_view_select_menu_append
@@ -782,7 +795,7 @@ ucp_prefs_view_select_menu_append
     + styles/prosilver/template/ucp_prefs_view.html
     + styles/subsilver2/template/ucp_prefs_view.html
 * Since: 3.1.0-a1
-* Purpose: Add options to the bottom of the drop-down lists block of the Edit 
+* Purpose: Add options to the bottom of the drop-down lists block of the Edit
 Display Options screen
 
 ucp_friend_list_before
