@@ -32,7 +32,7 @@
 	<thead>
 		<tr>
 			<th>{L_EXTENSION_NAME}</th>
-			<th width="20%">{L_CURRENT_VERSION} [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a>&nbsp;]</th>
+			<th width="20%">{L_CURRENT_VERSION}</th>
 			<th width="10%">{L_EXTENSION_OPTIONS}</th>
 			<th width="25%">{L_EXTENSION_ACTIONS}</th>
 		</tr>
@@ -91,7 +91,11 @@
 		<!-- ENDIF -->
 	</tbody>
 	</table>
-	<br />
+
+	<fieldset class="quick">
+		<p class="small"><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a></p>
+		{S_FORM_TOKEN}
+	</fieldset>
 
 	<table class="table1">
 	<tr>
