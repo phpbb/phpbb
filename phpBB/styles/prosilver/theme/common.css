@@ -1102,6 +1102,10 @@ form > p.post-notice strong {
 	padding: 10px;
 }
 
+.dropdown-extended .footer > a {
+	padding: 5px 0;
+}
+
 .dropdown-extended ul li a, .notification_list dt > a, .dropdown-extended .footer > a {
 	display: block;
 	text-decoration: none;
