@@ -354,7 +354,7 @@ navbar_header_username_append
 navbar_header_logged_out_content
 ===
 * Locations:
-	+ styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/navbar_header.html
 * Since: 3.1.0-b4
 * Purpose: Add text and HTML in place of the username when not logged in.
 
