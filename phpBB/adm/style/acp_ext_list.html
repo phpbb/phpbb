@@ -27,6 +27,11 @@
 	</fieldset>
 	</form>
 
+	<fieldset class="quick">
+		<p class="small"><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></p>
+		{S_FORM_TOKEN}
+	</fieldset>
+
 	<table class="table1">
 		<col class="row1" ><col class="row1" ><col class="row2" ><col class="row2" >
 	<thead>
@@ -91,11 +96,6 @@
 		<!-- ENDIF -->
 	</tbody>
 	</table>
-
-	<fieldset class="quick">
-		<p class="small"><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a onclick="phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></p>
-		{S_FORM_TOKEN}
-	</fieldset>
 
 	<table class="table1">
 	<tr>
