@@ -91,6 +91,8 @@ class acp_extensions
 				$this->list_disabled_exts($phpbb_extension_manager);
 				$this->list_available_exts($phpbb_extension_manager);
 
+				$this->template->assign_var('U_VERSIONCHECK_FORCE', $this->u_action . '&amp;action=list&amp;versioncheck_force=1');
+
 				$this->tpl_name = 'acp_ext_list';
 			break;
 

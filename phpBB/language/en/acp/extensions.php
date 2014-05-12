@@ -112,4 +112,6 @@ $lang = array_merge($lang, array(
 	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
 	'DOWNLOAD_LATEST'		=> 'Download Version',
 	'NO_VERSIONCHECK'		=> 'No version check information given.',
+
+	'VERSIONCHECK_FORCE_UPDATE_ALL'	=> 'Re-Check all',
 ));
