@@ -121,6 +121,11 @@ a.lastsubject:hover {
 }
 
 /* Profile links */
+.postprofile a:link:before{
+	content:'';
+	display:block;
+}
+
 .postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
 	font-weight: bold;
 	text-decoration: none;

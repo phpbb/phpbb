@@ -725,13 +725,13 @@ fieldset.polls dd div {
 }
 
 .postprofile .avatar {
-	display: block;
+	display: inline-block;
+	max-width: 90%;
 	border: none;
 	margin-bottom: 3px;
 }
 
 .postprofile .avatar img {
-	max-width: 90%;
 	height: auto !important;
 }
 
