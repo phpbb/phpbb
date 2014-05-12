@@ -308,7 +308,8 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$updates = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->version_check($md_manager, $force_update, !$force_update);
 
 				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
@@ -363,7 +364,8 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$updates = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->version_check($md_manager, $force_update, !$force_update);
 
 				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
@@ -421,7 +423,8 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$updates = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->version_check($md_manager, $force_update, !$force_update);
 
 				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
 				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
@@ -476,11 +479,12 @@ class acp_extensions
 	* Check the version and return the available updates.
 	*
 	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
-	* @param bool $force Ignores cached data. Default to false.
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return string
 	* @throws RuntimeException
 	*/
-	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force = false)
+	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
 	{
 		$meta = $md_manager->get_metadata('all');
 
@@ -496,7 +500,7 @@ class acp_extensions
 		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
 		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
 
-		return $updates = $version_helper->get_suggested_updates($force, true);
+		return $updates = $version_helper->get_suggested_updates($force_update, $force_cache);
 	}
 
 	/**
