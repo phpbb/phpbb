@@ -10,7 +10,7 @@
 			<!-- EVENT overall_header_breadcrumb_append -->
 		</li>
 
-		<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- IF CURRENT_USER_AVATAR --><a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a> <!-- ENDIF -->{CURRENT_USERNAME_FULL}</li><!-- ENDIF -->
+		<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- EVENT navbar_header_username_prepend --><!-- IF CURRENT_USER_AVATAR --><a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a> <!-- ENDIF -->{CURRENT_USERNAME_FULL}<!-- EVENT navbar_header_username_append --></li><!-- ENDIF -->
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH --><li class="responsive-search rightside" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH}</a></li><!-- ENDIF -->
 	</ul>
 
