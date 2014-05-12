@@ -114,7 +114,7 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_LATEST'		=> 'Download Version',
 	'NO_VERSIONCHECK'		=> 'No version check information given.',
 
-	'VERSIONCHECK_FORCE_UPDATE_ALL'		=> 'Re-Check all',
+	'VERSIONCHECK_FORCE_UPDATE_ALL'		=> 'Re-Check all versions',
 	'FORCE_UNSTABLE'					=> 'Always check for unstable versions',
 	'EXTENSIONS_VERSION_CHECK_SETTINGS'	=> 'Version check settings',
 ));
