@@ -351,6 +351,13 @@ navbar_header_username_append
 * Since: 3.1.0-b4
 * Purpose: Add text and HTMl after the username shown in the navbar.
 
+navbar_header_logged_out_content
+===
+* Locations:
+	+ styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b4
+* Purpose: Add text and HTML in place of the username when not logged in.
+
 navbar_header_username_prepend
 ===
 * Locations:
