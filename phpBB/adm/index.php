@@ -51,8 +51,10 @@ $mode			= request_var('mode', '');
 
 // Set custom style for admin area
 $template->set_custom_style(array(
-	'name' 		=> 'adm',
-	'ex_path' 	=> 'adm/',
+	array(
+		'name' 		=> 'adm',
+		'ex_path' 	=> 'adm/',
+	)
 ), $phpbb_admin_path . 'style');
 
 $template->assign_var('T_ASSETS_PATH', $phpbb_root_path . 'assets');

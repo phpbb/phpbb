@@ -236,10 +236,18 @@ class twig extends \phpbb\template\base
 
 				foreach ($names as $template_dir)
 				{
-					if (is_array($template_dir) && isset($template_dir['ext_path']))
+					if (is_array($template_dir))
 					{
-						$ext_style_template_path = $ext_path . $template_dir['ext_path'];
-						$ext_style_path = dirname($ext_style_template_path);
+						if (isset($template_dir['ext_path']))
+						{
+							$ext_style_template_path = $ext_path . $template_dir['ext_path'];
+							$ext_style_path = dirname($ext_style_template_path);
+						}
+						else
+						{
+							$ext_style_path = $ext_path . 'styles/' . $template_dir['name'] . '/';
+							$ext_style_template_path = $ext_style_path . 'template/';
+						}
 					}
 					else
 					{
