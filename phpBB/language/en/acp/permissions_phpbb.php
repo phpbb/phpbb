@@ -142,7 +142,7 @@ $lang = array_merge($lang, array(
 	'ACL_M_EDIT'		=> 'Can edit posts',
 	'ACL_M_DELETE'		=> 'Can permanently delete posts',
 	'ACL_M_SOFTDELETE'	=> 'Can soft delete posts<br /><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>',
-	'ACL_M_APPROVE'		=> 'Can approve posts',
+	'ACL_M_APPROVE'		=> 'Can approve and restore posts',
 	'ACL_M_REPORT'		=> 'Can close and delete reports',
 	'ACL_M_CHGPOSTER'	=> 'Can change post author',
 
