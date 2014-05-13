@@ -1039,9 +1039,11 @@ switch ($mode)
 		// Build additional search parameter array
 		$search_profilefields_params = array();
 		// and check if PROFILE_FIELDS_DATA is not empty
+		$additional_cpf_exist = false;
 		if ($config['load_cpf_memberlist'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
+			$additional_cpf_exist = $cp->profile_fields_data_exists();
 			$search_profilefields_params = $cp->build_custom_fields_search_array(); 
 			//Let's get search fields up
 			$cp->generate_search_fields();
@@ -1365,12 +1367,9 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
-		if (!empty($search_profilefields_params))
+		foreach ($search_profilefields_params as $additional_search_params) 
 		{
-			foreach ($search_profilefields_params as $additional_search_params) 
-			{
-				$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
-			}
+			$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
 		}
 
 		$u_first_char_params = array();
@@ -1523,7 +1522,7 @@ switch ($mode)
 			'ORDER_BY'	=> $order_by,
 		);
 
-		if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
+		if ($config['load_cpf_memberlist'] && $additional_cpf_exist)
 		{
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';

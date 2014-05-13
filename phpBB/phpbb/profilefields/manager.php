@@ -436,6 +436,21 @@ class manager
 	}
 
 	/**
+	* Check if there is any record in CUSTOM_PROFILE_FILEDS_DATA
+	* so we have any requests
+	* @return boolean
+	*/
+	public function profile_fields_data_exists()
+	{
+		$sql = 'SELECT 1 as data_exists
+				FROM ' . $this->fields_data_table;
+		$result = $this->db->sql_query_limit($sql, 1);
+		$data_exists = (bool) $this->db->sql_fetchfield('data_exists');
+
+		return $data_exists;
+	}
+
+	/**
 	* Build Array for user search filter extension
 	* @return array
 	*/
@@ -480,7 +495,7 @@ class manager
 			'ORDER_BY'	=> 'f.field_order'
 		);
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
-		$result = $this->db->sql_query($sql, 300);
+		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
