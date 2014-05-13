@@ -213,7 +213,7 @@ class twig extends \phpbb\template\base
 	*
 	* @param string|array $names Array of names (or detailed names) or string of name of template(s) in inheritance tree order, used by extensions.
 	* @param string|array of string $paths Array of style paths, relative to current root directory
-	* @return phpbb_template $this
+	* @return \phpbb\template\template $this
 	*/
 	public function set_custom_style($names, $paths)
 	{
