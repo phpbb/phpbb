@@ -260,18 +260,17 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $db_object, $table_prefix = 'pd')
+	public function make_sql_where($profile_row, $db, $table_prefix = 'pd')
 	{
 		// Let's check if the value is set ... and is it diferent from novalue
-		$profile_row['field_ident'] = 'pf_' . $profile_row['field_ident'];
-		$field_ident = $profile_row['field_ident'];
+		$field_ident = 'pf_' . $profile_row['field_ident'];
 		$default_value = $profile_row['field_novalue'];
 		$field_value = $this->request->variable($field_ident, $default_value);
 		$output = '';
 
 		if ($this->request->is_set($field_ident) && $field_value != $default_value)
 		{
-			$output = ' AND ' .$table_prefix. '.' . $field_ident . ' = '. $db_object->sql_escape($field_value);
+			$output = ' AND ' .$table_prefix. '.' . $field_ident . ' = '. $db->sql_escape($field_value);
 		}
 
 		return $output;

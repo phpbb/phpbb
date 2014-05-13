@@ -281,8 +281,9 @@ class type_date extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function make_sql_where($profile_row, $db_object, $table_prefix = 'pd')
+	public function make_sql_where($profile_row, $db, $table_prefix = 'pd')
 	{
+		//@todo needs implementing
 		return '';
 	}
 	/**
