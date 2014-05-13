@@ -32,6 +32,8 @@ class phpbb_filesystem_clean_path_test extends phpbb_test_case
 			array('foo/bar/.', 'foo/bar'),
 			array('./foo/bar', './foo/bar'),
 			array('../foo/bar', '../foo/bar'),
+			array('./../foo/bar', './../foo/bar'),
+			array('././../foo/bar', './../foo/bar'),
 			array('one/two/three', 'one/two/three'),
 			array('one/two/../three', 'one/three'),
 			array('one/../two/three', 'two/three'),
