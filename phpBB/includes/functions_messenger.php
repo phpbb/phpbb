@@ -252,7 +252,10 @@ class messenger
 			}
 		}
 
-		$this->set_template_paths($template_lang . '_email', $template_paths);
+		$this->set_template_paths(array(
+			'name' 		=> $template_lang . '_email',
+			'ext_path' 	=> 'language/' . $template_lang . '/email'
+		), $template_paths);
 
 		$this->template->set_filenames(array(
 			'body'		=> $template_file . '.txt',

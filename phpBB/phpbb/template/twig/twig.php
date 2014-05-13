@@ -211,8 +211,8 @@ class twig extends \phpbb\template\base
 	*
 	* Note: Templates are still compiled to phpBB's cache directory.
 	*
-	* @param string|array $names Array of names or string of name of template(s) in inheritance tree order, used by extensions.
-	* @param string|array or string $paths Array of style paths, relative to current root directory
+	* @param string|array $names Array of names (or detailed names) or string of name of template(s) in inheritance tree order, used by extensions.
+	* @param string|array of string $paths Array of style paths, relative to current root directory
 	* @return phpbb_template $this
 	*/
 	public function set_custom_style($names, $paths)
@@ -234,10 +234,18 @@ class twig extends \phpbb\template\base
 				$namespace = str_replace('/', '_', $ext_namespace);
 				$paths = array();
 
-				foreach ($names as $style_name)
+				foreach ($names as $template_dir)
 				{
-					$ext_style_path = $ext_path . 'styles/' . $style_name . '/';
-					$ext_style_template_path = $ext_style_path . 'template/';
+					if (is_array($template_dir) && isset($template_dir['ext_path']))
+					{
+						$ext_style_template_path = $ext_path . $template_dir['ext_path'];
+						$ext_style_path = dirname($ext_style_template_path);
+					}
+					else
+					{
+						$ext_style_path = $ext_path . 'styles/' . $template_dir . '/';
+						$ext_style_template_path = $ext_style_path . 'template/';
+					}
 
 					if (is_dir($ext_style_template_path))
 					{
