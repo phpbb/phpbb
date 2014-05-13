@@ -1037,29 +1037,19 @@ switch ($mode)
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// Build additional search parameter array
-		$additional_search_parms = array();
+		$search_profilefields_params = array();
 		// and check if PROFILE_FIELDS_DATA is not empty
-		$additional_cpf_exist = false;
 		if ($config['load_cpf_memberlist'])
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
-			$additional_cpf_exist = $cp->profile_fields_data_exists();
-
-			if ($additional_cpf_exist)
-			{
-				$additional_search_parms = $cp->build_custom_fields_search_array(); 
-			
-				//Let's get search fields up
-				$cp->generate_search_fields();
-			}
+			$search_profilefields_params = $cp->build_custom_fields_search_array(); 
+			//Let's get search fields up
+			$cp->generate_search_fields();
 		}
 		//expand search URL parameters
-		if (!empty($additional_search_parms))
+		foreach ($search_profilefields_params as $search_parameter) 
 		{
-			foreach ($additional_search_parms as $search_parameter) 
-			{
-				$search_params[] = $search_parameter['field_ident'];
-			}
+			$search_params[] = $search_parameter['field_ident'];
 		}
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -1084,11 +1074,9 @@ switch ($mode)
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
 			// Time to add aditional search parameters
-			if (!empty($additional_search_parms))
+			foreach ($search_profilefields_params as $search_parameter)
 			{
-				foreach ($additional_search_parms as $search_parameter) {
-					$search_container[$search_parameter['field_ident']] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
-				}
+				$search_container[$search_parameter['field_ident']] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
 			}
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
 			$s_find_count = '';
@@ -1119,7 +1107,7 @@ switch ($mode)
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			// Now to build the additional sql_where
-			if (!empty($additional_search_parms))
+			if (!empty($search_profilefields_params))
 			{
 				$sql_where .= $cp->generate_sql_where();
 			}
@@ -1334,7 +1322,7 @@ switch ($mode)
 				),
 				'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
 			);
-			if ($config['load_cpf_memberlist'] && !empty($additional_search_parms))
+			if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
 			{
 				$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 				$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
@@ -1377,11 +1365,11 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
-		if (!empty($additional_search_parms))
+		if (!empty($search_profilefields_params))
 		{
-			foreach ($additional_search_parms as $additional_search_parms) 
+			foreach ($search_profilefields_params as $additional_search_params) 
 			{
-				$check_params[$additional_search_parms['field_ident']] = array($additional_search_parms['field_ident'], (isset($search_container[$additional_search_parms['field_ident']])) ? $search_container[$additional_search_parms['field_ident']] : '');
+				$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
 			}
 		}
 
@@ -1535,7 +1523,7 @@ switch ($mode)
 			'ORDER_BY'	=> $order_by,
 		);
 
-		if ($config['load_cpf_memberlist'] && $additional_cpf_exist)
+		if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
 		{
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
