@@ -53,7 +53,7 @@ $mode			= request_var('mode', '');
 $template->set_custom_style(array(
 	array(
 		'name' 		=> 'adm',
-		'ext_path' 	=> 'adm/',
+		'ext_path' 	=> 'adm/style/',
 	)
 ), $phpbb_admin_path . 'style');
 
