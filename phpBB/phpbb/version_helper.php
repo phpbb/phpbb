@@ -225,7 +225,7 @@ class version_helper
 
 		if (!isset($info[$stability]))
 		{
-			throw new \RuntimeException($this->user->lang('VERSIONCHECK_FAIL'));
+			return array();
 		}
 
 		return $info[$stability];
