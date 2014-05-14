@@ -299,7 +299,7 @@ class acm_memory
 		}
 
 		$tables = array();
-		foreach($regs as $match)
+		foreach ($regs as $match)
 		{
 			if ($match[0][0] == 'F')
 			{
