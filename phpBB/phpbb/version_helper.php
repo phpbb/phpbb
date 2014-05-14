@@ -215,19 +215,10 @@ class version_helper
 
 		if ($this->force_stability !== null)
 		{
-			$stability = ($this->force_stability === 'unstable') ? 'unstable' : 'stable';
-		}
-		else
-		{
-			$stability = $this->is_stable($this->current_version) ? 'stable' : 'unstable';
+			return ($this->force_stability === 'unstable') ? $info['unstable'] : $info['stable'];
 		}
 
-		if (!isset($info[$stability]))
-		{
-			return array();
-		}
-
-		return $info[$stability];
+		return ($this->is_stable($this->current_version)) ? $info['stable'] : $info['unstable'];
 	}
 
 	/**
@@ -270,6 +261,9 @@ class version_helper
 					$info[$stability][$branch]['announcement'] = str_replace('&', '&amp;', $branch_data['announcement']);
 				}
 			}
+
+			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];
+			$info['unstable'] = (empty($info['unstable'])) ? $info['stable'] : $info['unstable'];
 
 			$this->cache->put($cache_file, $info, 86400); // 24 hours
 		}
