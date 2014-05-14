@@ -103,7 +103,7 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 
 		foreach ($sql_queries as $query)
 		{
-			$this->assertNotFalse($this->cache->sql_load($query[0]));
+			$this->assertNotEquals(false, $this->cache->sql_load($query[0]));
 		}
 	}
 }
