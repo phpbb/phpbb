@@ -760,10 +760,12 @@ class manager
 	*/
 	public function purge_notifications($notification_type_name)
 	{
-		// If the notification was never used, it was never put in the database and so its id was never cached.
-		// If this notification was added by an extension, this one will call purge_notification in the purge step,
-		// and get_notification_type_id()  will throw an exception. 
-		// The notification was never used, thus we can silently drop the exception.
+		// If a notification is never used, its type will not be added to the database
+		// nor its id cached. If this method is called by an extension during the
+		// purge step, and that extension never used its notifications,
+		// get_notification_type_id() will throw an exception. However,
+		// because no notification type was added to the database,
+		// there is nothing to delete, so we can silently drop the exception.
 		try
 		{
 			$notification_type_id = $this->get_notification_type_id($notification_type_name);
