@@ -760,17 +760,28 @@ class manager
 	*/
 	public function purge_notifications($notification_type_name)
 	{
-		$notification_type_id = $this->get_notification_type_id($notification_type_name);
+		// If the notification was never used, it was never put in the database and so its id was never cached.
+		// If this notification was added by an extension, this one will call purge_notification in the purge step,
+		// and get_notification_type_id()  will throw an exception. 
+		// The notification was never used, thus we can silently drop the exception.
+		try
+		{
+			$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
-		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_type_id = ' . (int) $notification_type_id;
-		$this->db->sql_query($sql);
+			$sql = 'DELETE FROM ' . $this->notifications_table . '
+				WHERE notification_type_id = ' . (int) $notification_type_id;
+			$this->db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . $this->notification_types_table . '
-			WHERE notification_type_id = ' . (int) $notification_type_id;
-		$this->db->sql_query($sql);
+			$sql = 'DELETE FROM ' . $this->notification_types_table . '
+				WHERE notification_type_id = ' . (int) $notification_type_id;
+			$this->db->sql_query($sql);
 
-		$this->cache->destroy('notification_type_ids');
+			$this->cache->destroy('notification_type_ids');
+		}
+		catch (\phpbb\notification\exception $e)
+		{
+			// Continue
+		}
 	}
 
 	/**
