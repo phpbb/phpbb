@@ -250,7 +250,12 @@ $phpbb_path_helper = $phpbb_container->get('path_helper');
 $template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context());
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
-$template->set_custom_style('adm', $paths);
+$template->set_custom_style(array(
+	array(
+		'name' 		=> 'adm',
+		'ext_path' 	=> 'adm/style/',
+	)
+), $paths);
 
 $path = array_shift($paths);
 
