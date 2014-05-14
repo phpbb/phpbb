@@ -84,8 +84,8 @@ phpbb.alert = function(title, msg, fadedark) {
 		e.stopPropagation();
 	});
 
-	$(document).bind('keydown', function(e) {
-		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
+	$(document).keydown(function(e) {
+		if ((e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) && dark.is(':visible')) {
 			dark.trigger('click');
 
 			e.preventDefault();
