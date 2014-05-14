@@ -295,7 +295,7 @@ class acm_memory
 		if (!preg_match_all('/(?:FROM \\(?(`?\\w+`?(?: \\w+)?(?:, ?`?\\w+`?(?: \\w+)?)*)\\)?)|(?:JOIN (`?\\w+`?(?: \\w+)?))/', $query, $regs, PREG_SET_ORDER))
 		{
 			// Bail out if the match fails.
-			return $query_result;
+			return;
 		}
 
 		$tables = array();
