@@ -221,6 +221,7 @@ $lang = array_merge($lang, array(
 		1	=> 'You may embed only %d quote within each other.',
 		2	=> 'You may embed only %d quotes within each other.',
 	),
+	'QUOTE_NO_NESTING'			=> 'You may not embed quotes within each other.',
 
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
