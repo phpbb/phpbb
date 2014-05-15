@@ -112,6 +112,12 @@
 	padding-right: 10px;
 }
 
+/* Responsive breadcrumbs
+----------------------------------------*/
+.rtl .breadcrumbs .crumb {
+	float: right;
+}
+
 /* Table styles
 ----------------------------------------*/
 .rtl table.table1 thead th {
