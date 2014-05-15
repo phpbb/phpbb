@@ -8,16 +8,38 @@
 	<!-- IF FOLDER_STATUS and FOLDER_MAX_MESSAGES neq 0 --><p>{FOLDER_STATUS}</p><!-- ENDIF -->
 	<!-- IF U_POST_REPLY_PM or U_POST_NEW_TOPIC or U_FORWARD_PM -->
 		<div class="buttons">
-			<!-- IF U_POST_REPLY_PM --><div class="pmreply-icon"><a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}"><span></span>{L_BUTTON_PM_REPLY}</a></div>
-			<!-- ELSEIF U_POST_NEW_TOPIC --><div class="newpm-icon"><a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}"><span></span>{L_BUTTON_PM_NEW}</a></div><!-- ENDIF -->
-			<!-- IF U_FORWARD_PM --><div class="forwardpm-icon"><a title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}"><span></span>{L_BUTTON_PM_FORWARD}</a></div><!-- ENDIF -->
-			<!-- IF U_POST_REPLY_PM and S_PM_RECIPIENTS gt 1 --><div class="reply-all"><a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}">{L_BUTTON_PM_REPLY_ALL}</a></div><!-- ENDIF -->
+			<!-- IF U_POST_REPLY_PM -->
+				<div class="pmreply-icon">
+					<a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}" class="button icon-button">
+						<span></span>{L_BUTTON_PM_REPLY}
+					</a>
+				</div>
+			<!-- ELSEIF U_POST_NEW_TOPIC -->
+				<div class="newpm-icon">
+					<a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}" class="button icon-button">
+						<span></span>{L_BUTTON_PM_NEW}</a>
+					</div>
+			<!-- ENDIF -->
+			<!-- IF U_FORWARD_PM -->
+				<div class="forwardpm-icon">
+					<a title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" class="button icon-button">
+						<span></span>{L_BUTTON_PM_FORWARD}
+					</a>
+				</div>
+			<!-- ENDIF -->
+			<!-- IF U_POST_REPLY_PM and S_PM_RECIPIENTS gt 1 -->
+				<div class="reply-all">
+					<a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}" class="button icon-button">
+						<span></span>{L_BUTTON_PM_REPLY_ALL}
+					</a>
+				</div>
+			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
 
 	<!-- IF not S_IS_BOT and U_PRINT_PM -->
 		<div class="dropdown-container dropdown-button-control topic-tools">
-			<span title="{L_PM_TOOLS}" class="dropdown-trigger dropdown-select dropdown-select-icon tools-icon"><span></span></span>
+			<span title="{L_PM_TOOLS}" class="dropdown-trigger dropdown-select button icon-button tools-icon"><span></span></span>
 			<div class="dropdown hidden">
 				<div class="pointer"><div class="pointer-inner"></div></div>
 				<ul class="dropdown-contents">

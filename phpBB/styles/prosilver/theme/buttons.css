@@ -4,20 +4,8 @@
 /* Rollover buttons
    Based on: http://wellstyled.com/css-nopreload-rollovers.html
 ----------------------------------------*/
-.buttons {
-	float: left;
-	width: auto;
-	height: auto;
-}
-
-/* Rollover state */
-.buttons div, .dropdown-select {
-	float: left;
-	margin: 0 5px 0 0;
-}
-
-/* Rolloff state */
-.buttons div a, .dropdown-select {
+.button {
+	cursor: pointer;
 	display: inline-block;
 	line-height: 17.5px;
 	height: 18px;
@@ -26,9 +14,8 @@
 	border: 1px solid transparent;
 	border-radius: 4px;
 	background: transparent none 0 0 repeat-x;
-	padding: 2px 22px 2px 8px;
+	padding: 2px 8px;
 	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	font-weight: 600;
 	position: relative;
 	text-decoration: none !important;
 	outline-style: none !important;
@@ -36,70 +23,69 @@
 	*padding-right: 8px;
 }
 
-.buttons div span { display: none; }
+.icon-button, .dropdown-select {
+	padding-right: 22px;
+}
 
-.buttons div a:after, .dropdown-select:after {
-	content: '';
-	display: block;
-	position: absolute;
-	top: 50%;
-	right: 6px;
-	width: 12px;
-	height: 12px;
-	margin-top: -6px;
+.icon-button.dropdown-select {
+	padding-right: 44px;
+}
+
+.icon-button span {
 	background: transparent 0 0 no-repeat;
-}
-
-.buttons div a:hover:after {
-	background-position: 0 -20px;
-}
-
-.dropdown-select {
-	cursor: pointer;
-	font-family: inherit;
-	font-size: 1em;
-	font-weight: normal;
+	display: block;
+	float: right;
+	height: 12px;
+	margin: 3px -16px 0 0;
+	width: 12px;
 }
 
 .dropdown-select:after {
 	background-position: -103px 10px;
 	border-left: 1px solid;
-	margin-top: 0;
+	content: '';
+	position: absolute;
 	top: 0;
 	right: 0;
-	height: 21px;
-	width: 15px;
+	height: 22px;
+	width: 16px;
 }
 
 .dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
 	background-position: -103px -10px;
 }
 
-.dropdown-select-icon:before {
-	content: '';
-	display: block;
+.buttons, .buttons div {
 	float: left;
-	margin-right: 4px;
-	margin-top: 2px;
+}
+
+.buttons .button, .dropdown-select {
+	margin-right: 5px;
 }
 
 /* Big button images */
-.buttons div.reply-icon a:after, .buttons div.pmreply-icon a:after { background-position: -20px 0; }
-.buttons div.reply-icon a:hover:after, .buttons div.pmreply-icon a:hover:after	{ background-position: -20px -20px; }
+.reply-icon a span, .pmreply-icon a span					{ background-position: -20px 0; }
+.reply-icon a:hover span, .pmreply-icon a:hover span		{ background-position: -20px -20px; }
 
-.buttons div.post-icon a:after, .buttons div.newpm-icon a:after	{ background-position: 0 0; }
-.buttons div.post-icon a:hover:after, .buttons div.newpm-icon a:hover:after	{ background-position: 0 -20px; }
+.post-icon a span, .newpm-icon a span, .reply-all a span	{ background-position: 0 0; }
+.post-icon a:hover span, .newpm-icon a:hover span,
+.reply-all a:hover span										{ background-position: 0 -20px; }
 
-.buttons div.locked-icon a:after	{ background-position: -60px 0; }
-.buttons div.locked-icon a:hover:after	{ background-position: -60px -20px; }
+.locked-icon a span											{ background-position: -60px 0; }
+.locked-icon a:hover span									{ background-position: -60px -20px; }
 
-.buttons div.forwardpm-icon a:after	{ background-position: -40px 0; }
-.buttons div.forwardpm-icon a:hover:after	{ background-position: -40px -20px; }
+.forwardpm-icon a span										{ background-position: -40px 0; }
+.forwardpm-icon a:hover span								{ background-position: -40px -20px; }
 
-.dropdown-select.tools-icon:before { background-position: -80px 0; height: 16px; width: 16px; }
+.tools-icon span {
+	background-position: -80px 0;
+	height: 16px;
+	margin-top: 2px;
+	width: 16px;
+}
 
-.dropdown-visible .dropdown-select.tools-icon:before,
-.nojs .dropdown-container:hover .dropdown-select.tools-icon:before { background-position: -80px -20px; }
+.dropdown-visible .tools-icon span,
+.nojs .dropdown-container:hover .tools-icon span		{ background-position: -80px -20px; }
 
 /* Icon images
 ---------------------------------------- */

@@ -668,8 +668,7 @@ dd.profile-warnings {
 --------------------------------------------------------------
 Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
-
-.buttons div a, .dropdown-select {
+.button {
 	border-color: #C7C3BF;
 	background-color: #FFFFFF;
 	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
@@ -679,19 +678,10 @@ Colours and backgrounds for buttons.css
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='#E9E9E9')";
 	box-shadow: 0 0 0 1px #FFFFFF inset;
 	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #BC2A4D !important;
-}
-
-.dropdown-select {
 	color: #5C6482 !important;
 }
 
-.dropdown-select:after {
-	border-color: #DADADA;
-}
-
-.buttons div a:hover, .dropdown-select:hover, .dropdown-visible .dropdown-select,
-.dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select  {
+.button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #0a8ed0;
 	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
@@ -701,9 +691,9 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.dropdown-select:hover {
-	border-color: #C7C3BF; 
-}
+.buttons .button		{ color: #BC2A4D !important; }
+.dropdown-select:after	{ border-color: #DADADA; }
+.dropdown-select:hover	{ border-color: #C7C3BF; }
 
 .dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #A6B2BA;
