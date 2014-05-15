@@ -718,10 +718,7 @@ INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mo
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('ARCHIVES', 0, 1, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('PLAIN_TEXT', 0, 0, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('DOCUMENTS', 0, 0, 1, '', 0, '');
-INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('REAL_MEDIA', 3, 0, 1, '', 0, '');
-INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('WINDOWS_MEDIA', 2, 0, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('FLASH_FILES', 5, 0, 1, '', 0, '');
-INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('QUICKTIME_MEDIA', 6, 0, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('DOWNLOADABLE_FILES', 0, 0, 1, '', 0, '');
 
 # -- extensions
@@ -778,27 +775,13 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ods');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odt');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'rtf');
 
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'rm');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ram');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'swf');
 
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wma');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wmv');
-
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'swf');
-
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'mov');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'm4v');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'm4a');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'mp4');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, '3gp');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, '3g2');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'qt');
-
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mpeg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mpg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mp3');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mp3');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mpeg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mpg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogm');
 
 # Add default profile fields
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_location', 'profilefields.type.string', 'phpbb_location', '20', '2', '100', '', '', '.*', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, '', '');
