@@ -776,8 +776,16 @@ class bbcode_firstpass extends bbcode
 					// the buffer holds a valid opening tag
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
-						// there are too many nested quotes
-						$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
+						if ($config['max_quote_depth'] == 1)
+						{
+							// Depth 1 - no nesting is allowed
+							$error_ary['quote_depth'] = $user->lang('QUOTE_NO_NESTING');
+						}
+						else
+						{
+							// There are too many nested quotes
+							$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
+						}
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
