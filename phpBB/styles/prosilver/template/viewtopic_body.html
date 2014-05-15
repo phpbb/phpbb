@@ -201,14 +201,38 @@
 
 		<!-- IF not S_IS_BOT -->
 			<!-- IF postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE -->
-				<ul class="profile-icons">
+				<ul class="post-buttons">
 					<!-- EVENT viewtopic_body_post_buttons_before -->
-					<!-- IF postrow.U_EDIT --><li class="edit-icon"><a href="{postrow.U_EDIT}" title="{L_EDIT_POST}"><span>{L_BUTTON_EDIT}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_DELETE --><li class="delete-icon"><a href="{postrow.U_DELETE}" title="{L_DELETE_POST}"><span>{L_DELETE_POST}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_REPORT --><li class="report-icon"><a href="{postrow.U_REPORT}" title="{L_REPORT_POST}"><span>{L_REPORT_POST}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_WARN --><li class="warn-icon"><a href="{postrow.U_WARN}" title="{L_WARN_USER}"><span>{L_WARN_USER}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_INFO --><li class="info-icon"><a href="{postrow.U_INFO}" title="{L_INFORMATION}"><span>{L_IP}</span></a></li><!-- ENDIF -->
-					<!-- IF postrow.U_QUOTE --><li class="quote-icon"><a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}"><span>{L_QUOTE}</span></a></li><!-- ENDIF -->
+					<!-- IF postrow.U_EDIT -->
+						<li class="edit-icon">
+							<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button icon-button"><span>{L_BUTTON_EDIT}</span></a>
+						</li>
+					<!-- ENDIF -->
+					<!-- IF postrow.U_DELETE -->
+						<li class="delete-icon">
+							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button icon-button"><span>{L_DELETE_POST}</span></a>
+						</li>
+					<!-- ENDIF -->
+					<!-- IF postrow.U_REPORT -->
+						<li class="report-icon">
+							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button icon-button"><span>{L_REPORT_POST}</span></a>
+						</li>
+					<!-- ENDIF -->
+					<!-- IF postrow.U_WARN -->
+						<li class="warn-icon">
+							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button icon-button"><span>{L_WARN_USER}</span></a>
+						</li>
+					<!-- ENDIF -->
+					<!-- IF postrow.U_INFO -->
+						<li class="info-icon">
+							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button icon-button"><span>{L_INFORMATION}</span></a>
+						</li>
+					<!-- ENDIF -->
+					<!-- IF postrow.U_QUOTE -->
+						<li class="quote-icon">
+							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button icon-button"><span>{L_QUOTE}</span></a>
+						</li>
+					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_post_buttons_after -->
 				</ul>
 			<!-- ENDIF -->

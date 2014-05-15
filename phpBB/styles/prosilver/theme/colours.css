@@ -700,17 +700,8 @@ Colours and backgrounds for buttons.css
 	color: #105289 !important;
 }
 
-.buttons div a:after, .dropdown-select-icon:before, .dropdown-select:after {
-	background-image: url("images/buttons.png");
-}
-
-.contact-icons a {
-	border-color: #DCDCDC;
-}
-
-.contact-icons a:hover {
-	background-color: #F2F6F9;
-}
+.contact-icons a		{ border-color: #DCDCDC; }
+.contact-icons a:hover	{ background-color: #F2F6F9; }
 
 /* Icon images
 ---------------------------------------- */
@@ -734,17 +725,9 @@ Colours and backgrounds for buttons.css
 .icon-print						{ background-image: url("./images/icon_print.gif"); }
 
 /* Profile & navigation icons */
-.contact-icon { background-image: url("./images/icons_contact.png"); }
-
-.quote-icon, .quote-icon a		{ background-image: url("./en/icon_post_quote.gif"); }
-ul.profile-icons.responsive a.responsive-menu-link	{ background-image: url("./images/icon_post_menu.png"); }
-
-/* Moderator icons */
-.report-icon, .report-icon a		{ background-image: url("./images/icon_post_report.gif"); }
-.edit-icon, .edit-icon a			{ background-image: url("./en/icon_post_edit.gif"); }
-.delete-icon, .delete-icon a		{ background-image: url("./images/icon_post_delete.gif"); }
-.info-icon, .info-icon a			{ background-image: url("./images/icon_post_info.gif"); }
-.warn-icon, .warn-icon a			{ background-image: url("./images/icon_user_warn.gif"); } /* Need updated warn icon */
+.contact-icon								{ background-image: url("./images/icons_contact.png"); }
+.icon-button span, .dropdown-select:after	{ background-image: url("images/buttons.png"); }
+.post-buttons .icon-button span				{ background-image: url("images/post_buttons.png"); }
 
 /* Forum icons & Topic icons */
 .global_read													{ background-image: url("./images/announce_read.gif"); }

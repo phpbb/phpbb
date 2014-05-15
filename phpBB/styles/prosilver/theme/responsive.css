@@ -423,10 +423,6 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	margin: 0;
 }
 
-.postprofile ul.profile-icons {
-	display: none;
-}
-
 .postprofile .avatar {
 	display: block;
 	float: left;

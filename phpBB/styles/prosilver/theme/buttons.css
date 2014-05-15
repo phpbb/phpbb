@@ -106,100 +106,6 @@ ul.linklist.bulletin li.small-icon:before {
 
 /* Poster contact icons
 ----------------------------------------*/
-ul.contact-icons {
-	padding-top: 10px;
-	list-style: none;
-}
-
-/* Rollover state */
-ul.contact-icons li {
-	float: left;
-	margin: 0 6px 3px 0;
-	background-position: 0 100%;
-}
-
-/* Rolloff state */
-ul.contact-icons li a {
-	display: block;
-	width: 100%;
-	height: 100%;
-	background-position: 0 0;
-}
-
-/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
-ul.contact-icons li span { display:none; }
-ul.contact-icons li a:hover { background: none; }
-
-/* Positioning of moderator icons */
-.postbody ul.contact-icons {
-	float: right;
-	width: auto;
-	padding: 0;
-}
-
-.postbody ul.contact-icons li {
-	margin: 0 3px;
-}
-
-/* Responsive icons in postbody */
-.postbody ul.contact-icons.responsive .responsive-menu {
-	position: relative;
-}
-
-ul.contact-icons.responsive a.responsive-menu-link {
-	display: inline-block;
-	position: relative;
-	margin: 0 5px;
-	width: 20px;
-	height: 20px;
-	text-decoration: none;
-	background: none top left no-repeat;
-}
-
-ul.contact-icons.responsive a.responsive-menu-link:hover {
-	background-position: 0 -20px;
-}
-
-ul.contact-icons.responsive a.responsive-menu-link:before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 7px;
-	height: .125em;
-	width: 14px;
-	border-bottom: 0.125em solid transparent;
-	border-top: 0.375em double transparent;
-}
-
-.postbody ul.contact-icons.responsive .popup-pointer {
-	left: auto;
-	right: 7px;
-	top: 20px;
-}
-
-.postbody ul.contact-icons .dropdown li, .postbody ul.contact-icons .dropdown li a {
-	display: block;
-	background: transparent none;
-	width: auto;
-	height: auto;
-	margin: 0;
-	padding: 0;
-	float: none;
-	list-style-type: none;
-}
-
-.postbody ul.contact-icons .dropdown li span {
-	display: block;
-	text-align: right;
-	font-size: 1.2em;
-	line-height: 1.8em;
-	white-space: nowrap;
-}
-
-.hasjs .postbody ul.contact-icons {
-	max-width: 40%;
-}
-
 .contact-icons.dropdown-contents {
 	min-width: 0;
 	padding: 0;
@@ -231,8 +137,7 @@ ul.contact-icons.responsive a.responsive-menu-link:before {
 	clear: left;
 }
 
-
-/* Profile & navigation icons */
+/* Profile icons */
 .pm-icon		{ background-position: 0 0; }
 .email-icon		{ background-position: -21px 0; }
 .jabber-icon	{ background-position: -80px 0; }
@@ -247,176 +152,55 @@ ul.contact-icons.responsive a.responsive-menu-link:before {
 .phpbb_twitter-icon		{ background-position: -203px 0; }
 .phpbb_yahoo-icon		{ background-position: -224px 0; }
 
-.quote-icon, .quote-icon a		{ background: none top left no-repeat; }
-
-/* Moderator icons */
-.report-icon, .report-icon a		{ background: none top left no-repeat; }
-.warn-icon, .warn-icon a			{ background: none top left no-repeat; }
-.edit-icon, .edit-icon a			{ background: none top left no-repeat; }
-.delete-icon, .delete-icon a		{ background: none top left no-repeat; }
-.info-icon, .info-icon a			{ background: none top left no-repeat; }
-
-/* Set profile icon dimensions */
-ul.profile-icons li.quote-icon	{ width: 54px; height: 20px; }
-ul.profile-icons li.report-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.edit-icon	{ width: 42px; height: 20px; }
-ul.profile-icons li.delete-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.info-icon	{ width: 20px; height: 20px; }
-ul.profile-icons li.warn-icon	{ width: 20px; height: 20px; }
-ul.profile-icons a.responsive-menu-link	{ width: 20px; height: 20px; }
-
-/* Fix profile icon default margins */
-ul.profile-icons li.edit-icon	{ margin: 0 0 0 3px; }
-ul.profile-icons li.quote-icon	{ margin: 0 0 0 10px; }
-ul.profile-icons li.info-icon, ul.profile-icons li.report-icon	{ margin: 0 3px 0 0; }
-
-/* mini profile buttons
+/* Post control buttons
 --------------------------------------------- */
-ul.profile-icons {
+.post-buttons {
 	float: right;
 	list-style: none;
-	width: auto;
-	height: auto;
 	margin-top: 2px;
 }
 
-ul.profile-icons li {
+.post-buttons li {
 	float: left;
-	margin: 0 5px 0 0;
+	margin-right: 3px;
 }
 
-ul.profile-icons li a {
-	font-weight: bold;
-	display: inline-block;
-	font-family: 'Noto Sans', sans-serif, Verdana, Arial, Helvetica;
-	font-size: 9px;
-	line-height: 10px;
-	height: 12px;
-	text-decoration: none !important;
-	outline-style: none !important;
-	vertical-align: bottom;
-	white-space: nowrap;
-	border: 1px solid transparent;
-	border-radius: 3px;
-	background: transparent none 0 0 repeat-x;
-	padding: 3px 5px 1px 8px;
-	position: relative;
-	border-color: #858585;
-	background: #e3e3e3;
-	/*background: url(data:image/svg+xml; base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNlM2UzZTMiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);*/
-	background: -moz-linear-gradient(top,  #ffffff 0%, #e3e3e3 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#e3e3e3));
-	background: -webkit-linear-gradient(top,  #ffffff 0%,#e3e3e3 100%);
-	background: -o-linear-gradient(top,  #ffffff 0%,#e3e3e3 100%);
-	background: -ms-linear-gradient(top,  #ffffff 0%,#e3e3e3 100%);
-	background: linear-gradient(to bottom,  #ffffff 0%,#e3e3e3 100%);
-	-m-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e3e3e3',GradientType=0 );
-	box-shadow: 0 0 0 1px #FFFFFF inset;
-	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #BC2A4D !important;
+.post-buttons .icon-button {
+	padding: 0 5px;
+	text-indent: -9999px;
 }
 
-ul.profile-icons li a:hover {
-	border-color: #0a8ed0;
-	background: #ffffff;
-	/*background: url(data:image/svg+xml; base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIxJSIgc3RvcC1jb2xvcj0iI2UzZTNlMyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);*/
-	background: -moz-linear-gradient(top,  #e3e3e3 1%, #ffffff 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(1%,#e3e3e3), color-stop(100%,#ffffff));
-	background: -webkit-linear-gradient(top,  #e3e3e3 1%,#ffffff 100%);
-	background: -o-linear-gradient(top,  #e3e3e3 1%,#ffffff 100%);
-	background: -ms-linear-gradient(top,  #e3e3e3 1%,#ffffff 100%);
-	background: linear-gradient(to bottom,  #e3e3e3 1%,#ffffff 100%);
-	-m-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e3e3e3', endColorstr='#ffffff',GradientType=0 );
-	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
-	box-shadow: 0 0 0 1px #FFFFFF inset;
-	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #BC2A4D !important;
+.post-buttons span {
+	float: none;
+	margin-right: 0;
 }
 
-ul.profile-icons li a:after {
-	content: '';
+.quote-icon span		{ background-position: 0 0; }
+.quote-icon:hover span	{ background-position: 0 -21px; }
+.edit-icon span			{ background-position: -24px 0; }
+.edit-icon:hover span	{ background-position: -24px -21px; }
+.warn-icon span			{ background-position: -48px 0; }
+.warn-icon:hover span	{ background-position: -48px -21px; }
+.delete-icon span		{ background-position: -36px 0; }
+.delete-icon:hover span	{ background-position: -36px -21px; }
+.report-icon span		{ background-position: -48px 0; }
+.report-icon:hover span	{ background-position: -48px -21px; }
+.info-icon span			{ background-position: -73px 0; }
+.info-icon:hover span	{ background-position: -73px -21px; }
+.button.responsive-menu-link span		{ background-position: -60px 0; }
+.button.responsive-menu-link:hover span	{ background-position: -60px -21px; }
+
+/* Responsive buttons in post body */
+.post-buttons .dropdown {
+	top: 18px;
+}
+
+.post-buttons .dropdown a {
 	display: block;
-	position: absolute;
-	top: 50%;
-	left: -4px;
-	width: 12px;
-	height: 16px;
-	margin-top: -10px;
-	background: transparent 0 0 no-repeat;
-	background-image: url("images/mini-buttons.png");
+	font-size: 1.2em;
+	text-align: right;
 }
 
-	/* Mini profile button images */
-ul.profile-icons li.quote-icon a:after {
-	background-position: 0px 0px;
-}
-
-ul.profile-icons li.quote-icon a:hover:after {
-	background-position: 0px -21px;
-}
-
-ul.profile-icons li.edit-icon a:after {
-	background-position: -24px 0;
-}
-
-ul.profile-icons li.edit-icon a:hover:after {
-	background-position: -24px -21px;
-}
-
-ul.profile-icons li.warn-icon span {
-	display: none;
-}
-
-ul.profile-icons li.warn-icon a:after {
-	background-position: -48px 0px;
-}
-
-ul.profile-icons li.warn-icon a:hover:after {
-	background-position: -48px -21px;
-}
-
-ul.profile-icons li.delete-icon span {
-	display: none;
-}
-
-ul.profile-icons li.delete-icon a {
-	width: 12px;
-	padding: 3px 3px 1px 3px;
-}
-
-ul.profile-icons li.delete-icon a:after {
-	background-position: -36px 0px;
-	left: 3px;
-	margin-top: -6px;
-}
-
-ul.profile-icons li.delete-icon a:hover:after {
-	background-position: -36px -21px;
-}
-
-ul.profile-icons li.report-icon span {
-	display: none;
-}
-
-ul.profile-icons li.report-icon a {
-	width: 12px;
-	padding: 3px 3px 1px 3px;
-}
-
-ul.profile-icons li.report-icon a:after {
-	background-position: -48px 0px;
-	left: 3px;
-	margin-top: -6px;
-}
-
-ul.profile-icons li.report-icon a:hover:after {
-	background-position: -48px -21px;
-}
-
-ul.profile-icons li.info-icon a	 {
-	padding: 3px 5px 1px 6px;
-}
-
-ul.profile-icons li.info-icon a:after {
-	background: none;
+.hasjs .postbody .post-buttons {
+	max-width: 40%;
 }
