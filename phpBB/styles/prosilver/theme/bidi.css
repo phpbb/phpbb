@@ -338,6 +338,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	border-left: none;
 }
 
+.rtl ul.topiclist dfn {
+	left: auto;
+	right: -999px;
+}
+
 .rtl ul.topiclist li.row dt a.subforum {
 	padding-right: 12px;
 	background-position: right;
