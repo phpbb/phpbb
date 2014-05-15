@@ -553,7 +553,6 @@ $lang = array_merge($lang, array(
 		1	=> '%d pixel',
 		2	=> '%d pixels',
 	),
-	'PLAY_QUICKTIME_FILE'	=> 'Play Quicktime file',
 	'PLEASE_WAIT'			=> 'Please wait.',
 	'PM'					=> 'PM',
 	'PM_REPORTED'			=> 'Click to view report',
