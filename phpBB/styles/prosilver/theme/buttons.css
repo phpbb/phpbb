@@ -177,18 +177,18 @@ ul.linklist.bulletin li.small-icon:before {
 
 .quote-icon span		{ background-position: 0 0; }
 .quote-icon:hover span	{ background-position: 0 -21px; }
-.edit-icon span			{ background-position: -24px 0; }
-.edit-icon:hover span	{ background-position: -24px -21px; }
-.warn-icon span			{ background-position: -48px 0; }
-.warn-icon:hover span	{ background-position: -48px -21px; }
-.delete-icon span		{ background-position: -36px 0; }
-.delete-icon:hover span	{ background-position: -36px -21px; }
-.report-icon span		{ background-position: -48px 0; }
-.report-icon:hover span	{ background-position: -48px -21px; }
-.info-icon span			{ background-position: -73px 0; }
-.info-icon:hover span	{ background-position: -73px -21px; }
-.button.responsive-menu-link span		{ background-position: -60px 0; }
-.button.responsive-menu-link:hover span	{ background-position: -60px -21px; }
+.edit-icon span			{ background-position: -15px 0; }
+.edit-icon:hover span	{ background-position: -15px -21px; }
+.warn-icon span			{ background-position: -86px 0; }
+.warn-icon:hover span	{ background-position: -86px -21px; }
+.delete-icon span		{ background-position: -30px 0; }
+.delete-icon:hover span	{ background-position: -30px -21px; }
+.report-icon span		{ background-position: -43px 0; }
+.report-icon:hover span	{ background-position: -43px -21px; }
+.info-icon span			{ background-position: -54px 0; }
+.info-icon:hover span	{ background-position: -54px -21px; }
+.button.responsive-menu-link span		{ background-position: -68px 0; }
+.button.responsive-menu-link:hover span	{ background-position: -68px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {
