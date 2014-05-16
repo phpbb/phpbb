@@ -919,6 +919,8 @@ function parse_document(container)
 	$(document).ready(function() {
 		// Swap .nojs and .hasjs
 		$('#phpbb.nojs').toggleClass('nojs hasjs');
+		$('#phpbb').toggleClass('hastouch', phpbb.isTouch);
+		$('#phpbb.hastouch').removeClass('notouch');
 
 		// Focus forms
 		$('form[data-focus]:first').each(function() {

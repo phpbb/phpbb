@@ -170,6 +170,10 @@ ul.linklist.bulletin li.small-icon:before {
 	text-indent: -9999px;
 }
 
+.hastouch .post-buttons .icon-button {
+	padding: 2px 8px;
+}
+
 .post-buttons span {
 	float: none;
 	margin-right: 0;
