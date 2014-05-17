@@ -97,6 +97,7 @@ class filespec
 	*
 	* @param real|unique|unique_ext $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
 	* @param string $prefix Prefix applied to filename
+	* @param string $user_id The user_id is only needed for when cleaning a user's avatar
 	* @access public
 	*/
 	function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
@@ -278,6 +279,7 @@ class filespec
 	*
 	* @param string $destination_path Destination path, for example $config['avatar_path']
 	* @param bool $overwrite If set to true, an already existing file will be overwritten
+	* @param bool $skip_image_check If set to true, the check for the file to be a valid image is skipped
 	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode defined by {@link phpbb_chmod()}
 	*
 	* @access public
@@ -498,6 +500,8 @@ class fileupload
 	* @param int $min_height Minimum image height (only checked for images)
 	* @param int $max_width Maximum image width (only checked for images)
 	* @param int $max_height Maximum image height (only checked for images)
+	* @param bool|array $disallowed_content If enabled, the first 256 bytes of the file must not contain any of it's values.
+	*										Defaults to false.
 	*
 	*/
 	function fileupload($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false, $disallowed_content = false)
