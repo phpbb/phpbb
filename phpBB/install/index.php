@@ -409,7 +409,7 @@ class module
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> htmlspecialchars($phpbb_admin_path) . 'images/',
-			'T_JQUERY_LINK'			=> $path . '/../../assets/javascript/jquery.js',
+			'T_JQUERY_LINK'			=> $path . '/../../assets/javascript/jquery.min.js',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
