@@ -771,7 +771,7 @@ function parse_document(container)
 				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 
 				if ($this.hasClass('post-buttons')) {
-					menu.find('.button').removeClass('button icon-button');
+					$('.button', menu).removeClass('button icon-button');
 					$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
 				}
 				copied = true;
