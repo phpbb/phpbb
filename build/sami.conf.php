@@ -18,9 +18,9 @@ $iterator = Symfony\Component\Finder\Finder::create()
 	->name('*.php')
 	->in(__DIR__ . '/../phpBB/')
 	->notPath('#^cache/#')
+	->notPath('#^develop/#')
 	->notPath('#^ext/#')
 	->notPath('#^vendor/#')
-	->notPath('#^develop/#')
 	->notPath('data')
 ;
 
