@@ -106,7 +106,10 @@ class dbal_mysqli extends dbal
 
 	/**
 	* Version information about used database
-	* @param bool $use_cache If true, it is safe to retrieve the value from the cache
+	*
+	* @param bool $raw			If true, returns the version string as obtained from the dbms
+	* @param bool $use_cache	If true, it is safe to retrieve the value from the cache
+	*
 	* @return string sql server version
 	*/
 	function sql_server_info($raw = false, $use_cache = true)
