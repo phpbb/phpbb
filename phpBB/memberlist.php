@@ -964,8 +964,8 @@ switch ($mode)
 		if ($user_id)
 		{
 			$template->assign_vars(array(
-				'S_SEND_USER'	=> true,
-				'USERNAME'		=> $row['username'],
+				'S_SEND_USER'		=> true,
+				'L_SEND_EMAIL_USER' => $user->lang('SEND_EMAIL_USER', $row['username']),
 
 				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_BODY_EXPLAIN'],
 				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id))
@@ -1780,7 +1780,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'AGE'			=> $age,
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
-		'LAST_ACTIVE'		=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
+		'LAST_ACTIVE'	=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
@@ -1800,7 +1800,7 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 
 		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
 
-		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
+		'U_SEARCH_USER' => ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
 		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && $can_receive_pm) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
@@ -1810,7 +1810,9 @@ function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = f
 		'USER_JABBER'		=> $data['user_jabber'],
 		'USER_JABBER_IMG'	=> ($data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
 
-		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
+		'L_SEND_EMAIL_USER' => $user->lang('SEND_EMAIL_USER', $username),
+		'L_CONTACT_USER'	=> $user->lang('CONTACT_USER', $username),
+		'L_VIEWING_PROFILE' => $user->lang('VIEWING_PROFILE', $username),
 	);
 
 	/**
