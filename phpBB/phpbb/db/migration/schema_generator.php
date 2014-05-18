@@ -107,7 +107,17 @@ class schema_generator
 							{
 								foreach ($add_columns as $column => $column_data)
 								{
-									$this->tables[$table]['COLUMNS'][$column] = $column_data;
+									if (isset($column_data['after']))
+									{
+										$columns = $this->tables[$table]['COLUMNS'];
+										$offset = array_search($column_data['after'], array_keys($columns));
+										unset($column_data['after']);
+										$this->tables[$table]['COLUMNS'] = array_merge(array_slice($columns, 0, $offset + 1, true), array($column => array_values($column_data)), array_slice($columns, $offset));
+									}
+									else
+									{
+										$this->tables[$table]['COLUMNS'][$column] = $column_data;
+									}
 								}
 							}
 						}
