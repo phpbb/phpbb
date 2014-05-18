@@ -31,6 +31,7 @@
 	font-weight: 600;
 	position: relative;
 	text-decoration: none !important;
+	text-transform: uppercase;
 	outline-style: none !important;
 	vertical-align: bottom;
 	*padding-right: 8px;
