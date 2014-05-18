@@ -74,14 +74,8 @@
 	</target>
 
 	<target name="docs">
-		<!-- only works if you setup phpdoctor:
-                     git clone https://github.com/peej/phpdoctor.git
-                     and then create an executable phpdoctor in your path containing
-                     #!/bin/sh
-                     php -f /path/to/phpdoctor/phpdoc.php $@
-                -->
-		<exec dir="build"
-			command="phpdoctor phpdoc-phpbb.ini"
+		<exec dir="."
+			command="phpBB/vendor/bin/sami.php update build/sami.conf.php"
 			passthru="true" />
 	</target>
 
