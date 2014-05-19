@@ -277,7 +277,7 @@ class filespec
 	* Move file to destination folder
 	* The phpbb_root_path variable will be applied to the destination path
 	*
-	* @param string $destination_path Destination path, for example $config['avatar_path']
+	* @param string $destination Destination path, for example $config['avatar_path']
 	* @param bool $overwrite If set to true, an already existing file will be overwritten
 	* @param bool $skip_image_check If set to true, the check for the file to be a valid image is skipped
 	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode defined by {@link phpbb_chmod()}

@@ -46,8 +46,8 @@ class diff
 	/**
 	* Computes diffs between sequences of strings.
 	*
-	* @param array	$from_lines		An array of strings. Typically these are lines from a file.
-	* @param array	$to_lines		An array of strings.
+	* @param array	$from_content	An array of strings. Typically these are lines from a file.
+	* @param array	$to_content		An array of strings.
 	* @param bool	$preserve_cr	If true, \r is replaced by a new line in the diff output
 	*/
 	function diff(&$from_content, &$to_content, $preserve_cr = true)

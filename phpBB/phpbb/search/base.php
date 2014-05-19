@@ -167,6 +167,7 @@ class base
 	* @param string $search_key		an md5 string generated from all the passed search options to identify the results
 	* @param string $keywords 		contains the keywords as entered by the user
 	* @param array	$author_ary		an array of author ids, if the author should be ignored during the search the array is empty
+	* @param int 	$result_count	contains the number of all results for the search (not only for the current page)
 	* @param array	&$id_ary 		contains a list of post or topic ids that shall be cached, the first element
 	* 	must have the absolute index $start in the result set.
 	* @param int 	$start			indicates the first index of the page
