@@ -170,7 +170,7 @@ class base
 	* @param int 	$result_count	contains the number of all results for the search (not only for the current page)
 	* @param array	$id_ary 		contains a list of post or topic ids that shall be cached, the first element
 	* 	must have the absolute index $start in the result set.
-	* @param int 	$start			indicates the first index of the page
+	* @param int	$start			indicates the first index of the page
 	* @param string $sort_dir		is either a or d representing ASC and DESC
 	*
 	* @return null
