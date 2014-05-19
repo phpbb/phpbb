@@ -94,6 +94,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*  (copied from post_in_queue)
 	*
 	* @param array $post Data from the post
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/

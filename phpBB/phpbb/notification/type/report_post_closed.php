@@ -60,6 +60,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	* Find the users who want to receive notifications
 	*
 	* @param array $post Data from
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/

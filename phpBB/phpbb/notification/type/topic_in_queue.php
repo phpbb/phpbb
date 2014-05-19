@@ -70,6 +70,7 @@ class topic_in_queue extends \phpbb\notification\type\topic
 	* Find the users who want to receive notifications
 	*
 	* @param array $topic Data from the topic
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/

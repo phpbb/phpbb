@@ -68,12 +68,14 @@ class manager
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
+	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
 	* @param string $notifications_table
 	* @param string $user_notifications_table
+	*
 	* @return \phpbb\notification\manager
 	*/
 	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
@@ -832,7 +834,7 @@ class manager
 	* Delete all notifications older than a certain time
 	*
 	* @param int $timestamp Unix timestamp to delete all notifications that were created before
-	* @param bool $only_unread True (default) to only prune read notifications
+	* @param bool $only_read True (default) to only prune read notifications
 	*/
 	public function prune_notifications($timestamp, $only_read = true)
 	{
