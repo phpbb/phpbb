@@ -25,6 +25,8 @@ class definition
 	* Get a DEFINE'd variable
 	*
 	* @param string $name
+	* @param array $arguments
+	*
 	* @return mixed Null if not found
 	*/
 	public function __call($name, $arguments)
