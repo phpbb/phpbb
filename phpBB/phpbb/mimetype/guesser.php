@@ -96,11 +96,7 @@ class guesser
 	}
 
 	/**
-	* Guess mimetype of supplied file
-	*
-	* @param string $file Path to file
-	*
-	* @return string Guess for mimetype of file
+	* @inheritdoc
 	*/
 	public function guess($file, $file_name = '')
 	{
