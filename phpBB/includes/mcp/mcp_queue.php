@@ -578,6 +578,7 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
+		$num_topics = 0;
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -634,11 +635,6 @@ class mcp_queue
 				$phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
 			}
 
-			if (sizeof($post_info) >= 1)
-			{
-				$success_msg = (sizeof($post_info) == 1) ? 'POST_' . strtoupper($action) . 'D_SUCCESS' : 'POSTS_' . strtoupper($action) . 'D_SUCCESS';
-			}
-
 			foreach ($approve_log as $log_data)
 			{
 				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_POST_' . strtoupper($action) . 'D', $log_data['post_subject']);
@@ -660,6 +656,7 @@ class mcp_queue
 						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
 						{
 							$phpbb_notifications->add_notifications(array('topic'), $post_data);
+							$num_topics++;
 						}
 					}
 					else
@@ -705,6 +702,15 @@ class mcp_queue
 				}
 			}
 
+			if ($num_topics >= 1)
+			{
+				$success_msg = ($num_topics == 1) ? 'TOPIC_' . strtoupper($action) . 'D_SUCCESS' : 'TOPICS_' . strtoupper($action) . 'D_SUCCESS';
+			}
+			else
+			{
+				$success_msg = (sizeof($post_info) == 1) ? 'POST_' . strtoupper($action) . 'D_SUCCESS' : 'POSTS_' . strtoupper($action) . 'D_SUCCESS';
+			}
+
 			meta_refresh(3, $redirect);
 			$message = $user->lang[$success_msg];
 
@@ -729,7 +735,6 @@ class mcp_queue
 		}
 		else
 		{
-			$num_topics = 0;
 			$show_notify = false;
 
 			if ($action == 'approve')
