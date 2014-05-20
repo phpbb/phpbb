@@ -1301,7 +1301,6 @@ class acp_attachments
 	/**
 	* Check accuracy of attachment statistics.
 	*
-	* @param $resync bool	Resync stats if they're incorrect.
 	* @return bool|string	Returns false if stats are correct or error message
 	*	otherwise.
 	*/

@@ -82,7 +82,7 @@ class helper
 	/**
 	* Automate setting up the page and creating the response object.
 	*
-	* @param string $handle The template handle to render
+	* @param string $template_file The template handle to render
 	* @param string $page_title The title of the page to output
 	* @param int $status_code The status code to be sent to the page header
 	* @param bool $display_online_list Do we display online users list
