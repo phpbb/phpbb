@@ -243,6 +243,7 @@ services:
         arguments:
             - @auth
             - @config
+            - @config_text
             - @dbal.conn
             - @user
             - %core.root_path%

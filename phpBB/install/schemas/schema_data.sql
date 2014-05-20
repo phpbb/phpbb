@@ -83,9 +83,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_attachment_c
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_dnsbl', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('contact_admin_form_enable', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('contact_admin_info_uid', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('contact_admin_info_bitfield', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('contact_admin_info_flags', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name', 'phpbb3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path', '/');
@@ -305,6 +302,9 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('warnin
 
 # Config text
 INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info', '');
+INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_uid', '');
+INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_bitfield', '');
+INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_flags', '');
 
 # -- Forum related auth options
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_', 1);

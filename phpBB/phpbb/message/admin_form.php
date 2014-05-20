@@ -157,11 +157,18 @@ class admin_form extends form
 		$l_admin_info = $this->config_text->get('contact_admin_info');
 		if ($l_admin_info)
 		{
+			$contact_admin_data			= $this->config_text->get_array(array(
+				'contact_admin_info',
+				'contact_admin_info_uid',
+				'contact_admin_info_bitfield',
+				'contact_admin_info_flags',
+			));
+
 			$l_admin_info = generate_text_for_display(
-				$this->config_text->get('contact_admin_info'),
-				$this->config['contact_admin_info_uid'],
-				$this->config['contact_admin_info_bitfield'],
-				$this->config['contact_admin_info_flags']
+				$contact_admin_data['contact_admin_info'],
+				$contact_admin_data['contact_admin_info_uid'],
+				$contact_admin_data['contact_admin_info_bitfield'],
+				$contact_admin_data['contact_admin_info_flags']
 			);
 		}
 
