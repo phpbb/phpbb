@@ -58,7 +58,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\foo\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\acp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => 'ext_vendor2/foo', 'cat' => array('ACP_MODS')),
 					),
@@ -66,7 +65,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'acp_foobar' => array(
 					'filename'	=> 'acp_foobar',
 					'title'		=> 'ACP Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 					),
@@ -80,7 +78,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\foo\\mcp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
 					),
@@ -94,7 +91,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\foo\\mcp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
 					),
@@ -108,7 +104,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\foo\\mcp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
 					),
@@ -132,7 +127,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\foo\\acp\\a_module' => array (
 					'filename' => 'vendor2\\foo\\acp\\a_module',
 					'title' => 'Foobar',
-					'version' => '3.1.0-dev',
 					'modes' => array (
 						'config'		=> array ('title' => 'Config', 'auth' => 'ext_vendor2/foo', 'cat' => array ('ACP_MODS')),
 					),
@@ -156,7 +150,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\foo\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\acp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => 'ext_vendor2/foo', 'cat' => array('ACP_MODS')),
 					),
@@ -164,7 +157,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'acp_foobar' => array(
 					'filename'	=> 'acp_foobar',
 					'title'		=> 'ACP Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 					),
@@ -172,7 +164,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\bar\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\bar\\acp\\a_module',
 					'title'		=> 'Bar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
 					),
@@ -185,7 +176,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\bar\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\bar\\acp\\a_module',
 					'title'		=> 'Bar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
 					),
