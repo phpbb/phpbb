@@ -45,7 +45,7 @@ class acp_contact
 
 		$config_text = $phpbb_container->get('config_text');
 
-		$contact_admin_info			= $request->variable('contact_admin_info', $config_text->get('contact_admin_info'), true);
+		$contact_admin_info			= $config_text->get('contact_admin_info');
 		$contact_admin_info_uid		= $config['contact_admin_info_uid'];
 		$contact_admin_info_bitfield= $config['contact_admin_info_bitfield'];
 		$contact_admin_info_flags	= $config['contact_admin_info_flags'];
@@ -56,6 +56,8 @@ class acp_contact
 			{
 				$error = $user->lang('FORM_INVALID');
 			}
+
+			$contact_admin_info = $request->variable('contact_admin_info', '', true);
 
 			generate_text_for_storage(
 				$contact_admin_info,
