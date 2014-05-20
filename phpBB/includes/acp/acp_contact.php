@@ -24,7 +24,7 @@ class acp_contact
 	public function main($id, $mode)
 	{
 		global $db, $user, $request, $template;
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$user->add_lang(array('acp/board', 'posting'));
 
@@ -43,7 +43,7 @@ class acp_contact
 			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		}
 
-		$config_text = new \phpbb\config\db_text($db, CONFIG_TEXT_TABLE);
+		$config_text = $phpbb_container->get('config_text');
 
 		$contact_admin_info			= $request->variable('contact_admin_info', $config_text->get('contact_admin_info'), true);
 		$contact_admin_info_uid		= $config['contact_admin_info_uid'];
