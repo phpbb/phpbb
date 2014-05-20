@@ -25,6 +25,7 @@ $mode = request_var('mode', '');
 if ($mode === 'contactadmin')
 {
 	define('SKIP_CHECK_BAN', true);
+	define('SKIP_CHECK_DISABLED', true);
 }
 
 // Start session management
