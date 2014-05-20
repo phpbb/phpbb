@@ -45,10 +45,17 @@ class acp_contact
 
 		$config_text = $phpbb_container->get('config_text');
 
-		$contact_admin_info			= $config_text->get('contact_admin_info');
-		$contact_admin_info_uid		= $config['contact_admin_info_uid'];
-		$contact_admin_info_bitfield= $config['contact_admin_info_bitfield'];
-		$contact_admin_info_flags	= $config['contact_admin_info_flags'];
+		$contact_admin_data			= $config_text->get_array(array(
+			'contact_admin_info',
+			'contact_admin_info_uid',
+			'contact_admin_info_bitfield',
+			'contact_admin_info_flags',
+		));
+
+		$contact_admin_info			= $contact_admin_data['contact_admin_info'];
+		$contact_admin_info_uid		= $contact_admin_data['contact_admin_info_uid'];
+		$contact_admin_info_bitfield= $contact_admin_data['contact_admin_info_bitfield'];
+		$contact_admin_info_flags	= $contact_admin_data['contact_admin_info_flags'];
 
 		if ($request->is_set_post('submit') || $request->is_set_post('preview'))
 		{
@@ -73,10 +80,12 @@ class acp_contact
 			{
 				$config->set('contact_admin_form_enable', $request->variable('contact_admin_form_enable', false));
 
-				$config_text->set('contact_admin_info', $contact_admin_info);
-				$config->set('contact_admin_info_uid', $contact_admin_info_uid);
-				$config->set('contact_admin_info_bitfield', $contact_admin_info_bitfield);
-				$config->set('contact_admin_info_flags', $contact_admin_info_flags);
+				$config_text->set_array(array(
+					'contact_admin_info'			=> $contact_admin_info,
+					'contact_admin_info_uid'		=> $contact_admin_info_uid,
+					'contact_admin_info_bitfield'	=> $contact_admin_info_bitfield,
+					'contact_admin_info_flags'		=> $contact_admin_info_flags,
+				));
 
 				trigger_error($user->lang['CONTACT_US_INFO_UPDATED'] . adm_back_link($this->u_action));
 			}
