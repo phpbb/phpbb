@@ -53,13 +53,13 @@
 
 			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px; margin-top: 5px;">
 				<!-- IF S_BBCODE_ALLOWED -->
-				<label><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label>
+				<label><input type="checkbox" class="radio" name="disable_bbcode"<!-- IF not S_BBCODE_ALLOWED --> checked="checked"<!-- ENDIF --> /> {L_DISABLE_BBCODE}</label>
 				<!-- ENDIF -->
 				<!-- IF S_SMILIES_ALLOWED -->
-				<label><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /> {L_DISABLE_SMILIES}</label>
+				<label><input type="checkbox" class="radio" name="disable_smilies"<!-- IF not S_SMILIES_ALLOWED --> checked="checked"<!-- ENDIF --> /> {L_DISABLE_SMILIES}</label>
 				<!-- ENDIF -->
 				<!-- IF S_LINKS_ALLOWED -->
-				<label><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /> {L_DISABLE_MAGIC_URL}</label>
+				<label><input type="checkbox" class="radio" name="disable_magic_url"<!-- IF not S_MAGIC_URL_ALLOWED --> checked="checked"<!-- ENDIF --> /> {L_DISABLE_MAGIC_URL}</label>
 				<!-- ENDIF -->
 			</dd>
 			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px; margin-top: 10px;"><strong>{L_OPTIONS}{L_COLON} </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}</dd>
