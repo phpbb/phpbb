@@ -95,9 +95,9 @@ class acp_contact
 			'CONTACT_US_INFO'			=> $contact_admin_edit['text'],
 			'CONTACT_US_INFO_PREVIEW'	=> $contact_admin_info_preview,
 
-			'S_BBCODE_ALLOWED'		=> $contact_admin_edit['allow_bbcode'],
-			'S_SMILIES_ALLOWED'		=> $contact_admin_edit['allow_smilies'],
-			'S_MAGIC_URL_ALLOWED'	=> $contact_admin_edit['allow_urls'],
+			'S_BBCODE_DISABLE_CHECKED'		=> !$contact_admin_edit['allow_bbcode'],
+			'S_SMILIES_DISABLE_CHECKED'		=> !$contact_admin_edit['allow_smilies'],
+			'S_MAGIC_URL_DISABLE_CHECKED'	=> !$contact_admin_edit['allow_urls'],
 
 			'BBCODE_STATUS'			=> $user->lang('BBCODE_IS_ON', '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
 			'SMILIES_STATUS'		=> $user->lang['SMILIES_ARE_ON'],
