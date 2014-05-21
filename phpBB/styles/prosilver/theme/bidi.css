@@ -893,3 +893,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	padding-right: 16px;
 	padding-left: 0;
 }
+
+/**
+* plupload.css
+*/
+
+.rtl .attach-controls {
+	float: left;
+}
