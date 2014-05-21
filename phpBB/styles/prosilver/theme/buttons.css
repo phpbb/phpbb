@@ -162,7 +162,7 @@ ul.linklist.bulletin li.small-icon:before {
 
 .notouch.section-viewtopic .post-buttons {
 	opacity: 0;
-	transition: opacity .8s;
+	transition: opacity .5s;
 }
 
 .notouch.section-viewtopic .post:hover .post-buttons {

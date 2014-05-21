@@ -726,8 +726,8 @@ Colours and backgrounds for buttons.css
 
 /* Profile & navigation icons */
 .contact-icon								{ background-image: url("./images/icons_contact.png"); }
-.icon-button span, .dropdown-select:after	{ background-image: url("images/buttons.png"); }
-.post-buttons .icon-button span				{ background-image: url("images/post_buttons.png"); }
+.icon-button span, .dropdown-select:after	{ background-image: url("./images/buttons.png"); }
+.post-buttons .icon-button span				{ background-image: url("./images/post_buttons.png"); }
 
 /* Forum icons & Topic icons */
 .global_read													{ background-image: url("./images/announce_read.gif"); }
