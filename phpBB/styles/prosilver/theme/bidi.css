@@ -602,6 +602,19 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-right: 0;
 }
 
+/* Poster contact icons
+ ----------------------------------------*/
+.rtl .contact-icons a {
+	border-left-width: 1px;
+	border-left-style: dotted;
+	border-right: none;
+	float: right;
+}
+
+.rtl .contact-icons .last-cell {
+	border-left: none;
+}
+
 /**
 * cp.css
 */
