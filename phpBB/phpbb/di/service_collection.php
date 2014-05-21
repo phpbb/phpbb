@@ -51,7 +51,8 @@ class service_collection extends \ArrayObject
 	*/
 	public function offsetGet($index)
 	{
-		if (($task = parent::offsetGet($index)) == null)
+		$task = parent::offsetGet($index);
+		if ($task == null)
 		{
 			$task = $this->container->get($index);
 			$this->offsetSet($index, $task);
