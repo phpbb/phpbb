@@ -41,6 +41,14 @@ class service_collection extends \ArrayObject
 	/**
 	* {@inheritdoc}
 	*/
+	public function offsetExists($index)
+	{
+		return parent::offsetExists($index);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function offsetGet($index)
 	{
 		if (($task = parent::offsetGet($index)) == null)
