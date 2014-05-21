@@ -52,14 +52,6 @@ class service_collection_iterator extends \ArrayIterator
 	/**
 	* {@inheritdoc}
 	*/
-	public function offsetExists($index)
-	{
-		parent::offsetExists($index);
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
 	public function current()
 	{
 		$task = parent::current();
