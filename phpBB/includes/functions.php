@@ -5095,7 +5095,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'])
+	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'] && !$cache->get('cron.lock_check'))
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
@@ -5123,6 +5123,10 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		{
 			$url = $task->get_url();
 			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+		}
+		else
+		{
+			$cache->put('cron.lock_check', true, 60 * 10);
 		}
 	}
 
