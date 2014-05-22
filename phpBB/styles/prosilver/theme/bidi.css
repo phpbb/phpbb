@@ -289,7 +289,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl ul.topiclist dt, .rtl li.header dt {
 	float: right;
 	margin-right: 0;
-	margin-left: -410px;
+	margin-left: -440px;
 }
 
 .rtl ul.topiclist.missing-column dt {
@@ -309,7 +309,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 .rtl ul.topiclist dt .list-inner {
 	margin-right: 0;
-	margin-left: 410px;
+	margin-left: 440px;
 }
 
 .rtl ul.topiclist.missing-column dt .list-inner {
