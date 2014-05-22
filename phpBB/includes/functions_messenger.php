@@ -629,14 +629,14 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager;
+		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager, $phpbb_container;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
 			return;
 		}
 
-		$this->template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context(), $phpbb_extension_manager);
+		$this->template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context(), $phpbb_extension_manager, $phpbb_container->get('proxy.factory'));
 	}
 
 	/**

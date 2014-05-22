@@ -304,8 +304,8 @@ services:
             - @config
             - @user
             - @template_context
-            - @proxy.factory
             - @ext.manager
+            - @proxy.factory
 
     template_context:
         class: phpbb\template\context
