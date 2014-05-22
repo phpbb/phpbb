@@ -73,7 +73,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		);
 
 		$this->template_path = $this->test_path . '/templates';
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context());
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context(), new phpbb\proxy\factory(dirname(__FILE__) . '/../tmp/'));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 

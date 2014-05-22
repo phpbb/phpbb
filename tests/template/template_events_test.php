@@ -142,7 +142,7 @@ Zeta test event in all',
 			$phpbb_root_path,
 			$phpEx
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $user, new \phpbb\template\context, $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $user, new \phpbb\template\context, new phpbb\proxy\factory(dirname(__FILE__) . '/../tmp/'), $this->extension_manager);
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}
 }
