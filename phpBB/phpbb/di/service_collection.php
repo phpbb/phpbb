@@ -38,6 +38,12 @@ class service_collection extends \ArrayObject
 		return new service_collection_iterator($this->container, $this);
 	}
 
+	// Because of a PHP issue we have to redefine offsetExists
+	// (even <ith a call to the parent):
+	// 		https://bugs.php.net/bug.php?id=66834
+	// 		https://bugs.php.net/bug.php?id=67067
+	// But it triggers a sniffer issue that we have to skip
+	// @codingStandardsIgnoreStart
 	/**
 	* {@inheritdoc}
 	*/
@@ -45,6 +51,7 @@ class service_collection extends \ArrayObject
 	{
 		return parent::offsetExists($index);
 	}
+	// @codingStandardsIgnoreEnd
 
 	/**
 	* {@inheritdoc}
