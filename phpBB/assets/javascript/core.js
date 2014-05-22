@@ -333,7 +333,9 @@ phpbb.ajaxify = function(options) {
 						// Hide the alert even if we refresh the page, in case the user
 						// presses the back button.
 						dark.fadeOut(phpbb.alertTime, function() {
-							alert.hide();
+							if (typeof alert !== 'undefined') {
+								alert.hide();
+							}
 						});
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
