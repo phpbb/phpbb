@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @copyright (c) 2011 phpBB Group
+* @copyright (c) 2014 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -12,7 +12,7 @@ namespace phpbb\di;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
-* Iterator which load the services when they are requested
+* Iterator which loads the services when they are requested
 *
 * @package phpBB3
 */
@@ -50,7 +50,7 @@ class service_collection_iterator extends \ArrayIterator
 	}
 
 	// Because of a PHP issue we have to redefine offsetExists
-	// (even <ith a call to the parent):
+	// (even <with a call to the parent):
 	// 		https://bugs.php.net/bug.php?id=66834
 	// 		https://bugs.php.net/bug.php?id=67067
 	// But it triggers a sniffer issue that we have to skip
