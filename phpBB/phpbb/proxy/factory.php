@@ -23,13 +23,7 @@ class factory extends \ProxyManager\Factory\LazyLoadingValueHolderFactory
 	public function __construct($phpbb_root_path)
 	{
 		$configuration = new \ProxyManager\Configuration();
-
-		if (!is_dir($phpbb_root_path . '/cache/proxy'))
-		{
-			mkdir($phpbb_root_path . '/cache/proxy', 0777, true);
-		}
-
-		$configuration->setProxiesTargetDir($phpbb_root_path . '/cache/proxy');
+		$configuration->setProxiesTargetDir($phpbb_root_path . '/cache');
 		spl_autoload_register($configuration->getProxyAutoloader());
 		parent::__construct($configuration);
 	}
