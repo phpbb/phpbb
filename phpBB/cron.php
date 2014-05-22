@@ -59,11 +59,7 @@ function do_cron($cron_lock, $run_tasks)
 //
 // If DEBUG is defined and cron lock cannot be obtained, a message will be printed.
 
-if ($config['use_system_cron'])
-{
-	$cron = $phpbb_container->get('cron.manager');
-}
-else
+if (!$config['use_system_cron'])
 {
 	$cron_type = request_var('cron_type', '');
 
@@ -74,6 +70,8 @@ else
 $cron_lock = $phpbb_container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
+	$cron = $phpbb_container->get('cron.manager');
+
 	if ($config['use_system_cron'])
 	{
 		$run_tasks = $cron->find_all_ready_tasks();
