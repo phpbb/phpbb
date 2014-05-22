@@ -29,14 +29,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
-
-		$tmp_dir = dirname(__FILE__) . '/../tmp/';
-		if (!is_dir($tmp_dir))
-		{
-			mkdir($tmp_dir, 0777, true);
-		}
-
-		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $user, new phpbb\template\context(), new phpbb\proxy\factory($tmp_dir));
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $user, new phpbb\template\context());
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 }

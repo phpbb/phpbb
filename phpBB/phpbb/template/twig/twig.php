@@ -78,7 +78,7 @@ class twig extends \phpbb\template\base
 	* @param \phpbb\proxy\factory $proxy_factory proxy factory
 	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct(\phpbb\path_helper $path_helper, $config, $user, \phpbb\template\context $context, \phpbb\proxy\factory $proxy_factory, \phpbb\extension\manager $extension_manager = null)
+	public function __construct(\phpbb\path_helper $path_helper, $config, $user, \phpbb\template\context $context, \phpbb\proxy\factory $proxy_factory = null, \phpbb\extension\manager $extension_manager = null)
 	{
 		$this->path_helper = $path_helper;
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
@@ -113,16 +113,23 @@ class twig extends \phpbb\template\base
 			)
 		);
 
-		$twig = $this->twig;
-		$lexer = $proxy_factory->createProxy(
-			'phpbb\template\twig\lexer',
-			function (& $wrappedObject, $proxy, $method, $parameters, & $initializer) use ($twig) {
-				$wrappedObject = new \phpbb\template\twig\lexer($twig); // instantiation logic here
-				$initializer = null; // turning off further lazy initialization
+		if ($proxy_factory == null)
+		{
+			$lexer = new \phpbb\template\twig\lexer($this->twig);
+		}
+		else
+		{
+			$twig = $this->twig;
+			$lexer = $proxy_factory->createProxy(
+				'phpbb\template\twig\lexer',
+				function (& $wrappedObject, $proxy, $method, $parameters, & $initializer) use ($twig) {
+					$wrappedObject = new \phpbb\template\twig\lexer($twig); // instantiation logic here
+					$initializer = null; // turning off further lazy initialization
 
-				return true;
-			}
-		);
+					return true;
+				}
+			);
+		}
 
 		$this->twig->setLexer($lexer);
 

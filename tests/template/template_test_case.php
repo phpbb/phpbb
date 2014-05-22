@@ -72,14 +72,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$phpEx
 		);
 
-		$tmp_dir = dirname(__FILE__) . '/../tmp/';
-		if (!is_dir($tmp_dir))
-		{
-			mkdir($tmp_dir, 0777, true);
-		}
-
 		$this->template_path = $this->test_path . '/templates';
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context(), new phpbb\proxy\factory($tmp_dir));
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context());
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
