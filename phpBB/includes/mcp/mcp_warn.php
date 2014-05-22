@@ -318,7 +318,7 @@ class mcp_warn
 	function mcp_warn_user_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config, $module;
-		global $template, $db, $user, $auth;
+		global $template, $db, $user, $auth, $phpbb_dispatcher;
 
 		$user_id = request_var('u', 0);
 		$username = request_var('username', '', true);
@@ -376,16 +376,57 @@ class mcp_warn
 		{
 			if (check_form_key('mcp_warn'))
 			{
-				add_warning($user_row, $warning, $notify);
-				$msg = $user->lang['USER_WARNING_ADDED'];
+				$s_mcp_warn_user = true;
+
+				/**
+				* Event for before warning a user from MCP.
+				*
+				* @event core.mcp_warn_user_before
+				* @var array	user_row		The entire user row
+				* @var string	warning			The warning message
+				* @var bool		notify			If true, we notify the user for the warning
+				* @var bool		s_mcp_warn_user If true, we add the warning else we omit it
+				* @since 3.1.0-b4
+				*/
+				$vars = array(
+						'user_row',
+						'warning',
+						'notify',
+						's_mcp_warn_user',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_warn_user_before', compact($vars)));
+
+				if ($s_mcp_warn_user)
+				{
+					add_warning($user_row, $warning, $notify);
+					$message = $user->lang['USER_WARNING_ADDED'];
+
+					/**
+					* Event for after warning a user from MCP.
+					*
+					* @event core.mcp_warn_user_after
+					* @var array	user_row	The entire user row
+					* @var string	warning		The warning message
+					* @var bool		notify		If true, the user was notified for the warning
+					* @var string	message		Message displayed to the moderator
+					* @since 3.1.0-b4
+					*/
+					$vars = array(
+							'user_row',
+							'warning',
+							'notify',
+							'message',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.mcp_warn_user_after', compact($vars)));
+				}
 			}
 			else
 			{
-				$msg = $user->lang['FORM_INVALID'];
+				$message = $user->lang['FORM_INVALID'];
 			}
 			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 			meta_refresh(2, $redirect);
-			trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($message . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at
