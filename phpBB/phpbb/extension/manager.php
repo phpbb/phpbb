@@ -414,6 +414,7 @@ class manager
 			),
 			\RecursiveIteratorIterator::SELF_FIRST
 		);
+		$iterator->setMaxDepth(2);
 
 		foreach ($iterator as $file_info)
 		{
