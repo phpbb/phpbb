@@ -5116,7 +5116,8 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	// Call cron job?
 	if ($call_cron)
 	{
-		global $cron;
+		global $phpbb_container;
+		$cron = $phpbb_container->get('cron.manager');
 		$task = $cron->find_one_ready_task();
 
 		if ($task)
