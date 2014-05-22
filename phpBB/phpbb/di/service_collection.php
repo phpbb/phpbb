@@ -29,6 +29,44 @@ class service_collection extends \ArrayObject
 	}
 
 	/**
+	* {@inheritdoc}
+	*/
+	public function getIterator()
+	{
+		return new service_collection_iterator($this->container, $this);
+	}
+
+	// Because of a PHP issue we have to redefine offsetExists
+	// (even <with a call to the parent):
+	// 		https://bugs.php.net/bug.php?id=66834
+	// 		https://bugs.php.net/bug.php?id=67067
+	// But it triggers a sniffer issue that we have to skip
+	// @codingStandardsIgnoreStart
+	/**
+	* {@inheritdoc}
+	*/
+	public function offsetExists($index)
+	{
+		return parent::offsetExists($index);
+	}
+	// @codingStandardsIgnoreEnd
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function offsetGet($index)
+	{
+		$task = parent::offsetGet($index);
+		if ($task == null)
+		{
+			$task = $this->container->get($index);
+			$this->offsetSet($index, $task);
+		}
+
+		return $task;
+	}
+
+	/**
 	* Add a service to the collection
 	*
 	* @param string $name The service name
@@ -36,8 +74,6 @@ class service_collection extends \ArrayObject
 	*/
 	public function add($name)
 	{
-		$task = $this->container->get($name);
-
-		$this->offsetSet($name, $task);
+		$this->offsetSet($name, null);
 	}
 }
