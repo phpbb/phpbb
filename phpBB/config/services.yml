@@ -284,6 +284,11 @@ services:
             - @php_ini
             - @mimetype.guesser
 
+    proxy.factory:
+        class: phpbb\proxy\factory
+        arguments:
+            - %core.root_path%
+
     request:
         class: phpbb\request\request
 
@@ -299,6 +304,7 @@ services:
             - @config
             - @user
             - @template_context
+            - @proxy.factory
             - @ext.manager
 
     template_context:
