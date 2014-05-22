@@ -108,11 +108,6 @@ foreach ($phpbb_hook_finder->find() as $hook)
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
 
-if (!$config['use_system_cron'])
-{
-	$cron = $phpbb_container->get('cron.manager');
-}
-
 /**
 * Main event which is triggered on every page
 *
