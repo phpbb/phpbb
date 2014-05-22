@@ -409,8 +409,12 @@ class manager
 		}
 
 		$iterator = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', \FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS),
-			\RecursiveIteratorIterator::SELF_FIRST);
+			new \phpbb\recursive_dot_prefix_filter_iterator(
+				new \RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', \FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS)
+			),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
 		foreach ($iterator as $file_info)
 		{
 			if ($file_info->isFile() && $file_info->getFilename() == 'ext.' . $this->php_ext)
