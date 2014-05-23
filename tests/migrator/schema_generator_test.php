@@ -7,6 +7,8 @@
 *
 */
 
+require_once __DIR__ . '/../dbal/migration/dummy_order.php';
+
 class schmema_generator_test extends phpbb_test_case
 {
 	public function setUp()
@@ -45,5 +47,20 @@ class schmema_generator_test extends phpbb_test_case
 		));
 
 		$this->assertArrayHasKey('phpbb_users', $this->generator->get_schema());
+	}
+
+	public function test_check_column_position_success()
+	{
+		$this->get_schema_generator(array(
+			'phpbb_dbal_migration_dummy_order',
+		));
+
+		$tables = $this->generator->get_schema();
+		$columns = $tables[$this->table_prefix . 'column_order_test']['COLUMNS'];
+
+		$offset1 = array_search('foobar1', array_keys($columns));
+		$offset2 = array_search('foobar2', array_keys($columns));
+
+		$this->assertEquals($offset1 + 1, $offset2, 'The schema generator could not position the column correctly, using the "after" option in the migration script.');
 	}
 }
