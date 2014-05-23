@@ -57,7 +57,8 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			}
 		}
 
-		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket);
+		$this->db_connect_id = @mysqli_init();
+		$this->db_connect_id->real_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket, MYSQLI_CLIENT_FOUND_ROWS);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
