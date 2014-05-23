@@ -250,7 +250,7 @@ p.post-notice.reported:before, p.post-notice.error:before {
 Colours and backgrounds for links.css
 -------------------------------------------------------------- */
 
-a:link	{ color: #105289; }
+a { color: #105289; }
 a:visited	{ color: #105289; }
 a:hover	{ color: #D31141; }
 a:active	{ color: #368AD2; }
