@@ -122,7 +122,7 @@ class twig extends \phpbb\template\base
 			$twig = $this->twig;
 			$lexer = $proxy_factory->createProxy(
 				'phpbb\template\twig\lexer',
-				function (& $wrappedObject, $proxy, $method, $parameters, & $initializer) use ($twig) {
+				function (&$wrappedObject, $proxy, $method, $parameters, &$initializer) use ($twig) {
 					$wrappedObject = new \phpbb\template\twig\lexer($twig); // instantiation logic here
 					$initializer = null; // turning off further lazy initialization
 
