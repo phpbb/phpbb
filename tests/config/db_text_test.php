@@ -9,8 +9,8 @@
 
 class phpbb_config_db_text_test extends phpbb_database_test_case
 {
-	private $db;
-	private $config_text;
+	/** @var \phpbb\config\db_text */
+	protected $config_text;
 
 	public function getDataSet()
 	{
@@ -46,6 +46,12 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 	{
 		$this->config_text->set('foo', '24');
 		$this->assertSame('24', $this->config_text->get('foo'));
+	}
+
+	public function test_set_same_value_get()
+	{
+		$this->config_text->set('foo', '23');
+		$this->assertSame('23', $this->config_text->get('foo'));
 	}
 
 	public function test_set_get_long_string()
