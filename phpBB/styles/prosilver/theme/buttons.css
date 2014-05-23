@@ -68,7 +68,8 @@
 .reply-icon a:hover span, .pmreply-icon a:hover span		{ background-position: -20px -20px; }
 
 .post-icon a span, .newpm-icon a span, .reply-all a span	{ background-position: 0 0; }
-.post-icon a:hover span, .newpm-icon a:hover span,
+.post-icon a:hover span,
+.newpm-icon a:hover span,
 .reply-all a:hover span										{ background-position: 0 -20px; }
 
 .locked-icon a span											{ background-position: -60px 0; }
