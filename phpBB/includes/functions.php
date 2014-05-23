@@ -5126,7 +5126,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		}
 		else
 		{
-			$cache->put('cron.lock_check', true, 60 * 10);
+			$cache->put('cron.lock_check', true, 300);
 		}
 	}
 
