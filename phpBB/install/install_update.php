@@ -366,7 +366,7 @@ class install_update extends module
 					$get_new_list = true;
 				}
 
-				if (!$get_new_list && $update_list['status'] != -1)
+				if (!$get_new_list && ($update_list['status'] != -1 || $update_list['status_deleted'] != -1))
 				{
 					$get_new_list = true;
 				}
@@ -377,17 +377,17 @@ class install_update extends module
 					$cache->put('_update_list', $update_list);
 
 					// Refresh the page if we are still not finished...
-					if ($update_list['status'] != -1)
+					if ($update_list['status'] != -1 || $update_list['status_deleted'] != -1)
 					{
 						$refresh_url = append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check");
 						meta_refresh(2, $refresh_url);
 
 						$template->assign_vars(array(
 							'S_IN_PROGRESS'		=> true,
-							'S_COLLECTED'		=> (int) $update_list['status'],
+							'S_COLLECTED'		=> (int) $update_list['status'] + (int) $update_list['status_deleted'],
 							'S_TO_COLLECT'		=> sizeof($this->update_info['files']),
 							'L_IN_PROGRESS'				=> $user->lang['COLLECTING_FILE_DIFFS'],
-							'L_IN_PROGRESS_EXPLAIN'		=> sprintf($user->lang['NUMBER_OF_FILES_COLLECTED'], (int) $update_list['status'], sizeof($this->update_info['files'])),
+							'L_IN_PROGRESS_EXPLAIN'		=> sprintf($user->lang['NUMBER_OF_FILES_COLLECTED'], (int) $update_list['status'], sizeof($this->update_info['files']) + sizeof($this->update_info['deleted'])),
 						));
 
 						return;
@@ -413,7 +413,7 @@ class install_update extends module
 				// Now assign the list to the template
 				foreach ($update_list as $status => $filelist)
 				{
-					if ($status == 'no_update' || !sizeof($filelist) || $status == 'status')
+					if ($status == 'no_update' || !sizeof($filelist) || $status == 'status' || $status == 'status_deleted')
 					{
 						continue;
 					}
@@ -480,7 +480,7 @@ class install_update extends module
 				$all_up_to_date = true;
 				foreach ($update_list as $status => $filelist)
 				{
-					if ($status != 'up_to_date' && $status != 'custom' && $status != 'status' && sizeof($filelist))
+					if ($status != 'up_to_date' && $status != 'custom' && $status != 'status' && $status != 'status_deleted' && sizeof($filelist))
 					{
 						$all_up_to_date = false;
 						break;
@@ -822,7 +822,7 @@ class install_update extends module
 
 						foreach ($update_list as $status => $files)
 						{
-							if ($status == 'up_to_date' || $status == 'no_update' || $status == 'status')
+							if ($status == 'up_to_date' || $status == 'no_update' || $status == 'status' || $status == 'status_deleted')
 							{
 								continue;
 							}
@@ -1212,6 +1212,16 @@ class install_update extends module
 				$this->page_title = 'VIEWING_FILE_CONTENTS';
 
 			break;
+
+			case 'deleted':
+
+				$diff = $this->return_diff(array(), $phpbb_root_path . $original_file);
+
+				$template->assign_var('S_DIFF_NEW_FILE', true);
+				$diff_mode = 'inline';
+				$this->page_title = 'VIEWING_FILE_CONTENTS';
+
+			break;
 		}
 
 		$diff_mode_options = '';
@@ -1257,7 +1267,9 @@ class install_update extends module
 				'new_conflict'	=> array(),
 				'conflict'		=> array(),
 				'no_update'		=> array(),
+				'deleted'		=> array(),
 				'status'		=> 0,
+				'status_deleted'=> 0,
 			);
 		}
 
@@ -1337,6 +1349,30 @@ class install_update extends module
 		}
 
 		$update_list['status'] = -1;
+
+		foreach ($this->update_info['deleted'] as $index => $file)
+		{
+			if (is_int($update_list['status_deleted']) && $index < $update_list['status_deleted'])
+			{
+				continue;
+			}
+
+			if ($num_bytes_processed >= 500 * 1024)
+			{
+				return;
+			}
+
+			if (file_exists($phpbb_root_path . $file))
+			{
+				$update_list['deleted'][] = array('filename' => $file, 'custom' => false, 'as_expected' => false);
+				$num_bytes_processed += filesize($phpbb_root_path . $file);
+			}
+
+			$update_list['status_deleted']++;
+		}
+
+		$update_list['status_deleted'] = -1;
+
 /*		if (!sizeof($this->update_info['files']))
 		{
 			return $update_list;

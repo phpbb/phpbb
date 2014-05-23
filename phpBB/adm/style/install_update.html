@@ -348,6 +348,25 @@
 
 		<!-- ENDIF -->
 
+		<!-- IF .deleted -->
+			<h2>{L_FILES_DELETED}</h2>
+			<p>{L_FILES_DELETED_EXPLAIN}</p>
+
+			<fieldset>
+				<legend><img src="{T_IMAGE_PATH}icon_delete.gif" alt="{L_STATUS_DELETED}" /></legend>
+				<!-- BEGIN deleted -->
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<br /><!-- ENDIF -->{deleted.FILE_PART}</strong>
+					</dt>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
+						<!-- IF not deleted.S_BINARY -->[<a href="{deleted.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{deleted.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+					</dd>
+				</dl>
+				<!-- END deleted -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
 		<br />
 
 		<fieldset class="quick">
