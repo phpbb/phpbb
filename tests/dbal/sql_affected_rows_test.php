@@ -23,15 +23,6 @@ class phpbb_dbal_sql_affected_rows_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
 	}
 
-	public function test_select()
-	{
-		$sql = 'SELECT *
-			FROM ' . CONFIG_TABLE;
-		$this->db->sql_query($sql);
-
-		$this->assertEquals(2, $this->db->sql_affectedrows());
-	}
-
 	public function test_update()
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
@@ -50,7 +41,7 @@ class phpbb_dbal_sql_affected_rows_test extends phpbb_database_test_case
 		$this->assertEquals(2, $this->db->sql_affectedrows());
 	}
 
-	public function test_update_some_matched_unequal_updated()
+	public function test_update_same_value_matched_unequal_updated()
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = 'foo'
