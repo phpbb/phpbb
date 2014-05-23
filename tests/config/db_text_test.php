@@ -95,6 +95,8 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 			'baby' => 'phpBB',
 			// Entry update
 			'bar' => '64',
+			// Entry update - same value
+			'foo' => '23',
 		);
 
 		$this->config_text->set_array($set_array_param);
