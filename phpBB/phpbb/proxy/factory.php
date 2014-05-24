@@ -10,7 +10,7 @@
 namespace phpbb\proxy;
 
 /**
-* Proxy Facotry, wrapper for Ocramius/ProxyManager
+* Proxy Factory, wrapper for Ocramius/ProxyManager
 * @package phpBB3
 */
 class factory
