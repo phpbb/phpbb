@@ -13,8 +13,13 @@ namespace phpbb\proxy;
 * Proxy Facotry, wrapper for Ocramius/ProxyManager
 * @package phpBB3
 */
-class factory extends \ProxyManager\Factory\LazyLoadingValueHolderFactory
+class factory
 {
+	/**
+	* @var \ProxyManager\Factory\LazyLoadingValueHolderFactory
+	*/
+	protected $factory;
+
 	/**
 	* Constructor
 	*
@@ -24,7 +29,19 @@ class factory extends \ProxyManager\Factory\LazyLoadingValueHolderFactory
 	{
 		$configuration = new \ProxyManager\Configuration();
 		$configuration->setProxiesTargetDir($phpbb_root_path . '/cache');
+
 		spl_autoload_register($configuration->getProxyAutoloader());
-		parent::__construct($configuration);
+		$this->factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($configuration);
+	}
+
+	/**
+	* @param string   $className name of the class to be proxied
+	* @param \Closure $initializer initializer to be passed to the proxy
+	*
+	* @return \ProxyManager\Proxy\LazyLoadingInterface|\ProxyManager\Proxy\ValueHolderInterface
+	*/
+	public function createProxy($className, \Closure $initializer)
+	{
+		return $this->factory->createProxy($className, $initializer);
 	}
 }
