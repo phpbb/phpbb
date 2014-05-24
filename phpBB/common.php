@@ -85,9 +85,43 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Setup class loader first
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpbb_root_path, $phpEx);
 $phpbb_class_loader->register();
-$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
+
+if (!defined('DEBUG_CONTAINER'))
+{
+	$phpbb_class_loader->doBuildBootstrap(array(
+		'\\phpbb\\cache\\driver\\base',
+		'\\phpbb\\cache\\driver\\driver_interface',
+		'\\phpbb\\config\\config',
+		'\\phpbb\\config\\db',
+		'\\phpbb\\db\\driver\\driver_interface',
+		'\\phpbb\\db\\driver\\driver',
+		'\\phpbb\\di\\service_collection',
+		'\\phpbb\\di\\pass\\collection_pass',
+		'\\phpbb\\di\\pass\\kernel_pass',
+		'\\phpbb\\di\\extension\\config',
+		'\\phpbb\\di\\extension\\core',
+		'\\phpbb\\di\\extension\\ext',
+		'\\phpbb\\event\\data',
+		'\\phpbb\\event\\dispatcher',
+		'\\phpbb\\event\\extension_subscriber_loader',
+		'\\phpbb\\event\\kernel_exception_subscriber',
+		'\\phpbb\\event\\kernel_request_subscriber',
+		'\\phpbb\\event\\kernel_terminate_subscriber',
+		'\\phpbb\\extension\\manager',
+		'\\phpbb\\filesystem',
+		'\\phpbb\\path_helper',
+		'\\phpbb\\request\\deactivated_super_global',
+		'\\phpbb\\request\\request',
+		'\\phpbb\\request\\request_interface',
+		'\\phpbb\\request\\type_cast_helper',
+		'\\phpbb\\request\\type_cast_helper_interface',
+		'\\phpbb\\symfony_request',
+	), '$phpbb_class_loader');
+}
+
+$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpbb_root_path, $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container

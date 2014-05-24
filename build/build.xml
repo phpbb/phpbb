@@ -295,6 +295,12 @@
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
 		<delete file="${dir}/vendor/psr/log/README.md" />
 
+		<delete dir="${dir}/vendor/symfony/class-loader/Symfony/Component/ClassLoader/Tests" />
+		<delete file="${dir}/vendor/symfony/class-loader/Symfony/Component/ClassLoader/.gitignore" />
+		<delete file="${dir}/vendor/symfony/class-loader/Symfony/Component/ClassLoader/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/class-loader/Symfony/Component/ClassLoader/README.md" />
+		<delete file="${dir}/vendor/symfony/class-loader/Symfony/Component/ClassLoader/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/config/Symfony/Component/Config/Tests" />
 		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/.gitignore" />
 		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/CHANGELOG.md" />

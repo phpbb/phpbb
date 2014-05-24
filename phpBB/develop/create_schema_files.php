@@ -34,7 +34,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 include($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpbb_root_path, $phpEx);
 $phpbb_class_loader->register();
 
 class phpbb_extension_empty_manager extends \phpbb\extension\manager

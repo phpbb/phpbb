@@ -38,15 +38,23 @@ class class_loader
 	private $cached_paths = array();
 
 	/**
+	* A map of looked up class names which are bootstrapped.
+	*
+	* @var array
+	*/
+	private $bootstrapped_classes = array();
+
+	/**
 	* Creates a new \phpbb\class_loader, which loads files with the given
 	* file extension from the given path.
 	*
 	* @param string $namespace Required namespace for files to be loaded
 	* @param string $path    Directory to load files from
+	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext The file extension for PHP files
 	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct($namespace, $path, $phpbb_root_path = './', $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		if ($namespace[0] !== '\\')
 		{
@@ -56,6 +64,7 @@ class class_loader
 		$this->namespace = $namespace;
 		$this->path = $path;
 		$this->php_ext = $php_ext;
+		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->set_cache($cache);
 	}
@@ -80,6 +89,60 @@ class class_loader
 		}
 
 		$this->cache = $cache;
+	}
+
+	/**
+	* Build (or include if the file already exist) a bootstrap file containing the code of a given set of classes.
+	*
+	* @param array	$classes			The list of the classes and interface to include in the boostrap
+	* @param string $loader_variable	The name of the variable corresponding to the current class loader
+	* @param bool	$force				If true builds the file even if it even exists
+	*/
+	public function doBuildBootstrap($classes, $loader_variable, $force = false)
+	{
+		$file = 'cache/bootstrap_' . str_replace('\\', '__', $this->namespace) . '.' . $this->php_ext;
+
+		if (file_exists($this->phpbb_root_path . $file) && !$force)
+		{
+			// Is the bootstrap already loaded?
+			if (empty($this->bootstrapped_classes))
+			{
+				require $this->phpbb_root_path . $file;
+			}
+			return;
+		}
+
+		if (file_exists($this->phpbb_root_path . $file)) {
+			unlink($this->phpbb_root_path . $file);
+		}
+
+		\Symfony\Component\ClassLoader\ClassCollectionLoader::load($classes, dirname($this->phpbb_root_path . $file), basename($this->phpbb_root_path . $file, $this->php_ext), false, false, $this->php_ext);
+
+		foreach ($classes as $class)
+		{
+			$this->bootstrapped_classes[$class] = $file;
+		}
+
+		$bootstrap_content = substr(file_get_contents($this->phpbb_root_path . $file), 5);
+		file_put_contents($this->phpbb_root_path . $file, sprintf("<?php
+namespace
+{
+	global {$loader_variable};
+	{$loader_variable}->set_bootstrapped_classes(%s);
+}
+
+%s
+", var_export($this->bootstrapped_classes, true), $bootstrap_content));
+	}
+
+	/**
+	* Set the list of the classes that are contained in the bootstrap file
+	*
+	* @param array $classes The fully qualified name of the classes
+	*/
+	public function set_bootstrapped_classes($classes)
+	{
+		$this->bootstrapped_classes = $classes;
 	}
 
 	/**

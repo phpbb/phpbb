@@ -47,6 +47,7 @@ services:
         arguments:
             - phpbb\
             - %core.root_path%includes/
+            - %core.root_path%
             - %core.php_ext%
         calls:
             - [register, []]
