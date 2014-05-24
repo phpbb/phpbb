@@ -463,7 +463,10 @@ class finder
 			}
 			else if ($directory && $directory[0] === '/')
 			{
-				$path .= substr($directory, 1);
+				if (!$is_dir)
+				{
+					$path .= substr($directory, 1);
+				}
 				$directory_pattern = '^' . preg_quote(str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR, '#');
 			}
 			else
@@ -476,57 +479,56 @@ class finder
 			}
 			$directory_pattern = '#' . $directory_pattern . '#';
 
-			$iterator = new \RecursiveIteratorIterator(
-				new \phpbb\recursive_dot_prefix_filter_iterator(
-					new \RecursiveDirectoryIterator(
-						$path,
-						\FilesystemIterator::SKIP_DOTS
-					)
-				),
-				\RecursiveIteratorIterator::SELF_FIRST
-			);
-
-			foreach ($iterator as $file_info)
+			if (is_dir($path))
 			{
-				$filename = $file_info->getFilename();
+				$iterator = new \RecursiveIteratorIterator(
+					new \phpbb\recursive_dot_prefix_filter_iterator(
+						new \RecursiveDirectoryIterator(
+							$path,
+							\FilesystemIterator::SKIP_DOTS
+						)
+					),
+					\RecursiveIteratorIterator::SELF_FIRST
+				);
 
-				if ($file_info->isDir() == $is_dir)
+				foreach ($iterator as $file_info)
 				{
-					if ($is_dir)
+					$filename = $file_info->getFilename();
+
+					if ($file_info->isDir() == $is_dir)
 					{
-						$relative_path = $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR . basename($filename) . DIRECTORY_SEPARATOR;
-						if ($directory && $directory[0] === '/')
+						if ($is_dir)
 						{
-							$relative_path = str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR . $relative_path;
-						}
-						else if ($relative_path[0] !== DIRECTORY_SEPARATOR)
-						{
-							$relative_path = DIRECTORY_SEPARATOR . $relative_path;
-						}
-					}
-					else
-					{
-						$relative_path = DIRECTORY_SEPARATOR . $iterator->getInnerIterator()->getSubPathname();
-						if ($directory && $directory[0] === '/')
-						{
-							$relative_path = str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR . $relative_path;
+							$relative_path = $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR . basename($filename) . DIRECTORY_SEPARATOR;
+							if ($relative_path[0] !== DIRECTORY_SEPARATOR)
+							{
+								$relative_path = DIRECTORY_SEPARATOR . $relative_path;
+							}
 						}
 						else
 						{
-							$relative_path = DIRECTORY_SEPARATOR . $relative_path;
+							$relative_path = $iterator->getInnerIterator()->getSubPathname();
+							if ($directory && $directory[0] === '/')
+							{
+								$relative_path = str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR . $relative_path;
+							}
+							else
+							{
+								$relative_path = DIRECTORY_SEPARATOR . $relative_path;
+							}
 						}
-					}
 
-					if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
-						(!$prefix || substr($filename, 0, strlen($prefix)) === $prefix) &&
-						(!$directory || preg_match($directory_pattern, $relative_path)))
-					{
-						$files[] = array(
-							'named_path'	=> str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1)),
-							'ext_name'		=> $ext_name,
-							'path'			=> str_replace(array(DIRECTORY_SEPARATOR, $this->phpbb_root_path), array('/', ''), $file_info->getPath()) . '/',
-							'filename'		=> $filename,
-						);
+						if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
+							(!$prefix || substr($filename, 0, strlen($prefix)) === $prefix) &&
+							(!$directory || preg_match($directory_pattern, $relative_path)))
+						{
+							$files[] = array(
+								'named_path'	=> str_replace(DIRECTORY_SEPARATOR, '/', $location . $name . substr($relative_path, 1)),
+								'ext_name'		=> $ext_name,
+								'path'			=> str_replace(array(DIRECTORY_SEPARATOR, $this->phpbb_root_path), array('/', ''), $file_info->getPath()) . '/',
+								'filename'		=> $filename,
+							);
+						}
 					}
 				}
 			}
