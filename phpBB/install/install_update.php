@@ -366,7 +366,7 @@ class install_update extends module
 					$get_new_list = true;
 				}
 
-				if (!$get_new_list && ($update_list['status'] != -1 || $update_list['status_deleted'] != -1))
+				if (!$get_new_list && $update_list['status'] != -1)
 				{
 					$get_new_list = true;
 				}
@@ -377,14 +377,14 @@ class install_update extends module
 					$cache->put('_update_list', $update_list);
 
 					// Refresh the page if we are still not finished...
-					if ($update_list['status'] != -1 || $update_list['status_deleted'] != -1)
+					if ($update_list['status'] != -1)
 					{
 						$refresh_url = append_sid($this->p_master->module_url, "language=$language&amp;mode=$mode&amp;sub=file_check");
 						meta_refresh(2, $refresh_url);
 
 						$template->assign_vars(array(
 							'S_IN_PROGRESS'		=> true,
-							'S_COLLECTED'		=> (int) $update_list['status'] + (int) $update_list['status_deleted'],
+							'S_COLLECTED'		=> (int) $update_list['status'],
 							'S_TO_COLLECT'		=> sizeof($this->update_info['files']),
 							'L_IN_PROGRESS'				=> $user->lang['COLLECTING_FILE_DIFFS'],
 							'L_IN_PROGRESS_EXPLAIN'		=> sprintf($user->lang['NUMBER_OF_FILES_COLLECTED'], (int) $update_list['status'], sizeof($this->update_info['files']) + sizeof($this->update_info['deleted'])),
@@ -1348,8 +1348,6 @@ class install_update extends module
 			$update_list['status']++;
 		}
 
-		$update_list['status'] = -1;
-
 		foreach ($this->update_info['deleted'] as $index => $file)
 		{
 			if (is_int($update_list['status_deleted']) && $index < $update_list['status_deleted'])
@@ -1369,9 +1367,11 @@ class install_update extends module
 			}
 
 			$update_list['status_deleted']++;
+			$update_list['status']++;
 		}
 
 		$update_list['status_deleted'] = -1;
+		$update_list['status'] = -1;
 
 /*		if (!sizeof($this->update_info['files']))
 		{
