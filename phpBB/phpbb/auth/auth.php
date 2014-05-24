@@ -209,10 +209,11 @@ class auth
 	/**
 	* Get forums with the specified permission setting
 	*
-	* @param string $opt The permission name to lookup. If it's prefixed with !, then the result becomes negated.
+	* @param string $opt The permission name to lookup. If prefixed with !, the result is negated.
 	* @param bool	$clean set to true if only values needs to be returned which are set/unset
 	*
-	* @return array Contains the forum ids with the specified permision set to true.
+	* @return array Contains the forum ids with the specified permission set to true.
+					This is a nested array: array => forum_id => permission => true
 	*/
 	function acl_getf($opt, $clean = false)
 	{

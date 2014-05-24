@@ -1064,10 +1064,10 @@ class session
 	* Checks whether the supplied user is banned by id, ip or email. If no parameters
 	* are passed to the method pre-existing session data is used.
 	*
-	* @param int|false				$user_id		The user id
-	* @param string|array|false		$user_ips		Can contain a string with one IP or an array of multiple IPs
-	* @param string|false			$user_email		The user email
-	* @param bool					$return			If $return is false this routine does not return on finding a banned user,
+	* @param int|false		$user_id		The user id
+	* @param mixed			$user_ips		Can contain a string with one IP or an array of multiple IPs
+	* @param string|false	$user_email		The user email
+	* @param bool			$return			If $return is false this routine does not return on finding a banned user,
 	*	it outputs a relevant message and stops execution.
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)

@@ -500,8 +500,8 @@ class fileupload
 	* @param int $min_height Minimum image height (only checked for images)
 	* @param int $max_width Maximum image width (only checked for images)
 	* @param int $max_height Maximum image height (only checked for images)
-	* @param bool|array $disallowed_content If enabled, the first 256 bytes of the file must not contain any of it's values.
-	*										Defaults to false.
+	* @param bool|array $disallowed_content If enabled, the first 256 bytes of the file must not
+	*										contain any of its values. Defaults to false.
 	*
 	*/
 	function fileupload($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false, $disallowed_content = false)
