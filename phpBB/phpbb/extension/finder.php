@@ -463,6 +463,7 @@ class finder
 			}
 			else if ($directory && $directory[0] === '/')
 			{
+				$path .= substr($directory, 1);
 				$directory_pattern = '^' . preg_quote(str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR, '#');
 			}
 			else
@@ -494,7 +495,11 @@ class finder
 					if ($is_dir)
 					{
 						$relative_path = $iterator->getInnerIterator()->getSubPath() . DIRECTORY_SEPARATOR . basename($filename) . DIRECTORY_SEPARATOR;
-						if ($relative_path[0] !== DIRECTORY_SEPARATOR)
+						if ($directory && $directory[0] === '/')
+						{
+							$relative_path = str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR . $relative_path;
+						}
+						else if ($relative_path[0] !== DIRECTORY_SEPARATOR)
 						{
 							$relative_path = DIRECTORY_SEPARATOR . $relative_path;
 						}
@@ -502,6 +507,14 @@ class finder
 					else
 					{
 						$relative_path = DIRECTORY_SEPARATOR . $iterator->getInnerIterator()->getSubPathname();
+						if ($directory && $directory[0] === '/')
+						{
+							$relative_path = str_replace('/', DIRECTORY_SEPARATOR, $directory) . DIRECTORY_SEPARATOR . $relative_path;
+						}
+						else
+						{
+							$relative_path = DIRECTORY_SEPARATOR . $relative_path;
+						}
 					}
 
 					if ((!$suffix || substr($relative_path, -strlen($suffix)) === $suffix) &&
