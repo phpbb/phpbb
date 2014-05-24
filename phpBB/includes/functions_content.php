@@ -1348,7 +1348,8 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			// Return colour
 			if ($mode == 'colour')
 			{
-				return $username_colour;
+				$username_string = $username_colour;
+				break;
 			}
 
 		// no break;
@@ -1368,7 +1369,8 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			// Return username
 			if ($mode == 'username')
 			{
-				return $username;
+				$username_string = $username;
+				break;
 			}
 
 		// no break;
@@ -1389,19 +1391,23 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			// Return profile
 			if ($mode == 'profile')
 			{
-				return $profile_url;
+				$username_string = $profile_url;
+				break;
 			}
 
 		// no break;
 	}
-
-	if (($mode == 'full' && !$profile_url) || $mode == 'no_profile')
+	
+	if (!isset($username_string))
 	{
-		$username_string = str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
-	}
-	else
-	{
-		$username_string = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+		if (($mode == 'full' && !$profile_url) || $mode == 'no_profile')
+		{
+			$username_string = str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
+		}
+		else
+		{
+			$username_string = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
+		}
 	}
 
 	/**
