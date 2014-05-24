@@ -656,6 +656,9 @@ class mcp_queue
 						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
 						{
 							$phpbb_notifications->add_notifications(array('topic'), $post_data);
+						}
+						if ($post_data['post_visibility'] != ITEM_APPROVED)
+						{
 							$num_topics++;
 						}
 					}
