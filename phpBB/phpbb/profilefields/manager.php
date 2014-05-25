@@ -28,6 +28,12 @@ class manager
 	protected $db;
 
 	/**
+	* Event dispatcher object
+	* @var \phpbb\event\dispatcher
+	*/
+	protected $dispatcher;
+
+	/**
 	* Request object
 	* @var \phpbb\request\request
 	*/
@@ -64,6 +70,7 @@ class manager
 	*
 	* @param	\phpbb\auth\auth			$auth		Auth object
 	* @param	\phpbb\db\driver\driver_interface	$db			Database object
+	* @param	\phpbb\event\dispatcher		$dispatcher	Event dispatcher object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\di\service_collection $type_collection
@@ -72,10 +79,11 @@ class manager
 	* @param	string				$fields_language_table
 	* @param	string				$fields_data_table
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher $dispatcher, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
+		$this->dispatcher = $dispatcher;
 		$this->request = $request;
 		$this->template = $template;
 		$this->type_collection = $type_collection;
@@ -313,6 +321,17 @@ class manager
 		}
 		$this->db->sql_freeresult($result);
 
+		/**
+		* Event to modify profile fields data retrieved from the database
+		*
+		* @event core.grab_profile_fields_data
+		* @var	array	user_ids		Single user id or an array of ids 
+		* @var	array	field_data		Array with profile fields data
+		* @since 3.1.0-b3
+		*/
+		$vars = array('user_ids', 'field_data');
+		extract($this->dispatcher->trigger_event('core.grab_profile_fields_data', compact($vars)));
+
 		$user_fields = array();
 
 		// Go through the fields in correct order
@@ -350,6 +369,18 @@ class manager
 		// $profile_row == $user_fields[$row['user_id']];
 		$tpl_fields = array();
 		$tpl_fields['row'] = $tpl_fields['blockrow'] = array();
+
+		/**
+		* Event to modify data of the generated profile fields, before the template assignment loop
+		*
+		* @event core.generate_profile_fields_template_data_before
+		* @var	array	profile_row		Array with users profile field data 
+		* @var	array	tpl_fields		Array with template data fields
+		* @var	bool	use_contact_fields	Should we display contact fields as such?
+		* @since 3.1.0-b3
+		*/
+		$vars = array('profile_row', 'tpl_fields', 'use_contact_fields');
+		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_data_before', compact($vars)));
 
 		foreach ($profile_row as $ident => $ident_ary)
 		{
@@ -403,6 +434,18 @@ class manager
 				'S_PROFILE_' . strtoupper($ident)		=> true,
 			);
 		}
+
+		/**
+		* Event to modify template data of the generated profile fields
+		*
+		* @event core.generate_profile_fields_template_data
+		* @var	array	profile_row		Array with users profile field data 
+		* @var	array	tpl_fields		Array with template data fields
+		* @var	bool	use_contact_fields	Should we display contact fields as such?
+		* @since 3.1.0-b3
+		*/
+		$vars = array('profile_row', 'tpl_fields', 'use_contact_fields');
+		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_data', compact($vars)));
 
 		return $tpl_fields;
 	}

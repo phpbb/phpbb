@@ -242,7 +242,7 @@ class acp_extensions
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$enabled_extension_meta_data = array();
-		
+
 		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
@@ -284,7 +284,7 @@ class acp_extensions
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$disabled_extension_meta_data = array();
-		
+
 		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
@@ -329,7 +329,7 @@ class acp_extensions
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
 
 		$available_extension_meta_data = array();
-		
+
 		foreach ($uninstalled as $name => $location)
 		{
 			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);

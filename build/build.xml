@@ -2,9 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.1.0-b3-dev" />
-	<property name="prevversion" value="3.1.0-b2" />
-	<property name="olderversions" value="3.0.12, 3.1.0-a1, 3.1.0-a2, 3.1.0-a3, 3.1.0-b1" />
+	<property name="newversion" value="3.1.0-b4-dev" />
+	<property name="prevversion" value="3.1.0-b3" />
+	<property name="olderversions" value="3.0.12, 3.1.0-a1, 3.1.0-a2, 3.1.0-a3, 3.1.0-b1, 3.1.0-b2" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
@@ -67,7 +67,6 @@
 		<exec dir="."
 			command="phpBB/vendor/bin/phpunit
 			--log-junit build/logs/phpunit.xml
-			--configuration phpunit.xml.all
 			--group slow
 			--coverage-clover build/logs/clover-slow.xml
 			--coverage-html build/coverage-slow"
@@ -109,14 +108,8 @@
 	</target>
 
 	<target name="docs">
-		<!-- only works if you setup phpdoctor:
-                     git clone https://github.com/peej/phpdoctor.git
-                     and then create an executable phpdoctor in your path containing
-                     #!/bin/sh
-                     php -f /path/to/phpdoctor/phpdoc.php $@
-                -->
-		<exec dir="build"
-			command="phpdoctor phpdoc-phpbb.ini"
+		<exec dir="."
+			command="phpBB/vendor/bin/sami.php update build/sami.conf.php"
 			passthru="true" />
 	</target>
 
@@ -141,6 +134,7 @@
 
 		<exec dir="build/old_versions" command="LC_ALL=C diff -crNEBwd release-${version} release-${newversion} >
 			../new_version/patches/phpBB-${version}_to_${newversion}.patch" escape="false" />
+		<exec dir="build/old_versions" command="LC_ALL=C diff -qr release-${version} release-${newversion} | grep 'Only in release-${version}' > ../new_version/patches/phpBB-${version}_to_${newversion}.deleted" escape="false" />
 	</target>
 
 	<target name="prepare-new-version">

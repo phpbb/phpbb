@@ -2004,7 +2004,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	*											the global one (false)
 	* @var	bool|string	append_sid_overwrite	Overwrite function (string
 	*											URL) or not (false)
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('url', 'params', 'is_amp', 'session_id', 'append_sid_overwrite');
 	extract($phpbb_dispatcher->trigger_event('core.append_sid', compact($vars)));
@@ -2326,8 +2326,9 @@ function reapply_sid($url)
 */
 function build_url($strip_vars = false)
 {
-	global $config, $user, $phpEx, $phpbb_root_path;
+	global $config, $user, $phpbb_path_helper;
 
+	$php_ext = $phpbb_path_helper->get_php_ext();
 	$page = $user->page['page'];
 
 	// We need to be cautious here.
@@ -2340,71 +2341,27 @@ function build_url($strip_vars = false)
 	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 	{
 		// Remove 'app.php/' from the page, when rewrite is enabled
-		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $phpEx . '/') === 0)
+		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $php_ext . '/') === 0)
 		{
-			$page = substr($page, strlen('app.' . $phpEx . '/'));
+			$page = substr($page, strlen('app.' . $php_ext . '/'));
 		}
 
-		$page = $phpbb_root_path . $page;
+		$page = $phpbb_path_helper->get_phpbb_root_path() . $page;
 	}
 
 	// Append SID
 	$redirect = append_sid($page, false, false);
 
-	// Add delimiter if not there...
-	if (strpos($redirect, '?') === false)
+	if ($strip_vars !== false)
 	{
-		$redirect .= '?';
+		$redirect = $phpbb_path_helper->strip_url_params($redirect, $strip_vars, false);
+	}
+	else
+	{
+		$redirect = str_replace('&', '&amp;', $redirect);
 	}
 
-	// Strip vars...
-	if ($strip_vars !== false && strpos($redirect, '?') !== false)
-	{
-		if (!is_array($strip_vars))
-		{
-			$strip_vars = array($strip_vars);
-		}
-
-		$query = $_query = array();
-
-		$args = substr($redirect, strpos($redirect, '?') + 1);
-		$args = ($args) ? explode('&', $args) : array();
-		$redirect = substr($redirect, 0, strpos($redirect, '?'));
-
-		foreach ($args as $argument)
-		{
-			$arguments = explode('=', $argument);
-			$key = $arguments[0];
-			unset($arguments[0]);
-
-			if ($key === '')
-			{
-				continue;
-			}
-
-			$query[$key] = implode('=', $arguments);
-		}
-
-		// Strip the vars off
-		foreach ($strip_vars as $strip)
-		{
-			if (isset($query[$strip]))
-			{
-				unset($query[$strip]);
-			}
-		}
-
-		// Glue the remaining parts together... already urlencoded
-		foreach ($query as $key => $value)
-		{
-			$_query[] = $key . '=' . $value;
-		}
-		$query = implode('&', $_query);
-
-		$redirect .= ($query) ? '?' . $query : '';
-	}
-
-	return str_replace('&', '&amp;', $redirect);
+	return $redirect . ((strpos($redirect, '?') === false) ? '?' : '');
 }
 
 /**
@@ -2693,7 +2650,6 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
-
 
 	if ($request->is_ajax())
 	{
@@ -4037,7 +3993,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 
 	// Get number of online guests
 
-	if ($db->sql_layer === 'sqlite')
+	if ($db->sql_layer === 'sqlite' || $db->sql_layer === 'sqlite3')
 	{
 		$sql = 'SELECT COUNT(session_ip) as num_guests
 			FROM (
@@ -4727,7 +4683,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	* @var	int		item_id				Restrict online users to item id
 	* @var	bool	page_header_override	Shall we return instead of running
 	*										the rest of page_header()
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_header', compact($vars)));
@@ -4903,12 +4859,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$hidden_fields_for_jumpbox = phpbb_build_hidden_fields_for_query_params($request, array('f'));
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
-		'CURRENT_USER_AVATAR'	=> phpbb_get_user_avatar($user->data),
 		'SITENAME'						=> $config['sitename'],
 		'SITE_DESCRIPTION'				=> $config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
@@ -4919,9 +4873,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'TOTAL_USERS_ONLINE'			=> $l_online_users,
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
-		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
-		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> $hidden_fields_for_jumpbox,
 
+		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
+		'CURRENT_USER_AVATAR'			=> phpbb_get_user_avatar($user->data),
+		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
@@ -4938,7 +4893,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
-		'USERNAME_FULL'		=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
@@ -5020,7 +4974,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'    => "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
-		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.js?assets_version=" . $config['assets_version'],
+		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $config['assets_version'],
 		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
@@ -5092,7 +5046,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	* @var	bool	run_cron			Shall we run cron tasks
 	* @var	bool	page_footer_override	Shall we return instead of running
 	*										the rest of page_footer()
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('run_cron', 'page_footer_override');
 	extract($phpbb_dispatcher->trigger_event('core.page_footer', compact($vars)));
@@ -5141,7 +5095,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'])
+	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'] && !$cache->get('cron.lock_check'))
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
@@ -5162,13 +5116,18 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	// Call cron job?
 	if ($call_cron)
 	{
-		global $cron;
+		global $phpbb_container;
+		$cron = $phpbb_container->get('cron.manager');
 		$task = $cron->find_one_ready_task();
 
 		if ($task)
 		{
 			$url = $task->get_url();
 			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+		}
+		else
+		{
+			$cache->put('cron.lock_check', true, 300);
 		}
 	}
 
@@ -5200,7 +5159,7 @@ function garbage_collection()
 		* Unload some objects, to free some memory, before we finish our task
 		*
 		* @event core.garbage_collection
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$phpbb_dispatcher->dispatch('core.garbage_collection');
 	}

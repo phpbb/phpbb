@@ -6,11 +6,11 @@
 		<li class="small-icon icon-home breadcrumbs">
 			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a></span><!-- ENDIF -->
 			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a></span>
-			<!-- BEGIN navlinks --><span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span><!-- END navlinks -->
+			<!-- BEGIN navlinks --><!-- EVENT overall_header_navlink_prepend --><span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span><!-- EVENT overall_header_navlink_append --><!-- END navlinks -->
 			<!-- EVENT overall_header_breadcrumb_append -->
 		</li>
 
-		<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- IF CURRENT_USER_AVATAR --><a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a> <!-- ENDIF -->{USERNAME_FULL}</li><!-- ENDIF -->
+		<!-- IF S_REGISTERED_USER --><li id="username_logged_in" class="rightside"><!-- IF CURRENT_USER_AVATAR --><a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a> <!-- ENDIF -->{CURRENT_USERNAME_FULL}</li><!-- ENDIF -->
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH --><li class="responsive-search rightside" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH}</a></li><!-- ENDIF -->
 	</ul>
 

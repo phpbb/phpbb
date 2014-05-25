@@ -7,7 +7,7 @@
 *
 */
 
-class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
+class phpbb_passwords_manager_test extends \phpbb_test_case
 {
 	protected $passwords_drivers;
 
@@ -176,7 +176,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 		}
 	}
 
-	public function test_combined_hash_data()
+	public function combined_hash_data()
 	{
 		if (version_compare(PHP_VERSION, '5.3.7', '<'))
 		{
@@ -242,7 +242,7 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	* @dataProvider test_combined_hash_data
+	* @dataProvider combined_hash_data
 	*/
 	public function test_combined_hash_password($first_type, $second_type, $expected = true)
 	{

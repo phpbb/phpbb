@@ -112,6 +112,12 @@
 	padding-right: 10px;
 }
 
+/* Responsive breadcrumbs
+----------------------------------------*/
+.rtl .breadcrumbs .crumb {
+	float: right;
+}
+
 /* Table styles
 ----------------------------------------*/
 .rtl table.table1 thead th {
@@ -289,7 +295,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl ul.topiclist dt, .rtl li.header dt {
 	float: right;
 	margin-right: 0;
-	margin-left: -410px;
+	margin-left: -440px;
 }
 
 .rtl ul.topiclist.missing-column dt {
@@ -309,7 +315,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 .rtl ul.topiclist dt .list-inner {
 	margin-right: 0;
-	margin-left: 410px;
+	margin-left: 440px;
 }
 
 .rtl ul.topiclist.missing-column dt .list-inner {
@@ -336,6 +342,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	border-right-width: 1px;
 	border-right-style: solid;
 	border-left: none;
+}
+
+.rtl ul.topiclist dfn {
+	left: auto;
+	right: -999px;
 }
 
 .rtl ul.topiclist li.row dt a.subforum {

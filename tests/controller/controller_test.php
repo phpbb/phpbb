@@ -8,8 +8,6 @@
 */
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -31,7 +29,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 	public function test_provider()
 	{
-		$provider = new \phpbb\controller\provider($this->extension_manager->get_finder());
+		$provider = new \phpbb\controller\provider();
+		$provider->find_routing_files($this->extension_manager->get_finder());
 		$routes = $provider->find(__DIR__)->get_routes();
 
 		// This will need to be updated if any new routes are defined
@@ -43,6 +42,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller2'));
 		$this->assertEquals('/foo/bar', $routes->get('controller2')->getPath());
+
+		$this->assertNull($routes->get('controller_noroute'));
 	}
 
 	public function test_controller_resolver()
@@ -67,7 +68,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			include(__DIR__.'/phpbb/controller/foo.php');
 		}
 
-		$resolver = new \phpbb\controller\resolver(new \phpbb\user, $container);
+		$resolver = new \phpbb\controller\resolver(new \phpbb\user, $container, dirname(__FILE__) . '/');
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 

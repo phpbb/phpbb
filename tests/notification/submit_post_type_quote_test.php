@@ -55,7 +55,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*	2	=> Poster, should NOT receive a notification
 			*	3	=> Quoted, should receive a notification
 			*	4	=> Quoted, but unauthed to read, should NOT receive a notification
-			*	5	=> Quoted, but already notified, should NOT receive a new notification
+			*	5	=> Quoted, but already notified, should STILL receive a new notification
 			*	6	=> Quoted, but option disabled, should NOT receive a notification
 			*	7	=> Quoted, option set to default, should receive a notification
 			*/
@@ -78,6 +78,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 				array(
 					array('user_id' => 3, 'item_id' => 2, 'item_parent_id' => 1),
 					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
+					array('user_id' => 5, 'item_id' => 2, 'item_parent_id' => 1),
 					array('user_id' => 7, 'item_id' => 2, 'item_parent_id' => 1),
 				),
 			),

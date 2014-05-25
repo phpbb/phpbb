@@ -336,6 +336,7 @@ $template->assign_vars(array(
 	'REPORTED_IMG'				=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 	'UNAPPROVED_IMG'			=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 	'DELETED_IMG'				=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
+	'POLL_IMG'					=> $user->img('icon_topic_poll', 'TOPIC_POLL'),
 	'GOTO_PAGE_IMG'				=> $user->img('icon_post_target', 'GOTO_PAGE'),
 
 	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
@@ -365,6 +366,7 @@ $template->assign_vars(array(
 	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
 	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($start == 0) ? '' : "&amp;start=$start")),
+	'U_CANONICAL'		=> generate_board_url() . '/' . append_sid("viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($start) ? "&amp;start=$start" : ''), true, ''),
 	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics&amp;mark_time=" . time()) : '',
 ));
 
@@ -387,7 +389,7 @@ $sql_array = array(
 *
 * @event core.viewforum_get_topic_data
 * @var	array	sql_array		The SQL array to get the data of all topics
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $vars = array('sql_array');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
@@ -582,7 +584,7 @@ if (sizeof($shadow_topic_list))
 	*
 	* @event core.viewforum_get_shadowtopic_data
 	* @var	array	sql_array		SQL array to get the data of any shadowtopics
-	* @since 3.1-A1
+	* @since 3.1.0-a1
 	*/
 	$vars = array('sql_array');
 	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_shadowtopic_data', compact($vars)));
@@ -749,7 +751,7 @@ if (sizeof($topic_list))
 		$view_topic_url_params = 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id;
 		$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params);
 
-		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $row['forum_id']));
+		$topic_unapproved = (($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE) && $auth->acl_get('m_approve', $row['forum_id']));
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id']));
 		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 
@@ -819,7 +821,7 @@ if (sizeof($topic_list))
 		* @event core.viewforum_modify_topicrow
 		* @var	array	row			Array with topic data
 		* @var	array	topic_row	Template array with topic data
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));

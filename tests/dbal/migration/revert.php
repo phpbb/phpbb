@@ -35,6 +35,14 @@ class phpbb_dbal_migration_revert extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('foobartest', 0)),
+			array('custom', array(array(&$this, 'my_custom_function'))),
 		);
+	}
+
+	function my_custom_function()
+	{
+		global $migrator_test_revert_counter;
+
+		$migrator_test_revert_counter += 1;
 	}
 }

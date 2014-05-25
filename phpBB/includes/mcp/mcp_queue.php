@@ -115,10 +115,10 @@ class mcp_queue
 
 				if (!empty($topic_id_list))
 				{
-					$post_visibility = ($mode == 'deleted_topics') ? ITEM_DELETED : ITEM_UNAPPROVED;
+					$post_visibility = ($mode == 'deleted_topics') ? ITEM_DELETED : array(ITEM_UNAPPROVED, ITEM_REAPPROVE);
 					$sql = 'SELECT post_id
 						FROM ' . POSTS_TABLE . '
-						WHERE post_visibility = ' . $post_visibility . '
+						WHERE ' . $db->sql_in_set('post_visibility', $post_visibility) . '
 							AND ' . $db->sql_in_set('topic_id', $topic_id_list);
 					$result = $db->sql_query($sql);
 
@@ -281,7 +281,7 @@ class mcp_queue
 					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED),
+					'S_POST_UNAPPROVED'		=> $post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE,
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 					'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED),
@@ -297,7 +297,6 @@ class mcp_queue
 					'U_VIEW_TOPIC'			=> $topic_url,
 
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
-
 
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . '&amp;start=' . $start . '">', '</a>'),
 					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
@@ -331,7 +330,7 @@ class mcp_queue
 				$m_perm = 'm_approve';
 				$is_topics = ($mode == 'unapproved_topics' || $mode == 'deleted_topics') ? true : false;
 				$is_restore = ($mode == 'deleted_posts' || $mode == 'deleted_topics') ? true : false;
-				$visibility_const = (!$is_restore) ? ITEM_UNAPPROVED : ITEM_DELETED;
+				$visibility_const = (!$is_restore) ? array(ITEM_UNAPPROVED, ITEM_REAPPROVE) : ITEM_DELETED;
 
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -419,7 +418,7 @@ class mcp_queue
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . '
 						WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . '
-							AND p.post_visibility = ' . $visibility_const . '
+							AND ' . $db->sql_in_set('p.post_visibility', $visibility_const) . '
 							' . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
@@ -472,7 +471,7 @@ class mcp_queue
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
-							AND topic_visibility = ' . $visibility_const . "
+							AND  ' . $db->sql_in_set('topic_visibility', $visibility_const) . "
 							AND topic_delete_user <> 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
@@ -660,11 +659,18 @@ class mcp_queue
 					}
 					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
-					$phpbb_notifications->add_notifications(array(
-						'quote',
-						'bookmark',
-						'post',
-					), $post_data);
+					// Only add notifications, if we are not reapproving post
+					// When the topic was already approved, but was edited and
+					// now needs re-approval, we don't want to notify the users
+					// again.
+					if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+					{
+						$phpbb_notifications->add_notifications(array(
+							'quote',
+							'bookmark',
+							'post',
+						), $post_data);
+					}
 
 					$phpbb_notifications->mark_notifications_read(array(
 						'quote',
@@ -832,10 +838,18 @@ class mcp_queue
 					));
 
 					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
-					$phpbb_notifications->add_notifications(array(
-						'quote',
-						'topic',
-					), $topic_data);
+
+					// Only add notifications, if we are not reapproving post
+					// When the topic was already approved, but was edited and
+					// now needs re-approval, we don't want to notify the users
+					// again.
+					if ($topic_data['topic_visibility'] == ITEM_UNAPPROVED)
+					{
+						$phpbb_notifications->add_notifications(array(
+							'quote',
+							'topic',
+						), $topic_data);
+					}
 
 					$phpbb_notifications->mark_notifications_read('quote', $topic_data['post_id'], $user->data['user_id']);
 					$phpbb_notifications->mark_notifications_read('topic', $topic_id, $user->data['user_id']);
@@ -1060,7 +1074,7 @@ class mcp_queue
 					if ($is_disapproving)
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED';
-						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason);
+						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason, $log_data['post_username']);
 					}
 					else
 					{
@@ -1126,7 +1140,6 @@ class mcp_queue
 						$post_data['disapprove_reason'] .= ($reason) ? "\n\n" . $reason : '';
 					}
 
-
 					if ($disapprove_all_posts_in_topic && $topic_information[$topic_id]['topic_posts_unapproved'] == 1)
 					{
 						// If there is only 1 post when disapproving the topic,
@@ -1143,7 +1156,6 @@ class mcp_queue
 			}
 
 			unset($lang_reasons, $post_info, $disapprove_reason, $disapprove_reason_lang);
-
 
 			if ($num_disapproved_topics)
 			{

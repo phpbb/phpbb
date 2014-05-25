@@ -138,4 +138,12 @@ class approve_post extends \phpbb\notification\type\post
 	{
 		return 'post_approved';
 	}
+
+	/**
+	* {inheritDoc}
+	*/
+	public function get_redirect_url()
+	{
+		return $this->get_url();
+	}
 }

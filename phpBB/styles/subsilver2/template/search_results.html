@@ -26,6 +26,7 @@
 		<th nowrap="nowrap">&nbsp;{L_LAST_POST}&nbsp;</th>
 	</tr>
 	<!-- BEGIN searchresults -->
+		<!-- EVENT search_results_topic_before -->
 		<tr valign="middle">
 			<td class="row1" width="25" align="center">{searchresults.TOPIC_FOLDER_IMG}</td>
 			<td class="row1" width="25" align="center">
@@ -36,7 +37,7 @@
 			<td class="row1">
 				<!-- EVENT topiclist_row_prepend -->
 				<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}" class="imageset">{NEWEST_POST_IMG}</a><!-- ENDIF -->
-				{searchresults.ATTACH_ICON_IMG} <a href="<!-- IF not S_IS_BOT and searchresults.S_UNREAD_TOPIC  -->{searchresults.U_NEWEST_POST}<!-- ELSE -->{searchresults.U_VIEW_TOPIC}<!-- ENDIF -->" class="topictitle">{searchresults.TOPIC_TITLE}</a>
+				{searchresults.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
 				<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 					<a href="{searchresults.U_MCP_QUEUE}" class="imageset">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
@@ -71,6 +72,7 @@
 				</p>
 			</td>
 		</tr>
+		<!-- EVENT search_results_topic_after -->
 	<!-- BEGINELSE -->
 		<tr valign="middle">
 			<td colspan="7" class="row3" align="center">{L_NO_SEARCH_RESULTS}</td>
@@ -91,6 +93,7 @@
 
 	<!-- BEGIN searchresults -->
 		<tr class="row2">
+		<!-- EVENT search_results_post_before -->
 		<!-- IF searchresults.S_IGNORE_POST -->
 			<td class="gensmall" colspan="2" height="25" align="center">{searchresults.L_IGNORE_POST}</td>
 		<!-- ELSE -->
@@ -126,6 +129,7 @@
 				</td>
 			</tr>
 		<!-- ENDIF -->
+		<!-- EVENT search_results_post_after -->
 		<tr>
 			<td class="spacer" colspan="2"><img src="images/spacer.gif" height="1" alt="" /></td>
 		</tr>

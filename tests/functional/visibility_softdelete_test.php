@@ -10,7 +10,7 @@
 /**
 * @group functional
 */
-class phpbb_functional_softdelete_test extends phpbb_functional_test_case
+class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_case
 {
 	protected $data = array();
 
@@ -608,7 +608,7 @@ class phpbb_functional_softdelete_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
-		$this->assertContainsLang('POST_DELETED', $crawler->filter('body')->text());
+		$this->assertContainsLang('POST_DELETED_ACTION', $crawler->filter('body')->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,

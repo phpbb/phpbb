@@ -142,7 +142,7 @@ class acp_bbcodes
 			case 'create':
 
 				$sql_ary = $hidden_fields = array();
-				
+
 				/**
 				* Modify custom bbcode data before the modify/create action
 				*
@@ -159,7 +159,16 @@ class acp_bbcodes
 				*									submitting form when $warn_text is true
 				* @since 3.1.0-a3
 				*/
-				$vars = array('action', 'sql_ary', 'bbcode_id', 'display_on_posting', 'bbcode_match', 'bbcode_tpl', 'bbcode_helpline', 'hidden_fields');
+				$vars = array(
+					'action',
+					'sql_ary',
+					'bbcode_id',
+					'display_on_posting',
+					'bbcode_match',
+					'bbcode_tpl',
+					'bbcode_helpline',
+					'hidden_fields',
+				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
 				$warn_text = preg_match('%<[^>]*\{text[\d]*\}[^>]*>%i', $bbcode_tpl);
@@ -209,7 +218,6 @@ class acp_bbcodes
 					{
 						trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-
 
 					if (strlen($bbcode_helpline) > 255)
 					{
@@ -311,7 +319,7 @@ class acp_bbcodes
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
-						
+
 						if ($request->is_ajax())
 						{
 							$json_response = new \phpbb\json_response;

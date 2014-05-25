@@ -14,7 +14,7 @@ require_once dirname(__FILE__) . '/tasks/simple_ready.php';
 require_once dirname(__FILE__) . '/tasks/simple_not_runnable.php';
 require_once dirname(__FILE__) . '/tasks/simple_should_not_run.php';
 
-class phpbb_cron_manager_test extends PHPUnit_Framework_TestCase
+class phpbb_cron_manager_test extends \phpbb_test_case
 {
 	public function setUp()
 	{

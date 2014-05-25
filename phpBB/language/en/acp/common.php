@@ -85,7 +85,6 @@ $lang = array_merge($lang, array(
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
 	'ACP_EXTENSIONS'			=> 'Manage extensions',
 
-
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
 	'ACP_FORUM_MANAGEMENT'			=> 'Forum management',
@@ -551,7 +550,7 @@ $lang = array_merge($lang, array(
 	'LOG_PM_REPORT_CLOSED'		=> '<strong>Closed PM report</strong><br />» %s',
 	'LOG_PM_REPORT_DELETED'		=> '<strong>Deleted PM report</strong><br />» %s',
 	'LOG_POST_APPROVED'			=> '<strong>Approved post</strong><br />» %s',
-	'LOG_POST_DISAPPROVED'		=> '<strong>Disapproved post “%1$s” with the following reason</strong><br />» %2$s',
+	'LOG_POST_DISAPPROVED'		=> '<strong>Disapproved post “%1$s” written by “%3$s” for the following reason</strong><br />» %2$s',
 	'LOG_POST_EDITED'			=> '<strong>Edited post “%1$s” written by</strong><br />» %2$s',
 	'LOG_POST_RESTORED'			=> '<strong>Restored post</strong><br />» %s',
 	'LOG_REPORT_CLOSED'			=> '<strong>Closed report</strong><br />» %s',
@@ -564,7 +563,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_TOPIC_APPROVED'		=> '<strong>Approved topic</strong><br />» %s',
 	'LOG_TOPIC_RESTORED'		=> '<strong>Restored topic</strong><br />» %s',
-	'LOG_TOPIC_DISAPPROVED'		=> '<strong>Disapproved topic “%1$s” with the following reason</strong><br />%2$s',
+	'LOG_TOPIC_DISAPPROVED'		=> '<strong>Disapproved topic “%1$s” written by “%3$s” for the following reason</strong><br />» %2$s',
 	'LOG_TOPIC_RESYNC'			=> '<strong>Resynchronised topic counters</strong><br />» %s',
 	'LOG_TOPIC_TYPE_CHANGED'	=> '<strong>Changed topic type</strong><br />» %s',
 	'LOG_UNLOCK'				=> '<strong>Unlocked topic</strong><br />» %s',
@@ -677,7 +676,6 @@ $lang = array_merge($lang, array(
 
 	'LOG_PURGE_CACHE'			=> '<strong>Purged cache</strong>',
 	'LOG_PURGE_SESSIONS'		=> '<strong>Purged sessions</strong>',
-
 
 	'LOG_RANK_ADDED'		=> '<strong>Added new rank</strong><br />» %s',
 	'LOG_RANK_REMOVED'		=> '<strong>Removed rank</strong><br />» %s',

@@ -98,10 +98,10 @@ class mcp_reports
 
 				$post_id = $report['post_id'];
 				$report_id = $report['report_id'];
-				
+
 				$parse_post_flags = $report['reported_post_enable_bbcode'] ? OPTION_FLAG_BBCODE : 0;
 				$parse_post_flags += $report['reported_post_enable_smilies'] ? OPTION_FLAG_SMILIES : 0;
-				$parse_post_flags += $report['reported_post_enable_magic_url'] ? OPTION_FLAG_LINKS : 0; 
+				$parse_post_flags += $report['reported_post_enable_magic_url'] ? OPTION_FLAG_LINKS : 0;
 
 				$post_info = get_post_data(array($post_id), 'm_report', true);
 
@@ -143,7 +143,13 @@ class mcp_reports
 				}
 
 				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
-
+				$message = generate_text_for_display(
+					$report['reported_post_text'],
+					$report['reported_post_uid'],
+					$report['reported_post_bitfield'],
+					$parse_post_flags,
+					false
+				);
 
 				$report['report_text'] = make_clickable(bbcode_nl2br($report['report_text']));
 
@@ -153,6 +159,7 @@ class mcp_reports
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
+							AND filetime <= ' . (int) $report['report_time'] . '
 						ORDER BY filetime DESC';
 					$result = $db->sql_query($sql);
 
@@ -165,7 +172,7 @@ class mcp_reports
 					if (sizeof($attachments))
 					{
 						$update_count = array();
-						parse_attachments($post_info['forum_id'], $report['reported_post_text'], $attachments, $update_count);
+						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
 					}
 
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
@@ -187,7 +194,7 @@ class mcp_reports
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
-					'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED),
+					'S_POST_UNAPPROVED'		=> $post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE,
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_REPORT_CLOSED'		=> $report['report_closed'],
 					'S_USER_NOTES'			=> true,
@@ -225,7 +232,7 @@ class mcp_reports
 					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
-					'POST_PREVIEW'			=> generate_text_for_display($report['reported_post_text'], $report['reported_post_uid'], $report['reported_post_bitfield'], $parse_post_flags, false),
+					'POST_PREVIEW'			=> $message,
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
@@ -577,7 +584,6 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 					WHERE ' . $db->sql_in_set('report_id', $report_id_list);
 			}
 			$db->sql_query($sql);
-
 
 			if (sizeof($close_report_posts))
 			{

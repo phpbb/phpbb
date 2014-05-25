@@ -224,7 +224,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_title = censor_text($row['topic_title']);
 
-		$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED  && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
+		$topic_unapproved = (($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE)  && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
@@ -302,7 +302,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		* @event core.mcp_view_forum_modify_topicrow
 		* @var	array	row			Array with topic data
 		* @var	array	topic_row	Template array with topic data
-		* @since 3.1-A1
+		* @since 3.1.0-a1
 		*/
 		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.mcp_view_forum_modify_topicrow', compact($vars)));

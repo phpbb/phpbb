@@ -63,7 +63,7 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 				redirect(append_sid($phpbb_root_path . $redirect));
 			}
 
-			redirect($notification->get_url());
+			redirect($notification->get_redirect_url());
 		}
 	}
 }
@@ -188,7 +188,7 @@ $page_title = $user->lang['INDEX'];
 *
 * @event core.index_modify_page_title
 * @var	string	page_title		Title of the index page
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
 $vars = array('page_title');
 extract($phpbb_dispatcher->trigger_event('core.index_modify_page_title', compact($vars)));

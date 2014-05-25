@@ -104,7 +104,7 @@ class bbcode_firstpass extends bbcode
 	function bbcode_init($allow_custom_bbcode = true)
 	{
 		global $phpbb_dispatcher;
-		
+
 		static $rowset;
 
 		// This array holds all bbcode data. BBCodes will be processed in this
@@ -776,8 +776,16 @@ class bbcode_firstpass extends bbcode
 					// the buffer holds a valid opening tag
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
-						// there are too many nested quotes
-						$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
+						if ($config['max_quote_depth'] == 1)
+						{
+							// Depth 1 - no nesting is allowed
+							$error_ary['quote_depth'] = $user->lang('QUOTE_NO_NESTING');
+						}
+						else
+						{
+							// There are too many nested quotes
+							$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
+						}
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
@@ -1128,7 +1136,7 @@ class parse_message extends bbcode_firstpass
 		// Maximum message length check. 0 disables this check completely.
 		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
 		{
-			$this->warn_msg[] = $user->lang('TOO_MANY_CHARS_' . strtoupper($mode), $message_length, (int) $config['max_' . $mode . '_chars']);
+			$this->warn_msg[] = $user->lang('CHARS_' . strtoupper($mode) . '_CONTAINS', $message_length) . '<br />' . $user->lang('TOO_MANY_CHARS_LIMIT', (int) $config['max_' . $mode . '_chars']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1137,7 +1145,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : $user->lang('TOO_FEW_CHARS_LIMIT', $message_length, (int) $config['min_post_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : ($user->lang('CHARS_POST_CONTAINS', $message_length) . '<br />' . $user->lang('TOO_FEW_CHARS_LIMIT', (int) $config['min_post_chars']));
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}

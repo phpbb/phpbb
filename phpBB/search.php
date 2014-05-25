@@ -613,6 +613,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 		'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
+		'POLL_IMG'			=> $user->img('icon_topic_poll', 'TOPIC_POLL'),
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 
 		'U_SEARCH_WORDS'	=> $u_search,
@@ -635,12 +636,66 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
-				FROM ' . POSTS_TABLE . ' p
-					LEFT JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
-					LEFT JOIN ' . FORUMS_TABLE . ' f ON (p.forum_id = f.forum_id)
-					LEFT JOIN ' . USERS_TABLE . " u ON (p.poster_id = u.user_id)
-				WHERE $sql_where";
+			$sql_array = array(
+				'SELECT'	=> 'p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour',
+				'FROM'		=> array(
+					POSTS_TABLE		=> 'p',
+				),
+				'LEFT_JOIN' => array(
+					array(
+						'FROM'	=> array(TOPICS_TABLE => 't'),
+						'ON'	=> 'p.topic_id = t.topic_id',
+					),
+					array(
+						'FROM'	=> array(FORUMS_TABLE => 'f'),
+						'ON'	=> 'p.forum_id = f.forum_id',
+					),
+					array(
+						'FROM'	=> array(USERS_TABLE => 'u'),
+						'ON'	=> 'p.poster_id = u.user_id',
+					),
+				),
+				'WHERE'	=> $sql_where,
+				'ORDER_BY' => $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC'),
+			);
+
+			/**
+			* Event to modify the SQL query before the posts data is retrieved
+			*
+			* @event core.search_get_posts_data
+			* @var	array	sql_array		The SQL array
+			* @var	array	zebra			Array of zebra data for the current user
+			* @var	int		total_match_count	The total number of search matches
+			* @var	string	keywords		String of the specified keywords
+			* @var	array	sort_by_sql		Array of SQL sorting instructions
+			* @var	string	s_sort_dir		The sort direction
+			* @var	string	s_sort_key		The sort key
+			* @var	string	s_limit_days	Limit the age of results
+			* @var	array	ex_fid_ary		Array of excluded forum ids
+			* @var	array	author_id_ary	Array of exclusive author ids
+			* @var	string	search_fields	The data fields to search in
+			* @var	int		search_id		The id of the search request
+			* @var	int		start			The starting id of the results
+			* @since 3.1.0-b3
+			*/
+			$vars = array(
+				'sql_array',
+				'zebra',
+				'total_match_count',
+				'keywords',
+				'sort_by_sql',
+				's_sort_dir',
+				's_sort_key',
+				's_limit_days',
+				'ex_fid_ary',
+				'author_id_ary',
+				'search_fields',
+				'search_id',
+				'start',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 		}
 		else
 		{
@@ -681,7 +736,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	sql_select		The SQL SELECT string used by search to get topic data
 			* @var	string	sql_from		The SQL FROM string used by search to get topic data
 			* @var	string	sql_where		The SQL WHERE string used by search to get topic data
-			* @since 3.1-A1
+			* @since 3.1.0-a1
 			*/
 			$vars = array('sql_select', 'sql_from', 'sql_where');
 			extract($phpbb_dispatcher->trigger_event('core.search_get_topic_data', compact($vars)));
@@ -689,8 +744,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$sql = "SELECT $sql_select
 				FROM $sql_from
 				WHERE $sql_where";
+			$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		}
-		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
 
@@ -857,6 +912,30 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$hilit = implode('|', $hilit_array);
 		}
 
+		/**
+		* Modify the rowset data
+		*
+		* @event core.search_modify_rowset
+		* @var	array	attachments				Array with posts attachments data
+		* @var	string	hilit					String to highlight
+		* @var	array	rowset					Array with the search results data
+		* @var	array	topic_tracking_info		Array with the topics tracking data
+		* @var	string	u_hilit					Highlight string to be injected into URL
+		* @var	string	view					Search results view mode
+		* @var	array	zebra					Array with zebra data for the current user
+		* @since 3.1.0-b4
+		*/
+		$vars = array(
+			'attachments',
+			'hilit',
+			'rowset',
+			'topic_tracking_info',
+			'u_hilit',
+			'view',
+			'zebra',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.search_modify_rowset', compact($vars)));
+
 		foreach ($rowset as $row)
 		{
 			$forum_id = $row['forum_id'];
@@ -879,7 +958,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
 
-				$topic_unapproved = ($row['topic_visibility'] == ITEM_UNAPPROVED && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$topic_unapproved = (($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE) && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
@@ -919,6 +998,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 					'S_TOPIC_DELETED'		=> $topic_deleted,
+					'S_HAS_POLL'			=> ($row['poll_start']) ? true : false,
 
 					'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
@@ -1002,11 +1082,46 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* Modify the topic data before it is assigned to the template
 			*
 			* @event core.search_modify_tpl_ary
-			* @var	array	row			Array with topic data
-			* @var	array	tpl_ary		Template block array with topic data
-			* @since 3.1-A1
+			* @var	array	row				Array with topic data
+			* @var	array	tpl_ary			Template block array with topic data
+			* @var	string	show_results	Display topics or posts
+			* @var	string	topic_title		Cleaned topic title
+			* @var	int		replies			The number of topic replies
+			* @var	string	view_topic_url	The URL to the topic
+			* @var	string	folder_img		The folder image of the topic
+			* @var	string	folder_alt		The alt attribute of the topic folder img
+			* @var	int		topic_type		The topic type
+			* @var	bool	unread_topic	Whether the topic has unread posts
+			* @var	bool	topic_unapproved	Whether the topic is unapproved
+			* @var	int		posts_unapproved	The number of unapproved posts
+			* @var	bool	topic_deleted	Whether the topic has been deleted
+			* @var	string	u_mcp_queue		The URL to the corresponding MCP queue page
+			* @var	array	zebra			The zebra data of the current user
+			* @var	array	attachments		All the attachments of the search results
+			* @since 3.1.0-a1
+			* @changed 3.1.0-b3 Added vars show_results, topic_title, replies,
+			*		view_topic_url, folder_img, folder_alt, topic_type, unread_topic,
+			*		topic_unapproved, posts_unapproved, topic_deleted, u_mcp_queue,
+			*		zebra, attachments
 			*/
-			$vars = array('row', 'tpl_ary');
+			$vars = array(
+				'row',
+				'tpl_ary',
+				'show_results',
+				'topic_title',
+				'replies',
+				'view_topic_url',
+				'folder_img',
+				'folder_alt',
+				'topic_type',
+				'unread_topic',
+				'topic_unapproved',
+				'posts_unapproved',
+				'topic_deleted',
+				'u_mcp_queue',
+				'zebra',
+				'attachments',
+			);
 			extract($phpbb_dispatcher->trigger_event('core.search_modify_tpl_ary', compact($vars)));
 
 			$template->assign_block_vars('searchresults', $tpl_ary);

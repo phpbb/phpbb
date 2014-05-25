@@ -314,7 +314,6 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		break;
 	}
 
-
 	if (!$result)
 	{
 		return false;
@@ -1588,7 +1587,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	/**
 	* Get all parts of the PM that are to be submited to the DB.
 	*
-	* @event	core.submit_pm_before
+	* @event core.submit_pm_before
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
 	* @var	array	data	The whole row data of the PM.
@@ -2030,10 +2029,10 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 			$decoded_message = bbcode_nl2br($decoded_message);
 		}
-		
+
 		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0);
 		$parse_flags |= ($row['enable_smilies'] ? OPTION_FLAG_SMILIES : 0);
-		
+
 		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
 
 		$subject = censor_text($subject);

@@ -80,9 +80,24 @@ $current_time = time();
 *							form submission.
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
-* @since 3.1-A1
+* @since 3.1.0-a1
 */
-$vars = array('post_id', 'topic_id', 'forum_id', 'draft_id', 'lastclick', 'submit', 'preview', 'save', 'load', 'delete', 'cancel', 'refresh', 'mode', 'error');
+$vars = array(
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'draft_id',
+	'lastclick',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'delete',
+	'cancel',
+	'refresh',
+	'mode',
+	'error',
+);
 extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
@@ -366,19 +381,46 @@ if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_statu
 // else it depends on editing times, lock status and if we're the correct user
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 {
-	if ($user->data['user_id'] != $post_data['poster_id'])
-	{
-		trigger_error('USER_CANNOT_EDIT');
-	}
+	$force_edit_allowed = false;
 
-	if (!($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']))
-	{
-		trigger_error('CANNOT_EDIT_TIME');
-	}
+	$s_cannot_edit = $user->data['user_id'] != $post_data['poster_id'];
+	$s_cannot_edit_time = $config['edit_time'] && $post_data['post_time'] <= time() - ($config['edit_time'] * 60);
+	$s_cannot_edit_locked = $post_data['post_edit_locked'];
 
-	if ($post_data['post_edit_locked'])
+	/**
+	* This event allows you to modify the conditions for the "cannot edit post" checks
+	*
+	* @event core.posting_modify_cannot_edit_conditions
+	* @var	array	post_data	Array with post data
+	* @var	bool	force_edit_allowed		Allow the user to edit the post (all permissions and conditions are ignored)
+	* @var	bool	s_cannot_edit			User can not edit the post because it's not his
+	* @var	bool	s_cannot_edit_locked	User can not edit the post because it's locked
+	* @var	bool	s_cannot_edit_time		User can not edit the post because edit_time has passed
+	* @since 3.1.0-b4
+	*/
+	$vars = array(
+		'post_data',
+		'force_edit_allowed',
+		's_cannot_edit',
+		's_cannot_edit_locked',
+		's_cannot_edit_time',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.posting_modify_cannot_edit_conditions', compact($vars)));
+
+	if (!$force_edit_allowed)
 	{
-		trigger_error('CANNOT_EDIT_POST_LOCKED');
+		if ($s_cannot_edit)
+		{
+			trigger_error('USER_CANNOT_EDIT');
+		}
+		else if ($s_cannot_edit_time)
+		{
+			trigger_error('CANNOT_EDIT_TIME');
+		}
+		else if ($s_cannot_edit_locked)
+		{
+			trigger_error('CANNOT_EDIT_POST_LOCKED');
+		}
 	}
 }
 
@@ -879,10 +921,13 @@ if ($submit || $preview || $refresh)
 			$message_parser->warn_msg = array();
 		}
 
-		$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		if (!$preview || !empty($message_parser->message))
+		{
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		}
 
 		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && $refresh)
+		if (sizeof($message_parser->warn_msg) && $refresh && !$preview)
 		{
 			$message_parser->warn_msg = array();
 		}
@@ -1473,8 +1518,8 @@ $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_up
 add_form_key('posting');
 
 
-// Start assigning vars for main posting page ...
-$template->assign_vars(array(
+// Build array of variables for main posting page
+$page_data = array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
 	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
@@ -1542,27 +1587,74 @@ $template->assign_vars(array(
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 	'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 	'S_IN_POSTING'			=> true,
-));
+);
 
 /**
 * This event allows you to modify template variables for the posting screen
 *
 * @event core.posting_modify_template_vars
-* @var	array	post_data		Array with post data
-* @var	array	moderators		Array with forum moderators
-* @var	string	mode			What action to take if the form is submitted
-*								post|reply|quote|edit|delete|bump|smilies|popup
-* @var	string	page_title		Title of the mode page
+* @var	array	post_data	Array with post data
+* @var	array	moderators	Array with forum moderators
+* @var	string	mode		What action to take if the form is submitted
+*				post|reply|quote|edit|delete|bump|smilies|popup
+* @var	string	page_title	Title of the mode page
 * @var	bool	s_topic_icons	Whether or not to show the topic icons
-* @var	string	form_enctype	If attachments are allowed for this form the value of
-*								this is "multipart/form-data" else it is the empty string
-* @var	string	s_action		The URL to submit the POST data to
-* @var	string	s_hidden_fields The concatenated input tags of the form's hidden fields
-* @since 3.1-A1
-* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title, s_topic_icons, form_enctype, s_action, s_hidden_fields
+* @var	string	form_enctype	If attachments are allowed for this form
+*				"multipart/form-data" or empty string
+* @var	string	s_action	The URL to submit the POST data to
+* @var	string	s_hidden_fields	Concatenated hidden input tags of posting form
+* @var	int	post_id		ID of the post
+* @var	int	topic_id	ID of the topic
+* @var	int	forum_id	ID of the forum
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*				viewtopic or viewforum depending on if the user
+*				is posting a new topic or editing a post)
+* @var	array	error		Any error strings; a non-empty array aborts
+*				form submission.
+*				NOTE: Should be actual language strings, NOT
+*				language keys.
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	array	page_data	Posting page data that should be passed to the
+*				posting page via $template->assign_vars()
+* @var	object	message_parser	The message parser object
+* @since 3.1.0-a1
+* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
+*		s_topic_icons, form_enctype, s_action, s_hidden_fields,
+*		post_id, topic_id, forum_id, submit, preview, save, load,
+*		delete, cancel, refresh, error, page_data, message_parser
 */
-$vars = array('post_data', 'moderators', 'mode', 'page_title', 's_topic_icons', 'form_enctype', 's_action', 's_hidden_fields');
+$vars = array(
+	'post_data',
+	'moderators',
+	'mode',
+	'page_title',
+	's_topic_icons',
+	'form_enctype',
+	's_action',
+	's_hidden_fields',
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'delete',
+	'cancel',
+	'refresh',
+	'error',
+	'page_data',
+	'message_parser',
+);
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
+
+// Start assigning vars for main posting page ...
+$template->assign_vars($page_data);
 
 // Build custom bbcodes array
 display_custom_bbcodes();
