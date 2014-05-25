@@ -23,7 +23,7 @@
 }
 
 .icon-button, .dropdown-select {
-	padding-right: 22px;
+	padding-right: 20px;
 }
 
 .icon-button.dropdown-select {
@@ -31,11 +31,17 @@
 }
 
 .icon-button span {
+	display: inline-block;
+	float: right;
+}
+
+.icon-button span:after {
 	background: transparent 0 0 no-repeat;
-	display: block;
+	content: '';
+	display: inline-block;
 	float: right;
 	height: 12px;
-	margin: 3px -16px 0 0;
+	margin: 3px -14px 0 0;
 	width: 12px;
 }
 
@@ -54,7 +60,7 @@
 	background-position: -103px -10px;
 }
 
-.buttons, .buttons div {
+.buttons, .buttons .button {
 	float: left;
 }
 
@@ -63,29 +69,29 @@
 }
 
 /* Big button images */
-.reply-icon a span, .pmreply-icon a span					{ background-position: -20px 0; }
-.reply-icon a:hover span, .pmreply-icon a:hover span		{ background-position: -20px -20px; }
+.reply-icon span:after, .pmreply-icon span:after						{ background-position: -20px 0; }
+.reply-icon:hover span:after, .pmreply-icon:hover span:after			{ background-position: -20px -20px; }
 
-.post-icon a span, .newpm-icon a span, .reply-all a span	{ background-position: 0 0; }
-.post-icon a:hover span,
-.newpm-icon a:hover span,
-.reply-all a:hover span										{ background-position: 0 -20px; }
+.post-icon span:after, .newpm-icon span:after, .reply-all span:after	{ background-position: 0 0; }
+.post-icon:hover span:after,
+.newpm-icon:hover span:after,
+.reply-all:hover span:after												{ background-position: 0 -20px; }
 
-.locked-icon a span											{ background-position: -60px 0; }
-.locked-icon a:hover span									{ background-position: -60px -20px; }
+.locked-icon span:after													{ background-position: -60px 0; }
+.locked-icon:hover span:after											{ background-position: -60px -20px; }
 
-.forwardpm-icon a span										{ background-position: -40px 0; }
-.forwardpm-icon a:hover span								{ background-position: -40px -20px; }
+.forwardpm-icon span:after												{ background-position: -40px 0; }
+.forwardpm-icon:hover span:after										{ background-position: -40px -20px; }
 
-.tools-icon span {
+.tools-icon span:after {
 	background-position: -80px 0;
 	height: 16px;
 	margin-top: 2px;
 	width: 16px;
 }
 
-.dropdown-visible .tools-icon span,
-.nojs .dropdown-container:hover .tools-icon span		{ background-position: -80px -20px; }
+.dropdown-visible .tools-icon span:after,
+.nojs .dropdown-container:hover .tools-icon span:after		{ background-position: -80px -20px; }
 
 /* Icon images
 ---------------------------------------- */
@@ -176,32 +182,35 @@ ul.linklist.bulletin li.small-icon:before {
 
 .post-buttons .icon-button {
 	padding: 0 5px;
-	text-indent: -9999px;
 }
 
 .hastouch .post-buttons .icon-button {
 	padding: 2px 8px;
 }
 
-.post-buttons span {
+.post-buttons .icon-button span {
+	font-size: 0;
+}
+
+.post-buttons .icon-button span:after {
 	float: none;
 	margin-right: 0;
 }
 
-.quote-icon span		{ background-position: 0 0; }
-.quote-icon:hover span	{ background-position: 0 -21px; }
-.edit-icon span			{ background-position: -15px 0; }
-.edit-icon:hover span	{ background-position: -15px -21px; }
-.warn-icon span			{ background-position: -86px 0; }
-.warn-icon:hover span	{ background-position: -86px -21px; }
-.delete-icon span		{ background-position: -30px 0; }
-.delete-icon:hover span	{ background-position: -30px -21px; }
-.report-icon span		{ background-position: -43px 0; }
-.report-icon:hover span	{ background-position: -43px -21px; }
-.info-icon span			{ background-position: -54px 0; }
-.info-icon:hover span	{ background-position: -54px -21px; }
-.button.responsive-menu-link span		{ background-position: -68px 0; }
-.button.responsive-menu-link:hover span	{ background-position: -68px -21px; }
+.quote-icon span:after							{ background-position: 0 0; }
+.quote-icon:hover span:after					{ background-position: 0 -21px; }
+.edit-icon span:after							{ background-position: -15px 0; }
+.edit-icon:hover span:after						{ background-position: -15px -21px; }
+.warn-icon span:after							{ background-position: -86px 0; }
+.warn-icon:hover span:after						{ background-position: -86px -21px; }
+.delete-icon span:after							{ background-position: -30px 0; }
+.delete-icon:hover span:after					{ background-position: -30px -21px; }
+.report-icon span:after							{ background-position: -43px 0; }
+.report-icon:hover span:after					{ background-position: -43px -21px; }
+.info-icon span:after							{ background-position: -54px 0; }
+.info-icon:hover span:after						{ background-position: -54px -21px; }
+.button.responsive-menu-link span:after			{ background-position: -68px 0; }
+.button.responsive-menu-link:hover span:after	{ background-position: -68px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {

@@ -9,31 +9,23 @@
 	<!-- IF U_POST_REPLY_PM or U_POST_NEW_TOPIC or U_FORWARD_PM -->
 		<div class="buttons">
 			<!-- IF U_POST_REPLY_PM -->
-				<div class="pmreply-icon">
-					<a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}" class="button icon-button">
-						<span></span>{L_BUTTON_PM_REPLY}
-					</a>
-				</div>
+				<a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}" class="button icon-button pmreply-icon">
+					<span>{L_BUTTON_PM_REPLY}</span>
+				</a>
 			<!-- ELSEIF U_POST_NEW_TOPIC -->
-				<div class="newpm-icon">
-					<a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}" class="button icon-button">
-						<span></span>{L_BUTTON_PM_NEW}
-					</a>
-				</div>
+				<a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}" class="button icon-button newpm-icon">
+					<span>{L_BUTTON_PM_NEW}</span>
+				</a>
 			<!-- ENDIF -->
 			<!-- IF U_FORWARD_PM -->
-				<div class="forwardpm-icon">
-					<a title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" class="button icon-button">
-						<span></span>{L_BUTTON_PM_FORWARD}
-					</a>
-				</div>
+				<a title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" class="button icon-button forwardpm-icon">
+					<span>{L_BUTTON_PM_FORWARD}</span>
+				</a>
 			<!-- ENDIF -->
 			<!-- IF U_POST_REPLY_PM and S_PM_RECIPIENTS gt 1 -->
-				<div class="reply-all">
-					<a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}" class="button icon-button">
-						<span></span>{L_BUTTON_PM_REPLY_ALL}
-					</a>
-				</div>
+				<a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}" class="button icon-button reply-all">
+					<span>{L_BUTTON_PM_REPLY_ALL}</span>
+				</a>
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
