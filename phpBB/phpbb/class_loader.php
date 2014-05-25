@@ -98,7 +98,7 @@ class class_loader
 	* @param string $loader_variable	The name of the variable corresponding to the current class loader
 	* @param bool	$force				If true builds the file even if it even exists
 	*/
-	public function doBuildBootstrap($classes, $loader_variable, $force = false)
+	public function do_build_bootstrap($classes, $loader_variable, $force = false)
 	{
 		$file = 'cache/bootstrap_' . str_replace('\\', '__', $this->namespace) . '.' . $this->php_ext;
 

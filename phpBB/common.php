@@ -90,7 +90,7 @@ $phpbb_class_loader->register();
 
 if (!defined('DEBUG_CONTAINER'))
 {
-	$phpbb_class_loader->doBuildBootstrap(array(
+	$phpbb_class_loader->do_build_bootstrap(array(
 		'\\phpbb\\cache\\driver\\base',
 		'\\phpbb\\cache\\driver\\driver_interface',
 		'\\phpbb\\config\\config',
