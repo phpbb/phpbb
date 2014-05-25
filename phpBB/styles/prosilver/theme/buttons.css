@@ -197,20 +197,20 @@ ul.linklist.bulletin li.small-icon:before {
 	margin-right: 0;
 }
 
-.quote-icon span:after							{ background-position: 0 0; }
-.quote-icon:hover span:after					{ background-position: 0 -21px; }
-.edit-icon span:after							{ background-position: -15px 0; }
-.edit-icon:hover span:after						{ background-position: -15px -21px; }
-.warn-icon span:after							{ background-position: -86px 0; }
-.warn-icon:hover span:after						{ background-position: -86px -21px; }
-.delete-icon span:after							{ background-position: -30px 0; }
-.delete-icon:hover span:after					{ background-position: -30px -21px; }
-.report-icon span:after							{ background-position: -43px 0; }
-.report-icon:hover span:after					{ background-position: -43px -21px; }
-.info-icon span:after							{ background-position: -54px 0; }
-.info-icon:hover span:after						{ background-position: -54px -21px; }
-.button.responsive-menu-link span:after			{ background-position: -68px 0; }
-.button.responsive-menu-link:hover span:after	{ background-position: -68px -21px; }
+.quote-icon span:after							{ background-position: -122px 0; }
+.quote-icon:hover span:after					{ background-position: -122px -21px; }
+.edit-icon span:after							{ background-position: -137px 0; }
+.edit-icon:hover span:after						{ background-position: -137px -21px; }
+.warn-icon span:after							{ background-position: -208px 0; }
+.warn-icon:hover span:after						{ background-position: -208px -21px; }
+.delete-icon span:after							{ background-position: -152px 0; }
+.delete-icon:hover span:after					{ background-position: -152px -21px; }
+.report-icon span:after							{ background-position: -165px 0; }
+.report-icon:hover span:after					{ background-position: -165px -21px; }
+.info-icon span:after							{ background-position: -175px 0; }
+.info-icon:hover span:after						{ background-position: -175px -21px; }
+.button.responsive-menu-link span:after			{ background-position: -191px 0; }
+.button.responsive-menu-link:hover span:after	{ background-position: -191px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {
