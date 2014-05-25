@@ -316,9 +316,13 @@ class mcp_warn
 			{
 				$message = $user->lang['FORM_INVALID'];
 			}
-			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
-			meta_refresh(2, $redirect);
-			trigger_error($message . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+
+			if (!empty($message))
+			{
+				$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
+				meta_refresh(2, $redirect);
+				trigger_error($message . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			}
 		}
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
