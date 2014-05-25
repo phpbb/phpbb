@@ -102,7 +102,8 @@ class phpbb_profile_custom_string_test extends phpbb_database_test_case
 		$cp = new \phpbb\profilefields\type\type_string(
 			$request,
 			$template,
-			$user
+			$user,
+			$db
 		);
 		$result = $cp->validate_profile_field($field_value, $field_data);
 

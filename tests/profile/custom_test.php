@@ -57,7 +57,8 @@ class phpbb_profile_custom_test extends phpbb_database_test_case
 			new \phpbb\profilefields\lang_helper($db, $table_prefix . 'profile_fields_lang'),
 			$request,
 			$template,
-			$user
+			$user,
+			$db
 		);
 		$result = $cp->validate_profile_field($field_value, $field_data);
 
