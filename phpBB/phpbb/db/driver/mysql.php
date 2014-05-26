@@ -207,7 +207,26 @@ class mysql extends \phpbb\db\driver\mysql_base
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->db_connect_id) ? @mysql_affected_rows($this->db_connect_id) : false;
+		if ($this->db_connect_id)
+		{
+			// We always want the number of matched rows
+			// instead of changed rows, when running an update.
+			// So when mysql_info() returns the number of matched rows
+			// we return that one instead of mysql_affected_rows()
+			$mysql_info = @mysql_info($this->db_connect_id);
+			if ($mysql_info !== false)
+			{
+				$match = array();
+				preg_match('#^Rows matched: (\d)+  Changed: (\d)+  Warnings: (\d)+$#', $mysql_info, $match);
+				if (isset($match[1]))
+				{
+					return $match[1];
+				}
+			}
+
+			return @mysql_affected_rows($this->db_connect_id);
+		}
+		return false;
 	}
 
 	/**
