@@ -187,7 +187,7 @@ class mcp_warn
 	function mcp_warn_post_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config;
-		global $template, $db, $user, $auth;
+		global $template, $db, $user, $auth, $phpbb_dispatcher;
 
 		$post_id = request_var('p', 0);
 		$forum_id = request_var('f', 0);
@@ -264,16 +264,65 @@ class mcp_warn
 		{
 			if (check_form_key('mcp_warn'))
 			{
-				add_warning($user_row, $warning, $notify, $post_id);
-				$msg = $user->lang['USER_WARNING_ADDED'];
+				$s_mcp_warn_post = true;
+
+				/**
+				* Event for before warning a user for a post.
+				*
+				* @event core.mcp_warn_post_before
+				* @var array	user_row		The entire user row
+				* @var string	warning			The warning message
+				* @var bool		notify			If true, we notify the user for the warning
+				* @var int		post_id			The post id for which the warning is added
+				* @var bool		s_mcp_warn_post If true, we add the warning else we omit it
+				* @since 3.1.0-b4
+				*/
+				$vars = array(
+						'user_row',
+						'warning',
+						'notify',
+						'post_id',
+						's_mcp_warn_post',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_warn_post_before', compact($vars)));
+
+				if ($s_mcp_warn_post)
+				{
+					add_warning($user_row, $warning, $notify, $post_id);
+					$message = $user->lang['USER_WARNING_ADDED'];
+
+					/**
+					* Event for after warning a user for a post.
+					*
+					* @event core.mcp_warn_post_after
+					* @var array	user_row	The entire user row
+					* @var string	warning		The warning message
+					* @var bool		notify		If true, the user was notified for the warning
+					* @var int		post_id		The post id for which the warning is added
+					* @var string	message		Message displayed to the moderator
+					* @since 3.1.0-b4
+					*/
+					$vars = array(
+							'user_row',
+							'warning',
+							'notify',
+							'post_id',
+							'message',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.mcp_warn_post_after', compact($vars)));
+				}
 			}
 			else
 			{
-				$msg = $user->lang['FORM_INVALID'];
+				$message = $user->lang['FORM_INVALID'];
 			}
-			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
-			meta_refresh(2, $redirect);
-			trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+
+			if (!empty($message))
+			{
+				$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
+				meta_refresh(2, $redirect);
+				trigger_error($message . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			}
 		}
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
