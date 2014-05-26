@@ -40,6 +40,7 @@ class disable extends command
 		}
 		else
 		{
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_DISABLE', time(), array($name));
 			$output->writeln("<info>Successfully disabled extension $name</info>");
 			return 0;
 		}

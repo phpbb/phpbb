@@ -13,9 +13,13 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\extension\manager */
 	protected $manager;
 
-	function __construct(\phpbb\extension\manager $manager)
+	/** @var \phpbb\log\log */
+	protected $log;
+
+	public function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log)
 	{
 		$this->manager = $manager;
+		$this->log = $log;
 
 		parent::__construct();
 	}

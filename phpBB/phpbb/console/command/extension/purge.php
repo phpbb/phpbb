@@ -40,6 +40,7 @@ class purge extends command
 		}
 		else
 		{
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_PURGE', time(), array($name));
 			$output->writeln("<info>Successfully purge extension $name</info>");
 			return 0;
 		}

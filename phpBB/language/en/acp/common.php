@@ -777,4 +777,8 @@ $lang = array_merge($lang, array(
 	'LOG_WORD_ADD'			=> '<strong>Added word censor</strong><br />» %s',
 	'LOG_WORD_DELETE'		=> '<strong>Deleted word censor</strong><br />» %s',
 	'LOG_WORD_EDIT'			=> '<strong>Edited word censor</strong><br />» %s',
+
+	'LOG_EXT_ENABLE'	=> '<strong>Extension enabled</strong><br />» %s',
+	'LOG_EXT_DISABLE'	=> '<strong>Extension disabled</strong><br />» %s',
+	'LOG_EXT_PURGE'		=> '<strong>Extension’s data deleted</strong><br />» %s',
 ));
