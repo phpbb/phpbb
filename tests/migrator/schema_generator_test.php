@@ -8,9 +8,18 @@
 */
 
 require_once __DIR__ . '/../dbal/migration/dummy_order.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_0.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_1.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_2.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_3.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_4.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_5.php';
 
-class schmema_generator_test extends phpbb_test_case
+class schema_generator_test extends phpbb_test_case
 {
+	/** @var \phpbb\db\migration\schema_generator */
+	protected $generator;
+
 	public function setUp()
 	{
 		parent::setUp();
@@ -49,75 +58,77 @@ class schmema_generator_test extends phpbb_test_case
 		$this->assertArrayHasKey('phpbb_users', $this->generator->get_schema());
 	}
 
-	protected $expected_results_between = array(
-		'foobar1' => array('BOOL', 0),
-		'foobar2' => array('BOOL', 0),
-		'foobar3' => array('BOOL', 0),
-	);
-
-	public function test_check_column_position_between_success()
+	public function column_add_after_data()
 	{
-		$this->get_schema_generator(array(
-			'phpbb_dbal_migration_dummy_order',
-		));
-
-		$tables = $this->generator->get_schema();
-		$columns = $tables[$this->table_prefix . 'column_order_test1']['COLUMNS'];
-
-		$this->assertEquals($columns, $expected_results_between, 'The schema generator could not position the column correctly between column 1 and 3, using the "after" option in the migration script.');
+		return array(
+			array(
+				'phpbb_dbal_migration_dummy_order_0',
+				array(
+					'foobar1',
+					'foobar2',
+					'foobar3',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_1',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar4',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_2',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar5',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_3',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar6',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_4',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar7',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_5',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar9',
+					'foobar8',
+				),
+			),
+		);
 	}
 
-	protected $expected_results_after_last = array(
-		'foobar1' => array('BOOL', 0),
-		'foobar3' => array('BOOL', 0),
-		'foobar4' => array('BOOL', 0),
-	);
-
-	public function test_check_column_position_after_last_success()
+	/**
+	* @dataProvider column_add_after_data
+	*/
+	public function test_column_add_after($migration, $expected)
 	{
 		$this->get_schema_generator(array(
 			'phpbb_dbal_migration_dummy_order',
+			$migration,
 		));
 
 		$tables = $this->generator->get_schema();
-		$columns = $tables[$this->table_prefix . 'column_order_test2']['COLUMNS'];
 
-		$this->assertEquals($columns, $expected_results_after_last, 'The schema generator could not position the column correctly after the last column, using the "after" option in the migration script.');
-	}
-
-	protected $expected_results_after_missing = array(
-		'foobar1' => array('BOOL', 0),
-		'foobar3' => array('BOOL', 0),
-		'foobar5' => array('BOOL', 0),
-	);
-
-	public function test_check_column_position_after_missing_success()
-	{
-		$this->get_schema_generator(array(
-			'phpbb_dbal_migration_dummy_order',
-		));
-
-		$tables = $this->generator->get_schema();
-		$columns = $tables[$this->table_prefix . 'column_order_test3']['COLUMNS'];
-
-		$this->assertEquals($columns, $expected_results_after_missing, 'The schema generator could not position the column after a "missing" column value, using the "after" option in the migration script.');
-	}
-
-	protected $expected_results_after_empty = array(
-		'foobar1' => array('BOOL', 0),
-		'foobar3' => array('BOOL', 0),
-		'foobar5' => array('BOOL', 0),
-	);
-
-	public function test_check_column_position_after_empty_success()
-	{
-		$this->get_schema_generator(array(
-			'phpbb_dbal_migration_dummy_order',
-		));
-
-		$tables = $this->generator->get_schema();
-		$columns = $tables[$this->table_prefix . 'column_order_test4']['COLUMNS'];
-
-		$this->assertEquals($columns, $expected_results_after_empty, 'The schema generator could not position the column after an "empty" column value, using the "after" option in the migration script.');
+		$this->assertEquals(
+			$expected,
+			array_keys($tables[$this->table_prefix . 'column_order_test1']['COLUMNS']),
+			'The schema generator could not position the column correctly, using the "after" option in the migration script.'
+		);
 	}
 }

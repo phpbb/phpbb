@@ -7,18 +7,14 @@
 *
 */
 
-class phpbb_dbal_migration_dummy_order extends \phpbb\db\migration\migration
+class phpbb_dbal_migration_dummy_order_1 extends \phpbb\db\migration\migration
 {
 	function update_schema()
 	{
 		return array(
-			'add_tables'	=> array(
+			'add_columns'	=> array(
 				$this->table_prefix . 'column_order_test1'	=> array(
-					'COLUMNS'			=> array(
-						'foobar1'			=> array('BOOL', 0),
-						'foobar3'			=> array('BOOL', 0),
-					),
-					'PRIMARY_KEY'		=> array('foobar1'),
+					'foobar4'	=> array('BOOL', 0, 'after' => 'foobar3'),
 				),
 			),
 		);
