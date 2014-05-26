@@ -170,73 +170,8 @@ class db extends \phpbb\auth\provider\base
 
 		}
 
-		// If the password convert flag is set we need to convert it
-		if ($row['user_pass_convert'])
-		{
-			// enable super globals to get literal value
-			// this is needed to prevent unicode normalization
-			$super_globals_disabled = $this->request->super_globals_disabled();
-			if ($super_globals_disabled)
-			{
-				$this->request->enable_super_globals();
-			}
-
-			// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
-			$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
-			$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
-			$password_new_format = $this->request->variable('password', '', true);
-
-			if ($super_globals_disabled)
-			{
-				$this->request->disable_super_globals();
-			}
-
-			if ($password == $password_new_format)
-			{
-				if (!function_exists('utf8_to_cp1252'))
-				{
-					include($this->phpbb_root_path . 'includes/utf/data/recode_basic.' . $this->php_ext);
-				}
-
-				// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
-				// plain md5 support left in for conversions from other systems.
-				if ((strlen($row['user_password']) == 34 && ($this->passwords_manager->check(md5($password_old_format), $row['user_password']) || $this->passwords_manager->check(md5(utf8_to_cp1252($password_old_format)), $row['user_password'])))
-					|| (strlen($row['user_password']) == 32  && (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password']))
-					|| ($this->passwords_manager->check($password_old_format, $row['user_password']) || $this->passwords_manager->check($password_new_format, $row['user_password'])))
-				{
-					$hash = $this->passwords_manager->hash($password_new_format);
-
-					// Update the password in the users table to the new format and remove user_pass_convert flag
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_password = \'' . $this->db->sql_escape($hash) . '\',
-							user_pass_convert = 0
-						WHERE user_id = ' . $row['user_id'];
-					$this->db->sql_query($sql);
-
-					$row['user_pass_convert'] = 0;
-					$row['user_password'] = $hash;
-				}
-				else
-				{
-					// Although we weren't able to convert this password we have to
-					// increase login attempt count to make sure this cannot be exploited
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_login_attempts = user_login_attempts + 1
-						WHERE user_id = ' . (int) $row['user_id'] . '
-							AND user_login_attempts < ' . LOGIN_ATTEMPTS_MAX;
-					$this->db->sql_query($sql);
-
-					return array(
-						'status'		=> LOGIN_ERROR_PASSWORD_CONVERT,
-						'error_msg'		=> 'LOGIN_ERROR_PASSWORD_CONVERT',
-						'user_row'		=> $row,
-					);
-				}
-			}
-		}
-
 		// Check password ...
-		if (!$row['user_pass_convert'] && $this->passwords_manager->check($password, $row['user_password']))
+		if ($this->passwords_manager->check($password, $row['user_password']))
 		{
 			// Check for old password hash...
 			if ($this->passwords_manager->convert_flag || strlen($row['user_password']) == 32)

@@ -268,10 +268,10 @@ class manager
 			$this->convert_flag = false;
 		}
 
+		// Check all legacy hash types if prefix is $CP$
 		if ($stored_hash_type->get_prefix() === '$CP$')
 		{
-			// Check all legacy hash types for this hash. Remove
-			// $CP$ prefix from beginning for proper checking.
+			// Remove $CP$ prefix for proper checking
 			$hash = substr($hash, 4);
 
 			foreach ($this->type_map as $algorithm)
