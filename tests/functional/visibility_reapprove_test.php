@@ -208,8 +208,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$crawler = self::submit($form);
 		$form = $crawler->selectButton($this->lang('YES'))->form();
 		$crawler = self::submit($form);
-		//@todo $this->assertContainsLang('TOPIC_APPROVED_SUCCESS', $crawler->text());
-		$this->assertContainsLang('POST_APPROVED_SUCCESS', $crawler->text());
+		$this->assertContainsLang('TOPIC_APPROVED_SUCCESS', $crawler->text());
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 3,

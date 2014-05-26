@@ -578,6 +578,7 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$success_msg = $post_url = '';
 		$approve_log = array();
+		$num_topics = 0;
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -634,11 +635,6 @@ class mcp_queue
 				$phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $topic_data['posts'], $topic_id, $topic_data['forum_id'], $user->data['user_id'], time(), '', isset($topic_data['first_post']), isset($topic_data['last_post']));
 			}
 
-			if (sizeof($post_info) >= 1)
-			{
-				$success_msg = (sizeof($post_info) == 1) ? 'POST_' . strtoupper($action) . 'D_SUCCESS' : 'POSTS_' . strtoupper($action) . 'D_SUCCESS';
-			}
-
 			foreach ($approve_log as $log_data)
 			{
 				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_POST_' . strtoupper($action) . 'D', $log_data['post_subject']);
@@ -656,21 +652,32 @@ class mcp_queue
 					if (!$post_data['topic_posts_approved'])
 					{
 						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+						
+						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+						{
+							$phpbb_notifications->add_notifications(array('topic'), $post_data);
+						}
+						if ($post_data['post_visibility'] != ITEM_APPROVED)
+						{
+							$num_topics++;
+						}
 					}
-					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
-
-					// Only add notifications, if we are not reapproving post
-					// When the topic was already approved, but was edited and
-					// now needs re-approval, we don't want to notify the users
-					// again.
-					if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+					else
 					{
-						$phpbb_notifications->add_notifications(array(
-							'quote',
-							'bookmark',
-							'post',
-						), $post_data);
+						// Only add notifications, if we are not reapproving post
+						// When the topic was already approved, but was edited and
+						// now needs re-approval, we don't want to notify the users
+						// again.
+						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
+						{
+							$phpbb_notifications->add_notifications(array(
+								'bookmark',
+								'post',
+							), $post_data);
+						}
 					}
+					$phpbb_notifications->add_notifications(array('quote'), $post_data);
+					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
 
 					$phpbb_notifications->mark_notifications_read(array(
 						'quote',
@@ -686,9 +693,25 @@ class mcp_queue
 							continue;
 						}
 
-						$phpbb_notifications->add_notifications('approve_post', $post_data);
+						if (!$post_data['topic_posts_approved'])
+						{
+							$phpbb_notifications->add_notifications('approve_post', $post_data);
+						}
+						else
+						{
+							$phpbb_notifications->add_notifications('approve_topic', $post_data);
+						}
 					}
 				}
+			}
+
+			if ($num_topics >= 1)
+			{
+				$success_msg = ($num_topics == 1) ? 'TOPIC_' . strtoupper($action) . 'D_SUCCESS' : 'TOPICS_' . strtoupper($action) . 'D_SUCCESS';
+			}
+			else
+			{
+				$success_msg = (sizeof($post_info) == 1) ? 'POST_' . strtoupper($action) . 'D_SUCCESS' : 'POSTS_' . strtoupper($action) . 'D_SUCCESS';
 			}
 
 			meta_refresh(3, $redirect);
@@ -721,14 +744,14 @@ class mcp_queue
 			{
 				foreach ($post_info as $post_data)
 				{
-					if ($post_data['poster_id'] == ANONYMOUS)
+					if (!$post_data['topic_posts_approved'])
 					{
-						continue;
+						$num_topics++;
 					}
-					else
+
+					if (!$show_notify && $post_data['poster_id'] != ANONYMOUS)
 					{
 						$show_notify = true;
-						break;
 					}
 				}
 			}
@@ -738,7 +761,18 @@ class mcp_queue
 				'S_' . strtoupper($action)	=> true,
 			));
 
-			confirm_box(false, strtoupper($action) . '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+			// Create the confirm box message
+			$action_msg = strtoupper($action);
+			$num_posts = sizeof($post_id_list) - $num_topics;
+			if ($num_topics > 0 && $num_posts <= 0)
+			{
+				$action_msg .= '_TOPIC' . (($num_topics == 1) ? '' : 'S');
+			}
+			else
+			{
+				$action_msg .= '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S');
+			}
+			confirm_box(false, $action_msg, $s_hidden_fields, 'mcp_approve.html');
 		}
 
 		redirect($redirect);
@@ -834,7 +868,7 @@ class mcp_queue
 						'post_subject'	=> $topic_data['topic_title'],
 						'post_time'		=> $topic_data['topic_time'],
 						'poster_id'		=> $topic_data['topic_poster'],
-						'username'		=> $topic_data['topic_first_poster_name'],
+						'post_username'	=> $topic_data['topic_first_poster_name'],
 					));
 
 					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
