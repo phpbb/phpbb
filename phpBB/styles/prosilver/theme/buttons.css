@@ -22,26 +22,17 @@
 	vertical-align: bottom;
 }
 
-.icon-button, .dropdown-select {
-	padding-right: 20px;
-}
-
 .icon-button.dropdown-select {
-	padding-right: 44px;
+	padding-right: 28px;
 }
 
-.icon-button span {
-	display: inline-block;
-	float: right;
-}
-
-.icon-button span:after {
+.icon-button:before {
 	background: transparent 0 0 no-repeat;
 	content: '';
 	display: inline-block;
 	float: right;
 	height: 12px;
-	margin: 3px -14px 0 0;
+	margin: 3px 0 0 2px;
 	width: 12px;
 }
 
@@ -69,29 +60,29 @@
 }
 
 /* Big button images */
-.reply-icon span:after, .pmreply-icon span:after						{ background-position: -20px 0; }
-.reply-icon:hover span:after, .pmreply-icon:hover span:after			{ background-position: -20px -20px; }
+.reply-icon:before, .pmreply-icon:before					{ background-position: -20px 0; }
+.reply-icon:hover:before, .pmreply-icon:hover:before		{ background-position: -20px -20px; }
 
-.post-icon span:after, .newpm-icon span:after, .reply-all span:after	{ background-position: 0 0; }
-.post-icon:hover span:after,
-.newpm-icon:hover span:after,
-.reply-all:hover span:after												{ background-position: 0 -20px; }
+.post-icon:before, .newpm-icon:before, .reply-all:before	{ background-position: 0 0; }
+.post-icon:hover:before,
+.newpm-icon:hover:before,
+.reply-all:hover:before										{ background-position: 0 -20px; }
 
-.locked-icon span:after													{ background-position: -60px 0; }
-.locked-icon:hover span:after											{ background-position: -60px -20px; }
+.locked-icon:before											{ background-position: -60px 0; }
+.locked-icon:hover:before									{ background-position: -60px -20px; }
 
-.forwardpm-icon span:after												{ background-position: -40px 0; }
-.forwardpm-icon:hover span:after										{ background-position: -40px -20px; }
+.forwardpm-icon:before										{ background-position: -40px 0; }
+.forwardpm-icon:hover:before								{ background-position: -40px -20px; }
 
-.tools-icon span:after {
+.tools-icon:before {
 	background-position: -80px 0;
 	height: 16px;
 	margin-top: 2px;
 	width: 16px;
 }
 
-.dropdown-visible .tools-icon span:after,
-.nojs .dropdown-container:hover .tools-icon span:after		{ background-position: -80px -20px; }
+.dropdown-visible .tools-icon:before,
+.nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
 
 /* Icon images
 ---------------------------------------- */
@@ -189,28 +180,31 @@ ul.linklist.bulletin li.small-icon:before {
 }
 
 .post-buttons .icon-button span {
-	font-size: 0;
+	display: block;
+	height: 0;
+	overflow: hidden;
+	position: absolute;
+	width: 1px;
 }
 
-.post-buttons .icon-button span:after {
-	float: none;
-	margin-right: 0;
+.post-buttons .icon-button:before {
+	margin-left: 0;
 }
 
-.quote-icon span:after							{ background-position: -122px 0; }
-.quote-icon:hover span:after					{ background-position: -122px -21px; }
-.edit-icon span:after							{ background-position: -137px 0; }
-.edit-icon:hover span:after						{ background-position: -137px -21px; }
-.warn-icon span:after							{ background-position: -208px 0; }
-.warn-icon:hover span:after						{ background-position: -208px -21px; }
-.delete-icon span:after							{ background-position: -152px 0; }
-.delete-icon:hover span:after					{ background-position: -152px -21px; }
-.report-icon span:after							{ background-position: -165px 0; }
-.report-icon:hover span:after					{ background-position: -165px -21px; }
-.info-icon span:after							{ background-position: -175px 0; }
-.info-icon:hover span:after						{ background-position: -175px -21px; }
-.button.responsive-menu-link span:after			{ background-position: -191px 0; }
-.button.responsive-menu-link:hover span:after	{ background-position: -191px -21px; }
+.quote-icon:before							{ background-position: -122px 0; }
+.quote-icon:hover:before					{ background-position: -122px -21px; }
+.edit-icon:before							{ background-position: -137px 0; }
+.edit-icon:hover:before						{ background-position: -137px -21px; }
+.warn-icon:before							{ background-position: -208px 0; }
+.warn-icon:hover:before						{ background-position: -208px -21px; }
+.delete-icon:before							{ background-position: -152px 0; }
+.delete-icon:hover:before					{ background-position: -152px -21px; }
+.report-icon:before							{ background-position: -165px 0; }
+.report-icon:hover:before					{ background-position: -165px -21px; }
+.info-icon:before							{ background-position: -175px 0; }
+.info-icon:hover:before						{ background-position: -175px -21px; }
+.button.responsive-menu-link:before			{ background-position: -191px 0; }
+.button.responsive-menu-link:hover:before	{ background-position: -191px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {

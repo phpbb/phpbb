@@ -726,7 +726,7 @@ Colours and backgrounds for buttons.css
 
 /* Profile & navigation icons */
 .contact-icon													{ background-image: url("./images/icons_contact.png"); }
-.icon-button span:after, .dropdown-select:after					{ background-image: url("./images/icons_button.png"); }
+.icon-button:before, .dropdown-select:after						{ background-image: url("./images/icons_button.png"); }
 
 /* Forum icons & Topic icons */
 .global_read													{ background-image: url("./images/announce_read.gif"); }
