@@ -27,6 +27,8 @@ script:
 matrix:
   include:
     - php: 5.4
+      env: DB=mysql
+    - php: 5.4
       env: DB=mariadb
     - php: 5.4
       env: DB=postgres
