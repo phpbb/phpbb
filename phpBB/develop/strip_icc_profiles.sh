@@ -20,7 +20,7 @@ STATUS=0
 for FILE in $(find "$ROOT" -type f -iregex '.*\.\(gif\|jpg\|jpeg\|png\)$')
 do
 	HASH_OLD=$(md5sum "$FILE")
-	exiftool -icc_profile"-<=" "$FILE" > /dev/null 2>&1
+	exiftool -icc_profile"-<=" -overwrite_original_in_place "$FILE" > /dev/null 2>&1
 	HASH_NEW=$(md5sum "$FILE")
 
 	if [ "$HASH_OLD" != "$HASH_NEW" ]
