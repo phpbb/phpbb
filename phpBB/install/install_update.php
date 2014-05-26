@@ -145,7 +145,7 @@ class install_update extends module
 			array(
 				'name' 		=> 'adm',
 				'ext_path' 	=> 'adm/style/',
-			)
+			),
 		), $paths);
 
 		$template->assign_vars(array(

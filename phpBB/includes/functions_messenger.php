@@ -256,7 +256,7 @@ class messenger
 			array(
 				'name' 		=> $template_lang . '_email',
 				'ext_path' 	=> 'language/' . $template_lang . '/email'
-			)
+			),
 		), $template_paths);
 
 		$this->template->set_filenames(array(

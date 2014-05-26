@@ -585,7 +585,7 @@ class p_master
 						array(
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
-						)
+						),
 					), array($module_style_dir, $phpbb_admin_path . 'style'));
 				}
 			}

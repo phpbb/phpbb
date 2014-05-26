@@ -54,7 +54,7 @@ $template->set_custom_style(array(
 	array(
 		'name' 		=> 'adm',
 		'ext_path' 	=> 'adm/style/',
-	)
+	),
 ), $phpbb_admin_path . 'style');
 
 $template->assign_var('T_ASSETS_PATH', $phpbb_root_path . 'assets');

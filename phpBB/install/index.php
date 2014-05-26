@@ -254,7 +254,7 @@ $template->set_custom_style(array(
 	array(
 		'name' 		=> 'adm',
 		'ext_path' 	=> 'adm/style/',
-	)
+	),
 ), $paths);
 
 $path = array_shift($paths);
