@@ -1,14 +1,30 @@
 language: php
-php:
-  - 5.3.3
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - hhvm
 
-env:
-  - DB=mysqli
+matrix:
+  include:
+    - php: 5.3.3
+      env: DB=mysqli
+    - php: 5.3
+      env: DB=mysqli # MyISAM
+    - php: 5.4
+      env: DB=mysqli
+    - php: 5.4
+      env: DB=mysql
+    - php: 5.4
+      env: DB=mariadb
+    - php: 5.4
+      env: DB=postgres
+    - php: 5.4
+      env: DB=sqlite3
+    - php: 5.5
+      env: DB=mysqli
+    - php: 5.6
+      env: DB=mysqli
+    - php: hhvm
+      env: DB=mysql
+  allow_failures:
+    - php: hhvm
+  fast_finish: true
 
 services:
   - redis-server
@@ -24,16 +40,3 @@ script:
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysqli' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
 
-matrix:
-  include:
-    - php: 5.4
-      env: DB=mysql
-    - php: 5.4
-      env: DB=mariadb
-    - php: 5.4
-      env: DB=postgres
-    - php: 5.4
-      env: DB=sqlite3
-  allow_failures:
-    - php: hhvm
-  fast_finish: true
