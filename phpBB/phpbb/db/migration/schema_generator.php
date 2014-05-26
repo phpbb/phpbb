@@ -112,8 +112,8 @@ class schema_generator
 										$columns = $this->tables[$table]['COLUMNS'];
 										$offset = array_search($column_data['after'], array_keys($columns));
 										unset($column_data['after']);
-										
-										if ($offset == false)
+
+										if ($offset === false)
 										{
 											$this->tables[$table]['COLUMNS'][$column] = array_values($column_data);
 										}
