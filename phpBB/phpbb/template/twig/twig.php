@@ -212,6 +212,10 @@ class twig extends \phpbb\template\base
 	* Note: Templates are still compiled to phpBB's cache directory.
 	*
 	* @param string|array $names Array of names (or detailed names) or string of name of template(s) in inheritance tree order, used by extensions.
+	*	E.g. array(
+	*			'name' 		=> 'adm',
+	*			'ext_path' 	=> 'adm/style/',
+	*		)
 	* @param string|array of string $paths Array of style paths, relative to current root directory
 	* @return \phpbb\template\template $this
 	*/
