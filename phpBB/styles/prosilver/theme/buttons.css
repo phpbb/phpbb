@@ -7,7 +7,6 @@
 .button {
 	cursor: pointer;
 	display: inline-block;
-	line-height: 17.5px;
 	height: 18px;
 	font-size: 13px;
 	white-space: nowrap;
