@@ -26,16 +26,18 @@ class acp_extensions
 	private $config;
 	private $template;
 	private $user;
+	private $log;
 
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx, $phpbb_log;
 
 		$this->db = $db;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
+		$this->log = $phpbb_log;
 
 		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
 
@@ -123,6 +125,11 @@ class acp_extensions
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
+				if ($phpbb_extension_manager->enabled($ext_name))
+				{
+					redirect($this->u_action);
+				}
+
 				try
 				{
 					while ($phpbb_extension_manager->enable_step($ext_name))
@@ -135,6 +142,7 @@ class acp_extensions
 							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
 						}
 					}
+					$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
@@ -164,6 +172,11 @@ class acp_extensions
 			break;
 
 			case 'disable':
+				if (!$phpbb_extension_manager->enabled($ext_name))
+				{
+					redirect($this->u_action);
+				}
+
 				while ($phpbb_extension_manager->disable_step($ext_name))
 				{
 					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
@@ -174,6 +187,7 @@ class acp_extensions
 						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
 					}
 				}
+				$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
 
 				$this->tpl_name = 'acp_ext_disable';
 
@@ -197,6 +211,11 @@ class acp_extensions
 			break;
 
 			case 'delete_data':
+				if ($phpbb_extension_manager->enabled($ext_name))
+				{
+					redirect($this->u_action);
+				}
+
 				try
 				{
 					while ($phpbb_extension_manager->purge_step($ext_name))
@@ -209,6 +228,7 @@ class acp_extensions
 							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
 						}
 					}
+					$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_PURGE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
