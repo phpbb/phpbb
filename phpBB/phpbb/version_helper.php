@@ -208,6 +208,7 @@ class version_helper
 	 *
 	 * @param bool $force_update Ignores cached data. Defaults to false.
 	 * @return string Version info
+	 * @throws \RuntimeException
 	 */
 	public function get_versions_matching_stability($force_update = false)
 	{
