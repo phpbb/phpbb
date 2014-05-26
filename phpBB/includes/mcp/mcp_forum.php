@@ -378,7 +378,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	$topic_data = get_topic_data($sync_topics, 'm_merge');
 
-	if (!sizeof($topic_data) && empty($topic_data[$to_topic_id]))
+	if (!sizeof($topic_data) || empty($topic_data[$to_topic_id]))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
