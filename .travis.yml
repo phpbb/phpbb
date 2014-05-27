@@ -37,6 +37,7 @@ before_script:
 
 script:
   - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION
+  - travis/check-icc-profiles.sh $DB $TRAVIS_PHP_VERSION
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysqli' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
 

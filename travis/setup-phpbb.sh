@@ -9,6 +9,11 @@ set -x
 DB=$1
 TRAVIS_PHP_VERSION=$2
 
+if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
+then
+	travis/setup-exiftool.sh
+fi
+
 if [ "$DB" == "mariadb" ]
 then
 	travis/setup-mariadb.sh
