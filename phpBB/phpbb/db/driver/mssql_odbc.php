@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package dbal
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,8 +21,6 @@ namespace phpbb\db\driver;
 * @note number of bytes returned for returning data depends on odbc.defaultlrl php.ini setting.
 * If it is limited to 4K for example only 4K of data is returned max, resulting in incomplete theme data for example.
 * @note odbc.defaultbinmode may affect UTF8 characters
-*
-* @package dbal
 */
 class mssql_odbc extends \phpbb\db\driver\mssql_base
 {

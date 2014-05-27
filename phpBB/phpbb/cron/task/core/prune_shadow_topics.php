@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -15,8 +19,6 @@ namespace phpbb\cron\task\core;
 * It is intended to be used when cron is invoked via web.
 * This task can decide whether it should be run using data obtained by viewforum
 * code, without making additional database queries.
-*
-* @package phpBB3
 */
 class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\task\parametrized
 {

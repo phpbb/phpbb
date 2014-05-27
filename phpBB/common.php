@@ -1,15 +1,20 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
 *
-* Minimum Requirement: PHP 5.3.3
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
 */
 
 /**
+* Minimum Requirement: PHP 5.3.3
 */
+
 if (!defined('IN_PHPBB'))
 {
 	exit;

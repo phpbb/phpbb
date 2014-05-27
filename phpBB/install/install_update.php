@@ -1,15 +1,20 @@
 <?php
 /**
 *
-* @package install
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
 *
-* @todo check for writable cache/store/files directory
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
 */
 
 /**
+* @todo check for writable cache/store/files directory
 */
+
 if (!defined('IN_INSTALL'))
 {
 	// Someone has tried to access the file directly. This is not a good idea, so exit
@@ -37,7 +42,6 @@ if (!empty($setmodules))
 
 /**
 * Update Installation
-* @package install
 */
 class install_update extends module
 {

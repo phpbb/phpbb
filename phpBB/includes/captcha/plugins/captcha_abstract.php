@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package VC
-* @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -15,11 +19,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-
 /**
 * This class holds the code shared by the two default 3.0.x CAPTCHAs.
-*
-* @package VC
 */
 class phpbb_captcha_plugins_captcha_abstract
 {
