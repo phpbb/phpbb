@@ -849,6 +849,37 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	float: right;
 }
 
+.rtl .search-tools form {
+	float: right;
+}
+
+.rtl .search-tools .inputbox {
+	border-left: none;
+	border-right: 1px solid;
+	border-radius: 0 4px 4px 0;
+	float: right;
+}
+
+.rtl .search-tools input.button {
+	float: right;
+}
+
+.rtl .search-tools .dropdown-select {
+	border-left: 1px solid;
+	border-right: none;
+	border-radius: 4px 0 0 4px;
+	padding: 2px 2px 2px 22px;
+}
+
+.rtl .search-tools label {
+	float: right;
+}
+
+.rtl .search-tools label .inputbox {
+	float: left;
+	margin-right: 5px;
+}
+
 .rtl input.search {
 	background-position: right 1px;
 	padding-right: 17px;

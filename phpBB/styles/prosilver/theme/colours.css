@@ -724,7 +724,7 @@ Colours and backgrounds for buttons.css
 .icon-mark						{ background-image: url("./images/icon_mark.gif"); }
 .icon-sendemail					{ background-image: url("./images/icon_sendemail.gif"); }
 .icon-print						{ background-image: url("./images/icon_print.gif"); }
-.icon-search-advanced			{ background-image: url("./images/icon_search.gif"); }
+.icon-search-advanced			{ background-image: url("./images/icon_search_adv.gif"); }
 .icon-search-self				{ background-image: url("./images/icon_topic_latest.gif"); }
 .icon-search-unanswered			{ background-image: url("./images/icon_post_target.gif"); }
 .icon-search-unread				{ background-image: url("./images/subforum_unread.gif"); }
@@ -1118,6 +1118,7 @@ input.disabled {
 	background-image: url("./images/icon_textbox_search.gif"), linear-gradient(to bottom, #FFFFFF, #E9E9E9);
 	background-position: 50% 50%, 0 0;
 	background-repeat: no-repeat, repeat;
+	-ms-filter: "none";
 }
 
 /* jQuery popups
