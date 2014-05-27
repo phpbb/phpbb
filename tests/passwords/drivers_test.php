@@ -28,6 +28,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
+			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
 			'passwords.driver.phpbb2_md5'	=> new \phpbb\passwords\driver\phpbb2_md5($request, $phpbb_root_path, $php_ext),
 		);
 	}
@@ -151,5 +152,12 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.phpbb2_md5']->hash('foobar'));
 
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.phpbb2_md5']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
+	}
+
+	public function test_convert_password_driver()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.convert_password']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.convert_password']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
 	}
 }
