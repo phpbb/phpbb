@@ -145,7 +145,12 @@ class install_update extends module
 		// Set custom template again. ;)
 		$paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 		$paths = array_filter($paths, 'is_dir');
-		$template->set_custom_style('adm', $paths);
+		$template->set_custom_style(array(
+			array(
+				'name' 		=> 'adm',
+				'ext_path' 	=> 'adm/style/',
+			),
+		), $paths);
 
 		$template->assign_vars(array(
 			'S_USER_LANG'			=> $user->lang['USER_LANG'],

@@ -251,7 +251,7 @@ class version_helper
 
 			$info = json_decode($info, true);
 
-			if (empty($info['stable']) || empty($info['unstable']))
+			if (empty($info['stable']) && empty($info['unstable']))
 			{
 				$this->user->add_lang('acp/common');
 
@@ -266,6 +266,9 @@ class version_helper
 					$info[$stability][$branch]['announcement'] = str_replace('&', '&amp;', $branch_data['announcement']);
 				}
 			}
+
+			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];
+			$info['unstable'] = (empty($info['unstable'])) ? $info['stable'] : $info['unstable'];
 
 			$this->cache->put($cache_file, $info, 86400); // 24 hours
 		}

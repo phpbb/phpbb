@@ -584,7 +584,12 @@ class p_master
 
 				if (is_dir($module_style_dir))
 				{
-					$template->set_custom_style('adm', array($module_style_dir, $phpbb_admin_path . 'style'));
+					$template->set_custom_style(array(
+						array(
+							'name' 		=> 'adm',
+							'ext_path' 	=> 'adm/style/',
+						),
+					), array($module_style_dir, $phpbb_admin_path . 'style'));
 				}
 			}
 
