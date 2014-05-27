@@ -554,13 +554,27 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 /* Rollover buttons
    Based on: http://wellstyled.com/css-nopreload-rollovers.html
 ----------------------------------------*/
-.rtl .buttons {
-	float: right;
+.rtl .icon-button.dropdown-select {
+	padding-left: 26px;
+	padding-right: 8px;
 }
 
-/* Rollover state */
-.rtl .buttons div {
-	margin: 0 1px 0 5px;
+.rtl .icon-button:before {
+	float: left;
+	margin-left: 0;
+	margin-right: 2px;
+}
+
+.dropdown-select:after {
+	border-left: 0;
+	border-right-style: solid;
+	border-right-width: 1px;
+	left: 0;
+	right: auto;
+}
+
+.rtl .buttons, .rtl .buttons .button {
+	float: right;
 }
 
 /* Icon images
@@ -574,15 +588,18 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	padding-right: 0;
 }
 
-/* Poster profile icons
-----------------------------------------*/
-/* Positioning of moderator icons */
+/* Post control buttons
+--------------------------------------------- */
 .rtl .post-buttons {
 	float: left;
 }
 
 .rtl .post-buttons li {
 	float: right;
+}
+
+.post-buttons .icon-button:before {
+	margin-right: 0;
 }
 
 /**
