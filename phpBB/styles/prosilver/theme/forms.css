@@ -370,13 +370,13 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 }
 
 .search-tools .inputbox {
-	background-position: left 50%;
+	background-image: none;
 	border: 1px solid transparent;
 	border-right: none;
 	border-radius: 4px 0 0 4px;
 	float: left;
 	height: 24px;
-	padding: 3px 0 3px 17px;
+	padding: 3px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -388,14 +388,18 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	font-weight: normal;
 	height: 24px;
 	margin: 0;
-	padding: 0 3px;
+	overflow: hidden;
+	padding: 3px;
+	position: relative;
+	text-indent: -5000px;
+	width: 30px;
 }
 
 .search-tools .dropdown-select {
 	border-left: none;
 	border-radius: 0 4px 4px 0;
 	margin: 0;
-	padding: 2px 22px 2px 4px;
+	padding: 2px 22px 2px 2px;
 }
 
 .search-tools label {

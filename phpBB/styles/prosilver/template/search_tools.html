@@ -1,10 +1,5 @@
 <div class="dropdown-container dropdown-button-control search-tools dropdown-left">
-	<!-- IF S_INDEX -->
-	<form method="get" id="forum-search" action="{U_SEARCH}">
-	<fieldset>
-		<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_MINI}" />
-		{S_SEARCH_HIDDEN_FIELDS}
-	<!-- ELSEIF S_VIEWFORUM -->
+	<!-- IF S_VIEWFORUM -->
 	<form method="get" id="forum-search" action="{S_SEARCHBOX_ACTION}">
 	<fieldset>
 		<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
@@ -29,25 +24,25 @@
 	</form>
 
 	<!-- IF S_DISPLAY_SEARCH -->
-	<span title="{L_TOPIC_TOOLS}" class="button icon-button tools-icon dropdown-trigger dropdown-select"></span>
+	<span title="{L_SEARCH_TOOLS}" class="button icon-button tools-icon dropdown-trigger dropdown-select"></span>
 
 	<div class="dropdown hidden">
 		<div class="pointer"><div class="pointer-inner"></div></div>
 		<ul class="dropdown-contents">
 			<!-- IF not S_IN_SEARCH -->
-				<li><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a></li>
+				<li class="small-icon icon-search-advanced"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a></li>
 			<!-- ENDIF -->
 			<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
-				<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
+				<li class="small-icon icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
 			<!-- ENDIF -->
-			<li><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></li>
+			<li class="small-icon icon-search-unanswered"><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></li>
 			<!-- IF S_LOAD_UNREADS --> 
-				<li><a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a></li>
+				<li class="small-icon icon-search-unread"><a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a></li>
 			<!-- ENDIF -->
 			<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
-				<li><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a></li>
+				<li class="small-icon icon-search-new"><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a></li>
 			<!-- ENDIF -->
-			<li><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
+			<li class="small-icon icon-search-active"><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
 		</ul>
 	</div>
 	<!-- ENDIF -->

@@ -702,6 +702,8 @@ Colours and backgrounds for buttons.css
 .contact-icons a		{ border-color: #DCDCDC; }
 .contact-icons a:hover	{ background-color: #F2F6F9; }
 
+.dropdown .icon-search-advanced { border-color: #AAA; }
+
 /* Icon images
 ---------------------------------------- */
 .icon-faq						{ background-image: url("./images/icon_faq.gif"); }
@@ -722,6 +724,12 @@ Colours and backgrounds for buttons.css
 .icon-mark						{ background-image: url("./images/icon_mark.gif"); }
 .icon-sendemail					{ background-image: url("./images/icon_sendemail.gif"); }
 .icon-print						{ background-image: url("./images/icon_print.gif"); }
+.icon-search-advanced			{ background-image: url("./images/icon_search.gif"); }
+.icon-search-self				{ background-image: url("./images/icon_topic_latest.gif"); }
+.icon-search-unanswered			{ background-image: url("./images/icon_post_target.gif"); }
+.icon-search-unread				{ background-image: url("./images/subforum_unread.gif"); }
+.icon-search-new				{ background-image: url("./images/subforum_unread.gif"); }
+.icon-search-active				{ background-image: url("./images/subforum_read.gif"); }
 
 /* Profile & navigation icons */
 .contact-icon													{ background-image: url("./images/icons_contact.png"); }
@@ -1100,6 +1108,16 @@ input.search {
 
 input.disabled {
 	color: #666666;
+}
+
+.search-tools input.button {
+	background-image: url("./images/icon_textbox_search.gif");
+	background-image: url("./images/icon_textbox_search.gif"), -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
+	background-image: url("./images/icon_textbox_search.gif"), -webkit-linear-gradient(top, #FFFFFF, #E9E9E9);
+	background-image: url("./images/icon_textbox_search.gif"), -o-linear-gradient(top, #FFFFFF, #E9E9E9);
+	background-image: url("./images/icon_textbox_search.gif"), linear-gradient(to bottom, #FFFFFF, #E9E9E9);
+	background-position: 50% 50%, 0 0;
+	background-repeat: no-repeat, repeat;
 }
 
 /* jQuery popups
