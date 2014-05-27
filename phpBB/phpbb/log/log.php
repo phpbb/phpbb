@@ -334,19 +334,41 @@ class log implements \phpbb\log\log_interface
 	*/
 	public function delete($mode, $conditions = array())
 	{
-		$sql_where = '';
-		$started = false;
+		switch ($mode)
+		{
+			case 'admin':
+				$log_type = LOG_ADMIN;
+				break;
+
+			case 'mod':
+				$log_type = LOG_MOD;
+				break;
+
+			case 'user':
+				$log_type = LOG_USERS;
+				break;
+
+			case 'users':
+				$log_type = LOG_USERS;
+				break;
+
+			case 'critical':
+				$log_type = LOG_CRITICAL;;
+				break;
+
+			default:
+				$log_type = false;
+		}
+
+		if ($log_type === false)
+		{
+			return;
+		}
+
+		$sql_where = 'WHERE log_type = ' . $log_type;
 		foreach ($conditions as $field => $field_value)
 		{
-			if ($started)
-			{
-				$sql_where .= ' AND ';
-			}
-			else
-			{
-				$sql_where = 'WHERE ';
-				$started = true;
-			}
+			$sql_where .= ' AND ';
 
 			if ($field == 'keywords')
 			{
@@ -354,11 +376,11 @@ class log implements \phpbb\log\log_interface
 			}
 			else
 			{
-				if (is_array($field_value) && sizeof($field_value) == 2)
+				if (is_array($field_value) && sizeof($field_value) == 2 && is_string($field_value[0]))
 				{
 					$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
 				}
-				else if (is_array($field_value) && sizeof($field_value) > 2)
+				else if (is_array($field_value))
 				{
 					$sql_where .= $this->db->sql_in_set($field, $field_value);
 				}
@@ -366,7 +388,6 @@ class log implements \phpbb\log\log_interface
 				{
 					$sql_where .= $field . ' = ' . $field_value;
 				}
-
 			}
 		}
 
