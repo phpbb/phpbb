@@ -140,7 +140,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 
 			$sql_ary = array(
 				'style_name'		=> 'prosilver',
-				'style_copyright'	=> '&copy; phpBB Group',
+				'style_copyright'	=> '&copy; phpBB Limited',
 				'style_active'		=> 1,
 				'style_path'		=> 'prosilver',
 				'bbcode_bitfield'	=> 'lNg=',

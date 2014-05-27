@@ -40,7 +40,7 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 				array(
 					'style_id' 			=> 1,
 					'style_name'		=> 'prosilver',
-					'style_copyright'	=> '&copy; phpBB Group',
+					'style_copyright'	=> '&copy; phpBB Limited',
 					'style_active'		=> 1,
 					'style_path'		=> 'prosilver',
 					'bbcode_bitfield'	=> 'kNg=',
@@ -50,7 +50,7 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 				array(
 					'style_id' 			=> 3,
 					'style_name'		=> 'Prosilver1',
-					'style_copyright'	=> '&copy; phpBB Group',
+					'style_copyright'	=> '&copy; phpBB Limited',
 					'style_active'		=> 0,
 					'style_path'		=> 'prosilver1',
 					'bbcode_bitfield'	=> 'kNg=',
@@ -60,7 +60,7 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 				array(
 					'style_id' 			=> 2,
 					'style_name'		=> 'prosilver2',
-					'style_copyright'	=> '&copy; phpBB Group',
+					'style_copyright'	=> '&copy; phpBB Limited',
 					'style_active'		=> 0,
 					'style_path'		=> 'prosilver2',
 					'bbcode_bitfield'	=> 'kNg=',

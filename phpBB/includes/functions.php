@@ -432,7 +432,7 @@ function phpbb_version_compare($version1, $version2, $operator = null)
 * @param int	$perms		Permissions to set
 *
 * @return bool	true on success, otherwise false
-* @author faw, phpBB Group
+* @author faw, phpBB Limited
 */
 function phpbb_chmod($filename, $perms = CHMOD_READ)
 {
