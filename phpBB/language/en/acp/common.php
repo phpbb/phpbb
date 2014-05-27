@@ -221,8 +221,11 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+	'CLI_DESCR_CRON_EXECUTE_ALL'		=> 'Executes all available cron tasks.',
+
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
+	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered path “%s” does not exist.',
@@ -283,6 +286,7 @@ $lang = array_merge($lang, array(
 	'REMIND'							=> 'Remind',
 	'RESYNC'							=> 'Resynchronise',
 
+	'RUNNING_TASK'			=> 'Running task: %s.',
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
 

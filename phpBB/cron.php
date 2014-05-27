@@ -39,11 +39,6 @@ function do_cron($cron_lock, $run_tasks)
 
 	foreach ($run_tasks as $task)
 	{
-		if (defined('DEBUG') && $config['use_system_cron'])
-		{
-			echo "[phpBB cron] Running task '{$task->get_name()}'\n";
-		}
-
 		$task->run();
 	}
 
@@ -59,38 +54,28 @@ function do_cron($cron_lock, $run_tasks)
 //
 // If DEBUG is defined and cron lock cannot be obtained, a message will be printed.
 
-if (!$config['use_system_cron'])
-{
-	$cron_type = request_var('cron_type', '');
+$cron_type = request_var('cron_type', '');
 
-	// Comment this line out for debugging so the page does not return an image.
-	output_image();
-}
+// Comment this line out for debugging so the page does not return an image.
+output_image();
 
 $cron_lock = $phpbb_container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
 	$cron = $phpbb_container->get('cron.manager');
 
-	if ($config['use_system_cron'])
+	// If invalid task is specified, empty $run_tasks is passed to do_cron which then does nothing
+	$run_tasks = array();
+	$task = $cron->find_task($cron_type);
+	if ($task)
 	{
-		$run_tasks = $cron->find_all_ready_tasks();
-	}
-	else
-	{
-		// If invalid task is specified, empty $run_tasks is passed to do_cron which then does nothing
-		$run_tasks = array();
-		$task = $cron->find_task($cron_type);
-		if ($task)
+		if ($task->is_parametrized())
 		{
-			if ($task->is_parametrized())
-			{
-				$task->parse_parameters($request);
-			}
-			if ($task->is_ready())
-			{
-				$run_tasks = array($task);
-			}
+			$task->parse_parameters($request);
+		}
+		if ($task->is_ready())
+		{
+			$run_tasks = array($task);
 		}
 	}
 
@@ -100,6 +85,6 @@ else
 {
 	if (defined('DEBUG'))
 	{
-		echo "Could not obtain cron lock.\n";
+		echo $this->user->lang('CRON_LOCK_ERROR') . '\n';
 	}
 }
