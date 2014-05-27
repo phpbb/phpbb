@@ -3,7 +3,6 @@
 # @copyright (c) 2014 phpBB Group
 # @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 #
-set -e
 
 if [ "$#" -ne 1 ]; then
 	SCRIPT=$(basename "$0")
