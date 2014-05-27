@@ -33,10 +33,6 @@ then
 	# Upgrade to a recent stable version of HHVM
 	sudo apt-get -o Dpkg::Options::="--force-confnew" install -y hhvm-nightly
 
-	# MySQLi is broken in HHVM 3.0.0~precise and still does not work for us in
-	# 2014.03.28~saucy, i.e. needs more work. Use MySQL extension for now.
-	sed -i "s/mysqli/mysql/" "$DIR/phpunit-mysql-travis.xml"
-
 	HHVM_LOG=$(realpath "$DIR")/hhvm.log
 
 	sudo hhvm \

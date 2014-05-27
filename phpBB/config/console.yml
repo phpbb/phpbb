@@ -86,6 +86,7 @@ services:
         class: phpbb\console\command\extension\show
         arguments:
             - @ext.manager
+            - @log
         tags:
             - { name: console.command }
 
