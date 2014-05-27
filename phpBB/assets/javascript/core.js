@@ -15,7 +15,7 @@ var dark = $('#darkenwrapper');
 var loadingIndicator = $('#loading_indicator');
 var phpbbAlertTimer = null;
 
-var isTouch = (window && typeof window.ontouchstart !== 'undefined');
+phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
 
 /**
  * Display a loading screen
@@ -1011,7 +1011,7 @@ phpbb.resizeTextArea = function(items, options) {
 		resetCallback: function(item) { }
 	};
 
-	if (isTouch) return;
+	if (phpbb.isTouch) return;
 
 	if (arguments.length > 1) {
 		configuration = $.extend(configuration, options);

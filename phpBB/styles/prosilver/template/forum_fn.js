@@ -681,7 +681,7 @@ function parse_document(container)
 	/**
 	* Responsive link lists
 	*/
-	container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody ul.profile-icons:not([data-skip-responsive])').each(function() {
+	container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
 		var $this = $(this),
 			$body = $('body'),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
@@ -769,6 +769,11 @@ function parse_document(container)
 				menu.prepend(clone.not('.rightside'));
 				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
 				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+
+				if ($this.hasClass('post-buttons')) {
+					$('.button', menu).removeClass('button icon-button');
+					$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
+				}
 				copied = true;
 			}
 			else {
@@ -914,6 +919,8 @@ function parse_document(container)
 	$(document).ready(function() {
 		// Swap .nojs and .hasjs
 		$('#phpbb.nojs').toggleClass('nojs hasjs');
+		$('#phpbb').toggleClass('hastouch', phpbb.isTouch);
+		$('#phpbb.hastouch').removeClass('notouch');
 
 		// Focus forms
 		$('form[data-focus]:first').each(function() {
