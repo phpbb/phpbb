@@ -4,7 +4,8 @@
 # @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 #
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 1 ]
+then
 	SCRIPT=$(basename "$0")
 	echo "Description: Finds and strips ICC Profiles from given image file." >&2
 	echo "Usage: $SCRIPT /path/to/image/file" >&2
