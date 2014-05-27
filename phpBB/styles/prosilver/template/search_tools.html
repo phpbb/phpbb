@@ -1,0 +1,54 @@
+<div class="dropdown-container dropdown-button-control search-tools dropdown-left">
+	<!-- IF S_INDEX -->
+	<form method="get" id="forum-search" action="{U_SEARCH}">
+	<fieldset>
+		<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_MINI}" />
+		{S_SEARCH_HIDDEN_FIELDS}
+	<!-- ELSEIF S_VIEWFORUM -->
+	<form method="get" id="forum-search" action="{S_SEARCHBOX_ACTION}">
+	<fieldset>
+		<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
+		{S_SEARCH_LOCAL_HIDDEN_FIELDS}
+	<!-- ELSEIF S_VIEWTOPIC -->
+	<form method="get" id="topic-search" action="{S_SEARCHBOX_ACTION}">
+	<fieldset>
+		<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
+		{S_SEARCH_LOCAL_HIDDEN_FIELDS}
+	<!-- ELSEIF SEARCH_MATCHES and SEARCH_IN_RESULTS -->
+	<form method="post" action="{S_SEARCH_ACTION}">
+		<label for="add_keywords">{L_SEARCH_IN_RESULTS}{L_COLON}<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" /></label>
+	<!-- ELSE -->
+	<form method="get" id="forum-search" action="{U_SEARCH}">
+	<fieldset>
+		<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_MINI}" />
+		{S_SEARCH_HIDDEN_FIELDS}
+	<!-- ENDIF -->
+
+		<input class="button" type="submit" value="{L_SEARCH}" />
+	</fieldset>
+	</form>
+
+	<!-- IF S_DISPLAY_SEARCH -->
+	<span title="{L_TOPIC_TOOLS}" class="button icon-button tools-icon dropdown-trigger dropdown-select"></span>
+
+	<div class="dropdown hidden">
+		<div class="pointer"><div class="pointer-inner"></div></div>
+		<ul class="dropdown-contents">
+			<!-- IF not S_IN_SEARCH -->
+				<li><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a></li>
+			<!-- ENDIF -->
+			<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
+				<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
+			<!-- ENDIF -->
+			<li><a href="{U_SEARCH_UNANSWERED}">{L_SEARCH_UNANSWERED}</a></li>
+			<!-- IF S_LOAD_UNREADS --> 
+				<li><a href="{U_SEARCH_UNREAD}">{L_SEARCH_UNREAD}</a></li>
+			<!-- ENDIF -->
+			<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
+				<li><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a></li>
+			<!-- ENDIF -->
+			<li><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
+		</ul>
+	</div>
+	<!-- ENDIF -->
+</div>

@@ -1051,6 +1051,9 @@ fieldset.quick-login input.inputbox {
 	color: transparent;
 }
 
+.search-tools .inputbox {
+	border-color: #C7C3BF;
+}
 
 /* Form button styles
 ---------------------------------------- */

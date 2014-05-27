@@ -237,6 +237,10 @@ div[class].topic-actions {
 	height: auto;
 }
 
+.topic-actions ul.linklist li {
+	font-size: 1.0em;
+}
+
 /* Post body styles
 ----------------------------------------*/
 .postbody {

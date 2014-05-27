@@ -99,7 +99,7 @@
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools {
+.rtl .dropdown-container.topic-tools, .rtl .dropdown-container.search-tools {
 	float: right;
 }
 
@@ -843,7 +843,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 
 /* Topic and forum Search */
-.rtl .search-box {
+.rtl .search-tools {
 	margin-right: 5px;
 	margin-left: 0;
 	float: right;
