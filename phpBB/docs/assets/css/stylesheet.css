@@ -178,6 +178,10 @@ a#logo:hover {
 	color: #000000;
 }
 
+.main-description {
+	font-size: 1.15em;
+}
+
 .content {
 	color: #333333;
 }
