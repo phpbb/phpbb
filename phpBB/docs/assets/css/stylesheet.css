@@ -239,10 +239,16 @@ a:active	{ color: #368AD2; }
 
 * html hr { margin: 0; }
 
-.back2top {
-	clear: both;
+.top {
+	background: url("../images/icon_back_top.gif") no-repeat top left;
+	text-decoration: none;
+	width: 11px;
 	height: 11px;
-	text-align: right;
+	display: block;
+	float: right;
+	overflow: hidden;
+	letter-spacing: 1000px;
+	text-indent: 11px;
 }
 
 .content ol, .content ul {
