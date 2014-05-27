@@ -668,7 +668,7 @@ dd.profile-warnings {
 --------------------------------------------------------------
 Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
-.button {
+.button, .button:visited {
 	border-color: #C7C3BF;
 	background-color: #FFFFFF;
 	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
@@ -678,7 +678,7 @@ Colours and backgrounds for buttons.css
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='#E9E9E9')";
 	box-shadow: 0 0 0 1px #FFFFFF inset;
 	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #5C6482 !important;
+	color: #BC2A4D;
 }
 
 .button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
@@ -691,13 +691,12 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.buttons .button		{ color: #BC2A4D !important; }
 .dropdown-select:after	{ border-color: #DADADA; }
 .dropdown-select:hover	{ border-color: #C7C3BF; }
 
 .dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #A6B2BA;
-	color: #105289 !important;
+	color: #105289;
 }
 
 .contact-icons a		{ border-color: #DCDCDC; }
