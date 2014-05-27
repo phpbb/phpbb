@@ -26,7 +26,7 @@ class acp_logs
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request, $phpbb_log;
+		global $request;
 
 		$user->add_lang('mcp');
 
@@ -78,6 +78,8 @@ class acp_logs
 				}
 
 				$conditions['log_type'] = $this->log_type;
+
+				$phpbb_log = $phpbb_container->get('log');
 				$phpbb_log->delete($mode, $conditions);
 			}
 			else
