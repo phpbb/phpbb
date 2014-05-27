@@ -11,12 +11,20 @@ body {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	color: #828282;
 	background-color: #FFFFFF;
-	font-size: 12px;
+	font-size: 10px;
 	margin: 0;
 	padding: 12px 0;
 }
 
 img { border-width: 0; }
+
+ul, ol {
+	font-size: 1.1em;
+}
+
+ul ul, ol ol {
+	font-size: inherit;
+}
 
 p {
 	line-height: 1.3em;
@@ -70,7 +78,7 @@ h3 {
 	border-bottom: 1px solid #CCCCCC;
 	margin-bottom: 3px;
 	padding-bottom: 2px;
-	font-size: 1.05em;
+	font-size: 1.1em;
 	color: #115098;
 	margin-top: 20px;
 }
@@ -80,7 +88,7 @@ h4 {
 	font-weight: bold;
 	margin-bottom: 3px;
 	padding-bottom: 2px;
-	font-size: 1.05em;
+	font-size: 1.1em;
 	color: #115098;
 	margin-top: 20px;
 }
@@ -154,6 +162,7 @@ a#logo:hover {
 
 .paragraph {
 	border-radius: 7px;
+	font-size: 1.1em;
 	padding: 5px 10px;
 	margin-bottom: 4px;
 	background-repeat: no-repeat;
