@@ -24,6 +24,9 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
+		$request = new phpbb_mock_request(array(), array(), array(), array(), array('password' => 'töst'));
+		$phpbb_root_path = dirname(__FILE__) . '/../../phpBB/';
+		$php_ext = 'php';
 
 		$this->passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper),
@@ -32,6 +35,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
+			'passwords.driver.phpbb2_md5'	=> new \phpbb\passwords\driver\phpbb2_md5($request, $phpbb_root_path, $php_ext),
 		);
 
 		$this->helper = new \phpbb\passwords\helper;
@@ -146,6 +150,9 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 			array('foobar', '6f9e2a1899e1f15708fd2e554103480eb53e8b57', false, array('login_name' => 'test')),
 			array('foobar', '$CP$6f9e2a1899e1f15708fd2e554103480eb53e8b57', true, array('login_name' => 'test')),
 			array('foobar', '6f9e2a1899', false, array('login_name' => 'test')),
+			array('fööbar', 'ae2fc75e20ee25d4520766788fbc96ae', false),
+			array('fööbar', '$CP$ae2fc75e20ee25d4520766788fbc96ae', false),
+			array(utf8_decode('fööbar'), '$CP$ae2fc75e20ee25d4520766788fbc96ae', true),
 		);
 	}
 

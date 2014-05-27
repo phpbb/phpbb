@@ -17,7 +17,10 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	{
 		// Prepare dependencies for drivers
 		$config =  new \phpbb\config\config(array());
+		$request = new phpbb_mock_request(array(), array(), array(), array(), array('password' => 'fööbar'));
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
+		$phpbb_root_path = dirname(__FILE__) . '/../../phpBB/';
+		$php_ext = 'php';
 
 		$this->passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper),
@@ -25,6 +28,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
+			'passwords.driver.phpbb2_md5'	=> new \phpbb\passwords\driver\phpbb2_md5($request, $phpbb_root_path, $php_ext),
 		);
 	}
 
@@ -114,5 +118,38 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function test_get_settings_only($expected, $hash, $driver)
 	{
 		$this->assertSame($expected, $this->passwords_drivers[$driver]->get_settings_only($hash));
+	}
+
+	public function data_phpbb2_md5_check()
+	{
+		return array(
+			array(false, 'foobar', 'ae2fc75e20ee25d4520766788fbc96ae'),
+			array(false, 'foobar', 'ae2fc75e20ee25d4520766788fbc96aeddsf'),
+			array(false, 'fööbar', 'ae2fc75e20ee25d4520766788fbc96ae'),
+			array(true, 'fööbar', 'ae2fc75e20ee25d4520766788fbc96ae', utf8_decode('fööbar')),
+		);
+	}
+
+	/**
+	* @dataProvider data_phpbb2_md5_check
+	*/
+	public function test_phpbb2_md5_check($expected, $password, $hash, $request_password = false)
+	{
+		if (!$request_password)
+		{
+			unset($_REQUEST['password']);
+		}
+		else
+		{
+			$_REQUEST['password'] = $request_password;
+		}
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.phpbb2_md5']->check($password, $hash));
+	}
+
+	public function test_phpbb2_md5_unneeded_functions()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.phpbb2_md5']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.phpbb2_md5']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
 	}
 }
