@@ -104,6 +104,7 @@ code {
 	border-width: 1px; 
 	border-style: solid; 
 	background-color: #FAFAFA; 
+	padding: 0 4px;
 }
 
 #wrap {
