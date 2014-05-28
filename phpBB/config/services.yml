@@ -99,7 +99,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    controller.resolver:
+    controller.resolver_real:
         class: phpbb\controller\resolver
         arguments:
             - @user

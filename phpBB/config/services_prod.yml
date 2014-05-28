@@ -4,3 +4,6 @@ imports:
 services:
     dispatcher:
         alias: dispatcher_real
+
+    controller.resolver:
+        alias: controller.resolver_real
