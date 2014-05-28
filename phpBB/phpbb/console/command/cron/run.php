@@ -55,7 +55,7 @@ class run extends \phpbb\console\command\command
 		$this
 			->setName('cron:run')
 			->setDescription($this->user->lang('CLI_DESCR_CRON_RUN'))
-			->addArgument('name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCR_CRON_ARG_RUN_1'));
+			->addArgument('name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCR_CRON_ARG_RUN_1'))
 		;
 	}
 
@@ -69,11 +69,11 @@ class run extends \phpbb\console\command\command
 	*		Otherwise there is no output.
 	* If an argument is given to the command, only the task whose name matches the 
 	*		argument will be started. If none exists, an error message is
-	*		printed and theexit status is set to -1. Verbose option does nothing in 
+	*		printed and the exit status is set to 2. Verbose option does nothing in 
 	*		this case.
 	*
-	* @param InputInterface $input The input stream, unused here
-	* @param OutputInterface $output The output stream, used for printig verbose-mode and error information.
+	* @param InputInterface $input The input stream used to get the argument
+	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	*
 	* @return int 0 if all is ok, 1 if a lock error occured and -1 if no task matching the argument was found
 	*/
@@ -81,9 +81,11 @@ class run extends \phpbb\console\command\command
 	{
 		if ($this->lock_db->acquire())
 		{
-			if ($task_name = $input->getArgument('name'))
+			$task_name = $input->getArgument('name');
+			if ($task_name)
 			{
-				if ($task = $this->cron_manager->find_task($task_name))
+				$task = $this->cron_manager->find_task($task_name);
+				if ($task)
 				{
 					$task->run();
 					return 0;
@@ -91,7 +93,7 @@ class run extends \phpbb\console\command\command
 				else
 				{
 					$output->writeln('<error>' . $this->user->lang('CRON_NO_TASK') . '</error>');
-					return -1;
+					return 2;
 				}
 			}
 			else
