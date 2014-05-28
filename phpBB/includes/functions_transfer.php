@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,7 +21,6 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Transfer class, wrapper for ftp/sftp/ssh
-* @package phpBB3
 */
 class transfer
 {
@@ -255,7 +258,6 @@ class transfer
 
 /**
 * FTP transfer class
-* @package phpBB3
 */
 class ftp extends transfer
 {
@@ -507,7 +509,6 @@ class ftp extends transfer
 * FTP fsock transfer class
 *
 * @author wGEric
-* @package phpBB3
 */
 class ftp_fsock extends transfer
 {

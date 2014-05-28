@@ -1,13 +1,19 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2003 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
 *
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
+
+/**
 * This script generates an index of some template vars and their use within the templates.
 * It writes down all language variables used by various templates.
-*
 */
 
 //
@@ -77,7 +83,7 @@ $html_skeleton .= '<br><br><a name="ref"></a><b>References: </b>{SEE_FILES}';
 
 $html_skeleton .= '
 <br><br>
-<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited</div>
 
 		<br clear="all" /></td>
 	</tr>
@@ -399,7 +405,7 @@ $html_data .= '<br><li><a href="./lang_index.html" class="gen">Appendix A: Langu
 
 $html_data .= '
 </ol><br><br>
-<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited</div>
 
 		<br clear="all" /></td>
 	</tr>
@@ -522,7 +528,7 @@ foreach ($lang_fp as $filepointer)
 
 $html_data .= '
 <br><br>
-<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Group</div>
+<div class="copyright" align="center">Powered by <a href="http://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited</div>
 
 		<br clear="all" /></td>
 	</tr>

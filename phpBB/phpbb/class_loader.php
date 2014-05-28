@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,8 +23,6 @@ namespace phpbb;
 *
 * If every part of the class name is a directory, the last directory name is
 * also used as the filename, e.g. phpbb_dir would resolve to dir/dir.php.
-*
-* @package phpBB3
 */
 class class_loader
 {

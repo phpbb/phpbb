@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package \phpbb\request\request
-* @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -14,8 +18,6 @@ namespace phpbb\request;
 *
 * It provides a method to disable access to input data through super globals.
 * This should force MOD authors to read about data validation.
-*
-* @package \phpbb\request\request
 */
 class request implements \phpbb\request\request_interface
 {

@@ -1,19 +1,21 @@
 <?php
 /**
 *
-* @package auth
-* @copyright (c) 2013 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
 namespace phpbb\auth\provider;
 
 /**
- * The interface authentication provider classes have to implement.
- *
- * @package auth
- */
+* The interface authentication provider classes have to implement.
+*/
 interface provider_interface
 {
 	/**

@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package \phpbb\request\request
-* @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -12,8 +16,6 @@ namespace phpbb\request;
 /**
 * Replacement for a superglobal (like $_GET or $_POST) which calls
 * trigger_error on all operations but isset, overloads the [] operator with SPL.
-*
-* @package \phpbb\request\request
 */
 class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAggregate
 {

@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -23,7 +27,6 @@ if (!class_exists('bbcode'))
 /**
 * BBCODE FIRSTPASS
 * BBCODE first pass class (functions for parsing messages for db storage)
-* @package phpBB3
 */
 class bbcode_firstpass extends bbcode
 {
@@ -1057,7 +1060,6 @@ class bbcode_firstpass extends bbcode
 /**
 * Main message parser for posting, pm, etc. takes raw message
 * and parses it for attachments, bbcode and smilies
-* @package phpBB3
 */
 class parse_message extends bbcode_firstpass
 {

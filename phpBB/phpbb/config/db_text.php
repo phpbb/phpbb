@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2013 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -13,8 +17,6 @@ namespace phpbb\config;
 * Manages configuration options with an arbitrary length value stored in a TEXT
 * column. In constrast to class \phpbb\config\db, values are never cached and
 * prefetched, but every get operation sends a query to the database.
-*
-* @package phpBB3
 */
 class db_text
 {

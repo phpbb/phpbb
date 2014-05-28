@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,7 +22,6 @@ if (!defined('IN_PHPBB'))
 /**
 * Responsible for holding all file relevant information, as well as doing file-specific operations.
 * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
-* @package phpBB3
 */
 class filespec
 {
@@ -455,8 +458,6 @@ class filespec
 
 /**
 * Class for assigning error messages before a real filespec class can be assigned
-*
-* @package phpBB3
 */
 class fileerror extends filespec
 {
@@ -469,8 +470,6 @@ class fileerror extends filespec
 /**
 * File upload class
 * Init class (all parameters optional and able to be set/overwritten separately) - scope is global and valid for all uploads
-*
-* @package phpBB3
 */
 class fileupload
 {

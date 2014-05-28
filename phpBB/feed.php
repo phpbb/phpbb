@@ -1,8 +1,13 @@
 <?php
 /**
-* @package phpBB3
-* @copyright (c) 2009 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 * Idea and original RSS Feed 2.0 MOD (Version 1.0.8/9) by leviatan21
 * Original MOD: http://www.phpbb.com/community/viewtopic.php?f=69&t=1214645
