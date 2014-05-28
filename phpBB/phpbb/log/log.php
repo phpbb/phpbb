@@ -353,7 +353,7 @@ class log implements \phpbb\log\log_interface
 				break;
 
 			case 'critical':
-				$log_type = LOG_CRITICAL;;
+				$log_type = LOG_CRITICAL;
 				break;
 
 			default:
