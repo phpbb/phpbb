@@ -72,7 +72,7 @@ class execute_all extends \phpbb\console\command\command
 			{
 				if ($input->getOption('verbose'))
 				{
-					$output->writeln($this->user->lang('RUNNING_TASK', $task->get_name()) . "\n");
+					$output->writeln($this->user->lang('RUNNING_TASK', $task->get_name()));
 				}
 
 				$task->run();

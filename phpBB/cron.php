@@ -33,20 +33,6 @@ function output_image()
 	flush();
 }
 
-function do_cron($cron_lock, $run_tasks)
-{
-	global $config;
-
-	foreach ($run_tasks as $task)
-	{
-		$task->run();
-	}
-
-	// Unloading cache and closing db after having done the dirty work.
-	$cron_lock->release();
-	garbage_collection();
-}
-
 // Thanks to various fatal errors and lack of try/finally, it is quite easy to leave
 // the cron lock locked, especially when working on cron-related code.
 //
@@ -65,7 +51,6 @@ if ($cron_lock->acquire())
 	$cron = $phpbb_container->get('cron.manager');
 
 	// If invalid task is specified, empty $run_tasks is passed to do_cron which then does nothing
-	$run_tasks = array();
 	$task = $cron->find_task($cron_type);
 	if ($task)
 	{
@@ -75,11 +60,12 @@ if ($cron_lock->acquire())
 		}
 		if ($task->is_ready())
 		{
-			$run_tasks = array($task);
+			$task->run();
+			$cron_lock->release();
+			garbage_collection();
 		}
 	}
 
-	do_cron($cron_lock, $run_tasks);
 }
 else
 {
