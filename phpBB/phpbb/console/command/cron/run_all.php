@@ -60,7 +60,7 @@ class run_all extends \phpbb\console\command\command
 	* @param InputInterface input The input stream, unused here
 	* @param OutputInterface output The output stream, used for printig verbose-mode
 	*							and error information.
-	* @return null
+	* @return boolean 0 if all is ok, 1 if a lock error occured
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{

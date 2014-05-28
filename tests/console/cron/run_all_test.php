@@ -21,6 +21,7 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 	protected $user;
 	protected $cron_manager;
 	protected $command_name;
+	protected $task;
 
 	public function getDataSet()
 	{
@@ -40,8 +41,9 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 		$this->user = $this->getMock('\phpbb\user');
 		$this->user->method('lang')->will($this->returnArgument(0));
 
+		$this->task = new phpbb_cron_task_simple();
 		$tasks = array(
-			new phpbb_cron_task_simple(),
+			$this->task,
 		);
 		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
 
@@ -58,7 +60,7 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 		$command_tester->execute(array('command' => $this->command_name));
 
 		$this->assertSame('', $command_tester->getDisplay());
-		$this->assertSame(1, $cron_num_exec);
+		$this->assertSame(true, $this->task->executed);
 	}
 
 	public function test_verbose_mode()
@@ -69,7 +71,7 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 		$command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
 		$this->assertContains('RUNNING_TASK', $command_tester->getDisplay());
-		$this->assertSame(1, $cron_num_exec);
+		$this->assertSame(true, $this->task->executed);
 	}
 
 	public function test_error_lock()
@@ -81,7 +83,7 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 		$command_tester->execute(array('command' => $this->command_name));
 
 		$this->assertContains('CRON_LOCK_ERROR', $command_tester->getDisplay());
-		$this->assertSame(0, $cron_num_exec);
+		$this->assertSame(false, $this->task->executed);
 	}
 
 	public function get_command_tester()
