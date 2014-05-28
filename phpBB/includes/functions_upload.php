@@ -309,6 +309,7 @@ class filespec
 		{
 			@unlink($this->filename);
 			$this->error[] = $user->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
+			$this->file_moved = false;
 			return false;
 		}
 		else

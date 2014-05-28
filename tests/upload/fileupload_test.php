@@ -110,7 +110,8 @@ class phpbb_fileupload_test extends phpbb_test_case
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		$file = $upload->local_upload($this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
-		$file->move_file('../tests/upload/fixture');
+		$this->assertFalse($file->move_file('../tests/upload/fixture'));
+		$this->assertFalse($file->file_moved);
 		$this->assertEquals(1, sizeof($file->error));
 	}
 
