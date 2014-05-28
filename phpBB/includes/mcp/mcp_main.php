@@ -120,7 +120,7 @@ class mcp_main
 					trigger_error('NO_TOPIC_SELECTED');
 				}
 
-				mcp_delete_topic($topic_ids, $soft_delete, ($soft_delete) ? $request->variable('delete_reason', '', true) : '');
+				mcp_delete_topic($topic_ids, $soft_delete, $request->variable('delete_reason', '', true));
 			break;
 
 			case 'delete_post':
@@ -137,7 +137,7 @@ class mcp_main
 					trigger_error('NO_POST_SELECTED');
 				}
 
-				mcp_delete_post($post_ids, $soft_delete, ($soft_delete) ? $request->variable('delete_reason', '', true) : '');
+				mcp_delete_post($post_ids, $soft_delete, $request->variable('delete_reason', '', true));
 			break;
 
 			case 'restore_topic':
