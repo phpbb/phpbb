@@ -75,7 +75,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 					'post_username'	=> 'A',
 					'responders'	=> null,			
 				),
-				'A replied to the topic “Test”.',
+				'<strong>Reply</strong> from A in topic:',
 			),
 			array(
 				array(
@@ -86,7 +86,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 3),
 					),			
 				),
-				'A and B replied to the topic “Test”.',
+				'<strong>Reply</strong> from A and B in topic:',
 			),
 			array(
 				array(
@@ -98,7 +98,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 4),
 					),			
 				),
-				'A, B, and C replied to the topic “Test”.',
+				'<strong>Reply</strong> from A, B, and C in topic:',
 			),
 			array(
 				array(
@@ -111,7 +111,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 5),
 					),			
 				),
-				'A, B, C, and D replied to the topic “Test”.',
+				'<strong>Reply</strong> from A, B, C, and D in topic:',
 			),
 			array(
 				array(
@@ -125,7 +125,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 6),
 					),			
 				),
-				'A, B, C, and 2 others replied to the topic “Test”.',
+				'<strong>Reply</strong> from A, B, C, and 2 others in topic:',
 			),
 		);
 	}
