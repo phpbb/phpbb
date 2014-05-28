@@ -26,7 +26,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -358,6 +358,17 @@ class acp_groups
 						'skip_auth'			=> request_var('group_skip_auth', 0),
 					);
 
+					/**
+					* Request group data and operate on it
+					*
+					* @event core.acp_group_options_request_data
+					* @var	string	action		Type of the action: add|edit
+					* @var	array	submit_ary	Array with new data
+					* @since 3.1.0-b4
+					*/
+					$vars = array('action', 'submit_ary');
+					extract($phpbb_dispatcher->trigger_event('core.acp_group_options_request_data', compact($vars)));
+
 					if ($user->data['user_type'] == USER_FOUNDER)
 					{
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
@@ -613,7 +624,7 @@ class acp_groups
 					break;
 				}
 
-				$template->assign_vars(array(
+				$template_data = array(
 					'S_EDIT'			=> true,
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
 					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
@@ -661,7 +672,37 @@ class acp_groups
 					'U_BACK'			=> $u_back,
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
-				));
+				);
+
+				/**
+				* Modify group template data before we display the form
+				*
+				* @event core.acp_group_options_display_form
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		group_id	The group id,
+				* @var	array	row			Array with current group data
+				*							empty when creating new group
+				* @var	array	group_data	Array with new group data
+				* @var	array	errors		Array of errors, if you add errors
+				*					ensure to update the template variables
+				*					S_ERROR and ERROR_MSG to display it
+				* @var	array	template_data	Array with new group data
+				* @since 3.1.0-b4
+				*/
+				$vars = array(
+					'action',
+					'update',
+					'group_id',
+					'row',
+					'group_data',
+					'errors',
+					'template_data',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_group_options_display_form', compact($vars)));
+
+				$template->assign_vars($template_data);
 
 				return;
 			break;
