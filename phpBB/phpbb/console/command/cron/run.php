@@ -14,10 +14,11 @@
 namespace phpbb\console\command\cron;
 
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class run_all extends \phpbb\console\command\command
+class run extends \phpbb\console\command\command
 {
 	/** @var \phpbb\cron\manager */
 	protected $cron_manager;
@@ -52,43 +53,64 @@ class run_all extends \phpbb\console\command\command
 	protected function configure()
 	{
 		$this
-			->setName('cron:run-all')
-			->setDescription($this->user->lang('CLI_DESCR_CRON_RUN_ALL'))
+			->setName('cron:run')
+			->setDescription($this->user->lang('CLI_DESCR_CRON_RUN'))
+			->addArgument('name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCR_CRON_ARG_RUN_1'));
 		;
 	}
 
 	/**
 	* Executes the function.
 	*
-	* Tries to acquire the cron lock, then runs all ready cron tasks.
+	* Tries to acquire the cron lock, then if no argument has been given runs all ready cron tasks.
 	* If the cron lock can not be obtained, an error message is printed
 	*		and the exit status is set to 1.
 	* If the verbose option is specified, each start of a task is printed.
 	*		Otherwise there is no output.
+	* If an argument is given to the command, only the task whose name matches the 
+	*		argument will be started. If none exists, an error message is
+	*		printed and theexit status is set to -1. Verbose option does nothing in 
+	*		this case.
 	*
 	* @param InputInterface $input The input stream, unused here
-	* @param OutputInterface $output The output stream, used for printig verbose-mode
-	*							and error information.
-	* @return int 0 if all is ok, 1 if a lock error occured
+	* @param OutputInterface $output The output stream, used for printig verbose-mode and error information.
+	*
+	* @return int 0 if all is ok, 1 if a lock error occured and -1 if no task matching the argument was found
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		if ($this->lock_db->acquire())
 		{
-			$run_tasks = $this->cron_manager->find_all_ready_tasks();
-
-			foreach ($run_tasks as $task)
+			if ($task_name = $input->getArgument('name'))
 			{
-				if ($input->getOption('verbose'))
+				if ($task = $this->cron_manager->find_task($task_name))
 				{
-					$output->writeln($this->user->lang('RUNNING_TASK', $task->get_name()));
+					$task->run();
+					return 0;
 				}
-
-				$task->run();
+				else
+				{
+					$output->writeln('<error>' . $this->user->lang('CRON_NO_TASK') . '</error>');
+					return -1;
+				}
 			}
-			$this->lock_db->release();
+			else
+			{
+				$run_tasks = $this->cron_manager->find_all_ready_tasks();
 
-			return 0;
+				foreach ($run_tasks as $task)
+				{
+					if ($input->getOption('verbose'))
+					{
+						$output->writeln($this->user->lang('RUNNING_TASK', $task->get_name()));
+					}
+
+					$task->run();
+				}
+				$this->lock_db->release();
+
+				return 0;
+			}
 		}
 		else
 		{

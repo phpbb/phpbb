@@ -13,11 +13,11 @@
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use phpbb\console\command\cron\run_all;
+use phpbb\console\command\cron\run;
 
 require_once dirname(__FILE__) . '/tasks/simple.php';
 
-class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
+class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $config;
@@ -81,12 +81,39 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->task->executed);
 	}
 
+	public function test_arg_valid()
+	{
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array('command' => $this->command_name, 'name' => 'phpbb_cron_task_simple'));
+
+		$this->assertSame('', $command_tester->getDisplay());
+		$this->assertSame(true, $this->task->executed);
+	}
+
+	public function test_arg_invalid()
+	{
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array('command' => $this->command_name, 'name' => 'foo'));
+
+		$this->assertContains('CRON_NO_TASK', $command_tester->getDisplay());
+		$this->assertSame(false, $this->task->executed);
+	}
+
+	public function test_arg_valid_verbose()
+	{
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array('command' => $this->command_name, 'name' => 'phpbb_cron_task_simple', '--verbose' => true));
+
+		$this->assertSame('', $command_tester->getDisplay());
+		$this->assertSame(true, $this->task->executed);
+	}
+
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new run_all($this->cron_manager, $this->lock, $this->user));
+		$application->add(new run($this->cron_manager, $this->lock, $this->user));
 
-		$command = $application->find('cron:run-all');
+		$command = $application->find('cron:run');
 		$this->command_name = $command->getName();
 		return new CommandTester($command);
 	}

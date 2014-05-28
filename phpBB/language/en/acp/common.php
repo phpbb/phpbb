@@ -221,11 +221,13 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
-	'CLI_DESCR_CRON_RUN_ALL'		=> 'Runs all available cron tasks.',
+	'CLI_DESCR_CRON_RUN'		=> 'Runs all available cron tasks.',
+	'CLI_DESCR_CRON_ARG_RUN_1'	=> 'What task do you what to run?',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
+	'CRON_NO_TASK'			=> 'No such cron task',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered path “%s” does not exist.',
