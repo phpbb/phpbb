@@ -49,7 +49,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 
 		// Delete with IN condition
 		$this->assertCount(2, $log->get_logs('mod', false, 0, 0, array(13, 14), 0, 0, 0, 'l.log_time DESC'));
-		$log->delete('mod', array('forum_id' => array(14, 13)));
+		$log->delete('mod', array('forum_id' => array('IN' => array(14, 13))));
 		$this->assertEmpty($log->get_logs('mod', false, 0, 0, array(13, 14), 0, 0, 0, 'l.log_time DESC'));
 
 		// Delete with a custom condition (ie: WHERE x >= 10)

@@ -360,6 +360,29 @@ class log implements \phpbb\log\log_interface
 				$log_type = false;
 		}
 
+		/**
+		* Allows to modify log data before we delete it from the database
+		*
+		* NOTE: if sql_ary does not contain a log_type value, the entry will
+		* not be deleted in the database. So ensure to set it, if needed.
+		*
+		* @event core.add_log
+		* @var	string	mode			Mode of the entry we log
+		* @var	string	log_type		Type ID of the log (should be different than false)
+		* @var	array	conditions		An array of conditions, 3 different  forms are accepted
+		* 								1) <key> => <value> transformed into 'AND <key> = <value>' (value should be an integer)
+		*								2) <key> => array(<operator>, <value>) transformed into 'AND <key> <operator> <value>' (values can't be an array)
+		*								3) <key> => array('IN' => array(<values>)) transformed into 'AND <key> IN <values>'
+		*								A special field, keywords, can also be defined. In this case only the log entries that have the keywords in log_operation or log_data will be deleted.
+		* @since 3.1.0-b4
+		*/
+		$vars = array(
+			'mode',
+			'log_type',
+			'conditions',
+		);
+		extract($this->dispatcher->trigger_event('core.delete_log', compact($vars)));
+
 		if ($log_type === false)
 		{
 			return;
@@ -376,13 +399,13 @@ class log implements \phpbb\log\log_interface
 			}
 			else
 			{
-				if (is_array($field_value) && sizeof($field_value) == 2 && is_string($field_value[0]))
+				if (is_array($field_value) && sizeof($field_value) == 2 && !is_array($field_value[1]))
 				{
 					$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
 				}
-				else if (is_array($field_value))
+				else if (is_array($field_value) && sizeof($field_value) == 1 && is_array($field_value['IN']))
 				{
-					$sql_where .= $this->db->sql_in_set($field, $field_value);
+					$sql_where .= $this->db->sql_in_set($field, $field_value['IN']);
 				}
 				else
 				{
