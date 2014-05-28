@@ -63,9 +63,31 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	*/
 	public function get_title()
 	{
+		return $this->user->lang($this->language_key);
+	}
+
+	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
 		return $this->user->lang(
-			$this->language_key,
-			censor_text($this->get_data('topic_title')),
+			'NOTIFICATION_REFERENCE',
+			censor_text($this->get_data('topic_title'))
+		);
+	}
+
+	/**
+	* Get the reason for the disapproval notification
+	*
+	* @return string
+	*/
+	public function get_reason()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_REASON',
 			$this->get_data('disapprove_reason')
 		);
 	}

@@ -111,7 +111,20 @@ class pm extends \phpbb\notification\type\base
 	{
 		$username = $this->user_loader->get_username($this->get_data('from_user_id'), 'no_profile');
 
-		return $this->user->lang('NOTIFICATION_PM', $username, $this->get_data('message_subject'));
+		return $this->user->lang('NOTIFICATION_PM', $username);
+	}
+
+	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_REFERENCE',
+			$this->get_data('message_subject')
+		);
 	}
 
 	/**

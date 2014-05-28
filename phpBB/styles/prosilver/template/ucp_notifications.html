@@ -72,8 +72,10 @@
 										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
 										<div class="notifications">
 											<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-											<p class="notifications_title">{notification_list.FORMATTED_TITLE}</p>
-											<!-- IF notification_list.URL --></a><!-- ENDIF -->
+											<p class="notifications_title">{notification_list.FORMATTED_TITLE} <!-- IF notification_list.REFERENCE -->{notification_list.REFERENCE}<!-- ENDIF --></p>
+											<!-- IF notification_list.URL --></a><!-- ENDIF -->				
+											<!-- IF notification_list.FORUM --><p class="notifications_forum">{notification_list.FORUM}</p><!-- ENDIF -->
+											<!-- IF notification_list.REASON --><p class="notifications_reason">{notification_list.REASON}</p><!-- ENDIF -->
 											<p class="notifications_time">{notification_list.TIME}</p>
 											<!-- IF not notification_list.URL and notification_list.U_MARK_READ -->
 												<p><a href="{notification_list.U_MARK_READ}">{L_MARK_READ}</a></p>

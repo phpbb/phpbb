@@ -107,7 +107,19 @@ class report_pm_closed extends \phpbb\notification\type\pm
 
 		return $this->user->lang(
 			$this->language_key,
-			$username,
+			$username
+		);
+	}
+
+	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('message_subject'))
 		);
 	}

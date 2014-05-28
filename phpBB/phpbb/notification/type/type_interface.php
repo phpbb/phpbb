@@ -95,6 +95,20 @@ interface type_interface
 	public function get_title();
 
 	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference();
+
+	/**
+	* Get the forum of the notification reference
+	*
+	* @return string
+	*/
+	public function get_forum();
+
+	/**
 	* Get the url to this item
 	*
 	* @return string URL

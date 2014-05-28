@@ -312,6 +312,12 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'AVATAR'			=> $this->get_avatar(),
 
 			'FORMATTED_TITLE'	=> $this->get_title(),
+			
+			'REFERENCE'			=> $this->get_reference(),
+			
+			'FORUM'				=> $this->get_forum(),
+			
+			'REASON'			=> $this->get_reason(),
 
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
@@ -342,6 +348,36 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @return string
 	*/
 	public function get_avatar()
+	{
+		return '';
+	}
+
+	/**
+	* Get the reference of the notifcation (fall back)
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return '';
+	}
+
+	/**
+	* Get the forum of the notification reference (fall back)
+	*
+	* @return string
+	*/
+	public function get_forum()
+	{
+		return '';
+	}
+
+	/**
+	* Get the reason for the notifcation (fall back)
+	*
+	* @return string
+	*/
+	public function get_reason()
 	{
 		return '';
 	}

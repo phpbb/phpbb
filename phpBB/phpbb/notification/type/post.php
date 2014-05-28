@@ -225,8 +225,20 @@ class post extends \phpbb\notification\type\base
 		return $this->user->lang(
 			$this->language_key,
 			phpbb_generate_string_list($usernames, $this->user),
-			censor_text($this->get_data('topic_title')),
 			$responders_cnt
+		);
+	}
+
+	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_REFERENCE',
+			censor_text($this->get_data('topic_title'))
 		);
 	}
 

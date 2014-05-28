@@ -1101,7 +1101,7 @@ form > p.post-notice strong {
 	display: none;
 	position: absolute;
 	left: 0;
-	width: 330px;
+	width: 340px;
 	z-index: 1;
 	top: 22px;
 }
@@ -1173,17 +1173,36 @@ form > p.post-notice strong {
 	text-decoration: none;
 }
 
+.notification_list a.notification-block {
+	padding: 8px;
+}
+
 .notification_list ul li img {
 	float: left;
 	max-height: 50px;
+	max-width: 50px;
 	width: auto !important;
 	height: auto !important;
 	margin-right: 5px;
 }
 
 .notification_list ul li p {
-	margin: 0;
+	margin-bottom: 4px;
 	font-size: 1em;
+}
+
+.notification_list p.notification-reference,
+.notification_list p.notification-location,
+.notification_list a.notification-block p.notification-reason {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.notification_list ul li p.notification-time {
+	font-size: 0.9em;
+	margin: 0;
+	text-align: right;
 }
 
 .notification_list div.notifications {
@@ -1193,11 +1212,18 @@ form > p.post-notice strong {
 .notification_list p.notifications_title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 13px !important;
+}
+
+.notification_list p.notifications_title strong {
 	font-weight: bold;
 }
 
 .notification_list p.notifications_time {
 	font-size: 11px !important;
+}
+
+.notification_text {
+	margin-left: 58px;
 }
 
 .notification_text:after {
