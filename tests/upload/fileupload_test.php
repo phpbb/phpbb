@@ -107,6 +107,31 @@ class phpbb_fileupload_test extends phpbb_test_case
 		unlink($this->path . 'jpg.jpg');
 	}
 
+	public function test_move_existent_file()
+	{
+		$upload = new fileupload('', array('jpg'), 1000);
+
+		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
+		$file = $upload->local_upload($this->path . 'jpg.jpg');
+		$this->assertEquals(0, sizeof($file->error));
+		$this->assertFalse($file->move_file('../tests/upload/fixture'));
+		$this->assertFalse($file->file_moved);
+		$this->assertEquals(1, sizeof($file->error));
+	}
+
+	public function test_move_existent_file_overwrite()
+	{
+		$upload = new fileupload('', array('jpg'), 1000);
+
+		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
+		copy($this->path . 'jpg', $this->path . 'copies/jpg.jpg');
+		$file = $upload->local_upload($this->path . 'jpg.jpg');
+		$this->assertEquals(0, sizeof($file->error));
+		$file->move_file('../tests/upload/fixture/copies', true);
+		$this->assertEquals(0, sizeof($file->error));
+		unlink($this->path . 'copies/jpg.jpg');
+	}
+
 	public function test_valid_dimensions()
 	{
 		$upload = new fileupload('', false, false, 1, 1, 100, 100);
