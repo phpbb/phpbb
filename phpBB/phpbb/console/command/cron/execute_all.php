@@ -23,6 +23,14 @@ class execute_all extends \phpbb\console\command\command
 	/** @var \phpbb\user */
 	protected $user;
 
+	/**
+	* Construct method
+	*
+	* @param \phpbb\cron\manager $cron_manager The cron manager containing
+	*							the cron tasks to be executed.
+	* @param \phpbb\lock\db $lock_db The lock for accessing database.
+	* @param \phobb\user $user The user object (used to get language information)
+	*/
 	public function __construct(\phpbb\cron\manager $cron_manager, \phpbb\lock\db $lock_db, \phpbb\user $user)
 	{
 		$this->cron_manager = $cron_manager;
@@ -31,6 +39,11 @@ class execute_all extends \phpbb\console\command\command
 		parent::__construct();
 	}
 
+	/**
+	* Sets the command name and description
+	*
+	* @return null
+	*/
 	protected function configure()
 	{
 		$this
@@ -39,6 +52,16 @@ class execute_all extends \phpbb\console\command\command
 		;
 	}
 
+	/**
+	* Executes the function. Each cron tasks is executed.
+	* If option "--verbose" is not seted, there will be no output in case of
+	* successful execution.
+	*
+	* @param InputInterface input The input stream, unused here
+	* @param OutputInterface output The output stream, used for printig verbose-mode
+	*							and error information.
+	* @return null
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		if ($this->lock_db->acquire())
