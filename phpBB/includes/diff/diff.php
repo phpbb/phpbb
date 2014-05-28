@@ -495,7 +495,8 @@ class diff3 extends diff
 	* @param array $orig		The original lines to use.
 	* @param array $final1		The first version to compare to.
 	* @param array $final2		The second version to compare to.
-	* @param bool $preserve_cr	If true, \r is replaced by a new line in the diff output
+	* @param bool $preserve_cr	If true, \r\n and bare \r are replaced by a new line
+	*							in the diff output
 	*/
 	function diff3(&$orig, &$final1, &$final2, $preserve_cr = true)
 	{
