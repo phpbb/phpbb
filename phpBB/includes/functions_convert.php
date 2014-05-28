@@ -1240,7 +1240,7 @@ function get_config()
 		$filename = $convert->options['forum_path'] . '/' . $convert->config_schema['filename'];
 		if (!file_exists($filename))
 		{
-			$convert->p_master->error($user->lang['FILE_NOT_FOUND'] . ': ' . $filename, __LINE__, __FILE__);
+			$convert->p_master->error($user->lang('FILE_NOT_FOUND', $filename), __LINE__, __FILE__);
 		}
 
 		if (isset($convert->config_schema['array_name']))
