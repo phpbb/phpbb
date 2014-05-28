@@ -33,6 +33,7 @@
 			<!-- IF not S_IN_SEARCH -->
 				<li class="small-icon icon-search-advanced"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a></li>
 			<!-- ENDIF -->
+			<!-- EVENT search_tools_list_before -->
 			<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
 				<li class="small-icon icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
 			<!-- ENDIF -->
@@ -44,6 +45,7 @@
 				<li class="small-icon icon-search-new"><a href="{U_SEARCH_NEW}">{L_SEARCH_NEW}</a></li>
 			<!-- ENDIF -->
 			<li class="small-icon icon-search-active"><a href="{U_SEARCH_ACTIVE_TOPICS}">{L_SEARCH_ACTIVE_TOPICS}</a></li>
+			<!-- EVENT search_tools_list_after -->
 		</ul>
 	</div>
 	<!-- ENDIF -->
