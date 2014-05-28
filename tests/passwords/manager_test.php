@@ -36,6 +36,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
 			'passwords.driver.sha1'		=> new \phpbb\passwords\driver\sha1($config, $this->driver_helper),
+			'passwords.driver.md5_mybb'		=> new \phpbb\passwords\driver\md5_mybb($config, $this->driver_helper),
 		);
 		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $phpbb_root_path, $php_ext);
 

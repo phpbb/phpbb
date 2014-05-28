@@ -30,6 +30,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
 			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
 			'passwords.driver.sha1'		=> new \phpbb\passwords\driver\sha1($config, $this->driver_helper),
+			'passwords.driver.md5_mybb'		=> new \phpbb\passwords\driver\md5_mybb($config, $this->driver_helper),
 		);
 		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $phpbb_root_path, $php_ext);
 	}
@@ -170,6 +171,30 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1']->hash('foobar'));
 
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
+	}
+
+	public function data_md5_mybb_check()
+	{
+		return array(
+			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd'),
+			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd', array('user_passwd_salt' => 'ae2fc75e')),
+			array(true, 'foobar', '6022de2cc0ecf59ff14b57c6205ee170', array('user_passwd_salt' => 'ae2fc75e')),
+		);
+	}
+
+	/**
+	* @dataProvider data_md5_mybb_check
+	*/
+	public function test_md5_mybb_check($expected, $password, $hash, $user_row = array())
+	{
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.md5_mybb']->check($password, $hash, $user_row));
+	}
+
+	public function test_md5_mybb_driver()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	protected function utf8_to_cp1252($string)
