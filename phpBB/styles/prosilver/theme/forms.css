@@ -376,7 +376,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 .search-tools .inputbox {
 	background-image: none;
 	border: 1px solid transparent;
-	border-right: none;
+	border-right-width: 0;
 	border-radius: 4px 0 0 4px;
 	float: left;
 	height: 24px;
@@ -400,7 +400,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 }
 
 .search-tools .dropdown-select {
-	border-left: none;
+	border-left-width: 0;
 	border-radius: 0 4px 4px 0;
 	float: left;
 	margin: 0;
