@@ -1,0 +1,13 @@
+imports:
+    - { resource: services.yml }
+
+services:
+    dispatcher:
+        class: Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher
+        arguments:
+            - @dispatcher_real
+            - @stopwatch
+
+    stopwatch:
+        class: Symfony\Component\Stopwatch\Stopwatch
+        public: false

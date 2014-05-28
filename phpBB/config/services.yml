@@ -133,8 +133,9 @@ services:
             - @config
             - @dbal.conn
 
-    dispatcher:
+    dispatcher_real:
         class: phpbb\event\dispatcher
+        public: false
         arguments:
             - @service_container
 

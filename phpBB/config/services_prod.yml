@@ -1,0 +1,6 @@
+imports:
+    - { resource: services.yml }
+
+services:
+    dispatcher:
+        alias: dispatcher_real
