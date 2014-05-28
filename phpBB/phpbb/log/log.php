@@ -403,7 +403,7 @@ class log implements \phpbb\log\log_interface
 				{
 					$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
 				}
-				else if (is_array($field_value) && sizeof($field_value) == 1 && is_array($field_value['IN']))
+				else if (is_array($field_value) && isset($field_value['IN']) && is_array($field_value['IN']))
 				{
 					$sql_where .= $this->db->sql_in_set($field, $field_value['IN']);
 				}
