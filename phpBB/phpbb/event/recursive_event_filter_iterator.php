@@ -1,22 +1,22 @@
 <?php
 /**
 *
-* @package event
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
 namespace phpbb\event;
 
 /**
-* Class recursive_event_filter_iterator
-*
 * This filter ignores directories and files starting with a dot.
 * It also skips some directories that do not contain events anyway,
 * such as e.g. files/, store/ and vendor/
-*
-* @package phpbb\event
 */
 class recursive_event_filter_iterator extends \RecursiveFilterIterator
 {

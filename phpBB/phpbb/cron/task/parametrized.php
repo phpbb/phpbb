@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,8 +21,6 @@ namespace phpbb\cron\task;
 * parametrized cron tasks perform actions on a particular object (or objects).
 * Parametrized cron tasks do not make sense and are not usable without
 * specifying these objects.
-*
-* @package phpBB3
 */
 interface parametrized extends \phpbb\cron\task\task
 {

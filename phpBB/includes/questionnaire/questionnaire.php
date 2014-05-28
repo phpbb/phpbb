@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -87,7 +91,6 @@ class phpbb_questionnaire_data_collector
 
 /**
 * Questionnaire PHP data provider
-* @package phpBB3
 */
 class phpbb_questionnaire_php_data_provider
 {
@@ -131,7 +134,6 @@ class phpbb_questionnaire_php_data_provider
 
 /**
 * Questionnaire System data provider
-* @package phpBB3
 */
 class phpbb_questionnaire_system_data_provider
 {
@@ -211,7 +213,6 @@ class phpbb_questionnaire_system_data_provider
 
 /**
 * Questionnaire phpBB data provider
-* @package phpBB3
 */
 class phpbb_questionnaire_phpbb_data_provider
 {

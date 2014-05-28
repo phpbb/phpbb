@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2012 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -14,8 +18,6 @@ namespace phpbb\groupposition;
 *
 * group_legend is an ascending list 1, 2, ..., n for groups which are displayed. 1 is the first group, n the last.
 * If the value is 0 (self::GROUP_DISABLED) the group is not displayed.
-*
-* @package phpBB3
 */
 class legend implements \phpbb\groupposition\groupposition_interface
 {

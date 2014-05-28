@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package migration
-* @copyright (c) 2012 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -136,7 +140,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 
 			$sql_ary = array(
 				'style_name'		=> 'prosilver',
-				'style_copyright'	=> '&copy; phpBB Group',
+				'style_copyright'	=> '&copy; phpBB Limited',
 				'style_active'		=> 1,
 				'style_path'		=> 'prosilver',
 				'bbcode_bitfield'	=> 'lNg=',

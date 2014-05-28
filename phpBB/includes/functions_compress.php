@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,7 +21,6 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Class for handling archives (compression/decompression)
-* @package phpBB3
 */
 class compress
 {
@@ -186,12 +189,10 @@ class compress
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
 *
-* Modified extensively by psoTFX and DavidMJ, (c) phpBB Group, 2003
+* Modified extensively by psoTFX and DavidMJ, (c) phpBB Limited, 2003
 *
 * Based on work by Eric Mueller and Denis125
 * Official ZIP file format: http://www.pkware.com/appnote.txt
-*
-* @package phpBB3
 */
 class compress_zip extends compress
 {
@@ -527,8 +528,6 @@ class compress_zip extends compress
 /**
 * Tar/tar.gz compression routine
 * Header/checksum creation derived from tarfile.pl, (c) Tom Horsley, 1994
-*
-* @package phpBB3
 */
 class compress_tar extends compress
 {

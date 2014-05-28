@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -15,9 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_database
 {
 	var $db_tools;
@@ -479,9 +480,6 @@ class acp_database
 	}
 }
 
-/**
-* @package acp
-*/
 class base_extractor
 {
 	var $fh;
@@ -625,9 +623,6 @@ class base_extractor
 	}
 }
 
-/**
-* @package acp
-*/
 class mysql_extractor extends base_extractor
 {
 	function write_start($table_prefix)
@@ -951,9 +946,6 @@ class mysql_extractor extends base_extractor
 	}
 }
 
-/**
-* @package acp
-*/
 class sqlite_extractor extends base_extractor
 {
 	function write_start($prefix)
@@ -1055,9 +1047,6 @@ class sqlite_extractor extends base_extractor
 	}
 }
 
-/**
-* @package acp
-*/
 class sqlite3_extractor extends base_extractor
 {
 	function write_start($prefix)
@@ -1161,9 +1150,6 @@ class sqlite3_extractor extends base_extractor
 	}
 }
 
-/**
-* @package acp
-*/
 class postgres_extractor extends base_extractor
 {
 	function write_start($prefix)
@@ -1453,9 +1439,6 @@ class postgres_extractor extends base_extractor
 	}
 }
 
-/**
-* @package acp
-*/
 class mssql_extractor extends base_extractor
 {
 	function write_end()
@@ -1900,9 +1883,6 @@ class mssql_extractor extends base_extractor
 
 }
 
-/**
-* @package acp
-*/
 class oracle_extractor extends base_extractor
 {
 	function write_table($table_name)
@@ -2130,9 +2110,6 @@ class oracle_extractor extends base_extractor
 	}
 }
 
-/**
-* @package acp
-*/
 class firebird_extractor extends base_extractor
 {
 	function write_start($prefix)

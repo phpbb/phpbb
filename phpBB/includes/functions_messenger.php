@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,7 +21,6 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Messenger
-* @package phpBB3
 */
 class messenger
 {
@@ -657,7 +660,6 @@ class messenger
 
 /**
 * handling email and jabber queue
-* @package phpBB3
 */
 class queue
 {
@@ -1137,7 +1139,6 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 * SMTP Class
 * Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
 * See docs/AUTHORS for more details
-* @package phpBB3
 */
 class smtp_class
 {
