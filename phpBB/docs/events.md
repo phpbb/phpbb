@@ -22,6 +22,18 @@ acp_forums_normal_settings_append
 * Since: 3.1.0-a1
 * Purpose: Add settings to forums
 
+acp_group_options_before
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.1.0-b4
+* Purpose: Add addtional options to group settings (before GROUP_FOUNDER_MANAGE)
+
+acp_group_options_after
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.1.0-b4
+* Purpose: Add addtional options to group settings (after GROUP_RECEIVE_PM)
+
 acp_main_actions_append
 ===
 * Location: adm/style/acp_main.html
