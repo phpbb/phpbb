@@ -12,9 +12,9 @@ namespace phpbb\passwords\driver;
 /**
 * @package passwords
 */
-class phpbb2_md5 extends base
+class md5_phpbb2 extends base
 {
-	const PREFIX = '$phpbb2_md5$';
+	const PREFIX = '$md5_phpbb2$';
 
 	/** @var \phpbb\request\request phpBB request object */
 	protected $request;
