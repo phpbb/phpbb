@@ -6,8 +6,7 @@ class phpbb_cron_task_simple extends \phpbb\cron\task\base
 
 	public function __construct()
 	{
-		$executed = false;
-		parent::__construct();
+		$this->executed = false;
 	}
 
 	public function get_name()

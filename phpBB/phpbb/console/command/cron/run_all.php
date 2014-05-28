@@ -53,12 +53,15 @@ class run_all extends \phpbb\console\command\command
 	}
 
 	/**
-	* Executes the function. Each cron tasks is executed.
-	* If option "--verbose" is not seted, there will be no output in case of
-	* successful execution.
+	* Executes the function.
+	* Tries to acquire the cron lock, then runs all ready cron tasks.
+	* If the cron lock can not be obtained, an error message is printed
+	*							and the exit status is set to 1.
+	*If the verbose option is specified, each start of a task is printed.
+								Otherwise there is no output.
 	*
-	* @param InputInterface input The input stream, unused here
-	* @param OutputInterface output The output stream, used for printig verbose-mode
+	* @param InputInterface $input The input stream, unused here
+	* @param OutputInterface $output The output stream, used for printig verbose-mode
 	*							and error information.
 	* @return boolean 0 if all is ok, 1 if a lock error occured
 	*/

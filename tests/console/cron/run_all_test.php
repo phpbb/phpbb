@@ -31,7 +31,6 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 	public function setUp()
 	{
 		global $db, $config, $phpbb_root_path, $pathEx;
-		global $cron_num_exec;
 
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
@@ -47,15 +46,11 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 		);
 		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
 
-		$cron_num_exec = 0;
-
 		$this->assertSame('0', $config['cron_lock']);
 	}
 
 	public function test_normal_use()
 	{
-		global $cron_num_exec;
-
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name));
 
@@ -65,8 +60,6 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 
 	public function test_verbose_mode()
 	{
-		global $cron_num_exec;
-
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
@@ -76,8 +69,6 @@ class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 
 	public function test_error_lock()
 	{
-		global $cron_num_exec;
-
 		$this->lock->acquire();
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name));
