@@ -88,6 +88,13 @@ interface type_interface
 	public function load_special($data, $notifications);
 
 	/**
+	* Get the styling of the notification
+	*
+	* @return string
+	*/
+	public function get_styling();
+
+	/**
 	* Get the HTML formatted title of this notification
 	*
 	* @return string

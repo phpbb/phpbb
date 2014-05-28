@@ -30,6 +30,16 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	}
 
 	/**
+	* Get the styling of the notification
+	*
+	* @return string
+	*/
+	public function get_styling()
+	{
+		return 'reported';
+	}
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string

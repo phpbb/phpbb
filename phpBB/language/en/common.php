@@ -442,7 +442,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_BOOKMARK'				=> array(
 		1	=> '<strong>Reply</strong> from %1$s in bookmarked topic:',
 	),
-	'NOTIFICATION_FORUM'				=> 'Forum: "%1$s"',
+	'NOTIFICATION_FORUM'				=> '<em>Forum:</em> %1$s',
 	'NOTIFICATION_GROUP_REQUEST'		=> '<strong>Group request</strong> from %1$s to join the group %2$s.',
 	'NOTIFICATION_GROUP_REQUEST_APPROVED'	=> '<strong>Group request approved</strong> to join the group %1$s.',
 	'NOTIFICATION_PM'					=> '<strong>Private Message</strong> from %1$s:',
@@ -456,7 +456,7 @@ $lang = array_merge($lang, array(
 		1	=> '<strong>Quoted</strong> by %1$s in:',
 	),
 	'NOTIFICATION_REFERENCE'			=> '"%1$s"',
-	'NOTIFICATION_REASON'				=> 'Reason: "%1$s".',
+	'NOTIFICATION_REASON'				=> '<em>Reason:</em> %1$s.',
 	'NOTIFICATION_REPORT_PM'			=> '<strong>Private Message reported</strong> by %1$s:',
 	'NOTIFICATION_REPORT_POST'			=> '<strong>Post reported</strong> by %1$s:',
 	'NOTIFICATION_REPORT_CLOSED'   		=> '<strong>Report closed</strong> by %1$s for:',

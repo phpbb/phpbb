@@ -1199,7 +1199,7 @@ form > p.post-notice strong {
 	white-space: nowrap;
 }
 
-.notification_list ul li p.notification-time {
+.notification_list p.notification-time {
 	font-size: 0.9em;
 	margin: 0;
 	text-align: right;

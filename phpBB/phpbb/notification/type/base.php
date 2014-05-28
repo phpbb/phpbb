@@ -309,6 +309,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 		return array(
 			'NOTIFICATION_ID'	=> $this->notification_id,
 
+			'STYLING'			=> $this->get_styling(),
+
 			'AVATAR'			=> $this->get_avatar(),
 
 			'FORMATTED_TITLE'	=> $this->get_title(),
@@ -340,6 +342,16 @@ abstract class base implements \phpbb\notification\type\type_interface
 	public function get_unsubscribe_url($method = false)
 	{
 		return false;
+	}
+
+	/**
+	* Get the styling of the notification (fall back)
+	*
+	* @return string
+	*/
+	public function get_styling()
+	{
+		return '';
 	}
 
 	/**
