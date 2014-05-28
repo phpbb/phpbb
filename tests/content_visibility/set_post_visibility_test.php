@@ -144,4 +144,45 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		$this->assertEquals($expected_topic, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
 	}
+
+	public function set_post_soft_deleted_data()
+	{
+		return array(
+			array(
+				10, 10, 10,
+				1, time(), 'soft-deleted',
+				true, false,
+				array(array('topic_attachment' => 1)),
+			),
+			array(
+				13, 11, 10,
+				1, time(), 'soft-deleted',
+				true, false,
+				array(array('topic_attachment' => 0)),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider set_post_soft_deleted_data
+	*/
+	public function test_set_post_soft_deleted($post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $expected)
+	{
+		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
+
+		$cache = new phpbb_mock_cache;
+		$db = $this->new_dbal();
+		$auth = $this->getMock('\phpbb\auth\auth');
+		$user = $this->getMock('\phpbb\user');
+		$content_visibility = new \phpbb\content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
+
+		$content_visibility->set_post_visibility(ITEM_DELETED, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest);
+
+		$result = $db->sql_query('SELECT topic_attachment
+			FROM phpbb_topics
+			WHERE topic_id = ' . $topic_id);
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+		$db->sql_freeresult($result);
+	}
 }
