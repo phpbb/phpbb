@@ -19,6 +19,9 @@ class phpbb2_md5 extends base
 	/** @var \phpbb\request\request phpBB request object */
 	protected $request;
 
+	/** @var \phpbb\passwords\driver\salted_md5 */
+	protected $salted_md5;
+
 	/** @var phpBB root path */
 	protected $phpbb_root_path;
 
@@ -28,13 +31,15 @@ class phpbb2_md5 extends base
 	/**
 	* Constructor of passwords driver object
 	*
-	* @param \phpbb\request\request		$request phpBB request object
-	* @param string				$phpbb_root_path phpBB root path
-	* @param string				$php_ext PHP file extension
+	* @param \phpbb\request\request $request phpBB request object
+	* @param \phpbb\passwords\driver\salted_md5 $salted_md5 Salted md5 driver
+	* @param string $phpbb_root_path phpBB root path
+	* @param string $php_ext PHP file extension
 	*/
-	public function __construct($request, $phpbb_root_path, $php_ext)
+	public function __construct($request, \phpbb\passwords\driver\salted_md5 $salted_md5, $phpbb_root_path, $php_ext)
 	{
 		$this->request = $request;
+		$this->salted_md5 = $salted_md5;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -69,7 +74,7 @@ class phpbb2_md5 extends base
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
-		if (strlen($hash) != 32)
+		if (strlen($hash) != 32 && strlen($hash) != 34)
 		{
 			return false;
 		}
@@ -99,7 +104,9 @@ class phpbb2_md5 extends base
 				include($this->phpbb_root_path . 'includes/utf/data/recode_basic.' . $this->php_ext);
 			}
 
-			if (md5($password_old_format) === $hash || md5(\utf8_to_cp1252($password_old_format)) === $hash)
+			if (md5($password_old_format) === $hash || md5(\utf8_to_cp1252($password_old_format)) === $hash
+				|| $this->salted_md5->check(md5($password_old_format), $hash) === true
+				|| $this->salted_md5->check(md5(\utf8_to_cp1252($password_old_format)), $hash) === true)
 			{
 				return true;
 			}
