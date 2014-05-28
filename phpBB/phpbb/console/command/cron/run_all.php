@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class execute_all extends \phpbb\console\command\command
+class run_all extends \phpbb\console\command\command
 {
 	/** @var \phpbb\cron\manager */
 	protected $cron_manager;
@@ -47,7 +47,7 @@ class execute_all extends \phpbb\console\command\command
 	protected function configure()
 	{
 		$this
-			->setName('cron:execute-all')
+			->setName('cron:run-all')
 			->setDescription($this->user->lang('CLI_DESCR_CRON_EXECUTE_ALL'))
 		;
 	}

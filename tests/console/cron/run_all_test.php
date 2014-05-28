@@ -9,11 +9,11 @@
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use phpbb\console\command\cron\execute_all;
+use phpbb\console\command\cron\run_all;
 
 require_once dirname(__FILE__) . '/tasks/simple.php';
 
-class phpbb_console_command_cron_execute_all_test extends phpbb_database_test_case
+class phpbb_console_command_cron_run_all_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $config;
@@ -47,7 +47,7 @@ class phpbb_console_command_cron_execute_all_test extends phpbb_database_test_ca
 
 		$cron_num_exec = 0;
 
-		$this->assertEquals('0', $config['cron_lock']);
+		$this->assertSame('0', $config['cron_lock']);
 	}
 
 	public function test_normal_use()
@@ -57,8 +57,8 @@ class phpbb_console_command_cron_execute_all_test extends phpbb_database_test_ca
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name));
 
-		$this->assertEquals('', $command_tester->getDisplay());
-		$this->assertEquals(1, $cron_num_exec);
+		$this->assertSame('', $command_tester->getDisplay());
+		$this->assertSame(1, $cron_num_exec);
 	}
 
 	public function test_verbose_mode()
@@ -69,7 +69,7 @@ class phpbb_console_command_cron_execute_all_test extends phpbb_database_test_ca
 		$command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
 		$this->assertContains('RUNNING_TASK', $command_tester->getDisplay());
-		$this->assertEquals(1, $cron_num_exec);
+		$this->assertSame(1, $cron_num_exec);
 	}
 
 	public function test_error_lock()
@@ -81,15 +81,15 @@ class phpbb_console_command_cron_execute_all_test extends phpbb_database_test_ca
 		$command_tester->execute(array('command' => $this->command_name));
 
 		$this->assertContains('CRON_LOCK_ERROR', $command_tester->getDisplay());
-		$this->assertEquals(0, $cron_num_exec);
+		$this->assertSame(0, $cron_num_exec);
 	}
 
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new execute_all($this->cron_manager, $this->lock, $this->user));
+		$application->add(new run_all($this->cron_manager, $this->lock, $this->user));
 
-		$command = $application->find('cron:execute-all');
+		$command = $application->find('cron:run-all');
 		$this->command_name = $command->getName();
 		return new CommandTester($command);
 	}

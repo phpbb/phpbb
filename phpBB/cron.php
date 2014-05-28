@@ -50,7 +50,6 @@ if ($cron_lock->acquire())
 {
 	$cron = $phpbb_container->get('cron.manager');
 
-	// If invalid task is specified, empty $run_tasks is passed to do_cron which then does nothing
 	$task = $cron->find_task($cron_type);
 	if ($task)
 	{

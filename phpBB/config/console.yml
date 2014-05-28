@@ -46,8 +46,8 @@ services:
         tags:
             - { name: console.command }
 
-    console.command.cron.execute_all:
-        class: phpbb\console\command\cron\execute_all
+    console.command.cron.run_all:
+        class: phpbb\console\command\cron\run_all
         arguments:
             - @cron.manager
             - @cron.lock_db
