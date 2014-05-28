@@ -27,17 +27,21 @@ class acp_extensions
 	private $config;
 	private $template;
 	private $user;
+	private $cache;
 	private $log;
+	private $request;
 
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx, $phpbb_log;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx, $phpbb_log, $cache;
 
 		$this->db = $db;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
+		$this->cache = $cache;
+		$this->request = $request;
 		$this->log = $phpbb_log;
 
 		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
@@ -81,11 +85,43 @@ class acp_extensions
 		// What are we doing?
 		switch ($action)
 		{
+			case 'set_config_version_check_force_unstable':
+				$force_unstable = $this->request->variable('force_unstable', false);
+
+				if ($force_unstable)
+				{
+					$s_hidden_fields = build_hidden_fields(array(
+						'force_unstable'	=> $force_unstable,
+					));
+
+					confirm_box(false, $user->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+				}
+				else
+				{
+					$config->set('extension_force_unstable', false);
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				}
+				break;
+
 			case 'list':
 			default:
+				if (confirm_box(true))
+				{
+					$config->set('extension_force_unstable', true);
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				}
+
 				$this->list_enabled_exts($phpbb_extension_manager);
 				$this->list_disabled_exts($phpbb_extension_manager);
 				$this->list_available_exts($phpbb_extension_manager);
+
+				$this->template->assign_vars(array(
+					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
+					'FORCE_UNSTABLE'		=> $config['extension_force_unstable'],
+					'U_ACTION' 				=> $this->u_action,
+				));
+
+				add_form_key('version_check_settings');
 
 				$this->tpl_name = 'acp_ext_list';
 			break;
@@ -247,7 +283,33 @@ class acp_extensions
 				// Output it to the template
 				$md_manager->output_template_data();
 
-				$template->assign_var('U_BACK', $this->u_action . '&amp;action=list');
+				try
+				{
+					$updates_available = $this->version_check($md_manager, $request->variable('versioncheck_force', false));
+
+					$template->assign_vars(array(
+						'S_UP_TO_DATE'		=> empty($updates_available),
+						'S_VERSIONCHECK'	=> true,
+						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
+					));
+
+					foreach ($updates_available as $branch => $version_data)
+					{
+						$template->assign_block_vars('updates_available', $version_data);
+					}
+				}
+				catch (\RuntimeException $e)
+				{
+					$template->assign_vars(array(
+						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
+						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+					));
+				}
+
+				$template->assign_vars(array(
+					'U_BACK'				=> $this->u_action . '&amp;action=list',
+					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name')),
+				));
 
 				$this->tpl_name = 'acp_ext_details';
 			break;
@@ -255,11 +317,11 @@ class acp_extensions
 	}
 
 	/**
-	 * Lists all the enabled extensions and dumps to the template
-	 *
-	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @return null
-	 */
+	* Lists all the enabled extensions and dumps to the template
+	*
+	* @param  $phpbb_extension_manager     An instance of the extension manager
+	* @return null
+	*/
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$enabled_extension_meta_data = array();
@@ -270,25 +332,39 @@ class acp_extensions
 
 			try
 			{
-				$enabled_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
+				$meta = $md_manager->get_metadata('all');
+				$enabled_extension_meta_data[$name] = array(
+					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
+					'META_VERSION' => $meta['version'],
+				);
+
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->version_check($md_manager, $force_update, !$force_update);
+
+				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
 			catch(\phpbb\extension\exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'S_VERSIONCHECK'		=> false,
 				));
+			}
+			catch (\RuntimeException $e)
+			{
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
-		natcasesort($enabled_extension_meta_data);
+		uasort($enabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
-		foreach ($enabled_extension_meta_data as $name => $display_name)
+		foreach ($enabled_extension_meta_data as $name => $block_vars)
 		{
-			$this->template->assign_block_vars('enabled', array(
-				'META_DISPLAY_NAME'		=> $display_name,
+			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
-				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
-			));
+			$this->template->assign_block_vars('enabled', $block_vars);
 
 			$this->output_actions('enabled', array(
 				'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
@@ -297,11 +373,11 @@ class acp_extensions
 	}
 
 	/**
-	 * Lists all the disabled extensions and dumps to the template
-	 *
-	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @return null
-	 */
+	* Lists all the disabled extensions and dumps to the template
+	*
+	* @param  $phpbb_extension_manager     An instance of the extension manager
+	* @return null
+	*/
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$disabled_extension_meta_data = array();
@@ -312,25 +388,39 @@ class acp_extensions
 
 			try
 			{
-				$disabled_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
+				$meta = $md_manager->get_metadata('all');
+				$disabled_extension_meta_data[$name] = array(
+					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
+					'META_VERSION' => $meta['version'],
+				);
+
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->version_check($md_manager, $force_update, !$force_update);
+
+				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
 			catch(\phpbb\extension\exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'S_VERSIONCHECK'		=> false,
 				));
+			}
+			catch (\RuntimeException $e)
+			{
+				$disabeld_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
-		natcasesort($disabled_extension_meta_data);
+		uasort($disabled_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
-		foreach ($disabled_extension_meta_data as $name => $display_name)
+		foreach ($disabled_extension_meta_data as $name => $block_vars)
 		{
-			$this->template->assign_block_vars('disabled', array(
-				'META_DISPLAY_NAME'		=> $display_name,
+			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
-				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
-			));
+			$this->template->assign_block_vars('disabled', $block_vars);
 
 			$this->output_actions('disabled', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
@@ -340,11 +430,11 @@ class acp_extensions
 	}
 
 	/**
-	 * Lists all the available extensions and dumps to the template
-	 *
-	 * @param  $phpbb_extension_manager     An instance of the extension manager
-	 * @return null
-	 */
+	* Lists all the available extensions and dumps to the template
+	*
+	* @param  $phpbb_extension_manager     An instance of the extension manager
+	* @return null
+	*/
 	public function list_available_exts(\phpbb\extension\manager $phpbb_extension_manager)
 	{
 		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
@@ -357,25 +447,39 @@ class acp_extensions
 
 			try
 			{
-				$available_extension_meta_data[$name] = $md_manager->get_metadata('display-name');
+				$meta = $md_manager->get_metadata('all');
+				$available_extension_meta_data[$name] = array(
+					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
+					'META_VERSION' => $meta['version'],
+				);
+
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->version_check($md_manager, $force_update, !$force_update);
+
+				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
 			catch(\phpbb\extension\exception $e)
 			{
 				$this->template->assign_block_vars('disabled', array(
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'S_VERSIONCHECK'		=> false,
 				));
+			}
+			catch (\RuntimeException $e)
+			{
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
-		natcasesort($available_extension_meta_data);
+		uasort($available_extension_meta_data, array($this, 'sort_extension_meta_data_table'));
 
-		foreach ($available_extension_meta_data as $name => $display_name)
+		foreach ($available_extension_meta_data as $name => $block_vars)
 		{
-			$this->template->assign_block_vars('disabled', array(
-				'META_DISPLAY_NAME'		=> $display_name,
+			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
-				'U_DETAILS'		=> $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name),
-			));
+			$this->template->assign_block_vars('disabled', $block_vars);
 
 			$this->output_actions('disabled', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
@@ -399,5 +503,41 @@ class acp_extensions
 				'U_ACTION'			=> $url,
 			));
 		}
+	}
+
+	/**
+	* Check the version and return the available updates.
+	*
+	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @return string
+	* @throws RuntimeException
+	*/
+	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
+	{
+		$meta = $md_manager->get_metadata('all');
+
+		if (!isset($meta['extra']['version-check']))
+		{
+			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
+		}
+
+		$version_check = $meta['extra']['version-check'];
+
+		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
+		$version_helper->set_current_version($meta['version']);
+		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
+		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
+
+		return $updates = $version_helper->get_suggested_updates($force_update, $force_cache);
+	}
+
+	/**
+	* Sort helper for the table containing the metadata about the extensions.
+	*/
+	protected function sort_extension_meta_data_table($val1, $val2)
+	{
+		return strnatcasecmp($val1['META_DISPLAY_NAME'], $val2['META_DISPLAY_NAME']);
 	}
 }

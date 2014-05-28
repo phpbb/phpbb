@@ -6,6 +6,22 @@
 
 	<h1>{L_EXTENSIONS_ADMIN}</h1>
 
+	<!-- IF S_VERSIONCHECK -->
+	<div class="<!-- IF S_UP_TO_DATE -->successbox<!-- ELSE -->errorbox<!-- ENDIF -->">
+		<p>{UP_TO_DATE_MSG} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+	<!-- ELSE IF S_VERSIONCHECK_STATUS == 0 -->
+	<div class="errorbox notice">
+		<p>{L_VERSIONCHECK_FAIL}</p>
+		<p>{VERSIONCHECK_FAIL_REASON}</p>
+		<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+	<!-- ELSE IF S_VERSIONCHECK_STATUS == 1 -->
+	<div class="errorbox notice">
+		<p>{VERSIONCHECK_FAIL_REASON}</p>
+	</div>
+	<!-- ENDIF -->
+
 	<fieldset>
 		<legend>{L_EXT_DETAILS}</legend>
 		<!-- IF META_DISPLAY_NAME -->
@@ -45,6 +61,32 @@
 			<dd><span id="meta_license">{META_LICENSE}</span></dd>
 		</dl>
 	</fieldset>
+
+	<!-- IF S_VERSIONCHECK && not S_UP_TO_DATE -->
+	<fieldset>
+		<legend>{L_LATEST_VERSION}</legend>
+		<!-- BEGIN updates_available -->
+		<fieldset>
+			<dl>
+				<dt><label>{L_VERSION}{L_COLON}</label></dt>
+				<dd><strong>{updates_available.current}</strong></dd>
+			</dl>
+			<!-- IF updates_available.download-->
+			<dl>
+				<dt><label>{L_DOWNLOAD_LATEST}</label></dt>
+				<dd><strong><a href="{updates_available.download}">{L_DOWNLOAD} {META_NAME} {LATEST_VERSION}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+			<!-- IF updates_available.announcement -->
+			<dl>
+				<dt><label>{L_ANNOUNCEMENT_TOPIC}</label></dt>
+				<dd><strong><a href="{updates_available.announcement}">{L_RELEASE_ANNOUNCEMENT}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+		</fieldset>
+		<!-- END updates_available -->
+	</fieldset>
+	<!-- ENDIF -->
 
 	<!-- IF META_REQUIRE_PHPBB || META_REQUIRE_PHP -->
 	<fieldset>
