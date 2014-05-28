@@ -85,6 +85,6 @@ else
 {
 	if (defined('DEBUG'))
 	{
-		echo $this->user->lang('CRON_LOCK_ERROR') . '\n';
+		echo $user->lang('CRON_LOCK_ERROR') . "\n";
 	}
 }
