@@ -11,8 +11,19 @@
 *
 */
 
-class schmema_generator_test extends phpbb_test_case
+require_once __DIR__ . '/../dbal/migration/dummy_order.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_0.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_1.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_2.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_3.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_4.php';
+require_once __DIR__ . '/../dbal/migration/dummy_order_5.php';
+
+class schema_generator_test extends phpbb_test_case
 {
+	/** @var \phpbb\db\migration\schema_generator */
+	protected $generator;
+
 	public function setUp()
 	{
 		parent::setUp();
@@ -49,5 +60,79 @@ class schmema_generator_test extends phpbb_test_case
 		));
 
 		$this->assertArrayHasKey('phpbb_users', $this->generator->get_schema());
+	}
+
+	public function column_add_after_data()
+	{
+		return array(
+			array(
+				'phpbb_dbal_migration_dummy_order_0',
+				array(
+					'foobar1',
+					'foobar2',
+					'foobar3',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_1',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar4',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_2',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar5',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_3',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar6',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_4',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar7',
+				),
+			),
+			array(
+				'phpbb_dbal_migration_dummy_order_5',
+				array(
+					'foobar1',
+					'foobar3',
+					'foobar9',
+					'foobar8',
+				),
+			),
+		);
+	}
+
+	/**
+	* @dataProvider column_add_after_data
+	*/
+	public function test_column_add_after($migration, $expected)
+	{
+		$this->get_schema_generator(array(
+			'phpbb_dbal_migration_dummy_order',
+			$migration,
+		));
+
+		$tables = $this->generator->get_schema();
+
+		$this->assertEquals(
+			$expected,
+			array_keys($tables[$this->table_prefix . 'column_order_test1']['COLUMNS']),
+			'The schema generator could not position the column correctly, using the "after" option in the migration script.'
+		);
 	}
 }
