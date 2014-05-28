@@ -94,4 +94,3 @@ class phpbb_console_command_cron_execute_all_test extends phpbb_database_test_ca
 		return new CommandTester($command);
 	}
 }
-

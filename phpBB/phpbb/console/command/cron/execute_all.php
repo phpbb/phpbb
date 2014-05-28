@@ -62,4 +62,3 @@ class execute_all extends \phpbb\console\command\command
 		}
 	}
 }
-
