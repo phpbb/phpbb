@@ -10,6 +10,7 @@
 		<column>topic_posts_approved</column>
 		<column>topic_posts_softdeleted</column>
 		<column>topic_posts_unapproved</column>
+		<column>topic_attachment</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
@@ -20,6 +21,7 @@
 			<value>1</value>
 			<value>1</value>
 			<value>1</value>
+			<value>0</value>
 		</row>
 
 		<row>
@@ -32,6 +34,7 @@
 			<value>1</value>
 			<value>1</value>
 			<value>1</value>
+			<value>0</value>
 		</row>
 
 		<row>
@@ -44,6 +47,33 @@
 			<value>1</value>
 			<value>0</value>
 			<value>0</value>
+			<value>0</value>
+		</row>
+
+		<row>
+			<value>10</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Only 3 posts (2 with attachments)</value>
+			<value>10</value>
+			<value>12</value>
+			<value>3</value>
+			<value>0</value>
+			<value>0</value>
+			<value>1</value>
+		</row>
+
+		<row>
+			<value>11</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Only 2 posts (1 with attachments)</value>
+			<value>13</value>
+			<value>14</value>
+			<value>3</value>
+			<value>0</value>
+			<value>0</value>
+			<value>1</value>
 		</row>
 	</table>
 	<table name="phpbb_posts">
@@ -53,6 +83,7 @@
 		<column>forum_id</column>
 		<column>post_visibility</column>
 		<column>post_text</column>
+		<column>post_attachment</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
@@ -60,6 +91,7 @@
 			<value>1</value>
 			<value>0</value>
 			<value>Unapproved</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>2</value>
@@ -68,6 +100,7 @@
 			<value>1</value>
 			<value>1</value>
 			<value>Approved</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>3</value>
@@ -76,6 +109,7 @@
 			<value>1</value>
 			<value>2</value>
 			<value>Softdeleted</value>
+			<value>0</value>
 		</row>
 
 		<row>
@@ -85,6 +119,7 @@
 			<value>1</value>
 			<value>0</value>
 			<value>Unapproved</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>5</value>
@@ -93,6 +128,7 @@
 			<value>1</value>
 			<value>1</value>
 			<value>Approved</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>6</value>
@@ -101,6 +137,7 @@
 			<value>1</value>
 			<value>1</value>
 			<value>Approved 2</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>7</value>
@@ -109,6 +146,7 @@
 			<value>1</value>
 			<value>2</value>
 			<value>Softdeleted</value>
+			<value>0</value>
 		</row>
 		<row>
 			<value>8</value>
@@ -117,6 +155,52 @@
 			<value>1</value>
 			<value>1</value>
 			<value>Approved</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>1</value>
+			<value>10</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Softdeleted</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>1</value>
+			<value>10</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Softdeleted</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>1</value>
+			<value>10</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Approved</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>1</value>
+			<value>11</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Approved</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>14</value>
+			<value>1</value>
+			<value>11</value>
+			<value>10</value>
+			<value>1</value>
+			<value>Approved</value>
+			<value>0</value>
 		</row>
 	</table>
 	<table name="phpbb_users">
