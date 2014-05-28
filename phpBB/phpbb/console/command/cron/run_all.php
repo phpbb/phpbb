@@ -48,7 +48,7 @@ class run_all extends \phpbb\console\command\command
 	{
 		$this
 			->setName('cron:run-all')
-			->setDescription($this->user->lang('CLI_DESCR_CRON_EXECUTE_ALL'))
+			->setDescription($this->user->lang('CLI_DESCR_CRON_RUN_ALL'))
 		;
 	}
 

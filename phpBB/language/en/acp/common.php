@@ -221,7 +221,7 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
-	'CLI_DESCR_CRON_EXECUTE_ALL'		=> 'Executes all available cron tasks.',
+	'CLI_DESCR_CRON_RUN_ALL'		=> 'Runs all available cron tasks.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
