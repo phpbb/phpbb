@@ -868,16 +868,8 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	border-left: 1px solid;
 	border-right: none;
 	border-radius: 4px 0 0 4px;
-	padding: 2px 2px 2px 22px;
-}
-
-.rtl .search-tools label {
 	float: right;
-}
-
-.rtl .search-tools label .inputbox {
-	float: left;
-	margin-right: 5px;
+	padding: 2px 2px 2px 22px;
 }
 
 .rtl input.search {

@@ -1126,6 +1126,7 @@ input.disabled {
 	background-image: url("./images/icon_textbox_search.gif"), -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: url("./images/icon_textbox_search.gif"), -o-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: url("./images/icon_textbox_search.gif"), linear-gradient(to bottom, #E9E9E9, #FFFFFF);
+	-ms-filter: "none";
 }
 
 /* jQuery popups

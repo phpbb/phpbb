@@ -350,6 +350,17 @@ fieldset.quick-login label[for="autologin"] {
 	}
 }
 
+@media only screen and (max-width: 430px), only screen and (max-device-width: 430px)
+{
+	.section-viewtopic .search-tools {
+		min-width: 185px;	
+	}
+
+	.section-viewtopic .search-tools .inputbox {
+		width: 110px;
+	}
+}
+
 @media only screen and (max-width: 320px), only screen and (max-device-width: 320px)
 {
 	select, .inputbox {
@@ -504,7 +515,11 @@ fieldset.display-actions {
 	p.responsive-center {
 		float: none;
 		text-align: center;
-		margin-bottom: 0.5em;
+		margin-bottom: 5px;
+	}
+
+	.topic-actions .buttons, .topic-actions .topic-tools, .topic-actions .search-tools {
+		margin-bottom: 5px;
 	}
 
 	.topic-actions > .pagination, fieldset.jumpbox {
@@ -518,7 +533,7 @@ fieldset.display-actions {
 		padding-bottom: 1px;
 	}
 
-	.topic-actions > div.search-box, p.jumpbox-return {
+	p.jumpbox-return {
 		display: none;
 	}
 

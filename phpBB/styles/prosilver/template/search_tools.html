@@ -11,7 +11,8 @@
 		{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 	<!-- ELSEIF SEARCH_MATCHES and SEARCH_IN_RESULTS -->
 	<form method="post" action="{S_SEARCH_ACTION}">
-		<label for="add_keywords">{L_SEARCH_IN_RESULTS}{L_COLON}<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" /></label>
+	<fieldset>
+		<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" placeholder="{L_SEARCH_IN_RESULTS}" />
 	<!-- ELSE -->
 	<form method="get" id="forum-search" action="{U_SEARCH}">
 	<fieldset>
