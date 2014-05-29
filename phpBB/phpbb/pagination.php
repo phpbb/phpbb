@@ -126,8 +126,8 @@ class pagination
 				// determine this number. Again at most five pages? Then just display them all. More than
 				// five and we first (min) determine whether we'd end up listing more pages than exist.
 				// We then (max) ensure we're displaying the minimum number of pages.
-				$start_page = ($total_pages > 5) ? min(max(1, $on_page - 3), $total_pages - 4) : 1;
-				$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 3), 5) : $total_pages;
+				$start_page = ($total_pages > 5) ? min(max(1, $on_page - 2), $total_pages - 4) : 1;
+				$end_page = ($total_pages > 5) ? max(min($total_pages, $on_page + 2), 5) : $total_pages;
 			}
 
 			if ($on_page != 1)

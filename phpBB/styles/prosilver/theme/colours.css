@@ -188,6 +188,10 @@ dl.details dd {
 	border-color: #B4BAC0;
 }
 
+.pagination li.next a, .pagination li.previous a, .pagination li.jump-to a {
+	background-image: url("./images/icons_pagination.png");
+}
+
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	background-image: url("./images/icon_pages.gif");

@@ -25,20 +25,12 @@ function popup(url, width, height, name) {
 /**
 * Jump to page
 */
-function jumpto(item) {
-	if (!item || !item.length) {
-		item = $('a.pagination-trigger[data-lang-jump-page]');
-		if (!item.length) {
-			return;
-		}
-	}
+function jumpto(form) {
 
-	var jump_page = item.attr('data-lang-jump-page'),
-		on_page = item.attr('data-on-page'),
-		per_page = item.attr('data-per-page'),
-		base_url = item.attr('data-base-url'),
-		start_name = item.attr('data-start-name'),
-		page = prompt(jump_page, on_page);
+	var page = $(form).find("input[name='page-number']").val(),
+		per_page = $(form).find("input[name='per-page']").val(),
+		base_url = $(form).find("input[name='base-url']").val(),
+		start_name = $(form).find("input[name='start-name']").val();
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
@@ -363,8 +355,15 @@ function parse_document(container)
 	/**
 	* Pagination
 	*/
-	container.find('a.pagination-trigger').click(function() {
+	container.find('form.page-jump-form').submit(function(event) {
+		event.preventDefault();
 		jumpto($(this));
+	});
+	
+	container.find('.pagination-trigger').click(function() {
+		$input = $(this).parent().find("input[name='page-number']");
+
+		setTimeout(function() { $input.focus(); },100);
 	});
 
 	/**

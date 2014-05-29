@@ -201,10 +201,12 @@ ul.topiclist li.row dt a.subforum {
 	margin: 5px 0;
 }
 
-.pagination li a, .pagination li span {
-	min-width: 10px;
-	display: inline-block;
-	text-align: center;
+.pagination ul {
+	margin-top: 5px;
+}
+
+.row .pagination ul {
+	margin-top: 0;
 }
 
 /* Responsive tables
@@ -516,6 +518,10 @@ fieldset.display-actions {
 		overflow: hidden;
 		clear: both;
 		padding-bottom: 1px;
+	}
+
+	.topic-actions > .pagination li.jump-to {
+		margin: 0 2px;
 	}
 
 	.topic-actions > div.search-box, p.jumpbox-return {

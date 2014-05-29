@@ -833,20 +833,60 @@ li.pagination ul {
 }
 
 .pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
-	display: inline;
+	display: inline-block;
 	padding: 0;
 	font-size: 100%;
 	line-height: normal;
+	vertical-align: middle;
 }
 
 .pagination li a, .pagnation li span, li .pagination li a, li .pagination li span, .pagination li.active span, .pagination li.ellipsis span {
-	font-weight: normal;
-	text-decoration: none;
-	padding: 0 2px;
 	border: 1px solid transparent;
+	border-radius: 2px;
+	display: block;
 	font-size: 0.9em;
-	line-height: 1.5em;
+	font-weight: normal;
+	line-height: 13px;
+	min-width: 10px;
+	padding: 3px;
+	text-align: center;
+	text-decoration: none;
 }
+
+.pagination li.ellipsis span {
+	border: none;
+	padding: 0;
+}
+
+.pagination li.jump-to {
+	margin: 0 5px;
+}
+
+.pagination li.jump-to a, .pagination li.next a, .pagination li.previous a {
+	font-size: 0;
+	height: 13px;
+	width: 11px;
+}
+
+.pagination li.jump-to a {
+	background-position: 0 2px;
+	background-repeat: no-repeat;
+	width: 24px;
+}
+
+.pagination li.next a {
+	background-position: -50px 2px;
+	background-repeat: no-repeat;
+}
+
+.pagination li.previous a {
+	background-position: -30px 2px;
+	background-repeat: no-repeat;
+}
+
+.pagination li.jump-to a:hover { background-position: 0 -18px; }
+.pagination li.next a:hover { background-position: -50px -18px; }
+.pagination li.previous a:hover { background-position: -30px -18px; }
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
@@ -857,6 +897,11 @@ li.pagination ul {
 	padding: 1px 0 1px 8px;
 	font-size: 0.9em;
 	background: none 0 50% no-repeat;
+}
+
+li .pagination li a, li .pagnation li span {
+	border-radius: 1px;
+	padding: 1px;
 }
 
 /* jQuery popups
@@ -1154,4 +1199,26 @@ form > p.post-notice strong {
 
 .compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
 	padding-left: 2px;
+}
+
+.dropdown-jump-to .dropdown {
+	top: 20px;
+}
+
+.dropdown-jump-to .dropdown-contents {
+	margin: 0;
+}
+
+.dropdown-jump-to .dropdown-contents ul {
+	display: inherit;
+}
+
+.dropdown-jump-to .dropdown-contents li {
+	display: list-item;
+	padding-bottom: 4px;
+	padding-top: 4px;
+}
+
+.dropdown-jump-to input.tiny {
+	width: 50px;
 }

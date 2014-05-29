@@ -226,6 +226,11 @@
 	position: absolute;
 }
 
+.pagination li.previous a { background-position: -50px 2px; }
+.pagination li.next a { background-position: -30px 2px; }
+.pagination li.previous a:hover { background-position: -50px -18px; }
+.pagination li.next a:hover { background-position: -30px -18px; }
+
 /* Miscellaneous styles
 ---------------------------------------- */
 .rtl #forum-permissions {
