@@ -33,6 +33,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			'passwords.driver.sha1'		=> new \phpbb\passwords\driver\sha1($config, $this->driver_helper),
 			'passwords.driver.md5_mybb'	=> new \phpbb\passwords\driver\md5_mybb($config, $this->driver_helper),
 			'passwords.driver.md5_vb'	=> new \phpbb\passwords\driver\md5_vb($config, $this->driver_helper),
+			'passwords.driver.sha_xf1'	=> new \phpbb\passwords\driver\sha_xf1($config, $this->driver_helper),
 		);
 		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $phpbb_root_path, $php_ext);
 		$this->passwords_drivers['passwords.driver.bcrypt_wcf2'] = new \phpbb\passwords\driver\bcrypt_wcf2($this->passwords_drivers['passwords.driver.bcrypt'], $this->driver_helper);
@@ -272,6 +273,31 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->hash('foobar'));
 
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
+	}
+
+	public function data_sha_xf1_check()
+	{
+		return array(
+			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff'),
+			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff', array('user_passwd_salt' => 'yeOtfFO6')),
+			array(true, 'foobar', '7f65d2fa8a826d232f8134772252f8b1aaef8594b1edcabd9ab65e5b0f236ff0', array('user_passwd_salt' => '15b6c02cedbd727f563dcca607a89b085287b448966f19c0cc78cae263b1e38c')),
+			array(true, 'foobar', '69962ae2079420573a3948cc4dedbabd35680051', array('user_passwd_salt' => '15b6c02cedbd727f563dcca607a89b085287b448966f19c0cc78cae263b1e38c')),
+		);
+	}
+
+	/**
+	* @dataProvider data_sha_xf1_check
+	*/
+	public function test_sha_xf1_check($expected, $password, $hash, $user_row = array())
+	{
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.sha_xf1']->check($password, $hash, $user_row));
+	}
+
+	public function test_sha_xf1_driver()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha_xf1']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha_xf1']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	protected function utf8_to_cp1252($string)
