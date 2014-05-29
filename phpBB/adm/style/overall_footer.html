@@ -5,15 +5,17 @@
 	</div>
 
 	<div id="page-footer">
-		<!-- IF S_COPYRIGHT_HTML -->
-			{CREDIT_LINE}
-			<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
-		<!-- ENDIF -->
+		<div class="copyright">
+			<!-- IF S_COPYRIGHT_HTML -->
+				{CREDIT_LINE}
+				<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
+			<!-- ENDIF -->
 
-		<!-- IF DEBUG_OUTPUT -->
-			<!-- IF S_COPYRIGHT_HTML --><br /><!-- ENDIF -->
-			{DEBUG_OUTPUT}
-		<!-- ENDIF -->
+			<!-- IF DEBUG_OUTPUT -->
+				<!-- IF S_COPYRIGHT_HTML --><br /><!-- ENDIF -->
+				{DEBUG_OUTPUT}
+			<!-- ENDIF -->
+		</div>
 
 		<div id="darkenwrapper" data-ajax-error-title="{L_AJAX_ERROR_TITLE}" data-ajax-error-text="{L_AJAX_ERROR_TEXT}" data-ajax-error-text-abort="{L_AJAX_ERROR_TEXT_ABORT}" data-ajax-error-text-timeout="{L_AJAX_ERROR_TEXT_TIMEOUT}" data-ajax-error-text-parsererror="{L_AJAX_ERROR_TEXT_PARSERERROR}">
 			<div id="darken">&nbsp;</div>
