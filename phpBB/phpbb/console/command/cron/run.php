@@ -109,7 +109,7 @@ class run extends \phpbb\console\command\command
 	*		be run, or else for each starting task.
 	*
 	* @see execute
-	* @param InputInterface $input The input stream used to get the argument and verboe option.
+	* @param InputInterface $input The input stream used to get the argument and verbose option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	* @return int 0
 	*/
@@ -143,7 +143,7 @@ class run extends \phpbb\console\command\command
 	/*
 	* Executes a given cron task, if it is ready.
 	*
-	* If there is a task whose name matches the argument, it is run and 0 is returned.
+	* If there is a task whose name matches $task_name, it is run and 0 is returned.
 	*		and if verbose mode is set, print an info message with the name of the task.
 	* If there is no task matching $task_name, the function prints an error message
 	*		and returns with status 2.
