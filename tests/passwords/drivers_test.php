@@ -178,7 +178,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		return array(
 			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd'),
 			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd', array('user_passwd_salt' => 'ae2fc75e')),
-			array(true, 'foobar', '6022de2cc0ecf59ff14b57c6205ee170', array('user_passwd_salt' => 'ae2fc75e')),
+			array(true, 'foobar', 'b86ee7e24008bfd2890dcfab1ed31333', array('user_passwd_salt' => 'yeOtfFO6')),
 		);
 	}
 
