@@ -1066,6 +1066,10 @@ form > p.post-notice strong {
 	position: relative;
 }
 
+.dropdown-extended ul li.no_notifications {
+	padding: 10px;
+}
+
 .dropdown-extended ul li:before, .dropdown-extended ul li:after {
 	display: none;
 }
