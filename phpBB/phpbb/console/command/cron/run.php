@@ -111,7 +111,7 @@ class run extends \phpbb\console\command\command
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	* @return null
 	*/
-	private function run_all(InputInterface $input, OutputInterface $output)
+	protected function run_all(InputInterface $input, OutputInterface $output)
 	{
 		$run_tasks = $this->cron_manager->find_all_ready_tasks();
 
@@ -147,7 +147,7 @@ class run extends \phpbb\console\command\command
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	* @return int 0 if all is well, 2 if no task matches $task_name.
 	*/
-	private function run_one(InputInterface $input, OutputInterface $output, $task_name)
+	protected function run_one(InputInterface $input, OutputInterface $output, $task_name)
 	{
 		$task = $this->cron_manager->find_task($task_name);
 		if ($task)
