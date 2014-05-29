@@ -115,7 +115,8 @@ class run extends \phpbb\console\command\command
 	{
 		$run_tasks = $this->cron_manager->find_all_ready_tasks();
 
-		if ($run_tasks) {
+		if ($run_tasks)
+		{
 			foreach ($run_tasks as $task)
 			{
 				if ($input->getOption('verbose'))
@@ -128,7 +129,10 @@ class run extends \phpbb\console\command\command
 		}
 		else
 		{
-			$output->writeln('<info>' . $this->user->lang('CRON_NO_TASK') . '</info>');
+			if ($input->getOption('verbose'))
+			{
+				$output->writeln('<info>' . $this->user->lang('CRON_NO_TASK') . '</info>');
+			}
 		}
 		$this->lock_db->release();
 	}
@@ -154,7 +158,7 @@ class run extends \phpbb\console\command\command
 		{
 			if ($input->getOption('verbose'))
 			{
-				$output->writeln('<info>' . $this->user->lang('RUNNING_TASK', $task_nameœ) . '</info>');
+				$output->writeln('<info>' . $this->user->lang('RUNNING_TASK', $task_name) . '</info>');
 			}
 
 			$task->run();
