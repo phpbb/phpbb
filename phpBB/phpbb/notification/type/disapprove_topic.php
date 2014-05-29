@@ -31,6 +31,16 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	}
 
 	/**
+	* Get the styling of the notification
+	*
+	* @return string
+	*/
+	public function get_styling()
+	{
+		return 'reported';
+	}
+
+	/**
 	* Language key used to output the text
 	*
 	* @var string
