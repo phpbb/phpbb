@@ -333,10 +333,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-left: 80px;
 }
 
-.rtl ul.topiclist dl {
-	position: static;	/* fix for IE6 */
-}
-
 .rtl ul.topiclist dd {
 	float: right;
 	border-right-width: 1px;
@@ -387,10 +383,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl dl.icon dt .list-inner {
 	padding-left: 0;
 	padding-right: 45px;					/* Space for folder icon */
-}
-
-.rtl dl.icon dt {							/* fix for topic row icon links */
-	position: relative;
 }
 
 .rtl dl a.icon-link {						/* topic row icon links */
