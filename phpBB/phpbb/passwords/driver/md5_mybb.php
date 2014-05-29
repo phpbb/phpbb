@@ -56,12 +56,4 @@ class md5_mybb extends base
 			return $hash === md5(md5($user_row['user_passwd_salt']) . md5($password));
 		}
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

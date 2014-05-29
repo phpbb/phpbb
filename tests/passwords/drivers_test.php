@@ -156,25 +156,19 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.md5_phpbb2']->check($password, $hash));
 	}
 
-	public function test_md5_phpbb2_unneeded_functions()
+	public function test_md5_phpbb2_hash()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_phpbb2']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_phpbb2']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
 	}
 
 	public function test_convert_password_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.convert_password']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.convert_password']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
 	}
 
 	public function test_sha1_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1']->get_settings_only('ae2fc75e20ee25d4520766788fbc96ae'));
 	}
 
 	public function data_md5_mybb_check()
@@ -197,8 +191,6 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function test_md5_mybb_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	public function data_md5_vb_check()
@@ -223,8 +215,6 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function test_md5_vb_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_vb']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_vb']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	public function data_sha1_wcf1_check()
@@ -247,8 +237,6 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function test_sha1_wcf1_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1_wcf1']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1_wcf1']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	public function data_bcrypt_wcf2_check()
@@ -271,8 +259,6 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function test_bcrypt_wcf2_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	public function data_sha_xf1_check()
@@ -296,8 +282,6 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 	public function test_sha_xf1_driver()
 	{
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha_xf1']->hash('foobar'));
-
-		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha_xf1']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	protected function utf8_to_cp1252($string)

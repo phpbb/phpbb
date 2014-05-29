@@ -47,12 +47,4 @@ class sha1_smf extends base
 	{
 		return $hash === $this->hash($password, $user_row);
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

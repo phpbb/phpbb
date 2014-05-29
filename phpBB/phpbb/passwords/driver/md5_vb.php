@@ -56,12 +56,4 @@ class md5_vb extends base
 			return $hash === md5(md5($password) . $user_row['user_passwd_salt']);
 		}
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

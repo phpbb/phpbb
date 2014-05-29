@@ -39,12 +39,4 @@ class convert_password extends base
 	{
 		return false;
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

@@ -56,12 +56,4 @@ class sha1_wcf1 extends base
 			return $hash === sha1($user_row['user_passwd_salt'] . sha1($user_row['user_passwd_salt'] . sha1($password)));
 		}
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

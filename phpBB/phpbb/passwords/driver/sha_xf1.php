@@ -64,12 +64,4 @@ class sha_xf1 extends base
 			}
 		}
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

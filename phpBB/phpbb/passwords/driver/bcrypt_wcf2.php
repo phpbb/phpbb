@@ -80,12 +80,4 @@ class bcrypt_wcf2 extends base
 			return $hash === $this->bcrypt->hash($this->bcrypt->hash($password, $salt), $salt);
 		}
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

@@ -48,12 +48,4 @@ class sha1 extends base
 	{
 		return $hash === sha1($password);
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

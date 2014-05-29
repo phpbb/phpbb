@@ -114,12 +114,4 @@ class md5_phpbb2 extends base
 
 		return false;
 	}
-
-	/**
-	* @inheritdoc
-	*/
-	public function get_settings_only($hash, $full = false)
-	{
-		return false;
-	}
 }

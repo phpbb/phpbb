@@ -51,4 +51,12 @@ abstract class base implements driver_interface
 	{
 		return false;
 	}
+
+	/**
+	* @inheritdoc
+	*/
+	public function get_settings_only($hash, $full = false)
+	{
+		return false;
+	}
 }
