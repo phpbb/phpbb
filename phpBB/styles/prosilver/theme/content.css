@@ -751,12 +751,14 @@ dd.profile-contact {
 
 .profile-contact .dropdown-container {
 	display: inline-block;
-	text-align: left;
-	width: 30px;
 }
 
 .profile-contact .icon_contact {
 	vertical-align: middle;
+}
+
+.profile-contact .dropdown {
+	margin-right: -14px;
 }
 
 .online {
