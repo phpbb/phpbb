@@ -150,7 +150,7 @@ class run extends \phpbb\console\command\command
 	*
 	* @see execute
 	* @param string $task_name The name of the task that should be run.
-	* @param InputInterface $input The input stream used to get the argument and verboe option.
+	* @param InputInterface $input The input stream used to get the argument and verbose option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	* @return int 0 if all is well, 2 if no task matches $task_name.
 	*/
