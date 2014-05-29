@@ -33,7 +33,7 @@ class run extends \phpbb\console\command\command
 	* Construct method
 	*
 	* @param \phpbb\cron\manager $cron_manager The cron manager containing
-	*							the cron tasks to be executed.
+	*		the cron tasks to be executed.
 	* @param \phpbb\lock\db $lock_db The lock for accessing database.
 	* @param \phobb\user $user The user object (used to get language information)
 	*/
@@ -68,14 +68,15 @@ class run extends \phpbb\console\command\command
 	* If the verbose option is specified, each start of a task is printed.
 	*		Otherwise there is no output.
 	* If an argument is given to the command, only the task whose name matches the 
-	*		argument will be started. If none exists, an error message is
-	*		printed and the exit status is set to 2. Verbose option does nothing in 
-	*		this case.
+	*		argument will be started. If verbose option is specified,
+	*		an info message containing the name of the task is printed.
+	* If no task matches the argument given, an error message is printed
+	*		and the exit status is set to 2.
 	*
-	* @param InputInterface $input The input stream used to get the argument
+	* @param InputInterface $input The input stream used to get the argument and verboe option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	*
-	* @return int 0 if all is ok, 1 if a lock error occured and -1 if no task matching the argument was found
+	* @return int 0 if all is ok, 1 if a lock error occured and 2 if no task matching the argument was found.
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -84,33 +85,11 @@ class run extends \phpbb\console\command\command
 			$task_name = $input->getArgument('name');
 			if ($task_name)
 			{
-				$task = $this->cron_manager->find_task($task_name);
-				if ($task)
-				{
-					$task->run();
-					return 0;
-				}
-				else
-				{
-					$output->writeln('<error>' . $this->user->lang('CRON_NO_TASK') . '</error>');
-					return 2;
-				}
+				return $this->run_one($input, $output, $task_name);
 			}
 			else
 			{
-				$run_tasks = $this->cron_manager->find_all_ready_tasks();
-
-				foreach ($run_tasks as $task)
-				{
-					if ($input->getOption('verbose'))
-					{
-						$output->writeln($this->user->lang('RUNNING_TASK', $task->get_name()));
-					}
-
-					$task->run();
-				}
-				$this->lock_db->release();
-
+				$this->run_all($input, $output);
 				return 0;
 			}
 		}
@@ -118,6 +97,73 @@ class run extends \phpbb\console\command\command
 		{
 			$output->writeln('<error>' . $this->user->lang('CRON_LOCK_ERROR') . '</error>');
 			return 1;
+		}
+	}
+
+	/*
+	* Executes the command in the case when no argument was given.
+	*
+	* If verbose mode is set, an info message will be printed if their is no task to
+	*		be run, or else for each starting task.
+	*
+	* @see execute
+	* @param InputInterface $input The input stream used to get the argument and verboe option.
+	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
+	* @return null
+	*/
+	private function run_all(InputInterface $input, OutputInterface $output)
+	{
+		$run_tasks = $this->cron_manager->find_all_ready_tasks();
+
+		if ($run_tasks) {
+			foreach ($run_tasks as $task)
+			{
+				if ($input->getOption('verbose'))
+				{
+					$output->writeln('<info>' . $this->user->lang('RUNNING_TASK', $task->get_name()) . '</info>');
+				}
+
+				$task->run();
+			}
+		}
+		else
+		{
+			$output->writeln('<info>' . $this->user->lang('CRON_NO_TASK') . '</info>');
+		}
+		$this->lock_db->release();
+	}
+
+	/*
+	* Executes the command in the case where an argument is given.
+	*
+	* If their is a task whose name matches the argument, it is run and 0 is returned.
+	*		and if verbose mode is set, print an info message with the name of the task.
+	* If there is no task matching $task_name, the function prints an error message
+	*		and returns with status 2.
+	*
+	* @see execute
+	* @param string $task_name The name of the task that should be run.
+	* @param InputInterface $input The input stream used to get the argument and verboe option.
+	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
+	* @return int 0 if all is well, 2 if no task matches $task_name.
+	*/
+	private function run_one(InputInterface $input, OutputInterface $output, $task_name)
+	{
+		$task = $this->cron_manager->find_task($task_name);
+		if ($task)
+		{
+			if ($input->getOption('verbose'))
+			{
+				$output->writeln('<info>' . $this->user->lang('RUNNING_TASK', $task_nameœ) . '</info>');
+			}
+
+			$task->run();
+			return 0;
+		}
+		else
+		{
+			$output->writeln('<error>' . $this->user->lang('CRON_NO_SUCH_TASK') . '</error>');
+			return 2;
 		}
 	}
 }
