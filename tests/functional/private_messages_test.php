@@ -2,7 +2,7 @@
 /**
 *
 * @package testing
-* @copyright (c) 2012 phpBB Group
+* @copyright (c) 2014 phpBB Group
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -44,6 +44,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "ucp.php?i=pm&mode=view&sid{$this->sid}&p={$message_id}");
 		$this->assertContains($this->lang('NO_AUTH_READ_HOLD_MESSAGE'), $crawler->filter('html')->text());
 	}
+
 	public function test_restore_config()
 	{
 		$this->login();
