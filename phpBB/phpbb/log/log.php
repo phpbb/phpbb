@@ -366,7 +366,7 @@ class log implements \phpbb\log\log_interface
 		* NOTE: if sql_ary does not contain a log_type value, the entry will
 		* not be deleted in the database. So ensure to set it, if needed.
 		*
-		* @event core.add_log
+		* @event core.delete_log
 		* @var	string	mode			Mode of the entry we log
 		* @var	string	log_type		Type ID of the log (should be different than false)
 		* @var	array	conditions		An array of conditions, 3 different  forms are accepted
