@@ -1205,11 +1205,15 @@ form > p.post-notice strong {
 	top: 20px;
 }
 
+.dropdown-jump-to.dropdown-up .dropdown {
+	bottom: 20px;
+}
+
 .dropdown-jump-to .dropdown-contents {
 	margin: 0;
 }
 
-.dropdown-jump-to .dropdown-contents ul {
+.dropdown-jump-to ul.dropdown-contents  {
 	display: inherit;
 }
 

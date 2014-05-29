@@ -515,7 +515,6 @@ fieldset.display-actions {
 
 	.topic-actions > .pagination {
 		float: none;
-		overflow: hidden;
 		clear: both;
 		padding-bottom: 1px;
 	}
