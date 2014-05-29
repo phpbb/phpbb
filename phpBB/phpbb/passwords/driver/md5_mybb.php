@@ -46,7 +46,7 @@ class md5_mybb extends base
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
-		if (empty(hash) || !isset($user_row['user_passwd_salt']))
+		if (empty($hash) || !isset($user_row['user_passwd_salt']))
 		{
 			return false;
 		}
