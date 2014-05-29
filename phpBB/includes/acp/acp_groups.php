@@ -362,11 +362,10 @@ class acp_groups
 					* Request group data and operate on it
 					*
 					* @event core.acp_group_options_request_data
-					* @var	string	action		Type of the action: add|edit
 					* @var	array	submit_ary	Array with new data
 					* @since 3.1.0-b4
 					*/
-					$vars = array('action', 'submit_ary');
+					$vars = array('submit_ary');
 					extract($phpbb_dispatcher->trigger_event('core.acp_group_options_request_data', compact($vars)));
 
 					if ($user->data['user_type'] == USER_FOUNDER)
@@ -456,16 +455,12 @@ class acp_groups
 						* Initialise data before we display the add/edit form
 						*
 						* @event core.acp_group_options_initialise_data
-						* @var	string	action		Type of the action: add|edit
-						* @var	bool	update		Do we display the form only
-						*							or did the user press submit
-						* @var	int		group_id	When editing: the forum id
-						* @var	array	row			Array with current forum data
-						*							empty when creating new forum
-						* @var	array	group_row	Array with new forum data
+						* @var	array	row			Array with current group data
+						*							empty when creating new group
+						* @var	array	group_row	Array with new group data
 						* @since 3.1.0-b4
 						*/
-						$vars = array('action', 'update', 'group_id', 'row', 'group_row');
+						$vars = array('row', 'group_row');
 						extract($phpbb_dispatcher->trigger_event('core.acp_group_options_initialise_data', compact($vars)));
 
 						foreach ($test_variables as $test => $type)
@@ -694,10 +689,6 @@ class acp_groups
 				* Modify group template data before we display the form
 				*
 				* @event core.acp_group_options_display_form
-				* @var	string	action		Type of the action: add|edit
-				* @var	bool	update		Do we display the form only
-				*							or did the user press submit
-				* @var	int		group_id	The group id,
 				* @var	array	row			Array with current group data
 				*							empty when creating new group
 				* @var	array	group_row	Array with new group data
