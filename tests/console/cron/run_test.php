@@ -34,7 +34,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function setUp()
 	{
-		global $db, $config, $phpbb_root_path, $pathEx;
+		global $db, $config, $phpbb_root_path, $phpEx;
 
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
@@ -48,7 +48,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$tasks = array(
 			$this->task,
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phbEx);
 
 		$this->assertSame('0', $config['cron_lock']);
 	}
@@ -90,7 +90,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	{
 		$tasks = array(
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name));
 
@@ -103,7 +103,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	{
 		$tasks = array(
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
