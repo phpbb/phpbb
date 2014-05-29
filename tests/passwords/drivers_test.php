@@ -226,6 +226,54 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_vb']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
+	public function data_sha1_wcf1_check()
+	{
+		return array(
+			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff'),
+			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff', array('user_passwd_salt' => 'yeOtfFO6')),
+			array(true, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff', array('user_passwd_salt' => '1a783e478d63f6422783a868db667aed3a857840')),
+		);
+	}
+
+	/**
+	* @dataProvider data_sha1_wcf1_check
+	*/
+	public function test_sha1_wcf1_check($expected, $password, $hash, $user_row = array())
+	{
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.sha1_wcf1']->check($password, $hash, $user_row));
+	}
+
+	public function test_sha1_wcf1_driver()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1_wcf1']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1_wcf1']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
+	}
+
+	public function data_bcrypt_wcf2_check()
+	{
+		return array(
+			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff'),
+			array(true, 'foobar', '$2a$08$p8h14U0jsEiVb1Luy.s8oOTXSQ0hVWUXpcNGBoCezeYNXrQyCKHfi'),
+			array(false, 'foobar', ''),
+		);
+	}
+
+	/**
+	* @dataProvider data_bcrypt_wcf2_check
+	*/
+	public function test_bcrypt_wcf2_check($expected, $password, $hash)
+	{
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->check($password, $hash));
+	}
+
+	public function test_bcrypt_wcf2_driver()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
+	}
+
 	protected function utf8_to_cp1252($string)
 	{
 		static $transform = array(
