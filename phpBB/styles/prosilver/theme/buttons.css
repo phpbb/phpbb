@@ -156,15 +156,6 @@ ul.linklist.bulletin li.small-icon:before {
 	margin-top: 2px;
 }
 
-.notouch.section-viewtopic .post-buttons {
-	opacity: 0;
-	transition: opacity .5s;
-}
-
-.notouch.section-viewtopic .post:hover .post-buttons {
-	opacity: 1;
-}
-
 .post-buttons li {
 	float: left;
 	margin-right: 3px;
