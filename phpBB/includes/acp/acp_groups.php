@@ -452,6 +452,22 @@ class acp_groups
 							'skip_auth'		=> 'int',
 						);
 
+						/**
+						* Initialise data before we display the add/edit form
+						*
+						* @event core.acp_group_options_initialise_data
+						* @var	string	action		Type of the action: add|edit
+						* @var	bool	update		Do we display the form only
+						*							or did the user press submit
+						* @var	int		group_id	When editing: the forum id
+						* @var	array	row			Array with current forum data
+						*							empty when creating new forum
+						* @var	array	group_row	Array with new forum data
+						* @since 3.1.0-b4
+						*/
+						$vars = array('action', 'update', 'group_id', 'row', 'group_row');
+						extract($phpbb_dispatcher->trigger_event('core.acp_group_options_initialise_data', compact($vars)));
+
 						foreach ($test_variables as $test => $type)
 						{
 							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
@@ -684,7 +700,7 @@ class acp_groups
 				* @var	int		group_id	The group id,
 				* @var	array	row			Array with current group data
 				*							empty when creating new group
-				* @var	array	group_data	Array with new group data
+				* @var	array	group_row	Array with new group data
 				* @var	array	errors		Array of errors, if you add errors
 				*					ensure to update the template variables
 				*					S_ERROR and ERROR_MSG to display it
@@ -696,7 +712,7 @@ class acp_groups
 					'update',
 					'group_id',
 					'row',
-					'group_data',
+					'group_row',
 					'errors',
 					'template_data',
 				);
