@@ -30,7 +30,8 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
 			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
 			'passwords.driver.sha1'		=> new \phpbb\passwords\driver\sha1($config, $this->driver_helper),
-			'passwords.driver.md5_mybb'		=> new \phpbb\passwords\driver\md5_mybb($config, $this->driver_helper),
+			'passwords.driver.md5_mybb'	=> new \phpbb\passwords\driver\md5_mybb($config, $this->driver_helper),
+			'passwords.driver.md5_vb'	=> new \phpbb\passwords\driver\md5_vb($config, $this->driver_helper),
 		);
 		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $phpbb_root_path, $php_ext);
 	}
@@ -195,6 +196,32 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->hash('foobar'));
 
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
+	}
+
+	public function data_md5_vb_check()
+	{
+		return array(
+			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd'),
+			array(false, 'foobar', 'b86ee7e24008bfd2890dcfab1ed31333', array('user_passwd_salt' => 'yeOtfFO6')),
+			array(true, 'foobar', 'b452c54c44c588fc095d2d000935c470', array('user_passwd_salt' => '9^F')),
+			array(true, 'foobar', 'f23a8241bd115d270c703213e3ef7f52', array('user_passwd_salt' => 'iaU*U%`CBl;/e~>D%do2m@Xf/,KZB0')),
+			array(false, 'nope', 'f23a8241bd115d270c703213e3ef7f52', array('user_passwd_salt' => 'iaU*U%`CBl;/e~>D%do2m@Xf/,KZB0')),
+		);
+	}
+
+	/**
+	* @dataProvider data_md5_vb_check
+	*/
+	public function test_md5_vb_check($expected, $password, $hash, $user_row = array())
+	{
+		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.md5_vb']->check($password, $hash, $user_row));
+	}
+
+	public function test_md5_vb_driver()
+	{
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_vb']->hash('foobar'));
+
+		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_vb']->get_settings_only('6022de2cc0ecf59ff14b57c6205ee170'));
 	}
 
 	protected function utf8_to_cp1252($string)
