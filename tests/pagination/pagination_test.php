@@ -91,7 +91,6 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:current:3:page.php?start=20
 				:else:4:page.php?start=30
 				:else:5:page.php?start=40
-				:else:6:page.php?start=50
 				:ellipsis:9:page.php?start=80
 				:else:10:page.php?start=90
 				:next::page.php?start=30
@@ -142,7 +141,6 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:current:3:test/page/3
 				:else:4:test/page/4
 				:else:5:test/page/5
-				:else:6:test/page/6
 				:ellipsis:9:test/page/9
 				:else:10:test/page/10
 				:next::test/page/4
