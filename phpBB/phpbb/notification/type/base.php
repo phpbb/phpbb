@@ -314,11 +314,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'AVATAR'			=> $this->get_avatar(),
 
 			'FORMATTED_TITLE'	=> $this->get_title(),
-			
+
 			'REFERENCE'			=> $this->get_reference(),
-			
+
 			'FORUM'				=> $this->get_forum(),
-			
+
 			'REASON'			=> $this->get_reason(),
 
 			'URL'				=> $this->get_url(),
