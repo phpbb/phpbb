@@ -60,7 +60,7 @@ class run extends \phpbb\console\command\command
 	}
 
 	/**
-	* Executes the function.
+	* Executes the command cron:run.
 	*
 	* Tries to acquire the cron lock, then if no argument has been given runs all ready cron tasks.
 	* If the cron lock can not be obtained, an error message is printed
@@ -89,8 +89,7 @@ class run extends \phpbb\console\command\command
 			}
 			else
 			{
-				$this->run_all($input, $output);
-				return 0;
+				return $this->run_all($input, $output);
 			}
 		}
 		else
@@ -101,15 +100,15 @@ class run extends \phpbb\console\command\command
 	}
 
 	/*
-	* Executes the command in the case when no argument was given.
+	* Executes all ready cron tasks.
 	*
-	* If verbose mode is set, an info message will be printed if their is no task to
+	* If verbose mode is set, an info message will be printed if there is no task to
 	*		be run, or else for each starting task.
 	*
 	* @see execute
 	* @param InputInterface $input The input stream used to get the argument and verboe option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
-	* @return null
+	* @return int 0
 	*/
 	protected function run_all(InputInterface $input, OutputInterface $output)
 	{
@@ -134,13 +133,15 @@ class run extends \phpbb\console\command\command
 				$output->writeln('<info>' . $this->user->lang('CRON_NO_TASK') . '</info>');
 			}
 		}
+
 		$this->lock_db->release();
+		return 0;
 	}
 
 	/*
-	* Executes the command in the case where an argument is given.
+	* Executes a given cron task, if it is ready.
 	*
-	* If their is a task whose name matches the argument, it is run and 0 is returned.
+	* If there is a task whose name matches the argument, it is run and 0 is returned.
 	*		and if verbose mode is set, print an info message with the name of the task.
 	* If there is no task matching $task_name, the function prints an error message
 	*		and returns with status 2.
@@ -162,11 +163,13 @@ class run extends \phpbb\console\command\command
 			}
 
 			$task->run();
+			$this->lock_db->release();
 			return 0;
 		}
 		else
 		{
 			$output->writeln('<error>' . $this->user->lang('CRON_NO_SUCH_TASK') . '</error>');
+			$this->lock_db->release();
 			return 2;
 		}
 	}
