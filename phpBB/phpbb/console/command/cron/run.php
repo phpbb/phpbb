@@ -85,12 +85,15 @@ class run extends \phpbb\console\command\command
 			$task_name = $input->getArgument('name');
 			if ($task_name)
 			{
-				return $this->run_one($input, $output, $task_name);
+				$exit_status = $this->run_one($input, $output, $task_name);
 			}
 			else
 			{
-				return $this->run_all($input, $output);
+				$exit_status = $this->run_all($input, $output);
 			}
+
+			$this->lock_db->release();
+			return $exit_status;
 		}
 		else
 		{
@@ -134,7 +137,6 @@ class run extends \phpbb\console\command\command
 			}
 		}
 
-		$this->lock_db->release();
 		return 0;
 	}
 
@@ -163,13 +165,11 @@ class run extends \phpbb\console\command\command
 			}
 
 			$task->run();
-			$this->lock_db->release();
 			return 0;
 		}
 		else
 		{
 			$output->writeln('<error>' . $this->user->lang('CRON_NO_SUCH_TASK') . '</error>');
-			$this->lock_db->release();
 			return 2;
 		}
 	}
