@@ -361,9 +361,12 @@ function parse_document(container)
 	});
 	
 	container.find('.pagination-trigger').click(function() {
-		$input = $(this).parent().find("input[name='page-number']");
-
-		setTimeout(function() { $input.focus(); },100);
+		$container = $(this).parent();
+		
+		if (!$container.hasClass('dropdown-visible')) {
+			$input = $container.find("input[name='page-number']");
+			setTimeout(function() { $input.focus(); },100);
+		}
 	});
 
 	/**
