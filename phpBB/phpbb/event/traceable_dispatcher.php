@@ -15,18 +15,11 @@ namespace phpbb\event;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 
 /**
-* Extension of the Symfony2 EventDispatcher
+* Extension of the Symfony2 TraceableEventDispatcher
 *
-* It provides an additional `trigger_event` method, which
-* gives some syntactic sugar for dispatching events. Instead
-* of creating the event object, the method will do that for
-* you.
+* It collects some data about event listeners.
 *
-* Example:
-*
-*     $vars = array('page_title');
-*     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
-*
+* This event dispatcher delegates the dispatching to another one.
 */
 class traceable_dispatcher extends TraceableEventDispatcher implements dispatcher
 {
