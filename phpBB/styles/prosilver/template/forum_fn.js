@@ -25,12 +25,12 @@ function popup(url, width, height, name) {
 /**
 * Jump to page
 */
-function jumpto(form) {
+function jumpto(item) {
 
-	var page = $(form).find("input[name='page-number']").val(),
-		per_page = $(form).find("input[name='per-page']").val(),
-		base_url = $(form).find("input[name='base-url']").val(),
-		start_name = $(form).find("input[name='start-name']").val();
+	var page = item.val(),
+		per_page = item.attr('data-per-page'),
+		base_url = item.attr('data-base-url'),
+		start_name = item.attr('data-start-name');
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
@@ -355,11 +355,18 @@ function parse_document(container)
 	/**
 	* Pagination
 	*/
-	container.find('form.page-jump-form').submit(function(event) {
-		event.preventDefault();
-		jumpto($(this));
+	container.find('.pagination .page-jump-form :button').click(function() {
+		$input = $(this).siblings("input[name='page-number']");
+		jumpto($input);
 	});
-	
+
+	container.find(".pagination .page-jump-form input[name='page-number']").on("keypress", function(event) {
+		if (event.which == 13 || event.keyCode == 13) {
+			event.preventDefault();
+			jumpto($(this));
+     	}
+	});
+
 	container.find('.pagination-trigger').click(function() {
 		$container = $(this).parent();
 		
