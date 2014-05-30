@@ -1,2 +1,5 @@
 imports:
     - { resource: services.yml }
+
+parameters:
+    debug.load_time: true

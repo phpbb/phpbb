@@ -124,7 +124,7 @@ function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth, $cache;
 	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-	global $request, $phpbb_dispatcher;
+	global $request, $phpbb_dispatcher, $phpbb_container;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_footer_override = false;
@@ -147,7 +147,7 @@ function adm_page_footer($copyright_html = true)
 	}
 
 	// Output page creation time
-	if (defined('DEBUG'))
+	if ($phpbb_container->hasParameter('debug.load_time') && $phpbb_container->getParameter('debug.load_time'))
 	{
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;

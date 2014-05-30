@@ -5038,7 +5038,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
-	global $request, $phpbb_dispatcher, $phpbb_admin_path;
+	global $request, $phpbb_dispatcher, $phpbb_admin_path, $phpbb_container;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$page_footer_override = false;
@@ -5061,12 +5061,12 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	}
 
 	// Output page creation time
-	if (defined('DEBUG'))
+	if ($phpbb_container->hasParameter('debug.load_time') && $phpbb_container->getParameter('debug.load_time'))
 	{
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
+			if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
 		{
 			$db->sql_report('display');
 		}
@@ -5090,7 +5090,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	}
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'			=> !empty($debug_output) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
