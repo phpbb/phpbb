@@ -725,7 +725,7 @@ Colours and backgrounds for buttons.css
 .icon-sendemail					{ background-image: url("./images/icon_sendemail.gif"); }
 .icon-print						{ background-image: url("./images/icon_print.gif"); }
 .icon-search-advanced			{ background-image: url("./images/icon_search_adv.gif"); }
-.search-tools .icon-search-self	{ background-image: url("./images/icon_topic_latest.gif"); }
+.icon-search-self				{ background-image: url("./images/icon_topic_latest.gif"); }
 .icon-search-unanswered			{ background-image: url("./images/icon_post_target.gif"); }
 .icon-search-unread				{ background-image: url("./images/subforum_unread.gif"); }
 .icon-search-new				{ background-image: url("./images/subforum_unread.gif"); }
