@@ -13,6 +13,8 @@
 
 namespace
 {
+	define('ENVIRONMENT', 'productive');
+
 	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 	require_once dirname(__FILE__) . '/../../phpBB/includes/functions_container.php';
 
