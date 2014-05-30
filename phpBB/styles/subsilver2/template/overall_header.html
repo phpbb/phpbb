@@ -156,10 +156,13 @@ function marklist(id, name, state)
 	<div id="menubar">
 		<table width="100%" cellspacing="0">
 		<tr>
-			<td class="genmed">
+			<td class="genmed dropdown-container">
 				<!-- IF S_NOTIFICATIONS_DISPLAY and not S_IS_BOT and S_USER_LOGGED_IN -->
-					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button"><img src="{T_THEME_PATH}/images/icon_mini_notification.gif" width="12" height="13" alt="*" /> {L_NOTIFICATIONS} [<strong>{NOTIFICATIONS_COUNT}</strong>]</a>&nbsp;
-					<div id="notification_list" class="notification_list">
+					<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger">
+						<img src="{T_THEME_PATH}/images/icon_mini_notification.gif" width="12" height="13" alt="*" />
+						{L_NOTIFICATIONS} [<strong>{NOTIFICATIONS_COUNT}</strong>]
+					</a>&nbsp;
+					<div id="notification_list" class="notification_list dropdown">
 						<div class="row1 header">
 							{L_NOTIFICATIONS}
 							<span class="header_settings"><a href="{U_NOTIFICATION_SETTINGS}">{L_SETTINGS}</a></span>
