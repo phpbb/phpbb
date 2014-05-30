@@ -35,4 +35,3 @@ class profiler extends \Symfony\Component\HttpKernel\Profiler\Profiler
 		}
 	}
 }
-
