@@ -82,6 +82,6 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=details&ext_name=not%2Fexists&sid=' . $this->sid);
 
 		// Error message because the files do not exist
-		$this->assertContains('The required file does not exist:', $crawler->filter('#main')->text());
+		$this->assertContains($this->lang('FILE_NOT_FOUND', ''), $crawler->filter('#main')->text());
 	}
 }
