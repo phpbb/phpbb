@@ -27,6 +27,11 @@ if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 	require($phpbb_root_path . 'config.' . $phpEx);
 }
 
+if (!defined('ENVIRONMENT'))
+{
+	@define('ENVIRONMENT', 'productive');
+}
+
 if (!defined('PHPBB_INSTALLED'))
 {
 	// Redirect the user to the installer
