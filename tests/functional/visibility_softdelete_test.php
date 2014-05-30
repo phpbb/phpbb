@@ -594,7 +594,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->add_lang('viewtopic');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #2']}&sid={$this->sid}");
 
-		$bookmark_tag = $crawler->filterXPath('//div/ul/li/a[contains(., "Bookmark topic")]');
+		$bookmark_tag = $crawler->filter('a.bookmark-link');
+		$this->assertContainsLang('BOOKMARK_TOPIC', $bookmark_tag->text());
 		$bookmark_link = $bookmark_tag->attr('href');
 		$crawler_bookmark = self::request('GET', $bookmark_link);
 		$this->assertContainsLang('BOOKMARK_ADDED', $crawler_bookmark->text());
