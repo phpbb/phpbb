@@ -236,15 +236,6 @@ dd.option {
 div[class].topic-actions {
 	height: auto;
 }
-.topic-actions:after {
-	content: '';
-	clear: both;
-	display: block;
-}
-
-.topic-actions ul.linklist li {
-	font-size: 1.0em;
-}
 
 /* Post body styles
 ----------------------------------------*/
