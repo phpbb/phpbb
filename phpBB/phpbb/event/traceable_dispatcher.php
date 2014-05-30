@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 *
 * This event dispatcher delegates the dispatching to another one.
 */
-class traceable_dispatcher extends TraceableEventDispatcher implements dispatcher
+class traceable_dispatcher extends TraceableEventDispatcher implements dispatcher_interface
 {
 	public function trigger_event($eventName, $data = array())
 	{
