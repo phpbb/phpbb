@@ -20,6 +20,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
+define('ENVIRONMENT', 'productive');
 /**#@-*/
 
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
