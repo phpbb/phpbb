@@ -203,12 +203,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
+		$user = new \phpbb\user();
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
 			$db,
 			$config,
 			new phpbb\filesystem(),
+			$user,
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,

@@ -70,7 +70,7 @@ class acp_extensions
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
-			$md_manager = new \phpbb\extension\metadata_manager($ext_name, $config, $phpbb_extension_manager, $template, $phpbb_root_path);
+			$md_manager = new \phpbb\extension\metadata_manager($ext_name, $config, $phpbb_extension_manager, $template, $user, $phpbb_root_path);
 
 			try
 			{
