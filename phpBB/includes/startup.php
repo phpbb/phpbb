@@ -177,7 +177,11 @@ else
 {
 	if (!file_exists($phpbb_root_path . 'vendor/autoload.php'))
 	{
-		trigger_error('You have not set up composer dependencies. See http://getcomposer.org/.', E_USER_ERROR);
+		trigger_error(
+			'Composer dependencies have not been set up yet, run ' .
+			"'php ../composer.phar install' from the phpBB directory to do so.",
+			E_USER_ERROR
+		);
 	}
 	require($phpbb_root_path . 'vendor/autoload.php');
 }
