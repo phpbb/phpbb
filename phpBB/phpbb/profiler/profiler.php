@@ -16,6 +16,11 @@ namespace phpbb\profiler;
 use Symfony\Component\HttpKernel\Profiler\ProfilerStorageInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+* Class profiler
+*
+* Extends the Symfony HttpKernel Profiler to allow to define the collectors through the container.
+*/
 class profiler extends \Symfony\Component\HttpKernel\Profiler\Profiler
 {
 	/**
