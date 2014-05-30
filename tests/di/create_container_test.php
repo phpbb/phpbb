@@ -13,7 +13,7 @@
 
 namespace
 {
-	define('ENVIRONMENT', 'productive');
+	define('ENVIRONMENT', 'production');
 
 	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
