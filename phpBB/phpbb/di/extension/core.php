@@ -49,8 +49,14 @@ class core extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
+		$config_file = 'services_prod.yml';
+		if (defined('DEBUG'))
+		{
+			$config_file = 'services_debug.yml';
+		}
+
 		$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->config_path)));
-		$loader->load('services.yml');
+		$loader->load($config_file);
 	}
 
 	/**

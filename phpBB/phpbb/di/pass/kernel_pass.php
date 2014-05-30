@@ -26,7 +26,7 @@ class kernel_pass implements CompilerPassInterface
 	*/
 	public function process(ContainerBuilder $container)
 	{
-		$definition = $container->getDefinition('dispatcher');
+		$definition = $container->findDefinition('dispatcher');
 
 		foreach ($container->findTaggedServiceIds('kernel.event_listener') as $id => $events)
 		{
