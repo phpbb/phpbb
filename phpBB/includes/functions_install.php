@@ -543,7 +543,7 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 
 	if ($debug)
 	{
-		$config_data .= "@define('ENVIRONMENT', 'debug');\n";
+		$config_data .= "@define('ENVIRONMENT', 'development');\n";
 	}
 	else
 	{
