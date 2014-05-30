@@ -41,8 +41,6 @@ function output_image()
 // the cron lock locked, especially when working on cron-related code.
 //
 // Attempt to alleviate the problem by doing setup outside of the lock as much as possible.
-//
-// If DEBUG is defined and cron lock cannot be obtained, a message will be printed.
 
 $cron_type = request_var('cron_type', '');
 
@@ -68,12 +66,4 @@ if ($cron_lock->acquire())
 		}
 	}
 	$cron_lock->release();
-
-}
-else
-{
-	if (defined('DEBUG'))
-	{
-		echo $user->lang('CRON_LOCK_ERROR') . "\n";
-	}
 }
