@@ -911,3 +911,17 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl .attach-controls {
 	float: left;
 }
+
+/**
+* responsive.css
+*/
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	.rtl table.responsive.show-header thead, .rtl table.responsive.show-header th:first-child {
+		text-align: right !important;
+	}
+
+	.rtl table.responsive td {
+		text-align: right !important;
+	}
+}
