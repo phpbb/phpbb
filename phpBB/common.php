@@ -96,11 +96,30 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
+if (ENVIRONMENT == 'debug' && !class_exists('Goutte\Client', true))
+{
+	trigger_error(
+		'Composer dependencies have not been set up for the development environment yet, run ' .
+		"'php ../composer.phar install --dev' from the phpBB directory to do so.",
+		E_USER_ERROR
+	);
+}
 phpbb_load_extensions_autoloaders($phpbb_root_path);
 
 // Set up container
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container = $phpbb_container_builder->get_container();
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+try
+{
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->get_container();
+}
+catch (InvalidArgumentException $e)
+{
+	trigger_error(
+		'The requested environment ' . ENVIRONMENT . ' is not available.',
+		E_USER_ERROR
+	);
+}
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
