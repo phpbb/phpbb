@@ -13,6 +13,8 @@
 
 namespace
 {
+	define('ENVIRONMENT', 'productive');
+
 	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 	class phpbb_di_container_test extends \phpbb_test_case
