@@ -99,7 +99,7 @@ $phpbb_class_loader_ext->register();
 if (ENVIRONMENT == 'debug' && !class_exists('Goutte\Client', true))
 {
 	trigger_error(
-		'Composer dependencies have not been set up for the development environment yet, run ' .
+		'Composer development dependencies have not been set up for the development environment yet, run ' .
 		"'php ../composer.phar install --dev' from the phpBB directory to do so.",
 		E_USER_ERROR
 	);
