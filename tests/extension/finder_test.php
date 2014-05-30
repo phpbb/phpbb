@@ -132,6 +132,22 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
+	public function test_non_absolute_directory_get_classes()
+	{
+		$classes = $this->finder
+			->directory('type/')
+			->get_classes();
+
+		sort($classes);
+		$this->assertEquals(
+			array(
+				'\vendor2\foo\sub\type\alternative',
+				'\vendor2\foo\type\alternative',
+			),
+			$classes
+		);
+	}
+
 	public function test_sub_directory_get_classes()
 	{
 		$classes = $this->finder
