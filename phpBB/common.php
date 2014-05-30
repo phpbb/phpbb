@@ -29,6 +29,11 @@ $phpbb_class_loader->register();
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
 
+if (!defined('ENVIRONMENT'))
+{
+	@define('ENVIRONMENT', 'productive');
+}
+
 if (!defined('PHPBB_INSTALLED'))
 {
 	// Redirect the user to the installer
