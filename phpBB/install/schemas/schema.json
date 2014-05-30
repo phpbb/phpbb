@@ -942,6 +942,10 @@
                 "BOOL",
                 0
             ],
+            "group_skip_auth": [
+                "BOOL",
+                0
+            ],
             "group_name": [
                 "VCHAR_CI",
                 ""
@@ -1009,12 +1013,7 @@
             "group_max_recipients": [
                 "UINT",
                 0
-            ],
-            "group_skip_auth": {
-                "0": "BOOL",
-                "1": 0,
-                "after": "group_founder_manage"
-            }
+            ]
         },
         "PRIMARY_KEY": "group_id",
         "KEYS": {
