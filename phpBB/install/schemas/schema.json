@@ -3023,10 +3023,6 @@
                 "TIMESTAMP",
                 0
             ],
-            "user_pass_convert": [
-                "BOOL",
-                0
-            ],
             "user_email": [
                 "VCHAR_UNI:100",
                 ""
