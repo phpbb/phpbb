@@ -3,7 +3,7 @@
 * phpBB © Copyright phpBB Limited 2003-2014
 * http://www.phpbb.com
 *
-* phpBB is free software. You can redistribute it and/or modify it 
+* phpBB is free software. You can redistribute it and/or modify it
 * under the terms of the GNU General Public License, version 2 (GPL-2.0)
 * as published by the Free Software Foundation.
 *
@@ -63,7 +63,7 @@ phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                          Vic D'Elfant (Vic D'Elfant)   [04/2007 - 04/2009]
 
 Major contributions by:  leviatan21 (Gabriel Vazquez)
-                         Neothermic (Ashley Pinner)
+                         NeoThermic (Ashley Pinner)
                          Raimon (Raimon Meuldijk)
                          Xore (Robert Hetzler)
 
