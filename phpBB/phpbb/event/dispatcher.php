@@ -13,8 +13,6 @@
 
 namespace phpbb\event;
 
-use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
-
 /**
 * Extension of the Symfony2 EventDispatcher
 *
@@ -29,12 +27,7 @@ use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 *     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
-class dispatcher extends ContainerAwareEventDispatcher
+interface dispatcher extends \Symfony\Component\EventDispatcher\EventDispatcherInterface
 {
-	public function trigger_event($eventName, $data = array())
-	{
-		$event = new \phpbb\event\data($data);
-		$this->dispatch($eventName, $event);
-		return $event->get_data_filtered(array_keys($data));
-	}
+	public function trigger_event($eventName, $data = array());
 }
