@@ -12,7 +12,7 @@ services:
             - @stopwatch
 
     dispatcher:
-        class: Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher
+        class: phpbb\event\traceable_dispatcher
         arguments:
             - @dispatcher_real
             - @stopwatch

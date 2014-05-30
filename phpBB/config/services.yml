@@ -134,7 +134,7 @@ services:
             - @dbal.conn
 
     dispatcher_real:
-        class: phpbb\event\dispatcher
+        class: phpbb\event\dispatcher_impl
         public: false
         arguments:
             - @service_container
