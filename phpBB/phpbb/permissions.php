@@ -30,11 +30,11 @@ class permissions
 	/**
 	* Constructor
 	*
-	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher
+	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher
 	* @param	\phpbb\user				$user				User Object
 	* @return	null
 	*/
-	public function __construct(\phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\user $user)
+	public function __construct(\phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\user $user)
 	{
 		$this->dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
