@@ -31,7 +31,7 @@ extract($phpbb_config_php_file->get_all());
 
 if (!defined('ENVIRONMENT'))
 {
-	@define('ENVIRONMENT', 'productive');
+	@define('ENVIRONMENT', 'production');
 }
 
 if (!defined('PHPBB_INSTALLED'))

@@ -457,7 +457,7 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 	}
 	else
 	{
-		$config_data .= "@define('ENVIRONMENT', 'productive');\n";
+		$config_data .= "@define('ENVIRONMENT', 'production');\n";
 	}
 
 	if ($debug_container)
