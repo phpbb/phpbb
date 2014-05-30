@@ -3,7 +3,7 @@
 *
 * This file is part of the phpBB Forum Software package.
 *
-* @copyright (c) phpBB Limited 
+* @copyright (c) phpBB Limited
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 * For full copyright and license information, please see
@@ -67,7 +67,7 @@ class run extends \phpbb\console\command\command
 	*		and the exit status is set to 1.
 	* If the verbose option is specified, each start of a task is printed.
 	*		Otherwise there is no output.
-	* If an argument is given to the command, only the task whose name matches the 
+	* If an argument is given to the command, only the task whose name matches the
 	*		argument will be started. If verbose option is specified,
 	*		an info message containing the name of the task is printed.
 	* If no task matches the argument given, an error message is printed
@@ -169,7 +169,7 @@ class run extends \phpbb\console\command\command
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CRON_NO_SUCH_TASK') . '</error>');
+			$output->writeln('<error>' . $this->user->lang('CRON_NO_SUCH_TASK', $task_name) . '</error>');
 			return 2;
 		}
 	}
