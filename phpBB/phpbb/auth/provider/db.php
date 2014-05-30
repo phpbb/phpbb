@@ -78,7 +78,7 @@ class db extends \phpbb\auth\provider\base
 
 		$username_clean = utf8_clean_string($username);
 
-		$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
+		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type, user_login_attempts
 			FROM ' . USERS_TABLE . "
 			WHERE username_clean = '" . $this->db->sql_escape($username_clean) . "'";
 		$result = $this->db->sql_query($sql);
@@ -180,8 +180,7 @@ class db extends \phpbb\auth\provider\base
 
 				// Update the password in the users table to the new format
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_password = '" . $this->db->sql_escape($hash) . "',
-						user_pass_convert = 0
+					SET user_password = '" . $this->db->sql_escape($hash) . "'
 					WHERE user_id = {$row['user_id']}";
 				$this->db->sql_query($sql);
 

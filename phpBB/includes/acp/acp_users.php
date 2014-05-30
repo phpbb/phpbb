@@ -922,7 +922,6 @@ class acp_users
 							$sql_ary += array(
 								'user_password'		=> $passwords_manager->hash($data['new_password']),
 								'user_passchg'		=> time(),
-								'user_pass_convert'	=> 0,
 							);
 
 							$user->reset_login_keys($user_id);
