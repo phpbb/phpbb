@@ -37,7 +37,7 @@ $dbms = phpbb_convert_30_dbms_to_31($dbms);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.1.0-b3',
+	'phpbb_version'	=> '3.1.0-b4',
 	'author'		=> '<a href="https://www.phpbb.com/">phpBB Limited</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
