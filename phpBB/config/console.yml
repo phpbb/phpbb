@@ -46,6 +46,15 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.cron.run:
+        class: phpbb\console\command\cron\run
+        arguments:
+            - @cron.manager
+            - @cron.lock_db
+            - @user
+        tags:
+            - { name: console.command }
+
     console.command.db.migrate:
         class: phpbb\console\command\db\migrate
         arguments:
