@@ -56,5 +56,10 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		$this->assertCount(3, $log->get_logs('critical', false, 0, 0, 0, 0, 0, 0, 'l.log_time DESC'));
 		$log->delete('critical', array('user_id' => array('>', 1)));
 		$this->assertCount(1, $log->get_logs('critical', false, 0, 0, 0, 0, 0, 0, 'l.log_time DESC'));
+
+		// Delete with an empty keyword list
+		$this->assertCount(1, $log->get_logs('critical', false, 0, 0, 0, 0, 0, 0, 'l.log_time DESC'));
+		$log->delete('critical', array('keywords' => ''));
+		$this->assertEmpty($log->get_logs('critical', false, 0, 0, 0, 0, 0, 0, 'l.log_time DESC'));
 	}
 }

@@ -395,7 +395,7 @@ class log implements \phpbb\log\log_interface
 		{
 			if ($field == 'keywords')
 			{
-				$sql_where .= $this->generate_sql_keyword($field_value, '', '');
+				$sql_where .= $this->generate_sql_keyword($field_value, '', ' AND');
 			}
 			else
 			{
