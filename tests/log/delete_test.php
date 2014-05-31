@@ -143,11 +143,6 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		$this->assertEquals($expected_before, $this->get_ids($this->log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)), 'before');
 		$this->log->delete($mode, $delete_conditions);
 		$this->assertEquals($expected_after, $this->get_ids($this->log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)), 'after');
-/*
-		// Delete with an empty keyword list
-		$this->assertCount(1, $log->get_logs('critical', false, 0, 0, 0, 0, 0, 0, 'l.log_time DESC'));
-		$log->delete('critical', array('keywords' => ''));
-		$this->assertEmpty($log->get_logs('critical', false, 0, 0, 0, 0, 0, 0, 'l.log_time DESC'));*/
 	}
 
 	public function get_ids($logs)
