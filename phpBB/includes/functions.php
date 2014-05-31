@@ -2855,15 +2855,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	}
 
 	$provider_collection = $phpbb_container->get('auth.provider_collection');
-	$auth_method = $config['auth_method'];
-
-	// Revert to db auth provider if selected method does not exist
-	if (!isset($provider_collection['auth.provider.' . $config['auth_method']]))
-	{
-		$auth_method = 'db';
-	}
-
-	$auth_provider = $provider_collection['auth.provider.' . $auth_method];
+	$auth_provider = $provider_collection->get_provider();
 
 	$auth_provider_data = $auth_provider->get_login_data();
 	if ($auth_provider_data)

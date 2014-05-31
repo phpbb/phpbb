@@ -408,16 +408,8 @@ class session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
-					$method = basename(trim($config['auth_method']));
-
 					$provider_collection = $phpbb_container->get('auth.provider_collection');
-
-					// Revert to db auth provider if selected method does not exist
-					if (!isset($provider_collection['auth.provider.' . $method]))
-					{
-						$method = 'db';
-					}
-					$provider = $provider_collection['auth.provider.' . $method];
+					$provider = $provider_collection->get_provider();
 
 					if (!($provider instanceof \phpbb\auth\provider\provider_interface))
 					{
@@ -584,16 +576,8 @@ class session
 			}
 		}
 
-		$method = basename(trim($config['auth_method']));
-
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
-
-		// Revert to db auth provider if selected method does not exist
-		if (!isset($provider_collection['auth.provider.' . $method]))
-		{
-			$method = 'db';
-		}
-		$provider = $provider_collection['auth.provider.' . $method];
+		$provider = $provider_collection->get_provider();
 		$this->data = $provider->autologin();
 
 		if (sizeof($this->data))
@@ -912,9 +896,8 @@ class session
 		$db->sql_query($sql);
 
 		// Allow connecting logout with external auth method logout
-		$method = basename(trim($config['auth_method']));
-
-		$provider = $phpbb_container->get('auth.provider.' . $method);
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$provider = $provider_collection->get_provider();
 		$provider->logout($this->data, $new_session);
 
 		if ($this->data['user_id'] != ANONYMOUS)
