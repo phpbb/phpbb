@@ -54,7 +54,7 @@ class manager
 	*
 	* @param array $notification_types
 	* @param array $notification_methods
-	* @param ContainerInterface $phpbb_container
+	* @param \Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
@@ -63,12 +63,11 @@ class manager
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
-	* @param string $notifications_table
 	* @param string $user_notifications_table
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, \Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
