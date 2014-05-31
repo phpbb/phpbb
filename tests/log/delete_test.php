@@ -54,7 +54,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 				0,
 				0,
 				0,
-				'l.log_id DESC',
+				'l.log_id ASC',
 				'',
 			),
 			array(
@@ -69,7 +69,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 				0,
 				0,
 				0,
-				'l.log_id DESC',
+				'l.log_id ASC',
 				'guest',
 			),
 			array(
@@ -84,7 +84,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 				0,
 				1,
 				0,
-				'l.log_id DESC',
+				'l.log_id ASC',
 				'',
 			),
 			array(
@@ -99,7 +99,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 				0,
 				0,
 				0,
-				'l.log_id DESC',
+				'l.log_id ASC',
 				'',
 			),
 			array(
@@ -114,7 +114,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 				0,
 				0,
 				0,
-				'l.log_id DESC',
+				'l.log_id ASC',
 				'',
 			),
 			array(
@@ -129,7 +129,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 				0,
 				0,
 				0,
-				'l.log_id DESC',
+				'l.log_id ASC',
 				'',
 			),
 		);
