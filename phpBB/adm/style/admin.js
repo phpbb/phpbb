@@ -75,7 +75,7 @@ function parse_document(container)
 				var cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
 					dfn = cell.attr('data-dfn'),
-					text = dfn ? dfn : cell.text().trim();
+					text = dfn ? dfn : $.trim(cell.text());
 
 				if (text == '&nbsp;') text = '';
 				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
@@ -114,7 +114,7 @@ function parse_document(container)
 			cells.each(function() {
 				var cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
-					text = cell.text().trim();
+					text = $.trim(cell.text());
 
 				if (headersLength <= column) {
 					return;

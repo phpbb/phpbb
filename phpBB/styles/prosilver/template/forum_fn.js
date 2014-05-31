@@ -517,7 +517,7 @@ function parse_document(container)
 			block = $this.find('dt .responsive-show:last-child');
 		}
 		else {
-			first = (block.text().trim().length == 0);
+			first = ($.trim(block.text()).length == 0);
 		}
 
 		// Copy contents of each column
@@ -570,7 +570,7 @@ function parse_document(container)
 				block = $this.find('dt .responsive-show:last-child');
 			}
 			else {
-				first = (block.text().trim().length == 0);
+				first = ($.trim(block.text()).length == 0);
 			}
 
 			// Copy contents of each column
@@ -648,7 +648,7 @@ function parse_document(container)
 			cells.each(function() {
 				var cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
-					text = cell.text().trim();
+					text = $.trim(cell.text());
 
 				if (headersLength <= column) {
 					return;
