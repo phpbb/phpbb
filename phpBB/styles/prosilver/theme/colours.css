@@ -614,6 +614,10 @@ Colours and backgrounds for buttons.css
 	color: #D31141;
 }
 
+.dropdown-select, .dropdown-select:visited {
+	color: #536482;
+}
+
 .button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #0a8ed0;
 	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);

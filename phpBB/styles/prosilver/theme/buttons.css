@@ -21,8 +21,8 @@
 	vertical-align: bottom;
 }
 
-.icon-button.dropdown-select {
-	padding-right: 28px;
+.dropdown-select {
+	padding-right: 24px;
 }
 
 .icon-button:before {
@@ -33,6 +33,10 @@
 	height: 12px;
 	margin: 3px 0 0 2px;
 	width: 12px;
+}
+
+.dropdown-select.icon-button:before {
+	margin-right: 4px;
 }
 
 .dropdown-select:after {
