@@ -89,7 +89,6 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_notification_types',
-			'phpbb_notifications',
 			'phpbb_user_notifications'
 		);
 
