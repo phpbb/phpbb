@@ -117,6 +117,7 @@ jQuery(document).ready(function() {
 			if (typeof(p) === 'string') {
 				show_panel = p;
 			}
+			$('input[name="show_panel"]').val(show_panel);
 
 			for (i = 0; i < panels.length; i++) {
 				jQuery('#' + panels[i]).css('display', panels[i] === show_panel ? 'block' : 'none');
