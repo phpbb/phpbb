@@ -231,12 +231,7 @@ class filespec
 	{
 		if ($this->mimetype_guesser !== null)
 		{
-			$mimetype = $this->mimetype_guesser->guess($filename);
-
-			if ($mimetype !== 'application/octet-stream')
-			{
-				$this->mimetype = $mimetype;
-			}
+			$this->mimetype = $this->mimetype_guesser->guess($filename);
 		}
 
 		return $this->mimetype;
