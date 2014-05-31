@@ -78,8 +78,6 @@ class acp_logs
 					$conditions['keywords'] = $keywords;
 				}
 
-				$conditions['log_type'] = $this->log_type;
-
 				$phpbb_log = $phpbb_container->get('log');
 				$phpbb_log->delete($mode, $conditions);
 			}
