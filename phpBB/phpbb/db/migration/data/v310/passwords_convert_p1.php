@@ -25,6 +25,12 @@ class passwords_convert_p1 extends \phpbb\db\migration\migration
 
 	public function update_passwords($start)
 	{
+		// Nothing to do if user_pass_convert column doesn't exist
+		if (!$this->db_tools->sql_column_exists($this->table_prefix . 'users', 'user_pass_convert'))
+		{
+			return;
+		}
+
 		$start = (int) $start;
 		$limit = 1000;
 		$converted_users = 0;
