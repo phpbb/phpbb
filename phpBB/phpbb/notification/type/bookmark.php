@@ -109,10 +109,11 @@ class bookmark extends \phpbb\notification\type\post
 			unset($notify_users[$user]);
 
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
+			$notification->set_initial_data($notification_data);
 			$update_responders = $notification->add_responders($post);
 			if (!empty($update_responders))
 			{
-				$this->notification_manager->update_notifications($this->get_type(), $update_responders, array(
+				$this->notification_manager->update_notification($notification, $update_responders, array(
 					'item_parent_id'	=> self::get_item_parent_id($post),
 					'read'				=> 0,
 					'user_id'			=> $user,

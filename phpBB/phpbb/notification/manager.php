@@ -304,7 +304,7 @@ class manager
 	}
 
 	/**
-	* Update a notification
+	* Update notification
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be updated
@@ -322,8 +322,18 @@ class manager
 			return;
 		}
 
-		$notification = $this->get_item_type_class($notification_type_name);
+		$this->update_notification($this->get_item_type_class($notification_type_name), $data, $options);
+	}
 
+	/**
+	* Update a notification
+	*
+	* @param \phpbb\notification\type\type_interface $notification The notification
+	* @param array $data Data specific for this type that will be updated
+	* @param array $options
+	*/
+	public function update_notification(\phpbb\notification\type\type_interface $notification, array $data, array $options = array())
+	{
 		if (empty($options))
 		{
 			$options['item_id'] = $notification->get_item_id($data);
@@ -832,12 +842,14 @@ class manager
 	* @param array $options
 	* @return array The list of the notified users
 	*/
-	public function get_notified_users($notification_type_name, array $options)//$item_id, $user_id, $time = false, $read = false)
+	public function get_notified_users($notification_type_name, array $options)
 	{
+		$notification_type_id = $this->get_notification_type_id($notification_type_name);
+
 		$notified_users = array();
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$notified_users = array_merge($method->get_notified_users($notification_type_name, $options));
+			$notified_users = $notified_users + $method->get_notified_users($notification_type_id, $options);
 		}
 
 		return $notified_users;
