@@ -136,14 +136,14 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc
 	*/
-	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true)
+	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false, $mark_read = true)
+	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
 	}
 
@@ -165,14 +165,14 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
+	public function delete_notifications($notification_type_id, $item_id, $parent_id = false, $user_id = false)
 	{
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function purge_notifications($notification_type_name)
+	public function purge_notifications($notification_type_id)
 	{
 	}
 
