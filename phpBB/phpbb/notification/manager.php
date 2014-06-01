@@ -54,7 +54,7 @@ class manager
 	*
 	* @param array $notification_types
 	* @param array $notification_methods
-	* @param \Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container
+	* @param \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
@@ -67,7 +67,7 @@ class manager
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, \Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
@@ -251,8 +251,8 @@ class manager
 		// We remove each user which was already notified by at least one method.
 		foreach ($this->get_subscription_methods_instances() as $method_name => $method)
 		{
-			$notified_users = $method->get_notified_users($notification_type_id, $item_id);
-			foreach ($notified_users as $user)
+			$notified_users = $method->get_notified_users($notification_type_id, array('item_id' => $item_id));
+			foreach ($notified_users as $user => $notifications)
 			{
 				unset($notify_users[$user]);
 			}
@@ -308,8 +308,9 @@ class manager
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be updated
+	* @param array $options
 	*/
-	public function update_notifications($notification_type_name, $data)
+	public function update_notifications($notification_type_name, array $data, array $options = array())
 	{
 		if (is_array($notification_type_name))
 		{
@@ -323,9 +324,14 @@ class manager
 
 		$notification = $this->get_item_type_class($notification_type_name);
 
+		if (empty($options))
+		{
+			$options['item_id'] = $notification->get_item_id($data);
+		}
+
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->update_notification($notification, $data);
+			$method->update_notification($notification, $data, $options);
 		}
 	}
 
@@ -816,5 +822,23 @@ class manager
 		}
 
 		return $notification_type_ids;
+	}
+
+	/**
+	* Find the users which are already notified
+	*
+	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to retrieve all item types
+	* @param array $options
+	* @return array The list of the notified users
+	*/
+	public function get_notified_users($notification_type_name, array $options)//$item_id, $user_id, $time = false, $read = false)
+	{
+		$notified_users = array();
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$notified_users = array_merge($method->get_notified_users($notification_type_name, $options));
+		}
+
+		return $notified_users;
 	}
 }

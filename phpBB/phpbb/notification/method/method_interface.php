@@ -105,10 +105,10 @@ interface method_interface
 	* Return the list of the users already notified
 	*
 	* @param int $notification_type_id Type of the notification
-	* @param int $item_id
+	* @param array $options
 	* @return array User
 	*/
-	public function get_notified_users($notification_type_id, $item_id);
+	public function get_notified_users($notification_type_id, array $options);
 
 	/**
 	* Delete a notification
@@ -142,6 +142,7 @@ interface method_interface
 	*
 	* @param \phpbb\notification\type\type_interface $notification Notification to update
 	* @param array $data Data specific for this type that will be updated
+	* @param array $options
 	*/
-	public function update_notification($notification, $data);
+	public function update_notification($notification, array $data, array $options);
 }

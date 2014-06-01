@@ -157,7 +157,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_notified_users($notification_type_id, $item_id)
+	public function get_notified_users($notification_type_id, array $options)
 	{
 		return array();
 	}
@@ -186,7 +186,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function update_notification($notification, $data)
+	public function update_notification($notification, array $data, array $options)
 	{
 	}
 }

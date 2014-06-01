@@ -131,7 +131,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, $notification_methods_array,
 			$phpbb_container, $user_loader, $config, $db, $cache, $user,
 			$phpbb_root_path, $phpEx,
-			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
+			NOTIFICATION_TYPES_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
 	}
 
@@ -143,7 +143,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$class = new $class_name(
 			$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
 			$phpbb_root_path, $phpEx,
-			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
+			NOTIFICATION_TYPES_TABLE, USER_NOTIFICATIONS_TABLE);
 		return $class;
 	}
 

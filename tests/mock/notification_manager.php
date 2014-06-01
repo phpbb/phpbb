@@ -44,7 +44,6 @@ class phpbb_mock_notification_manager
 	{
 	}
 
-
 	public function add_notifications()
 	{
 		return array();

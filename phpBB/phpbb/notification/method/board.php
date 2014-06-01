@@ -302,19 +302,23 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_notified_users($notification_type_id, $item_id)
+	public function get_notified_users($notification_type_id, array $options)
 	{
 		$notified_users = array();
-		$sql = 'SELECT n.user_id
+		$sql = 'SELECT n.*
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $notification_type_id . '
-				AND n.item_id = ' . (int) $item_id . '
+			WHERE n.notification_type_id = ' . (int) $notification_type_id .
+				(isset($options['item_id']) ? ' AND n.item_id = ' . (int) $options['item_id'] : '') .
+				(isset($options['item_parent_id']) ? ' AND n.item_parent_id = ' . (int) $options['item_parent_id'] : '') .
+				(isset($options['user_id']) ? ' AND n.user_id = ' . (int) $options['user_id'] : '') .
+				(isset($options['read']) ? ' AND n.notification_read = ' . (int) $options['read'] : '') .
+				(isset($options['time']) ? ' AND n.notification_time = ' . (int) $options['time'] : '') .'
 				AND nt.notification_type_id = n.notification_type_id
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$notified_users[] = $row['user_id'];
+			$notified_users[$row['user_id']] = $row;
 		}
 		$this->db->sql_freeresult($result);
 
@@ -382,7 +386,7 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function update_notification($notification, $data)
+	public function update_notification($notification, array $data, array $options)
 	{
 		// Allow the notifications class to over-ride the update_notifications functionality
 		if (method_exists($notification, 'update_notifications'))
@@ -395,13 +399,16 @@ class board extends \phpbb\notification\method\base
 		}
 
 		$notification_type_id = $this->notification_manager->get_notification_type_id($notification->get_type());
-		$item_id = $notification->get_item_id($data);
 		$update_array = $notification->create_update_array($data);
 
 		$sql = 'UPDATE ' . $this->notifications_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $update_array) . '
-			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND item_id = ' . (int) $item_id;
+			WHERE notification_type_id = ' . (int) $notification_type_id .
+			(isset($options['item_id']) ? ' AND n.item_id = ' . (int) $options['item_id'] : '') .
+			(isset($options['item_parent_id']) ? ' AND n.item_parent_id = ' . (int) $options['item_parent_id'] : '') .
+			(isset($options['user_id']) ? ' AND n.user_id = ' . (int) $options['user_id'] : '') .
+			(isset($options['read']) ? ' AND n.notification_read = ' . (int) $options['read'] : '') .
+			(isset($options['time']) ? ' AND n.notification_time = ' . (int) $options['time'] : '');
 		$this->db->sql_query($sql);
 	}
 }
