@@ -331,6 +331,8 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - %tables.notification_types%
+            - %tables.user_notifications%
         tags:
             - { name: notification.method }
 

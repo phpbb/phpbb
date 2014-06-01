@@ -23,9 +23,6 @@ class board extends \phpbb\notification\method\base
 	/** @var string */
 	protected $notifications_table;
 
-	/** @var string */
-	protected $user_notifications_table;
-
 	/**
 	* Notification Method Board Constructor
 	*
@@ -38,10 +35,10 @@ class board extends \phpbb\notification\method\base
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
-	* @param string $user_notifications_table
+	* @param string $notifications_table
 	* @return \phpbb\notification\method\board
 	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -52,8 +49,8 @@ class board extends \phpbb\notification\method\base
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
-		$this->notification_types_table = NOTIFICATION_TYPES_TABLE;
-		$this->notifications_table = NOTIFICATIONS_TABLE;
+		$this->notification_types_table = $notification_types_table;
+		$this->notifications_table = $notifications_table;
 	}
 
 	/**

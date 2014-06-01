@@ -123,7 +123,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$class = new $class_name(
 			$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
 			$phpbb_root_path, $phpEx,
-			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
+			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification.method.board', $class);
 		$notification_methods_array = array('notification.method.board' => $class);
 
