@@ -104,18 +104,22 @@ class manager
 	*	'notifications'		array of notification type objects
 	*	'unread_count'		number of unread notifications the user has if count_unread is true in the options
 	*	'total_count'		number of notifications the user has if count_total is true in the options
+	* @throws \phpbb\notification\exception when the method doesn't refer to a class extending \phpbb\notification\method\method_interface
 	*/
 	public function load_notifications($method_name, array $options = array())
 	{
 		$method = $this->get_method_class($method_name);
 
-		if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
+		if ($method instanceof \phpbb\notification\method\method_interface)
+		{
+			throw new \phpbb\notification\exception($this->user->lang('NOTIFICATION_TYPE_NOT_EXIST', $method_name));
+		}
+		else if ($method->is_available())
 		{
 			return $method->load_notifications($options);
 		}
 		else
 		{
-			// TODO: throw error?
 			return array(
 				'notifications'		=> array(),
 				'unread_count'		=> 0,
