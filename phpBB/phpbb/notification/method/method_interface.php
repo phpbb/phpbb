@@ -71,32 +71,35 @@ interface method_interface
 	public function load_notifications(array $options = array());
 
 	/**
-	* Mark notifications read
+	* Mark notifications read or unread
 	*
 	* @param bool|string $notification_type_name Type identifier of item types. False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false);
+	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true);
 
 	/**
-	* Mark notifications read from a parent identifier
+	* Mark notifications read or unread from a parent identifier
 	*
 	* @param string $notification_type_name Type identifier of item types
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false);
+	public function mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false, $mark_read = true);
 
 	/**
-	* Mark notifications read
+	* Mark notifications read or unread
 	*
 	* @param int $notification_id Notification id of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read_by_id($notification_id, $time = false);
+	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true);
 
 	/**
 	* Return the list of the users already notified

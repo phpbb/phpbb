@@ -125,51 +125,54 @@ class manager
 	}
 
 	/**
-	* Mark notifications read for all available methods
+	* Mark notifications read or unread for all available methods
 	*
 	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->mark_notifications_read($notification_type_name, $item_id, $user_id, $time);
+			$method->mark_notifications($notification_type_name, $item_id, $user_id, $time, $mark_read);
 		}
 	}
 
 	/**
-	* Mark notifications read from a parent identifier for all available methods
+	* Mark notifications read or unread from a parent identifier for all available methods
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	public function mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time);
+			$method->mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time, $mark_read);
 		}
 	}
 
 	/**
-	* Mark notifications read for a given method
+	* Mark notifications read or unread for a given method
 	*
 	* @param string $method_name
 	* @param int|array $notification_id Notification id or array of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read_by_id($method_name, $notification_id, $time = false)
+	public function mark_notifications_by_id($method_name, $notification_id, $time = false, $mark_read = true)
 	{
 		$method = $this->get_method_class($method_name);
 
 		if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
 		{
-			$method->mark_notifications_read_by_id($notification_id, $time);
+			$method->mark_notifications_by_id($notification_id, $time, $mark_read);
 		}
 	}
 

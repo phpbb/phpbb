@@ -1145,7 +1145,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			// Mark all topic notifications read for this user
-			$phpbb_notifications->mark_notifications_read(array(
+			$phpbb_notifications->mark_notifications(array(
 				'topic',
 				'quote',
 				'bookmark',
@@ -1210,7 +1210,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array(
+		$phpbb_notifications->mark_notifications_by_parent(array(
 			'topic',
 			'approve_topic',
 		), $forum_id, $user->data['user_id'], $post_time);
@@ -1227,7 +1227,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		$db->sql_freeresult($result);
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array(
+		$phpbb_notifications->mark_notifications_by_parent(array(
 			'quote',
 			'bookmark',
 			'post',
@@ -1333,12 +1333,12 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		// Mark post notifications read for this user in this topic
-		$phpbb_notifications->mark_notifications_read(array(
+		$phpbb_notifications->mark_notifications(array(
 			'topic',
 			'approve_topic',
 		), $topic_id, $user->data['user_id'], $post_time);
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array(
+		$phpbb_notifications->mark_notifications_by_parent(array(
 			'quote',
 			'bookmark',
 			'post',

@@ -92,7 +92,7 @@ class mcp_reports
 
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications('report_post', $post_id, $user->data['user_id']);
 
 				if (!$report_id && $report['report_closed'])
 				{

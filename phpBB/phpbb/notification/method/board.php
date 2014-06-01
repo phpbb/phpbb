@@ -38,7 +38,6 @@ class board extends \phpbb\notification\method\base
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
-	* @param string $notifications_table
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\method\board
 	*/
@@ -255,13 +254,13 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 		$time = ($time !== false) ? $time : time();
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time .
+		$sql = 'UPDATE ' . $this->notifications_table . '
+			SET notification_read = ' . ($mark_read ? 1 : 0) . '
+			WHERE notification_time <= ' . (int) $time .
 			(($notification_type_name !== false) ? ' AND ' .
 				(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->notification_manager->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->notification_manager->get_notification_type_id($notification_type_name)) : '') .
 			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
@@ -272,13 +271,13 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	public function mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
 		$time = ($time !== false) ? $time : time();
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time .
+		$sql = 'UPDATE ' . $this->notifications_table . '
+			SET notification_read = ' . ($mark_read ? 1 : 0) . '
+			WHERE notification_time <= ' . (int) $time .
 			(($notification_type_name !== false) ? ' AND ' .
 				(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->notification_manager->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->notification_manager->get_notification_type_id($notification_type_name)) : '') .
 			(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
@@ -289,13 +288,13 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications_read_by_id($notification_id, $time = false)
+	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true)
 	{
 		$time = ($time !== false) ? $time : time();
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time . '
+		$sql = 'UPDATE ' . $this->notifications_table . '
+			SET notification_read = ' . ($mark_read ? 1 : 0) . '
+			WHERE notification_time <= ' . (int) $time . '
 				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id);
 		$this->db->sql_query($sql);
 	}
