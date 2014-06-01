@@ -28,17 +28,17 @@ class notifications_board extends \phpbb\db\migration\migration
 	public function update_module()
 	{
 		$sql = 'UPDATE ' . MODULES_TABLE . "
-		SET auth = 'cfg_allow_board_notifications'
-		WHERE module_basename = 'ucp_notifications'
-			AND module_mode = 'notification_list'";
+			SET auth = 'cfg_allow_board_notifications'
+			WHERE module_basename = 'ucp_notifications'
+				AND module_mode = 'notification_list'";
 		$this->sql_query($sql);
 	}
 
 	public function update_user_subscriptions()
 	{
 		$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-		SET method = 'board'
-		WHERE method = ''";
+			SET method = 'board'
+			WHERE method = ''";
 		$this->sql_query($sql);
 	}
 
@@ -53,17 +53,17 @@ class notifications_board extends \phpbb\db\migration\migration
 	public function revert_user_subscriptions()
 	{
 		$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-		SET method = ''
-		WHERE method = 'board'";
+			SET method = ''
+			WHERE method = 'board'";
 		$this->sql_query($sql);
 	}
 
 	public function revert_module()
 	{
 		$sql = 'UPDATE ' . MODULES_TABLE . "
-		SET auth = ''
-		WHERE module_basename = 'ucp_notifications'
-			AND module_mode = 'notification_list'";
+			SET auth = ''
+			WHERE module_basename = 'ucp_notifications'
+				AND module_mode = 'notification_list'";
 		$this->sql_query($sql);
 	}
 }
