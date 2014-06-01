@@ -127,7 +127,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
+		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_user_notifications');
 	}
 
 	protected function build_method($method)

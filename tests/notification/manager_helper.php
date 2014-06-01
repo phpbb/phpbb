@@ -45,7 +45,7 @@ class phpbb_notification_manager_helper extends \phpbb\notification\manager
 	{
 		$item_type = 'phpbb\notification\type\\' . $item_type;
 
-		$item = new $item_type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
+		$item = new $item_type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->user_notifications_table);
 
 		$item->set_notification_manager($this);
 
@@ -61,7 +61,7 @@ class phpbb_notification_manager_helper extends \phpbb\notification\manager
 	{
 		$method_name = 'phpbb\notification\method\\' . $method_name;
 
-		$method = new $method_name($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
+		$method = new $method_name($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, NOTIFICATIONS_TABLE, $this->user_notifications_table);
 
 		$method->set_notification_manager($this);
 
