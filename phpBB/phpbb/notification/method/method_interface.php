@@ -26,29 +26,26 @@ interface method_interface
 	public function get_type();
 
 	/**
+	* Is the method enable by default?
+	*
+	* @return bool
+	*/
+	public function is_enabled_by_default();
+
+	/**
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*/
 	public function is_available();
 
 	/**
-	* Add a notification to the queue
+	* Return the list of the users already notified
 	*
-	* @param \phpbb\notification\type\type_interface $notification
+	* @param int $notification_type_id Type of the notification
+	* @param array $options
+	* @return array User
 	*/
-	public function add_to_queue(\phpbb\notification\type\type_interface $notification);
-
-	/**
-	* Parse the queue and notify the users
-	*/
-	public function notify();
-
-	/**
-	* Is the method enable by default?
-	*
-	* @return bool
-	*/
-	public function is_enabled_by_default();
+	public function get_notified_users($notification_type_id, array $options);
 
 	/**
 	* Load the user's notifications
@@ -69,6 +66,27 @@ interface method_interface
 	*	'total_count'		number of notifications the user has if count_total is true in the options
 	*/
 	public function load_notifications(array $options = array());
+
+	/**
+	* Add a notification to the queue
+	*
+	* @param \phpbb\notification\type\type_interface $notification
+	*/
+	public function add_to_queue(\phpbb\notification\type\type_interface $notification);
+
+	/**
+	* Parse the queue and notify the users
+	*/
+	public function notify();
+
+	/**
+	* Update a notification
+	*
+	* @param \phpbb\notification\type\type_interface $notification Notification to update
+	* @param array $data Data specific for this type that will be updated
+	* @param array $options
+	*/
+	public function update_notification($notification, array $data, array $options);
 
 	/**
 	* Mark notifications read or unread
@@ -102,15 +120,6 @@ interface method_interface
 	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true);
 
 	/**
-	* Return the list of the users already notified
-	*
-	* @param int $notification_type_id Type of the notification
-	* @param array $options
-	* @return array User
-	*/
-	public function get_notified_users($notification_type_id, array $options);
-
-	/**
 	* Delete a notification
 	*
 	* @param string $notification_type_id Type identifier of item types
@@ -121,16 +130,6 @@ interface method_interface
 	public function delete_notifications($notification_type_id, $item_id, $parent_id = false, $user_id = false);
 
 	/**
-	* Purge all notifications of a certain type
-	*
-	* This should be called when an extension which has notification types
-	* is purged so that all those notifications are removed
-	*
-	* @param string $notification_type_id Type identifier of the subscription
-	*/
-	public function purge_notifications($notification_type_id);
-
-	/**
 	* Delete all notifications older than a certain time
 	*
 	* @param int $timestamp Unix timestamp to delete all notifications that were created before
@@ -139,11 +138,12 @@ interface method_interface
 	public function prune_notifications($timestamp, $only_read = true);
 
 	/**
-	* Update a notification
+	* Purge all notifications of a certain type
 	*
-	* @param \phpbb\notification\type\type_interface $notification Notification to update
-	* @param array $data Data specific for this type that will be updated
-	* @param array $options
+	* This should be called when an extension which has notification types
+	* is purged so that all those notifications are removed
+	*
+	* @param string $notification_type_id Type identifier of the subscription
 	*/
-	public function update_notification($notification, array $data, array $options);
+	public function purge_notifications($notification_type_id);
 }
