@@ -284,12 +284,12 @@ class manager
 			foreach ($methods as $method)
 			{
 				// setup the notification methods and add the notification to the queue
-					if (!isset($notification_methods[$method]))
-					{
-						$notification_methods[$method] = $this->get_method_class($method);
-					}
+				if (!isset($notification_methods[$method]))
+				{
+					$notification_methods[$method] = $this->get_method_class($method);
+				}
 
-					$notification_methods[$method]->add_to_queue($notification);
+				$notification_methods[$method]->add_to_queue($notification);
 			}
 		}
 
@@ -506,7 +506,7 @@ class manager
 	*/
 	public function get_global_subscriptions($user_id = false)
 	{
-		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
+		$user_id = $user_id ?: $this->user->data['user_id'];
 
 		$subscriptions = array();
 
