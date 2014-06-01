@@ -341,14 +341,15 @@ class manager
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
 	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	* @param mixed $user_id User id (Default: false; not checked)
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
 	{
 		if (is_array($notification_type_name))
 		{
 			foreach ($notification_type_name as $type)
 			{
-				$this->delete_notifications($type, $item_id, $parent_id);
+				$this->delete_notifications($type, $item_id, $parent_id, $user_id);
 			}
 
 			return;
@@ -356,7 +357,7 @@ class manager
 
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->delete_notifications($notification_type_name, $item_id, $parent_id);
+			$method->delete_notifications($notification_type_name, $item_id, $parent_id, $user_id);
 		}
 	}
 

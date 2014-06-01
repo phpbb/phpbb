@@ -116,8 +116,9 @@ interface method_interface
 	* @param string $notification_type_name Type identifier of item types
 	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	* @param mixed $user_id User id (Default: false; not checked)
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false);
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false);
 
 	/**
 	* Purge all notifications of a certain type

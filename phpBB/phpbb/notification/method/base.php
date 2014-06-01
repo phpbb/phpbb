@@ -165,7 +165,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
 	{
 	}
 
