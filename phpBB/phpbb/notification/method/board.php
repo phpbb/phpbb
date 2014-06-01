@@ -254,15 +254,15 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true)
+	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 		$time = ($time !== false) ? $time : time();
 
 		$sql = 'UPDATE ' . $this->notifications_table . '
 			SET notification_read = ' . ($mark_read ? 1 : 0) . '
 			WHERE notification_time <= ' . (int) $time .
-			(($notification_type_name !== false) ? ' AND ' .
-				(is_array($notification_type_name) ? $this->db->sql_in_set('notification_type_id', $this->notification_manager->get_notification_type_ids($notification_type_name)) : 'notification_type_id = ' . $this->notification_manager->get_notification_type_id($notification_type_name)) : '') .
+			(($notification_type_id !== false) ? ' AND ' .
+				(is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '') .
 			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '') .
 			(($item_id !== false) ? ' AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) : '');
 		$this->db->sql_query($sql);
@@ -328,10 +328,8 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
+	public function delete_notifications($notification_type_id, $item_id, $parent_id = false, $user_id = false)
 	{
-		$notification_type_id = $this->notification_manager->get_notification_type_id($notification_type_name);
-
 		$sql = 'DELETE FROM ' . $this->notifications_table . '
 			WHERE notification_type_id = ' . (int) $notification_type_id . '
 				AND ' . (is_array($item_id) ? $this->db->sql_in_set('item_id', $item_id) : 'item_id = ' . (int) $item_id) .
@@ -343,7 +341,7 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function purge_notifications($notification_type_name)
+	public function purge_notifications($notification_type_id)
 	{
 		// If a notification is never used, its type will not be added to the database
 		// nor its id cached. If this method is called by an extension during the
@@ -353,8 +351,6 @@ class board extends \phpbb\notification\method\base
 		// there is nothing to delete, so we can silently drop the exception.
 		try
 		{
-			$notification_type_id = $this->notification_manager->get_notification_type_id($notification_type_name);
-
 			$sql = 'DELETE FROM ' . $this->notifications_table . '
 				WHERE notification_type_id = ' . (int) $notification_type_id;
 			$this->db->sql_query($sql);

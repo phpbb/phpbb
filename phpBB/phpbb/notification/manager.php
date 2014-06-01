@@ -135,9 +135,18 @@ class manager
 	*/
 	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true)
 	{
+		if (is_array($notification_type_name))
+		{
+			$notification_type_id = $this->get_notification_type_ids($notification_type_name);
+		}
+		else
+		{
+			$notification_type_id = $this->get_notification_type_id($notification_type_name);
+		}
+
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->mark_notifications($notification_type_name, $item_id, $user_id, $time, $mark_read);
+			$method->mark_notifications($notification_type_id, $item_id, $user_id, $time, $mark_read);
 		}
 	}
 
@@ -365,9 +374,11 @@ class manager
 			return;
 		}
 
+		$notification_type_id = $this->get_notification_type_id($notification_type_name);
+
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->delete_notifications($notification_type_name, $item_id, $parent_id, $user_id);
+			$method->delete_notifications($notification_type_id, $item_id, $parent_id, $user_id);
 		}
 	}
 
@@ -675,9 +686,11 @@ class manager
 	*/
 	public function purge_notifications($notification_type_name)
 	{
+		$notification_type_id = $this->get_notification_type_id($notification_type_name);
+
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
-			$method->purge_notifications($notification_type_name);
+			$method->purge_notifications($notification_type_id);
 		}
 	}
 
