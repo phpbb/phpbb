@@ -139,9 +139,13 @@ class manager
 		{
 			$notification_type_id = $this->get_notification_type_ids($notification_type_name);
 		}
-		else
+		else if ($notification_type_name !== false)
 		{
 			$notification_type_id = $this->get_notification_type_id($notification_type_name);
+		}
+		else
+		{
+			$notification_type_id = false;
 		}
 
 		foreach ($this->get_available_subscription_methods() as $method)
