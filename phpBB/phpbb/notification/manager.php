@@ -144,7 +144,7 @@ class manager
 			$notification_type_id = $this->get_notification_type_id($notification_type_name);
 		}
 
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->mark_notifications($notification_type_id, $item_id, $user_id, $time, $mark_read);
 		}
@@ -161,9 +161,18 @@ class manager
 	*/
 	public function mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		if (is_array($notification_type_name))
 		{
-			$method->mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time, $mark_read);
+			$notification_type_id = $this->get_notification_type_ids($notification_type_name);
+		}
+		else
+		{
+			$notification_type_id = $this->get_notification_type_id($notification_type_name);
+		}
+
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$method->mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time, $mark_read);
 		}
 	}
 
@@ -258,7 +267,7 @@ class manager
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
 		// We remove each user which was already notified by at least one method.
-		foreach ($this->get_subscription_methods_instances() as $method_name => $method)
+		foreach ($this->get_subscription_methods_instances() as $method)
 		{
 			$notified_users = $method->get_notified_users($notification_type_id, array('item_id' => $item_id));
 			foreach ($notified_users as $user => $notifications)
@@ -348,7 +357,7 @@ class manager
 			$options['item_id'] = $notification->get_item_id($data);
 		}
 
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->update_notification($notification, $data, $options);
 		}
@@ -376,7 +385,7 @@ class manager
 
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->delete_notifications($notification_type_id, $item_id, $parent_id, $user_id);
 		}
@@ -688,7 +697,7 @@ class manager
 	{
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->purge_notifications($notification_type_id);
 		}
@@ -719,7 +728,7 @@ class manager
 	*/
 	public function prune_notifications($timestamp, $only_read = true)
 	{
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->prune_notifications($timestamp, $only_read);
 		}
@@ -732,7 +741,7 @@ class manager
 	{
 		$default_methods = array();
 
-		foreach ($this->notification_methods as $method_name => $method)
+		foreach ($this->notification_methods as $method)
 		{
 			if ($method->is_enabled_by_default() && $method->is_available())
 			{
@@ -860,7 +869,7 @@ class manager
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
 		$notified_users = array();
-		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$notified_users = $notified_users + $method->get_notified_users($notification_type_id, $options);
 		}
