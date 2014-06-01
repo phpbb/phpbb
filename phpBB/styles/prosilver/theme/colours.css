@@ -239,8 +239,7 @@ p.post-notice.reported:before, p.post-notice.error:before {
 	color: #4C5D77;
 }
 
-.notification_list .reported p.notifications_title strong,
-.notification_list .reported p.notification-title strong {
+.notification_list .reported strong {
 	color: #D31141;
 }
 
