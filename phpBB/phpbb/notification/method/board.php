@@ -324,7 +324,7 @@ class board extends \phpbb\notification\method\base
 			SET notification_read = ' . ($mark_read ? 1 : 0) . '
 			WHERE notification_time <= ' . (int) $time .
 			(($notification_type_id !== false) ? ' AND ' .
-				(is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $this->notification_manager->get_notification_type_ids($notification_type_id)) : 'notification_type_id = ' . $this->notification_manager->get_notification_type_id($notification_type_id)) : '') .
+				(is_array($notification_type_id) ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : 'notification_type_id = ' . $notification_type_id) : '') .
 			(($item_parent_id !== false) ? ' AND ' . (is_array($item_parent_id) ? $this->db->sql_in_set('item_parent_id', $item_parent_id) : 'item_parent_id = ' . (int) $item_parent_id) : '') .
 			(($user_id !== false) ? ' AND ' . (is_array($user_id) ? $this->db->sql_in_set('user_id', $user_id) : 'user_id = ' . (int) $user_id) : '');
 		$this->db->sql_query($sql);
@@ -375,27 +375,14 @@ class board extends \phpbb\notification\method\base
 	*/
 	public function purge_notifications($notification_type_id)
 	{
-		// If a notification is never used, its type will not be added to the database
-		// nor its id cached. If this method is called by an extension during the
-		// purge step, and that extension never used its notifications,
-		// get_notification_type_id() will throw an exception. However,
-		// because no notification type was added to the database,
-		// there is nothing to delete, so we can silently drop the exception.
-		try
-		{
-			$sql = 'DELETE FROM ' . $this->notifications_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id;
-			$this->db->sql_query($sql);
+		$sql = 'DELETE FROM ' . $this->notifications_table . '
+			WHERE notification_type_id = ' . (int) $notification_type_id;
+		$this->db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . $this->notification_types_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id;
-			$this->db->sql_query($sql);
+		$sql = 'DELETE FROM ' . $this->notification_types_table . '
+			WHERE notification_type_id = ' . (int) $notification_type_id;
+		$this->db->sql_query($sql);
 
-			$this->cache->destroy('notification_type_ids');
-		}
-		catch (\phpbb\notification\exception $e)
-		{
-			// Continue
-		}
+		$this->cache->destroy('notification_type_ids');
 	}
 }

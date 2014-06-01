@@ -695,11 +695,25 @@ class manager
 	*/
 	public function purge_notifications($notification_type_name)
 	{
-		$notification_type_id = $this->get_notification_type_id($notification_type_name);
-
-		foreach ($this->get_available_subscription_methods() as $method)
+		// If a notification is never used, its type will not be added to the database
+		// nor its id cached. If this method is called by an extension during the
+		// purge step, and that extension never used its notifications,
+		// get_notification_type_id() will throw an exception. However,
+		// because no notification type was added to the database,
+		// there is nothing to delete, so we can silently drop the exception.
+		try
 		{
-			$method->purge_notifications($notification_type_id);
+			$notification_type_id = $this->get_notification_type_id($notification_type_name);
+
+			foreach ($this->get_available_subscription_methods() as $method)
+			{
+				$method->purge_notifications($notification_type_id);
+			}
+
+		}
+		catch (\phpbb\notification\exception $e)
+		{
+			// Continue
 		}
 	}
 
