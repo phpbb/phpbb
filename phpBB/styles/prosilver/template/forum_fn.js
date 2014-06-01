@@ -367,13 +367,14 @@ function parse_document(container)
      	}
 	});
 
-	container.find('.pagination-trigger').click(function() {
+	container.find('.pagination .dropdown-trigger').click(function() {
 		$dropdown_container = $(this).parent();
-		
-		if (!$dropdown_container.hasClass('dropdown-visible')) {
-			$input = $dropdown_container.find("input.inputbox");
-			setTimeout(function() { $input.focus(); },100);
-		}
+		// Wait a little bit to make sure the dropdown has activated
+		setTimeout(function() { 
+			if ($dropdown_container.hasClass('dropdown-visible')) {
+				$dropdown_container.find("input.inputbox").focus();
+			}
+		},100);
 	});
 
 	/**

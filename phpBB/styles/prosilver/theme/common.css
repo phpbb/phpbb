@@ -884,7 +884,7 @@ li.pagination ul {
 	background-repeat: no-repeat;
 }
 
-.pagination li.page-jump a:hover { background-position: 0 -18px; }
+.pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
 .pagination li.next a:hover { background-position: -50px -18px; }
 .pagination li.previous a:hover { background-position: -30px -18px; }
 

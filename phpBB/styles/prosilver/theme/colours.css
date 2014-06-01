@@ -159,7 +159,7 @@ dl.details dd {
 /* Pagination
 ---------------------------------------- */
 
-.pagination li a, .pagination li a:link, .pagination li a:visited {
+.pagination li a {
 	color: #5C758C;
 	background-color: #ECEDEE;
 	border-color: #B4BAC0;
@@ -176,16 +176,11 @@ dl.details dd {
 	border-color: #4692BF;
 }
 
-.pagination li a:hover, .pagination .active a:hover {
+.pagination li a:hover, .pagination .active a:hover,
+.pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { {
 	border-color: #368AD2;
 	background-color: #368AD2;
 	color: #FFFFFF;
-}
-
-.pagination li a:active, .pagination li.active a:active {
-	color: #5C758C;
-	background-color: #ECEDEE;
-	border-color: #B4BAC0;
 }
 
 .pagination li.next a, .pagination li.previous a, .pagination li.page-jump a {
