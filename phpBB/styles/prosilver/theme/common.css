@@ -603,6 +603,14 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	text-align: left;
 }
 
+.dropdown-contents > li {
+	padding-right: 15px;
+}
+
+.dropdown-nonscroll > li {
+	padding-right: 0;
+}
+
 .dropdown li:first-child, .dropdown li.separator + li, .dropdown li li {
 	border-top: 0;
 }
