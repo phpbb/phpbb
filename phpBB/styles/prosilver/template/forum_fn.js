@@ -25,7 +25,7 @@ function popup(url, width, height, name) {
 /**
 * Jump to page
 */
-function jumpto(item) {
+function pageJump(item) {
 
 	var page = item.val(),
 		per_page = item.attr('data-per-page'),
@@ -356,22 +356,22 @@ function parse_document(container)
 	* Pagination
 	*/
 	container.find('.pagination .page-jump-form :button').click(function() {
-		$input = $(this).siblings("input[name='page-number']");
-		jumpto($input);
+		$input = $(this).siblings("input.inputbox");
+		pageJump($input);
 	});
 
-	container.find(".pagination .page-jump-form input[name='page-number']").on("keypress", function(event) {
+	container.find(".pagination .page-jump-form input.inputbox").on("keypress", function(event) {
 		if (event.which == 13 || event.keyCode == 13) {
 			event.preventDefault();
-			jumpto($(this));
+			pageJump($(this));
      	}
 	});
 
 	container.find('.pagination-trigger').click(function() {
-		$container = $(this).parent();
+		$dropdown_container = $(this).parent();
 		
-		if (!$container.hasClass('dropdown-visible')) {
-			$input = $container.find("input[name='page-number']");
+		if (!$dropdown_container.hasClass('dropdown-visible')) {
+			$input = $dropdown_container.find("input.inputbox");
 			setTimeout(function() { $input.focus(); },100);
 		}
 	});

@@ -188,7 +188,7 @@ dl.details dd {
 	border-color: #B4BAC0;
 }
 
-.pagination li.next a, .pagination li.previous a, .pagination li.jump-to a {
+.pagination li.next a, .pagination li.previous a, .pagination li.page-jump a {
 	background-image: url("./images/icons_pagination.png");
 }
 

@@ -858,17 +858,17 @@ li.pagination ul {
 	padding: 0;
 }
 
-.pagination li.jump-to {
+.pagination li.page-jump {
 	margin: 0 5px;
 }
 
-.pagination li.jump-to a, .pagination li.next a, .pagination li.previous a {
+.pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
 	font-size: 0;
 	height: 13px;
 	width: 11px;
 }
 
-.pagination li.jump-to a {
+.pagination li.page-jump a {
 	background-position: 0 2px;
 	background-repeat: no-repeat;
 	width: 24px;
@@ -884,7 +884,7 @@ li.pagination ul {
 	background-repeat: no-repeat;
 }
 
-.pagination li.jump-to a:hover { background-position: 0 -18px; }
+.pagination li.page-jump a:hover { background-position: 0 -18px; }
 .pagination li.next a:hover { background-position: -50px -18px; }
 .pagination li.previous a:hover { background-position: -30px -18px; }
 
@@ -1201,28 +1201,28 @@ form > p.post-notice strong {
 	padding-left: 2px;
 }
 
-.dropdown-jump-to .dropdown {
+.dropdown-page-jump .dropdown {
 	top: 20px;
 }
 
-.dropdown-jump-to.dropdown-up .dropdown {
+.dropdown-page-jump.dropdown-up .dropdown {
 	bottom: 20px;
 }
 
-.dropdown-jump-to .dropdown-contents {
+.dropdown-page-jump .dropdown-contents {
 	margin: 0;
 }
 
-.dropdown-jump-to ul.dropdown-contents  {
+.dropdown-page-jump ul.dropdown-contents  {
 	display: inherit;
 }
 
-.dropdown-jump-to .dropdown-contents li {
+.dropdown-page-jump .dropdown-contents li {
 	display: list-item;
 	padding-bottom: 4px;
 	padding-top: 4px;
 }
 
-.dropdown-jump-to input.tiny {
+.dropdown-page-jump input.tiny {
 	width: 50px;
 }

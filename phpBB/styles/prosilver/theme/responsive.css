@@ -519,7 +519,7 @@ fieldset.display-actions {
 		padding-bottom: 1px;
 	}
 
-	.topic-actions > .pagination li.jump-to {
+	.topic-actions > .pagination li.page-jump {
 		margin: 0 2px;
 	}
 
