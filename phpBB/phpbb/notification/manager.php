@@ -587,26 +587,34 @@ class manager
 
 		$subscriptions = array();
 
+		$sql = 'SELECT method, notify, item_type
+				FROM ' . $this->user_notifications_table . '
+				WHERE user_id = ' . (int) $user_id . '
+					AND item_id = 0';
+
+		$result = $this->db->sql_query($sql);
+		$rows = array();
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rows[$row['item_type']][] = $row;
+		}
+
+		$this->db->sql_freeresult($result);
+
 		foreach ($this->get_subscription_types() as $group_name => $types)
 		{
 			foreach ($types as $id => $type)
 			{
-				$sql = 'SELECT method, notify
-					FROM ' . $this->user_notifications_table . '
-					WHERE user_id = ' . (int) $user_id . "
-						AND item_type = '" . $this->db->sql_escape($id) . "'
-						AND item_id = 0";
-				$result = $this->db->sql_query($sql);
 
-				$row = $this->db->sql_fetchrow($result);
-				if (!$row)
+				if (empty($rows[$id]))
 				{
 					// No rows at all, default to ''
 					$subscriptions[$id] = array('');
 				}
 				else
 				{
-					do
+					foreach ($rows[$id] as $row)
 					{
 						if (!$row['notify'])
 						{
@@ -620,10 +628,7 @@ class manager
 
 						$subscriptions[$id][] = $row['method'];
 					}
-					while ($row = $this->db->sql_fetchrow($result));
 				}
-
-				$this->db->sql_freeresult($result);
 			}
 		}
 
