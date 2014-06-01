@@ -332,7 +332,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - %tables.notification_types%
-            - %tables.user_notifications%
+            - %tables.notifications%
         tags:
             - { name: notification.method }
 
