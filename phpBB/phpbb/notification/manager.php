@@ -582,6 +582,7 @@ class manager
 	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
 	* @param string $method The method of the notification e.g. 'board', 'email', or 'jabber'
+	*                       (if null a subscription will be added for all the defaults methods)
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
 	public function add_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
