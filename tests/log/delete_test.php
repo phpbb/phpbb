@@ -140,9 +140,9 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 	*/
 	public function test_log_delete($expected_before, $expected_after, $delete_conditions, $mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)
 	{
-		$this->assertEquals($expected_before, $this->get_ids($this->log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)), 'before');
+		$this->assertSame($expected_before, $this->get_ids($this->log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)), 'before');
 		$this->log->delete($mode, $delete_conditions);
-		$this->assertEquals($expected_after, $this->get_ids($this->log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)), 'after');
+		$this->assertSame($expected_after, $this->get_ids($this->log->get_logs($mode, $count_logs, $limit, $offset, $forum_id, $topic_id, $user_id, $log_time, $sort_by, $keywords)), 'after');
 	}
 
 	public function get_ids($logs)
@@ -150,7 +150,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		$ids = array();
 		foreach ($logs as $log_entry)
 		{
-			$ids[] = $log_entry['id'];
+			$ids[] = (int) $log_entry['id'];
 		}
 		return $ids;
 	}
