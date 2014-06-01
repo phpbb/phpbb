@@ -644,7 +644,7 @@ class manager
 			return;
 		}
 
-		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
+		$user_id = $user_id ?: $this->user->data['user_id'];
 
 		$sql = 'UPDATE ' . $this->user_notifications_table . "
 			SET notify = 0
