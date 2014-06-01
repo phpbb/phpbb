@@ -97,8 +97,7 @@ class board extends \phpbb\notification\method\base
 			(isset($options['item_id']) ? ' AND n.item_id = ' . (int) $options['item_id'] : '') .
 			(isset($options['item_parent_id']) ? ' AND n.item_parent_id = ' . (int) $options['item_parent_id'] : '') .
 			(isset($options['user_id']) ? ' AND n.user_id = ' . (int) $options['user_id'] : '') .
-			(isset($options['read']) ? ' AND n.notification_read = ' . (int) $options['read'] : '') .
-			(isset($options['time']) ? ' AND n.notification_time = ' . (int) $options['time'] : '') .'
+			(isset($options['read']) ? ' AND n.notification_read = ' . (int) $options['read'] : '') .'
 				AND nt.notification_type_id = n.notification_type_id
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
@@ -291,8 +290,7 @@ class board extends \phpbb\notification\method\base
 			(isset($options['item_id']) ? ' AND item_id = ' . (int) $options['item_id'] : '') .
 			(isset($options['item_parent_id']) ? ' AND item_parent_id = ' . (int) $options['item_parent_id'] : '') .
 			(isset($options['user_id']) ? ' AND user_id = ' . (int) $options['user_id'] : '') .
-			(isset($options['read']) ? ' AND notification_read = ' . (int) $options['read'] : '') .
-			(isset($options['time']) ? ' AND notification_time = ' . (int) $options['time'] : '');
+			(isset($options['read']) ? ' AND notification_read = ' . (int) $options['read'] : '');
 		$this->db->sql_query($sql);
 	}
 
