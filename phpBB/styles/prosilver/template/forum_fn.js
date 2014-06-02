@@ -357,6 +357,13 @@ function parse_document(container)
 	});
 
 	/**
+	* Search-tools
+	*/
+	container.find('.search-tools input.inputbox').focus(function() {
+		$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
+	});
+
+	/**
 	* Dropdowns
 	*/
 	container.find('.dropdown-container').each(function() {

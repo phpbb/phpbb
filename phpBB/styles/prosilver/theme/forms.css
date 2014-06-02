@@ -303,6 +303,10 @@ input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-s
 	display: none;
 }
 
+input[type="search"]::-webkit-search-cancel-button {
+	cursor: pointer;
+}
+
 /* Form button styles
 ---------------------------------------- */
 input.button1, input.button2 {
