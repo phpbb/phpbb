@@ -283,7 +283,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$contact_fields = array(
 		array(
 			'ID'		=> 'pm',
-			'NAME'		=> $user->lang['PRIVATE_MESSAGE'],
+			'NAME'		=> $user->lang['SEND_PRIVATE_MESSAGE'],
 			'U_CONTACT' => $u_pm,
 		),
 		array(

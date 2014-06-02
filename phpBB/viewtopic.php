@@ -1809,7 +1809,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$contact_fields = array(
 		array(
 			'ID'		=> 'pm',
-			'NAME' 		=> $user->lang['PRIVATE_MESSAGES'],
+			'NAME' 		=> $user->lang['SEND_PRIVATE_MESSAGE'],
 			'U_CONTACT'	=> $u_pm,
 		),
 		array(
