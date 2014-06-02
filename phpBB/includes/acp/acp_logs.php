@@ -58,13 +58,7 @@ class acp_logs
 
 				if ($deletemark && sizeof($marked))
 				{
-					$sql_in = array();
-					foreach ($marked as $mark)
-					{
-						$sql_in[] = $mark;
-					}
-					$conditions['log_id'] = array('IN' => $sql_in);
-					unset($sql_in);
+					$conditions['log_id'] = array('IN' => $marked);
 				}
 
 				if ($deleteall)
