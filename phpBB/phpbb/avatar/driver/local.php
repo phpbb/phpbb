@@ -36,7 +36,7 @@ class local extends \phpbb\avatar\driver\driver
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$avatar_list = $this->get_avatar_list($user);
-		$category = $request->variable('avatar_local_cat', '');
+		$category = $request->variable('avatar_local_cat', key($avatar_list));
 
 		foreach ($avatar_list as $cat => $null)
 		{
