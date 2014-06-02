@@ -159,7 +159,7 @@ dl.details dd {
 /* Pagination
 ---------------------------------------- */
 
-.pagination li a {
+.pagination li a, li .pagination li a {
 	color: #5C758C;
 	background-color: #ECEDEE;
 	border-color: #B4BAC0;
@@ -177,7 +177,7 @@ dl.details dd {
 }
 
 .pagination li a:hover, .pagination .active a:hover,
-.pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { {
+.pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
 	border-color: #368AD2;
 	background-color: #368AD2;
 	color: #FFFFFF;
