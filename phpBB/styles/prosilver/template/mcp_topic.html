@@ -13,14 +13,14 @@
 
 <div id="minitabs" class="sub-panels" data-show-panel="{$SHOW_PANEL}">
 	<ul>
-		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<a href="#minitabs" data-subpanel="display-panel"><span>{L_DISPLAY_OPTIONS}</span></a>
+		<li id="display-panel-tab" class="tab<!-- IF not S_MERGE_VIEW --> activetab<!-- ENDIF -->">
+			<a href="#minitabs" data-subpanel="display-panel">{L_DISPLAY_OPTIONS}</a>
 		</li>
-		<li id="split-panel-tab">
-			<a href="#minitabs" data-subpanel="split-panel"><span>{L_SPLIT_TOPIC}</span></a>
+		<li id="split-panel-tab" class="tab">
+			<a href="#minitabs" data-subpanel="split-panel">{L_SPLIT_TOPIC}</a>
 		</li>
-		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<a href="#minitabs" data-subpanel="merge-panel"><span>{L_MERGE_POSTS}</span></a>
+		<li id="merge-panel-tab" class="tab<!-- IF S_MERGE_VIEW --> activetab<!-- ENDIF -->">
+			<a href="#minitabs" data-subpanel="merge-panel">{L_MERGE_POSTS}</a>
 		</li>
 	</ul>
 </div>

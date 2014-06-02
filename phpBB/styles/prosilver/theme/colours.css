@@ -807,52 +807,53 @@ ul.cplist {
 
 /* CP tabbed menu
 ----------------------------------------*/
-#tabs a {
-	background-image: url("./images/bg_tabs1.gif");
-}
-
-#tabs a span {
-	background-image: url("./images/bg_tabs2.gif");
+#tabs .tab > a {
+	background: #BACCD9;
 	color: #536482;
 }
 
-#tabs a:hover span {
+#tabs .tab > a:hover {
+	background: #DDEDFB;
 	color: #BC2A4D;
 }
 
-#tabs .activetab a {
-	border-bottom-color: #CADCEB;
-}
-
-#tabs .activetab a span {
+#tabs .activetab > a,
+#tabs .activetab > a:hover {
+	background: #E2F2FF;
+	background: -moz-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #E2F2FF), color-stop(100%, #CADCEB));
+	background: -webkit-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
+	background: -o-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
+	background: -ms-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
+	background: linear-gradient(to bottom, #E2F2FF 0%, #CADCEB 100%);
+	border-color: #CADCEB;
+	box-shadow: 0 1px 1px #F2F9FF inset;
 	color: #333333;
 }
 
-#tabs .activetab a:hover span {
+#tabs .activetab > a:hover {
 	color: #000000;
 }
 
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
-#minitabs li {
+#minitabs .tab > a {
 	background-color: #E1EBF2;
 }
 
-#minitabs li.activetab {
+#minitabs .activetab > a,
+#minitabs .activetab > a:hover {
 	background-color: #F9F9F9;
-}
-
-#minitabs li.activetab a span, #minitabs li.activetab a:hover span {
 	color: #333333;
 }
 
 /* Responsive tabs
 ----------------------------------------*/
-.responsive-tab .responsive-tab-link span:before {
+.responsive-tab .responsive-tab-link:before {
 	border-color: #536482;
 }
 
-.responsive-tab .responsive-tab-link:hover span:before {
+.responsive-tab .responsive-tab-link:hover:before {
 	border-color: #BC2A4D;
 }
 
@@ -1144,7 +1145,7 @@ input.disabled {
 	border-color: #FFF transparent;
 }
 
-.dropdown-extended .pointer-inner, #minitabs .pointer-inner {
+.dropdown-extended .pointer-inner {
 	border-color: #F1F8FF transparent;
 }
 
@@ -1168,10 +1169,6 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 
 .dropdown li, .dropdown li li {
 	border-color: #DCDCDC;
-}
-
-#minitabs .dropdown-contents {
-	background-color: #F1F8FF;
 }
 
 /* Notifications
