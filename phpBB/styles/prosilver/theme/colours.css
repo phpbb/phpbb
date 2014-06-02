@@ -819,7 +819,7 @@ ul.cplist {
 
 #tabs .activetab > a,
 #tabs .activetab > a:hover {
-	background: #E2F2FF;
+	background: #CADCEB;
 	background: -moz-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #E2F2FF), color-stop(100%, #CADCEB));
 	background: -webkit-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
