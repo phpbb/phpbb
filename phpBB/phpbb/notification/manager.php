@@ -110,9 +110,9 @@ class manager
 	{
 		$method = $this->get_method_class($method_name);
 
-		if ($method instanceof \phpbb\notification\method\method_interface)
+		if (! $method instanceof \phpbb\notification\method\method_interface)
 		{
-			throw new \phpbb\notification\exception($this->user->lang('NOTIFICATION_TYPE_NOT_EXIST', $method_name));
+			throw new \phpbb\notification\exception($this->user->lang('NOTIFICATION_METHOD_INVALID', $method_name));
 		}
 		else if ($method->is_available())
 		{
