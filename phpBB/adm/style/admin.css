@@ -154,6 +154,10 @@ a:active {
 	font-weight: bold;
 }
 
+a#maincontent, a#acl, a#assigned_to {
+	display: block;
+}
+
 /* List items */
 ul, ol {
 	list-style-position: inside;
@@ -174,18 +178,11 @@ li {
 }
 
 #page-header {
-	clear: both;
 	text-align: right;
 	background: url("../images/phpbb_logo.png") top left no-repeat;
 	height: 54px;
 	font-size: 0.85em;
 	margin-bottom: 10px;
-}
-
-#page-header:after {
-	content: '';
-	clear: both;
-	display: block;
 }
 
 .rtl #page-header {
@@ -210,16 +207,6 @@ li {
 
 #page-body {
 	min-width: 650px;
-}
-
-#page-body:after {
-	content: '';
-	clear: both;
-	display: block;
-}
-
-#page-footer {
-	clear: both;
 }
 
 .copyright {
@@ -344,12 +331,6 @@ li {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-}
-
-#tabs > ul:after {
-	content: '';
-	display: block;
-	clear: both;
 }
 
 #tabs .tab {
@@ -486,7 +467,6 @@ li {
 /* Main Panel
 ---------------------------------------- */
 #acp {
-	clear: both;
 	position: relative;
 	top: -2px;
 	margin: 0 0 2px;
@@ -496,12 +476,6 @@ li {
 	border: 1px #999999 solid;
 	border-radius: 5px;
 	box-shadow: #FFF 0 0 0 1px inset;
-}
-
-#acp:after {
-	content: '';
-	clear: both;
-	display: block;
 }
 
 #acp:first-child {
@@ -740,6 +714,7 @@ td {
 .table1 {
 	border-collapse: separate;
 	border-spacing: 1px;
+	clear: both;
 }
 
 dt#color_palette_placeholder table {
@@ -1247,8 +1222,8 @@ fieldset.quick legend {
 fieldset.tabulated {
 	background: none;
 	margin: 0;
+	margin-top: 5px;
 	padding: 0;
-	padding-top: 5px;
 	border: 0;
 }
 
@@ -1697,12 +1672,12 @@ input.button1:focus, input.button2:focus {
 	height: 1%; /* IE tweak (holly hack) */
 	width: auto;
 	text-align: right;
-	margin-top: 5px;
+	margin: 5px 0;
 }
 
 .top-pagination {
 	float: right;
-	margin: 15px 0 2px 0;
+	margin: 15px 0 5px 0;
 }
 
 .rtl .pagination {
@@ -1898,17 +1873,7 @@ li.pagination ul {
 	vertical-align: middle;
 }
 
-/* Nice method for clearing floated blocks without having to insert any extra markup
-	From http://www.positioniseverything.net/easyclearing.html
-.clearfix:after, #tabs:after, .row:after, #content:after, fieldset dl:after, #page-body:after {
-	content: ".";
-	display: block;
-	height: 0;
-	clear: both;
-	visibility: hidden;
-}*/
-
-.clearfix, .row, fieldset dl {
+.row, fieldset dl {
 	overflow: hidden;
 }
 
@@ -2490,4 +2455,21 @@ fieldset.permissions .padding {
 	.responsive-show { display: block !important; }
 	.responsive-show-inline { display: inline !important; }
 	.responsive-show-inline-block { display: inline-block !important; }
+}
+
+.clearfix {
+	overflow: hidden;
+}
+
+.pagination:after,
+#page-header:after,
+#page-body:after,
+#tabs:after,
+#tabs > ul:after,
+#tabs li:after,
+#acp:after,
+#content:after {
+	content: '';
+	clear: both;
+	display: block;
 }
