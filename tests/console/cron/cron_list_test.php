@@ -7,7 +7,7 @@
  *
  */
 
-require_once dirname(__FILE__) . '/tasks/simple.php';
+require_once dirname(__FILE__) . '/tasks/simple_ready.php';
 require_once dirname(__FILE__) . '/tasks/simple_not_ready.php';
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -41,13 +41,13 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 	public function test_only_ready()
 	{
 		$tasks = array(
-			new phpbb_cron_task_simple(),
-			new phpbb_cron_task_simple()
+			new phpbb_cron_task_simple_ready(),
+			new phpbb_cron_task_simple_ready()
 		);
 		$this->get_cron_manager($tasks);
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertContains('TASKS_READYcommand1command2', preg_replace('/\s+/', '', $command_tester->getDisplay()));
+		$this->assertContains('TASKS_READY command1 command2', preg_replace('/\s+/', ' ', trim($command_tester->getDisplay())));
 	}
 
 	public function test_only_not_ready()
@@ -59,21 +59,21 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 		$this->get_cron_manager($tasks);
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertContains('TASKS_NOT_READYcommand1command2', preg_replace('/\s+/', '', $command_tester->getDisplay()));
+		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/\s+/', ' ', trim($command_tester->getDisplay())));
 	}
 
 	public function test_both_ready()
 	{
 		$tasks = array(
-			new phpbb_cron_task_simple(),
-			new phpbb_cron_task_simple(),
+			new phpbb_cron_task_simple_ready(),
+			new phpbb_cron_task_simple_ready(),
 			new phpbb_cron_task_simple_not_ready(),
 			new phpbb_cron_task_simple_not_ready()
 		);
 		$this->get_cron_manager($tasks);
 		$command_tester = $this->get_command_tester();
 		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertSame('TASKS_READYcommand1command2TASKS_NOT_READYcommand3command4', preg_replace('/\s+/', '', $command_tester->getDisplay()));
+		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/\s+/', ' ', trim($command_tester->getDisplay())));
 	}
 
 	public function get_cron_manager(array $tasks)
