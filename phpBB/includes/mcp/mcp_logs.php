@@ -116,7 +116,7 @@ class mcp_logs
 				{
 					$conditions = array(
 						'forum_id'	=> $forum_list,
-						'log_id'	=> $marked,
+						'log_id'	=> array('IN' => $marked),
 					);
 
 					$phpbb_log->delete('mod', $conditions);

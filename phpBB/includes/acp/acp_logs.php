@@ -63,7 +63,7 @@ class acp_logs
 					{
 						$sql_in[] = $mark;
 					}
-					$conditions['log_id'] = $sql_in;
+					$conditions['log_id'] = array('IN' => $sql_in);
 					unset($sql_in);
 				}
 
