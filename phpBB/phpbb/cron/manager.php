@@ -122,6 +122,21 @@ class manager
 	}
 
 	/**
+	* Find all tasks and return them.
+	*
+	* @return array List of all tasks.
+	*/
+	public function get_tasks()
+	{
+		$tasks = array();
+		foreach ($this->tasks as $task)
+		{
+			$tasks[] = $task;
+		}
+		return $tasks;
+	}
+
+	/**
 	* Wraps a task inside an instance of \phpbb\cron\task\wrapper.
 	*
 	* @param  \phpbb\cron\task\task 			$task The task.
