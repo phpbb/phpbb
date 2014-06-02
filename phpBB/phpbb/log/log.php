@@ -391,28 +391,29 @@ class log implements \phpbb\log\log_interface
 		}
 
 		$sql_where = 'WHERE log_type = ' . $log_type;
+
+		if (isset($conditions['keywords']))
+		{
+			$sql_where .= $this->generate_sql_keyword($conditions['keywords'], '', ' AND');
+
+			unset($conditions['keywords']);
+		}
+
 		foreach ($conditions as $field => $field_value)
 		{
-			if ($field == 'keywords')
+			$sql_where .= ' AND ';
+
+			if (is_array($field_value) && sizeof($field_value) == 2 && !is_array($field_value[1]))
 			{
-				$sql_where .= $this->generate_sql_keyword($field_value, '', ' AND');
+				$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
+			}
+			else if (is_array($field_value) && isset($field_value['IN']) && is_array($field_value['IN']))
+			{
+				$sql_where .= $this->db->sql_in_set($field, $field_value['IN']);
 			}
 			else
 			{
-				$sql_where .= ' AND ';
-
-				if (is_array($field_value) && sizeof($field_value) == 2 && !is_array($field_value[1]))
-				{
-					$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
-				}
-				else if (is_array($field_value) && isset($field_value['IN']) && is_array($field_value['IN']))
-				{
-					$sql_where .= $this->db->sql_in_set($field, $field_value['IN']);
-				}
-				else
-				{
-					$sql_where .= $field . ' = ' . $field_value;
-				}
+				$sql_where .= $field . ' = ' . $field_value;
 			}
 		}
 
