@@ -182,6 +182,12 @@ li {
 	margin-bottom: 10px;
 }
 
+#page-header:after {
+	content: '';
+	clear: both;
+	display: block;
+}
+
 .rtl #page-header {
 	text-align: left;
 	background: url("../images/phpbb_logo.png") top right no-repeat;
@@ -203,8 +209,13 @@ li {
 }
 
 #page-body {
-	clear: both;
 	min-width: 650px;
+}
+
+#page-body:after {
+	content: '';
+	clear: both;
+	display: block;
 }
 
 #page-footer {
@@ -485,6 +496,12 @@ li {
 	border: 1px #999999 solid;
 	border-radius: 5px;
 	box-shadow: #FFF 0 0 0 1px inset;
+}
+
+#acp:after {
+	content: '';
+	clear: both;
+	display: block;
 }
 
 #acp:first-child {
@@ -1130,6 +1147,10 @@ input:hover, textarea:hover {
 
 input.langvalue, textarea.langvalue {
 	width: 90%;
+}
+
+input[type="number"], dd input[type="number"] {
+	width: 60px;
 }
 
 optgroup, select {
@@ -1887,7 +1908,7 @@ li.pagination ul {
 	visibility: hidden;
 }*/
 
-.clearfix, .row, #content, fieldset dl, #page-body {
+.clearfix, .row, fieldset dl {
 	overflow: hidden;
 }
 
