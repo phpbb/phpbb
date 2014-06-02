@@ -65,7 +65,7 @@ class bcrypt_wcf2 extends base
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
-		if (empty($hash))
+		if (empty($hash) || strlen($hash) != 60)
 		{
 			return false;
 		}

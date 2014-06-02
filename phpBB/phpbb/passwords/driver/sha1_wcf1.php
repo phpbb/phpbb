@@ -47,7 +47,7 @@ class sha1_wcf1 extends base
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
-		if (empty($hash) || !isset($user_row['user_passwd_salt']))
+		if (empty($hash) || strlen($hash) != 40 || !isset($user_row['user_passwd_salt']))
 		{
 			return false;
 		}

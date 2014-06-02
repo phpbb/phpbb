@@ -46,6 +46,6 @@ class sha1_smf extends base
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
-		return $hash === $this->hash($password, $user_row);
+		return (strlen($hash) == 40) ? $hash === $this->hash($password, $user_row) : false;
 	}
 }
