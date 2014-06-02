@@ -82,7 +82,7 @@ class filespec
 
 		if (!$this->mimetype)
 		{
-			$this->mimetype = 'application/octetstream';
+			$this->mimetype = 'application/octet-stream';
 		}
 
 		$this->extension = strtolower(self::get_extension($this->realname));
@@ -673,7 +673,6 @@ class fileupload
 		{
 			$upload['name'] = utf8_basename($source_file);
 			$upload['size'] = 0;
-			$mimetype = 'application/octet-stream';
 		}
 		else
 		{
