@@ -356,11 +356,11 @@ function parse_document(container)
 	* Pagination
 	*/
 	container.find('.pagination .page-jump-form :button').click(function() {
-		$input = $(this).siblings("input.inputbox");
+		$input = $(this).siblings('input.inputbox');
 		pageJump($input);
 	});
 
-	container.find(".pagination .page-jump-form input.inputbox").on("keypress", function(event) {
+	container.find('.pagination .page-jump-form input.inputbox').on('keypress', function(event) {
 		if (event.which == 13 || event.keyCode == 13) {
 			event.preventDefault();
 			pageJump($(this));
@@ -372,7 +372,7 @@ function parse_document(container)
 		// Wait a little bit to make sure the dropdown has activated
 		setTimeout(function() { 
 			if ($dropdown_container.hasClass('dropdown-visible')) {
-				$dropdown_container.find("input.inputbox").focus();
+				$dropdown_container.find('input.inputbox').focus();
 			}
 		},100);
 	});

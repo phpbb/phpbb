@@ -899,7 +899,7 @@ li.pagination ul {
 	background: none 0 50% no-repeat;
 }
 
-li .pagination li a, li .pagnation li span {
+li .pagination li a, li .pagination li span {
 	border-radius: 1px;
 	padding: 1px;
 }
