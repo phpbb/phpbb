@@ -509,11 +509,11 @@ fieldset.display-actions {
 		margin: 0;
 	}
 
-	.topic-actions > .pagination, fieldset.jumpbox {
+	.topic-actions > .pagination, fieldset.jumpbox, .action-bar > .pagination {
 		text-align: center;
 	}
 
-	.topic-actions > .pagination {
+	.topic-actions > .pagination, .action-bar > .pagination {
 		float: none;
 		clear: both;
 		padding-bottom: 1px;

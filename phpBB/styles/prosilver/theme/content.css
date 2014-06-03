@@ -238,8 +238,18 @@ div[class].topic-actions {
 }
 
 .topic-actions:after {
-	content: '';
 	clear: both;
+	content: '';
+	display: block;
+}
+
+.action-bar {
+	margin: 4px 0;
+}
+
+.action-bar:after {
+	clear: both;
+	content: '';
 	display: block;
 }
 

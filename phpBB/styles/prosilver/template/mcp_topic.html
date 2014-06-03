@@ -151,16 +151,16 @@
 	<hr />
 
 	<!-- IF .pagination or TOTAL_POSTS -->
-	<ul class="linklist">
-		<li class="rightside pagination">
-			<!-- IF TOTAL_POSTS --> {TOTAL_POSTS} &bull; <!-- ENDIF -->
-			<!-- IF .pagination -->
+	<div class="action-bar">
+		<div class="pagination">
+			<!-- IF TOTAL_POSTS -->{TOTAL_POSTS}<!-- ENDIF -->
+			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE -->
-				{PAGE_NUMBER}
+			<!-- ELSE --> 
+				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
-		</li>
-	</ul>
+		</div>
+	</div>
 	<!-- ENDIF -->
 
 	</div>

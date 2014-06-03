@@ -96,26 +96,26 @@
 	<!-- ENDIF -->
 
 	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
-	<fieldset class="display-actions">
-		<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}{L_COLON} <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button2" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
-		<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
-		<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>
-	</fieldset>
-
-	<hr />
-
-	<ul class="linklist">
+		<fieldset class="display-actions">
+			<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}{L_COLON} <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button2" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
+			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
+			<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>
+		</fieldset>
+	
+		<hr />
+	
 		<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
-		<li class="rightside pagination">
-			<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES} &bull; <!-- ENDIF -->
-			<!-- IF .pagination --> 
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
-				{PAGE_NUMBER}
-			<!-- ENDIF -->
-		</li>
+		<div class="action-bar">
+			<div class="pagination">
+				<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES}<!-- ENDIF -->
+				<!-- IF .pagination --> 
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE --> 
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
 		<!-- ENDIF -->
-	</ul>
 	<!-- ENDIF -->
 
 		</div>

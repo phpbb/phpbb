@@ -10,16 +10,19 @@
 	<p>{L_ATTACHMENTS_EXPLAIN}</p>
 
 	<!-- IF .attachrow -->
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE} &bull; <!-- ENDIF -->
+
+		<!-- IF .pagination or TOTAL_ATTACHMENTS -->
+		<div class="action-bar">
+			<div class="rightside pagination">
+				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE}<!-- ENDIF -->
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
-					{PAGE_NUMBER}
+					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
-			</li>
-		</ul>	
+			</div>
+		</div>
+		<!-- ENDIF -->
 		
 		<ul class="topiclist">
 			<li class="header">
@@ -59,16 +62,19 @@
 
 		<hr />
 		
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE} &bull; <!-- ENDIF -->
+		<!-- IF .pagination or TOTAL_ATTACHMENTS -->
+		<div class="action-bar">
+			<div class="rightside pagination">
+				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE}<!-- ENDIF -->
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
-					{PAGE_NUMBER}
+					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
-			</li>
-		</ul>
+			</div>
+		</div>
+		<!-- ENDIF -->
+
 	<!-- ELSE -->
 		<p><strong>{L_UCP_NO_ATTACHMENTS}</strong></p>
 	<!-- ENDIF -->

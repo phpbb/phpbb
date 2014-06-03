@@ -60,9 +60,7 @@ ul.cplist {
 }
 
 #cp-main .pagination {
-	float: right;
-	width: auto;
-	padding-top: 1px;
+	margin: 0;
 }
 
 #cp-main .postbody p {
