@@ -9,7 +9,9 @@
 namespace phpbb\console\command\update;
 
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Tests\Input\InputTest;
 
 class check extends \phpbb\console\command\command
 {
@@ -46,6 +48,8 @@ class check extends \phpbb\console\command\command
 		$this
 			->setName('update:check')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK'))
+			->addOption('stability', null, InputOption::VALUE_REQUIRED, 'CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY')
+			->addOption('cache', 'c', InputOption::VALUE_NONE, 'CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE')
 		;
 	}
 
@@ -66,13 +70,24 @@ class check extends \phpbb\console\command\command
 		try
 		{
 			$recheck = true;
+			if ($input->getOption('cache'))
+			{
+				$recheck = false;
+			}
+			if ($input->getOption('stability'))
+			{
+				$stability = $input->getOption('stability');
+				if ($stability == 'stable' || $stability == 'unstable')
+				{
+					$version_helper->force_stability($stability);
+				}
+			}
 			$updates_available = $version_helper->get_suggested_updates($recheck);
 		}
 		catch (\RuntimeException $e)
 		{
 			$output->writeln('<error>' . $this->user->lang('VERSIONCHECK_FAIL') . '</error>');
 
-			$updates_available = array();
 			return 2;
 		}
 
