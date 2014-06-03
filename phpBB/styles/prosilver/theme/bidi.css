@@ -99,7 +99,7 @@
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools, .rtl .dropdown-container.search-tools {
+.rtl .dropdown-container.topic-tools {
 	float: right;
 }
 
@@ -843,17 +843,17 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 
 /* Topic and forum Search */
-.rtl .search-tools {
+.rtl .search-box {
 	margin-right: 5px;
 	margin-left: 0;
 	float: right;
 }
 
-.rtl .search-tools form {
+.rtl .search-box form {
 	float: right;
 }
 
-.rtl .search-tools .inputbox {
+.rtl .search-box .inputbox {
 	border-left-width: 0;
 	border-right-width: 1px;
 	border-radius: 0 4px 4px 0;
@@ -861,11 +861,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	padding: 3px;
 }
 
-.rtl .search-tools input.button {
+.rtl .search-box input.button {
 	float: right;
 }
 
-.rtl .search-tools .dropdown-select {
+.rtl .search-box a.button {
 	border-left-width: 1px;
 	border-right-width: 0;
 	border-radius: 4px 0 0 4px;

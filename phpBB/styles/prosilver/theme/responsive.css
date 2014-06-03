@@ -352,11 +352,7 @@ fieldset.quick-login label[for="autologin"] {
 
 @media only screen and (max-width: 430px), only screen and (max-device-width: 430px)
 {
-	.section-viewtopic .search-tools {
-		min-width: 185px;	
-	}
-
-	.section-viewtopic .search-tools .inputbox {
+	.section-viewtopic .search-box .inputbox {
 		width: 110px;
 	}
 }
@@ -518,7 +514,7 @@ fieldset.display-actions {
 		margin-bottom: 5px;
 	}
 
-	.topic-actions .buttons, .topic-actions .topic-tools, .topic-actions .search-tools {
+	.topic-actions .buttons, .topic-actions .topic-tools, .topic-actions .search-box {
 		margin-bottom: 5px;
 	}
 

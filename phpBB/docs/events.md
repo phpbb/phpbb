@@ -617,20 +617,6 @@ search_results_topic_before
 * Since: 3.1.0-b4
 * Purpose: Add data before search result topics
 
-search_tools_list_after
-===
-* Locations:
-    + styles/prosilver/template/search_tools.html
-* Since: 3.1.0-b5
-* Purpose: Add content to the bottom of the search-tools drop-down list
-
-search_tools_list_before
-===
-* Locations:
-    + styles/prosilver/template/search_tools.html
-* Since: 3.1.0-b5
-* Purpose: Add content to the top (right below advanced search) of the search-tools drop-down list
-
 simple_footer_after
 ===
 * Locations:

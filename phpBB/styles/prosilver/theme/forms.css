@@ -369,15 +369,11 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 }
 
 /* Topic and forum Search */
-.search-tools {
-	min-width: 225px;
-}
-
-.search-tools form {
+.search-box {
 	float: left;
 }
 
-.search-tools .inputbox {
+.search-box .inputbox {
 	background-image: none;
 	border: 1px solid transparent;
 	border-right-width: 0;
@@ -390,7 +386,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	box-sizing: border-box;
 }
 
-.search-tools input.button {
+.search-box input.button {
 	border-radius: 0;
 	float: left;
 	font-weight: normal;
@@ -403,12 +399,17 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	width: 30px;
 }
 
-.search-tools .dropdown-select {
+.search-box a.button {
 	border-left-width: 0;
 	border-radius: 0 4px 4px 0;
 	float: left;
+	font-size: 0;
 	margin: 0;
-	padding: 2px 22px 2px 2px;
+	padding: 2px;
+}
+
+.search-box a.button:before {
+	float: left;
 }
 
 input.search {

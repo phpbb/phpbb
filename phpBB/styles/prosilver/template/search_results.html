@@ -15,7 +15,15 @@
 	<div class="topic-actions">
 
 	<!-- IF SEARCH_MATCHES -->
-		<!-- INCLUDE search_tools.html -->
+	<div class="search-box">
+		<form method="post" action="{S_SEARCH_ACTION}">
+		<fieldset>
+			<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" placeholder="{L_SEARCH_IN_RESULTS}" />
+			<input class="button" type="submit" value="{L_SEARCH}" />
+		</fieldset>
+		</form>
+		<a href="{U_SEARCH}" class="button icon-button gear-icon" title="{L_SEARCH_ADV}">{L_SEARCH_ADV}</a>
+	</div>
 	<!-- ENDIF -->
 
 		<div class="rightside pagination">

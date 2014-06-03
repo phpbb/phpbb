@@ -86,12 +86,10 @@
 .gear-icon:before {
 	background-position: -100px 0;
 	height: 16px;
-	margin-top: 2px;
+	margin: 2px 4px 0 3px;
 	width: 16px;
 }
-
-.dropdown-visible .gear-icon:before,
-.nojs .dropdown-container:hover .gear-icon:before			{ background-position: -100px -20px; }
+.gear-icon:hover:before										{ background-position: -100px -20px; }
 
 /* Icon images
 ---------------------------------------- */
