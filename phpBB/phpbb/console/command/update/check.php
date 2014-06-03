@@ -25,7 +25,7 @@ class check extends \phpbb\console\command\command
 	/**
 	* Construct method
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \Symfony\Component\DependencyInjection\ContainerBuilder $phpbb_container)
+	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container)
 	{
 		$this->user = $user;
 		$this->config = $config;
