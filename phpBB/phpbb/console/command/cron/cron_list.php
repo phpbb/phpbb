@@ -61,20 +61,26 @@ class cron_list extends \phpbb\console\command\command
 		if (!empty($ready_tasks))
 		{
 			$output->writeln('<info>' . $this->user->lang('TASKS_READY') . '</info>');
-			foreach ($ready_tasks as $task)
-			{
-				$output->writeln($task->get_name());
-			}
+			$this->print_tasks_names($ready_tasks, $output);
+		}
+
+		if (!empty($ready_tasks) && !empty($not_ready_tasks))
+		{
 			$output->writeln('');
 		}
 
 		if (!empty($not_ready_tasks))
 		{
 			$output->writeln('<info>' . $this->user->lang('TASKS_NOT_READY') . '</info>');
-			foreach ($not_ready_tasks as $task)
-			{
-				$output->writeln($task->get_name());
-			}
+			$this->print_tasks_names($not_ready_tasks, $output);
+		}
+	}
+
+	public function print_tasks_names ($tasks, $output)
+	{
+		foreach ($tasks as $task)
+		{
+			$output->writeln($task->get_name());
 		}
 	}
 }

@@ -23,6 +23,8 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 	protected $command_name;
 
+	protected $command_tester;
+
 	protected function setUp()
 	{
 		$this->user = $this->getMock('\phpbb\user');
@@ -31,49 +33,26 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 	public function test_no_task()
 	{
-		$tasks = array();
-		$this->get_cron_manager($tasks);
-		$command_tester = $this->get_command_tester();
-		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertContains('NO_TASK', $command_tester->getDisplay());
+		$this->initiate_test(0,0);
+		$this->assertContains('NO_TASK', $this->command_tester->getDisplay());
 	}
 
 	public function test_only_ready()
 	{
-		$tasks = array(
-			new phpbb_cron_task_simple_ready(),
-			new phpbb_cron_task_simple_ready()
-		);
-		$this->get_cron_manager($tasks);
-		$command_tester = $this->get_command_tester();
-		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertContains('TASKS_READY command1 command2', preg_replace('/\s+/', ' ', trim($command_tester->getDisplay())));
+		$this->initiate_test(2,0);
+		$this->assertContains('TASKS_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_only_not_ready()
 	{
-		$tasks = array(
-			new phpbb_cron_task_simple_not_ready(),
-			new phpbb_cron_task_simple_not_ready()
-		);
-		$this->get_cron_manager($tasks);
-		$command_tester = $this->get_command_tester();
-		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/\s+/', ' ', trim($command_tester->getDisplay())));
+		$this->initiate_test(0,2);
+		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_both_ready()
 	{
-		$tasks = array(
-			new phpbb_cron_task_simple_ready(),
-			new phpbb_cron_task_simple_ready(),
-			new phpbb_cron_task_simple_not_ready(),
-			new phpbb_cron_task_simple_not_ready()
-		);
-		$this->get_cron_manager($tasks);
-		$command_tester = $this->get_command_tester();
-		$command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/\s+/', ' ', trim($command_tester->getDisplay())));
+		$this->initiate_test(2,2);
+		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function get_cron_manager(array $tasks)
@@ -96,5 +75,24 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 		$command = $application->find('cron:list');
 		$this->command_name = $command->getName();
 		return new CommandTester($command);
+	}
+
+	public function initiate_test ($number_ready, $number_not_ready)
+	{
+		$tasks = array();
+
+		for ($i = 0; $i < $number_ready; $i++)
+		{
+			$tasks[] =  new phpbb_cron_task_simple_ready();
+		}
+
+		for ($i = 0; $i < $number_not_ready; $i++)
+		{
+			$tasks[] = new phpbb_cron_task_simple_not_ready();
+		}
+
+		$this->get_cron_manager($tasks);
+		$this->command_tester = $this->get_command_tester();
+		$this->command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
 	}
 }

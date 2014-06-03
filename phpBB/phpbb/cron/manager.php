@@ -128,12 +128,7 @@ class manager
 	*/
 	public function get_tasks()
 	{
-		$tasks = array();
-		foreach ($this->tasks as $task)
-		{
-			$tasks[] = $task;
-		}
-		return $tasks;
+		return $this->tasks;
 	}
 
 	/**
