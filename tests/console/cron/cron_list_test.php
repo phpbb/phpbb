@@ -13,6 +13,7 @@
 
 require_once dirname(__FILE__) . '/tasks/simple_ready.php';
 require_once dirname(__FILE__) . '/tasks/simple_not_ready.php';
+
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\cron\cron_list;

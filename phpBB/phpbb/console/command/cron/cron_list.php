@@ -88,3 +88,4 @@ class cron_list extends \phpbb\console\command\command
 		}
 	}
 }
+
