@@ -97,51 +97,57 @@ ul.cplist {
 }
 
 .tabs-container:after {
-	display: block;
 	clear: both;
 	content: '';
+	display: block;
 }
 
-/* CP tabbed menu
+/* CP tabs shared
 ----------------------------------------*/
-#tabs {
+#tabs, #minitabs {
 	line-height: normal;
-	margin: 20px 0 0 7px;
-	/**overflow: hidden;*/
 }
 
-#tabs > ul {
+#tabs > ul, #minitabs > ul {
 	list-style: none;
-	margin:0;
+	margin: 0;
 	padding: 0;
 	position: relative;
 }
 
-#tabs > ul:after {
+#tabs > ul:after, #minitabs > ul:after {
+	clear: both;
 	content: '';
 	display: block;
-	clear: both;
 }
 
-#tabs .tab {
-	display: inline;
+#tabs .tab, #minitabs .tab {
+	display: inline-block;
 	float: left;
 	font-size: 1em;
 	font-weight: bold;
 	line-height: 14px;
 }
 
-#tabs .tab > a {
-	background: none no-repeat 0% -35px;
-	border: 1px solid transparent;
-	border-radius: 4px 4px 0 0;
+#tabs .tab > a, #minitabs .tab > a {
 	display: block;
-	margin: 1px 1px 0 0;
 	padding: 5px 9px;
 	position: relative;
 	text-decoration: none;
 	white-space: nowrap;
 	cursor: pointer;
+}
+
+/* CP tabbed menu 
+----------------------------------------*/
+#tabs {
+	margin: 20px 0 0 7px;
+}
+
+#tabs .tab > a {
+	border: 1px solid transparent;
+	border-radius: 4px 4px 0 0;
+	margin: 1px 1px 0 0;
 }
 
 #tabs .activetab > a {
@@ -152,7 +158,6 @@ ul.cplist {
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
 #minitabs {
-	line-height: normal;
 	margin: -20px 7px 0 0;
 }
 
@@ -162,27 +167,13 @@ ul.cplist {
 	max-width: 50%;
 }
 
-#minitabs > ul {
-	list-style: none;
-	margin:0;
-	padding: 0;
-	position: relative;
-}
-
 #minitabs .tab {
-	display: inline;
 	float: right;
-	font-size: 1em;
-	font-weight: bold;
-	line-height: 14px;
 }
 
 #minitabs .tab > a {
 	border-radius: 5px 5px 0 0;
-	display: block;
 	margin-left: 2px;
-	padding: 5px 9px;
-	position: relative;
 }
 
 #minitabs .tab > a:hover {
@@ -196,7 +187,7 @@ ul.cplist {
 }
 
 .responsive-tab > a.responsive-tab-link {
-	display: inline-block;
+	display: block;
 	font-size: 16px;
 	position: relative;
 	width: 16px;
@@ -256,15 +247,15 @@ ul.cplist {
 }
 
 #navigation ul {
-	list-style:none;
+	list-style: none;
 }
 
 /* Default list state */
 #navigation li {
+	display: inline;
+	font-weight: bold;
 	margin: 1px 0;
 	padding: 0;
-	font-weight: bold;
-	display: inline;
 }
 
 /* Link styles for the sub-section links */
@@ -273,18 +264,10 @@ ul.cplist {
 	padding: 5px;
 	margin: 1px 0;
 	text-decoration: none;
-	font-weight: bold;
-	background: transparent none repeat-y 100% 0;
 }
 
 #navigation a:hover {
 	text-decoration: none;
-	background-image: none;
-}
-
-#navigation #active-subsection a {
-	display: block;
-	background-image: none;
 }
 
 /* Preferences pane layout
