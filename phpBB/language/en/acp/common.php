@@ -261,6 +261,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT'		=> 'Name of the extension.',
 	'CLI_DESCRIPTION_EXTENSION_PURGE'				=> 'Purges the specified extension.',
 	'CLI_DESCRIPTION_EXTENSION_SHOW'				=> 'Lists all extensions in the database and on the filesystem.',
+	'CLI_DESCRIPTION_FIXUP_RECALCULATE_EMAIL_HASH'	=> 'Recalculates the user_email_hash column of the users table.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
@@ -304,6 +305,8 @@ $lang = array_merge($lang, array(
 	'EXTENSION_PURGE_FAIL'		=> 'Could not purge extension %s.',
 	'EXTENSION_PURGE_SUCCESS'	=> 'Successfully purged extension %s.',
 	'EXTENSION_SHOW_FAIL'		=> 'No extensions were found.',
+
+	'FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'	=> 'Successfully recalculated all email hashes.',
 
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',

@@ -20,9 +20,13 @@ class recalculate_email_hash extends \phpbb\console\command\command
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	function __construct(\phpbb\db\driver\driver_interface $db)
+	protected $user;
+
+
+	function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user)
 	{
 		$this->db = $db;
+		$this->user = $user;
 
 		parent::__construct();
 	}
@@ -31,7 +35,7 @@ class recalculate_email_hash extends \phpbb\console\command\command
 	{
 		$this
 			->setName('fixup:recalculate-email-hash')
-			->setDescription('Recalculates the user_email_hash column of the users table.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_FIXUP_RECALCULATE_EMAIL_HASH'))
 		;
 	}
 
@@ -70,6 +74,6 @@ class recalculate_email_hash extends \phpbb\console\command\command
 		}
 		$this->db->sql_freeresult($result);
 
-		$output->writeln('<info>Successfully recalculated all email hashes.</info>');
+		$output->writeln('<info>' . $this->user->lang('FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS') . '</info>');
 	}
 }

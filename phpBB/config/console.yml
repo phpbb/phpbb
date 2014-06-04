@@ -112,5 +112,6 @@ services:
         class: phpbb\console\command\fixup\recalculate_email_hash
         arguments:
             - @dbal.conn
+            - @user
         tags:
             - { name: console.command }
