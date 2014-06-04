@@ -19,21 +19,32 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class get extends command
 {
+	protected $user;
+
+	/**
+	* Construct method
+	*/
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user)
+	{
+		$this->user = $user;
+		parent::__construct($config);
+	}
+
 	protected function configure()
 	{
 		$this
 			->setName('config:get')
-			->setDescription("Gets a configuration option's value")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_CONFIG_GET'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				"The configuration option's name"
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_GET_ARGUMENT')
 			)
 			->addOption(
 				'no-newline',
 				null,
 				InputOption::VALUE_NONE,
-				'Set this option if the value should be printed without a new line at the end.'
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_GET_OPTION')
 			)
 		;
 	}

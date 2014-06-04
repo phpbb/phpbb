@@ -30,6 +30,7 @@ services:
         class: phpbb\console\command\config\get
         arguments:
             - @config
+            - @user
         tags:
             - { name: console.command }
 
