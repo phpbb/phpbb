@@ -515,6 +515,34 @@ overall_header_page_body_before
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-header, but before the page-body
 
+overall_header_profile_list_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the bottom of the profile drop-down menu in the page-header
+
+overall_header_profile_list_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the top of the profile drop-down menu in the page-header
+
+overall_header_quick_links_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the bottom of the quick-links drop-down menu in the header
+
+overall_header_quick_links_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the top of the quick-links drop-down menu in the header
+
 posting_editor_buttons_after
 ===
 * Locations:

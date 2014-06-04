@@ -673,19 +673,23 @@ function parse_document(container)
 		var $this = $(this),
 			$body = $('body'),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.pagination, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
+			filterLast = '.pagination, .icon-acp, .icon-mcp, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
+			persist = $this.attr('id') == 'nav-main',
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
 			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
 			filterLastList = links.filter(filterLast);
 
-		if (links.is('.rightside'))
-		{
-			links.filter('.rightside:first').before(html);
-		}
-		else
-		{
-			$this.append(html);
+		if (!persist) {
+			if (links.is('.rightside'))
+			{
+				links.filter('.rightside:first').before(html);
+				$this.children('.responsive-menu').addClass('rightside');
+			}
+			else
+			{
+				$this.append(html);
+			}
 		}
 
 		var item = $this.children('.responsive-menu'),
@@ -706,7 +710,7 @@ function parse_document(container)
 				responsive = false;
 				$this.removeClass('responsive');
 				links.css('display', '');
-				item.css('display', 'none');
+				if (!persist) item.css('display', 'none');
 			}
 
 			if (compact) {
@@ -752,9 +756,16 @@ function parse_document(container)
 			if (!copied) {
 				var clone = links.clone(true);
 				clone.filter('.rightside').each(function() {
+					if (persist) this.addClass('clone');
 					menu.prepend(this);
 				});
-				menu.prepend(clone.not('.rightside'));
+				
+				if (persist) {
+					menu.prepend(clone.not('.rightside').addClass('clone'));
+				} else {
+					menu.prepend(clone.not('.rightside'));
+				}
+
 				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
 				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
 
@@ -771,7 +782,7 @@ function parse_document(container)
 			item.css('display', '');
 			$this.addClass('responsive');
 
-			// Try to not hide filtered items
+			// Try to not hide filtered items #TODO: this does not work!
 			if (filterLastList.length) {
 				links.not(filterLast).css('display', 'none');
 
@@ -787,10 +798,14 @@ function parse_document(container)
 				}
 			}
 
+			// If even responsive isn't enough, use both responsive and compact at same time
+			compact = true;
+			$this.addClass('compact');
+
 			links.css('display', 'none');
 		}
 
-		phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+		if (!persist) phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
 
 		check();
 		$(window).resize(check);

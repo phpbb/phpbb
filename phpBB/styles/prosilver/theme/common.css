@@ -261,7 +261,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 .navbar {
-	padding: 5px 10px 5px 10px;
+	padding: 3px 10px;
 	border-radius: 7px;
 }
 
@@ -307,6 +307,10 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 /* Horizontal lists
 ----------------------------------------*/
+.navbar ul.linklist {
+	padding: 2px 0;
+}
+
 ul.linklist {
 	display: block;
 	margin: 0;
@@ -327,7 +331,7 @@ ul.linklist li {
 	list-style-type: none;
 	float: left;
 	width: auto;
-	margin-right: 5px;
+	margin-right: 7px;
 	font-size: 1.1em;
 	line-height: 2.2em;
 	padding-top: 1px;
@@ -336,15 +340,12 @@ ul.linklist li {
 ul.linklist li.rightside, p.rightside {
 	float: right;
 	margin-right: 0;
-	margin-left: 5px;
+	margin-left: 7px;
 	text-align: right;
 }
 
 ul.navlinks {
-	padding-bottom: 1px;
-	margin-bottom: 1px;
-	border-bottom: 1px solid transparent;
-	font-weight: bold;
+	border-top: 1px solid transparent;
 }
 
 ul.leftside {
@@ -372,7 +373,7 @@ ul.linklist li.responsive-menu a.responsive-menu-link {
 	font-size: 16px;
 	position: relative;
 	width: 16px;
-	line-height: 16.5px;
+	line-height: 20px;
 	text-decoration: none;
 }
 
@@ -403,10 +404,6 @@ li.responsive-menu.dropdown-left .dropdown {
 	right: -6px;
 }
 
-li.responsive-menu .dropdown .dropdown-contents {
-	padding: 0 5px;
-}
-
 ul.linklist .dropdown-down .dropdown {
 	top: 22px;
 }
@@ -417,9 +414,9 @@ ul.linklist .dropdown-up .dropdown {
 
 ul.linklist .dropdown li {
 	clear: both;
+	margin: 0;
+	padding: 4px 4px 4px 0;
 }
-
-
 
 /* Bulletin icons for list items
 ----------------------------------------*/
@@ -444,9 +441,13 @@ ul.linklist.bulletin li.no-bulletin:before {
 }
 
 /* Avatar in overall_header.html */
+.header-avatar:hover {
+	text-decoration: none;
+}
+
 .header-avatar img {
 	margin-bottom: 2px;
-	max-height: 25px;
+	max-height: 20px;
 	vertical-align: middle;
 	width: auto;
 }
@@ -556,14 +557,14 @@ ul.linklist.bulletin li.no-bulletin:before {
 	padding: 5px;
 	position: relative;
 	min-width: 40px;
-	max-height: 200px;
+	max-height: 300px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
 .dropdown li {
-	border-bottom: 1px dotted transparent;
+	border-top: 1px dotted transparent;
 	float: none !important;
 	line-height: normal !important;
 	font-size: 1em !important;
@@ -575,8 +576,8 @@ ul.linklist.bulletin li.no-bulletin:before {
 	text-align: left;
 }
 
-.dropdown li:last-child, .dropdown li li {
-	border-bottom: 0;
+.dropdown li:first-child, .dropdown li.separator + li, .dropdown li li {
+	border-top: 0;
 }
 
 .dropdown li li:first-child {
@@ -600,10 +601,33 @@ ul.linklist.bulletin li.no-bulletin:before {
 	display: none !important;
 }
 
+.dropdown li.separator {
+	border-top: 1px solid transparent;
+}
+
+.dropdown li.separator, ul.linklist .dropdown li.separator {
+	margin: 3px 0;
+	padding: 0;
+}
+
+.dropdown li.separator:first-child, .dropdown li.separator:last-child {
+	display: none !important;
+}
+
+.dropdown .clone + li.separator {
+	display: none;
+}
+
+.responsive .dropdown .clone + li.separator {
+	display: inherit;
+}
+
+
 /* Responsive breadcrumbs
 ----------------------------------------*/
 .breadcrumbs .crumb {
 	float: left;
+	font-weight: bold;
 	word-wrap: normal;
 }
 
@@ -1233,6 +1257,30 @@ form > p.post-notice strong {
 	display: block;
 }
 
+/* Main navigation specific list items
+----------------------------------------*/
+
+#quick-links {
+	margin: 0 7px 0 0;
+}
+
+#quick-links a.responsive-menu-link {
+	display: block;
+	font-size: inherit;
+	line-height: inherit;
+	margin: 0;
+	width: auto;
+}
+
+#quick-links a.responsive-menu-link:before {
+	font-size: 16px;
+	line-height: 16.5px;
+}
+
+.compact #quick-links a.responsive-menu-link {
+	font-size: 0;
+}
+
 .compact .icon-notification > a > span, .compact .icon-pm > a > span {
 	display: none;
 }
@@ -1251,4 +1299,12 @@ form > p.post-notice strong {
 
 .dropdown-page-jump input.tiny {
 	width: 50px;
+}
+
+.dropdown .clone {
+	display: none;
+}
+
+.responsive .dropdown .clone {
+	display: inherit;
 }

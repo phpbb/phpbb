@@ -62,12 +62,12 @@
 .rtl ul.linklist li {
 	float: right;
 	margin-right: 0;
-	margin-left: 5px;
+	margin-left: 7px;
 }
 
 .rtl ul.linklist li.rightside, .rtl p.rightside {
 	float: left;
-	margin-right: 5px;
+	margin-right: 7px;
 	margin-left: 0;
 	text-align: left;
 }
