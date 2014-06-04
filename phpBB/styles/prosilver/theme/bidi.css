@@ -88,7 +88,8 @@
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools {
+.rtl .dropdown-container.topic-tools,
+.rtl .dropdown-container.sort-tools {
 	float: right;
 }
 

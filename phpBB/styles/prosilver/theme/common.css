@@ -454,7 +454,8 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	top: auto;
 }
 
-.dropdown-container.topic-tools {
+.dropdown-container.topic-tools,
+.dropdown-container.sort-tools {
 	float: left;
 }
 

@@ -92,6 +92,13 @@
 	width: 16px;
 }
 
+.sort-icon:before {
+	background-position: -999px 0;
+	height: 16px;
+	margin-top: 2px;
+	width: 16px;
+}
+
 .dropdown-visible .tools-icon:before,
 .nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
 
