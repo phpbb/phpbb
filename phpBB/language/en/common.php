@@ -340,7 +340,7 @@ $lang = array_merge($lang, array(
 	'JOINED'				=> 'Joined',
 	'JUMP_PAGE'				=> 'Enter the page number you wish to go to',
 	'JUMP_TO'				=> 'Jump to',
-	'JUMP_TO_PAGE'			=> 'Jump to page:',
+	'JUMP_TO_PAGE'			=> 'Jump to page',
 	'JUMP_TO_PAGE_CLICK'	=> 'Click to jump to page…',
 
 	'KB'					=> 'KB',

@@ -837,7 +837,7 @@ li.pagination ul {
 	vertical-align: middle;
 }
 
-.pagination li a, .pagnation li span, li .pagination li a, li .pagination li span, .pagination li.active span, .pagination li.ellipsis span {
+.pagination li a, .pagination li span, li .pagination li a, li .pagination li span, .pagination li.active span, .pagination li.ellipsis span {
 	border: 1px solid transparent;
 	border-radius: 2px;
 	display: block;
