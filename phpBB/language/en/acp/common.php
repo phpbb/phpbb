@@ -225,6 +225,8 @@ $lang = array_merge($lang, array(
 
 	'CLI_DESCRIPTION_CACHE_PURGE'			=> 'Purges the cache.',
 
+	'CLI_DESCRIPTION_CONFIG_DB_MIGRATE'		=> 'Updates the database by applying migrations.',
+
 	'CLI_DESCRIPTION_CONFIG_DELETE'			=> 'Deletes a configuration option.',
 	'CLI_DESCRIPTION_CONFIG_DELETE_ARGUMENT'=> 'The configuration option\'s name.',
 
