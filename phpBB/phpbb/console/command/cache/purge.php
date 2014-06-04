@@ -43,7 +43,6 @@ class purge extends \phpbb\console\command\command
 		$this->log = $log;
 		$this->user = $user;
 		$this->config = $config;
-		$this->user->add_lang(array('acp/common'));
 		parent::__construct();
 	}
 
