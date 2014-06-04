@@ -394,7 +394,7 @@ class log implements \phpbb\log\log_interface
 
 		if (isset($conditions['keywords']))
 		{
-			$sql_where .= $this->generate_sql_keyword($conditions['keywords'], '', ' AND');
+			$sql_where .= $this->generate_sql_keyword($conditions['keywords'], '');
 
 			unset($conditions['keywords']);
 		}
@@ -782,7 +782,7 @@ class log implements \phpbb\log\log_interface
 				}
 			}
 
-			$sql_keywords = $statement_operator . ' (';
+			$sql_keywords = ' ' . $statement_operator . ' (';
 			if (!empty($operations))
 			{
 				$sql_keywords .= $this->db->sql_in_set($table_alias . 'log_operation', $operations) . ' OR ';
