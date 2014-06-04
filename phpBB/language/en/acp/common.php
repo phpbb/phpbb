@@ -221,6 +221,8 @@ $lang = array_merge($lang, array(
 	'ADM_LOGOUT'			=> 'ACP&nbsp;Logout',
 	'ADM_LOGGED_OUT'		=> 'Successfully logged out from Administration Control Panel',
 
+	'AVAILABLE'				=> 'Available',
+
 	'BACK'					=> 'Back',
 
 	'CLI_DESCRIPTION_CACHE_PURGE'			=> 'Purges the cache.',
@@ -258,6 +260,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_EXTENSION_ENABLE'				=> 'Enables the specified extension.',
 	'CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT'		=> 'Name of the extension.',
 	'CLI_DESCRIPTION_EXTENSION_PURGE'				=> 'Purges the specified extension.',
+	'CLI_DESCRIPTION_EXTENSION_SHOW'				=> 'Lists all extensions in the database and on the filesystem.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
@@ -281,6 +284,7 @@ $lang = array_merge($lang, array(
 	'DIRECTORY_NOT_DIR'			=> 'The entered path “%s” is not a directory.',
 	'DIRECTORY_NOT_WRITABLE'	=> 'The entered path “%s” is not writable.',
 	'DISABLE'					=> 'Disable',
+	'DISABLED'					=> 'Disabled',
 	'DOWNLOAD'					=> 'Download',
 	'DOWNLOAD_AS'				=> 'Download as',
 	'DOWNLOAD_STORE'			=> 'Download or store file',
@@ -289,6 +293,7 @@ $lang = array_merge($lang, array(
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
+	'ENABLED'				=> 'Enabled',
 	'EXPORT_DOWNLOAD'		=> 'Download',
 	'EXPORT_STORE'			=> 'Store',
 
@@ -298,6 +303,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION_ENABLE_SUCCESS'	=> 'Successfully enabled extension %s.',
 	'EXTENSION_PURGE_FAIL'		=> 'Could not purge extension %s.',
 	'EXTENSION_PURGE_SUCCESS'	=> 'Successfully purged extension %s.',
+	'EXTENSION_SHOW_FAIL'		=> 'No extensions were found.',
 
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',
