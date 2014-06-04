@@ -27,7 +27,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_database_test_case
 
 	public function __construct()
 	{
-		$this->cache_dir = dirname(__FILE__) . 'tmp/cache/';
+		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
 	}
 
 	public function getDataSet()
