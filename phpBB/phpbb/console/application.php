@@ -13,11 +13,7 @@
 
 namespace phpbb\console;
 
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Shell;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,6 +25,11 @@ class application extends \Symfony\Component\Console\Application
 	* @var bool Indicates whether or not we are in a shell
 	*/
 	protected $in_shell = false;
+
+	/**
+	* @var \phpbb\user User object
+	*/
+	protected $user;
 
 	/**
 	* @param string			$name		The name of the application
@@ -54,7 +55,7 @@ class application extends \Symfony\Component\Console\Application
 	{
 		// If we are already in a shell
 		// we do not want to have the --shell option available
-		if($this->in_shell)
+		if ($this->in_shell)
 		{
 			return parent::getHelp();
 		}
@@ -96,9 +97,9 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function doRun(InputInterface $input, OutputInterface $output)
 	{
-		// Run a shell if the --shell (or -s) option is set and if any command name is specified
+		// Run a shell if the --shell (or -s) option is set and if no command name is specified
 		// Also, we do not want to have the --shell option available if we are already in a shell
-		if (!$this->in_shell && $this->getCommandName($input) === null && $input->hasParameterOption(array('--shell', '-s')) === true)
+		if (!$this->in_shell && $this->getCommandName($input) === null && $input->hasParameterOption(array('--shell', '-s')))
 		{
 			$shell = new Shell($this);
 			$this->in_shell = true;
