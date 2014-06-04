@@ -206,7 +206,11 @@
 .rtl .pagination {
 	text-align: left;
 	float: left;
-	padding-left: 5px;
+}
+
+.rtl .pagination ul {
+	margin-left: 0;
+	margin-right: 5px;
 }
 
 /* Pagination in viewforum for multipage topics */
@@ -224,6 +228,11 @@
 	display: inline;
 	visibility: hidden;
 	position: absolute;
+}
+
+.pagination li.page-jump {
+	margin-left: 5px;
+	margin-right: 0;
 }
 
 .pagination li.previous a { background-position: -50px 2px; }

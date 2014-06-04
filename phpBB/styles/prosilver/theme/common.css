@@ -821,10 +821,7 @@ li.pagination {
 
 .pagination ul {
 	display: inline-block;
-	*display: inline; /* IE7 inline-block hack */
-	*zoom: 1;
-	margin-left: 0;
-	margin-bottom: 0;
+	margin-left: 5px;
 }
 
 li.pagination ul {
@@ -859,7 +856,7 @@ li.pagination ul {
 }
 
 .pagination li.page-jump {
-	margin: 0 5px;
+	margin-right: 5px;
 }
 
 .pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
