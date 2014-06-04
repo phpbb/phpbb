@@ -38,25 +38,25 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 	public function test_no_task()
 	{
-		$this->initiate_test(0,0);
+		$this->initiate_test(0, 0);
 		$this->assertContains('NO_TASK', $this->command_tester->getDisplay());
 	}
 
 	public function test_only_ready()
 	{
-		$this->initiate_test(2,0);
+		$this->initiate_test(2, 0);
 		$this->assertContains('TASKS_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_only_not_ready()
 	{
-		$this->initiate_test(0,2);
+		$this->initiate_test(0, 2);
 		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_both_ready()
 	{
-		$this->initiate_test(2,2);
+		$this->initiate_test(2, 2);
 		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
@@ -82,7 +82,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 		return new CommandTester($command);
 	}
 
-	public function initiate_test ($number_ready, $number_not_ready)
+	public function initiate_test($number_ready, $number_not_ready)
 	{
 		$tasks = array();
 
