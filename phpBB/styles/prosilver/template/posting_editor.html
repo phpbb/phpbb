@@ -99,7 +99,7 @@
 	<!-- ENDIF -->
 
 	<!-- IF not S_PRIVMSGS and not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
-		<div id="tabs" class="sub-panels" data-show-panel="options-panel">
+		<div id="tabs" class="sub-panels" data-show-panel="<!-- IF SHOW_PANEL -->{SHOW_PANEL}<!-- ELSE -->options-panel<!-- ENDIF -->">
 			<ul>
 				<li id="options-panel-tab" class="activetab"><a href="#tabs" data-subpanel="options-panel"><span>{L_OPTIONS}</span></a></li>
 				<!-- IF S_SHOW_ATTACH_BOX -->
