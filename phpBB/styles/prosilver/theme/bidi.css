@@ -870,7 +870,10 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	border-right-width: 0;
 	border-radius: 4px 0 0 4px;
 	float: right;
-	padding: 2px 2px 2px 22px;
+}
+
+.rtl .search-box a.button:before {
+	margin-left: 2px;
 }
 
 .rtl input.search {
