@@ -27,7 +27,7 @@ class application extends \Symfony\Component\Console\Application
 	* @param string			$version	The version of the application
 	* @param \phpbb\user	$user		The user which runs the application (used for translation)
 	*/
-	public function __construct($name = 'UNKNOWN', $version = 'UNKNOWN', \phpbb\user $user)
+	public function __construct($name, $version, \phpbb\user $user)
 	{
 		parent::__construct($name, $version);
 
