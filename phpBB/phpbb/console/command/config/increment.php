@@ -19,26 +19,37 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class increment extends command
 {
+	protected $user;
+
+	/**
+	* Construct method
+	*/
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user)
+	{
+		$this->user = $user;
+		parent::__construct($config);
+	}
+
 	protected function configure()
 	{
 		$this
 			->setName('config:increment')
-			->setDescription("Increments a configuration option's value")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				"The configuration option's name"
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_1')
 			)
 			->addArgument(
 				'increment',
 				InputArgument::REQUIRED,
-				'Amount to increment by'
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_2')
 			)
 			->addOption(
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				'Set this option if the configuration option changes too frequently to be efficiently cached.'
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT_OPTION')
 			)
 		;
 	}
@@ -51,6 +62,6 @@ class increment extends command
 
 		$this->config->increment($key, $increment, $use_cache);
 
-		$output->writeln("<info>Successfully incremented config $key</info>");
+		$output->writeln('<info>' . $this->user->lang('CONFIG_INCREMENT_SUCCESS', $key) . '</info>');
 	}
 }

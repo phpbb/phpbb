@@ -23,6 +23,7 @@ services:
         class: phpbb\console\command\config\increment
         arguments:
             - @config
+            - @user
         tags:
             - { name: console.command }
 

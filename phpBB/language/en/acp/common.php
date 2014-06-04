@@ -227,18 +227,25 @@ $lang = array_merge($lang, array(
 
 	'CLI_DESCRIPTION_CONFIG_DELETE'			=> 'Deletes a configuration option.',
 	'CLI_DESCRIPTION_CONFIG_DELETE_ARGUMENT'=> 'The configuration option\'s name.',
+
 	'CLI_DESCRIPTION_CONFIG_GET'			=> 'Gets a configuration option\'s value.',
 	'CLI_DESCRIPTION_CONFIG_GET_ARGUMENT'	=> 'The configuration option\'s name.',
-	'CLI_DESCRIPTION_CONFIG_GET_OPTION'	=> 'Set this option if the value should be printed without a new line at the end.',
+	'CLI_DESCRIPTION_CONFIG_GET_OPTION'		=> 'Set this option if the value should be printed without a new line at the end.',
+
+	'CLI_DESCRIPTION_CONFIG_INCREMENT'				=> 'Increments a configuration option\'s value.',
+	'CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_1'	=> 'The configuration option\'s name.',
+	'CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_2'	=> 'Amount to increment by.',
+	'CLI_DESCRIPTION_CONFIG_INCREMENT_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
 
 	'CLI_DESCRIPTION_CRON_RUN'				=> 'Runs all ready cron tasks.',
 	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
-	'CONFIG_DELETE_FAIL'	=> 'Config %s does not exist.',
-	'CONFIG_DELETE_SUCCESS'	=> 'Successfully deleted config %s.',
-	'CONFIG_GET_FAIL'		=> 'Could not get config %s',
+	'CONFIG_DELETE_FAIL'		=> 'Config %s does not exist.',
+	'CONFIG_DELETE_SUCCESS'		=> 'Successfully deleted config %s.',
+	'CONFIG_GET_FAIL'			=> 'Could not get config %s.',
+	'CONFIG_INCREMENT_SUCCESS'	=> 'Successfully incremented config %s.',
 
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',

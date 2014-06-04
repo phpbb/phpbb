@@ -63,7 +63,7 @@ class get extends command
 		}
 		else
 		{
-			$output->writeln("<error>Could not get config $key</error>");
+			$output->writeln('<error>' . $this->user->lang('CONFIG_GET_FAIL' , $key) . '</error>');
 		}
 	}
 }
