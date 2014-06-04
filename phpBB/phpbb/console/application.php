@@ -13,6 +13,9 @@
 
 namespace phpbb\console;
 
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +26,11 @@ use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 class application extends \Symfony\Component\Console\Application
 {
 	/**
+	* @var bool Indicates whether or not we are in a shell
+	*/
+	protected $in_shell = false;
+
+	/**
 	* @param string			$name		The name of the application
 	* @param string			$version	The version of the application
 	* @param \phpbb\user	$user		The user which runs the application (used for translation)
@@ -31,12 +39,42 @@ class application extends \Symfony\Component\Console\Application
 	{
 		parent::__construct($name, $version);
 
+		$this->user = $user;
+	}
+
+	/**
+	* Gets the help message.
+	*
+	* It's a hack of the default help message to display the --shell
+	* option only for the application and not for all the commands.
+	*
+	* @return string A help message.
+	*/
+	public function getHelp()
+	{
+		// If we are already in a shell
+		// we do not want to have the --shell option available
+		if($this->in_shell)
+		{
+			return parent::getHelp();
+		}
+
+		// We store the definition to restore it later.
+		// Otherwise, in the shell mode the --shell option
+		// will be available for all command.
+		$definition_backup = $this->getDefinition();
+
 		$this->getDefinition()->addOption(new InputOption(
 			'--shell',
 			'-s',
 			InputOption::VALUE_NONE,
-			$user->lang('CLI_DESCRIPTION_OPTION_SHELL')
+			$this->user->lang('CLI_DESCRIPTION_OPTION_SHELL')
 		));
+
+		$help_message = parent::getHelp();
+		$this->setDefinition($definition_backup);
+
+		return $help_message;
 	}
 
 	/**
@@ -58,14 +96,17 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function doRun(InputInterface $input, OutputInterface $output)
 	{
-		if ($input->hasParameterOption(array('--shell', '-s')) === true)
+		// Run a shell if the --shell (or -s) option is set and if any command name is specified
+		// Also, we do not want to have the --shell option available if we are already in a shell
+		if (!$this->in_shell && $this->getCommandName($input) === null && $input->hasParameterOption(array('--shell', '-s')) === true)
 		{
 			$shell = new Shell($this);
+			$this->in_shell = true;
 			$shell->run();
 
 			return 0;
 		}
 
-		parent::doRun($input, $output);
+		return parent::doRun($input, $output);
 	}
 }
