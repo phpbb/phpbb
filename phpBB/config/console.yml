@@ -47,6 +47,7 @@ services:
         class: phpbb\console\command\config\set_atomic
         arguments:
             - @config
+            - @user
         tags:
             - { name: console.command }
 

@@ -243,6 +243,13 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_CONFIG_SET'			=> 'Sets a configuration option\'s value.',
 	'CLI_DESCRIPTION_CONFIG_SET_ARGUMENT_1'	=> 'The configuration option\'s name.',
 	'CLI_DESCRIPTION_CONFIG_SET_ARGUMENT_2'	=> 'New configuration value, use 0 and 1 to specify boolean values.',
+
+	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC'				=> 'Sets a configuration option\'s value only if the old matches the current value.',
+	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_1'	=> 'The configuration option\'s name.',
+	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_2'	=> 'Current configuration value, use 0 and 1 to specify boolean values.',
+	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_3'	=> 'New configuration value, use 0 and 1 to specify boolean values.',
+	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
+
 	'CLI_DESCRIPTION_CONFIG_SET_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
@@ -251,6 +258,10 @@ $lang = array_merge($lang, array(
 	'CONFIG_DELETE_SUCCESS'		=> 'Successfully deleted config %s.',
 	'CONFIG_GET_FAIL'			=> 'Could not get config %s.',
 	'CONFIG_INCREMENT_SUCCESS'	=> 'Successfully incremented config %s.',
+
+	'CONFIG_SET_ATOMIC_FAIL'		=> 'Could not set config %s.',
+	'CONFIG_SET_ATOMIC_SUCCESS'		=> 'Successfully set config %s.',
+
 	'CONFIG_SET_SUCCESS'		=> 'Successfully set config %s.',
 
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',

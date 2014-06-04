@@ -19,31 +19,42 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class set_atomic extends command
 {
+	protected $user;
+
+	/**
+	* Construct method
+	*/
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user)
+	{
+		$this->user = $user;
+		parent::__construct($config);
+	}
+
 	protected function configure()
 	{
 		$this
 			->setName('config:set-atomic')
-			->setDescription("Sets a configuration option's value only if the old matches the current value.")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				"The configuration option's name"
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_1')
 			)
 			->addArgument(
 				'old',
 				InputArgument::REQUIRED,
-				'Current configuration value, use 0 and 1 to specify boolean values'
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_2')
 			)
 			->addArgument(
 				'new',
 				InputArgument::REQUIRED,
-				'New configuration value, use 0 and 1 to specify boolean values'
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_3')
 			)
 			->addOption(
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				'Set this option if the configuration option changes too frequently to be efficiently cached.'
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_OPTION')
 			)
 		;
 	}
@@ -57,12 +68,12 @@ class set_atomic extends command
 
 		if ($this->config->set_atomic($key, $old_value, $new_value, $use_cache))
 		{
-			$output->writeln("<info>Successfully set config $key</info>");
+			$output->writeln('<info>' . $this->user->lang('CONFIG_SET_ATOMIC_SUCCESS', $key) . '</info>');
 			return 0;
 		}
 		else
 		{
-			$output->writeln("<error>Could not set config $key</error>");
+			$output->writeln('<error>' . $this->user->lang('CONFIG_SET_ATOMIC_FAIL', $key) . '</error>');
 			return 1;
 		}
 	}
