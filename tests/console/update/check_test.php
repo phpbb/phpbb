@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/../../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../../phpBB/includes/utf/utf_tools.php';
 
 /**
-*@slow
+* @slow
 */
 class phpbb_console_command_check_test extends phpbb_test_case
 {
@@ -83,8 +83,8 @@ class phpbb_console_command_check_test extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$config = new \phpbb\config\config(array('version'	=> $current_version,));
-		$this->version_helper = new \phpbb\version_helper( $cache, $config, $user);
+		$config = new \phpbb\config\config(array('version' => $current_version));
+		$this->version_helper = new \phpbb\version_helper($cache, $config, $user);
 
 		$container = new phpbb_mock_container_builder;
 		$container->set('version_helper', $this->version_helper);

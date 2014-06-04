@@ -16,7 +16,6 @@ namespace phpbb\console\command\update;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tests\Input\InputTest;
 
 class check extends \phpbb\console\command\command
 {
@@ -104,7 +103,7 @@ class check extends \phpbb\console\command\command
 			{
 				$output->writeln($this->user->lang('CURRENT_VERSION') . $this->user->lang('COLON') . ' ' . $this->config['version']);
 				$output->writeln($this->user->lang('UPDATES_AVAILABLE'));
-				foreach ($updates_available as $branch => $version_data)
+				foreach ($updates_available as $version_data)
 				{
 					$output->writeln($version_data);
 				}
