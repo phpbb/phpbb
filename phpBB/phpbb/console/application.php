@@ -13,6 +13,9 @@
 
 namespace phpbb\console;
 
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -60,11 +63,6 @@ class application extends \Symfony\Component\Console\Application
 			return parent::getHelp();
 		}
 
-		// We store the definition to restore it later.
-		// Otherwise, in the shell mode the --shell option
-		// will be available for all command.
-		$definition_backup = $this->getDefinition();
-
 		$this->getDefinition()->addOption(new InputOption(
 			'--shell',
 			'-s',
@@ -72,10 +70,7 @@ class application extends \Symfony\Component\Console\Application
 			$this->user->lang('CLI_DESCRIPTION_OPTION_SHELL')
 		));
 
-		$help_message = parent::getHelp();
-		$this->setDefinition($definition_backup);
-
-		return $help_message;
+		return parent::getHelp();
 	}
 
 	/**
