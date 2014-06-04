@@ -39,6 +39,7 @@ services:
         class: phpbb\console\command\config\set
         arguments:
             - @config
+            - @user
         tags:
             - { name: console.command }
 
