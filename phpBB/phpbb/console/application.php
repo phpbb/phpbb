@@ -13,9 +13,6 @@
 
 namespace phpbb\console;
 
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -79,7 +76,7 @@ class application extends \Symfony\Component\Console\Application
 	* @param TaggedContainerInterface	$container	The container
 	* @param string						$tag		The tag used to register the commands
 	*/
-	function register_container_commands(TaggedContainerInterface $container, $tag = 'console.command')
+	public function register_container_commands(TaggedContainerInterface $container, $tag = 'console.command')
 	{
 		foreach($container->findTaggedServiceIds($tag) as $id => $void)
 		{
