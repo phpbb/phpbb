@@ -37,7 +37,7 @@ class disable extends command
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_EXTENSION_DISABLE_ARGUMENT')
+				$this->user->lang('CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT')
 			)
 		;
 	}

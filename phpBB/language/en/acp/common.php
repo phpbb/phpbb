@@ -255,7 +255,8 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_CONFIG_SET_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
 
 	'CLI_DESCRIPTION_EXTENSION_DISABLE'				=> 'Disables the specified extension.',
-	'CLI_DESCRIPTION_EXTENSION_DISABLE_ARGUMENT'	=> 'Name of the extension.',
+	'CLI_DESCRIPTION_EXTENSION_ENABLE'				=> 'Enables the specified extension.',
+	'CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT'		=> 'Name of the extension.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
@@ -292,6 +293,8 @@ $lang = array_merge($lang, array(
 
 	'EXTENSION_DISABLE_FAIL'	=> 'Could not disable extension %s.',
 	'EXTENSION_DISABLE_SUCCESS'	=> 'Successfully disabled extension %s.',
+	'EXTENSION_ENABLE_FAIL'		=> 'Could not enable extension %s.',
+	'EXTENSION_ENABLE_SUCCESS'	=> 'Successfully enabled extension %s.',
 
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',
