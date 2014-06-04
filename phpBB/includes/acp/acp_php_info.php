@@ -47,7 +47,7 @@ class acp_php_info
 		// for this was nabbed from the PHP annotated manual
 		preg_match_all('#<body[^>]*>(.*)</body>#si', $phpinfo, $output);
 
-		if (empty($phpinfo) || empty($output))
+		if (empty($phpinfo) || empty($output[1][0]))
 		{
 			trigger_error('NO_PHPINFO_AVAILABLE', E_USER_WARNING);
 		}
