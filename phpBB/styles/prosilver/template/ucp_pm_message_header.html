@@ -44,10 +44,10 @@
 	<!-- ENDIF -->
 
 	<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
-		<div class="rightside pagination">
-			<!-- IF S_VIEW_MESSAGE --><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_CURRENT_FOLDER}">{L_RETURN_TO_FOLDER}</a><!-- ENDIF -->
-	
-			<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
+		<div class="pagination">
+			<!-- IF S_VIEW_MESSAGE -->
+				<a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_CURRENT_FOLDER}">{L_RETURN_TO_FOLDER}</a>
+			<!-- ELSEIF FOLDER_CUR_MESSAGES neq 0 -->
 				<!-- IF TOTAL_MESSAGES -->{TOTAL_MESSAGES}<!-- ENDIF -->
 				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
