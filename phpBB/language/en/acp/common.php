@@ -223,11 +223,18 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
-	'CLI_DESCRIPTION-CACHE_PURGE'			=> 'Purge the cache.',
+	'CLI_DESCRIPTION_CACHE_PURGE'			=> 'Purges the cache.',
+	'CLI_DESCRIPTION_CONFIG_DELETE'			=> 'Deletes a configuration option.',
+	'CLI_DESCRIPTION_CONFIG_DELETE_ARGUMENT'=> 'The configuration option\'s name',
+
 	'CLI_DESCRIPTION_CRON_RUN'				=> 'Runs all ready cron tasks.',
 	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
+
+	'CONFIG_DELETE_FAIL'	=> 'Config %s does not exist.',
+	'CONFIG_DELETE_SUCCESS'	=> 'Successfully deleted config %s.',
+
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',

@@ -15,6 +15,7 @@ services:
         class: phpbb\console\command\config\delete
         arguments:
             - @config
+            - @user
         tags:
             - { name: console.command }
 

@@ -51,7 +51,7 @@ class purge extends \phpbb\console\command\command
 	{
 		$this
 			->setName('cache:purge')
-			->setDescription($this->user->lang('CLI_DESCRIPTION-CACHE_PURGE'))
+			->setDescription($this->user->lang('CLI_DESCRIPTION_CACHE_PURGE'))
 		;
 	}
 
