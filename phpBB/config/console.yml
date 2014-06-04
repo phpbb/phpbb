@@ -95,6 +95,7 @@ services:
         arguments:
             - @ext.manager
             - @log
+            - @user
         tags:
             - { name: console.command }
 

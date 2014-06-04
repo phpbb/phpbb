@@ -257,6 +257,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_EXTENSION_DISABLE'				=> 'Disables the specified extension.',
 	'CLI_DESCRIPTION_EXTENSION_ENABLE'				=> 'Enables the specified extension.',
 	'CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT'		=> 'Name of the extension.',
+	'CLI_DESCRIPTION_EXTENSION_PURGE'				=> 'Purges the specified extension.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
@@ -295,6 +296,8 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DISABLE_SUCCESS'	=> 'Successfully disabled extension %s.',
 	'EXTENSION_ENABLE_FAIL'		=> 'Could not enable extension %s.',
 	'EXTENSION_ENABLE_SUCCESS'	=> 'Successfully enabled extension %s.',
+	'EXTENSION_PURGE_FAIL'		=> 'Could not purge extension %s.',
+	'EXTENSION_PURGE_SUCCESS'	=> 'Successfully purged extension %s.',
 
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',

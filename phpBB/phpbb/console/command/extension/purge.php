@@ -18,15 +18,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class purge extends command
 {
+	protected $user;
+
+	/**
+	* Construct method
+	*/
+	public function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log, \phpbb\user $user)
+	{
+		$this->user = $user;
+		parent::__construct($manager, $log);
+	}
+
 	protected function configure()
 	{
 		$this
 			->setName('extension:purge')
-			->setDescription('Purges the specified extension.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_EXTENSION_PURGE'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,
-				'Name of the extension'
+				$this->user->lang('CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT')
 			)
 		;
 	}
@@ -39,13 +50,13 @@ class purge extends command
 
 		if ($this->manager->enabled($name))
 		{
-			$output->writeln("<error>Could not purge extension $name</error>");
+			$output->writeln('<error>' . $this->user->lang('EXTENSION_PURGE_FAIL', $name) . '</error>');
 			return 1;
 		}
 		else
 		{
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_PURGE', time(), array($name));
-			$output->writeln("<info>Successfully purge extension $name</info>");
+			$output->writeln('<info>' . $this->user->lang('EXTENSION_PURGE_SUCCESS', $name) . '</info>');
 			return 0;
 		}
 	}
