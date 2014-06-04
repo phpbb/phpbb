@@ -31,7 +31,12 @@ class application extends \Symfony\Component\Console\Application
 	{
 		parent::__construct($name, $version);
 
-		$this->getDefinition()->addOption(new InputOption('--shell', '-s', InputOption::VALUE_NONE, $user->lang('CLI_DESCRIPTION_OPTION_SHELL')));
+		$this->getDefinition()->addOption(new InputOption(
+			'--shell',
+			'-s',
+			InputOption::VALUE_NONE,
+			$user->lang('CLI_DESCRIPTION_OPTION_SHELL')
+		));
 	}
 
 	/**
@@ -53,7 +58,8 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function doRun(InputInterface $input, OutputInterface $output)
 	{
-		if ($input->hasParameterOption(array('--shell', '-s')) === true) {
+		if ($input->hasParameterOption(array('--shell', '-s')) === true)
+		{
 			$shell = new Shell($this);
 			$shell->run();
 
