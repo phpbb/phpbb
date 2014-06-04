@@ -115,9 +115,8 @@ class mcp_logs
 				if ($deletemark && sizeof($marked))
 				{
 					$conditions = array(
-						'log_type'	=> LOG_MOD,
 						'forum_id'	=> $forum_list,
-						'log_id'	=> $marked,
+						'log_id'	=> array('IN' => $marked),
 					);
 
 					$phpbb_log->delete('mod', $conditions);
@@ -127,7 +126,6 @@ class mcp_logs
 					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
 
 					$conditions = array(
-						'log_type'	=> LOG_MOD,
 						'forum_id'	=> $forum_list,
 						'keywords'	=> $keywords,
 					);

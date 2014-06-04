@@ -391,28 +391,29 @@ class log implements \phpbb\log\log_interface
 		}
 
 		$sql_where = 'WHERE log_type = ' . $log_type;
+
+		if (isset($conditions['keywords']))
+		{
+			$sql_where .= $this->generate_sql_keyword($conditions['keywords'], '');
+
+			unset($conditions['keywords']);
+		}
+
 		foreach ($conditions as $field => $field_value)
 		{
 			$sql_where .= ' AND ';
 
-			if ($field == 'keywords')
+			if (is_array($field_value) && sizeof($field_value) == 2 && !is_array($field_value[1]))
 			{
-				$sql_where .= $this->generate_sql_keyword($field_value, '', '');
+				$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
+			}
+			else if (is_array($field_value) && isset($field_value['IN']) && is_array($field_value['IN']))
+			{
+				$sql_where .= $this->db->sql_in_set($field, $field_value['IN']);
 			}
 			else
 			{
-				if (is_array($field_value) && sizeof($field_value) == 2 && !is_array($field_value[1]))
-				{
-					$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
-				}
-				else if (is_array($field_value) && isset($field_value['IN']) && is_array($field_value['IN']))
-				{
-					$sql_where .= $this->db->sql_in_set($field, $field_value['IN']);
-				}
-				else
-				{
-					$sql_where .= $field . ' = ' . $field_value;
-				}
+				$sql_where .= $field . ' = ' . $field_value;
 			}
 		}
 
@@ -781,7 +782,7 @@ class log implements \phpbb\log\log_interface
 				}
 			}
 
-			$sql_keywords = $statement_operator . ' (';
+			$sql_keywords = ' ' . $statement_operator . ' (';
 			if (!empty($operations))
 			{
 				$sql_keywords .= $this->db->sql_in_set($table_alias . 'log_operation', $operations) . ' OR ';
