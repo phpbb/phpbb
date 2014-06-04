@@ -29,18 +29,8 @@
 --------------------------------------------- */
 .rtl #search-box {
 	float: left;
-	text-align: left;
 	margin-right: 0;
 	margin-left: 5px;
-}
-
-.rtl #search-box li {
-	text-align: left;
-}
-
-.rtl #search-box img {
-	margin-right: 0;
-	margin-left: 3px;
 }
 
 .rtl #site-description {

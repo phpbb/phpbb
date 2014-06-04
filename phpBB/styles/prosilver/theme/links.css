@@ -27,19 +27,19 @@ a:active {
 }
 
 /* Links on gradient backgrounds */
-#search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
+.navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
 	text-decoration: none;
 }
 
-#search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
+.navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
 	text-decoration: none;
 }
 
-#search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+.navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	text-decoration: underline;
 }
 
-#search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
+.navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
 	text-decoration: none;
 }
 
