@@ -223,6 +223,7 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+	'CLI_DESCRIPTION-CACHE_PURGE'			=> 'Purge the cache.',
 	'CLI_DESCRIPTION_CRON_RUN'				=> 'Runs all ready cron tasks.',
 	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
 
