@@ -38,7 +38,7 @@ class delete extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_DELETE_ARGUMENT')
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
 			)
 		;
 	}

@@ -38,7 +38,7 @@ class set_atomic extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_1')
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
 			)
 			->addArgument(
 				'old',

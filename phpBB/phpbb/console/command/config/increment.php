@@ -38,7 +38,7 @@ class increment extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_1')
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
 			)
 			->addArgument(
 				'increment',

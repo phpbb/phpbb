@@ -38,7 +38,7 @@ class get extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_GET_ARGUMENT')
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
 			)
 			->addOption(
 				'no-newline',
