@@ -40,7 +40,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'	=> true,
 		));
 
-		$this->assertSame($this->config['test_key'],'test_value');
+		$this->assertSame($this->config['test_key'], 'test_value');
 	}
 
 	public function test_set_no_dynamic()
@@ -56,7 +56,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'	=> false,
 		));
 
-		$this->assertSame($this->config['test_key'],'test_value');
+		$this->assertSame($this->config['test_key'], 'test_value');
 	}
 
 	public function test_set_atomic_dynamic()
@@ -64,7 +64,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertEmpty($this->config);
 
 		$this->config->set('test_key', 'old_value', true);
-		$this->assertSame($this->config['test_key'],'old_value');
+		$this->assertSame($this->config['test_key'], 'old_value');
 
 		$this->class_name = 'set_atomic';
 		$command_tester = $this->get_command_tester();
@@ -76,7 +76,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'	=> true,
 		));
 
-		$this->assertSame($this->config['test_key'],'new_value');
+		$this->assertSame($this->config['test_key'], 'new_value');
 	}
 
 	public function test_set_atomic_no_dynamic()
@@ -84,7 +84,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertEmpty($this->config);
 
 		$this->config->set('test_key', 'old_value', false);
-		$this->assertSame($this->config['test_key'],'old_value');
+		$this->assertSame($this->config['test_key'], 'old_value');
 
 		$this->class_name = 'set_atomic';
 		$command_tester = $this->get_command_tester();
@@ -96,7 +96,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'	=> false
 		));
 
-		$this->assertSame($this->config['test_key'],'new_value');
+		$this->assertSame($this->config['test_key'], 'new_value');
 	}
 
 	public function test_set_atomic_error_dynamic()
@@ -104,7 +104,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertEmpty($this->config);
 
 		$this->config->set('test_key', 'wrong_value', true);
-		$this->assertSame($this->config['test_key'],'wrong_value');
+		$this->assertSame($this->config['test_key'], 'wrong_value');
 
 		$this->class_name = 'set_atomic';
 		$command_tester = $this->get_command_tester();
@@ -116,13 +116,13 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'	=> true,
 		));
 
-		$this->assertSame($this->config['test_key'],'wrong_value');
+		$this->assertSame($this->config['test_key'], 'wrong_value');
 	}
 
 	public function test_get_no_new_line()
 	{
 		$this->config->set('test_key', 'test_value', false);
-		$this->assertSame($this->config['test_key'],'test_value');
+		$this->assertSame($this->config['test_key'], 'test_value');
 
 		$this->class_name = 'get';
 		$command_tester = $this->get_command_tester();
@@ -138,7 +138,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	public function test_get_new_line()
 	{
 		$this->config->set('test_key', 'test_value', false);
-		$this->assertSame($this->config['test_key'],'test_value');
+		$this->assertSame($this->config['test_key'], 'test_value');
 
 		$this->class_name = 'get';
 		$command_tester = $this->get_command_tester();
@@ -154,7 +154,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	public function test_get_error()
 	{
 		$this->config->set('test_key', 'test_value', false);
-		$this->assertSame($this->config['test_key'],'test_value');
+		$this->assertSame($this->config['test_key'], 'test_value');
 
 		$this->class_name = 'get';
 		$command_tester = $this->get_command_tester();
@@ -167,6 +167,58 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertContains('Could not get config', $command_tester->getDisplay());
 	}
 
+	public function test_increment_dynamic()
+	{
+		$this->config->set('test_key', 0, false);
+		$this->assertSame($this->config['test_key'], 0);
+
+		$this->class_name = 'increment';
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'test_key',
+			'increment'		=> 2,
+			'--dynamic'		=> true,
+		));
+
+		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
+		$this->assertSame(2, $this->config['test_key']);
+	}
+
+	public function test_increment_no_dynamic()
+	{
+		$this->config->set('test_key', 0, false);
+		$this->assertSame($this->config['test_key'], 0);
+
+		$this->class_name = 'increment';
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'test_key',
+			'increment'		=> 2,
+			'--dynamic'		=> false,
+		));
+
+		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
+		$this->assertSame(2, $this->config['test_key']);
+	}
+
+	public function test_increment_no_set()
+	{
+		$this->assertEmpty($this->config);
+
+		$this->class_name = 'increment';
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'test_key',
+			'increment'		=> 2,
+			'--dynamic'		=> true,
+		));
+
+		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
+		$this->assertSame(2, $this->config['test_key']);
+	}
 	public function get_command_tester()
 	{
 		$command_complete_name = $this->command_namespace . '\\' . $this->class_name;
