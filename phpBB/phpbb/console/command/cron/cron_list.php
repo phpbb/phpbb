@@ -80,7 +80,7 @@ class cron_list extends \phpbb\console\command\command
 		}
 	}
 
-	public function print_tasks_names($tasks, $output)
+	protected function print_tasks_names(array $tasks, OutputInterface $output)
 	{
 		foreach ($tasks as $task)
 		{
