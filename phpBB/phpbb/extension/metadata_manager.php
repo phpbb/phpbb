@@ -31,12 +31,6 @@ class metadata_manager
 	protected $extension_manager;
 
 	/**
-	* phpBB Template instance
-	* @var \phpbb\template\template
-	*/
-	protected $template;
-
-	/**
 	* phpBB User instance
 	* @var \phpbb\user
 	*/
@@ -72,15 +66,13 @@ class metadata_manager
 	* @param string				$ext_name			Name (including vendor) of the extension
 	* @param \phpbb\config\config		$config				phpBB Config instance
 	* @param \phpbb\extension\manager	$extension_manager	An instance of the phpBB extension manager
-	* @param \phpbb\template\template	$template			phpBB Template instance
 	* @param \phpbb\user 		$user 				User instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path)
+	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\user $user, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->extension_manager = $extension_manager;
-		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 
@@ -332,11 +324,12 @@ class metadata_manager
 	/**
 	* Outputs the metadata into the template
 	*
+	* @param \phpbb\template\template	$template	phpBB Template instance
 	* @return null
 	*/
-	public function output_template_data()
+	public function output_template_data(\phpbb\template\template $template)
 	{
-		$this->template->assign_vars(array(
+		$template->assign_vars(array(
 			'META_NAME'			=> htmlspecialchars($this->metadata['name']),
 			'META_TYPE'			=> htmlspecialchars($this->metadata['type']),
 			'META_DESCRIPTION'	=> (isset($this->metadata['description'])) ? htmlspecialchars($this->metadata['description']) : '',
@@ -356,7 +349,7 @@ class metadata_manager
 
 		foreach ($this->metadata['authors'] as $author)
 		{
-			$this->template->assign_block_vars('meta_authors', array(
+			$template->assign_block_vars('meta_authors', array(
 				'AUTHOR_NAME'		=> htmlspecialchars($author['name']),
 				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',

@@ -36,7 +36,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->cache = new phpbb_mock_cache();
 		$this->config = new \phpbb\config\config(array(
 			'version'		=> '3.1.0',
 		));
@@ -44,6 +43,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->db_tools = new \phpbb\db\tools($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = 'php';
+		$this->cache =  new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->db, $this->phpbb_root_path, $this->phpEx);
 		$this->user = new \phpbb\user('\phpbb\datetime');
 		$this->table_prefix = 'phpbb_';
 
@@ -332,7 +332,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$ext_name,
 			$this->config,
 			$this->extension_manager,
-			$this->template,
 			$this->user,
 			$this->phpbb_root_path
 		);

@@ -183,7 +183,7 @@ services:
             - %tables.ext%
             - %core.root_path%
             - %core.php_ext%
-            - @cache.driver
+            - @cache
 
     filesystem:
         class: phpbb\filesystem
