@@ -16,10 +16,9 @@
 	<p>{L_EXPLAIN}</p>
 
 	<!-- IF .postrow -->
-		<!-- IF .pagination or TOTAL -->
 		<div class="action-bar">
 			<div class="pagination">
-				<!-- IF TOTAL -->{TOTAL}<!-- ENDIF -->
+				{TOTAL}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
@@ -27,7 +26,6 @@
 				<!-- ENDIF -->
 			</div>
 		</div>
-		<!-- ENDIF -->
 
 		<ul class="topiclist missing-column">
 			<li class="header">
@@ -84,10 +82,9 @@
 
 		<hr />
 
-		<!-- IF .pagination or TOTAL -->
 		<div class="action-bar">
 			<div class="pagination">
-				<!-- IF TOTAL -->{TOTAL}<!-- ENDIF -->
+				{TOTAL}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
@@ -95,7 +92,6 @@
 				<!-- ENDIF -->
 			</div>
 		</div>
-		<!-- ENDIF -->
 
 	<!-- ELSE -->
 		<p class="notopics"><strong>

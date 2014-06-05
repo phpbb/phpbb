@@ -10,10 +10,9 @@
 	<p>{L_WARNED_USERS_EXPLAIN}</p>
 
 	<!-- IF .user -->
-		<!-- IF .pagination or TOTAL_USERS -->
 		<div class="action-bar">
 			<div class="pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS}<!-- ENDIF -->
+				{TOTAL_USERS}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
@@ -21,7 +20,6 @@
 				<!-- ENDIF -->
 			</div>
 		</div>
-		<!-- ENDIF -->
 
 		<table class="table1">
 		<thead>
@@ -53,10 +51,9 @@
 
 		<hr />
 
-		<!-- IF .pagination or TOTAL_USERS -->
 		<div class="action-bar">
 			<div class="pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS}<!-- ENDIF -->
+				{TOTAL_USERS}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
@@ -64,7 +61,6 @@
 				<!-- ENDIF -->
 			</div>
 		</div>
-		<!-- ENDIF -->
 
 	<!-- ELSE -->
 		<p><strong>{L_NO_WARNINGS}</strong></p>
