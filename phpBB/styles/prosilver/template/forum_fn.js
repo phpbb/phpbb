@@ -364,7 +364,7 @@ function parse_document(container)
 		if (event.which == 13 || event.keyCode == 13) {
 			event.preventDefault();
 			pageJump($(this));
-     	}
+		}
 	});
 
 	container.find('.pagination .dropdown-trigger').click(function() {

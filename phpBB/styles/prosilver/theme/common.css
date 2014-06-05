@@ -805,10 +805,11 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Pagination
 ---------------------------------------- */
 .pagination {
-	width: auto;
-	text-align: right;
-	margin-top: 5px;
 	float: right;
+	font-size: 11px;
+	margin-top: 5px;
+	text-align: right;
+	width: auto;
 }
 
 li.pagination {
