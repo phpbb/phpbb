@@ -18,21 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class enable extends command
 {
-	protected $user;
-
-	/**
-	* Construct method
-	*
-	* @param \phpbb\extension\manager $manager Manager object
-	* @param \phpbb\log\log $log Log table
-	* @param \phpbb\user $user User object
-	*/
-	public function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log, \phpbb\user $user)
-	{
-		$this->user = $user;
-		parent::__construct($manager, $log);
-	}
-
 	protected function configure()
 	{
 		$this
