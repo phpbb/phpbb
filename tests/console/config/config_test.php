@@ -19,7 +19,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	protected $config;
 	protected $command_name;
 	protected $class_name;
-	protected $comand_namespace;
+	protected $command_namespace;
 
 	public function setUp()
 	{
@@ -93,7 +93,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'key'		=> 'test_key',
 			'old'		=> 'old_value',
 			'new'		=> 'new_value',
-			'--dynamic'	=> false
+			'--dynamic'	=> false,
 		));
 
 		$this->assertSame($this->config['test_key'], 'new_value');
