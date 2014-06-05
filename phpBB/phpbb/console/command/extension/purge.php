@@ -22,6 +22,10 @@ class purge extends command
 
 	/**
 	* Construct method
+	*
+	* @param \phpbb\extension\manager $manager Manager object
+	* @param \phpbb\log\log $log Log table
+	* @param \phpbb\user $user User object
 	*/
 	public function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log, \phpbb\user $user)
 	{

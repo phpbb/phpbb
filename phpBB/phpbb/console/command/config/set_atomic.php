@@ -23,6 +23,9 @@ class set_atomic extends command
 
 	/**
 	* Construct method
+	*
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\user $user User object
 	*/
 	public function __construct(\phpbb\config\config $config, \phpbb\user $user)
 	{

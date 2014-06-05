@@ -22,7 +22,12 @@ class recalculate_email_hash extends \phpbb\console\command\command
 
 	protected $user;
 
-
+	/**
+	* Construct method
+	*
+	* @param \phpbb\db\driver\driver_interface $db Data base
+	* @param \phpbb\user $user User object
+	*/
 	function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user)
 	{
 		$this->db = $db;
