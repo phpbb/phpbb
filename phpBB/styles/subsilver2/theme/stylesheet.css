@@ -458,6 +458,10 @@ th a:hover {
 	text-decoration: underline;
 }
 
+a.anchor {
+	display: block;
+}
+
 
 /* Form Elements
  ------------ */

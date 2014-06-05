@@ -141,8 +141,8 @@
 
 	<!-- IF postrow.S_POST_HIDDEN -->
 			<td class="gensmall" colspan="2" height="25" align="center">
-				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF -->
-				<a name="p{postrow.POST_ID}"></a>
+				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" class="anchor" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF -->
+				<a name="p{postrow.POST_ID}" class="anchor"></a>
 				<!-- IF postrow.S_POST_HIDDEN -->
 					<!-- IF postrow.S_POST_DELETED -->
 						{postrow.L_POST_DELETED_MESSAGE}
@@ -155,7 +155,7 @@
 	<!-- ELSE -->
 
 			<td align="center" valign="middle">
-				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a>
+				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" class="anchor" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF --><a name="p{postrow.POST_ID}" class="anchor"></a>
 				<b class="postauthor"<!-- IF postrow.POST_AUTHOR_COLOUR --> style="color: {postrow.POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{postrow.POST_AUTHOR}</b>
 			</td>
 			<td width="100%" height="25">
