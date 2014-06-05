@@ -237,6 +237,12 @@ div[class].topic-actions {
 	height: auto;
 }
 
+.topic-actions:after {
+	content: '';
+	clear: both;
+	display: block;
+}
+
 /* Post body styles
 ----------------------------------------*/
 .postbody {
