@@ -19,20 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class set_atomic extends command
 {
-	protected $user;
-
-	/**
-	* Construct method
-	*
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\user $user User object
-	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user)
-	{
-		$this->user = $user;
-		parent::__construct($config);
-	}
-
 	protected function configure()
 	{
 		$this
