@@ -586,6 +586,11 @@ uploader.bind('FilesAdded', function(up, files) {
 		return;
 	}
 
+	// Switch the active tab if the style supports it
+	if (typeof activateSubPanel == 'function') {
+		activateSubPanel('attach-panel');
+	}
+
 	// Show the file list if there aren't any files currently.
 	if (!$('#file-list-container').is(':visible')) {
 		$('#file-list-container').show(100);

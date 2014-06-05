@@ -228,3 +228,7 @@ a.feed-icon-forum {
 	float: right;
 	margin: 3px;
 }
+
+a.anchor {
+	display: block;
+}

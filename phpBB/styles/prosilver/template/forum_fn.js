@@ -104,28 +104,38 @@ jQuery(document).ready(function() {
 			show_panel = this.getAttribute('data-show-panel');
 
 		if (panels.length) {
-			subPanels(show_panel);
+			activateSubPanel(show_panel, panels);
 			childNodes.click(function () {
-				subPanels(this.getAttribute('data-subpanel'));
+				activateSubPanel(this.getAttribute('data-subpanel'), panels);
 				return false;
 			});
 		}
-
-		function subPanels(p) {
-			var i;
-
-			if (typeof(p) === 'string') {
-				show_panel = p;
-			}
-			$('input[name="show_panel"]').val(show_panel);
-
-			for (i = 0; i < panels.length; i++) {
-				jQuery('#' + panels[i]).css('display', panels[i] === show_panel ? 'block' : 'none');
-				jQuery('#' + panels[i] + '-tab').toggleClass('activetab', panels[i] === show_panel);
-			}
-		}
 	});
 });
+
+/**
+* Activate specific subPanel
+*/
+function activateSubPanel(p, panels) {
+	var i;
+
+	if (typeof(p) === 'string') {
+		show_panel = p;
+	}
+	$('input[name="show_panel"]').val(show_panel);
+
+	if (typeof(panels) === 'undefined') {
+		panels = [];
+		jQuery('.sub-panels a[data-subpanel]').each(function() {
+			panels.push(this.getAttribute('data-subpanel'));
+		});
+	}
+
+	for (i = 0; i < panels.length; i++) {
+		jQuery('#' + panels[i]).css('display', panels[i] === show_panel ? 'block' : 'none');
+		jQuery('#' + panels[i] + '-tab').toggleClass('activetab', panels[i] === show_panel);
+	}
+}
 
 /**
 * Call print preview
