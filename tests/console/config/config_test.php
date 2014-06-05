@@ -219,6 +219,40 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
+
+	public function test_delete_ok()
+	{
+		$this->config->set('test_key', 'test_value', false);
+		$this->assertSame($this->config['test_key'], 'test_value');
+
+		$this->class_name = 'delete';
+
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'test_key',
+		));
+
+		$this->assertContains('Successfully deleted config test_key', $command_tester->getDisplay());
+		$this->assertEmpty($this->config);
+	}
+
+	public function test_delete_error()
+	{
+		$this->assertEmpty($this->config);
+
+		$this->class_name = 'delete';
+
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'wrong_key',
+		));
+
+		$this->assertContains('Config wrong_key does not exist', $command_tester->getDisplay());
+		$this->assertEmpty($this->config);
+	}
+
 	public function get_command_tester()
 	{
 		$command_complete_name = $this->command_namespace . '\\' . $this->class_name;
