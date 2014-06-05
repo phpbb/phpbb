@@ -52,8 +52,8 @@ class check extends \phpbb\console\command\command
 		$this
 			->setName('update:check')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK'))
-			->addOption('stability', null, InputOption::VALUE_REQUIRED, 'CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY')
-			->addOption('cache', 'c', InputOption::VALUE_NONE, 'CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE')
+			->addOption('stability', null, InputOption::VALUE_REQUIRED, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY'))
+			->addOption('cache', 'c', InputOption::VALUE_NONE, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE'))
 		;
 	}
 
@@ -84,6 +84,11 @@ class check extends \phpbb\console\command\command
 				if ($stability == 'stable' || $stability == 'unstable')
 				{
 					$version_helper->force_stability($stability);
+				}
+				else
+				{
+					$output->writeln('<error>' . $this->user->lang('UPDATE_CHECK_FAIL', $stability) . '</error>');
+					return;
 				}
 			}
 			$updates_available = $version_helper->get_suggested_updates($recheck);

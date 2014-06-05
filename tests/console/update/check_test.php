@@ -44,7 +44,6 @@ class phpbb_console_command_check_test extends phpbb_test_case
 		$this->assertSame($status, 0);
 	}
 
-
 	public function test_not_up_to_date()
 	{
 		$command_tester = $this->get_command_tester('0');

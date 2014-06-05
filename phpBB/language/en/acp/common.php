@@ -225,6 +225,7 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
@@ -310,6 +311,7 @@ $lang = array_merge($lang, array(
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
+	'UPDATE_CHECK_FAIL'		=> 'The option --stability=%s does not exit.',
 	'UPDATE_NEEDED'			=> 'The board is not up to date.',
 	'UPDATE_NOT_NEEDED'		=> 'The board is up to date.',
 	'UPDATES_AVAILABLE'		=> 'Updates available:',
