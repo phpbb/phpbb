@@ -37,7 +37,7 @@ ul.topiclist dt {
 }
 
 ul.topiclist.missing-column dt {
-	margin-right: -330px;
+	margin-right: -345px;
 }
 
 ul.topiclist.two-long-columns dt {
@@ -55,7 +55,7 @@ ul.topiclist dt .list-inner {
 }
 
 ul.topiclist.missing-column dt .list-inner {
-	margin-right: 330px;
+	margin-right: 345px;
 }
 
 ul.topiclist.two-long-columns dt .list-inner {
