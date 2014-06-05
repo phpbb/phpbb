@@ -91,8 +91,6 @@ class phpbb_console_command_cache_purge_test extends phpbb_database_test_case
 
 	public function get_command_tester()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$application = new Application();
 		$application->add(new purge($this->cache, $this->db, $this->getMock('\phpbb\auth\auth'), new \phpbb\log\null(), $this->getMock('\phpbb\user'), $this->config));
 
