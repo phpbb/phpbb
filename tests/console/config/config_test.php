@@ -119,6 +119,54 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertSame($this->config['test_key'],'wrong_value');
 	}
 
+	public function test_get_no_new_line()
+	{
+		$this->config->set('test_key', 'test_value', false);
+		$this->assertSame($this->config['test_key'],'test_value');
+
+		$this->class_name = 'get';
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'test_key',
+			'--no-newline'	=> true,
+		));
+
+		$this->assertSame($this->config['test_key'], $command_tester->getDisplay());
+	}
+
+	public function test_get_new_line()
+	{
+		$this->config->set('test_key', 'test_value', false);
+		$this->assertSame($this->config['test_key'],'test_value');
+
+		$this->class_name = 'get';
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'test_key',
+			'--no-newline'	=> false,
+		));
+
+		$this->assertSame($this->config['test_key'] . "\n", $command_tester->getDisplay());
+	}
+
+	public function test_get_error()
+	{
+		$this->config->set('test_key', 'test_value', false);
+		$this->assertSame($this->config['test_key'],'test_value');
+
+		$this->class_name = 'get';
+		$command_tester = $this->get_command_tester();
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'key'			=> 'wrong_key',
+			'--no-newline'	=> false,
+		));
+
+		$this->assertContains('Could not get config', $command_tester->getDisplay());
+	}
+
 	public function get_command_tester()
 	{
 		$command_complete_name = $this->command_namespace . '\\' . $this->class_name;
