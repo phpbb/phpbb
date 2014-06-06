@@ -574,6 +574,34 @@ class manager
 		return $subscription_methods;
 	}
 
+
+	/**
+	* Get user's notification data
+	*
+	* @param int $user_id The user_id of the user to get the notifications for
+	*
+	* @return array User's notification
+	*/
+	protected function get_user_notifications($user_id)
+	{
+		$sql = 'SELECT method, notify, item_type
+				FROM ' . $this->user_notifications_table . '
+				WHERE user_id = ' . (int) $user_id . '
+					AND item_id = 0';
+
+		$result = $this->db->sql_query($sql);
+		$user_notifications = array();
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$user_notifications[$row['item_type']][] = $row;
+		}
+
+		$this->db->sql_freeresult($result);
+
+		return $user_notifications;
+	}
+
 	/**
 	* Get global subscriptions (item_id = 0)
 	*
@@ -587,36 +615,23 @@ class manager
 
 		$subscriptions = array();
 
-		$sql = 'SELECT method, notify, item_type
-				FROM ' . $this->user_notifications_table . '
-				WHERE user_id = ' . (int) $user_id . '
-					AND item_id = 0';
-
-		$result = $this->db->sql_query($sql);
-		$rows = array();
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$rows[$row['item_type']][] = $row;
-		}
-
-		$this->db->sql_freeresult($result);
+		$user_notifications = $this->get_user_notifications($user_id);
 
 		foreach ($this->get_subscription_types() as $types)
 		{
 			foreach ($types as $id => $type)
 			{
 
-				if (empty($rows[$id]))
+				if (empty($user_notifications[$id]))
 				{
 					// No rows at all, default to ''
 					$subscriptions[$id] = array('');
 				}
 				else
 				{
-					foreach ($rows[$id] as $row)
+					foreach ($user_notifications[$id] as $user_notification)
 					{
-						if (!$row['notify'])
+						if (!$user_notification['notify'])
 						{
 							continue;
 						}
@@ -626,7 +641,7 @@ class manager
 							$subscriptions[$id] = array();
 						}
 
-						$subscriptions[$id][] = $row['method'];
+						$subscriptions[$id][] = $user_notification['method'];
 					}
 				}
 			}
