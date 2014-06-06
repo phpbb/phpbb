@@ -44,7 +44,7 @@ class cron_list extends \phpbb\console\command\command
 
 		if (empty($tasks))
 		{
-			$output->writeln($this->user->lang('NO_TASK'));
+			$output->writeln($this->user->lang('CRON_NO_RUNNABLE_TASK'));
 			return;
 		}
 

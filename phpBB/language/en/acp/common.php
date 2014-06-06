@@ -230,8 +230,8 @@ $lang = array_merge($lang, array(
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
+	'CRON_NO_RUNNABLE_TASK'	=> 'No cron task needs to be run right now.',
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',
-	'CRON_NO_TASK'			=> 'No cron tasks need to be run right now.',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered path “%s” does not exist.',
