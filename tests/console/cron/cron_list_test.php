@@ -39,7 +39,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 	public function test_no_task()
 	{
 		$this->initiate_test(0, 0);
-		$this->assertContains('NO_TASK', $this->command_tester->getDisplay());
+		$this->assertContains('CRON_NO_RUNNABLE_TASK', $this->command_tester->getDisplay());
 	}
 
 	public function test_only_ready()
