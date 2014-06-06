@@ -20,6 +20,7 @@ class recalculate_email_hash extends \phpbb\console\command\command
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\user */
 	protected $user;
 
 	/**

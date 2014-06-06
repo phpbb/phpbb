@@ -225,6 +225,8 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+	'CLI_CONFIG_OPTION_NAME'			=> "The configuration option's name.",
+
 	'CLI_DESCRIPTION_CACHE_PURGE'			=> 'Purges the cache.',
 
 	'CLI_DESCRIPTION_CONFIG_DB_MIGRATE'		=> 'Updates the database by applying migrations.',
@@ -237,8 +239,6 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_CONFIG_INCREMENT'				=> "Increments a configuration option's value.",
 	'CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_2'	=> 'Amount to increment by.',
 	'CLI_DESCRIPTION_CONFIG_INCREMENT_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
-
-	'CLI_DESCRIPTION_CONFIG_OPTION_NAME'			=> "The configuration option's name.",
 
 	'CLI_DESCRIPTION_CRON_RUN'				=> 'Runs all ready cron tasks.',
 	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
@@ -282,7 +282,6 @@ $lang = array_merge($lang, array(
 	'DIRECTORY_NOT_DIR'			=> 'The entered path “%s” is not a directory.',
 	'DIRECTORY_NOT_WRITABLE'	=> 'The entered path “%s” is not writable.',
 	'DISABLE'					=> 'Disable',
-	'DISABLED'					=> 'Disabled',
 	'DOWNLOAD'					=> 'Download',
 	'DOWNLOAD_AS'				=> 'Download as',
 	'DOWNLOAD_STORE'			=> 'Download or store file',
@@ -291,7 +290,6 @@ $lang = array_merge($lang, array(
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
-	'ENABLED'				=> 'Enabled',
 	'EXPORT_DOWNLOAD'		=> 'Download',
 	'EXPORT_STORE'			=> 'Store',
 

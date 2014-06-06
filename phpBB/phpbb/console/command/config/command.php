@@ -17,7 +17,7 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var  \phpbb\user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/**

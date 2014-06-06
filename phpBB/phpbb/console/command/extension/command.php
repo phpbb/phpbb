@@ -20,7 +20,7 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var  \phpbb\user */
+	/** @var \phpbb\user */
 	protected $user;
 
 	/**
