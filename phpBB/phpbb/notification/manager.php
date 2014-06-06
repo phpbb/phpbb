@@ -602,7 +602,7 @@ class manager
 
 		$this->db->sql_freeresult($result);
 
-		foreach ($this->get_subscription_types() as $group_name => $types)
+		foreach ($this->get_subscription_types() as $types)
 		{
 			foreach ($types as $id => $type)
 			{
