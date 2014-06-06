@@ -46,6 +46,14 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.cron.list:
+        class: phpbb\console\command\cron\cron_list
+        arguments:
+            - @cron.manager
+            - @user
+        tags:
+            - { name: console.command }
+
     console.command.cron.run:
         class: phpbb\console\command\cron\run
         arguments:
