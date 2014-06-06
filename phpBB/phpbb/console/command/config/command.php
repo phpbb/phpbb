@@ -17,9 +17,19 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	function __construct(\phpbb\config\config $config)
+	/** @var \phpbb\user */
+	protected $user;
+
+	/**
+	* Construct method
+	*
+	* @param \phpbb\config\config $config Config object
+	* @param \phpbb\user $user User object
+	*/
+	function __construct(\phpbb\config\config $config, \phpbb\user $user)
 	{
 		$this->config = $config;
+		$this->user = $user;
 
 		parent::__construct();
 	}

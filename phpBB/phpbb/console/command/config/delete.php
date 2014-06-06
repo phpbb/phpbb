@@ -23,11 +23,11 @@ class delete extends command
 	{
 		$this
 			->setName('config:delete')
-			->setDescription('Deletes a configuration option')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_CONFIG_DELETE'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				"The configuration option's name"
+				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
 			)
 		;
 	}
@@ -40,11 +40,11 @@ class delete extends command
 		{
 			$this->config->delete($key);
 
-			$output->writeln("<info>Successfully deleted config $key</info>");
+			$output->writeln('<info>' . $this->user->lang('CONFIG_DELETE_SUCCESS', $key) . '</info>');
 		}
 		else
 		{
-			$output->writeln("<error>Config $key does not exist</error>");
+			$output->writeln('<error>' . $this->user->lang('CONFIG_DELETE_FAIL', $key) . '</error>');
 		}
 	}
 }
