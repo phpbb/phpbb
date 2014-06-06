@@ -43,7 +43,7 @@ class migrate extends \phpbb\console\command\command
 		$this->cache = $cache;
 		$this->log = $log;
 		$this->user = $user;
-		$this->user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
+		$this->user->add_lang(array('common', 'install', 'migrator'));
 		parent::__construct();
 	}
 

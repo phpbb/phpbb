@@ -39,6 +39,9 @@ $phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$php
 $phpbb_container->get('request')->enable_super_globals();
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
-$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION);
+$user = $phpbb_container->get('user');
+$user->add_lang('acp/common');
+
+$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $user);
 $application->register_container_commands($phpbb_container);
 $application->run();
