@@ -589,6 +589,28 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			);
 		}
 
+		/**
+		* Modify and/or assign additional template data for the forum
+		* after forumrow loop has been assigned. This can be used
+		* to create additional forumrow subloops in extensions.
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_add_template_data
+		* @var	array	forum_row		Template data of the forum
+		* @var	array	row				The data of the forum
+		* @var	array	subforums_list	The data of subforums
+		* @var	bool	catless			The flag indicating whether a forum has a parent category
+		* @since 3.1.0-b5
+		*/
+		$vars = array(
+			'forum_row',
+			'row',
+			'subforums_list',
+			'catless',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_add_template_data', compact($vars)));
+
 		$last_catless = $catless;
 	}
 
