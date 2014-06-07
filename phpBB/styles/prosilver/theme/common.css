@@ -455,6 +455,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 .header-avatar span:after {
 	content: '\25BC';
 	display: inline-block;
+	font-size: 9px;
 	float: right;
 	margin-left: 2px;
 	opacity: 0.7;
@@ -611,11 +612,8 @@ ul.linklist.bulletin li.no-bulletin:before {
 
 .dropdown li.separator {
 	border-top: 1px solid transparent;
-}
-
-.dropdown li.separator, ul.linklist .dropdown li.separator {
-	margin: 4px 0;
-	padding: 0;
+	margin: 4px 0 !important;
+	padding: 0 !important;
 }
 
 .dropdown li.separator:first-child, .dropdown li.separator:last-child {

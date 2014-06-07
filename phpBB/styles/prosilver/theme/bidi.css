@@ -97,6 +97,11 @@
 	padding-right: 0;
 }
 
+.rtl ul.linklist li.responsive-menu a.responsive-menu-link:before {
+	left: auto;
+	right: 0;
+}
+
 /* Dropdown menu
 ---------------------------------------- */
 .rtl .dropdown-container.topic-tools {
@@ -110,6 +115,12 @@
 .rtl .dropdown li li {
 	padding-left: 0;
 	padding-right: 10px;
+}
+
+.rtl ul.linklist .dropdown li {
+	margin: 0;
+	padding-left: 0;
+	padding-right: 4px;
 }
 
 .rtl .dropdown-extended .header .header_settings {
@@ -276,12 +287,15 @@
 	text-align: left;
 }
 
-.rtl .forabg {
-	width: 99%;	/* fix for IE6 */
+.rtl #quick-links {
+	margin-left: 7px;
+	margin-right: 0;
 }
 
-.rtl .forumbg {
-	width: 99%;	/* fix for IE6 */
+.rtl .header-avatar span:after {
+	float: left;
+	margin-left: 0;
+	margin-right: 2px;
 }
 
 .rtl .member-search {
