@@ -1201,7 +1201,11 @@ phpbb.applyCodeEditor = function(textarea) {
 		var key = event.keyCode || event.which;
 
 		// intercept tabs
-		if (key == 9) {
+		if (key == 9		&&
+			!event.ctrlKey	&&
+			!event.shiftKey	&&
+			!event.altKey	&&
+			!event.metaKey) {
 			if (inTag()) {
 				appendText("\t");
 				event.preventDefault();
