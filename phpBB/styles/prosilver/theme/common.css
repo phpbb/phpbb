@@ -452,6 +452,14 @@ ul.linklist.bulletin li.no-bulletin:before {
 	width: auto;
 }
 
+.header-avatar span:after {
+	content: '\25BC';
+	display: inline-block;
+	float: right;
+	margin-left: 2px;
+	opacity: 0.7;
+}
+
 /* Dropdown menu
 ----------------------------------------*/
 .dropdown-container {
@@ -606,7 +614,7 @@ ul.linklist.bulletin li.no-bulletin:before {
 }
 
 .dropdown li.separator, ul.linklist .dropdown li.separator {
-	margin: 3px 0;
+	margin: 4px 0;
 	padding: 0;
 }
 

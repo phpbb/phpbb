@@ -9,12 +9,6 @@
 				<div class="pointer"><div class="pointer-inner"></div></div>
 				<ul class="dropdown-contents">
 					<!-- EVENT overall_header_quick_links_before -->
-
-					<!-- <!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
-						<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
-						<!-- IF U_TEAM --><li class="small-icon icon-team"><a href="{U_TEAM}">{L_THE_TEAM}</a></li><!-- ENDIF -->
-					<!-- ENDIF --> -->
-
 					<li class="separator"></li>
 
 					<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
@@ -47,7 +41,7 @@
 
 	<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
 		<li id="username_logged_in" class="rightside dropdown-container<!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
-			<a href="{U_PROFILE}" class="header-avatar dropdown-trigger icon-dropdown"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_CLEAN}</a>
+			<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_CLEAN}</a>
 			<div class="dropdown hidden">
 				<div class="pointer"><div class="pointer-inner"></div></div>
 				<ul class="dropdown-contents">

@@ -383,9 +383,6 @@ function parse_document(container)
 	if (oldBrowser) {
 		// Fix .linklist.bulletin lists
 		container.find('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
-
-		// Do not run functions below for old browsers
-		return;
 	}
 
 	/**
@@ -481,6 +478,158 @@ function parse_document(container)
 		check();
 		$(window).resize(check);
 	});
+
+	/**
+	* Responsive link lists
+	*/
+	container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
+		var $this = $(this),
+			$body = $('body'),
+			filterSkip = '.breadcrumbs, [data-skip-responsive]',
+			filterLast = '.pagination, .icon-faq, .mark-read, .edit-icon, .quote-icon',
+			persist = $this.attr('id') == 'nav-main',
+			allLinks = $this.children(),
+			links = allLinks.not(filterSkip),
+			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+			filterLastList = links.filter(filterLast);
+
+		if (!persist) {
+			if (links.is('.rightside'))
+			{
+				links.filter('.rightside:first').before(html);
+				$this.children('.responsive-menu').addClass('rightside');
+			}
+			else
+			{
+				$this.append(html);
+			}
+		}
+
+		var item = $this.children('.responsive-menu'),
+			menu = item.find('.dropdown-contents'),
+			lastWidth = false,
+			compact = false,
+			responsive = false,
+			copied = false;
+
+		function check() {
+			var width = $body.width();
+			if (responsive && width <= lastWidth) {
+				return;
+			}
+
+			// Reset responsive and compact layout
+			if (responsive) {
+				responsive = false;
+				$this.removeClass('responsive');
+				links.css('display', '');
+				if (!persist) item.css('display', 'none');
+			}
+
+			if (compact) {
+				compact = false;
+				$this.removeClass('compact');
+			}
+
+			// Find tallest element
+			var maxHeight = 0;
+			allLinks.each(function() {
+				if (!$(this).height()) return;
+				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+			});
+
+			if (maxHeight < 1) {
+				return;
+			}
+
+			// Nothing to resize if block's height is not bigger than tallest element's height
+			if ($this.height() <= maxHeight) {
+				return;
+			}
+
+			// Enable compact layout, find tallest element, compare to height of whole block
+			compact = true;
+			$this.addClass('compact');
+
+			var compactMaxHeight = 0;
+			allLinks.each(function() {
+				if (!$(this).height()) return;
+				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
+			});
+
+			if ($this.height() <= maxHeight) {
+				return;
+			}
+
+			// Compact layout did not resize block enough, switch to responsive layout
+			compact = false;
+			$this.removeClass('compact');
+			responsive = true;
+
+			if (!copied) {
+				var clone = links.clone(true);
+				clone.filter('.rightside').each(function() {
+					if (persist) $(this).addClass('clone');
+					menu.prepend(this);
+				});
+				
+				if (persist) {
+					menu.prepend(clone.not('.rightside').addClass('clone'));
+				} else {
+					menu.prepend(clone.not('.rightside'));
+				}
+
+				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
+				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+
+				if ($this.hasClass('post-buttons')) {
+					$('.button', menu).removeClass('button icon-button');
+					$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
+				}
+				copied = true;
+			}
+			else {
+				menu.children().css('display', '');
+			}
+
+			item.css('display', '');
+			$this.addClass('responsive');
+
+			// Try to not hide filtered items #TODO: this does not work in FF and IE of some reason
+			if (filterLastList.length) {
+				links.not(filterLast).css('display', 'none');
+
+				maxHeight = 0;
+				filterLastList.each(function() {
+					if (!$(this).height()) return;
+					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+				});
+
+				if ($this.height() <= maxHeight) {
+					menu.children().filter(filterLast).css('display', 'none');
+					return;
+				}
+			}
+
+			// If even responsive isn't enough, use both responsive and compact at same time
+			compact = true;
+			$this.addClass('compact');
+
+			links.css('display', 'none');
+		}
+
+		if (!persist) phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
+
+		check();
+		$(window).resize(check);
+	});
+
+	/**
+	* Do not run functions below for old browsers	
+	*/
+	if (oldBrowser) {
+		return;
+	}
 
 	/**
 	* Adjust topiclist lists with check boxes
@@ -664,151 +813,6 @@ function parse_document(container)
 		{
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
-	});
-
-	/**
-	* Responsive link lists
-	*/
-	container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
-		var $this = $(this),
-			$body = $('body'),
-			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.pagination, .icon-acp, .icon-mcp, .icon-notifications, .icon-pm, .icon-logout, .icon-login, .mark-read, .edit-icon, .quote-icon',
-			persist = $this.attr('id') == 'nav-main',
-			allLinks = $this.children(),
-			links = allLinks.not(filterSkip),
-			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-			filterLastList = links.filter(filterLast);
-
-		if (!persist) {
-			if (links.is('.rightside'))
-			{
-				links.filter('.rightside:first').before(html);
-				$this.children('.responsive-menu').addClass('rightside');
-			}
-			else
-			{
-				$this.append(html);
-			}
-		}
-
-		var item = $this.children('.responsive-menu'),
-			menu = item.find('.dropdown-contents'),
-			lastWidth = false,
-			compact = false,
-			responsive = false,
-			copied = false;
-
-		function check() {
-			var width = $body.width();
-			if (responsive && width <= lastWidth) {
-				return;
-			}
-
-			// Reset responsive and compact layout
-			if (responsive) {
-				responsive = false;
-				$this.removeClass('responsive');
-				links.css('display', '');
-				if (!persist) item.css('display', 'none');
-			}
-
-			if (compact) {
-				compact = false;
-				$this.removeClass('compact');
-			}
-
-			// Find tallest element
-			var maxHeight = 0;
-			allLinks.each(function() {
-				if (!$(this).height()) return;
-				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-			});
-
-			if (maxHeight < 1) {
-				return;
-			}
-
-			// Nothing to resize if block's height is not bigger than tallest element's height
-			if ($this.height() <= maxHeight) {
-				return;
-			}
-
-			// Enable compact layout, find tallest element, compare to height of whole block
-			compact = true;
-			$this.addClass('compact');
-
-			var compactMaxHeight = 0;
-			allLinks.each(function() {
-				if (!$(this).height()) return;
-				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
-			});
-
-			if ($this.height() <= maxHeight) {
-				return;
-			}
-
-			// Compact layout did not resize block enough, switch to responsive layout
-			compact = false;
-			$this.removeClass('compact');
-			responsive = true;
-
-			if (!copied) {
-				var clone = links.clone(true);
-				clone.filter('.rightside').each(function() {
-					if (persist) this.addClass('clone');
-					menu.prepend(this);
-				});
-				
-				if (persist) {
-					menu.prepend(clone.not('.rightside').addClass('clone'));
-				} else {
-					menu.prepend(clone.not('.rightside'));
-				}
-
-				menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
-				menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
-
-				if ($this.hasClass('post-buttons')) {
-					$('.button', menu).removeClass('button icon-button');
-					$('.responsive-menu-link', item).addClass('button icon-button').prepend('<span></span>');
-				}
-				copied = true;
-			}
-			else {
-				menu.children().css('display', '');
-			}
-
-			item.css('display', '');
-			$this.addClass('responsive');
-
-			// Try to not hide filtered items #TODO: this does not work!
-			if (filterLastList.length) {
-				links.not(filterLast).css('display', 'none');
-
-				maxHeight = 0;
-				filterLastList.each(function() {
-					if (!$(this).height()) return;
-					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-				});
-
-				if ($this.height() <= maxHeight) {
-					menu.children().filter(filterLast).css('display', 'none');
-					return;
-				}
-			}
-
-			// If even responsive isn't enough, use both responsive and compact at same time
-			compact = true;
-			$this.addClass('compact');
-
-			links.css('display', 'none');
-		}
-
-		if (!persist) phpbb.registerDropdown(item.find('a.responsive-menu-link'), item.find('.dropdown'));
-
-		check();
-		$(window).resize(check);
 	});
 
 	/**

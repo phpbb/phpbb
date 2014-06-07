@@ -369,11 +369,6 @@ a.arrow-right:hover {
 	color: #368AD2;
 }
 
-a.icon-dropdown:after {
-	background-image: url("./images/icon_dropdown.png");
-}
-
-
 /*
 --------------------------------------------------------------
 Colours and backgrounds for content.css
