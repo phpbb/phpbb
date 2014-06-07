@@ -696,7 +696,8 @@ Colours and backgrounds for buttons.css
 .icon-faq						{ background-image: url("./images/icon_faq.gif"); }
 .icon-members					{ background-image: url("./images/icon_members.gif"); }
 .icon-team						{ background-image: url("./images/icon_team.gif"); }
-.icon-cookies					{ background-image: url("./images/icon_cookies.gif"); }
+.icon-delete-cookies			{ background-image: url("./images/icon_delete_cookies.gif"); }
+.icon-contact					{ background-image: url("./images/icon_pm.gif"); }
 .icon-home						{ background-image: url("./images/icon_home.gif"); }
 .icon-acp						{ background-image: url("./images/icon_acp.gif"); }
 .icon-mcp						{ background-image: url("./images/icon_mcp.gif"); }
