@@ -543,7 +543,7 @@ function parse_document(container)
 			}
 
 			// Nothing to resize if block's height is not bigger than tallest element's height
-			if ($this.height() <= maxHeight) {
+			if ($this.height() <= (maxHeight + 1)) {
 				return;
 			}
 
@@ -557,7 +557,7 @@ function parse_document(container)
 				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 			});
 
-			if ($this.height() <= maxHeight) {
+			if ($this.height() <= (maxHeight + 1)) {
 				return;
 			}
 
@@ -595,7 +595,7 @@ function parse_document(container)
 			item.css('display', '');
 			$this.addClass('responsive');
 
-			// Try to not hide filtered items #TODO: this does not work in FF and IE of some reason
+			// Try to not hide filtered items
 			if (filterLastList.length) {
 				links.not(filterLast).css('display', 'none');
 
@@ -605,7 +605,7 @@ function parse_document(container)
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 				});
 
-				if ($this.height() <= maxHeight) {
+				if ($this.height() <= (maxHeight + 1)) {
 					menu.children().filter(filterLast).css('display', 'none');
 					return;
 				}
