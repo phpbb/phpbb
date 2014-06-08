@@ -174,30 +174,17 @@ class path_helper
 		$corrections = substr_count($path_info, '/');
 
 		/*
-		* If the script name (e.g. phpBB/app.php) exists in the
-		*	requestUri (e.g. phpBB/app.php/foo/template), then we
-		*	are have a non-rewritten URL.
+		* If the script name (e.g. phpBB/app.php) does not exists in the
+		* requestUri (e.g. phpBB/app.php/foo/template), then we are rewriting
+		* the URL. So we must reduce the slash count by 1.
 		*/
-		if (strpos($request_uri, $script_name) === 0)
+		if (strpos($request_uri, $script_name) !== 0)
 		{
-			/*
-			* Append ../ to the end of the phpbb_root_path as many times
-			*	as / exists in path_info
-			*/
-			$this->web_root_path = $this->filesystem->clean_path(str_repeat('../', $corrections) . $this->phpbb_root_path);
-		}
-		else
-		{
-			/*
-			* If we're here it means we're at a re-written path, so we must
-			*	correct the relative path for web URLs. We must append ../
-			*	to the end of the root path as many times as / exists in path_info
-			*	less one time (because the script, e.g. /app.php, doesn't exist in
-			*	the URL)
-			*/
-			$this->web_root_path = $this->filesystem->clean_path(str_repeat('../', $corrections - 1) . $this->phpbb_root_path);
+			$corrections--;
 		}
 
+		// Prepend ../ to the phpbb_root_path as many times as / exists in path_info
+		$this->web_root_path = $this->filesystem->clean_path(str_repeat('../', $corrections) . $this->phpbb_root_path);
 		return $this->web_root_path;
 	}
 
