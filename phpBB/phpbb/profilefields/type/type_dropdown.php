@@ -244,6 +244,69 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['field_default_value'];
+
+		$value = $this->request->variable($field_ident, $default_value);
+
+		if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
+		{
+			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
+		}
+
+		$profile_row['field_value'] = (int) $value;
+		$this->template->assign_block_vars('dropdown', array_change_key_case($profile_row, CASE_UPPER));
+
+		$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
+
+		foreach ($options as $option_id => $option_value)
+		{
+			$this->template->assign_block_vars('dropdown.options', array(
+				'OPTION_ID'	=> $option_id,
+				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
+				'VALUE'		=> $option_value,
+			));
+		}
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_search_array($profile_row)
+	{
+		$output = array(
+			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
+			'field_novalue'	=> $profile_row['field_novalue'],
+			'field_multibyte'	=> true,
+		);
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function make_sql_where($profile_row, $db, $table_prefix = 'pd')
+	{
+		// Let's check if the value is set ... and is it diferent from novalue
+		$field_ident = 'pf_' . $profile_row['field_ident'];
+		$default_value = $profile_row['field_novalue'];
+		$field_value = $this->request->variable($field_ident, $default_value);
+		$output = '';
+
+		if ($this->request->is_set($field_ident) && $field_value != $default_value)
+		{
+			$output = ' AND ' .$table_prefix. '.' . $field_ident . ' = '. $db->sql_escape($field_value);
+		}
+
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_database_column_type()
 	{
 		return 'UINT';
