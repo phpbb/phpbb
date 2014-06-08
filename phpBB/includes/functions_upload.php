@@ -1051,7 +1051,7 @@ class fileupload
 	*/
 	static public function image_types()
 	{
-		return array(
+		$result = array(
 			IMAGETYPE_GIF		=> array('gif'),
 			IMAGETYPE_JPEG		=> array('jpg', 'jpeg'),
 			IMAGETYPE_PNG		=> array('png'),
@@ -1064,10 +1064,16 @@ class fileupload
 			IMAGETYPE_JP2		=> array('jpg', 'jpeg'),
 			IMAGETYPE_JPX		=> array('jpg', 'jpeg'),
 			IMAGETYPE_JB2		=> array('jpg', 'jpeg'),
-			IMAGETYPE_SWC		=> array('swc'),
 			IMAGETYPE_IFF		=> array('iff'),
 			IMAGETYPE_WBMP		=> array('wbmp'),
 			IMAGETYPE_XBM		=> array('xbm'),
 		);
+
+		if (defined('IMAGETYPE_SWC'))
+		{
+			$result[IMAGETYPE_SWC] = array('swc');
+		}
+
+		return $result;
 	}
 }
