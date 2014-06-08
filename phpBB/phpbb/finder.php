@@ -330,7 +330,9 @@ class finder
 	*
 	* @param bool $cache Whether the result should be cached
 	* @param bool $is_dir Directories will be returned when true, only files
-	*                     otherwise
+	*					otherwise
+	* @param bool $extension_keys If true, result will be associative array
+	*					with extension name as key
 	* @return array An array of paths to found items
 	*/
 	protected function find_with_root_path($cache = true, $is_dir = false, $extension_keys = false)
