@@ -11,16 +11,16 @@
 	<!-- DEFINE $SHOW_PANEL = 'display-panel' -->
 <!-- ENDIF -->
 
-<div id="minitabs" class="sub-panels" data-show-panel="{$SHOW_PANEL}">
+<div id="minitabs" class="sub-panels" data-show-panel="{$SHOW_PANEL}" role="tablist">
 	<ul>
 		<li id="display-panel-tab" class="tab<!-- IF not S_MERGE_VIEW --> activetab<!-- ENDIF -->">
-			<a href="#minitabs" data-subpanel="display-panel">{L_DISPLAY_OPTIONS}</a>
+			<a href="#minitabs" data-subpanel="display-panel" role="tab" aria-controls="display-panel">{L_DISPLAY_OPTIONS}</a>
 		</li>
 		<li id="split-panel-tab" class="tab">
-			<a href="#minitabs" data-subpanel="split-panel">{L_SPLIT_TOPIC}</a>
+			<a href="#minitabs" data-subpanel="split-panel" role="tab" aria-controls="split-panel">{L_SPLIT_TOPIC}</a>
 		</li>
 		<li id="merge-panel-tab" class="tab<!-- IF S_MERGE_VIEW --> activetab<!-- ENDIF -->">
-			<a href="#minitabs" data-subpanel="merge-panel">{L_MERGE_POSTS}</a>
+			<a href="#minitabs" data-subpanel="merge-panel" role="tab" aria-controls="merge-panel">{L_MERGE_POSTS}</a>
 		</li>
 	</ul>
 </div>
@@ -31,7 +31,7 @@
 <div class="panel">
 	<div class="inner">
 
-	<fieldset id="display-panel" class="fields2">
+	<fieldset id="display-panel" class="fields2" role="tabpanel">
 	<dl>
 		<dt><label for="posts_per_page">{L_POSTS_PER_PAGE}{L_COLON}</label><br /><span>{L_POSTS_PER_PAGE_EXPLAIN}</span></dt>
 		<dd><input class="inputbox autowidth" type="number" min="1" name="posts_per_page" id="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></dd>
@@ -43,7 +43,7 @@
 	</fieldset>
 
 <!-- IF S_CAN_SPLIT -->
-	<fieldset id="split-panel" class="fields2">
+	<fieldset id="split-panel" class="fields2" role="tabpanel">
 		<p>{L_SPLIT_TOPIC_EXPLAIN}</p>
 
 	<!-- IF S_SHOW_TOPIC_ICONS -->
@@ -66,7 +66,7 @@
 <!-- ENDIF -->
 
 <!-- IF S_CAN_MERGE -->
-	<fieldset id="merge-panel" class="fields2">
+	<fieldset id="merge-panel" class="fields2" role="tabpanel">
 		<p>{L_MERGE_TOPIC_EXPLAIN}</p>
 	<dl>
 		<dt><label for="to_topic_id">{L_MERGE_TOPIC_ID}{L_COLON}</label></dt>
