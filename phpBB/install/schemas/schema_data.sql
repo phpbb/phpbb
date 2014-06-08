@@ -304,7 +304,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('warnin
 INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info', '');
 INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_uid', '');
 INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_bitfield', '');
-INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_flags', '');
+INSERT INTO phpbb_config_text (config_name, config_value) VALUES ('contact_admin_info_flags', '7');
 
 # -- Forum related auth options
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_', 1);

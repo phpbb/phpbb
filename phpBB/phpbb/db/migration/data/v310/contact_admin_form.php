@@ -20,9 +20,6 @@ class contact_admin_form extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('contact_admin_form_enable', 1)),
-			array('config.add', array('contact_admin_info_uid', '')),
-			array('config.add', array('contact_admin_info_bitfield', '')),
-			array('config.add', array('contact_admin_info_flags', '')),
 			array('custom', array(array($this, 'contact_admin_info'))),
 		);
 	}
@@ -30,6 +27,11 @@ class contact_admin_form extends \phpbb\db\migration\migration
 	public function contact_admin_info()
 	{
 		$text_config = new \phpbb\config\db_text($this->db, $this->table_prefix . 'config_text');
-		$text_config->set('contact_admin_info', '');
+		$text_config->set_array(array(
+			'contact_admin_info'			=> '',
+			'contact_admin_info_uid'		=> '',
+			'contact_admin_info_bitfield'	=> '',
+			'contact_admin_info_flags'		=> OPTION_FLAG_BBCODE + OPTION_FLAG_SMILIES + OPTION_FLAG_LINKS,
+		));
 	}
 }
