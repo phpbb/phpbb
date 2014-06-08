@@ -276,6 +276,35 @@ class type_date extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		return '';
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_search_array($profile_row)
+	{
+		$output = array(
+			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
+			'field_novalue'	=> $profile_row['field_novalue'],
+			'field_multibyte'	=> true,
+		);
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function make_sql_where($profile_row, $db, $table_prefix = 'pd')
+	{
+		//@todo needs implementing
+		return '';
+	}
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return '';
