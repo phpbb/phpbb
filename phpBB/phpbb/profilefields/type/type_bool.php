@@ -246,6 +246,89 @@ class type_bool extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['field_default_value'];
+		$no_value = $profile_row['field_novalue'];
+
+		// checkbox - set the value to "true" if it has been set to on
+		if ($profile_row['field_length'] == 2)
+		{
+			$value = ($this->request->is_set($field_ident) && $this->request->variable($field_ident, $default_value) == 'on') ? true : $default_value;
+		}
+		else
+		{
+			$value = $this->request->variable($field_ident, $no_value);
+		}
+
+		$profile_row['field_value'] = (int) $value;
+		$this->template->assign_block_vars('bool', array_change_key_case($profile_row, CASE_UPPER));
+
+		if ($profile_row['field_length'] == 1)
+		{
+			if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
+			{
+				$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
+			}
+
+			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
+			$this->template->assign_block_vars('bool.options', array(
+				'OPTION_ID'	=> 0,
+				'CHECKED'	=> (!$value) ? ' checked="checked"' : '',
+				'VALUE'		=> $this->user->lang['CANCEL'],
+			));
+
+			foreach ($options as $option_id => $option_value)
+			{
+				$this->template->assign_block_vars('bool.options', array(
+					'OPTION_ID'	=> $option_id,
+					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
+					'VALUE'		=> $option_value,
+				));
+			}
+		}
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_search_array($profile_row)
+	{
+		$output = array(
+			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
+			'field_novalue'	=> $profile_row['field_novalue'],
+			'field_multibyte'	=> false,
+		);
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function make_sql_where($profile_row, $db, $table_prefix = 'pd')
+	{
+		// Let's check if the value is set ... and is it diferent from novalue
+		$field_ident = 'pf_' . $profile_row['field_ident'];
+		$default_value = $profile_row['field_novalue'];
+		$field_value = $this->request->variable($field_ident, $default_value);
+		$output = '';
+
+		if ($profile_row['field_length'] == 2 && $this->request->is_set($field_ident) && $field_value == 'on')
+		{
+			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = 1';
+		}
+		else if ($this->request->is_set($field_ident) && $field_value != $profile_row['field_novalue'] && $field_value != 0 )
+		{
+			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = ' . $db->sql_escape($field_value);
+		}
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return ($field_data['field_length'] == '1') ? '' : 'pf_' . $field_data['field_ident'];
