@@ -1,6 +1,6 @@
 <h2 class="solo">{L_FIND_USERNAME}</h2>
 
-<form method="post" action="{S_MODE_ACTION}" id="search_memberlist">
+<form method="post" action="{S_USER_SEARCH_ACTION}" id="search_memberlist">
 <div class="panel">
 	<div class="inner">
 
@@ -68,6 +68,13 @@
 		<dd><input class="inputbox medium" type="text" name="ip" id="ip" value="{IP}" /></dd>
 	</dl>
 <!-- ENDIF -->
+
+<!-- BEGIN search_fields -->
+	<dl>
+		<dt><label for="pf_{search_fields.FIELD_ID}">{search_fields.LANG_NAME}</label></dt>
+		<dd>{search_fields.FIELD}</dd>
+	</dl>
+<!-- END search_fields -->
 	<!-- EVENT memberlist_search_fields_after -->
 	</fieldset>
 
