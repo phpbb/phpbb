@@ -924,7 +924,7 @@ switch ($mode)
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
 			$additional_cpf_exist = $cp->profile_fields_data_exists();
-			$search_profilefields_params = $cp->build_custom_fields_search_array();
+			$search_profilefields_params = $cp->build_custom_fields_search_array(); 
 			//Let's get search fields up
 			$cp->generate_search_fields();
 		}
@@ -993,7 +993,6 @@ switch ($mode)
 			{
 				$sql_where .= $cp->generate_sql_where();
 			}
-
 			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
 			{
 				$joined_time = gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]);
@@ -1251,7 +1250,7 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
-		foreach ($search_profilefields_params as $additional_search_params)
+		foreach ($search_profilefields_params as $additional_search_params) 
 		{
 			$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
 		}
