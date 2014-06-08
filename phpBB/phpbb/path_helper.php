@@ -158,7 +158,7 @@ class path_helper
 		*/
 		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
 		{
-			return $this->web_root_path = $this->filesystem->clean_path('../' . $this->phpbb_root_path);
+			return $this->web_root_path = $this->filesystem->clean_path('./../' . $this->phpbb_root_path);
 		}
 
 		/*
@@ -184,7 +184,9 @@ class path_helper
 		}
 
 		// Prepend ../ to the phpbb_root_path as many times as / exists in path_info
-		$this->web_root_path = $this->filesystem->clean_path(str_repeat('../', $corrections) . $this->phpbb_root_path);
+		$this->web_root_path = $this->filesystem->clean_path(
+			'./' . str_repeat('../', $corrections) . $this->phpbb_root_path
+		);
 		return $this->web_root_path;
 	}
 
