@@ -1060,7 +1060,8 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
+		$sql_select = $sql_where_data = $sql_where = $order_by = '';
+		$sql_from = array();
 
 
 		$form			= $request->variable('form', '');
@@ -1070,6 +1071,23 @@ switch ($mode)
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
+		// Build additional search parameter array
+		$search_profilefields_params = array();
+		// and check if PROFILE_FIELDS_DATA is not empty
+		$additional_cpf_exist = false;
+		if ($config['load_cpf_memberlist'])
+		{
+			$cp = $phpbb_container->get('profilefields.manager');
+			$additional_cpf_exist = $cp->profile_fields_data_exists();
+			$search_profilefields_params = $cp->build_custom_fields_search_array(); 
+			//Let's get search fields up
+			$cp->generate_search_fields();
+		}
+		//expand search URL parameters
+		foreach ($search_profilefields_params as $search_parameter) 
+		{
+			$search_params[] = $search_parameter['field_ident'];
+		}
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
@@ -1092,6 +1110,11 @@ switch ($mode)
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
+			// Time to add aditional search parameters
+			foreach ($search_profilefields_params as $search_parameter)
+			{
+				$search_container[$search_parameter['field_ident']] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
+			}
 			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
 			$s_find_count = '';
 			foreach ($find_count as $key => $value)
@@ -1120,7 +1143,13 @@ switch ($mode)
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
-			if (isset($find_key_match[$joined_select]) && count($joined) == 3)
+			// Now to build the additional sql_where
+			if (!empty($search_profilefields_params))
+			{
+				$sql_where .= $cp->generate_sql_where();
+			}
+			
+			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
 			{
 				$joined_time = gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]);
 
@@ -1155,7 +1184,9 @@ switch ($mode)
 
 			if ($search_group_id)
 			{
-				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+				$sql_from = array(
+					USER_GROUP_TABLE	=> 'ug',
+				);
 			}
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
@@ -1351,7 +1382,9 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+			$sql_from[] = array(
+				USER_GROUP_TABLE	=> 'ug'
+			);
 			$order_by = 'ug.group_leader DESC, ';
 
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
@@ -1399,10 +1432,33 @@ switch ($mode)
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
 
 		// Count the users ...
-		$sql = 'SELECT COUNT(u.user_id) AS total_users
-			FROM ' . USERS_TABLE . " u$sql_from
-			WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
-			$sql_where";
+		if ($sql_where)
+		{
+			$sql_array = array(
+				'SELECT'	=> 'COUNT(u.user_id) as total_users',
+				'FROM'		=> array(
+					USERS_TABLE	=> 'u',
+				),
+				'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
+			);
+			if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
+			{
+				$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+				$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
+			}
+			if (!empty($sql_from))
+			{
+				$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
+			}
+			$sql = $db->sql_build_query('SELECT', $sql_array);
+		}
+		else
+		{
+			$sql = 'SELECT COUNT(u.user_id) AS total_users
+				FROM ' . USERS_TABLE . " u$sql_from
+				WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
+				$sql_where";
+		}
 		$result = $db->sql_query($sql);
 		$total_users = (int) $db->sql_fetchfield('total_users');
 		$db->sql_freeresult($result);
@@ -1431,6 +1487,10 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
+		foreach ($search_profilefields_params as $additional_search_params) 
+		{
+			$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
+		}
 
 		$u_first_char_params = array();
 		foreach ($check_params as $key => $call)
@@ -1601,12 +1661,26 @@ switch ($mode)
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $total_users);
 
 		// Get us some users :D
-		$sql = "SELECT u.user_id
-			FROM " . USERS_TABLE . " u
-				$sql_from
-			WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
-				$sql_where
-			ORDER BY $order_by";
+		$sql_array = array(
+			'SELECT'	=> 'u.user_id',
+			'FROM'		=> array(
+				USERS_TABLE	=> 'u',
+			),
+			'WHERE'	=> $db->sql_in_set('u.user_type', $user_types) . $sql_where,
+			'ORDER_BY'	=> $order_by,
+		);
+
+		if ($config['load_cpf_memberlist'] && $additional_cpf_exist)
+		{
+			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
+		}
+		if (!empty($sql_from))
+		{
+			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
+		}
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		$user_list = array();
@@ -1621,7 +1695,6 @@ switch ($mode)
 		{
 			/* @var $cp \phpbb\profilefields\manager */
 			$cp = $phpbb_container->get('profilefields.manager');
-
 			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
 			foreach ($cp_row as $profile_field)
 			{
