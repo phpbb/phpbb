@@ -221,4 +221,22 @@ abstract class type_base implements type_interface
 
 		return $this->template->assign_display('cp_body');
 	}
+
+	/**
+	* Return templated value/field for search
+	*/
+	public function process_search_field_row($profile_row)
+	{
+		// set template filename
+		$this->template->set_filenames(array(
+			'cp_body'		=> $this->get_template_filename(),
+		));
+		// empty previously filled blockvars
+		$this->template->destroy_block_vars($this->get_name_short());
+
+		// Assign template variables
+		$this->generate_search_field($profile_row);
+
+		return $this->template->assign_display('cp_body');
+	}
 }
