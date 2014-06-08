@@ -1051,6 +1051,9 @@ class fileupload
 	*/
 	static public function image_types()
 	{
+		//So it appears there is option to be missing some PHP global Constant SWC ...
+		$imagetype_swc = (defined('IMAGETYPE_SWC')) ? IMAGETYPE_SWC : 13; 
+
 		return array(
 			IMAGETYPE_GIF		=> array('gif'),
 			IMAGETYPE_JPEG		=> array('jpg', 'jpeg'),
@@ -1064,10 +1067,12 @@ class fileupload
 			IMAGETYPE_JP2		=> array('jpg', 'jpeg'),
 			IMAGETYPE_JPX		=> array('jpg', 'jpeg'),
 			IMAGETYPE_JB2		=> array('jpg', 'jpeg'),
-			IMAGETYPE_SWC		=> array('swc'),
+			$imagetype_swc		=> array('swc'),
 			IMAGETYPE_IFF		=> array('iff'),
 			IMAGETYPE_WBMP		=> array('wbmp'),
 			IMAGETYPE_XBM		=> array('xbm'),
+			//As of PHP 5.3 ICO is also known imagetype
+			IMAGETYPE_ICO		=> array('ico'),
 		);
 	}
 }
