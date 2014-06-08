@@ -1051,23 +1051,43 @@ class fileupload
 	*/
 	static public function image_types()
 	{
+		//So it appears there is option to be missing some PHP global Constants ...
+		$imagetype_gif = (defined('IMAGETYPE_GIF')) ? IMAGETYPE_GIF : 1; 
+		$imagetype_jpeg = (defined('IMAGETYPE_JPEG')) ? IMAGETYPE_JPEG : 2; 
+		$imagetype_png = (defined('IMAGETYPE_PNG')) ? IMAGETYPE_PNG : 3; 
+		$imagetype_swf = (defined('IMAGETYPE_SWF')) ? IMAGETYPE_SWF : 4; 
+		$imagetype_psd = (defined('IMAGETYPE_PSD')) ? IMAGETYPE_PSD : 5; 
+		$imagetype_bmp = (defined('IMAGETYPE_BMP')) ? IMAGETYPE_BMP : 6; 
+		$imagetype_tiff_ii = (defined('IMAGETYPE_TIFF_II')) ? IMAGETYPE_TIFF_II : 7; 
+		$imagetype_tiff_mm = (defined('IMAGETYPE_TIFF_MM')) ? IMAGETYPE_TIFF_MM : 8; 
+		$imagetype_jpc = (defined('IMAGETYPE_JPC')) ? IMAGETYPE_JPC : 9; 
+		$imagetype_jp2 = (defined('IMAGETYPE_JP2')) ? IMAGETYPE_JP2 : 10; 
+		$imagetype_jpx = (defined('IMAGETYPE_JPX')) ? IMAGETYPE_JPX : 11; 
+		$imagetype_jb2 = (defined('IMAGETYPE_JB2')) ? IMAGETYPE_JB2 : 12; 
+		$imagetype_swc = (defined('IMAGETYPE_SWC')) ? IMAGETYPE_SWC : 13; 
+		$imagetype_iff = (defined('IMAGETYPE_IFF')) ? IMAGETYPE_IFF : 14; 
+		$imagetype_wbmp = (defined('IMAGETYPE_WBMP')) ? IMAGETYPE_WBMP : 15; 
+		$imagetype_xbm = (defined('IMAGETYPE_XBM')) ? IMAGETYPE_XBM : 16; 
+		//As of PHP 5.3 ICO is also known imagetype
+		$iamgetype_ico = (defined('IMAGETYPE_ICO')) ? IMAGETYPE_ICO : 17;
 		return array(
-			IMAGETYPE_GIF		=> array('gif'),
-			IMAGETYPE_JPEG		=> array('jpg', 'jpeg'),
-			IMAGETYPE_PNG		=> array('png'),
-			IMAGETYPE_SWF		=> array('swf'),
-			IMAGETYPE_PSD		=> array('psd'),
-			IMAGETYPE_BMP		=> array('bmp'),
-			IMAGETYPE_TIFF_II	=> array('tif', 'tiff'),
-			IMAGETYPE_TIFF_MM	=> array('tif', 'tiff'),
-			IMAGETYPE_JPC		=> array('jpg', 'jpeg'),
-			IMAGETYPE_JP2		=> array('jpg', 'jpeg'),
-			IMAGETYPE_JPX		=> array('jpg', 'jpeg'),
-			IMAGETYPE_JB2		=> array('jpg', 'jpeg'),
-			IMAGETYPE_SWC		=> array('swc'),
-			IMAGETYPE_IFF		=> array('iff'),
-			IMAGETYPE_WBMP		=> array('wbmp'),
-			IMAGETYPE_XBM		=> array('xbm'),
+			$imagetype_gif		=> array('gif'),
+			$imagetype_jpeg		=> array('jpg', 'jpeg'),
+			$imagetype_png		=> array('png'),
+			$imagetype_swf		=> array('swf'),
+			$imagetype_psd		=> array('psd'),
+			$imagetype_bmp		=> array('bmp'),
+			$imagetype_tiff_ii	=> array('tif', 'tiff'),
+			$imagetype_tiff_mm	=> array('tif', 'tiff'),
+			$imagetype_jpc		=> array('jpg', 'jpeg'),
+			$imagetype_jp2		=> array('jpg', 'jpeg'),
+			$imagetype_jpx		=> array('jpg', 'jpeg'),
+			$imagetype_jb2		=> array('jpg', 'jpeg'),
+			$imagetype_swc		=> array('swc'),
+			$imagetype_iff		=> array('iff'),
+			$imagetype_wbmp		=> array('wbmp'),
+			$imagetype_xbm		=> array('xbm'),
+			$iamgetype_ico		=> array('ico'),
 		);
 	}
 }
