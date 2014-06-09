@@ -157,6 +157,7 @@ abstract class memory extends \phpbb\cache\driver\base
 		while (($entry = readdir($dir)) !== false)
 		{
 			if (strpos($entry, 'container_') !== 0 &&
+				strpos($entry, 'ProxyManagerGeneratedProxy') !== 0 &&
 				strpos($entry, 'url_matcher') !== 0 &&
 				strpos($entry, 'sql_') !== 0 &&
 				strpos($entry, 'data_') !== 0 &&
