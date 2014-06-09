@@ -153,7 +153,7 @@
 			<dd class="profile-contact">
 				<strong>{L_CONTACT}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
-					<a href="#" class="dropdown-trigger"><span class="imageset icon_contact"></span></a>
+					<a href="#" class="dropdown-trigger"><span class="imageset icon_contact" title="{L_CONTACT}{L_COLON} {postrow.POST_AUTHOR}">{L_CONTACT}{L_COLON} {postrow.POST_AUTHOR}</span></a>
 					<div class="dropdown hidden">
 						<div class="pointer"><div class="pointer-inner"></div></div>
 						<div class="dropdown-contents contact-icons">
@@ -164,7 +164,7 @@
 									<div>
 								<!-- ENDIF -->
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 550, 320); return false;"<!-- ENDIF -->>
-										<span class="contact-icon {postrow.contact.ID}-icon"><span>{postrow.contact.NAME}</span></span>
+										<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>
 									</a>
 								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
 									</div>

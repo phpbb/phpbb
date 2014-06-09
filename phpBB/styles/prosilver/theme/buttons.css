@@ -105,6 +105,7 @@ ul.linklist.bulletin li.small-icon:before {
 .contact-icons.dropdown-contents {
 	min-width: 0;
 	padding: 0;
+	font-size: 0;
 }
 
 .contact-icon {
@@ -131,14 +132,6 @@ ul.linklist.bulletin li.small-icon:before {
 
 .contact-icons div {
 	clear: left;
-}
-
-.contact-icons span.contact-icon  span{
-	display: block;
-	height: 0;
-	overflow: hidden;
-	position: absolute;
-	width: 1px;
 }
 
 /* Profile icons */
