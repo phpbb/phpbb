@@ -27,7 +27,7 @@ class acp_groups
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -410,6 +410,42 @@ class acp_groups
 						'colour'	=> array('hex_colour', true),
 					);
 
+					/**
+					* Request group data and operate on it
+					*
+					* @event core.acp_manage_group_request_data
+					* @var	string	action				Type of the action: add|edit
+					* @var	int		group_id			The group id
+					* @var	array	group_row			Array with new group data
+					* @var	array	error				Array of errors, if you add errors
+					*							ensure to update the template variables
+					*							S_ERROR and ERROR_MSG to display it
+					* @var	string	group_name			The group name
+					* @var	string	group_desc			The group description
+					* @var	int		group_type			The group type
+					* @var	bool	allow_desc_bbcode	Allow bbcode in group description: true|false
+					* @var	bool	allow_desc_urls		Allow urls in group description: true|false
+					* @var	bool	allow_desc_smilies	Allow smiles in group description: true|false
+					* @var	array	submit_ary			Array with new group data
+					* @var	array	validation_checks	Array with validation data
+					* @since 3.1.0-b5
+					*/
+					$vars = array(
+						'action',
+						'group_id',
+						'group_row',
+						'error',
+						'group_name',
+						'group_desc',
+						'group_type',
+						'allow_desc_bbcode',
+						'allow_desc_urls',
+						'allow_desc_smilies',
+						'submit_ary',
+						'validation_checks',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_request_data', compact($vars)));
+
 					if ($validation_error = validate_data($submit_ary, $validation_checks))
 					{
 						// Replace "error" string with its real, localised form
@@ -442,6 +478,42 @@ class acp_groups
 							'skip_auth'		=> 'int',
 						);
 
+						/**
+						* Initialise data before we display the add/edit form
+						*
+						* @event core.acp_manage_group_initialise_data
+						* @var	string	action				Type of the action: add|edit
+						* @var	int		group_id			The group id
+						* @var	array	group_row			Array with new group data
+						* @var	array	error				Array of errors, if you add errors
+						*							ensure to update the template variables
+						*							S_ERROR and ERROR_MSG to display it
+						* @var	string	group_name			The group name
+						* @var	string	group_desc			The group description
+						* @var	int		group_type			The group type
+						* @var	bool	allow_desc_bbcode	Allow bbcode in group description: true|false
+						* @var	bool	allow_desc_urls		Allow urls in group description: true|false
+						* @var	bool	allow_desc_smilies	Allow smiles in group description: true|false
+						* @var	array	submit_ary			Array with new group data
+						* @var	array	test_variables		Array with variables for test
+						* @since 3.1.0-b5
+						*/
+						$vars = array(
+							'action',
+							'group_id',
+							'group_row',
+							'error',
+							'group_name',
+							'group_desc',
+							'group_type',
+							'allow_desc_bbcode',
+							'allow_desc_urls',
+							'allow_desc_smilies',
+							'submit_ary',
+							'test_variables',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_initialise_data', compact($vars)));
+ 
 						foreach ($test_variables as $test => $type)
 						{
 							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test] || isset($group_attributes['group_avatar']) && strpos($test, 'avatar') === 0 || in_array($test, $set_attributes)))
@@ -663,6 +735,39 @@ class acp_groups
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> phpbb_avatar_explanation_string(),
 				));
+
+				/**
+				* Modify group template data before we display the form
+				*
+				* @event core.acp_manage_group_display_form
+				* @var	string	action				Type of the action: add|edit
+				* @var	bool	update				Do we display the form only
+				*							or did the user press submit
+				* @var	int		group_id			The group id
+				* @var	array	group_row			Array with new group data
+				* @var	string	group_name			The group name
+				* @var	int		group_type			The group type
+				* @var	array	group_desc_data		The group description data
+				* @var	string	group_rank			The group rank
+				* @var	string	rank_options		The rank options
+				* @var	array	error				Array of errors, if you add errors
+				*							ensure to update the template variables
+				*							S_ERROR and ERROR_MSG to display it
+				* @since 3.1.0-b5
+				*/
+				$vars = array(
+					'action',
+					'update',
+					'group_id',
+					'group_row',
+					'group_desc_data',
+					'group_name',
+					'group_type',
+					'group_rank',
+					'rank_options',
+					'error',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_display_form', compact($vars)));
 
 				return;
 			break;
