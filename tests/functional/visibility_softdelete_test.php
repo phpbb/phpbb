@@ -595,7 +595,14 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
 		), 'before merging #1');
 
+		$this->add_lang('viewtopic');
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #2']}&sid={$this->sid}");
+
+		$bookmark_tag = $crawler->filter('a.bookmark-link');
+		$this->assertContainsLang('BOOKMARK_TOPIC', $bookmark_tag->text());
+		$bookmark_link = $bookmark_tag->attr('href');
+		$crawler_bookmark = self::request('GET', $bookmark_link);
+		$this->assertContainsLang('BOOKMARK_ADDED', $crawler_bookmark->text());
 
 		$this->add_lang('mcp');
 		$form = $crawler->selectButton('Go')->eq(1)->form();
@@ -613,6 +620,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
 		$this->assertContains('Soft Delete Topic #1', $crawler->filter('h2')->text());
 		$this->assertContainsLang('POST_DELETED_ACTION', $crawler->filter('body')->text());
+		$this->assertContainsLang('BOOKMARK_TOPIC_REMOVE', $crawler->filter('body')->text());
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
