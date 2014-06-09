@@ -133,6 +133,14 @@ ul.linklist.bulletin li.small-icon:before {
 	clear: left;
 }
 
+.contact-icons span.contact-icon  span{
+	display: block;
+	height: 0;
+	overflow: hidden;
+	position: absolute;
+	width: 1px;
+}
+
 /* Profile icons */
 .pm-icon		{ background-position: 0 0; }
 .email-icon		{ background-position: -21px 0; }
