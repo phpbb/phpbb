@@ -43,35 +43,18 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		$this->add_lang('posting');
 
-		$crawler = self::request('GET', "posting.php?mode=reply&f=2&t=1&sid={$this->sid}");
+		self::create_post(2,
+			1,
+			'Unsupported characters',
+			"This is a test with these weird characters: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
+			array(),
+			'Your message contains the following unsupported characters');
 
-		$form = $crawler->selectButton('Submit')->form();
-
-		$hidden_fields = array(
-			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
-				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
-			}),
-		);
-
-		foreach ($hidden_fields as $fields)
-		{
-			foreach($fields as $field)
-			{
-				$form_data[$field['name']] = $field['value'];
-			}
-		}
-
-		// Bypass time restriction that said that if the lastclick time (i.e. time when the form was opened)
-		// is not at least 2 seconds before submission, cancel the form
-		$form_data['lastclick'] = 0;
-
-		$form_data += array(
-			'subject'		=> 'Unsupported characters',
-			'message'		=> 'This is a test with these weird characters: 👅👅👅',
-			'post'			=> true,
-		);
-		$crawler = self::request('POST', "posting.php?mode=reply&f=2&t=1&sid={$this->sid}", $form_data);
-
-		$this->assertContains('Your message contains the following unsupported characters', $crawler->text());
+		self::create_post(2,
+			1,
+			"Unsupported: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
+			'This is a test with emoji characters in the topic title.',
+			array(),
+			'Your subject contains the following unsupported characters');
 	}
 }
