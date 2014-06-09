@@ -14,7 +14,7 @@
 	<form method="post" name="charsearch" action="{S_MODE_ACTION}">
 		<table width="100%" cellspacing="1">
 		<tr>
-			<td align="{S_CONTENT_FLOW_BEGIN}"><span class="genmed">{L_USERNAME_BEGINS_WITH}: </span>
+			<td align="{S_CONTENT_FLOW_BEGIN}"><span class="genmed">{L_USERNAME_BEGINS_WITH}{L_COLON} </span>
 				<select name="first_char" onchange="this.form.submit();">
 					<!-- BEGIN first_char -->
 						<option value="{first_char.VALUE}"<!-- IF first_char.S_SELECTED --> selected="selected"<!-- ENDIF -->>{first_char.DESC}</option>
@@ -45,7 +45,6 @@
 	<th nowrap="nowrap" width="15%"><a href="{U_SORT_RANK}">{L_RANK}</a></th>
 	<th nowrap="nowrap" width="11%">{L_SEND_MESSAGE}</th>
 	<th nowrap="nowrap" width="11%"><a href="{U_SORT_EMAIL}">{L_EMAIL}</a></th>
-	<th nowrap="nowrap" width="11%"><a href="{U_SORT_WEBSITE}">{L_WEBSITE}</a></th>
 	<!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
 </tr>
 <!-- BEGIN memberrow -->
@@ -66,13 +65,12 @@
 	<!-- IF memberrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
 
 		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
-		<td class="genmed" align="{S_CONTENT_FLOW_BEGIN}">{memberrow.USERNAME_FULL}<!-- IF S_SELECT_SINGLE --> [&nbsp;<a href="#" onclick="insert_single('{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
+		<td class="genmed" align="{S_CONTENT_FLOW_BEGIN}"><!-- EVENT memberlist_body_username_prepend -->{memberrow.USERNAME_FULL}<!-- EVENT memberlist_body_username_append --><!-- IF S_SELECT_SINGLE --> [&nbsp;<a href="#" onclick="insert_single('{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
 		<td class="genmed" align="center" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 		<td class="gen" align="center">{memberrow.POSTS}</td>
 		<td class="gen" align="center"><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --></td>
-		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_PM --><a href="{memberrow.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
-		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_EMAIL --><a href="{memberrow.U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF -->&nbsp;</td>
-		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_WWW --><a href="{memberrow.U_WWW}">{WWW_IMG}</a><!-- ENDIF -->&nbsp;</td>
+		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_PM --><a href="{memberrow.U_PM}" class="imageset">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
+		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_EMAIL --><a href="{memberrow.U_EMAIL}" class="imageset">{EMAIL_IMG}</a><!-- ENDIF -->&nbsp;</td>
 		<!-- IF memberrow.S_PROFILE_FIELD1 -->
 			<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 			<td class="gen" align="center">&nbsp;{memberrow.PROFILE_FIELD1_VALUE}</td>
@@ -91,7 +89,7 @@
 <!-- END memberrow -->
 
 <tr>
-	<td class="cat" colspan="<!-- IF S_IN_SEARCH_POPUP -->9<!-- ELSE -->8<!-- ENDIF -->" align="center"><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
+	<td class="cat" colspan="<!-- IF S_IN_SEARCH_POPUP -->9<!-- ELSE -->8<!-- ENDIF -->" align="center"><!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}{L_COLON}</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
 </tr>
 </table>
 {S_FORM_TOKEN}

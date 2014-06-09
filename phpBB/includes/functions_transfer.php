@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,7 +21,6 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Transfer class, wrapper for ftp/sftp/ssh
-* @package phpBB3
 */
 class transfer
 {
@@ -235,7 +237,7 @@ class transfer
 	/**
 	* Determine methods able to be used
 	*/
-	function methods()
+	static public function methods()
 	{
 		$methods = array();
 		$disabled_functions = explode(',', @ini_get('disable_functions'));
@@ -256,7 +258,6 @@ class transfer
 
 /**
 * FTP transfer class
-* @package phpBB3
 */
 class ftp extends transfer
 {
@@ -280,7 +281,7 @@ class ftp extends transfer
 		}
 
 		// Init some needed values
-		transfer::transfer();
+		$this->transfer();
 
 		return;
 	}
@@ -288,7 +289,7 @@ class ftp extends transfer
 	/**
 	* Requests data
 	*/
-	function data()
+	static public function data()
 	{
 		global $user;
 
@@ -508,7 +509,6 @@ class ftp extends transfer
 * FTP fsock transfer class
 *
 * @author wGEric
-* @package phpBB3
 */
 class ftp_fsock extends transfer
 {
@@ -534,7 +534,7 @@ class ftp_fsock extends transfer
 		}
 
 		// Init some needed values
-		transfer::transfer();
+		$this->transfer();
 
 		return;
 	}
@@ -542,7 +542,7 @@ class ftp_fsock extends transfer
 	/**
 	* Requests data
 	*/
-	function data()
+	static public function data()
 	{
 		global $user;
 
@@ -902,5 +902,3 @@ class ftp_fsock extends transfer
 		return ($return) ? $response : true;
 	}
 }
-
-?>

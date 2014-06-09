@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2004 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -376,6 +380,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 
 					case 'mssql':
 					case 'sqlite':
+					case 'sqlite3':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 						break;
 
@@ -409,5 +414,3 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 	unset($sql_ary);
 
 }
-
-?>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_forums">
+		<column>forum_id</column>
+		<column>parent_id</column>
+		<column>left_id</column>
+		<column>right_id</column>
+		<column>forum_parents</column>
+		<column>forum_name</column>
+		<column>forum_desc</column>
+		<column>forum_rules</column>
+	</table>
+</dataset>

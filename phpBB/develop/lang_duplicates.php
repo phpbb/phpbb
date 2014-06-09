@@ -15,10 +15,11 @@ die("Please read the first lines of this script for instructions on how to enabl
 
 // -------------------------------------------------------------
 //
-// $Id$
+// @copyright (c) phpBB Limited <https://www.phpbb.com>
+// @license GNU General Public License, version 2 (GPL-2.0)
 //
-// @copyright (c) 2005 phpBB Group 
-// @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+// For full copyright and license information, please see
+// the docs/CREDITS.txt file.
 // 
 // -------------------------------------------------------------
 // Thanks to arod-1

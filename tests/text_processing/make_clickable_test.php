@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -12,7 +16,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 
 class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 {
-	static public function make_clickable_data()
+	public function make_clickable_data()
 	{
 		// value => whether it should work
 		$prefix_texts = array(

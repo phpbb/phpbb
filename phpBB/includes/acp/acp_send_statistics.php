@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,18 +19,15 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
-
-/**
-* @package acp
-*/
 class acp_send_statistics
 {
 	var $u_action;
 
 	function main($id, $mode)
 	{
-		global $config, $template, $phpbb_admin_path, $phpEx;
+		global $config, $template, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+
+		include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
 
 		$collect_url = "https://www.phpbb.com/stats/receive_stats.php";
 
@@ -86,5 +86,3 @@ class acp_send_statistics
 		}
 	}
 }
-
-?>

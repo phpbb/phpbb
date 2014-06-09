@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class ucp_profile_info
 {
 	function module()
@@ -20,10 +20,11 @@ class ucp_profile_info
 			'title'		=> 'UCP_PROFILE',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'profile_info'	=> array('title' => 'UCP_PROFILE_PROFILE_INFO', 'auth' => '', 'cat' => array('UCP_PROFILE')),
+				'profile_info'	=> array('title' => 'UCP_PROFILE_PROFILE_INFO', 'auth' => 'acl_u_chgprofileinfo', 'cat' => array('UCP_PROFILE')),
 				'signature'		=> array('title' => 'UCP_PROFILE_SIGNATURE', 'auth' => 'acl_u_sig', 'cat' => array('UCP_PROFILE')),
-				'avatar'		=> array('title' => 'UCP_PROFILE_AVATAR', 'auth' => 'cfg_allow_avatar && (cfg_allow_avatar_local || cfg_allow_avatar_remote || cfg_allow_avatar_upload || cfg_allow_avatar_remote_upload)', 'cat' => array('UCP_PROFILE')),
+				'avatar'		=> array('title' => 'UCP_PROFILE_AVATAR', 'auth' => 'cfg_allow_avatar', 'cat' => array('UCP_PROFILE')),
 				'reg_details'	=> array('title' => 'UCP_PROFILE_REG_DETAILS', 'auth' => '', 'cat' => array('UCP_PROFILE')),
+				'autologin_keys'=> array('title' => 'UCP_PROFILE_AUTOLOGIN_KEYS', 'auth' => '', 'cat' => array('UCP_PROFILE')),
 			),
 		);
 	}
@@ -36,5 +37,3 @@ class ucp_profile_info
 	{
 	}
 }
-
-?>

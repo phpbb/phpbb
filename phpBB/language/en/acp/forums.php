@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* acp_forums [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -102,6 +103,8 @@ $lang = array_merge($lang, array(
 	'FORUM_PASSWORD_OLD'				=> 'The forum password is using an old hashing method and should be changed.',
 	'FORUM_PASSWORD_MISMATCH'			=> 'The passwords you entered did not match.',
 	'FORUM_PRUNE_SETTINGS'				=> 'Forum prune settings',
+	'FORUM_PRUNE_SHADOW'				=> 'Enable auto-pruning of shadow topics',
+	'FORUM_PRUNE_SHADOW_EXPLAIN'			=> 'Prunes the forum of shadow topics, set the frequency/age parameters below.',
 	'FORUM_RESYNCED'					=> 'Forum “%s” successfully resynced',
 	'FORUM_RULES_EXPLAIN'				=> 'Forum rules are displayed at any page within the given forum.',
 	'FORUM_RULES_LINK'					=> 'Link to forum rules',
@@ -156,5 +159,3 @@ $lang = array_merge($lang, array(
 
 	'UNLOCKED'			=> 'Unlocked',
 ));
-
-?>

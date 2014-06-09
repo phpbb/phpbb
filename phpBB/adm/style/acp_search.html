@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_SETTINGS -->
 	<h1>{L_ACP_SEARCH_SETTINGS}</h1>
@@ -12,47 +12,47 @@
 	<fieldset>
 		<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
 	<dl>
-		<dt><label for="load_search">{L_YES_SEARCH}:</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
+		<dt><label for="load_search">{L_YES_SEARCH}{L_COLON}</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="search_interval">{L_SEARCH_INTERVAL}:</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>
-		<dd><input id="search_interval" type="text" size="4" maxlength="4" name="config[search_interval]" value="{SEARCH_INTERVAL}" /> {L_SECONDS}</dd>
+		<dt><label for="search_interval">{L_SEARCH_INTERVAL}{L_COLON}</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>
+		<dd><input id="search_interval" type="number" size="4" maxlength="4" min="0" max="9999" name="config[search_interval]" value="{SEARCH_INTERVAL}" /> {L_SECONDS}</dd>
 	</dl>
 	<dl>
-		<dt><label for="search_anonymous_interval">{L_SEARCH_GUEST_INTERVAL}:</label><br /><span>{L_SEARCH_GUEST_INTERVAL_EXPLAIN}</span></dt>
-		<dd><input id="search_anonymous_interval" type="text" size="4" maxlength="4" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /> {L_SECONDS}</dd>
+		<dt><label for="search_anonymous_interval">{L_SEARCH_GUEST_INTERVAL}{L_COLON}</label><br /><span>{L_SEARCH_GUEST_INTERVAL_EXPLAIN}</span></dt>
+		<dd><input id="search_anonymous_interval" type="number" size="4" maxlength="4" min="0" max="9999" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /> {L_SECONDS}</dd>
 	</dl>
 	<dl>
-		<dt><label for="limit_search_load">{L_LIMIT_SEARCH_LOAD}:</label><br /><span>{L_LIMIT_SEARCH_LOAD_EXPLAIN}</span></dt>
+		<dt><label for="limit_search_load">{L_LIMIT_SEARCH_LOAD}{L_COLON}</label><br /><span>{L_LIMIT_SEARCH_LOAD_EXPLAIN}</span></dt>
 		<dd><input id="limit_search_load" type="text" size="4" maxlength="4" name="config[limit_search_load]" value="{LIMIT_SEARCH_LOAD}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="min_search_author_chars">{L_MIN_SEARCH_AUTHOR_CHARS}:</label><br /><span>{L_MIN_SEARCH_AUTHOR_CHARS_EXPLAIN}</span></dt>
-		<dd><input id="min_search_author_chars" type="text" size="4" maxlength="4" name="config[min_search_author_chars]" value="{MIN_SEARCH_AUTHOR_CHARS}" /></dd>
+		<dt><label for="min_search_author_chars">{L_MIN_SEARCH_AUTHOR_CHARS}{L_COLON}</label><br /><span>{L_MIN_SEARCH_AUTHOR_CHARS_EXPLAIN}</span></dt>
+		<dd><input id="min_search_author_chars" type="number" size="4" maxlength="4" min="0" max="9999" name="config[min_search_author_chars]" value="{MIN_SEARCH_AUTHOR_CHARS}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="max_num_search_keywords">{L_MAX_NUM_SEARCH_KEYWORDS}:</label><br /><span>{L_MAX_NUM_SEARCH_KEYWORDS_EXPLAIN}</span></dt>
-		<dd><input id="max_num_search_keywords" type="text" size="4" maxlength="4" name="config[max_num_search_keywords]" value="{MAX_NUM_SEARCH_KEYWORDS}" /></dd>
+		<dt><label for="max_num_search_keywords">{L_MAX_NUM_SEARCH_KEYWORDS}{L_COLON}</label><br /><span>{L_MAX_NUM_SEARCH_KEYWORDS_EXPLAIN}</span></dt>
+		<dd><input id="max_num_search_keywords" type="number" size="4" maxlength="4" min="0" max="9999" name="config[max_num_search_keywords]" value="{MAX_NUM_SEARCH_KEYWORDS}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}:</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
-		<dd><input id="search_store_results" type="text" size="4" maxlength="6" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
+		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}{L_COLON}</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
+		<dd><input id="search_store_results" type="number" size="4" maxlength="6" min="0" max="999999" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
 	</dl>
 	</fieldset>
 
 	<fieldset>
 		<legend>{L_SEARCH_TYPE}</legend>
 	<dl>
-		<dt><label for="search_type">{L_SEARCH_TYPE}:</label><br /><span>{L_SEARCH_TYPE_EXPLAIN}</span></dt>
-		<dd><select id="search_type" name="config[search_type]">{S_SEARCH_TYPES}</select></dd>
+		<dt><label for="search_type">{L_SEARCH_TYPE}{L_COLON}</label><br /><span>{L_SEARCH_TYPE_EXPLAIN}</span></dt>
+		<dd><select id="search_type" name="config[search_type]" data-togglable-settings="true">{S_SEARCH_TYPES}</select></dd>
 	</dl>
 	</fieldset>
 
 	<!-- BEGIN backend -->
 
-		<fieldset>
+		<fieldset id="search_{backend.IDENTIFIER}_settings">
 			<legend>{backend.NAME}</legend>
 		{backend.SETTINGS}
 		</fieldset>
@@ -110,9 +110,9 @@
 
 				{backend.S_HIDDEN_FIELDS}
 
-				<legend>{L_INDEX_STATS}: {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></legend>
+				<legend>{L_INDEX_STATS}{L_COLON} {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></legend>
 
-				<table cellspacing="1">
+				<table class="table1">
 					<caption>{backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></caption>
 					<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
 				<thead>
@@ -126,9 +126,9 @@
 				<tbody>
 				<!-- BEGIN data -->
 					<tr>
-						<td>{backend.data.STATISTIC_1}:</td>
+						<td>{backend.data.STATISTIC_1}{L_COLON}</td>
 						<td>{backend.data.VALUE_1}</td>
-						<td>{backend.data.STATISTIC_2}<!-- IF backend.data.STATISTIC_2 -->:<!-- ENDIF --></td>
+						<td>{backend.data.STATISTIC_2}<!-- IF backend.data.STATISTIC_2 -->{L_COLON}<!-- ENDIF --></td>
 						<td>{backend.data.VALUE_2}</td>
 					</tr>
 				<!-- END data -->
@@ -139,9 +139,11 @@
 
 			<p class="quick">
 			<!-- IF backend.S_INDEXED -->
-				<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
+				<input type="hidden" name="action" value="delete" />
+				<input class="button2" type="submit" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
 			<!-- ELSE -->
-				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
+				<input type="hidden" name="action" value="create" />
+				<input class="button2" type="submit" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
 			<!-- ENDIF -->
 			</p>
 			{S_FORM_TOKEN}

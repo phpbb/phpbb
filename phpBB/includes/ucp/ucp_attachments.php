@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,7 +22,6 @@ if (!defined('IN_PHPBB'))
 /**
 * ucp_attachments
 * User attachments
-* @package ucp
 */
 class ucp_attachments
 {
@@ -27,7 +29,7 @@ class ucp_attachments
 
 	function main($id, $mode)
 	{
-		global $template, $user, $db, $config, $phpEx, $phpbb_root_path;
+		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $phpbb_container;
 
 		$start		= request_var('start', 0);
 		$sort_key	= request_var('sk', 'a');
@@ -120,6 +122,10 @@ class ucp_attachments
 		$num_attachments = $db->sql_fetchfield('num_attachments');
 		$db->sql_freeresult($result);
 
+		// Ensure start is a valid value
+		$pagination = $phpbb_container->get('pagination');
+		$start = $pagination->validate_start($start, $config['topics_per_page'], $num_attachments);
+
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
 			FROM ' . ATTACHMENTS_TABLE . ' a
 				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
@@ -171,9 +177,10 @@ class ucp_attachments
 		}
 		$db->sql_freeresult($result);
 
+		$base_url = $this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> on_page($num_attachments, $config['topics_per_page'], $start),
-			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
@@ -197,5 +204,3 @@ class ucp_attachments
 		$this->page_title = 'UCP_ATTACHMENTS';
 	}
 }
-
-?>

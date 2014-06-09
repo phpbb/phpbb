@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package VC
-* @version $Id$
-* @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,13 +19,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-
 /**
 * This class holds the code shared by the two default 3.0.x CAPTCHAs.
-*
-* @package VC
 */
-class phpbb_default_captcha
+class phpbb_captcha_plugins_captcha_abstract
 {
 	var $confirm_id;
 	var $confirm_code;
@@ -207,7 +207,6 @@ class phpbb_default_captcha
 		{
 			if ($this->check_code())
 			{
-				// $this->delete_code(); commented out to allow posting.php to repeat the question
 				$this->solved = true;
 			}
 			else
@@ -329,17 +328,6 @@ class phpbb_default_captcha
 		return (strcasecmp($this->code, $this->confirm_code) === 0);
 	}
 
-	function delete_code()
-	{
-		global $db, $user;
-
-		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-			WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND confirm_type = " . $this->type;
-		$db->sql_query($sql);
-	}
-
 	function get_attempt_count()
 	{
 		return $this->attempts;
@@ -377,4 +365,9 @@ class phpbb_default_captcha
 
 }
 
-?>
+/**
+* Old class name for legacy use. The new class name is auto loadable.
+*/
+class phpbb_default_captcha extends phpbb_captcha_plugins_captcha_abstract
+{
+}

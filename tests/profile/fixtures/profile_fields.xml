@@ -10,21 +10,21 @@
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
-			<value>5</value>
+			<value>profilefields.type.dropdown</value>
 			<value>Default Option</value>
 		</row>
 		<row>
 			<value>1</value>
 			<value>1</value>
 			<value>1</value>
-			<value>5</value>
+			<value>profilefields.type.dropdown</value>
 			<value>First Alternative</value>
 		</row>
 		<row>
 			<value>1</value>
 			<value>1</value>
 			<value>2</value>
-			<value>5</value>
+			<value>profilefields.type.dropdown</value>
 			<value>Third Alternative</value>
 		</row>
 	</table>

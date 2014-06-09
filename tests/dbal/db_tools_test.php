@@ -1,18 +1,23 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 {
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+	/** @var \phpbb\db\tools */
 	protected $tools;
 	protected $table_exists;
 	protected $table_data;
@@ -27,7 +32,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->tools = new phpbb_db_tools($this->db);
+		$this->tools = new \phpbb\db\tools($this->db);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(
@@ -208,6 +213,32 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'column_does_not_exist'));
 	}
 
+	public function test_column_change_with_index()
+	{
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012', array('DECIMAL', 0)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+
+		// Create index over the column
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012', array('c_bug_12012', 'c_bool')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+
+		// Change type from int to string
+		$this->assertTrue($this->tools->sql_column_change('prefix_table_name', 'c_bug_12012', array('VCHAR:100', '')));
+
+		// Remove the index
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+		$this->assertTrue($this->tools->sql_index_drop('prefix_table_name', 'i_bug_12012'));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+
+		// Remove the column
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_bug_12012'));
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+	}
+
 	public function test_column_remove()
 	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
@@ -215,6 +246,28 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_int_size'));
 
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
+	}
+
+	public function test_column_remove_with_index()
+	{
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012_2', array('UINT', 4)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+
+		// Create index over the column
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012_2', array('c_bug_12012_2', 'c_bool')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_2'));
+
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_3'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012_3', array('c_bug_12012_2')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012_3'));
+
+		// Remove the column
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
 	}
 
 	public function test_column_remove_primary()
@@ -253,9 +306,9 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_table_exists('prefix_test_table'));
 	}
 
-	public function test_peform_schema_changes_drop_tables()
+	public function test_perform_schema_changes_drop_tables()
 	{
-		$db_tools = $this->getMock('phpbb_db_tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools', array(
 			'sql_table_exists',
 			'sql_table_drop',
 		), array(&$this->db));
@@ -279,9 +332,9 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		));
 	}
 
-	public function test_peform_schema_changes_drop_columns()
+	public function test_perform_schema_changes_drop_columns()
 	{
-		$db_tools = $this->getMock('phpbb_db_tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools', array(
 			'sql_column_exists',
 			'sql_column_remove',
 		), array(&$this->db));

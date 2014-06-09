@@ -1,14 +1,14 @@
 <!-- INCLUDE overall_header.html -->
 
 <!-- IF TOPIC_TITLE -->
-	<h2><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
+	<h2 class="posting-title"><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
 <!-- ELSE -->
-	<h2><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
+	<h2 class="posting-title"><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a></h2>
  <!-- ENDIF -->
 
 <!-- IF S_FORUM_RULES -->
-	<div class="rules">
-		<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="rules<!-- IF U_FORUM_RULES --> rules-link<!-- ENDIF -->">
+		<div class="inner">
 		
 		<!-- IF U_FORUM_RULES -->
 			<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
@@ -17,7 +17,7 @@
 			{FORUM_RULES}
 		<!-- ENDIF -->
 		
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 
@@ -25,12 +25,12 @@
 
 <!-- IF S_DRAFT_LOADED -->
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		
 		<h3>{L_INFORMATION}</h3>
 		<p>{L_DRAFT_LOADED}</p>
 		
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 
@@ -40,12 +40,12 @@
 
 <!-- IF S_UNGLOBALISE -->
 	<div class="panel bg3">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<fieldset class="fields1">
 			<h2>{L_SELECT_DESTINATION_FORUM}</h2>
 			<p>{L_UNGLOBALISE_EXPLAIN}</p>
 			<dl>
-				<dt><label for="to_forum_id">{L_MOVE}:</label></dt>
+				<dt><label for="to_forum_id">{L_MOVE}{L_COLON}</label></dt>
 				<dd><select id="to_forum_id" name="to_forum_id">{S_FORUM_SELECT}</select></dd>
 			</dl>
 			
@@ -55,21 +55,22 @@
 			</dl>
 		</fieldset>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 
 <!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
 
 <div class="panel" id="postingbox">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 	
 	<h3>{L_POST_A}</h3>
 
 	<!-- DEFINE $EXTRA_POSTING_OPTIONS = 1 -->
 	<!-- INCLUDE posting_editor.html -->
+	<input type="hidden" name="show_panel" value="options-panel" />
 	{S_FORM_TOKEN}
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
@@ -79,12 +80,5 @@
 <!-- IF S_DISPLAY_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
 
 </form>
-<!-- IF not S_PRIVMSGS -->
-<script type="text/javascript">
-// <![CDATA[
-	subPanels(show_panel);
-// ]]>
-</script>
-<!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

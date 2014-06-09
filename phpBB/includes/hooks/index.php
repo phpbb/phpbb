@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2007 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,7 +21,6 @@ if (!defined('IN_PHPBB'))
 
 /**
 * phpBB Hook Class
-* @package phpBB3
 */
 class phpbb_hook
 {
@@ -246,5 +248,3 @@ class phpbb_hook
 		}
 	}
 }
-
-?>

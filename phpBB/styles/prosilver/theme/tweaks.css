@@ -1,107 +1,73 @@
 /* Style Sheet Tweaks
 
-These style definitions are mainly IE specific 
+These style definitions are IE 7 and 8 specific 
 tweaks required due to its poor CSS support.
 -------------------------------------------------*/
 
-* html table, * html select, * html input { font-size: 100%; }
-* html hr { margin: 0; }
-* html span.corners-top, * html span.corners-bottom { background-image: url("{T_THEME_PATH}/images/corners_left.gif"); }
-* html span.corners-top span, * html span.corners-bottom span { background-image: url("{T_THEME_PATH}/images/corners_right.gif"); }
-
-table.table1 {
-	width: 99%;		/* IE < 6 browsers */
-	/* Tantek hack */
-	voice-family: "\"}\"";
-	voice-family: inherit;
-	width: 100%;
-}
-html>body table.table1 { width: 100%; }	/* Reset 100% for opera */
-
-* html ul.topiclist li { position: relative; }
-* html .postbody h3 img { vertical-align: middle; }
-
-/* Form styles */
-html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/radio buttons nicely */
-
-* html input.button1, * html input.button2 {
-	padding-bottom: 0;
-	margin-bottom: 1px;
-}
-
-/* Misc layout styles */
-* html .column1, * html .column2 { width: 45%; }
-
-/* Nice method for clearing floated blocks without having to insert any extra markup (like spacer above)
-   From http://www.positioniseverything.net/easyclearing.html 
-#tabs:after, #minitabs:after, .post:after, .navbar:after, fieldset dl:after, ul.topiclist dl:after, ul.linklist:after, dl.polls:after {
-	content: "."; 
-	display: block; 
-	height: 0; 
-	clear: both; 
-	visibility: hidden;
-}*/
-
-.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
-	height: 1%;
-	overflow: hidden;
-}
-
-/* viewtopic fix */
-* html .post {
-	height: 25%;
-	overflow: hidden;
-}
-
-/* navbar fix */
-* html .clearfix, * html .navbar, ul.linklist {
-	height: 4%;
-	overflow: hidden;
-}
-
-/* Simple fix so forum and topic lists always have a min-height set, even in IE6
-	From http://www.dustindiaz.com/min-height-fast-hack */
-dl.icon {
-	min-height: 35px;
-	height: auto !important;
-	height: 35px;
-}
-
-* html li.row dl.icon dt {
-	height: 35px;
-	overflow: visible;
-}
-
-* html #search-box {
-	width: 25%;
-}
-
-/* Correctly clear floating for details on profile view */
-*:first-child+html dl.details dd {
-	margin-left: 30%;
-	float: none;
-}
-
-* html dl.details dd {
-	margin-left: 30%;
-	float: none;
-}
-
-/* Headerbar height fix for IE7 and below */
-* html #site-description p {
-	margin-bottom: 1.0em;
-}
-
-*:first-child+html #site-description p {
-	margin-bottom: 1.0em;
-}
-
-/* #minitabs fix for IE */
-.tabs-container {
+/* Clear float fix for IE7 */
+.inner {
 	zoom: 1;
 }
 
-#minitabs {
-	white-space: nowrap;
-	*min-width: 50%;
+ul.linklist {
+	zoom: 1;
+}
+
+/* Align checkboxes/radio buttons nicely */
+dd label input { 
+	vertical-align: text-bottom; 
+	*vertical-align: middle; 
+}
+
+/* Simple fix so forum and topic lists always have a height set */
+dl.icon {
+	*height: 35px;
+}
+
+/* Correctly clear floating for details on profile view */
+dl.details dd {
+	*margin-left: 30%;
+	*float: none;
+}
+
+/* Headerbar height fix for IE7 */
+#site-description p {
+	*margin-bottom: 1.0em;
+}
+
+/* Forum list column styles for IE7 */
+dl.icon dt, dl.icon dd {
+	*min-height: 32px;
+}
+
+dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
+	*width: 79px;
+}
+
+dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
+	*width: 249px;
+}
+
+dd.option {
+	*width: 124px;
+}
+
+/* Notifications list for IE7 */
+.dropdown-extended {
+	*left: 0;
+}
+
+.dropdown-extended .header_settings {
+	*position: absolute;
+	*right: 10px;
+	*top: 0;
+}
+
+.icon-notification {
+	*z-index: 2;
+}
+
+/* Fixes header-avatar aspect-ratio in IE8 */
+.header-avatar img {
+	height: 25px;
 }

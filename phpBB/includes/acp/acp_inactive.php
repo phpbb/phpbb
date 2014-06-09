@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,9 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_inactive
 {
 	var $u_action;
@@ -31,7 +31,7 @@ class acp_inactive
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $config, $db, $user, $auth, $template, $phpbb_container;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -50,6 +50,7 @@ class acp_inactive
 
 		$form_key = 'acp_inactive';
 		add_form_key($form_key);
+		$pagination = $phpbb_container->get('pagination');
 
 		// We build the sort key and per page settings here, because they may be needed later
 
@@ -116,7 +117,7 @@ class acp_inactive
 							{
 								$messenger->template('admin_welcome_activated', $row['user_lang']);
 
-								$messenger->to($row['user_email'], $row['username']);
+								$messenger->set_addresses($row);
 
 								$messenger->anti_abuse_headers($config, $user);
 
@@ -137,6 +138,8 @@ class acp_inactive
 								add_log('admin', 'LOG_USER_ACTIVE', $row['username']);
 								add_log('user', $row['user_id'], 'LOG_USER_ACTIVE_USER');
 							}
+
+							trigger_error(sprintf($user->lang['LOG_INACTIVE_ACTIVATE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
@@ -154,12 +157,11 @@ class acp_inactive
 								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
-							foreach ($mark as $user_id)
-							{
-								user_delete('retain', $user_id, $user_affected[$user_id]);
-							}
+							user_delete('retain', $mark, true);
 
 							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
+
+							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
 						else
 						{
@@ -203,8 +205,7 @@ class acp_inactive
 						{
 							$messenger->template('user_remind_inactive', $row['user_lang']);
 
-							$messenger->to($row['user_email'], $row['username']);
-							$messenger->im($row['user_jabber'], $row['username']);
+							$messenger->set_addresses($row);
 
 							$messenger->anti_abuse_headers($config, $user);
 
@@ -231,7 +232,8 @@ class acp_inactive
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_INACTIVE_REMIND', implode(', ', $usernames));
-						unset($usernames);
+
+						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
 
@@ -284,6 +286,9 @@ class acp_inactive
 			$option_ary += array('remind' => 'REMIND');
 		}
 
+		$base_url = $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $inactive_count, $per_page, $start);
+
 		$template->assign_vars(array(
 			'S_INACTIVE_USERS'		=> true,
 			'S_INACTIVE_OPTIONS'	=> build_select($option_ary),
@@ -291,8 +296,6 @@ class acp_inactive
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_ON_PAGE'		=> on_page($inactive_count, $per_page, $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page", $inactive_count, $per_page, $start, true),
 			'USERS_PER_PAGE'	=> $per_page,
 
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param&amp;users_per_page=$per_page&amp;start=$start",
@@ -302,5 +305,3 @@ class acp_inactive
 		$this->page_title = 'ACP_INACTIVE_USERS';
 	}
 }
-
-?>

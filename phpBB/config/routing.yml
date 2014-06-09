@@ -1,0 +1,9 @@
+# Structure:
+#
+# foo_controller:
+#     pattern: /foo
+#     defaults: { _controller: foo_sevice:method }
+#
+# The above will be accessed via app.php?controller=foo and it will
+# instantiate the "foo_service" service and call the "method" method.
+#

@@ -4,6 +4,7 @@
 <tr>
 	<th colspan="2" valign="middle">{L_TITLE}</th>
 </tr>
+<!-- EVENT ucp_friend_list_before -->
 <tr>
 	<td class="row3" colspan="2"><span class="gensmall">{L_FRIENDS_EXPLAIN}</span></td>
 </tr>
@@ -13,11 +14,12 @@
 	</tr>
 <!-- ENDIF -->
 <tr>
-	<td class="row1" width="40%"><b class="genmed">{L_YOUR_FRIENDS}:</b><br /><span class="gensmall">{L_YOUR_FRIENDS_EXPLAIN}</span></td>
+	<td class="row1" width="40%"><b class="genmed">{L_YOUR_FRIENDS}{L_COLON}</b><br /><span class="gensmall">{L_YOUR_FRIENDS_EXPLAIN}</span></td>
 	<td class="row2" align="center"><!-- IF S_USERNAME_OPTIONS --><select name="usernames[]" multiple="multiple" size="5">{S_USERNAME_OPTIONS}</select><!-- ELSE --><b class="genmed">{L_NO_FRIENDS}</b><!-- ENDIF --></td>
 </tr>
+<!-- EVENT ucp_friend_list_after -->
 <tr>
-	<td class="row1"><b class="genmed">{L_ADD_FRIENDS}:</b><br /><span class="gensmall">{L_ADD_FRIENDS_EXPLAIN} [ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span></td>
+	<td class="row1"><b class="genmed">{L_ADD_FRIENDS}{L_COLON}</b><br /><span class="gensmall">{L_ADD_FRIENDS_EXPLAIN} [ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span></td>
 	<td class="row2" align="center"><textarea name="add" rows="5" cols="30">{USERNAMES}</textarea><br /></td>
 </tr>
 <tr>

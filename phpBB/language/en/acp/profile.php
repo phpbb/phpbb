@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* acp_profile [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -40,6 +41,7 @@ $lang = array_merge($lang, array(
 	'ADDED_PROFILE_FIELD'	=> 'Successfully added custom profile field.',
 	'ALPHA_ONLY'			=> 'Alphanumeric only',
 	'ALPHA_SPACERS'			=> 'Alphanumeric and spacers',
+	'ALPHA_UNDERSCORE'		=> 'Alphanumeric and underscores',
 	'ALWAYS_TODAY'			=> 'Always the current date',
 
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
@@ -66,6 +68,10 @@ $lang = array_merge($lang, array(
 	'DISPLAY_AT_PROFILE_EXPLAIN'	=> 'The user is able to change this profile field within the user control panel.',
 	'DISPLAY_AT_REGISTER'			=> 'Display on registration screen',
 	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration.',
+	'DISPLAY_ON_MEMBERLIST'			=> 'Display on memberlist screen',
+	'DISPLAY_ON_MEMBERLIST_EXPLAIN'	=> 'If this option is enabled, the field will be displayed in the user rows on the memberlist screen.',
+	'DISPLAY_ON_PM'					=> 'Display on view private message screen',
+	'DISPLAY_ON_PM_EXPLAIN'			=> 'If this option is enabled, the field will be displayed in the mini-profile on the private message screen.',
 	'DISPLAY_ON_VT'					=> 'Display on viewtopic screen',
 	'DISPLAY_ON_VT_EXPLAIN'			=> 'If this option is enabled, the field will be displayed in the mini-profile on the topic screen.',
 	'DISPLAY_PROFILE_FIELD'			=> 'Publicly display profile field',
@@ -79,6 +85,8 @@ $lang = array_merge($lang, array(
 	'EVERYTHING_OK'					=> 'Everything OK',
 
 	'FIELD_BOOL'				=> 'Boolean (Yes/No)',
+	'FIELD_CONTACT_DESC'		=> 'Contact description',
+	'FIELD_CONTACT_URL'			=> 'Contact link',
 	'FIELD_DATE'				=> 'Date',
 	'FIELD_DESCRIPTION'			=> 'Field description',
 	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The explanation for this field presented to the user.',
@@ -87,12 +95,15 @@ $lang = array_merge($lang, array(
 	'FIELD_IDENT_ALREADY_EXIST'	=> 'The chosen field identification already exist. Please choose another name.',
 	'FIELD_IDENT_EXPLAIN'		=> 'The field identification is a name to identify the profile field within the database and the templates.',
 	'FIELD_INT'					=> 'Numbers',
+	'FIELD_IS_CONTACT'			=> 'Display field as a contact field',
+	'FIELD_IS_CONTACT_EXPLAIN'	=> 'Contact fields are displayed with in the contact section of the user profile and are displayed differently in the mini profile next to posts and private messages.',
 	'FIELD_LENGTH'				=> 'Length of input box',
 	'FIELD_NOT_FOUND'			=> 'Profile field not found.',
 	'FIELD_STRING'				=> 'Single text field',
 	'FIELD_TEXT'				=> 'Textarea',
 	'FIELD_TYPE'				=> 'Field type',
 	'FIELD_TYPE_EXPLAIN'		=> 'You are not able to change the field type later.',
+	'FIELD_URL'					=> 'URL (Link)',
 	'FIELD_VALIDATION'			=> 'Field validation',
 	'FIRST_OPTION'				=> 'First option',
 
@@ -154,5 +165,3 @@ $lang = array_merge($lang, array(
 
 	'VISIBILITY_OPTION'				=> 'Visibility options',
 ));
-
-?>

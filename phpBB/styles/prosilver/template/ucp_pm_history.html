@@ -1,7 +1,7 @@
 
 <h3 id="review">
 	<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
-	{L_MESSAGE_HISTORY}:
+	{L_MESSAGE_HISTORY}{L_COLON}
 </h3>
 
 <div id="topicreview">
@@ -12,23 +12,28 @@
 	</script>
 	<!-- BEGIN history_row -->
 	<div class="post <!-- IF history_row.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="postbody" id="pr{history_row.MSG_ID}">
+			<h3><a href="{history_row.U_VIEW_MESSAGE}" <!-- IF history_row.S_CURRENT_MSG -->class="current"<!-- ENDIF -->>{history_row.SUBJECT}</a></h3>
+
 			<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
-			<ul class="profile-icons">
-				<li class="quote-icon"><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}');"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}"><span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span></a></li>
+			<ul class="post-buttons">
+				<li>
+					<a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}');"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}" class="button icon-button quote-icon">
+						<span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
+					</a>
+				</li>
 			</ul>
 			<!-- ENDIF -->
 
-			<h3><a href="{history_row.U_VIEW_MESSAGE}" <!-- IF history_row.S_CURRENT_MSG -->class="current"<!-- ENDIF -->>{history_row.SUBJECT}</a></h3>
-			<p class="author">{history_row.MINI_POST_IMG} {L_SENT_AT}: <strong>{history_row.SENT_DATE}</strong><br />
+			<p class="author">{history_row.MINI_POST_IMG} {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong><br />
 				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}</p>
 			<div class="content"><!-- IF history_row.MESSAGE -->{history_row.MESSAGE}<!-- ELSE --><span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span><!-- ENDIF --></div>
 			<div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div>
 		</div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	<!-- END history_row -->
 </div>

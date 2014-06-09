@@ -1,26 +1,20 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript">
-// <![CDATA[
-	onload_functions.push('document.getElementById("<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->").focus();');
-// ]]>
-</script>
-
-<form action="{S_LOGIN_ACTION}" method="post" id="login">
+<form action="{S_LOGIN_ACTION}" method="post" id="login" data-focus="<!-- IF S_ADMIN_AUTH -->{PASSWORD_CREDENTIAL}<!-- ELSE -->{USERNAME_CREDENTIAL}<!-- ENDIF -->">
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<div class="content">
-		<h2><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
+		<h2 class="login-title"><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></h2>
 
 		<fieldset <!-- IF not S_CONFIRM_CODE -->class="fields1"<!-- ELSE -->class="fields2"<!-- ENDIF -->>
 		<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
 		<dl>
-			<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}:</label></dt>
+			<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}{L_COLON}</label></dt>
 			<dd><input type="text" tabindex="1" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}:</label></dt>
+			<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}{L_COLON}</label></dt>
 			<dd><input type="password" tabindex="2" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></dd>
 			<!-- IF S_DISPLAY_FULL_LOGIN and (U_SEND_PASSWORD or U_RESEND_ACTIVATION) -->
 				<!-- IF U_SEND_PASSWORD --><dd><a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></dd><!-- ENDIF -->
@@ -45,13 +39,17 @@
 		</dl>
 		</fieldset>
 	</div>
-	<span class="corners-bottom"><span></span></span></div>
+
+	<!-- IF not S_ADMIN_AUTH and PROVIDER_TEMPLATE_FILE -->
+		<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
+	<!-- ENDIF -->
+	</div>
 </div>
 
 
 <!-- IF not S_ADMIN_AUTH and S_REGISTER_ENABLED -->
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 			<h3>{L_REGISTER}</h3>
@@ -61,7 +59,7 @@
 			<p><a href="{U_REGISTER}" class="button2">{L_REGISTER}</a></p>
 		</div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 

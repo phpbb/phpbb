@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -36,14 +39,70 @@ $submit		= (isset($_POST['post'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
 $load		= (isset($_POST['load'])) ? true : false;
-$delete		= (isset($_POST['delete'])) ? true : false;
+$confirm	= $request->is_set_post('confirm');
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['full_editor']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
-$mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
+$mode		= request_var('mode', '');
+
+// If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
+if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_gets('f_delete', 'm_delete', $forum_id)))
+{
+	$mode = 'soft_delete';
+}
 
 $error = $post_data = array();
 $current_time = time();
+
+/**
+* This event allows you to alter the above parameters, such as submit and mode
+*
+* Note: $refresh must be true to retain previously submitted form data.
+*
+* Note: The template class will not work properly until $user->setup() is
+* called, and it has not been called yet. Extensions requiring template
+* assignments should use an event that comes later in this file.
+*
+* @event core.modify_posting_parameters
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @var	int		forum_id	ID of the forum
+* @var	int		draft_id	ID of the draft
+* @var	int		lastclick	Timestamp of when the form was last loaded
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*							viewtopic or viewforum depending on if the user
+*							is posting a new topic or editing a post)
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been submitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*							form submission.
+*							NOTE: Should be actual language strings, NOT
+*							language keys.
+* @since 3.1.0-a1
+*/
+$vars = array(
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'draft_id',
+	'lastclick',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'delete',
+	'cancel',
+	'refresh',
+	'mode',
+	'error',
+);
+extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
@@ -57,6 +116,8 @@ if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$foru
 {
 	trigger_error('NO_FORUM');
 }
+
+$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // We need to know some basic information in all cases before we do anything.
 switch ($mode)
@@ -87,14 +148,14 @@ switch ($mode)
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
-				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)" .
-			(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
+				AND f.forum_id = t.forum_id
+				AND " . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
 	break;
 
 	case 'quote':
 	case 'edit':
 	case 'delete':
+	case 'soft_delete':
 		if (!$post_id)
 		{
 			$user->setup('posting');
@@ -116,9 +177,8 @@ switch ($mode)
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
-				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)" .
-				(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
+				AND f.forum_id = t.forum_id
+				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.');
 	break;
 
 	case 'smilies':
@@ -166,7 +226,7 @@ if (!$post_data)
 
 // Not able to reply to unapproved posts/topics
 // TODO: add more descriptive language key
-if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && !$post_data['topic_approved']) || ($mode == 'quote' && !$post_data['post_approved'])))
+if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && $post_data['topic_visibility'] != ITEM_APPROVED) || ($mode == 'quote' && $post_data['post_visibility'] != ITEM_APPROVED)))
 {
 	trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
 }
@@ -182,7 +242,7 @@ $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 {
 	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 	$captcha->init(CONFIRM_POST);
 }
 
@@ -214,8 +274,18 @@ if (!$auth->acl_get('f_read', $forum_id))
 	{
 		trigger_error('USER_CANNOT_READ');
 	}
+	$message = $user->lang['LOGIN_EXPLAIN_POST'];
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_POST']);
+	if ($request->is_ajax())
+	{
+		$json = new phpbb\json_response();
+		$json->send(array(
+			'title'		=> $user->lang['INFORMATION'],
+			'message'	=> $message,
+		));
+	}
+
+	login_box('', $message);
 }
 
 // Permission to do the action asked?
@@ -258,9 +328,21 @@ switch ($mode)
 	break;
 
 	case 'delete':
-		if ($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+		if ($user->data['is_registered'] && ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id))))
 		{
 			$is_authed = true;
+		}
+	break;
+
+	case 'soft_delete':
+		if ($user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+		{
+			$is_authed = true;
+		}
+		else
+		{
+			// Display the same error message for softdelete we use for delete
+			$mode = 'delete';
 		}
 	break;
 }
@@ -273,8 +355,18 @@ if (!$is_authed)
 	{
 		trigger_error('USER_CANNOT_' . strtoupper($check_auth));
 	}
+	$message = $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)];
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
+	if ($request->is_ajax())
+	{
+		$json = new phpbb\json_response();
+		$json->send(array(
+			'title'		=> $user->lang['INFORMATION'],
+			'message'	=> $message,
+		));
+	}
+
+	login_box('', $message);
 }
 
 // Is the user able to post within this forum?
@@ -293,26 +385,61 @@ if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_statu
 // else it depends on editing times, lock status and if we're the correct user
 if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 {
-	if ($user->data['user_id'] != $post_data['poster_id'])
-	{
-		trigger_error('USER_CANNOT_EDIT');
-	}
+	$force_edit_allowed = false;
 
-	if (!($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']))
-	{
-		trigger_error('CANNOT_EDIT_TIME');
-	}
+	$s_cannot_edit = $user->data['user_id'] != $post_data['poster_id'];
+	$s_cannot_edit_time = $config['edit_time'] && $post_data['post_time'] <= time() - ($config['edit_time'] * 60);
+	$s_cannot_edit_locked = $post_data['post_edit_locked'];
 
-	if ($post_data['post_edit_locked'])
+	/**
+	* This event allows you to modify the conditions for the "cannot edit post" checks
+	*
+	* @event core.posting_modify_cannot_edit_conditions
+	* @var	array	post_data	Array with post data
+	* @var	bool	force_edit_allowed		Allow the user to edit the post (all permissions and conditions are ignored)
+	* @var	bool	s_cannot_edit			User can not edit the post because it's not his
+	* @var	bool	s_cannot_edit_locked	User can not edit the post because it's locked
+	* @var	bool	s_cannot_edit_time		User can not edit the post because edit_time has passed
+	* @since 3.1.0-b4
+	*/
+	$vars = array(
+		'post_data',
+		'force_edit_allowed',
+		's_cannot_edit',
+		's_cannot_edit_locked',
+		's_cannot_edit_time',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.posting_modify_cannot_edit_conditions', compact($vars)));
+
+	if (!$force_edit_allowed)
 	{
-		trigger_error('CANNOT_EDIT_POST_LOCKED');
+		if ($s_cannot_edit)
+		{
+			trigger_error('USER_CANNOT_EDIT');
+		}
+		else if ($s_cannot_edit_time)
+		{
+			trigger_error('CANNOT_EDIT_TIME');
+		}
+		else if ($s_cannot_edit_locked)
+		{
+			trigger_error('CANNOT_EDIT_POST_LOCKED');
+		}
 	}
 }
 
 // Handle delete mode...
-if ($mode == 'delete')
+if ($mode == 'delete' || $mode == 'soft_delete')
 {
-	handle_post_delete($forum_id, $topic_id, $post_id, $post_data);
+	if ($mode == 'soft_delete' && $post_data['post_visibility'] == ITEM_DELETED)
+	{
+		$user->setup('posting');
+		trigger_error('NO_POST');
+	}
+
+	$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
+	$soft_delete_reason = ($mode == 'soft_delete' && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
+	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
 	return;
 }
 
@@ -320,13 +447,17 @@ if ($mode == 'delete')
 if ($mode == 'bump')
 {
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id'])
-	   && check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
+		&& check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
 	{
 		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
+		$message = $user->lang['TOPIC_BUMPED'];
 
-		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $meta_url . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		if (!$request->is_ajax())
+		{
+			$message .= '<br /><br />' . $user->lang('VIEW_MESSAGE', '<a href="' . $meta_url . '">', '</a>');
+			$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		}
 
 		trigger_error($message);
 	}
@@ -391,6 +522,8 @@ if ($mode == 'edit')
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
 $message_parser = new parse_message();
+$plupload = $phpbb_container->get('plupload');
+$message_parser->set_plupload($plupload);
 
 if (isset($post_data['post_text']))
 {
@@ -417,7 +550,7 @@ $message_parser->get_submitted_attachment_data($post_data['poster_id']);
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
 	// Do not change to SELECT *
-	$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
+	$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename, filesize
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
@@ -636,7 +769,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
+	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -754,8 +887,13 @@ if ($submit || $preview || $refresh)
 
 		// We make sure nobody else made exactly the same change
 		// we're about to submit by also checking $message_md5 != $post_data['post_checksum']
-		if (($edit_post_message_checksum !== '' && $edit_post_message_checksum != $post_data['post_checksum'] && $message_md5 != $post_data['post_checksum'])
-		 || ($edit_post_subject_checksum !== '' && $edit_post_subject_checksum != $post_data['post_subject_md5'] && md5($post_data['post_subject']) != $post_data['post_subject_md5']))
+		if ($edit_post_message_checksum !== '' &&
+			$edit_post_message_checksum != $post_data['post_checksum'] &&
+			$message_md5 != $post_data['post_checksum']
+			||
+			$edit_post_subject_checksum !== '' &&
+			$edit_post_subject_checksum != $post_data['post_subject_md5'] &&
+			md5($post_data['post_subject']) != $post_data['post_subject_md5'])
 		{
 			if (topic_review($topic_id, $forum_id, 'post_review_edit', $post_id))
 			{
@@ -787,10 +925,13 @@ if ($submit || $preview || $refresh)
 			$message_parser->warn_msg = array();
 		}
 
-		$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		if (!$preview || !empty($message_parser->message))
+		{
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+		}
 
 		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && $refresh)
+		if (sizeof($message_parser->warn_msg) && $refresh && !$preview)
 		{
 			$message_parser->warn_msg = array();
 		}
@@ -844,7 +985,7 @@ if ($submit || $preview || $refresh)
 		if (($result = validate_string($post_data['username'], false, $config['min_name_chars'], $config['max_name_chars'])) !== false)
 		{
 			$min_max_amount = ($result == 'TOO_SHORT') ? $config['min_name_chars'] : $config['max_name_chars'];
-			$error[] = sprintf($user->lang['FIELD_' . $result], $user->lang['USERNAME'], $min_max_amount);
+			$error[] = $user->lang('FIELD_' . $result, $min_max_amount, $user->lang['USERNAME']);
 		}
 	}
 
@@ -868,10 +1009,31 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['FORM_INVALID'];
 	}
 
+	if ($submit && $mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED && !isset($_POST['soft_delete']) && $auth->acl_get('m_approve', $forum_id))
+	{
+		$is_first_post = ($post_id == $post_data['topic_first_post_id'] || !$post_data['topic_posts_approved']);
+		$is_last_post = ($post_id == $post_data['topic_last_post_id'] || !$post_data['topic_posts_approved']);
+		$updated_post_data = $phpbb_content_visibility->set_post_visibility(ITEM_APPROVED, $post_id, $post_data['topic_id'], $post_data['forum_id'], $user->data['user_id'], time(), '', $is_first_post, $is_last_post);
+
+		if (!empty($updated_post_data))
+		{
+			// Update the post_data, so we don't need to refetch it.
+			$post_data = array_merge($post_data, $updated_post_data);
+		}
+	}
+
 	// Parse subject
 	if (!$preview && !$refresh && utf8_clean_string($post_data['post_subject']) === '' && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
+	}
+
+	// Check for out-of-bounds characters that are currently
+	// not supported by utf8_bin
+	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+	{
+		$character_list = implode('<br />', $matches[0]);
+		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
 	}
 
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
@@ -996,60 +1158,6 @@ if ($submit || $preview || $refresh)
 	// Store message, sync counters
 	if (!sizeof($error) && $submit)
 	{
-		// Check if we want to de-globalize the topic... and ask for new forum
-		if ($post_data['topic_type'] != POST_GLOBAL)
-		{
-			$sql = 'SELECT topic_type, forum_id
-				FROM ' . TOPICS_TABLE . "
-				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($row && !$row['forum_id'] && $row['topic_type'] == POST_GLOBAL)
-			{
-				$to_forum_id = request_var('to_forum_id', 0);
-
-				if ($to_forum_id)
-				{
-					$sql = 'SELECT forum_type
-						FROM ' . FORUMS_TABLE . '
-						WHERE forum_id = ' . $to_forum_id;
-					$result = $db->sql_query($sql);
-					$forum_type = (int) $db->sql_fetchfield('forum_type');
-					$db->sql_freeresult($result);
-
-					if ($forum_type != FORUM_POST || !$auth->acl_get('f_post', $to_forum_id) || !$auth->acl_get('f_noapprove', $to_forum_id))
-					{
-						$to_forum_id = 0;
-					}
-				}
-
-				if (!$to_forum_id)
-				{
-					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-
-					$template->assign_vars(array(
-						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true, true),
-						'S_UNGLOBALISE'		=> true)
-					);
-
-					$submit = false;
-					$refresh = true;
-				}
-				else
-				{
-					if (!$auth->acl_get('f_post', $to_forum_id))
-					{
-						// This will only be triggered if the user tried to trick the forum.
-						trigger_error('NOT_AUTHORISED');
-					}
-
-					$forum_id = $to_forum_id;
-				}
-			}
-		}
-
 		if ($submit)
 		{
 			// Lock/Unlock Topic
@@ -1121,14 +1229,15 @@ if ($submit || $preview || $refresh)
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
 
-				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
-				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
+				'topic_visibility'			=> (isset($post_data['topic_visibility'])) ? $post_data['topic_visibility'] : false,
+				'post_visibility'			=> (isset($post_data['post_visibility'])) ? $post_data['post_visibility'] : false,
 			);
 
 			if ($mode == 'edit')
 			{
-				$data['topic_replies_real'] = $post_data['topic_replies_real'];
-				$data['topic_replies'] = $post_data['topic_replies'];
+				$data['topic_posts_approved'] = $post_data['topic_posts_approved'];
+				$data['topic_posts_unapproved'] = $post_data['topic_posts_unapproved'];
+				$data['topic_posts_softdeleted'] = $post_data['topic_posts_softdeleted'];
 			}
 
 			// Only return the username when it is either a guest posting or we are editing a post and
@@ -1145,6 +1254,15 @@ if ($submit || $preview || $refresh)
 				$captcha->reset();
 			}
 
+			// Handle delete mode...
+			if ($request->is_set_post('delete') || $request->is_set_post('delete_permanent'))
+			{
+				$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
+				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
+				handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
+				return;
+			}
+
 			// Check the permissions for post approval.
 			// Moderators must go through post approval like ordinary users.
 			if ((!$auth->acl_get('f_noapprove', $data['forum_id']) && empty($data['force_approved_state'])) || (isset($data['force_approved_state']) && !$data['force_approved_state']))
@@ -1152,17 +1270,11 @@ if ($submit || $preview || $refresh)
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
 				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : ' '. $user->lang['POST_APPROVAL_NOTIFY']);
-			}
-			else
-			{
-				meta_refresh(3, $redirect_url);
-
-				$message = ($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED';
-				$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>');
+				$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
+				trigger_error($message);
 			}
 
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
-			trigger_error($message);
+			redirect($redirect_url);
 		}
 	}
 }
@@ -1219,8 +1331,8 @@ if (!sizeof($error) && $preview)
 			'POLL_QUESTION'		=> $parse_poll->message,
 
 			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_end)) : '',
-			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']))
-		);
+			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
+		));
 
 		$parse_poll->message = implode("\n", $post_data['poll_options']);
 		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
@@ -1263,8 +1375,8 @@ if (!sizeof($error) && $preview)
 			'PREVIEW_MESSAGE'		=> $preview_message,
 			'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-			'S_DISPLAY_PREVIEW'		=> true)
-		);
+			'S_DISPLAY_PREVIEW'		=> !empty($preview_message),
+		));
 	}
 }
 
@@ -1418,16 +1530,16 @@ $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_up
 add_form_key('posting');
 
 
-// Start assigning vars for main posting page ...
-$template->assign_vars(array(
+// Build array of variables for main posting page
+$page_data = array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
-	'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
 	'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
-	'MODERATORS'			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
+	'MODERATORS'			=> (sizeof($moderators)) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
@@ -1441,7 +1553,8 @@ $template->assign_vars(array(
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
-	'EDIT_REASON'			=> $post_data['post_edit_reason'],
+	'EDIT_REASON'			=> $request->variable('edit_reason', ''),
+	'SHOW_PANEL'			=> $request->variable('show_panel', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
@@ -1466,6 +1579,10 @@ $template->assign_vars(array(
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
+	'S_SOFTDELETE_CHECKED'		=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? ' checked="checked"' : '',
+	'S_SOFTDELETE_ALLOWED'		=> ($mode == 'edit' && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $lock_post_checked)) ? true : false,
+	'S_RESTORE_ALLOWED'			=> $auth->acl_get('m_approve', $forum_id),
+	'S_IS_DELETED'				=> ($mode == 'edit' && $post_data['post_visibility'] == ITEM_DELETED) ? true : false,
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
@@ -1479,8 +1596,77 @@ $template->assign_vars(array(
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
 	'S_POST_ACTION'			=> $s_action,
-	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+	'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
+	'S_IN_POSTING'			=> true,
 );
+
+/**
+* This event allows you to modify template variables for the posting screen
+*
+* @event core.posting_modify_template_vars
+* @var	array	post_data	Array with post data
+* @var	array	moderators	Array with forum moderators
+* @var	string	mode		What action to take if the form is submitted
+*				post|reply|quote|edit|delete|bump|smilies|popup
+* @var	string	page_title	Title of the mode page
+* @var	bool	s_topic_icons	Whether or not to show the topic icons
+* @var	string	form_enctype	If attachments are allowed for this form
+*				"multipart/form-data" or empty string
+* @var	string	s_action	The URL to submit the POST data to
+* @var	string	s_hidden_fields	Concatenated hidden input tags of posting form
+* @var	int	post_id		ID of the post
+* @var	int	topic_id	ID of the topic
+* @var	int	forum_id	ID of the forum
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	delete		Whether or not the post is being deleted
+* @var	bool	cancel		Whether or not to cancel the form (returns to
+*				viewtopic or viewforum depending on if the user
+*				is posting a new topic or editing a post)
+* @var	array	error		Any error strings; a non-empty array aborts
+*				form submission.
+*				NOTE: Should be actual language strings, NOT
+*				language keys.
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	array	page_data	Posting page data that should be passed to the
+*				posting page via $template->assign_vars()
+* @var	object	message_parser	The message parser object
+* @since 3.1.0-a1
+* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
+*		s_topic_icons, form_enctype, s_action, s_hidden_fields,
+*		post_id, topic_id, forum_id, submit, preview, save, load,
+*		delete, cancel, refresh, error, page_data, message_parser
+*/
+$vars = array(
+	'post_data',
+	'moderators',
+	'mode',
+	'page_title',
+	's_topic_icons',
+	'form_enctype',
+	's_action',
+	's_hidden_fields',
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'delete',
+	'cancel',
+	'refresh',
+	'error',
+	'page_data',
+	'message_parser',
+);
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', compact($vars)));
+
+// Start assigning vars for main posting page ...
+$template->assign_vars($page_data);
 
 // Build custom bbcodes array
 display_custom_bbcodes();
@@ -1495,7 +1681,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
 
-		'L_POLL_OPTIONS_EXPLAIN'	=> sprintf($user->lang['POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN'], $config['max_poll_options']),
+		'L_POLL_OPTIONS_EXPLAIN'	=> $user->lang('POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN', (int) $config['max_poll_options']),
 
 		'VOTE_CHANGE_CHECKED'	=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
 		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
@@ -1508,11 +1694,17 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 // Show attachment box for adding attachments if true
 $allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && $config['allow_attachments'] && $form_enctype);
 
+if ($allowed)
+{
+	$max_files = ($auth->acl_get('a_') || $auth->acl_get('m_', $forum_id)) ? 0 : (int) $config['max_attachments'];
+	$plupload->configure($cache, $template, $s_action, $forum_id, $max_files);
+}
+
 // Attachment entry
 posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 // Output page ...
-page_header($page_title, false);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
@@ -1540,7 +1732,7 @@ function upload_popup($forum_style = 0)
 
 	($forum_style) ? $user->setup('posting', $forum_style) : $user->setup('posting');
 
-	page_header($user->lang['PROGRESS_BAR'], false);
+	page_header($user->lang['PROGRESS_BAR']);
 
 	$template->set_filenames(array(
 		'popup'	=> 'posting_progress_bar.html')
@@ -1559,18 +1751,20 @@ function upload_popup($forum_style = 0)
 /**
 * Do the various checks required for removing posts as well as removing it
 */
-function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
+function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $soft_delete_reason = '')
 {
-	global $user, $db, $auth, $config;
+	global $user, $db, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
 
+	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
+
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
+	if ($auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
 	{
-		$s_hidden_fields = build_hidden_fields(array(
+		$s_hidden_fields = array(
 			'p'		=> $post_id,
 			'f'		=> $forum_id,
-			'mode'	=> 'delete')
+			'mode'	=> ($is_soft) ? 'soft_delete' : 'delete',
 		);
 
 		if (confirm_box(true))
@@ -1578,41 +1772,74 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			$data = array(
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
-				'topic_replies_real'	=> $post_data['topic_replies_real'],
-				'topic_approved'		=> $post_data['topic_approved'],
+				'topic_posts_approved'		=> $post_data['topic_posts_approved'],
+				'topic_posts_unapproved'	=> $post_data['topic_posts_unapproved'],
+				'topic_posts_softdeleted'	=> $post_data['topic_posts_softdeleted'],
+				'topic_visibility'		=> $post_data['topic_visibility'],
 				'topic_type'			=> $post_data['topic_type'],
-				'post_approved'			=> $post_data['post_approved'],
+				'post_visibility'		=> $post_data['post_visibility'],
 				'post_reported'			=> $post_data['post_reported'],
 				'post_time'				=> $post_data['post_time'],
 				'poster_id'				=> $post_data['poster_id'],
-				'post_postcount'		=> $post_data['post_postcount']
+				'post_postcount'		=> $post_data['post_postcount'],
 			);
 
-			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
+			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $soft_delete_reason);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if ($next_post_id === false)
 			{
-				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title'], $post_username);
+				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), $post_data['topic_title'], $post_username, $soft_delete_reason);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 				$message = $user->lang['POST_DELETED'];
 			}
 			else
 			{
-				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_POST', $post_data['post_subject'], $post_username);
+				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), $post_data['post_subject'], $post_username, $soft_delete_reason);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
-				$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>');
+				$message = $user->lang['POST_DELETED'];
+
+				if (!$request->is_ajax())
+				{
+					$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $meta_info . '">', '</a>');
+				}
 			}
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+			if (!$request->is_ajax())
+			{
+				$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+			}
 			trigger_error($message);
 		}
 		else
 		{
-			confirm_box(false, 'DELETE_POST', $s_hidden_fields);
+			global $user, $template, $request;
+
+			$can_delete = $auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id));
+			$can_softdelete = $auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id));
+
+			$template->assign_vars(array(
+				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,
+				'S_CHECKED_PERMANENT'	=> $request->is_set_post('delete_permanent') ? ' checked="checked"' : '',
+				'S_ALLOWED_DELETE'		=> $can_delete,
+				'S_ALLOWED_SOFTDELETE'	=> $can_softdelete,
+			));
+
+			$l_confirm = 'DELETE_POST';
+			if ($post_data['post_visibility'] == ITEM_DELETED)
+			{
+				$l_confirm .= '_PERMANENTLY';
+				$s_hidden_fields['delete_permanent'] = '1';
+			}
+			else if (!$can_softdelete)
+			{
+				$s_hidden_fields['delete_permanent'] = '1';
+			}
+
+			confirm_box(false, $l_confirm, build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
 	}
 
@@ -1629,5 +1856,3 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 
 	trigger_error('USER_CANNOT_DELETE');
 }
-
-?>

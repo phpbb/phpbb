@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <h1>{L_TITLE}</h1>
 
@@ -25,7 +25,7 @@
 	<!-- ELSE -->
 
 		<dl>
-			<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 			<dd>{options.CONTENT}</dd>
 		</dl>
 
@@ -33,9 +33,12 @@
 <!-- END options -->
 
 <!-- IF S_AUTH -->
+	</fieldset>
 	<!-- BEGIN auth_tpl -->
-		{auth_tpl.TPL}
+		<!-- INCLUDE {auth_tpl.TEMPLATE_FILE} -->
 	<!-- END auth_tpl -->
+	<fieldset>
+		<legend>{L_ACP_SUBMIT_CHANGES}</legend>
 <!-- ENDIF -->
 
 	<p class="submit-buttons">

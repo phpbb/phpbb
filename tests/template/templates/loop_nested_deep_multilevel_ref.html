@@ -1,0 +1,13 @@
+top-level content
+<!-- BEGIN outer -->
+	outer
+	<!-- BEGIN middle -->
+		{outer.middle.S_BLOCK_NAME}
+		<!-- BEGIN inner -->
+			inner {inner.VARIABLE}
+			<!-- IF outer.middle.inner.S_FIRST_ROW -->
+				first row of {outer.middle.inner.S_NUM_ROWS} in {middle.inner.S_BLOCK_NAME}
+			<!-- ENDIF -->
+		<!-- END inner -->
+	<!-- END middle -->
+<!-- END outer -->

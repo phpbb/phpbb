@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,16 +19,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_bbcodes
 {
 	var $u_action;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
@@ -97,7 +97,7 @@ class acp_bbcodes
 			case 'edit':
 			case 'add':
 
-				$template->assign_vars(array(
+				$tpl_ary = array(
 					'S_EDIT_BBCODE'		=> true,
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
@@ -106,14 +106,32 @@ class acp_bbcodes
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
 					'BBCODE_HELPLINE'		=> $bbcode_helpline,
-					'DISPLAY_ON_POSTING'	=> $display_on_posting)
+					'DISPLAY_ON_POSTING'	=> $display_on_posting,
 				);
 
-				foreach ($user->lang['tokens'] as $token => $token_explain)
+				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
+
+				/**
+				* Modify custom bbcode template data before we display the add/edit form
+				*
+				* @event core.acp_bbcodes_edit_add
+				* @var	string	action			Type of the action: add|edit
+				* @var	array	tpl_ary			Array with custom bbcode add/edit data
+				* @var	int		bbcode_id		When editing: the bbcode id,
+				*								when creating: 0
+				* @var	array	bbcode_tokens	Array of bbcode tokens
+				* @since 3.1.0-a3
+				*/
+				$vars = array('action', 'tpl_ary', 'bbcode_id', 'bbcode_tokens');
+				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_edit_add', compact($vars)));
+
+				$template->assign_vars($tpl_ary);
+
+				foreach ($bbcode_tokens as $token)
 				{
 					$template->assign_block_vars('token', array(
 						'TOKEN'		=> '{' . $token . '}',
-						'EXPLAIN'	=> ($token === 'LOCAL_URL') ? sprintf($token_explain, generate_board_url() . '/') : $token_explain,
+						'EXPLAIN'	=> ($token === 'LOCAL_URL') ? $user->lang(array('tokens', $token), generate_board_url() . '/') : $user->lang(array('tokens', $token)),
 					));
 				}
 
@@ -123,6 +141,36 @@ class acp_bbcodes
 
 			case 'modify':
 			case 'create':
+
+				$sql_ary = $hidden_fields = array();
+
+				/**
+				* Modify custom bbcode data before the modify/create action
+				*
+				* @event core.acp_bbcodes_modify_create
+				* @var	string	action				Type of the action: modify|create
+				* @var	array	sql_ary				Array with new bbcode data
+				* @var	int		bbcode_id			When editing: the bbcode id,
+				*									when creating: 0
+				* @var	bool	display_on_posting	Display bbcode on posting form
+				* @var	string	bbcode_match		The bbcode usage string to match
+				* @var	string	bbcode_tpl			The bbcode HTML replacement string
+				* @var	string	bbcode_helpline		The bbcode help line string
+				* @var	array	hidden_fields		Array of hidden fields for use when
+				*									submitting form when $warn_text is true
+				* @since 3.1.0-a3
+				*/
+				$vars = array(
+					'action',
+					'sql_ary',
+					'bbcode_id',
+					'display_on_posting',
+					'bbcode_match',
+					'bbcode_tpl',
+					'bbcode_helpline',
+					'hidden_fields',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
 
 				$warn_text = preg_match('%<[^>]*\{text[\d]*\}[^>]*>%i', $bbcode_tpl);
 				if (!$warn_text || confirm_box(true))
@@ -172,13 +220,12 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-
 					if (strlen($bbcode_helpline) > 255)
 					{
 						trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$sql_ary = array(
+					$sql_ary = array_merge($sql_ary, array(
 						'bbcode_tag'				=> $data['bbcode_tag'],
 						'bbcode_match'				=> $bbcode_match,
 						'bbcode_tpl'				=> $bbcode_tpl,
@@ -188,7 +235,7 @@ class acp_bbcodes
 						'first_pass_replace'		=> $data['first_pass_replace'],
 						'second_pass_match'			=> $data['second_pass_match'],
 						'second_pass_replace'		=> $data['second_pass_replace']
-					);
+					));
 
 					if ($action == 'create')
 					{
@@ -244,14 +291,14 @@ class acp_bbcodes
 				}
 				else
 				{
-					confirm_box(false, $user->lang['BBCODE_DANGER'], build_hidden_fields(array(
+					confirm_box(false, $user->lang['BBCODE_DANGER'], build_hidden_fields(array_merge($hidden_fields, array(
 						'action'				=> $action,
 						'bbcode'				=> $bbcode_id,
 						'bbcode_match'			=> $bbcode_match,
 						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl),
 						'bbcode_helpline'		=> $bbcode_helpline,
 						'display_on_posting'	=> $display_on_posting,
-						))
+						)))
 					, 'confirm_bbcode.html');
 				}
 
@@ -273,6 +320,18 @@ class acp_bbcodes
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+
+						if ($request->is_ajax())
+						{
+							$json_response = new \phpbb\json_response;
+							$json_response->send(array(
+								'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+								'MESSAGE_TEXT'	=> $user->lang['BBCODE_DELETED'],
+								'REFRESH_DATA'	=> array(
+									'time'	=> 3
+								)
+							));
+						}
 					}
 					else
 					{
@@ -288,22 +347,57 @@ class acp_bbcodes
 			break;
 		}
 
-		$template->assign_vars(array(
-			'U_ACTION'		=> $this->u_action . '&amp;action=add')
+		$u_action = $this->u_action;
+
+		$template_data = array(
+			'U_ACTION'		=> $this->u_action . '&amp;action=add',
 		);
 
-		$sql = 'SELECT *
-			FROM ' . BBCODES_TABLE . '
-			ORDER BY bbcode_tag';
-		$result = $db->sql_query($sql);
+		$sql_ary = array(
+			'SELECT'	=> 'b.*',
+			'FROM'		=> array(BBCODES_TABLE => 'b'),
+			'ORDER_BY'	=> 'b.bbcode_tag',
+		);
+
+		/**
+		*  Modify custom bbcode template data before we display the form
+		*
+		* @event core.acp_bbcodes_display_form
+		* @var	string	action			Type of the action: modify|create
+		* @var	string	sql_ary			The SQL array to get custom bbcode data
+		* @var	array	template_data	Array with form template data
+		* @var	string	u_action		The u_action link
+		* @since 3.1.0-a3
+		*/
+		$vars = array('action', 'sql_ary', 'template_data', 'u_action');
+		extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_form', compact($vars)));
+
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+
+		$template->assign_vars($template_data);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('bbcodes', array(
+			$bbcodes_array = array(
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
-				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'])
+				'U_EDIT'			=> $u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
+				'U_DELETE'			=> $u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'],
 			);
+
+			/**
+			*  Modify display of custom bbcodes in the form
+			*
+			* @event core.acp_bbcodes_display_bbcodes
+			* @var	array	row				Array with current bbcode data
+			* @var	array	bbcodes_array	Array of bbcodes template data
+			* @var	string	u_action		The u_action link
+			* @since 3.1.0-a3
+			*/
+			$vars = array('bbcodes_array', 'row', 'u_action');
+			extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_display_bbcodes', compact($vars)));
+
+			$template->assign_block_vars('bbcodes', $bbcodes_array);
+
 		}
 		$db->sql_freeresult($result);
 	}
@@ -317,16 +411,7 @@ class acp_bbcodes
 		$bbcode_tpl = trim($bbcode_tpl);
 		$utf8 = strpos($bbcode_match, 'INTTEXT') !== false;
 
-		// make sure we have utf8 support
-		$utf8_pcre_properties = false;
-		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
-		{
-			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
-			if (@preg_match('/\p{L}/u', 'a') !== false)
-			{
-				$utf8_pcre_properties = true;
-			}
-		}
+		$utf8_pcre_properties = phpbb_pcre_utf8_support();
 
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
@@ -480,5 +565,3 @@ class acp_bbcodes
 		);
 	}
 }
-
-?>

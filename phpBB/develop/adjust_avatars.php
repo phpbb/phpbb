@@ -143,5 +143,3 @@ function adjust_avatar($old_name, $midfix)
 	}
 	return false;
 }
-
-?>

@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,7 +22,6 @@ if (!defined('IN_PHPBB'))
 /**
 * mcp_logs
 * Handling warning the users
-* @package mcp
 */
 class mcp_logs
 {
@@ -34,7 +36,7 @@ class mcp_logs
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('acp/common');
 
@@ -62,6 +64,8 @@ class mcp_logs
 
 		$this->tpl_name = 'mcp_logs';
 		$this->page_title = 'MCP_LOGS';
+
+		$pagination = $phpbb_container->get('pagination');
 
 		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
 		$forum_list[] = 0;
@@ -110,27 +114,33 @@ class mcp_logs
 			{
 				if ($deletemark && sizeof($marked))
 				{
-					$sql = 'DELETE FROM ' . LOG_TABLE . '
-						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list) . '
-							AND ' . $db->sql_in_set('log_id', $marked);
-					$db->sql_query($sql);
+					$conditions = array(
+						'forum_id'	=> $forum_list,
+						'log_id'	=> array('IN' => $marked),
+					);
 
-					add_log('admin', 'LOG_CLEAR_MOD');
+					$phpbb_log->delete('mod', $conditions);
 				}
 				else if ($deleteall)
 				{
-					$sql = 'DELETE FROM ' . LOG_TABLE . '
-						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list);
+					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+
+					$conditions = array(
+						'forum_id'	=> $forum_list,
+						'keywords'	=> $keywords,
+					);
+
+					if ($sort_days)
+					{
+						$conditions['log_time'] = array('>=', time() - ($sort_days * 86400));
+					}
 
 					if ($mode == 'topic_logs')
 					{
-						$sql .= ' AND topic_id = ' . $topic_id;
+						$conditions['topic_logs'] = $topic_id;
 					}
-					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_CLEAR_MOD');
+					$phpbb_log->delete('mod', $conditions);
 				}
 			}
 			else
@@ -172,10 +182,11 @@ class mcp_logs
 		$log_count = 0;
 		$start = view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);
 
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
-			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start),
+			'TOTAL'				=> $user->lang('TOTAL_LOGS', (int) $log_count),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 
@@ -214,5 +225,3 @@ class mcp_logs
 		}
 	}
 }
-
-?>

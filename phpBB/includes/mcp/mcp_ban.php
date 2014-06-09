@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,9 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package mcp
-*/
 class mcp_ban
 {
 	var $u_action;
@@ -172,7 +172,7 @@ class mcp_ban
 				case 'user':
 					$pre_fill = (string) $db->sql_fetchfield('username');
 				break;
-				
+
 				case 'ip':
 					$pre_fill = (string) $db->sql_fetchfield('user_ip');
 				break;
@@ -215,5 +215,3 @@ class mcp_ban
 		}
 	}
 }
-
-?>

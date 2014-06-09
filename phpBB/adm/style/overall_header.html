@@ -1,25 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<meta http-equiv="Content-Language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width" />
 <!-- IF META -->{META}<!-- ENDIF -->
 <title>{PAGE_TITLE}</title>
 
-<link href="style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="style/admin.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
 // <![CDATA[
-var jump_page = '{LA_JUMP_PAGE}:';
-var on_page = '{ON_PAGE}';
+var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
+var on_page = '{CURRENT_PAGE}';
 var per_page = '{PER_PAGE}';
-var base_url = '{A_BASE_URL}';
-
-var menu_state = 'shown';
-
+var base_url = '{BASE_URL|e('js')}';
 
 /**
 * Jump to page
@@ -42,35 +36,12 @@ function jumpto()
 }
 
 /**
-* Set display of page element
-* s[-1,0,1] = hide,toggle display,show
-*/
-function dE(n, s, type)
-{
-	if (!type)
-	{
-		type = 'block';
-	}
-
-	var e = document.getElementById(n);
-	if (!s)
-	{
-		s = (e.style.display == '') ? -1 : 1;
-	}
-	e.style.display = (s == 1) ? type : 'none';
-}
-
-/**
 * Mark/unmark checkboxes
 * id = ID of parent container, name = name prefix, state = state [true/false]
 */
 function marklist(id, name, state)
 {
-	var parent = document.getElementById(id);
-	if (!parent)
-	{
-		eval('parent = document.' + id);
-	}
+	var parent = document.getElementById(id) || document[id];
 
 	if (!parent)
 	{
@@ -111,61 +82,18 @@ function popup(url, width, height, name)
 	return false;
 }
 
-/**
-* Hiding/Showing the side menu
-*/
-function switch_menu()
-{
-	var menu = document.getElementById('menu');
-	var main = document.getElementById('main');
-	var toggle = document.getElementById('toggle');
-	var handle = document.getElementById('toggle-handle');
-
-	switch (menu_state)
-	{
-		// hide
-		case 'shown':
-			main.style.width = '93%';
-			menu_state = 'hidden';
-			menu.style.display = 'none';
-			toggle.style.width = '20px';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundRepeat = 'no-repeat';
-
-			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-				handle.style.backgroundPosition = '0% 50%';
-				toggle.style.left = '96%';
-			<!-- ELSE -->
-				handle.style.backgroundPosition = '100% 50%';
-				toggle.style.left = '0';
-			<!-- ENDIF -->
-		break;
-
-		// show
-		case 'hidden':
-			main.style.width = '76%';
-			menu_state = 'shown';
-			menu.style.display = 'block';
-			toggle.style.width = '5%';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundRepeat = 'no-repeat';
-
-			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-				handle.style.backgroundPosition = '100% 50%';
-				toggle.style.left = '75%';
-			<!-- ELSE -->
-				handle.style.backgroundPosition = '0% 50%';
-				toggle.style.left = '15%';
-			<!-- ENDIF -->
-		break;
-	}
-}
-
 // ]]>
 </script>
+
+<!-- EVENT acp_overall_header_head_append -->
+
+{$STYLESHEETS}
+
 </head>
 
-<body class="{S_CONTENT_DIRECTION}">
+<body class="{S_CONTENT_DIRECTION} {BODY_CLASS} nojs">
+
+<!-- EVENT acp_overall_header_body_before -->
 
 <div id="wrap">
 	<div id="page-header">
@@ -178,29 +106,25 @@ function switch_menu()
 		<div id="tabs">
 			<ul>
 			<!-- BEGIN t_block1 -->
-				<li<!-- IF t_block1.S_SELECTED --> id="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
+				<li<!-- IF t_block1.S_SELECTED --> class="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
 			<!-- END t_block1 -->
 			</ul>
 		</div>
 
 		<div id="acp">
-		<div class="panel">
-			<span class="corners-top"><span></span></span>
 				<div id="content">
-					<!-- IF not S_USER_NOTICE --> 
-					<div id="toggle">
-						<a id="toggle-handle" accesskey="m" title="{L_MENU_TOGGLE}" onclick="switch_menu(); return false;" href="#"></a></div>
-					<!-- ENDIF -->
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-						<ul>
 						<!-- DEFINE $LI_USED = 0 -->
 						<!-- BEGIN l_block1 -->
 							<!-- IF l_block1.S_SELECTED -->
 	
 						<!-- BEGIN l_block2 -->
 							<!-- IF .l_block1.l_block2.l_block3 -->
-							<li class="header">{l_block1.l_block2.L_TITLE}</li>
+							<!-- IF $LI_USED --></ul></div><!-- ENDIF -->
+							<div class="menu-block">
+								<a class="header" href="javascript:void(0);">{l_block1.l_block2.L_TITLE}</a>
+								<ul>
 							<!-- DEFINE $LI_USED = 1 -->
 							<!-- ENDIF -->
 	
@@ -212,10 +136,11 @@ function switch_menu()
 						
 							<!-- ENDIF -->
 						<!-- END l_block1 -->
-						<!-- IF not $LI_USED -->
-							<li></li>
+						<!-- IF $LI_USED -->
+								</ul>
+							</div>
 						<!-- ENDIF -->
-						</ul>
 					</div>
 	
 					<div id="main">
+						<div class="main">

@@ -1,0 +1,18 @@
+					<!-- IF BASE_URL -->
+					<a href="#" class="pagination-trigger" title="{L_JUMP_TO_PAGE}" data-lang-jump-page="{L_JUMP_PAGE|e('html_attr')}{L_COLON}" data-on-page="{CURRENT_PAGE}" data-per-page="{PER_PAGE}" data-base-url="{BASE_URL|e('html_attr')}" data-base-is-route="{BASE_IS_ROUTE}" data-start-name="{START_NAME}">{PAGE_NUMBER}</a> &bull;
+					<!-- ELSE -->
+					{PAGE_NUMBER} &bull;
+					<!-- ENDIF -->
+					<ul>
+					<!-- BEGIN pagination -->
+						<!-- IF pagination.S_IS_PREV -->
+						<!-- ELSEIF pagination.S_IS_CURRENT -->
+						<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+						<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+						<li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+						<!-- ELSEIF pagination.S_IS_NEXT -->
+						<!-- ELSE -->
+						<li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+						<!-- ENDIF -->
+					<!-- END pagination -->
+					</ul>

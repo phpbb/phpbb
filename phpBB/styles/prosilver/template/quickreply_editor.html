@@ -1,79 +1,26 @@
-<script type="text/javascript">
-// <![CDATA[
-	function hide_qr(show)
-	{
-		dE('qr_editor_div');
-		dE('qr_showeditor_div');
-		if (show && document.getElementById('qr_editor_div').style.display != 'none')
-		{
-			document.getElementsByName('message')[0].focus();
-		}
-		return true;
-	}
-
-
-	function init_qr()
-	{
-		dE('qr_showeditor_div');
-		return true;
-	}
-	onload_functions.push('init_qr();');
-	// ]]>
-</script>
-<noscript>
-	<form method="post" action="{U_QR_ACTION}">
-		<div class="panel" id="qr_ns_editor_div">
-			<div class="inner"><span class="corners-top"><span></span></span>
-					<h2>{L_QUICKREPLY}</h2>
-					<fieldset class="fields1">
-						<dl style="clear: left;">
-							<dt><label for="subject">{L_SUBJECT}:</label></dt>
-							<dd><input type="text" name="subject" id="subject-ns" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
-						</dl>
-					<div id="message-box-ns">
-						<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
-					</div>
-					</fieldset>
-					<fieldset class="submit-buttons">
-						{S_FORM_TOKEN}
-						{QR_HIDDEN_FIELDS}
-						<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
-						<input type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" class="button2" />&nbsp;
-					</fieldset>
-			<span class="corners-bottom"><span></span></span></div>
-		</div>
-	</form>
-</noscript>
-<form method="post" action="{U_QR_ACTION}">
-	<div class="panel" style="display: none" id="qr_editor_div">
-		<div class="inner"><span class="corners-top"><span></span></span>
-				<h2>{L_QUICKREPLY}</h2>
+<form method="post" action="{U_QR_ACTION}" id="qr_postform">
+<!-- EVENT quickreply_editor_panel_before -->
+	<div class="panel">
+		<div class="inner">
+				<h2 class="quickreply-title">{L_QUICKREPLY}</h2>
 				<fieldset class="fields1">
 					<dl style="clear: left;">
-						<dt><label for="subject">{L_SUBJECT}:</label></dt>
-						<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
+						<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+						<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
 					</dl>
+				<!-- EVENT quickreply_editor_message_before -->
 				<div id="message-box">
 					<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
 				</div>
+				<!-- EVENT quickreply_editor_message_after -->
 				</fieldset>
 				<fieldset class="submit-buttons">
 					{S_FORM_TOKEN}
 					{QR_HIDDEN_FIELDS}
-					<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
-					<input type="submit" accesskey="f" tabindex="7" name="full_editor" value="{L_FULL_EDITOR}" class="button2" />&nbsp;
+					<input type="submit" accesskey="f" tabindex="6" name="preview" value="{L_FULL_EDITOR}" class="button2" id="qr_full_editor" />&nbsp;
+					<input type="submit" accesskey="s" tabindex="7" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
 				</fieldset>
-				<a href="" class="right-box up" onclick="hide_qr(false); return false;" title="{L_COLLAPSE_QR}">{L_COLLAPSE_QR}</a>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
-	<div class="panel" style="display: none" id="qr_showeditor_div" >
-		<div class="inner"><span class="corners-top"><span></span></span>
-
-			<div class="content">
-				<fieldset class="submit-buttons">
-					<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr(true);return false;"/>
-				</fieldset>
-			</div>
-		<span class="corners-bottom"><span></span></span></div>
-	</div>
+<!-- EVENT quickreply_editor_panel_after -->
 </form>

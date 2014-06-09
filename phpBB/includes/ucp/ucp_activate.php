@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,7 +22,6 @@ if (!defined('IN_PHPBB'))
 /**
 * ucp_activate
 * User activation
-* @package ucp
 */
 class ucp_activate
 {
@@ -28,7 +30,7 @@ class ucp_activate
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $phpbb_container;
 
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
@@ -109,13 +111,16 @@ class ucp_activate
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
+			$phpbb_notifications->delete_notifications('admin_activate_user', $user_row['user_id']);
+
 			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 			$messenger = new messenger(false);
 
 			$messenger->template('admin_welcome_activated', $user_row['user_lang']);
 
-			$messenger->to($user_row['user_email'], $user_row['username']);
+			$messenger->set_addresses($user_row);
 
 			$messenger->anti_abuse_headers($config, $user);
 
@@ -143,5 +148,3 @@ class ucp_activate
 		trigger_error($user->lang[$message]);
 	}
 }
-
-?>

@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package VC
-* @version $Id$
-* @copyright (c) 2006, 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,14 +22,11 @@ if (!defined('IN_PHPBB'))
 /**
 * Placeholder for autoload
 */
-if (!class_exists('phpbb_default_captcha'))
+if (!class_exists('phpbb_default_captcha', false))
 {
 	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
-/**
-* @package VC
-*/
 class phpbb_captcha_nogd extends phpbb_default_captcha
 {
 
@@ -40,18 +40,18 @@ class phpbb_captcha_nogd extends phpbb_default_captcha
 		}
 	}
 
-	function &get_instance()
+	static public function get_instance()
 	{
-		$instance =& new phpbb_captcha_nogd();
+		$instance = new phpbb_captcha_nogd();
 		return $instance;
 	}
 
-	function is_available()
+	static public function is_available()
 	{
 		return true;
 	}
 
-	function get_name()
+	static public function get_name()
 	{
 		return 'CAPTCHA_NO_GD';
 	}
@@ -68,5 +68,3 @@ class phpbb_captcha_nogd extends phpbb_default_captcha
 		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
 	}
 }
-
-?>

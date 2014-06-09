@@ -192,13 +192,13 @@ function get_topic_count($forum_id)
 {
 	global $db;
 	
-	$sql = "SELECT forum_topics
+	$sql = "SELECT forum_topics_approved
 		FROM " . FORUMS_TABLE . "
 		WHERE (forum_id = $forum_id)";
 	if($result = $db->sql_query($sql))
 	{
 		$row = $db->sql_fetchrow($result);
-		$topic_count = $row['forum_topics'];
+		$topic_count = $row['forum_topics_approved'];
 
 		unset($result);
 		unset($row);
@@ -263,7 +263,7 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 	
 	$post_message = prepare_message($text, $html_on, $bbcode_on, $smilies_on, $bbcode_uid);	
 	
-	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_approved, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
+	$sql = "INSERT INTO " . POSTS_TABLE . " (topic_id, forum_id, poster_id, attach_id, icon_id, post_username, post_time, poster_ip, post_visibility, bbcode_uid, enable_bbcode, enable_html, enable_smilies, enable_sig, post_subject, post_text)
 		VALUES ($new_topic_id, $forum_id, $user_id, 0, 0, '$post_username', $current_time, '$user_ip', 1, '$bbcode_uid', $bbcode_on, $html_on, $smilies_on, $attach_sig, '$post_subject', '$post_message')";
 	$result = $db->sql_query($sql);
 	
@@ -282,10 +282,10 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 		if($db->sql_query($sql))
 		{
 			$sql = "UPDATE " . FORUMS_TABLE . "
-				SET forum_last_post_id = $new_post_id, forum_posts = forum_posts + 1";
+				SET forum_last_post_id = $new_post_id, forum_posts_approved = forum_posts_approved + 1";
 			if($mode == "newtopic")
 			{
-				$sql .= ", forum_topics = forum_topics + 1";
+				$sql .= ", forum_topics_approved = forum_topics_approved + 1";
 			}
 			$sql .= " WHERE forum_id = $forum_id";
 	
@@ -366,18 +366,10 @@ function make_user($username)
 
 	$password = md5("benchpass");
 	$email = "nobody@localhost";
-	$icq = "12345678";
-	$website = "http://www.phpbb.com";
-	$occupation = "phpBB tester";
-	$location = "phpBB world hq";
-	$interests = "Eating, sleeping, living, and breathing phpBB";
 	$signature = "$username: phpBB tester.";
 	$signature_bbcode_uid = "";
 	$avatar_filename = "";
 	$viewemail = 0;
-	$aim = 0;
-	$yim = 0;
-	$msn = 0;
 	$attachsig = 1;
 	$allowsmilies = 1;
 	$allowhtml = 1;
@@ -422,8 +414,8 @@ function make_user($username)
 	}
 
 
-	$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_icq, user_website, user_occ, user_from, user_interests, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_aim, user_yim, user_msnm, user_attachsig, user_allowsmilies, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
-		VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$icq', '$website', '$occupation', '$location', '$interests', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, '$aim', '$yim', '$msn', $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
+	$sql = "INSERT INTO " . USERS_TABLE . "	(user_id, username, user_regdate, user_password, user_email, user_sig, user_sig_bbcode_uid, user_avatar, user_viewemail, user_attachsig, user_allowsmilies, user_allowhtml, user_allowbbcode, user_allow_viewonline, user_notify, user_notify_pm, user_timezone, user_dateformat, user_lang, user_style, user_level, user_allow_pm, user_active, user_actkey)
+		VALUES ($new_user_id, '$username', " . time() . ", '$password', '$email', '$signature', '$signature_bbcode_uid', '$avatar_filename', $viewemail, $attachsig, $allowsmilies, $allowhtml, $allowbbcode, $allowviewonline, $notifyreply, $notifypm, $user_timezone, '$user_dateformat', '$user_lang', $user_style, 0, 1, ";
 
 	
 	$sql .= "1, '')";
@@ -458,5 +450,3 @@ function make_user($username)
 	}
 
 }
-
-?>

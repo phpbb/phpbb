@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -12,8 +16,11 @@ require_once dirname(__FILE__) . '/phpbb_database_connection_odbc_pdo_wrapper.ph
 
 class phpbb_database_test_connection_manager
 {
+	/** @var array */
 	private $config;
+	/** @var array */
 	private $dbms;
+	/** @var \PDO */
 	private $pdo;
 
 	/**
@@ -50,6 +57,7 @@ class phpbb_database_test_connection_manager
 		switch ($this->dbms['PDO'])
 		{
 			case 'sqlite2':
+			case 'sqlite':	// SQLite3 driver
 				$dsn .= $this->config['dbhost'];
 			break;
 
@@ -108,7 +116,7 @@ class phpbb_database_test_connection_manager
 
 		// These require different connection strings on the phpBB side than they do in PDO
 		// so you must provide a DSN string for ODBC separately
-		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'mssql' || $this->config['dbms'] == 'firebird'))
+		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'phpbb\db\driver\mssql' || $this->config['dbms'] == 'phpbb\db\driver\firebird'))
 		{
 			$dsn = 'odbc:' . $this->config['custom_dsn'];
 		}
@@ -117,12 +125,12 @@ class phpbb_database_test_connection_manager
 		{
 			switch ($this->config['dbms'])
 			{
-				case 'mssql':
-				case 'mssql_odbc':
+				case 'phpbb\db\driver\mssql':
+				case 'phpbb\db\driver\mssql_odbc':
 					$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('mssql', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
 				break;
 
-				case 'firebird':
+				case 'phpbb\db\driver\firebird':
 					if (!empty($this->config['custom_dsn']))
 					{
 						$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
@@ -138,15 +146,15 @@ class phpbb_database_test_connection_manager
 		catch (PDOException $e)
 		{
 			$cleaned_dsn = str_replace($this->config['dbpasswd'], '*password*', $dsn);
-			throw new Exception("Unable do connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
+			throw new Exception("Unable to connect to $cleaned_dsn using PDO with error: {$e->getMessage()}");
 		}
 
 		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 		switch ($this->config['dbms'])
 		{
-			case 'mysql':
-			case 'mysqli':
+			case 'phpbb\db\driver\mysql':
+			case 'phpbb\db\driver\mysqli':
 				$this->pdo->exec('SET NAMES utf8');
 
 				/*
@@ -169,12 +177,12 @@ class phpbb_database_test_connection_manager
 	/**
 	* Load the phpBB database schema into the database
 	*/
-	public function load_schema()
+	public function load_schema($db)
 	{
 		$this->ensure_connected(__METHOD__);
 
 		$directory = dirname(__FILE__) . '/../../phpBB/install/schemas/';
-		$this->load_schema_from_file($directory);
+		$this->load_schema_from_file($directory, $db);
 	}
 
 	/**
@@ -187,8 +195,9 @@ class phpbb_database_test_connection_manager
 	{
 		switch ($this->config['dbms'])
 		{
-			case 'sqlite':
-			case 'firebird':
+			case 'phpbb\db\driver\sqlite':
+			case 'phpbb\db\driver\sqlite3':
+			case 'phpbb\db\driver\firebird':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -198,7 +207,7 @@ class phpbb_database_test_connection_manager
 				$this->purge_extras();
 			break;
 
-			case 'oracle':
+			case 'phpbb\db\driver\oracle':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -208,7 +217,7 @@ class phpbb_database_test_connection_manager
 				$this->purge_extras();
 			break;
 
-			case 'postgres':
+			case 'phpbb\db\driver\postgres':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -258,39 +267,45 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
+			case 'phpbb\db\driver\mysql':
+			case 'phpbb\db\driver\mysqli':
 				$sql = 'SHOW TABLES';
 			break;
 
-			case 'sqlite':
+			case 'phpbb\db\driver\sqlite':
 				$sql = 'SELECT name
 					FROM sqlite_master
 					WHERE type = "table"';
 			break;
 
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'mssqlnative':
+			case 'phpbb\db\driver\sqlite3':
+				$sql = 'SELECT name
+					FROM sqlite_master
+					WHERE type = "table"
+						AND name <> "sqlite_sequence"';
+			break;
+
+			case 'phpbb\db\driver\mssql':
+			case 'phpbb\db\driver\mssql_odbc':
+			case 'phpbb\db\driver\mssqlnative':
 				$sql = "SELECT name
 					FROM sysobjects
 					WHERE type='U'";
 			break;
 
-			case 'postgres':
+			case 'phpbb\db\driver\postgres':
 				$sql = 'SELECT relname
 					FROM pg_stat_user_tables';
 			break;
 
-			case 'firebird':
+			case 'phpbb\db\driver\firebird':
 				$sql = 'SELECT rdb$relation_name
 					FROM rdb$relations
 					WHERE rdb$view_source is null
 						AND rdb$system_flag = 0';
 			break;
 
-			case 'oracle':
+			case 'phpbb\db\driver\oracle':
 				$sql = 'SELECT table_name
 					FROM USER_TABLES';
 			break;
@@ -322,11 +337,11 @@ class phpbb_database_test_connection_manager
 	* Compile the correct schema filename (as per create_schema_files) and
 	* load it into the database.
 	*/
-	protected function load_schema_from_file($directory)
+	protected function load_schema_from_file($directory, \phpbb\db\driver\driver_interface $db)
 	{
 		$schema = $this->dbms['SCHEMA'];
 
-		if ($this->config['dbms'] == 'mysql')
+		if ($this->config['dbms'] == 'phpbb\db\driver\mysql')
 		{
 			$sth = $this->pdo->query('SELECT VERSION() AS version');
 			$row = $sth->fetch(PDO::FETCH_ASSOC);
@@ -352,6 +367,35 @@ class phpbb_database_test_connection_manager
 		{
 			$this->pdo->exec($query);
 		}
+
+		// Ok we have the db info go ahead and work on building the table
+		$db_table_schema = file_get_contents($directory . 'schema.json');
+		$db_table_schema = json_decode($db_table_schema, true);
+
+		$db_tools = new \phpbb\db\tools($db, true);
+		foreach ($db_table_schema as $table_name => $table_data)
+		{
+			$queries = $db_tools->sql_create_table(
+				$table_name,
+				$table_data
+			);
+
+			foreach ($queries as $query)
+			{
+				if ($query === 'begin')
+				{
+					$this->pdo->beginTransaction();
+				}
+				else if ($query === 'commit')
+				{
+					$this->pdo->commit();
+				}
+				else
+				{
+					$this->pdo->exec($query);
+				}
+			}
+		}
 	}
 
 	/**
@@ -360,50 +404,55 @@ class phpbb_database_test_connection_manager
 	protected function get_dbms_data($dbms)
 	{
 		$available_dbms = array(
-			'firebird'	=> array(
+			'phpbb\db\driver\firebird'	=> array(
 				'SCHEMA'		=> 'firebird',
 				'DELIM'			=> ';;',
 				'PDO'			=> 'firebird',
 			),
-			'mysqli'	=> array(
+			'phpbb\db\driver\mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
-			'mysql'		=> array(
+			'phpbb\db\driver\mysql'		=> array(
 				'SCHEMA'		=> 'mysql',
 				'DELIM'			=> ';',
 				'PDO'			=> 'mysql',
 			),
-			'mssql'		=> array(
+			'phpbb\db\driver\mssql'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
 			),
-			'mssql_odbc'=>	array(
+			'phpbb\db\driver\mssql_odbc'=>	array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'odbc',
 			),
-			'mssqlnative'		=> array(
+			'phpbb\db\driver\mssqlnative'		=> array(
 				'SCHEMA'		=> 'mssql',
 				'DELIM'			=> 'GO',
 				'PDO'			=> 'sqlsrv',
 			),
-			'oracle'	=>	array(
+			'phpbb\db\driver\oracle'	=>	array(
 				'SCHEMA'		=> 'oracle',
 				'DELIM'			=> '/',
 				'PDO'			=> 'oci',
 			),
-			'postgres' => array(
+			'phpbb\db\driver\postgres' => array(
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
 				'PDO'			=> 'pgsql',
 			),
-			'sqlite'		=> array(
+			'phpbb\db\driver\sqlite'		=> array(
 				'SCHEMA'		=> 'sqlite',
 				'DELIM'			=> ';',
 				'PDO'			=> 'sqlite2',
+			),
+			'phpbb\db\driver\sqlite3'		=> array(
+				'SCHEMA'		=> 'sqlite',
+				'DELIM'			=> ';',
+				'PDO'			=> 'sqlite',
 			),
 		);
 
@@ -429,7 +478,7 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'firebird':
+			case 'phpbb\db\driver\firebird':
 				$sql = 'SELECT RDB$GENERATOR_NAME
 					FROM RDB$GENERATORS
 					WHERE RDB$SYSTEM_FLAG = 0';
@@ -441,7 +490,7 @@ class phpbb_database_test_connection_manager
 				}
 			break;
 
-			case 'oracle':
+			case 'phpbb\db\driver\oracle':
 				$sql = 'SELECT sequence_name
 					FROM USER_SEQUENCES';
 				$result = $this->pdo->query($sql);
@@ -452,7 +501,7 @@ class phpbb_database_test_connection_manager
 				}
 			break;
 
-			case 'postgres':
+			case 'phpbb\db\driver\postgres':
 				$sql = 'SELECT sequence_name
 					FROM information_schema.sequences';
 				$result = $this->pdo->query($sql);
@@ -510,7 +559,7 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'oracle':
+			case 'phpbb\db\driver\oracle':
 				// Get all of the information about the sequences
 				$sql = "SELECT t.table_name, tc.column_name, d.referenced_name as sequence_name, s.increment_by, s.min_value
 					FROM USER_TRIGGERS t
@@ -545,14 +594,14 @@ class phpbb_database_test_connection_manager
 					* Since we have no objects attached to our sequencers (triggers aren't attached), this works fine.
 					*/
 					$queries[] = 'DROP SEQUENCE ' . $row['SEQUENCE_NAME'];
-					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']} 
-									MINVALUE {$row['MIN_VALUE']} 
-									INCREMENT BY {$row['INCREMENT_BY']} 
+					$queries[] = "CREATE SEQUENCE {$row['SEQUENCE_NAME']}
+									MINVALUE {$row['MIN_VALUE']}
+									INCREMENT BY {$row['INCREMENT_BY']}
 									START WITH $max_val";
 				}
 			break;
 
-			case 'postgres':
+			case 'phpbb\db\driver\postgres':
 				// Get the sequences attached to the tables
 				$sql = 'SELECT column_name, table_name FROM information_schema.columns
 					WHERE table_name IN (' . implode(', ', $table_names) . ")
@@ -591,6 +640,14 @@ class phpbb_database_test_connection_manager
 				{
 					$queries[] = 'SELECT ' . implode(', ', $setval_queries);
 				}
+			break;
+
+			case 'phpbb\db\driver\sqlite3':
+				/**
+				* Just delete all of the sequences. When an insertion occurs, the sequence will be automatically
+				* re-created from the key with the AUTOINCREMENT attribute
+				*/
+				$queries[] = 'DELETE FROM sqlite_sequence';
 			break;
 		}
 

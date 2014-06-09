@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,9 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_forums
 {
 	var $u_action;
@@ -26,7 +26,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/forums');
@@ -139,16 +139,30 @@ class acp_forums
 						'enable_prune'			=> request_var('enable_prune', false),
 						'enable_post_review'	=> request_var('enable_post_review', true),
 						'enable_quick_reply'	=> request_var('enable_quick_reply', false),
+						'enable_shadow_prune'		=> request_var('enable_shadow_prune', false),
 						'prune_days'			=> request_var('prune_days', 7),
 						'prune_viewed'			=> request_var('prune_viewed', 7),
 						'prune_freq'			=> request_var('prune_freq', 1),
 						'prune_old_polls'		=> request_var('prune_old_polls', false),
 						'prune_announce'		=> request_var('prune_announce', false),
 						'prune_sticky'			=> request_var('prune_sticky', false),
+						'prune_shadow_days'		=> request_var('prune_shadow_days', 7),
+						'prune_shadow_freq'		=> request_var('prune_shadow_freq', 1),
 						'forum_password'		=> request_var('forum_password', '', true),
 						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
 						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
+
+					/**
+					* Request forum data and operate on it (parse texts, etc.)
+					*
+					* @event core.acp_manage_forums_request_data
+					* @var	string	action		Type of the action: add|edit
+					* @var	array	forum_data	Array with new forum data
+					* @since 3.1.0-a1
+					*/
+					$vars = array('action', 'forum_data');
+					extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_request_data', compact($vars)));
 
 					// On add, add empty forum_options... else do not consider it (not updating it)
 					if ($action == 'add')
@@ -195,7 +209,7 @@ class acp_forums
 							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
-							cache_moderators();
+							phpbb_cache_moderators($db, $cache, $auth);
 							$copied_permissions = true;
 						}
 /* Commented out because of questionable UI workflow - re-visit for 3.0.7
@@ -256,6 +270,12 @@ class acp_forums
 					$cache->destroy('sql', FORUMS_TABLE);
 				}
 
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array('success' => ($move_forum_name !== false)));
+				}
+
 			break;
 
 			case 'sync':
@@ -266,7 +286,7 @@ class acp_forums
 
 				@set_time_limit(0);
 
-				$sql = 'SELECT forum_name, forum_topics_real
+				$sql = 'SELECT forum_name, (forum_topics_approved + forum_topics_unapproved + forum_topics_softdeleted) AS total_topics
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -278,7 +298,7 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				if ($row['forum_topics_real'])
+				if ($row['total_topics'])
 				{
 					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
 						FROM ' . TOPICS_TABLE . '
@@ -297,7 +317,6 @@ class acp_forums
 					$end = $start + $batch_size;
 
 					// Sync all topics in batch mode...
-					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
 					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
 
 					if ($end < $row2['max_topic_id'])
@@ -313,15 +332,15 @@ class acp_forums
 
 						$start += $batch_size;
 
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['total_topics']}";
 
 						meta_refresh(0, $url);
 
 						$template->assign_vars(array(
-							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}",
-							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}"),
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}",
+							'UA_PROGRESS_BAR'		=> addslashes($this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['total_topics']}"),
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['forum_topics_real']))
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['total_topics']))
 						);
 
 						return;
@@ -335,7 +354,7 @@ class acp_forums
 					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
 					'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
 					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['total_topics']))
 				);
 
 				return;
@@ -379,6 +398,9 @@ class acp_forums
 					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? FORUM_FLAG_POST_REVIEW : 0;
 					$forum_data['forum_flags'] += (request_var('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
 				}
+
+				// Initialise $row, so we always have it in the event
+				$row = array();
 
 				// Show form to create/modify a forum
 				if ($action == 'edit')
@@ -439,6 +461,9 @@ class acp_forums
 							'prune_days'			=> 7,
 							'prune_viewed'			=> 7,
 							'prune_freq'			=> 1,
+							'enable_shadow_prune'		=> false,
+							'prune_shadow_days'		=> 7,
+							'prune_shadow_freq'		=> 1,
 							'forum_flags'			=> FORUM_FLAG_POST_REVIEW + FORUM_FLAG_ACTIVE_TOPICS,
 							'forum_options'			=> 0,
 							'forum_password'		=> '',
@@ -446,6 +471,24 @@ class acp_forums
 						);
 					}
 				}
+
+				/**
+				* Initialise data before we display the add/edit form
+				*
+				* @event core.acp_manage_forums_initialise_data
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		forum_id	When editing: the forum id,
+				*							when creating: the parent forum id
+				* @var	array	row			Array with current forum data
+				*							empty when creating new forum
+				* @var	array	forum_data	Array with new forum data
+				* @var	string	parents_list	List of parent options
+				* @since 3.1.0-a1
+				*/
+				$vars = array('action', 'update', 'forum_id', 'row', 'forum_data', 'parents_list');
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_initialise_data', compact($vars)));
 
 				$forum_rules_data = array(
 					'text'			=> $forum_data['forum_rules'],
@@ -576,7 +619,7 @@ class acp_forums
 					$errors[] = $user->lang['FORUM_PASSWORD_OLD'];
 				}
 
-				$template->assign_vars(array(
+				$template_data = array(
 					'S_EDIT_FORUM'		=> true,
 					'S_ERROR'			=> (sizeof($errors)) ? true : false,
 					'S_PARENT_ID'		=> $this->parent_id,
@@ -600,6 +643,8 @@ class acp_forums
 					'PRUNE_FREQ'				=> $forum_data['prune_freq'],
 					'PRUNE_DAYS'				=> $forum_data['prune_days'],
 					'PRUNE_VIEWED'				=> $forum_data['prune_viewed'],
+					'PRUNE_SHADOW_FREQ'			=> $forum_data['prune_shadow_freq'],
+					'PRUNE_SHADOW_DAYS'			=> $forum_data['prune_shadow_days'],
 					'TOPICS_PER_PAGE'			=> $forum_data['forum_topics_per_page'],
 					'FORUM_RULES_LINK'			=> $forum_data['forum_rules_link'],
 					'FORUM_RULES'				=> $forum_data['forum_rules'],
@@ -632,6 +677,7 @@ class acp_forums
 					'S_DISPLAY_SUBFORUM_LIST'	=> ($forum_data['display_subforum_list']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
+					'S_PRUNE_SHADOW_ENABLE'			=> ($forum_data['enable_shadow_prune']) ? true : false,
 					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? true : false,
 					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_POLL) ? true : false,
 					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_ANNOUNCE) ? true : false,
@@ -641,7 +687,40 @@ class acp_forums
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
 					'S_ENABLE_QUICK_REPLY'		=> ($forum_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) ? true : false,
 					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
-				));
+				);
+
+				/**
+				* Modify forum template data before we display the form
+				*
+				* @event core.acp_manage_forums_display_form
+				* @var	string	action		Type of the action: add|edit
+				* @var	bool	update		Do we display the form only
+				*							or did the user press submit
+				* @var	int		forum_id	When editing: the forum id,
+				*							when creating: the parent forum id
+				* @var	array	row			Array with current forum data
+				*							empty when creating new forum
+				* @var	array	forum_data	Array with new forum data
+				* @var	string	parents_list	List of parent options
+				* @var	array	errors		Array of errors, if you add errors
+				*					ensure to update the template variables
+				*					S_ERROR and ERROR_MSG to display it
+				* @var	array	template_data	Array with new forum data
+				* @since 3.1.0-a1
+				*/
+				$vars = array(
+					'action',
+					'update',
+					'forum_id',
+					'row',
+					'forum_data',
+					'parents_list',
+					'errors',
+					'template_data',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_display_form', compact($vars)));
+
+				$template->assign_vars($template_data);
 
 				return;
 
@@ -706,7 +785,7 @@ class acp_forums
 				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
 				{
 					copy_forum_permissions($forum_perm_from, $forum_id, true);
-					cache_moderators();
+					phpbb_cache_moderators($db, $cache, $auth);
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 
@@ -795,8 +874,8 @@ class acp_forums
 					'FORUM_IMAGE_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 					'FORUM_NAME'		=> $row['forum_name'],
 					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
-					'FORUM_TOPICS'		=> $row['forum_topics'],
-					'FORUM_POSTS'		=> $row['forum_posts'],
+					'FORUM_TOPICS'		=> $row['forum_topics_approved'],
+					'FORUM_POSTS'		=> $row['forum_posts_approved'],
 
 					'S_FORUM_LINK'		=> ($forum_type == FORUM_LINK) ? true : false,
 					'S_FORUM_POST'		=> ($forum_type == FORUM_POST) ? true : false,
@@ -866,9 +945,21 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache, $phpbb_root_path;
+		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
 
 		$errors = array();
+
+		/**
+		* Validate the forum data before we create/update the forum
+		*
+		* @event core.acp_manage_forums_validate_data
+		* @var	array	forum_data	Array with new forum data
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1.0-a1
+		*/
+		$vars = array('forum_data', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
 
 		if ($forum_data['forum_name'] == '')
 		{
@@ -958,11 +1049,29 @@ class acp_forums
 		}
 		else
 		{
-			$forum_data_sql['forum_password'] = phpbb_hash($forum_data_sql['forum_password']);
+			// Instantiate passwords manager
+			$passwords_manager = $phpbb_container->get('passwords.manager');
+
+			$forum_data_sql['forum_password'] = $passwords_manager->hash($forum_data_sql['forum_password']);
 		}
 		unset($forum_data_sql['forum_password_unset']);
 
-		if (!isset($forum_data_sql['forum_id']))
+		/**
+		* Remove invalid values from forum_data_sql that should not be updated
+		*
+		* @event core.acp_manage_forums_update_data_before
+		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_sql	Array with data we are going to update
+		*						If forum_data_sql[forum_id] is set, we update
+		*						that forum, otherwise a new one is created.
+		* @since 3.1.0-a1
+		*/
+		$vars = array('forum_data', 'forum_data_sql');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
+
+		$is_new_forum = !isset($forum_data_sql['forum_id']);
+
+		if ($is_new_forum)
 		{
 			// no forum_id means we're creating a new forum
 			unset($forum_data_sql['type_action']);
@@ -1055,7 +1164,8 @@ class acp_forums
 					return array($user->lang['NO_FORUM_ACTION']);
 				}
 
-				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = $forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_posts_approved'] = $forum_data_sql['forum_posts_unapproved'] = $forum_data_sql['forum_posts_softdeleted'] = $forum_data_sql['forum_topics_approved'] = $forum_data_sql['forum_topics_unapproved'] = $forum_data_sql['forum_topics_softdeleted'] = 0;
+				$forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
 				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
 			}
 			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_LINK)
@@ -1175,9 +1285,12 @@ class acp_forums
 			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_POST)
 			{
 				// Changing a category to a forum? Reset the data (you can't post directly in a cat, you must use a forum)
-				$forum_data_sql['forum_posts'] = 0;
-				$forum_data_sql['forum_topics'] = 0;
-				$forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_posts_approved'] = 0;
+				$forum_data_sql['forum_posts_unapproved'] = 0;
+				$forum_data_sql['forum_posts_softdeleted'] = 0;
+				$forum_data_sql['forum_topics_approved'] = 0;
+				$forum_data_sql['forum_topics_unapproved'] = 0;
+				$forum_data_sql['forum_topics_softdeleted'] = 0;
 				$forum_data_sql['forum_last_post_id'] = 0;
 				$forum_data_sql['forum_last_post_subject'] = '';
 				$forum_data_sql['forum_last_post_time'] = 0;
@@ -1233,6 +1346,22 @@ class acp_forums
 			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
 		}
 
+		/**
+		* Event after a forum was updated or created
+		*
+		* @event core.acp_manage_forums_update_data_after
+		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_sql	Array with data we updated
+		* @var	bool	is_new_forum	Did we create a forum or update one
+		*								If you want to overwrite this value,
+		*								ensure to set forum_data_sql[forum_id]
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1.0-a1
+		*/
+		$vars = array('forum_data', 'forum_data_sql', 'is_new_forum', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
+
 		return $errors;
 	}
 
@@ -1241,7 +1370,7 @@ class acp_forums
 	*/
 	function move_forum($from_id, $to_id)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_dispatcher;
 
 		$to_data = $moved_ids = $errors = array();
 
@@ -1253,8 +1382,28 @@ class acp_forums
 			if ($to_data['forum_type'] == FORUM_LINK)
 			{
 				$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
-				return $errors;
 			}
+		}
+
+		/**
+		* Event when we move all children of one forum to another
+		*
+		* This event may be triggered, when a forum is deleted
+		*
+		* @event core.acp_manage_forums_move_children
+		* @var	int		from_id		If of the current parent forum
+		* @var	int		to_id		If of the new parent forum
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key.
+		* @since 3.1.0-a1
+		*/
+		$vars = array('from_id', 'to_id', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_children', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
 		}
 
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
@@ -1336,7 +1485,30 @@ class acp_forums
 	*/
 	function move_forum_content($from_id, $to_id, $sync = true)
 	{
-		global $db;
+		global $db, $phpbb_dispatcher;
+
+		$errors = array();
+
+		/**
+		* Event when we move content from one forum to another
+		*
+		* @event core.acp_manage_forums_move_content
+		* @var	int		from_id		If of the current parent forum
+		* @var	int		to_id		If of the new parent forum
+		* @var	bool	sync		Shall we sync the "to"-forum's data
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key. If this array is not empty,
+		*							The content will not be moved.
+		* @since 3.1.0-a1
+		*/
+		$vars = array('from_id', 'to_id', 'sync', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_move_content', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
+		}
 
 		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
@@ -1645,7 +1817,7 @@ class acp_forums
 			FROM ' . POSTS_TABLE . '
 			WHERE forum_id = ' . $forum_id . '
 				AND post_postcount = 1
-				AND post_approved = 1';
+				AND post_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 
 		$post_counts = array();
@@ -1783,7 +1955,7 @@ class acp_forums
 		// Make sure the overall post/topic count is correct...
 		$sql = 'SELECT COUNT(post_id) AS stat
 			FROM ' . POSTS_TABLE . '
-			WHERE post_approved = 1';
+			WHERE post_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1792,7 +1964,7 @@ class acp_forums
 
 		$sql = 'SELECT COUNT(topic_id) AS stat
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_approved = 1';
+			WHERE topic_visibility = ' . ITEM_APPROVED;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -1945,5 +2117,3 @@ class acp_forums
 	}
 
 }
-
-?>

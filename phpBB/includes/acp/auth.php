@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,9 +21,8 @@ if (!defined('IN_PHPBB'))
 
 /**
 * ACP Permission/Auth class
-* @package phpBB3
 */
-class auth_admin extends auth
+class auth_admin extends \phpbb\auth\auth
 {
 	/**
 	* Init auth settings
@@ -131,7 +133,7 @@ class auth_admin extends auth
 			{
 				if ($user->data['user_id'] != $userdata['user_id'])
 				{
-					$auth2 = new auth();
+					$auth2 = new \phpbb\auth\auth();
 					$auth2->acl($userdata);
 				}
 				else
@@ -139,7 +141,6 @@ class auth_admin extends auth
 					global $auth;
 					$auth2 = &$auth;
 				}
-
 
 				$hold_ary[$userdata['user_id']] = array();
 				foreach ($forum_ids as $f_id)
@@ -262,7 +263,8 @@ class auth_admin extends auth
 	*/
 	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx;
+		global $template, $user, $db, $phpbb_root_path, $phpEx, $phpbb_container;
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		// Define names for template loops, might be able to be set
 		$tpl_pmask = 'p_mask';
@@ -270,7 +272,7 @@ class auth_admin extends auth
 		$tpl_category = 'category';
 		$tpl_mask = 'mask';
 
-		$l_acl_type = (isset($user->lang['ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type)])) ? $user->lang['ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type)] : 'ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type);
+		$l_acl_type = $phpbb_permissions->get_type_lang($permission_type, (($local) ? 'local' : 'global'));
 
 		// Allow trace for viewing permissions and in user mode
 		$show_trace = ($mode == 'view' && $user_mode == 'user') ? true : false;
@@ -506,7 +508,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, ($mode == 'view'), $show_trace);
 
 					unset($content_array[$ug_id]);
 				}
@@ -530,8 +532,8 @@ class auth_admin extends auth
 					'NAME'			=> $ug_name,
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
-					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && sizeof($user_groups_default[$ug_id])) ? implode(', ', $user_groups_default[$ug_id]) : '',
-					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && sizeof($user_groups_custom[$ug_id])) ? implode(', ', $user_groups_custom[$ug_id]) : '',
+					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && sizeof($user_groups_default[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_default[$ug_id]) : '',
+					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && sizeof($user_groups_custom[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_custom[$ug_id]) : '',
 					'L_ACL_TYPE'			=> $l_acl_type,
 
 					'S_LOCAL'		=> ($local) ? true : false,
@@ -593,7 +595,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, ($mode == 'view'), $show_trace);
 				}
 
 				unset($hold_ary[$ug_id], $ug_names_ary[$ug_id]);
@@ -649,9 +651,9 @@ class auth_admin extends auth
 				{
 					$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
-						'USERNAME'		=> $row['username'],
-						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$row['user_id']}"))
-					);
+						'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username']),
+						'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username']),
+					));
 				}
 				$db->sql_freeresult($result);
 			}
@@ -1099,9 +1101,11 @@ class auth_admin extends auth
 	* Assign category to template
 	* used by display_mask()
 	*/
-	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false, $s_view)
+	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
 	{
-		global $template, $user, $phpbb_admin_path, $phpEx;
+		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
+
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
@@ -1111,8 +1115,8 @@ class auth_admin extends auth
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
 
-				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
-			);
+				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
+			));
 
 			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
 			*	Commented out due to it's memory consumption and time needed
@@ -1146,8 +1150,8 @@ class auth_admin extends auth
 						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
 						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
-						'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
-					);
+						'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+					));
 				}
 				else
 				{
@@ -1164,8 +1168,8 @@ class auth_admin extends auth
 						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
 						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
-						'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
-					);
+						'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+					));
 				}
 			}
 		}
@@ -1177,7 +1181,9 @@ class auth_admin extends auth
 	*/
 	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
 	{
-		global $user;
+		global $user, $phpbb_container;
+
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		foreach ($key_sort_array as $forum_id)
 		{
@@ -1192,20 +1198,12 @@ class auth_admin extends auth
 			@reset($permissions);
 			while (list($permission, $auth_setting) = each($permissions))
 			{
-				if (!isset($user->lang['acl_' . $permission]))
-				{
-					$user->lang['acl_' . $permission] = array(
-						'cat'	=> 'misc',
-						'lang'	=> '{ acl_' . $permission . ' }'
-					);
-				}
-
-				$cat = $user->lang['acl_' . $permission]['cat'];
+				$cat = $phpbb_permissions->get_permission_category($permission);
 
 				// Build our categories array
 				if (!isset($categories[$cat]))
 				{
-					$categories[$cat] = $user->lang['permission_cat'][$cat];
+					$categories[$cat] = $phpbb_permissions->get_category_lang($cat);
 				}
 
 				// Build our content array
@@ -1281,5 +1279,3 @@ class auth_admin extends auth
 		return true;
 	}
 }
-
-?>

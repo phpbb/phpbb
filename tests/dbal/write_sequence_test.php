@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2012 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -33,13 +37,15 @@ class phpbb_dbal_write_sequence_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
+		// dbal uses cache
+		global $cache;
+		$cache = new phpbb_mock_cache();
+
 		$sql = 'INSERT INTO phpbb_users ' . $db->sql_build_array('INSERT', array(
 			'username'			=> $username,
 			'username_clean'	=> $username,
 			'user_permissions'	=> '',
 			'user_sig'			=> '',
-			'user_occ'			=> '',
-			'user_interests'	=> '',
 		));
 		$db->sql_query($sql);
 

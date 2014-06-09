@@ -1,27 +1,40 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF U_MCP -->
+<!-- EVENT index_body_linklist_before -->
+
+<!-- IF U_MCP or U_ACP -->
 	<div id="pageheader">
-		<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
+		<p class="linkmcp">[&nbsp;<!-- IF U_ACP --><a href="{U_ACP}">{L_ACP}</a><!-- IF U_MCP -->&nbsp;|&nbsp;<!-- ENDIF --><!-- ENDIF --><!-- IF U_MCP --><a href="{U_MCP}">{L_MCP}</a><!-- ENDIF -->&nbsp;]</p>
 	</div>
 
 	<br clear="all" /><br />
 <!-- ENDIF -->
 
+<!-- EVENT index_body_linklist_after -->
+
 <!-- INCLUDE forumlist_body.html -->
 
 <!-- IF not S_IS_BOT or U_TEAM -->
-<span class="gensmall"><!-- IF not S_IS_BOT --><a href="{U_DELETE_COOKIES}">{L_DELETE_COOKIES}</a><!-- ENDIF --><!-- IF not S_IS_BOT and U_TEAM --> | <!-- ENDIF --><!-- IF U_TEAM --><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF --></span><br />
+<span class="gensmall">
+	<!-- IF not S_IS_BOT --><a href="{U_DELETE_COOKIES}">{L_DELETE_COOKIES}</a><!-- ENDIF -->
+	<!-- IF not S_IS_BOT and U_TEAM --> | <!-- ENDIF -->
+	<!-- EVENT overall_footer_teamlink_before -->
+	<!-- IF U_TEAM --><a href="{U_TEAM}">{L_THE_TEAM}</a><!-- ENDIF -->
+	<!-- EVENT overall_footer_teamlink_after -->
+</span>
+<br />
 <!-- ENDIF -->
 
 <br clear="all" />
 
 <!-- INCLUDE breadcrumbs.html -->
 
+<!-- EVENT index_body_stat_blocks_before -->
+
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<br clear="all" />
 
-	<table class="tablebg" width="100%" cellspacing="1">
+	<table class="tablebg stat-block online-list" width="100%" cellspacing="1">
 	<tr>
 		<td class="cat" colspan="2"><!-- IF U_VIEWONLINE --><h4><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h4><!-- ELSE --><h4>{L_WHO_IS_ONLINE}</h4><!-- ENDIF --></td>
 	</tr>
@@ -31,7 +44,13 @@
 	<!-- ELSE -->
 		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
 	<!-- ENDIF -->
-		<td class="row1" width="100%"><span class="genmed">{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}</span></td>
+		<td class="row1" width="100%">
+			<span class="genmed">
+				<!-- EVENT index_body_block_online_prepend -->
+				{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}
+				<!-- EVENT index_body_block_online_append -->
+			</span>
+		</td>
 	</tr>
 	<!-- IF LEGEND -->
 		<tr>
@@ -44,28 +63,42 @@
 <!-- IF S_DISPLAY_BIRTHDAY_LIST -->
 	<br clear="all" />
 
-	<table class="tablebg" width="100%" cellspacing="1">
+	<table class="tablebg stat-block birthday-list" width="100%" cellspacing="1">
 	<tr>
 		<td class="cat" colspan="2"><h4>{L_BIRTHDAYS}</h4></td>
 	</tr>
 	<tr>
 		<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_BIRTHDAYS}" /></td>
-		<td class="row1" width="100%"><p class="genmed"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
+		<td class="row1" width="100%">
+			<p class="genmed">
+				<!-- EVENT index_body_block_birthday_prepend -->
+				<!-- IF .birthdays -->{L_CONGRATULATIONS}{L_COLON} <b><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF -->
+				<!-- EVENT index_body_block_birthday_append -->
+			</p>
+		</td>
 	</tr>
 	</table>
 <!-- ENDIF -->
 
 <br clear="all" />
 
-<table class="tablebg" width="100%" cellspacing="1">
+<table class="tablebg stat-block statistics" width="100%" cellspacing="1">
 <tr>
 	<td class="cat" colspan="2"><h4>{L_STATISTICS}</h4></td>
 </tr>
 <tr>
 	<td class="row1"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_STATISTICS}" /></td>
-	<td class="row1" width="100%" valign="middle"><p class="genmed">{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}</p></td>
+	<td class="row1" width="100%" valign="middle">
+		<p class="genmed">
+			<!-- EVENT index_body_block_stats_prepend -->
+			{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}
+			<!-- EVENT index_body_block_stats_append -->
+		</p>
+	</td>
 </tr>
 </table>
+
+<!-- EVENT index_body_stat_blocks_after -->
 
 <!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
 	<br clear="all" />
@@ -77,7 +110,7 @@
 		<td class="cat"><h4><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></h4></td>
 	</tr>
 	<tr>
-		<td class="row1" align="center"><span class="genmed">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="genmed">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <!-- IF S_AUTOLOGIN_ENABLED --> <span class="gensmall">{L_LOG_ME_IN}</span> <input type="checkbox" class="radio" name="autologin" /><!-- ENDIF -->&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
+		<td class="row1" align="center"><span class="genmed">{L_USERNAME}{L_COLON}</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="genmed">{L_PASSWORD}{L_COLON}</span> <input class="post" type="password" name="password" size="10" />&nbsp; <!-- IF U_SEND_PASSWORD --><a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a>&nbsp; <!-- ENDIF --> <!-- IF S_AUTOLOGIN_ENABLED --> <span class="gensmall">{L_LOG_ME_IN}</span> <input type="checkbox" class="radio" name="autologin" /><!-- ENDIF -->&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
 	</tr>
 	</table>
 	{S_LOGIN_REDIRECT}

@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,9 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_users
 {
 	var $u_action;
@@ -33,10 +33,11 @@ class acp_users
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_dispatcher, $request;
+		global $phpbb_container;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
-		$this->page_title = 'ACP_USER_' . strtoupper($mode);
 
 		$error		= array();
 		$username	= utf8_normalize_nfc(request_var('username', '', true));
@@ -56,7 +57,7 @@ class acp_users
 			$this->page_title = 'WHOIS';
 			$this->tpl_name = 'simple_body';
 
-			$user_ip = request_var('user_ip', '');
+			$user_ip = phpbb_ip_normalise(request_var('user_ip', ''));
 			$domain = gethostbyaddr($user_ip);
 			$ipwhois = user_ipwhois($user_ip);
 
@@ -120,7 +121,7 @@ class acp_users
 		// Build modes dropdown list
 		$sql = 'SELECT module_mode, module_auth
 			FROM ' . MODULES_TABLE . "
-			WHERE module_basename = 'users'
+			WHERE module_basename = 'acp_users'
 				AND module_enabled = 1
 				AND module_class = 'acp'
 			ORDER BY left_id, module_mode";
@@ -129,7 +130,7 @@ class acp_users
 		$dropdown_modes = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$this->p_master->module_auth($row['module_auth']))
+			if (!$this->p_master->module_auth_self($row['module_auth']))
 			{
 				continue;
 			}
@@ -157,6 +158,8 @@ class acp_users
 		{
 			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
+
+		$this->page_title = $user_row['username'] . ' :: ' . $user->lang('ACP_USER_' . strtoupper($mode));
 
 		switch ($mode)
 		{
@@ -351,7 +354,7 @@ class acp_users
 
 								$messenger->template($email_template, $user_row['user_lang']);
 
-								$messenger->to($user_row['user_email'], $user_row['username']);
+								$messenger->set_addresses($user_row);
 
 								$messenger->anti_abuse_headers($config, $user);
 
@@ -400,13 +403,16 @@ class acp_users
 							{
 								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 								{
+									$phpbb_notifications = $phpbb_container->get('notification_manager');
+									$phpbb_notifications->delete_notifications('admin_activate_user', $user_row['user_id']);
+
 									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 									$messenger = new messenger(false);
 
 									$messenger->template('admin_welcome_activated', $user_row['user_lang']);
 
-									$messenger->to($user_row['user_email'], $user_row['username']);
+									$messenger->set_addresses($user_row);
 
 									$messenger->anti_abuse_headers($config, $user);
 
@@ -461,7 +467,7 @@ class acp_users
 
 							$sql_ary = array(
 								'user_avatar'			=> '',
-								'user_avatar_type'		=> 0,
+								'user_avatar_type'		=> '',
 								'user_avatar_width'		=> 0,
 								'user_avatar_height'	=> 0,
 							);
@@ -472,9 +478,11 @@ class acp_users
 							$db->sql_query($sql);
 
 							// Delete old avatar if present
-							if ($user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
+							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+							$driver = $phpbb_avatar_manager->get_driver($user_row['user_avatar_type']);
+							if ($driver)
 							{
-								avatar_delete('user', $user_row);
+								$driver->delete($user_row);
 							}
 
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
@@ -626,29 +634,32 @@ class acp_users
 							$topic_id_ary = $move_topic_ary = $move_post_ary = $new_topic_id_ary = array();
 							$forum_id_ary = array($new_forum_id);
 
-							$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
+							$sql = 'SELECT topic_id, post_visibility, COUNT(post_id) AS total_posts
 								FROM ' . POSTS_TABLE . "
 								WHERE poster_id = $user_id
 									AND forum_id <> $new_forum_id
-								GROUP BY topic_id";
+								GROUP BY topic_id, post_visibility";
 							$result = $db->sql_query($sql);
 
 							while ($row = $db->sql_fetchrow($result))
 							{
-								$topic_id_ary[$row['topic_id']] = $row['total_posts'];
+								$topic_id_ary[$row['topic_id']][$row['post_visibility']] = $row['total_posts'];
 							}
 							$db->sql_freeresult($result);
 
 							if (sizeof($topic_id_ary))
 							{
-								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real, topic_attachment
+								$sql = 'SELECT topic_id, forum_id, topic_title, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, topic_attachment
 									FROM ' . TOPICS_TABLE . '
 									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+									if ($topic_id_ary[$row['topic_id']][ITEM_APPROVED] == $row['topic_posts_approved']
+										&& $topic_id_ary[$row['topic_id']][ITEM_UNAPPROVED] == $row['topic_posts_unapproved']
+										&& $topic_id_ary[$row['topic_id']][ITEM_REAPPROVE] == $row['topic_posts_unapproved']
+										&& $topic_id_ary[$row['topic_id']][ITEM_DELETED] == $row['topic_posts_softdeleted'])
 									{
 										$move_topic_ary[] = $row['topic_id'];
 									}
@@ -681,7 +692,7 @@ class acp_users
 										'topic_time'				=> time(),
 										'forum_id' 					=> $new_forum_id,
 										'icon_id'					=> 0,
-										'topic_approved'			=> 1,
+										'topic_visibility'			=> ITEM_APPROVED,
 										'topic_title' 				=> $post_ary['title'],
 										'topic_first_poster_name'	=> $user_row['username'],
 										'topic_type'				=> POST_NORMAL,
@@ -726,7 +737,6 @@ class acp_users
 								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
-
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
 
@@ -755,6 +765,19 @@ class acp_users
 							}
 
 						break;
+
+						default:
+							/**
+							* Run custom quicktool code
+							*
+							* @event core.acp_users_overview_run_quicktool
+							* @var	array	user_row	Current user data
+							* @var	string	action		Quick tool that should be run
+							* @since 3.1.0-a1
+							*/
+							$vars = array('action', 'user_row');
+							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
+						break;
 					}
 
 					// Handle registration info updates
@@ -762,9 +785,8 @@ class acp_users
 						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
-						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-						'new_password'		=> request_var('new_password', '', true),
-						'password_confirm'	=> request_var('password_confirm', '', true),
+						'new_password'		=> $request->variable('new_password', '', true),
+						'password_confirm'	=> $request->variable('password_confirm', '', true),
 					);
 
 					// Validation data - we do not check the password complexity setting here
@@ -794,7 +816,6 @@ class acp_users
 								array('string', false, 6, 60),
 								array('email', $user_row['user_email'])
 							),
-							'email_confirm'		=> array('string', true, 6, 60)
 						);
 					}
 
@@ -805,19 +826,17 @@ class acp_users
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if ($data['email'] != $user_row['user_email'] && $data['email_confirm'] != $data['email'])
-					{
-						$error[] = 'NEW_EMAIL_ERROR';
-					}
-
 					if (!check_form_key($form_name))
 					{
 						$error[] = 'FORM_INVALID';
 					}
 
+					// Instantiate passwords manager
+					$passwords_manager = $phpbb_container->get('passwords.manager');
+
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['new_password'] && !phpbb_check_hash($data['new_password'], $user_row['user_password'])) ? true : false;
+					$update_password = $data['new_password'] && !$passwords_manager->check($data['new_password'], $user_row['user_password']);
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -868,6 +887,18 @@ class acp_users
 							}
 						}
 
+						/**
+						* Modify user data before we update it
+						*
+						* @event core.acp_users_overview_modify_data
+						* @var	array	user_row	Current user data
+						* @var	array	data		Submitted user data
+						* @var	array	sql_ary		User data we udpate
+						* @since 3.1.0-a1
+						*/
+						$vars = array('user_row', 'data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_modify_data', compact($vars)));
+
 						if ($update_username !== false)
 						{
 							$sql_ary['username'] = $update_username;
@@ -889,7 +920,7 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password'		=> phpbb_hash($data['new_password']),
+								'user_password'		=> $passwords_manager->hash($data['new_password']),
 								'user_passchg'		=> time(),
 								'user_pass_convert'	=> 0,
 							);
@@ -920,7 +951,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				if ($user_id == $user->data['user_id'])
@@ -958,12 +989,6 @@ class acp_users
 					}
 				}
 
-				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
-				foreach ($quick_tool_ary as $value => $lang)
-				{
-					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
-				}
-
 				if ($config['load_onlinetrack'])
 				{
 					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
@@ -978,7 +1003,24 @@ class acp_users
 					unset($row);
 				}
 
-				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
+				/**
+				* Add additional quick tool options and overwrite user data
+				*
+				* @event core.acp_users_display_overview
+				* @var	array	user_row			Array with user data
+				* @var	array	quick_tool_ary		Ouick tool options
+				* @since 3.1.0-a1
+				*/
+				$vars = array('user_row', 'quick_tool_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
+
+				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
+				foreach ($quick_tool_ary as $value => $lang)
+				{
+					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
+				}
+
+				$last_active = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
 
 				$inactive_reason = '';
 				if ($user_row['user_type'] == USER_INACTIVE)
@@ -1009,7 +1051,7 @@ class acp_users
 				$sql = 'SELECT COUNT(post_id) as posts_in_queue
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = ' . $user_id . '
-						AND post_approved = 0';
+						AND ' . $db->sql_in_set('post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE));
 				$result = $db->sql_query($sql);
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 				$db->sql_freeresult($result);
@@ -1022,8 +1064,8 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_NAME_CHARS_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars']), $user->lang('CHARACTERS', (int) $config['max_pass_chars'])),
 					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
@@ -1045,7 +1087,7 @@ class acp_users
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
 					'REGISTERED_IP'		=> ($ip == 'hostname') ? gethostbyaddr($user_row['user_ip']) : $user_row['user_ip'],
-					'USER_LASTACTIVE'	=> ($last_visit) ? $user->format_date($last_visit) : ' - ',
+					'USER_LASTACTIVE'	=> ($last_active) ? $user->format_date($last_active) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
@@ -1065,6 +1107,7 @@ class acp_users
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= request_var('mark', array(0));
 				$message	= utf8_normalize_nfc(request_var('message', '', true));
+				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_days	= request_var('st', 0);
@@ -1134,10 +1177,11 @@ class acp_users
 				$log_count = 0;
 				$start = view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
+				$base_url = $this->u_action . "&amp;u=$user_id&amp;$u_sort_param";
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -1210,17 +1254,13 @@ class acp_users
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
 
-							switch ($log_warnings)
+							if ($log_warnings)
 							{
-								case 2:
-									add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
-								break;
-								case 1:
-									add_log('admin', 'LOG_WARNING_DELETED', $user_row['username']);
-								break;
-								default:
-									add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
-								break;
+								add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
+							}
+							else
+							{
+								add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
 							}
 						}
 					}
@@ -1290,7 +1330,6 @@ class acp_users
 						}
 					}
 
-
 					$template->assign_block_vars('warn', array(
 						'ID'		=> $row['warning_id'],
 						'USERNAME'	=> ($row['log_operation']) ? get_username_string('full', $row['mod_user_id'], $row['mod_username'], $row['mod_user_colour']) : '-',
@@ -1309,9 +1348,8 @@ class acp_users
 			case 'profile':
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-				$cp = new custom_profile();
+				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
 
@@ -1325,15 +1363,7 @@ class acp_users
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
 				$data = array(
-					'icq'			=> request_var('icq', $user_row['user_icq']),
-					'aim'			=> request_var('aim', $user_row['user_aim']),
-					'msn'			=> request_var('msn', $user_row['user_msnm']),
-					'yim'			=> request_var('yim', $user_row['user_yim']),
 					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
-					'website'		=> request_var('website', $user_row['user_website']),
-					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
-					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user_row['user_occ'], true)),
-					'interests'		=> utf8_normalize_nfc(request_var('interests', $user_row['user_interests'], true)),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
@@ -1349,25 +1379,12 @@ class acp_users
 				$data['bday_year']		= request_var('bday_year', $data['bday_year']);
 				$data['user_birthday']	= sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
 
-
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'icq'			=> array(
-							array('string', true, 3, 15),
-							array('match', true, '#^[0-9]+$#i')),
-						'aim'			=> array('string', true, 3, 255),
-						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
 							array('jabber')),
-						'yim'			=> array('string', true, 5, 255),
-						'website'		=> array(
-							array('string', true, 12, 255),
-							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
-						'location'		=> array('string', true, 2, 100),
-						'occupation'	=> array('string', true, 2, 500),
-						'interests'		=> array('string', true, 2, 500),
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
 						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
@@ -1389,15 +1406,7 @@ class acp_users
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'user_icq'		=> $data['icq'],
-							'user_aim'		=> $data['aim'],
-							'user_msnm'		=> $data['msn'],
-							'user_yim'		=> $data['yim'],
 							'user_jabber'	=> $data['jabber'],
-							'user_website'	=> $data['website'],
-							'user_from'		=> $data['location'],
-							'user_occ'		=> $data['occupation'],
-							'user_interests'=> $data['interests'],
 							'user_birthday'	=> $data['user_birthday'],
 						);
 
@@ -1413,7 +1422,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';
@@ -1441,16 +1450,7 @@ class acp_users
 				unset($now);
 
 				$template->assign_vars(array(
-					'ICQ'			=> $data['icq'],
-					'YIM'			=> $data['yim'],
-					'AIM'			=> $data['aim'],
-					'MSN'			=> $data['msn'],
 					'JABBER'		=> $data['jabber'],
-					'WEBSITE'		=> $data['website'],
-					'LOCATION'		=> $data['location'],
-					'OCCUPATION'	=> $data['occupation'],
-					'INTERESTS'		=> $data['interests'],
-
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 					'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
@@ -1472,15 +1472,13 @@ class acp_users
 				$data = array(
 					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
 					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
-					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
+					'tz'				=> request_var('tz', $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
-					'dst'				=> request_var('dst', $user_row['user_dst']),
 					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
 					'massemail'			=> request_var('massemail', $user_row['user_allow_massemail']),
 					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
 					'notifymethod'		=> request_var('notifymethod', $user_row['user_notify_type']),
 					'notifypm'			=> request_var('notifypm', $user_row['user_notify_pm']),
-					'popuppm'			=> request_var('popuppm', $this->optionget($user_row, 'popuppm')),
 					'allowpm'			=> request_var('allowpm', $user_row['user_allow_pm']),
 
 					'topic_sk'			=> request_var('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
@@ -1504,12 +1502,23 @@ class acp_users
 					'notify'	=> request_var('notify', $user_row['user_notify']),
 				);
 
+				/**
+				* Modify users preferences data
+				*
+				* @event core.acp_users_prefs_modify_data
+				* @var	array	data			Array with users preferences data
+				* @var	array	user_row		Array with user data
+				* @since 3.1.0-b3
+				*/
+				$vars = array('data', 'user_row');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_data', compact($vars)));
+
 				if ($submit)
 				{
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
-						'tz'			=> array('num', false, -14, 14),
+						'tz'			=> array('timezone'),
 
 						'topic_sk'		=> array('string', false, 1, 1),
 						'topic_sd'		=> array('string', false, 1, 1),
@@ -1524,7 +1533,6 @@ class acp_users
 
 					if (!sizeof($error))
 					{
-						$this->optionset($user_row, 'popuppm', $data['popuppm']);
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
 						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
@@ -1545,7 +1553,6 @@ class acp_users
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 
-							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
@@ -1562,41 +1569,57 @@ class acp_users
 							'user_notify'	=> $data['notify'],
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-							WHERE user_id = $user_id";
-						$db->sql_query($sql);
+						/**
+						* Modify SQL query before users preferences are updated
+						*
+						* @event core.acp_users_prefs_modify_sql
+						* @var	array	data			Array with users preferences data
+						* @var	array	user_row		Array with user data
+						* @var	array	sql_ary			SQL array with users preferences data to update
+						* @var	array	error			Array with errors data
+						* @since 3.1.0-b3
+						*/
+						$vars = array('data', 'user_row', 'sql_ary', 'error');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_sql', compact($vars)));
 
-						// Check if user has an active session
-						if ($user_row['session_id'])
+						if (!sizeof($error))
 						{
-							// We'll update the session if user_allow_viewonline has changed and the user is a bot
-							// Or if it's a regular user and the admin set it to hide the session
-							if ($user_row['user_allow_viewonline'] != $sql_ary['user_allow_viewonline'] && $user_row['user_type'] == USER_IGNORE
-								|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								WHERE user_id = $user_id";
+							$db->sql_query($sql);
+
+							// Check if user has an active session
+							if ($user_row['session_id'])
 							{
-								// We also need to check if the user has the permission to cloak.
-								$user_auth = new auth();
-								$user_auth->acl($user_row);
+								// We'll update the session if user_allow_viewonline has changed and the user is a bot
+								// Or if it's a regular user and the admin set it to hide the session
+								if ($user_row['user_allow_viewonline'] != $sql_ary['user_allow_viewonline'] && $user_row['user_type'] == USER_IGNORE
+									|| $user_row['user_allow_viewonline'] && !$sql_ary['user_allow_viewonline'])
+								{
+									// We also need to check if the user has the permission to cloak.
+									$user_auth = new \phpbb\auth\auth();
+									$user_auth->acl($user_row);
 
-								$session_sql_ary = array(
-									'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
-								);
+									$session_sql_ary = array(
+										'session_viewonline'	=> ($user_auth->acl_get('u_hideonline')) ? $sql_ary['user_allow_viewonline'] : true,
+									);
 
-								$sql = 'UPDATE ' . SESSIONS_TABLE . '
-									SET ' . $db->sql_build_array('UPDATE', $session_sql_ary) . "
-									WHERE session_user_id = $user_id";
-								$db->sql_query($sql);
+									$sql = 'UPDATE ' . SESSIONS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', $session_sql_ary) . "
+										WHERE session_user_id = $user_id";
+									$db->sql_query($sql);
 
-								unset($user_auth);
+									unset($user_auth);
+								}
 							}
-						}
 
-						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						}
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$dateformat_options = '';
@@ -1655,7 +1678,8 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				$template->assign_vars(array(
+				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
+				$user_prefs_data = array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
 
@@ -1667,8 +1691,6 @@ class acp_users
 					'NOTIFY_IM'			=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
 					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
-					'POPUP_PM'			=> $data['popuppm'],
-					'DST'				=> $data['dst'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
 					'ATTACH_SIG'		=> $data['sig'],
@@ -1695,75 +1717,144 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
-					'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
-					)
+					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
+					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 				);
+
+				/**
+				* Modify users preferences data before assigning it to the template
+				*
+				* @event core.acp_users_prefs_modify_template_data
+				* @var	array	data				Array with users preferences data
+				* @var	array	user_row			Array with user data
+				* @var	array	user_prefs_data		Array with users preferences data to be assigned to the template
+				* @since 3.1.0-b3
+				*/
+				$vars = array('data', 'user_row', 'user_prefs_data');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_prefs_modify_template_data', compact($vars)));
+
+				$template->assign_vars($user_prefs_data);
 
 			break;
 
 			case 'avatar':
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+				$avatars_enabled = false;
 
-				if ($submit)
+				if ($config['allow_avatar'])
 				{
+					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
-					if (!check_form_key($form_name))
+					// This is normalised data, without the user_ prefix
+					$avatar_data = \phpbb\avatar\manager::clean_row($user_row, 'user');
+
+					if ($submit)
 					{
+						if (check_form_key($form_name))
+						{
+							$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
+
+							if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
+							{
+								$driver = $phpbb_avatar_manager->get_driver($driver_name);
+								$result = $driver->process_form($request, $template, $user, $avatar_data, $error);
+
+								if ($result && empty($error))
+								{
+									// Success! Lets save the result in the database
+									$result = array(
+										'user_avatar_type' => $driver_name,
+										'user_avatar' => $result['avatar'],
+										'user_avatar_width' => $result['avatar_width'],
+										'user_avatar_height' => $result['avatar_height'],
+									);
+
+									$sql = 'UPDATE ' . USERS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', $result) . '
+										WHERE user_id = ' . (int) $user_id;
+
+									$db->sql_query($sql);
+									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								}
+							}
+							else
+							{
+								$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
+								if ($driver)
+								{
+									$driver->delete($avatar_data);
+								}
+
+								// Removing the avatar
+								$result = array(
+									'user_avatar' => '',
+									'user_avatar_type' => '',
+									'user_avatar_width' => 0,
+									'user_avatar_height' => 0,
+								);
+
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $result) . '
+									WHERE user_id = ' . (int) $user_id;
+
+								$db->sql_query($sql);
+								trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+						}
+						else
+						{
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
 					}
 
-					if (avatar_process_user($error, $user_row, $can_upload))
+					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $user_row['user_avatar_type']));
+
+					foreach ($avatar_drivers as $current_driver)
 					{
-						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_row['user_id']));
+						$driver = $phpbb_avatar_manager->get_driver($current_driver);
+
+						$avatars_enabled = true;
+						$config_name = $phpbb_avatar_manager->get_driver_config_name($driver);
+						$template->set_filenames(array(
+							'avatar' => "acp_avatar_options_{$config_name}.html",
+						));
+
+						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
+						{
+							$driver_name = $phpbb_avatar_manager->prepare_driver_name($current_driver);
+							$driver_upper = strtoupper($driver_name);
+
+							$template->assign_block_vars('avatar_drivers', array(
+								'L_TITLE' => $user->lang($driver_upper . '_TITLE'),
+								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
+
+								'DRIVER' => $driver_name,
+								'SELECTED' => $current_driver == $selected_driver,
+								'OUTPUT' => $template->assign_display('avatar'),
+							));
+						}
 					}
-
-					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				if (!$config['allow_avatar'] && $user_row['user_avatar_type'])
-				{
-					$error[] = $user->lang['USER_AVATAR_NOT_ALLOWED'];
-				}
-				else if ((($user_row['user_avatar_type'] == AVATAR_UPLOAD) && !$config['allow_avatar_upload']) ||
-				 (($user_row['user_avatar_type'] == AVATAR_REMOTE) && !$config['allow_avatar_remote']) ||
-				 (($user_row['user_avatar_type'] == AVATAR_GALLERY) && !$config['allow_avatar_local']))
-				{
-					$error[] = $user->lang['USER_AVATAR_TYPE_NOT_ALLOWED'];
-				}
+				// Replace "error" strings with their real, localised form
+				$error = $phpbb_avatar_manager->localize_errors($user, $error);
 
-				// Generate users avatar
-				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height'], 'USER_AVATAR', true) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-
-				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
-				$avatar_select = basename(request_var('avatar_select', ''));
-				$category = basename(request_var('category', ''));
-
-				if ($config['allow_avatar_local'] && $display_gallery)
-				{
-					avatar_gallery($category, $avatar_select, 4);
-				}
+				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
 
 				$template->assign_vars(array(
-					'S_AVATAR'			=> true,
-					'S_CAN_UPLOAD'		=> $can_upload,
-					'S_UPLOAD_FILE'		=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_upload']) ? true : false,
-					'S_REMOTE_UPLOAD'	=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_remote_upload']) ? true : false,
-					'S_ALLOW_REMOTE'	=> ($config['allow_avatar'] && $config['allow_avatar_remote']) ? true : false,
-					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar'] && $config['allow_avatar_local'] && !$display_gallery) ? true : false,
-					'S_IN_GALLERY'		=> ($config['allow_avatar'] && $config['allow_avatar_local'] && $display_gallery) ? true : false,
+					'S_AVATAR'	=> true,
+					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
+					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
 
-					'AVATAR_IMAGE'			=> $avatar_img,
-					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
-					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
+					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
-				);
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+
+					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
+				));
 
 			break;
 
@@ -1865,7 +1956,7 @@ class acp_users
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = array_map(array($user, 'lang'), $error);
 				}
 
 				$signature_preview = '';
@@ -1895,7 +1986,7 @@ class acp_users
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
@@ -1914,6 +2005,7 @@ class acp_users
 				$start		= request_var('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$marked		= request_var('mark', array(0));
+				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_key	= request_var('sk', 'a');
@@ -1956,7 +2048,7 @@ class acp_users
 
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $log_attachments));
+						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang['COMMA_SEPARATOR'], $log_attachments));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
@@ -2049,14 +2141,14 @@ class acp_users
 				}
 				$db->sql_freeresult($result);
 
+				$base_url = $this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir";
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> on_page($num_attachments, $config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
-
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
-				);
+				));
 
 			break;
 
@@ -2189,7 +2281,6 @@ class acp_users
 
 					$error = array();
 				}
-
 
 				$sql = 'SELECT ug.*, g.*
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
@@ -2411,5 +2502,3 @@ class acp_users
 		return phpbb_optionget($user->keyoptions[$key], $var);
 	}
 }
-
-?>

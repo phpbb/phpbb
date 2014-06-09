@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+    <table name="phpbb_sessions_keys">
+        <column>key_id</column>
+        <column>user_id</column>
+        <column>last_ip</column>
+        <column>last_login</column>
+        <row>
+            <value>a87ff679a2f3e71d9181a67b7542122c</value>
+            <value>4</value>
+            <value>127.0.0.1</value>
+            <value>0</value>
+        </row>
+    </table>
+    <table name="phpbb_sessions">
+        <column>session_id</column>
+        <column>session_user_id</column>
+        <column>session_ip</column>
+        <column>session_browser</column>
+        <row>
+            <value>bar_session000000000000000000000</value>
+            <value>4</value>
+            <value>127.0.0.1</value>
+            <value>user agent</value>
+        </row>
+    </table>
+    <table name="phpbb_users">
+        <column>user_id</column>
+        <column>username_clean</column>
+        <column>user_permissions</column>
+        <column>user_sig</column>
+        <row>
+            <value>4</value>
+            <value>bar</value>
+            <value></value>
+            <value></value>
+        </row>
+    </table>
+</dataset>

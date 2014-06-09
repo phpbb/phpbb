@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* acp_database [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -73,5 +74,3 @@ $lang = array_merge($lang, array(
 	'TABLE_SELECT'		=> 'Table select',
 	'TABLE_SELECT_ERROR'=> 'You must select at least one table.',
 ));
-
-?>

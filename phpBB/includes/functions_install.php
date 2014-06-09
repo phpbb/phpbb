@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package install
-* @version $Id$
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -14,27 +17,6 @@
 if (!defined('IN_PHPBB'))
 {
 	exit;
-}
-
-/**
-* Determine if we are able to load a specified PHP module and do so if possible
-*/
-function can_load_dll($dll)
-{
-	// SQLite2 is a tricky thing, from 5.0.0 it requires PDO; if PDO is not loaded we must state that SQLite is unavailable
-	// as the installer doesn't understand that the extension has a prerequisite.
-	//
-	// On top of this sometimes the SQLite extension is compiled for a different version of PDO
-	// by some Linux distributions which causes phpBB to bomb out with a blank page.
-	//
-	// Net result we'll disable automatic inclusion of SQLite support
-	//
-	// See: r9618 and #56105
-	if ($dll == 'sqlite')
-	{
-		return false;
-	}
-	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && function_exists('dl') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
 }
 
 /**
@@ -50,8 +32,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase',
 			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'firebird',
+			'DRIVER'		=> 'phpbb\db\driver\firebird',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
@@ -62,8 +43,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysqli',
+			'DRIVER'		=> 'phpbb\db\driver\mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -72,8 +52,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysql',
+			'DRIVER'		=> 'phpbb\db\driver\mysql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -82,8 +61,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql',
+			'DRIVER'		=> 'phpbb\db\driver\mssql',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -92,8 +70,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql_odbc',
+			'DRIVER'		=> 'phpbb\db\driver\mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -102,28 +79,25 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssqlnative',
+			'DRIVER'		=> 'phpbb\db\driver\mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
-		),			
+		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
 			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'oracle',
+			'DRIVER'		=> 'phpbb\db\driver\oracle',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
 		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 7.x/8.x',
+			'LABEL'			=> 'PostgreSQL 8.3+',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'postgres',
+			'DRIVER'		=> 'phpbb\db\driver\postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
@@ -132,8 +106,16 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'sqlite',
+			'DRIVER'		=> 'phpbb\db\driver\sqlite',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),
+		'sqlite3'		=> array(
+			'LABEL'			=> 'SQLite3',
+			'SCHEMA'		=> 'sqlite',
+			'MODULE'		=> 'sqlite3',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'phpbb\db\driver\sqlite3',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
 		),
@@ -171,18 +153,15 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 
 		if (!@extension_loaded($dll))
 		{
-			if (!can_load_dll($dll))
+			if ($return_unavailable)
 			{
-				if ($return_unavailable)
-				{
-					$available_dbms[$db_name]['AVAILABLE'] = false;
-				}
-				else
-				{
-					unset($available_dbms[$db_name]);
-				}
-				continue;
+				$available_dbms[$db_name]['AVAILABLE'] = false;
 			}
+			else
+			{
+				unset($available_dbms[$db_name]);
+			}
+			continue;
 		}
 		$any_db_support = true;
 	}
@@ -218,13 +197,7 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function get_tables(&$db)
 {
-	if (!class_exists('phpbb_db_tools'))
-	{
-		global $phpbb_root_path, $phpEx;
-		require($phpbb_root_path . 'includes/db/db_tools.' . $phpEx);
-	}
-
-	$db_tools = new phpbb_db_tools($db);
+	$db_tools = new \phpbb\db\tools($db);
 
 	return $db_tools->sql_list_tables();
 }
@@ -241,26 +214,19 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 	$dbms = $dbms_details['DRIVER'];
 
-	if ($load_dbal)
-	{
-		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-	}
-
 	// Instantiate it and set return on error true
-	$sql_db = 'dbal_' . $dbms;
-	$db = new $sql_db();
+	$db = new $dbms();
 	$db->sql_return_on_error(true);
 
 	// Check that we actually have a database name before going any further.....
-	if ($dbms_details['DRIVER'] != 'sqlite' && $dbms_details['DRIVER'] != 'oracle' && $dbname === '')
+	if ($dbms_details['DRIVER'] != 'phpbb\db\driver\sqlite' && $dbms_details['DRIVER'] != 'phpbb\db\driver\sqlite3' && $dbms_details['DRIVER'] != 'phpbb\db\driver\oracle' && $dbname === '')
 	{
 		$error[] = $lang['INST_ERR_DB_NO_NAME'];
 		return false;
 	}
 
 	// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-	if ($dbms_details['DRIVER'] == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+	if (($dbms_details['DRIVER'] == 'phpbb\db\driver\sqlite' || $dbms_details['DRIVER'] == 'phpbb\db\driver\sqlite3') && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
 	{
 		$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
 		return false;
@@ -269,8 +235,8 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 	// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
 	switch ($dbms_details['DRIVER'])
 	{
-		case 'mysql':
-		case 'mysqli':
+		case 'phpbb\db\driver\mysql':
+		case 'phpbb\db\driver\mysqli':
 			if (strspn($table_prefix, '-./\\') !== 0)
 			{
 				$error[] = $lang['INST_ERR_PREFIX_INVALID'];
@@ -279,22 +245,23 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 		// no break;
 
-		case 'postgres':
+		case 'phpbb\db\driver\postgres':
 			$prefix_length = 36;
 		break;
 
-		case 'mssql':
-		case 'mssql_odbc':
-		case 'mssqlnative':
+		case 'phpbb\db\driver\mssql':
+		case 'phpbb\db\driver\mssql_odbc':
+		case 'phpbb\db\driver\mssqlnative':
 			$prefix_length = 90;
 		break;
 
-		case 'sqlite':
+		case 'phpbb\db\driver\sqlite':
+		case 'phpbb\db\driver\sqlite3':
 			$prefix_length = 200;
 		break;
 
-		case 'firebird':
-		case 'oracle':
+		case 'phpbb\db\driver\firebird':
+		case 'phpbb\db\driver\oracle':
 			$prefix_length = 6;
 		break;
 	}
@@ -332,21 +299,29 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
 		switch ($dbms_details['DRIVER'])
 		{
-			case 'mysqli':
+			case 'phpbb\db\driver\mysqli':
 				if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 				}
 			break;
 
-			case 'sqlite':
+			case 'phpbb\db\driver\sqlite':
 				if (version_compare(sqlite_libversion(), '2.8.2', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
 				}
 			break;
 
-			case 'firebird':
+			case 'phpbb\db\driver\sqlite3':
+				$version = \SQLite3::version();
+				if (version_compare($version['versionString'], '3.6.15', '<'))
+				{
+					$error[] = $lang['INST_ERR_DB_NO_SQLITE3'];
+				}
+			break;
+
+			case 'phpbb\db\driver\firebird':
 				// check the version of FB, use some hackery if we can't get access to the server info
 				if ($db->service_handle !== false && function_exists('ibase_server_info'))
 				{
@@ -427,7 +402,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 				}
 			break;
 
-			case 'oracle':
+			case 'phpbb\db\driver\oracle':
 				if ($unicode_check)
 				{
 					$sql = "SELECT *
@@ -449,7 +424,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 				}
 			break;
 
-			case 'postgres':
+			case 'phpbb\db\driver\postgres':
 				if ($unicode_check)
 				{
 					$sql = "SHOW server_encoding;";
@@ -475,19 +450,6 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 }
 
 /**
-* Removes comments from schema files
-*
-* @deprecated		Use phpbb_remove_comments() instead.
-*/
-function remove_remarks(&$sql)
-{
-	// Remove # style comments
-	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
-
-	// Return by reference
-}
-
-/**
 * Removes "/* style" as well as "# style" comments from $input.
 *
 * @param string $input		Input string
@@ -496,17 +458,11 @@ function remove_remarks(&$sql)
 */
 function phpbb_remove_comments($input)
 {
-	if (!function_exists('remove_comments'))
-	{
-		global $phpbb_root_path, $phpEx;
-		require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-	}
-
-	// Remove /* */ comments
-	remove_comments($input);
+	// Remove /* */ comments (http://ostermiller.org/findcomment.html)
+	$input = preg_replace('#/\*(.|[\r\n])*?\*/#', "\n", $input);
 
 	// Remove # style comments
-	remove_remarks($input);
+	$input = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $input));
 
 	return $input;
 }
@@ -551,19 +507,18 @@ function adjust_language_keys_callback($matches)
 *
 * @param	array	$data Array containing the database connection information
 * @param	string	$dbms The name of the DBAL class to use
-* @param	array	$load_extensions Array of additional extensions that should be loaded
 * @param	bool	$debug If the debug constants should be enabled by default or not
+* @param	bool	$debug_container If the container should be compiled on
+*					every page load or not
 * @param	bool	$debug_test If the DEBUG_TEST constant should be added
 *					NOTE: Only for use within the testing framework
 *
 * @return	string	The output to write to the file
 */
-function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = false, $debug_test = false)
+function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_container = false, $debug_test = false)
 {
-	$load_extensions = implode(',', $load_extensions);
-
 	$config_data = "<?php\n";
-	$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+	$config_data .= "// phpBB 3.1.x auto-generated configuration file\n// Do not change anything in this file!\n";
 
 	$config_data_array = array(
 		'dbms'			=> $dbms,
@@ -573,8 +528,10 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 		'dbuser'		=> $data['dbuser'],
 		'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 		'table_prefix'	=> $data['table_prefix'],
-		'acm_type'		=> 'file',
-		'load_extensions'	=> $load_extensions,
+
+		'phpbb_adm_relative_path'	=> 'adm/',
+
+		'acm_type'		=> 'phpbb\cache\driver\file',
 	);
 
 	foreach ($config_data_array as $key => $value)
@@ -587,12 +544,19 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	if ($debug)
 	{
 		$config_data .= "@define('DEBUG', true);\n";
-		$config_data .= "@define('DEBUG_EXTRA', true);\n";
 	}
 	else
 	{
 		$config_data .= "// @define('DEBUG', true);\n";
-		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
+	}
+
+	if ($debug_container)
+	{
+		$config_data .= "@define('DEBUG_CONTAINER', true);\n";
+	}
+	else
+	{
+		$config_data .= "// @define('DEBUG_CONTAINER', true);\n";
 	}
 
 	if ($debug_test)
@@ -603,4 +567,69 @@ function phpbb_create_config_file_data($data, $dbms, $load_extensions, $debug = 
 	return $config_data;
 }
 
-?>
+/**
+* Check whether a file should be ignored on update
+*
+* We ignore new files in some circumstances:
+* 1. The file is a language file, but the language is not installed
+* 2. The file is a style file, but the style is not installed
+* 3. The file is a style language file, but the language is not installed
+*
+* @param	string	$phpbb_root_path	phpBB root path
+* @param	string	$file				File including path from phpbb root
+* @return	bool		Should we ignore the new file or add it to the board?
+*/
+function phpbb_ignore_new_file_on_update($phpbb_root_path, $file)
+{
+	$ignore_new_file = false;
+
+	// We ignore new files in some circumstances:
+	// 1. The file is a language file, but the language is not installed
+	if (!$ignore_new_file && strpos($file, 'language/') === 0)
+	{
+		list($language_dir, $language_iso) = explode('/', $file);
+		$ignore_new_file = !file_exists($phpbb_root_path . $language_dir . '/' . $language_iso);
+	}
+
+	// 2. The file is a style file, but the style is not installed
+	if (!$ignore_new_file && strpos($file, 'styles/') === 0)
+	{
+		list($styles_dir, $style_name) = explode('/', $file);
+		$ignore_new_file = !file_exists($phpbb_root_path . $styles_dir . '/' . $style_name);
+	}
+
+	// 3. The file is a style language file, but the language is not installed
+	if (!$ignore_new_file && strpos($file, 'styles/') === 0)
+	{
+		$dirs = explode('/', $file);
+		if (sizeof($dirs) >= 5)
+		{
+			list($styles_dir, $style_name, $template_component, $language_iso) = explode('/', $file);
+			if ($template_component == 'theme' && $language_iso !== 'images')
+			{
+				$ignore_new_file = !file_exists($phpbb_root_path . 'language/' . $language_iso);
+			}
+		}
+	}
+
+	return $ignore_new_file;
+}
+
+/**
+* Check whether phpBB is installed.
+*
+* @param string $phpbb_root_path	Path to the phpBB board root.
+* @param string $php_ext			PHP file extension.
+*
+* @return bool Returns true if phpBB is installed.
+*/
+function phpbb_check_installation_exists($phpbb_root_path, $php_ext)
+{
+	// Try opening config file
+	if (file_exists($phpbb_root_path . 'config.' . $php_ext))
+	{
+		include($phpbb_root_path . 'config.' . $php_ext);
+	}
+
+	return defined('PHPBB_INSTALLED');
+}

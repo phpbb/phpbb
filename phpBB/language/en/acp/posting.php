@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* acp_posting [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -46,6 +47,7 @@ $lang = array_merge($lang, array(
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully.',
 	'BBCODE_EDITED'				=> 'BBCode edited successfully.',
+	'BBCODE_DELETED'			=> 'The BBCode has been removed successfully.',
 	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist.',
 	'BBCODE_HELPLINE'			=> 'Help line',
 	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouse over text of the BBCode.',
@@ -81,12 +83,12 @@ $lang = array_merge($lang, array(
 		'INTTEXT'		=> 'Unicode letter characters, numbers, spaces, commas, dots, minus, plus, hyphen, underscore and whitespaces.',
 		'IDENTIFIER'	=> 'Characters from the latin alphabet (A-Z), numbers, hyphen and underscore',
 		'NUMBER'		=> 'Any series of digits',
-		'EMAIL'			=> 'A valid e-mail address',
+		'EMAIL'			=> 'A valid email address',
 		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, “http://” is prefixed to the string.',
 		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol, as links are prefixed with “%s”',
 		'RELATIVE_URL'	=> 'A relative URL. You can use this to match parts of a URL, but be careful: a full URL is a valid relative URL. When you want to use relative URLs of your board, use the LOCAL_URL token.',
-		'COLOR'			=> 'A HTML colour, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
-	)
+		'COLOR'			=> 'A HTML colour, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>',
+	),
 ));
 
 // Smilies and topic icons
@@ -109,8 +111,6 @@ $lang = array_merge($lang, array(
 	'DISPLAY_POSTING'			=> 'On posting page',
 	'DISPLAY_POSTING_NO'		=> 'Not on posting page',
 
-
-
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
 	'EMOTION'					=> 'Emotion',
@@ -122,15 +122,19 @@ $lang = array_merge($lang, array(
 	'FIRST'			=> 'First',
 
 	'ICONS_ADD'				=> 'Add a new icon',
-	'ICONS_NONE_ADDED'		=> 'No icons were added.',
-	'ICONS_ONE_ADDED'		=> 'The icon has been added successfully.',
-	'ICONS_ADDED'			=> 'The icons have been added successfully.',
+	'ICONS_ADDED'			=> array(
+		0	=> 'No icons were added.',
+		1	=> 'The icon has been added successfully.',
+		2	=> 'The icons have been added successfully.',
+	),
 	'ICONS_CONFIG'			=> 'Icon configuration',
 	'ICONS_DELETED'			=> 'The icon has been removed successfully.',
 	'ICONS_EDIT'			=> 'Edit icon',
-	'ICONS_ONE_EDITED'		=> 'The icon has been updated successfully.',
-	'ICONS_NONE_EDITED'		=> 'No icons were updated.',
-	'ICONS_EDITED'			=> 'The icons have been updated successfully.',
+	'ICONS_EDITED'			=> array(
+		0	=> 'No icons were updated.',
+		1	=> 'The icon has been updated successfully.',
+		2	=> 'The icons have been updated successfully.',
+	),
 	'ICONS_HEIGHT'			=> 'Icon height',
 	'ICONS_IMAGE'			=> 'Icon image',
 	'ICONS_IMPORTED'		=> 'The icons pack has been installed successfully.',
@@ -162,9 +166,11 @@ $lang = array_merge($lang, array(
 
 	'SELECT_PACKAGE'			=> 'Select a package file',
 	'SMILIES_ADD'				=> 'Add a new smiley',
-	'SMILIES_NONE_ADDED'		=> 'No smilies were added.',
-	'SMILIES_ONE_ADDED'			=> 'The smiley has been added successfully.',
-	'SMILIES_ADDED'				=> 'The smilies have been added successfully.',
+	'SMILIES_ADDED'				=> array(
+		0	=> 'No smilies were added.',
+		1	=> 'The smiley has been added successfully.',
+		2	=> 'The smilies have been added successfully.',
+	),
 	'SMILIES_CODE'				=> 'Smiley code',
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
@@ -172,9 +178,11 @@ $lang = array_merge($lang, array(
 	'SMILIE_NO_CODE'			=> 'The smiley “%s” was ignored, as there was no code entered.',
 	'SMILIE_NO_EMOTION'			=> 'The smiley “%s” was ignored, as there was no emotion entered.',
 	'SMILIE_NO_FILE'			=> 'The smiley “%s” was ignored, as the file is missing.',
-	'SMILIES_NONE_EDITED'		=> 'No smilies were updated.',
-	'SMILIES_ONE_EDITED'		=> 'The smiley has been updated successfully.',
-	'SMILIES_EDITED'			=> 'The smilies have been updated successfully.',
+	'SMILIES_EDITED'			=> array(
+		0	=> 'No smilies were updated.',
+		1	=> 'The smiley has been updated successfully.',
+		2	=> 'The smilies have been updated successfully.',
+	),
 	'SMILIES_EMOTION'			=> 'Emotion',
 	'SMILIES_HEIGHT'			=> 'Smiley height',
 	'SMILIES_IMAGE'				=> 'Smiley image',
@@ -186,7 +194,10 @@ $lang = array_merge($lang, array(
 	'SMILIES_URL'				=> 'Smiley image file',
 	'SMILIES_WIDTH'				=> 'Smiley width',
 
-	'TOO_MANY_SMILIES'			=> 'Limit of %d smilies reached.',
+	'TOO_MANY_SMILIES'			=> array(
+		1	=> 'Limit of %d smiley reached.',
+		2	=> 'Limit of %d smilies reached.',
+	),
 
 	'WRONG_PAK_TYPE'	=> 'The specified package does not contain the appropriate data.',
 ));
@@ -278,5 +289,3 @@ $lang = array_merge($lang, array(
 
 	'USED_IN_REPORTS'		=> 'Used in reports',
 ));
-
-?>

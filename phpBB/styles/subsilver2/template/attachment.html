@@ -6,16 +6,16 @@
 	<!-- ELSE -->
 
 		<!-- IF _file.COMMENT -->
-			<span class="gensmall"><b>{L_FILE_COMMENT}:</b> {_file.COMMENT}</span><br />
+			<span class="gensmall"><b>{L_FILE_COMMENT}{L_COLON}</b> {_file.COMMENT}</span><br />
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_THUMBNAIL -->
-			<a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" /></a><br />
+			<a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" class="postimage" alt="{_file.DOWNLOAD_NAME}" /></a><br />
 			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_IMAGE -->
-			<img src="{_file.U_INLINE_LINK}" alt="{_file.DOWNLOAD_NAME}" /><br />
+			<img src="{_file.U_INLINE_LINK}" class="postimage" alt="{_file.DOWNLOAD_NAME}" /><br />
 			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 

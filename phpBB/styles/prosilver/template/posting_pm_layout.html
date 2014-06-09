@@ -2,12 +2,12 @@
 
 <!-- IF S_DRAFT_LOADED -->
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		
 		<h3>{L_INFORMATION}</h3>
 		<p>{L_DRAFT_LOADED_PM}</p>
 		
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- ENDIF -->
 
@@ -15,15 +15,21 @@
 
 <!-- IF S_DISPLAY_PREVIEW --><!-- INCLUDE posting_preview.html --><!-- ENDIF -->
 
-<h2>{L_TITLE}</h2>
+<h2 class="posting-title">{L_TITLE}</h2>
+
+<div class="panel" id="pmheader-postingbox">
+	<div class="inner">
+	<!-- INCLUDE posting_pm_header.html -->
+	</div>
+</div>
 
 <div class="panel" id="postingbox">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<!-- DEFINE $EXTRA_POSTING_OPTIONS = 1 -->
 	<!-- INCLUDE posting_editor.html -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->

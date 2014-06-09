@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,10 +23,13 @@ class phpbb_functions_parse_cfg_file extends phpbb_test_case
 					'#',
 					'# phpBB Style Configuration File',
 					'#',
-					'# @package phpBB3',
-					'# @copyright (c) 2005 phpBB Group',
-					'# @license http://opensource.org/licenses/gpl-license.php GNU Public License',
+					'# This file is part of the phpBB Forum Software package.',
 					'#',
+					'# @copyright (c) phpBB Limited <https://www.phpbb.com>',
+					'# @license GNU General Public License, version 2 (GPL-2.0)',
+					'#',
+					'# For full copyright and license information, please see',
+					'# the docs/CREDITS.txt file.',
 					'#',
 					'# At the left is the name, please do not change this',
 					'# At the right the value is entered',
@@ -35,24 +42,24 @@ class phpbb_functions_parse_cfg_file extends phpbb_test_case
 					'',
 					'# General Information about this style',
 					'name = prosilver',
-					'copyright = © phpBB Group, 2007',
+					'copyright = © phpBB Limited, 2007',
 					'version = 3.0.12',
 				),
 				array(
 					'name'		=> 'prosilver',
-					'copyright'	=> '© phpBB Group, 2007',
+					'copyright'	=> '© phpBB Limited, 2007',
 					'version'	=> '3.0.12',
 				),
 			),
 			array(
 				array(
 					'name = subsilver2',
-					'copyright = © 2005 phpBB Group',
+					'copyright = © 2005 phpBB Limited',
 					'version = 3.0.12',
 				),
 				array(
 					'name'		=> 'subsilver2',
-					'copyright'	=> '© 2005 phpBB Group',
+					'copyright'	=> '© 2005 phpBB Limited',
 					'version'	=> '3.0.12',
 				),
 			),

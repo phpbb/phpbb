@@ -1,16 +1,20 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
 *
-* Minimum Requirement: PHP 4.3.3
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
 */
 
 /**
+* Minimum Requirement: PHP 5.3.3
 */
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -45,8 +49,11 @@ if (!defined('PHPBB_INSTALLED'))
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+
 	// Eliminate . and .. from the path
-	$script_path = phpbb_clean_path($script_path);
+	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
+	$phpbb_filesystem = new phpbb\filesystem();
+	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -64,67 +71,59 @@ if (!defined('PHPBB_INSTALLED'))
 	exit;
 }
 
-if (defined('DEBUG_EXTRA'))
-{
-	$base_memory_usage = 0;
-	if (function_exists('memory_get_usage'))
-	{
-		$base_memory_usage = memory_get_usage();
-	}
-}
-
-// Load Extensions
-// dl() is deprecated and disabled by default as of PHP 5.3.
-if (!empty($load_extensions) && function_exists('dl'))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
-}
+// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
+$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
+$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
-require($phpbb_root_path . 'includes/template.' . $phpEx);
-require($phpbb_root_path . 'includes/session.' . $phpEx);
-require($phpbb_root_path . 'includes/auth.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-// Instantiate some basic classes
-$user		= new user();
-$auth		= new auth();
-$template	= new template();
-$cache		= new cache();
-$db			= new $sql_db();
+// Setup class loader first
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader->register();
+$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
+$phpbb_class_loader_ext->register();
 
-// Connect to DB
-$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false);
+// Set up container
+$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
-// We do not need this any longer, unset for safety purposes
-unset($dbpasswd);
+$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
+$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
-// Grab global variables, re-cache if necessary
-$config = $cache->obtain_config();
+require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('\phpbb\template\template', 'display')));
+$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
-foreach ($cache->obtain_hooks() as $hook)
+foreach ($phpbb_hook_finder->find() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
 
-?>
+/**
+* Main event which is triggered on every page
+*
+* You can use this event to load function files and initiate objects
+*
+* NOTE:	At this point the global session ($user) and permissions ($auth)
+*		do NOT exist yet. If you need to use the user object
+*		(f.e. to include language files) or need to check permissions,
+*		please use the core.user_setup event instead!
+*
+* @event core.common
+* @since 3.1.0-a1
+*/
+$phpbb_dispatcher->dispatch('core.common');

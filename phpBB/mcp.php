@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -31,15 +34,8 @@ $template->assign_var('S_IN_MCP', true);
 // Basic parameter data
 $id = request_var('i', '');
 
-if (isset($_REQUEST['mode']) && is_array($_REQUEST['mode']))
-{
-	$mode = request_var('mode', array(''));
-	list($mode, ) = each($mode);
-}
-else
-{
-	$mode = request_var('mode', '');
-}
+$mode = request_var('mode', array(''));
+$mode = sizeof($mode) ? array_shift($mode) : request_var('mode', '');
 
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
@@ -57,7 +53,7 @@ $action = request_var('action', '');
 $action_ary = request_var('action', array('' => 0));
 
 $forum_action = request_var('forum_action', '');
-if ($forum_action !== '' && !empty($_POST['sort']))
+if ($forum_action !== '' && $request->variable('sort', false, false, \phpbb\request\request_interface::POST))
 {
 	$action = $forum_action;
 }
@@ -92,7 +88,7 @@ if ($post_id)
 	$db->sql_freeresult($result);
 
 	$topic_id = (int) $row['topic_id'];
-	$forum_id = (int) ($row['forum_id']) ? $row['forum_id'] : $forum_id;
+	$forum_id = (int) $row['forum_id'];
 }
 else if ($topic_id)
 {
@@ -166,6 +162,7 @@ if ($quickmod)
 		case 'move':
 		case 'delete_post':
 		case 'delete_topic':
+		case 'restore_topic':
 			$module->load('mcp', 'main', 'quickmod');
 			return;
 		break;
@@ -174,7 +171,7 @@ if ($quickmod)
 			// Reset start parameter if we jumped from the quickmod dropdown
 			if (request_var('start', 0))
 			{
-				$_REQUEST['start'] = 0;
+				$request->overwrite('start', 0);
 			}
 
 			$module->set_active('logs', 'topic_logs');
@@ -190,7 +187,27 @@ if ($quickmod)
 		break;
 
 		default:
-			trigger_error("$action not allowed as quickmod", E_USER_ERROR);
+			// If needed, the flag can be set to true within event listener
+			// to indicate that the action was handled properly
+			// and to pass by the trigger_error() call below
+			$is_valid_action = false;
+
+			/**
+			* This event allows you to add custom quickmod options
+			*
+			* @event core.modify_quickmod_options
+			* @var	object	module			Instance of module system class
+			* @var	string	action			Quickmod option
+			* @var	bool	is_valid_action	Flag indicating if the action was handled properly
+			* @since 3.1.0-a4
+			*/
+			$vars = array('module', 'action', 'is_valid_action');
+			extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_options', compact($vars)));
+
+			if (!$is_valid_action)
+			{
+				trigger_error($user->lang('QUICKMOD_ACTION_NOT_ALLOWED', $action), E_USER_ERROR);
+			}
 		break;
 	}
 }
@@ -207,7 +224,7 @@ if (!$post_id)
 	$module->set_display('warn', 'warn_post', false);
 }
 
-if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts')
+if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts' || $mode == 'deleted_topics' || $mode == 'deleted_posts')
 {
 	$module->set_display('queue', 'approve_details', false);
 }
@@ -240,6 +257,32 @@ if (!$user_id && $username == '')
 	$module->set_display('warn', 'warn_user', false);
 }
 
+/**
+* This event allows you to set display option for custom MCP modules
+*
+* @event core.modify_mcp_modules_display_option
+* @var	p_master	module			Module system class
+* @var	string		mode			MCP mode
+* @var	int			user_id			User id
+* @var	int			forum_id		Forum id
+* @var	int			topic_id		Topic id
+* @var	int			post_id			Post id
+* @var	string		username		User name
+* @var	int			id				Parent module id
+* @since 3.1.0-b2
+*/
+$vars = array(
+	'module',
+	'mode',
+	'user_id',
+	'forum_id',
+	'topic_id',
+	'post_id',
+	'username',
+	'id',
+);
+extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
+
 // Load and execute the relevant module
 $module->load_active();
 
@@ -255,7 +298,7 @@ $template->assign_vars(array(
 ));
 
 // Generate the page, do not display/query online list
-$module->display($module->get_page_title(), false);
+$module->display($module->get_page_title());
 
 /**
 * Functions used to generate additional URL paramters
@@ -407,12 +450,6 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!$row['forum_id'])
-			{
-				// Global Announcement?
-				$row['forum_id'] = request_var('f', 0);
-			}
-
 			$rowset[$row['topic_id']] = $row;
 
 			if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -492,18 +529,12 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!$row['forum_id'])
-		{
-			// Global Announcement?
-			$row['forum_id'] = request_var('f', 0);
-		}
-
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
 
-		if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		if ($row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
@@ -521,7 +552,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 */
 function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
-	global $auth, $db, $user, $config;
+	global $auth, $db, $user, $config, $phpbb_container;
 
 	$rowset = array();
 
@@ -551,6 +582,8 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -558,10 +591,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 			continue;
 		}
 
-		if ($auth->acl_get('m_approve', $row['forum_id']))
-		{
-			$row['forum_topics'] = $row['forum_topics_real'];
-		}
+		$row['forum_topics_approved'] = $phpbb_content_visibility->get_count('forum_topics', $row, $row['forum_id']);
 
 		$rowset[$row['forum_id']] = $row;
 	}
@@ -639,7 +669,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND topic_approved = 1';
+				$sql .= 'AND topic_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
@@ -655,11 +685,13 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND post_approved = 1';
+				$sql .= 'AND post_visibility = ' . ITEM_APPROVED;
 			}
 		break;
 
 		case 'unapproved_posts':
+		case 'deleted_posts':
+			$visibility_const = ($mode == 'unapproved_posts') ? array(ITEM_UNAPPROVED, ITEM_REAPPROVE) : ITEM_DELETED;
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -668,9 +700,9 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(p.post_id) AS total
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND p.post_approved = 0
+					AND ' . $db->sql_in_set('p.post_visibility', $visibility_const) .'
 					AND t.topic_id = p.topic_id
-					AND t.topic_first_post_id <> p.post_id';
+					AND t.topic_visibility <> p.post_visibility';
 
 			if ($min_time)
 			{
@@ -679,6 +711,8 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		break;
 
 		case 'unapproved_topics':
+		case 'deleted_topics':
+			$visibility_const = ($mode == 'unapproved_topics') ? array(ITEM_UNAPPROVED, ITEM_REAPPROVE) : ITEM_DELETED;
 			$type = 'topics';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -686,7 +720,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND topic_approved = 0';
+					AND ' . $db->sql_in_set('topic_visibility', $visibility_const);
 
 			if ($min_time)
 			{
@@ -768,7 +802,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'tt' => $user->lang['TOPIC_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 
-			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
+			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 't.topic_title', 'v' => 't.topic_views');
 			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
 		break;
 
@@ -816,7 +850,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 	);
 
-	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
+	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts', 'deleted_topics', 'deleted_posts')) || $where_sql != 'WHERE')
 	{
 		$result = $db->sql_query($sql);
 		$total = (int) $db->sql_fetchfield('total');
@@ -911,5 +945,3 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }
-
-?>

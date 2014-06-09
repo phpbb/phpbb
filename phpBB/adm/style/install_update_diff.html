@@ -1,15 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<meta http-equiv="Content-Language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width" />
 <!-- IF META -->{META}<!-- ENDIF -->
 <title>{PAGE_TITLE}</title>
 
-<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="{T_TEMPLATE_PATH}/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
 // <![CDATA[
@@ -37,7 +34,7 @@ window.onresize = resize_panel;
 <style type="text/css">
 /* <![CDATA[ */
 
-#main {
+#main, .rtl #main {
 	font-size: 1em;
 	line-height: 0.7em;
 	margin: 0;
@@ -47,6 +44,7 @@ window.onresize = resize_panel;
 
 #diff_content {
 	padding: 30px 10px 10px;
+	overflow: hidden;
 }
 
 <!-- IF DIFF_MODE neq 'side_by_side' and DIFF_MODE neq 'raw' -->
@@ -225,9 +223,9 @@ table.hrdiff caption span {
 <!-- ENDIF -->
 <!-- IF not S_DIFF_NEW_FILE -->
 		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
-		<form method="post" action="">
+		<form method="post" action="#">
 		<fieldset class="quick">
-			<label for="diff_mode">{L_SELECT_DIFF_MODE}:</label>
+			<label for="diff_mode">{L_SELECT_DIFF_MODE}{L_COLON}</label>
 			<select name="diff_mode" id="diff_mode">{S_DIFF_MODE_OPTIONS}</select>
 
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_CHANGE}" />
@@ -235,22 +233,20 @@ table.hrdiff caption span {
 		</form>
 <!-- ENDIF -->
 <!-- IF S_DIFF_CONFLICT_FILE -->
-		<div style="float: {S_CONTENT_FLOW_BEGIN};"><strong>{L_NUM_CONFLICTS}: {NUM_CONFLICTS}</strong></div>
+		<div style="float: {S_CONTENT_FLOW_BEGIN};"><strong>{L_NUM_CONFLICTS}{L_COLON} {NUM_CONFLICTS}</strong></div>
 		<br style="clear: both;" />
 <!-- ENDIF -->
 	</div>
 
 	<div id="page-body">
 		<div id="acp">
-		<div class="panel" id="codepanel">
-			<span class="corners-top"><span></span></span>
+			<div id="codepanel">
 				<div id="diff_content">
 					<div id="main">
 						{DIFF_CONTENT}
 					</div>
 				</div>
-			<span class="corners-bottom"><span></span></span>
-		</div>
+			</div>
 		</div>
 	</div>
 

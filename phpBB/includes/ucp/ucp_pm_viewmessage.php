@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -21,8 +24,8 @@ if (!defined('IN_PHPBB'))
 */
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
-	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $phpEx, $config;
+	global $user, $template, $auth, $db, $cache, $phpbb_container;
+	global $phpbb_root_path, $request, $phpEx, $config, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
@@ -59,23 +62,22 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		$bbcode = new bbcode($message_row['bbcode_bitfield']);
 	}
 
+	// Load the custom profile fields
+	if ($config['load_cpf_pm'])
+	{
+		$cp = $phpbb_container->get('profilefields.manager');
+
+		$profile_fields = $cp->grab_profile_fields_data($author_id);
+	}
+
 	// Assign TO/BCC Addresses to template
 	write_pm_addresses(array('to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']), $author_id);
 
 	$user_info = get_user_information($author_id, $message_row);
 
 	// Parse the message and subject
-	$message = censor_text($message_row['message_text']);
-
-	// Second parse bbcode here
-	if ($message_row['bbcode_bitfield'])
-	{
-		$bbcode->bbcode_second_pass($message, $message_row['bbcode_uid'], $message_row['bbcode_bitfield']);
-	}
-
-	// Always process smilies after parsing bbcodes
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$parse_flags = ($message_row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$message = generate_text_for_display($message_row['message_text'], $message_row['bbcode_uid'], $message_row['bbcode_bitfield'], $parse_flags, true);
 
 	// Replace naughty words such as farty pants
 	$message_row['message_subject'] = censor_text($message_row['message_subject']);
@@ -83,8 +85,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Editing information
 	if ($message_row['message_edit_count'] && $config['display_last_edited'])
 	{
-		$l_edit_time_total = ($message_row['message_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], $user->format_date($message_row['message_edit_time'], false, true), $message_row['message_edit_count']);
+		$l_edited_by = '<br /><br />' . $user->lang('EDITED_TIMES_TOTAL', (int) $message_row['message_edit_count'], (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], $user->format_date($message_row['message_edit_time'], false, true));
 	}
 	else
 	{
@@ -150,21 +151,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// End signature parsing, only if needed
 	if ($signature)
 	{
-		$signature = censor_text($signature);
-
-		if ($user_info['user_sig_bbcode_bitfield'])
-		{
-			if ($bbcode === false)
-			{
-				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode($user_info['user_sig_bbcode_bitfield']);
-			}
-
-			$bbcode->bbcode_second_pass($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield']);
-		}
-
-		$signature = bbcode_nl2br($signature);
-		$signature = smiley_text($signature);
+		$parse_flags = ($user_info['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+		$signature = generate_text_for_display($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield'], $parse_flags, true);
 	}
 
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
@@ -174,7 +162,38 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
 
-	$template->assign_vars(array(
+	// Get the profile fields template data
+	$cp_row = array();
+	if ($config['load_cpf_pm'] && isset($profile_fields[$author_id]))
+	{
+		// Filter the fields we don't want to show
+		foreach ($profile_fields[$author_id] as $used_ident => $profile_field)
+		{
+			if (!$profile_field['data']['field_show_on_pm'])
+			{
+				unset($profile_fields[$author_id][$used_ident]);
+			}
+		}
+
+		if (isset($profile_fields[$author_id]))
+		{
+			$cp_row = $cp->generate_profile_fields_template_data($profile_fields[$author_id]);
+		}
+	}
+
+	$u_pm = $u_jabber = '';
+
+	if ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_')))
+	{
+		$u_pm = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id);
+	}
+
+	if ($user_info['user_jabber'] && $auth->acl_get('u_sendim'))
+	{
+		$u_jabber = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id);
+	}
+
+	$msg_data = array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -185,7 +204,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (int) $user_info['user_posts'],
-		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
@@ -206,13 +224,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EDITED_MESSAGE'	=> $l_edited_by,
 		'MESSAGE_ID'		=> $message_row['msg_id'],
 
-		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
-		'U_WWW'			=> (!empty($user_info['user_website'])) ? $user_info['user_website'] : '',
-		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people/' . urlencode($user_info['user_icq']) . '/' : '',
-		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
-		'U_YIM'			=> ($user_info['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($user_info['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
-		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
+		'U_PM'			=>  $u_pm,
+		'U_JABBER'		=>  $u_jabber,
 
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EMAIL'			=> $user_info['email'],
@@ -227,19 +240,101 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_PM_ACTION'		=> $url . '&amp;mode=compose&amp;f=' . $folder_id . '&amp;p=' . $message_row['msg_id'],
 
 		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
+		'S_HAS_MULTIPLE_ATTACHMENTS' => (sizeof($attachments) > 1),
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
 		'S_PM_RECIPIENTS'	=> $num_recipients,
 		'S_BBCODE_ALLOWED'	=> ($bbcode_status) ? 1 : 0,
+		'S_CUSTOM_FIELDS'	=> (!empty($cp_row['row'])) ? true : false,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
+		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
+
+	/**
+	* Modify pm and sender data before it is assigned to the template
+	*
+	* @event core.ucp_pm_view_messsage
+	* @var	mixed	id			Active module category (can be int or string)
+	* @var	string	mode		Active module
+	* @var	int		folder_id	ID of the folder the message is in
+	* @var	int		msg_id		ID of the private message
+	* @var	array	folder		Array with data of user's message folders
+	* @var	array	message_row	Array with message data
+	* @var	array	cp_row		Array with senders custom profile field data
+	* @var	array	msg_data	Template array with message data
+	* @since 3.1.0-a1
+	*/
+	$vars = array(
+		'id',
+		'mode',
+		'folder_id',
+		'msg_id',
+		'folder',
+		'message_row',
+		'cp_row',
+		'msg_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
+
+	$template->assign_vars($msg_data);
+
+	$contact_fields = array(
+		array(
+			'ID'		=> 'pm',
+			'NAME'		=> $user->lang['SEND_PRIVATE_MESSAGE'],
+			'U_CONTACT' => $u_pm,
+		),
+		array(
+			'ID'		=> 'email',
+			'NAME'		=> $user->lang['SEND_EMAIL'],
+			'U_CONTACT'	=> $user_info['email'],
+		),
+		array(
+			'ID'		=> 'jabber',
+			'NAME'		=> $user->lang['JABBER'],
+			'U_CONTACT'	=> $u_jabber,
+		),
+	);
+
+	foreach ($contact_fields as $field)
+	{
+		if ($field['U_CONTACT'])
+		{
+			$template->assign_block_vars('contact', $field);
+		}
+	}
+
+	// Display the custom profile fields
+	if (!empty($cp_row['row']))
+	{
+		$template->assign_vars($cp_row['row']);
+
+		foreach ($cp_row['blockrow'] as $cp_block_row)
+		{
+			$template->assign_block_vars('custom_fields', $cp_block_row);
+
+			if ($cp_block_row['S_PROFILE_CONTACT'])
+			{
+				$template->assign_block_vars('contact', array(
+					'ID'		=> $cp_block_row['PROFILE_FIELD_IDENT'],
+					'NAME'		=> $cp_block_row['PROFILE_FIELD_NAME'],
+					'U_CONTACT'	=> $cp_block_row['PROFILE_FIELD_CONTACT'],
+				));
+			}
+		}
+	}
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
 	{
+		$methods = phpbb_gen_download_links('msg_id', $msg_id, $phpbb_root_path, $phpEx);
+		foreach ($methods as $method)
+		{
+			$template->assign_block_vars('dl_method', $method);
+		}
+
 		foreach ($attachments as $attachment)
 		{
 			$template->assign_block_vars('attachment', array(
@@ -248,7 +343,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 	}
 
-	if (!isset($_REQUEST['view']) || $_REQUEST['view'] != 'print')
+	if (!isset($_REQUEST['view']) || $request->variable('view', '') != 'print')
 	{
 		// Message History
 		if (message_history($msg_id, $user->data['user_id'], $message_row, $folder))
@@ -303,12 +398,12 @@ function get_user_information($user_id, $user_row)
 		}
 	}
 
-	if (!function_exists('get_user_avatar'))
+	$user_row['avatar'] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
+
+	if (!function_exists('get_user_rank'))
 	{
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
-
-	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
 
 	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 
@@ -319,5 +414,3 @@ function get_user_information($user_id, $user_row)
 
 	return $user_row;
 }
-
-?>

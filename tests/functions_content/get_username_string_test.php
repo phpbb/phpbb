@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,14 +20,15 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $auth, $user;
-		$auth = $this->getMock('auth');
+		global $auth, $phpbb_dispatcher, $user;
+		$auth = $this->getMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap(array(
 				array('u_viewprofile', true),
 			)));
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$user->data['user_id'] = ANONYMOUS;
 		$user->lang['GUEST'] = 'Guest';
 	}

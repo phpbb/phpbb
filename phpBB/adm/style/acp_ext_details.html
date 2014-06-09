@@ -1,0 +1,139 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<!-- IF S_VERSIONCHECK -->
+	<div class="<!-- IF S_UP_TO_DATE -->successbox<!-- ELSE -->errorbox<!-- ENDIF -->">
+		<p>{UP_TO_DATE_MSG} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+	<!-- ELSE IF S_VERSIONCHECK_STATUS == 0 -->
+	<div class="errorbox notice">
+		<p>{L_VERSIONCHECK_FAIL}</p>
+		<p>{VERSIONCHECK_FAIL_REASON}</p>
+		<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+	<!-- ELSE IF S_VERSIONCHECK_STATUS == 1 -->
+	<div class="errorbox notice">
+		<p>{VERSIONCHECK_FAIL_REASON}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_EXT_DETAILS}</legend>
+		<!-- IF META_DISPLAY_NAME -->
+		<dl>
+			<dt><label>{L_DISPLAY_NAME}{L_COLON}</label></dt>
+			<dd><strong id="meta_display_name">{META_DISPLAY_NAME}</strong></dd>
+		</dl>
+		<!-- ENDIF -->
+		<dl>
+			<dt><label>{L_CLEAN_NAME}{L_COLON}</label></dt>
+			<dd><strong id="meta_name">{META_NAME}</strong></dd>
+		</dl>
+		<!-- IF META_DESCRIPTION -->
+		<dl>
+			<dt><label>{L_DESCRIPTION}{L_COLON}</label></dt>
+			<dd><span id="meta_description">{META_DESCRIPTION}</span></dd>
+		</dl>
+		<!-- ENDIF -->
+		<dl>
+			<dt><label>{L_VERSION}{L_COLON}</label></dt>
+			<dd><span id="meta_version">{META_VERSION}</span></dd>
+		</dl>
+		<!-- IF META_HOMEPAGE -->
+		<dl>
+			<dt><label>{L_HOMEPAGE}{L_COLON}</label></dt>
+			<dd><strong id="meta_homepage"><a href="{META_HOMEPAGE}">{META_HOMEPAGE}</a></strong></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF META_TIME -->
+		<dl>
+			<dt><label>{L_TIME}{L_COLON}</label></dt>
+			<dd><span id="meta_time">{META_TIME}</span></dd>
+		</dl>
+		<!-- ENDIF -->
+		<dl>
+			<dt><label>{L_LICENSE}{L_COLON}</label></dt>
+			<dd><span id="meta_license">{META_LICENSE}</span></dd>
+		</dl>
+	</fieldset>
+
+	<!-- IF S_VERSIONCHECK && not S_UP_TO_DATE -->
+	<fieldset>
+		<legend>{L_LATEST_VERSION}</legend>
+		<!-- BEGIN updates_available -->
+		<fieldset>
+			<dl>
+				<dt><label>{L_VERSION}{L_COLON}</label></dt>
+				<dd><strong>{updates_available.current}</strong></dd>
+			</dl>
+			<!-- IF updates_available.download-->
+			<dl>
+				<dt><label>{L_DOWNLOAD_LATEST}</label></dt>
+				<dd><strong><a href="{updates_available.download}">{L_DOWNLOAD} {META_NAME} {LATEST_VERSION}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+			<!-- IF updates_available.announcement -->
+			<dl>
+				<dt><label>{L_ANNOUNCEMENT_TOPIC}</label></dt>
+				<dd><strong><a href="{updates_available.announcement}">{L_RELEASE_ANNOUNCEMENT}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+		</fieldset>
+		<!-- END updates_available -->
+	</fieldset>
+	<!-- ENDIF -->
+
+	<!-- IF META_REQUIRE_PHPBB || META_REQUIRE_PHP -->
+	<fieldset>
+		<legend>{L_REQUIREMENTS}</legend>
+		<!-- IF META_REQUIRE_PHPBB -->
+		<dl<!-- IF META_REQUIRE_PHPBB_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
+			<dt><label>{L_PHPBB_VERSION}{L_COLON}</label></dt>
+			<dd><span id="require_phpbb">{META_REQUIRE_PHPBB}</span></dd>
+		</dl>
+		<!-- ENDIF -->
+		<!-- IF META_REQUIRE_PHP -->
+		<dl<!-- IF META_REQUIRE_PHP_FAIL --> class="requirements_not_met"<!-- ENDIF -->>
+			<dt><label>{L_PHP_VERSION}{L_COLON}</label></dt>
+			<dd><span id="require_php">{META_REQUIRE_PHP}</span></dd>
+		</dl>
+		<!-- ENDIF -->
+	</fieldset>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_AUTHOR_INFORMATION}</legend>
+		<!-- BEGIN meta_authors -->
+		<fieldset>
+			<dl>
+				<dt><label>{L_AUTHOR_NAME}{L_COLON}</label></dt>
+				<dd><strong>{meta_authors.AUTHOR_NAME}</strong></dd>
+			</dl>
+			<!-- IF meta_authors.AUTHOR_EMAIL -->
+			<dl>
+				<dt><label>{L_AUTHOR_EMAIL}{L_COLON}</label></dt>
+				<dd><strong><a href="mailto:{meta_authors.AUTHOR_EMAIL}">{meta_authors.AUTHOR_EMAIL}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+			<!-- IF meta_authors.AUTHOR_HOMEPAGE -->
+			<dl>
+				<dt><label>{L_AUTHOR_HOMEPAGE}{L_COLON}</label></dt>
+				<dd><strong><a href="{meta_authors.AUTHOR_HOMEPAGE}">{meta_authors.AUTHOR_HOMEPAGE}</a></strong></dd>
+			</dl>
+			<!-- ENDIF -->
+			<!-- IF meta_authors.AUTHOR_ROLE -->
+			<dl>
+				<dt><label>{L_AUTHOR_ROLE}{L_COLON}</label></dt>
+				<dd><strong>{meta_authors.AUTHOR_ROLE}</strong></dd>
+			</dl>
+			<!-- ENDIF -->
+		</fieldset>
+		<!-- END meta_authors -->
+	</fieldset>
+
+<!-- INCLUDE overall_footer.html -->

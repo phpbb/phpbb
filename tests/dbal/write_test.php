@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,7 +20,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/config.xml');
 	}
 
-	static public function build_array_insert_data()
+	public function build_array_insert_data()
 	{
 		return array(
 			array(array(
@@ -64,7 +68,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 			FROM phpbb_config';
 		$result = $db->sql_query($sql);
 		$rows = $db->sql_fetchrowset($result);
-		
+
 		$this->assertEquals(1, sizeof($rows));
 		$this->assertEquals('config2', $rows[0]['config_name']);
 
@@ -104,7 +108,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	static public function update_data()
+	public function update_data()
 	{
 		return array(
 			array(

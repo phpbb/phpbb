@@ -16,15 +16,15 @@
 			<!-- IF S_NOTIFY_POSTER -->
 				<input type="checkbox" class="radio" name="notify_poster" checked="checked" /><span class="gen"><!-- IF S_APPROVE -->{L_NOTIFY_POSTER_APPROVAL}<!-- ELSE -->{L_NOTIFY_POSTER_DISAPPROVAL}<!-- ENDIF --></span><br />
 			<!-- ENDIF -->
-			<!-- IF not S_APPROVE -->
+			<!-- IF not S_APPROVE and not S_RESTORE and .reason -->
 				<br />
 				<table border="0" width="90%" cellspacing="2" cellpadding="1">
 				<tr>
-					<td class="row1" width="22%"><b class="gen">{L_DISAPPROVE_REASON}:</b></td>
+					<td class="row1" width="22%"><b class="gen">{L_DISAPPROVE_REASON}{L_COLON}</b></td>
 					<td class="row1" width="78%"><select name="reason_id"><!-- BEGIN reason --><option value="{reason.ID}"<!-- IF reason.S_SELECTED --> selected="selected"<!-- ENDIF -->>{reason.DESCRIPTION}</option><!-- END reason --></select></td>
 				</tr>
 				<tr>
-					<td class="row1" valign="top"><span class="gen"><b>{L_MORE_INFO}:</b></span><br /><span class="gensmall">{L_CAN_LEAVE_BLANK}</span></td>
+					<td class="row1" valign="top"><span class="gen"><b>{L_MORE_INFO}{L_COLON}</b></span><br /><span class="gensmall">{L_CAN_LEAVE_BLANK}</span></td>
 					<td class="row1"><textarea class="post" style="width:500px" name="reason" rows="10" cols="40">{REASON}</textarea></td>
 				</tr>
 				</table>

@@ -5,13 +5,9 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value>barfoo</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -20,14 +16,10 @@
 			<value>foobar</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>bertie</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

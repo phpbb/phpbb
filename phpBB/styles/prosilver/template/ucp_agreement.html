@@ -10,6 +10,7 @@
 	*/
 	function change_language(lang_iso)
 	{
+		document.cookie = '{COOKIE_NAME}_lang=' + lang_iso + '; path={COOKIE_PATH}';
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit();
 	}
@@ -19,7 +20,7 @@
 
 	<form method="post" action="{S_UCP_ACTION}" id="register">
 		<p class="rightside">
-			<label for="lang">{L_LANGUAGE}:</label><select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select>
+			<label for="lang">{L_LANGUAGE}{L_COLON}</label><select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select>
 			{S_HIDDEN_FIELDS}
 		</p>
 	</form>
@@ -31,16 +32,18 @@
 	<form method="post" action="{S_UCP_ACTION}" id="agreement">
 
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<div class="content">
-			<h2>{SITENAME} - {L_REGISTRATION}</h2>
+			<h2 class="sitename-title">{SITENAME} - {L_REGISTRATION}</h2>
+			<!-- EVENT ucp_agreement_terms_before -->
 			<p><!-- IF S_SHOW_COPPA -->{L_COPPA_BIRTHDAY}<!-- ELSE -->{L_TERMS_OF_USE}<!-- ENDIF --></p>
+			<!-- EVENT ucp_agreement_terms_after -->
 		</div>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<fieldset class="submit-buttons">
 			<!-- IF S_SHOW_COPPA -->
 			<strong><a href="{U_COPPA_NO}" class="button1">{L_COPPA_NO}</a></strong>&nbsp; <a href="{U_COPPA_YES}" class="button2">{L_COPPA_YES}</a>
@@ -51,21 +54,21 @@
 			{S_HIDDEN_FIELDS}
 			{S_FORM_TOKEN}
 		</fieldset>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 	</form>
 
 <!-- ELSEIF S_AGREEMENT -->
 
 	<div class="panel">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 		<div class="content">
-			<h2>{SITENAME} - {AGREEMENT_TITLE}</h2>
+			<h2 class="sitename-title">{SITENAME} - {AGREEMENT_TITLE}</h2>
 			<p>{AGREEMENT_TEXT}</p>
 			<hr class="dashed" />
 			<p><a href="{U_BACK}" class="button2">{L_BACK}</a></p>
 		</div>
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 <!-- ENDIF -->

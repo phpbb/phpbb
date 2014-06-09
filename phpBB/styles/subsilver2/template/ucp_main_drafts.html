@@ -32,8 +32,8 @@
 		<td class="postdetails" style="padding: 4px;" nowrap="nowrap">{draftrow.DATE}</td>
 		<td style="padding: 4px;" valign="top" width="100%">
 			<p class="topictitle">{draftrow.DRAFT_SUBJECT}</p>
-			<!-- IF draftrow.S_LINK_TOPIC --><span class="gensmall">{L_TOPIC}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
-			<!-- ELSEIF draftrow.S_LINK_FORUM --><span class="gensmall">{L_FORUM}: <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
+			<!-- IF draftrow.S_LINK_TOPIC --><span class="gensmall">{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
+			<!-- ELSEIF draftrow.S_LINK_FORUM --><span class="gensmall">{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a></span>
 			<!-- ELSEIF draftrow.S_LINK_PM --><span class="gensmall">{L_PRIVATE_MESSAGE}</span>
 			<!-- ELSE --><span class="gensmall">{L_NO_TOPIC_FORUM}</span><!-- ENDIF -->
 		</td>
@@ -54,11 +54,11 @@
 
 <!-- ELSEIF S_EDIT_DRAFT -->
 	<tr>
-		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
+		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}{L_COLON}</b></td>
 		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="64" tabindex="2" value="{DRAFT_SUBJECT}" /></td>
 	</tr>
 	<tr> 
-		<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}: </b><br /><span class="gensmall">{L_EDIT_DRAFT_EXPLAIN}</span></td>
+		<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}{L_COLON} </b><br /><span class="gensmall">{L_EDIT_DRAFT_EXPLAIN}</span></td>
 		<td class="row2">
 			<script type="text/javascript">
 			// <![CDATA[
@@ -75,12 +75,7 @@
 				<td colspan="9">
 					<table cellspacing="0" cellpadding="0" border="0" width="100%">
 					<tr>
-						<td align="{S_CONTENT_FLOW_BEGIN}">
-							<script type="text/javascript">
-							// <![CDATA[
-								colorPalette('h', 6, 5)
-							// ]]>
-							</script>
+						<td align="{S_CONTENT_FLOW_BEGIN}" id="color_palette_placeholder" data-orientation="h" data-width="11" data-height="10" data-bbcode="true">
 						</td>
 					</tr>
 					</table>

@@ -1,27 +1,29 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
-
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_profile_fields.php';
 
 class phpbb_profile_get_profile_value_test extends phpbb_test_case
 {
 	static public function get_profile_value_int_data()
 	{
 		return array(
-			array(FIELD_INT,	'10',	true,	10),
-			array(FIELD_INT,	'0',	true,	0),
-			array(FIELD_INT,	'',		true,	0),
-			array(FIELD_INT,	null,	true,	0),
-			array(FIELD_INT,	'10',	false,	10),
-			array(FIELD_INT,	'0',	false,	0),
-			array(FIELD_INT,	'',		false,	null),
-			array(FIELD_INT,	null,	false,	null),
+			array('\phpbb\profilefields\type\type_int',	'10',	true,	10),
+			array('\phpbb\profilefields\type\type_int',	'0',	true,	0),
+			array('\phpbb\profilefields\type\type_int',	'',		true,	0),
+			array('\phpbb\profilefields\type\type_int',	null,	true,	0),
+			array('\phpbb\profilefields\type\type_int',	'10',	false,	10),
+			array('\phpbb\profilefields\type\type_int',	'0',	false,	0),
+			array('\phpbb\profilefields\type\type_int',	'',		false,	null),
+			array('\phpbb\profilefields\type\type_int',	null,	false,	null),
 		);
 	}
 
@@ -30,13 +32,15 @@ class phpbb_profile_get_profile_value_test extends phpbb_test_case
 	*/
 	public function test_get_profile_value_int($type, $value, $show_novalue, $expected)
 	{
-		$cp = new custom_profile;
-		$this->assertSame($expected, $cp->get_profile_value(array(
-			'value'	=> $value,
-			'data'	=> array(
-				'field_type'			=> $type,
-				'field_show_novalue'	=> $show_novalue,
-			),
+		$cp = new $type(
+			$this->getMock('\phpbb\request\request'),
+			$this->getMock('\phpbb\template\template'),
+			$this->getMock('\phpbb\user')
+		);
+
+		$this->assertSame($expected, $cp->get_profile_value($value, array(
+			'field_type'			=> $type,
+			'field_show_novalue'	=> $show_novalue,
 		)));
 	}
 }

@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package VC
-* @version $Id$
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,17 +19,10 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* Original Author - Xore (Robert Hetzler)
-* With contributions from Neothermic
-*
-* @package VC
-*/
 class captcha
 {
 	var $width = 360;
 	var $height = 96;
-
 
 	/**
 	* Create the image containing $code with a seed of $seed
@@ -34,7 +30,7 @@ class captcha
 	function execute($code, $seed)
 	{
 		global $config;
-		
+
 		mt_srand($seed);
 
 		// Create image
@@ -70,7 +66,6 @@ class captcha
 			$bounding_boxes[$i] = $box;
 		}
 
- 
 		// Redistribute leftover x-space
 		$offset = array();
 		for ($i = 0; $i < $code_len; ++$i)
@@ -100,12 +95,12 @@ class captcha
 				imagedashedline($img, mt_rand($x -3, $x + 3), mt_rand(0, 4), mt_rand($x -3, $x + 3), mt_rand($this->height - 5, $this->height), $current_colour);
 			}
 		}
+
 		if ($config['captcha_gd_wave'] && ($config['captcha_gd_y_grid'] || $config['captcha_gd_y_grid']))
 		{
 			$this->wave($img);
 		}
-		
-		
+
 		if ($config['captcha_gd_3d_noise'])
 		{
 			$xoffset = mt_rand(0,9);
@@ -123,11 +118,12 @@ class captcha
 				$dimm = $bounding_boxes[$i];
 				$xoffset += ($offset[$i] - $dimm[0]);
 				$yoffset = mt_rand(-$dimm[1], $this->height - $dimm[3]);
-	 
+
 				$noise[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 				$xoffset += $dimm[2];
 			}
 		}
+
 		$xoffset = 5;
 		for ($i = 0; $i < $code_len; ++$i)
 		{
@@ -138,14 +134,17 @@ class captcha
 			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 			$xoffset += $dimm[2];
 		}
+
 		if ($config['captcha_gd_wave'])
 		{
 			$this->wave($img);
 		}
+
 		if ($config['captcha_gd_foreground_noise'])
 		{
 			$this->noise_line($img, 0, 0, $this->width, $this->height, $colour->get_resource('background'), $scheme, $bg_colours);
 		}
+
 		// Send image
 		header('Content-Type: image/png');
 		header('Cache-control: no-cache, no-store');
@@ -159,13 +158,13 @@ class captcha
 	function wave($img)
 	{
 		global $config;
-		
+
 		$period_x = mt_rand(12,18);
 		$period_y = mt_rand(7,14);
 		$amp_x = mt_rand(5,10);
-		$amp_y = mt_rand(2,4); 
+		$amp_y = mt_rand(2,4);
 		$socket = mt_rand(0,100);
-		
+
 		$dampen_x = mt_rand($this->width/5, $this->width/2);
 		$dampen_y = mt_rand($this->height/5, $this->height/2);
 		$direction_x = (mt_rand (0, 1));
@@ -184,7 +183,7 @@ class captcha
 		}
 		return $img;
 	}
-	
+
 	/**
 	* Noise line
 	*/
@@ -234,9 +233,8 @@ class captcha
 		imagesetthickness($img, 1);
 	}
 
-
 	function captcha_noise_bg_bitmaps()
-	{		
+	{
 		return array(
 			'width'		=> 15,
 			'height'	=> 5,
@@ -293,14 +291,14 @@ class captcha
 			),
 		));
 	}
-	
+
 	/**
 	* Return bitmaps
 	*/
 	function captcha_bitmaps()
 	{
 		global $config;
-		
+
 		$chars = array(
 			'A'	=>	array(
 						array(
@@ -1681,7 +1679,7 @@ class captcha
 			'J' =>	$chars['J'][mt_rand(0, min(sizeof($chars['J']), $config['captcha_gd_fonts']) -1)],
 			'K' =>	$chars['K'][mt_rand(0, min(sizeof($chars['K']), $config['captcha_gd_fonts']) -1)],
 			'L' =>	$chars['L'][mt_rand(0, min(sizeof($chars['L']), $config['captcha_gd_fonts']) -1)],
-			'M' =>	$chars['M'][mt_rand(0, min(sizeof($chars['M']), $config['captcha_gd_fonts']) -1)],  
+			'M' =>	$chars['M'][mt_rand(0, min(sizeof($chars['M']), $config['captcha_gd_fonts']) -1)],
 			'N' =>	$chars['N'][mt_rand(0, min(sizeof($chars['N']), $config['captcha_gd_fonts']) -1)],
 			'O' =>	$chars['O'][mt_rand(0, min(sizeof($chars['O']), $config['captcha_gd_fonts']) -1)],
 			'P' =>	$chars['P'][mt_rand(0, min(sizeof($chars['P']), $config['captcha_gd_fonts']) -1)],
@@ -1854,9 +1852,6 @@ class captcha
 	}
 }
 
-/**
-* @package VC
-*/
 class char_cube3d
 {
 	var $bitmap;
@@ -2120,9 +2115,6 @@ class char_cube3d
 	}
 }
 
-/**
-* @package VC
-*/
 class colour_manager
 {
 	var $img;
@@ -2196,7 +2188,7 @@ class colour_manager
 		{
 			$mode = $this->mode;
 		}
-		
+
 		if (!is_array($colour))
 		{
 			if (isset($this->named_rgb[$colour]))
@@ -2226,8 +2218,8 @@ class colour_manager
 			return $this->random_colour($colour, $mode);
 		}
 
-		$rgb		= colour_manager::model_convert($colour, $mode, 'rgb');
-		$store		= ($this->mode == 'rgb') ? $rgb : colour_manager::model_convert($colour, $mode, $this->mode);
+		$rgb		= $this->model_convert($colour, $mode, 'rgb');
+		$store		= ($this->mode == 'rgb') ? $rgb : $this->model_convert($colour, $mode, $this->mode);
 		$resource	= imagecolorallocate($this->img, $rgb[0], $rgb[1], $rgb[2]);
 		$this->colours[$resource] = $store;
 
@@ -2345,13 +2337,12 @@ class colour_manager
 			$resource = $pre;
 		}
 
-		$colour = colour_manager::model_convert($this->colours[$resource], $this->mode, $mode);
+		$colour = $this->model_convert($this->colours[$resource], $this->mode, $mode);
 		$results = ($include_original) ? array($resource) : array();
 		$colour2 = $colour3 = $colour4 = $colour;
 		$colour2[0] += 150;
 		$colour3[0] += 180;
 		$colour4[0] += 210;
-
 
 		$results[] = $this->allocate($colour2, $mode);
 		$results[] = $this->allocate($colour3, $mode);
@@ -2380,7 +2371,7 @@ class colour_manager
 			$resource = $pre;
 		}
 
-		$colour = colour_manager::model_convert($this->colours[$resource], $this->mode, $mode);
+		$colour = $this->model_convert($this->colours[$resource], $this->mode, $mode);
 
 		$results = array();
 		if ($include_original)
@@ -2390,7 +2381,7 @@ class colour_manager
 		}
 
 		// This is a hard problem. I chicken out and try to maintain readability at the cost of less randomness.
-		
+
 		while ($count > 0)
 		{
 			$colour[1] = ($colour[1] + mt_rand(40,60)) % 99;
@@ -2418,11 +2409,11 @@ class colour_manager
 				switch ($from_model)
 				{
 					case 'ahsv':
-						return colour_manager::ah2h($colour);
+						return $this->ah2h($colour);
 					break;
 
 					case 'rgb':
-						return colour_manager::rgb2hsv($colour);
+						return $this->rgb2hsv($colour);
 					break;
 				}
 			break;
@@ -2432,11 +2423,11 @@ class colour_manager
 				switch ($from_model)
 				{
 					case 'hsv':
-						return colour_manager::h2ah($colour);
+						return $this->h2ah($colour);
 					break;
 
 					case 'rgb':
-						return colour_manager::h2ah(colour_manager::rgb2hsv($colour));
+						return $this->h2ah($this->rgb2hsv($colour));
 					break;
 				}
 			break;
@@ -2445,11 +2436,11 @@ class colour_manager
 				switch ($from_model)
 				{
 					case 'hsv':
-						return colour_manager::hsv2rgb($colour);
+						return $this->hsv2rgb($colour);
 					break;
 
 					case 'ahsv':
-						return colour_manager::hsv2rgb(colour_manager::ah2h($colour));
+						return $this->hsv2rgb($this->ah2h($colour));
 					break;
 				}
 			break;
@@ -2462,7 +2453,7 @@ class colour_manager
 	*/
 	function hsv2rgb($hsv)
 	{
-		colour_manager::normalize_hue($hsv[0]);
+		$this->normalize_hue($hsv[0]);
 
 		$h = $hsv[0];
 		$s = min(1, max(0, $hsv[1] / 100));
@@ -2554,7 +2545,7 @@ class colour_manager
 				break;
 			}
 		}
-		colour_manager::normalize_hue($h);
+		$this->normalize_hue($h);
 
 		return array($h, $s * 100, $v * 100);
 	}
@@ -2578,10 +2569,10 @@ class colour_manager
 	{
 		if (is_array($ahue))
 		{
-			$ahue[0] = colour_manager::ah2h($ahue[0]);
+			$ahue[0] = $this->ah2h($ahue[0]);
 			return $ahue;
 		}
-		colour_manager::normalize_hue($ahue);
+		$this->normalize_hue($ahue);
 
 		// blue through red is already ok
 		if ($ahue >= 240)
@@ -2612,10 +2603,10 @@ class colour_manager
 	{
 		if (is_array($hue))
 		{
-			$hue[0] = colour_manager::h2ah($hue[0]);
+			$hue[0] = $this->h2ah($hue[0]);
 			return $hue;
 		}
-		colour_manager::normalize_hue($hue);
+		$this->normalize_hue($hue);
 
 		// blue through red is already ok
 		if ($hue >= 240)
@@ -2636,5 +2627,3 @@ class colour_manager
 		}
 	}
 }
-
-?>

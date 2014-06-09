@@ -34,7 +34,7 @@
 		<!-- ENDIF -->
 
 		<tr>
-			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_USERNAME}:</b></td>
+			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_USERNAME}{L_COLON}</b></td>
 			<td><input class="post" type="text" name="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" tabindex="1" />
 				<!-- IF not S_ADMIN_AUTH and S_REGISTER_ENABLED -->
 					<br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a>
@@ -42,7 +42,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_PASSWORD}:</b></td>
+			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_PASSWORD}{L_COLON}</b></td>
 			<td>
 				<input class="post" type="password" name="{PASSWORD_CREDENTIAL}" size="25" tabindex="2" />
 				<!-- IF U_SEND_PASSWORD --><br /><a class="gensmall" href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a><!-- ENDIF -->
@@ -60,6 +60,9 @@
 				<td>&nbsp;</td>
 				<td><input type="checkbox" class="radio" name="viewonline" tabindex="4" /> <span class="gensmall">{L_HIDE_ME}</span></td>
 			</tr>
+		<!-- ENDIF -->
+		<!-- IF not S_ADMIN_AUTH and PROVIDER_TEMPLATE_FILE -->
+			<!-- INCLUDE {PROVIDER_TEMPLATE_FILE} -->
 		<!-- ENDIF -->
 		</table>
 	</td>

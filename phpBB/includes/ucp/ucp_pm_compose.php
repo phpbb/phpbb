@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -22,8 +25,10 @@ if (!defined('IN_PHPBB'))
 */
 function compose_pm($id, $mode, $action, $user_folders = array())
 {
-	global $template, $db, $auth, $user;
+	global $template, $db, $auth, $user, $cache;
 	global $phpbb_root_path, $phpEx, $config;
+	global $request;
+	global $phpbb_container;
 
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
@@ -49,13 +54,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Reply to all triggered (quote/reply)
 	$reply_to_all	= request_var('reply_to_all', 0);
 
-	// Do NOT use request_var or specialchars here
-	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
-
-	if (!is_array($address_list))
-	{
-		$address_list = array();
-	}
+	$address_list	= $request->variable('address_list', array('' => array(0 => '')));
 
 	$submit		= (isset($_POST['post'])) ? true : false;
 	$preview	= (isset($_POST['preview'])) ? true : false;
@@ -391,6 +390,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	$message_parser = new parse_message();
+	$plupload = $phpbb_container->get('plupload');
+	$message_parser->set_plupload($plupload);
 
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
@@ -495,7 +496,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	if ($message_attachment && !$submit && !$refresh && !$preview && $action == 'edit')
 	{
 		// Do not change to SELECT *
-		$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
+		$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename, filesize
 			FROM ' . ATTACHMENTS_TABLE . "
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
@@ -588,7 +589,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 					'p'			=> $msg_id)
 				);
 				$s_hidden_fields .= build_address_field($address_list);
-
 
 				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 			}
@@ -751,7 +751,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$return_box_url = ($action === 'post' || $action === 'edit') ? $outbox_folder_url : $inbox_folder_url;
 			$return_box_lang = ($action === 'post' || $action === 'edit') ? 'PM_OUTBOX' : 'PM_INBOX';
 
-
 			$save_message = ($action === 'edit') ? $user->lang['MESSAGE_EDITED'] : $user->lang['MESSAGE_STORED'];
 			$message = $save_message . '<br /><br />' . $user->lang('VIEW_PRIVATE_MESSAGE', '<a href="' . $return_message_url . '">', '</a>');
 
@@ -841,11 +840,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$post_id = request_var('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
+				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}{$user->lang['COLON']} {$message_subject}[/url]\n\n";
 			}
 			else
 			{
-				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
+				$message_link = $user->lang['SUBJECT'] . $user->lang['COLON'] . ' ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
 		else
@@ -878,7 +877,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$forward_text[] = sprintf($user->lang['FWD_SUBJECT'], censor_text($message_subject));
 		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time, false, true));
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
-		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
+		$forward_text[] = sprintf($user->lang['FWD_TO'], implode($user->lang['COMMA_SEPARATOR'], $fwd_to_field['to']));
 
 		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=&quot;{$quote_username}&quot;]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
@@ -1009,7 +1008,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Build hidden address list
 	$s_hidden_address_field = build_address_field($address_list);
 
-
 	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
 	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);
 	$urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
@@ -1048,7 +1046,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
-	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
+	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? $request->variable('draft_loaded', 0) : $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
@@ -1056,7 +1054,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> $user->lang['PM_ICON'],
-		'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+		'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
@@ -1084,6 +1082,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $action != 'edit') ? true : false,
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
 		'S_FORM_ENCTYPE'		=> $form_enctype,
+		'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 
 		'S_BBCODE_IMG'			=> $img_status,
 		'S_BBCODE_FLASH'		=> $flash_status,
@@ -1105,6 +1104,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Show attachment box for adding attachments if true
 	$allowed = ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype);
 
+	if ($allowed)
+	{
+		$max_files = ($auth->acl_gets('a_', 'm_')) ? 0 : (int) $config['max_attachments_pm'];
+		$plupload->configure($cache, $template, $s_action, false, $max_files);
+	}
+
 	// Attachment entry
 	posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
@@ -1124,11 +1129,12 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $auth, $db, $user;
+	global $request;
 
 	// Delete User [TO/BCC]
-	if ($remove_u && !empty($_REQUEST['remove_u']) && is_array($_REQUEST['remove_u']))
+	if ($remove_u && $request->variable('remove_u', array(0 => '')))
 	{
-		$remove_user_id = array_keys($_REQUEST['remove_u']);
+		$remove_user_id = array_keys($request->variable('remove_u', array(0 => '')));
 
 		if (isset($remove_user_id[0]))
 		{
@@ -1137,9 +1143,9 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	}
 
 	// Delete Group [TO/BCC]
-	if ($remove_g && !empty($_REQUEST['remove_g']) && is_array($_REQUEST['remove_g']))
+	if ($remove_g && $request->variable('remove_g', array(0 => '')))
 	{
-		$remove_group_id = array_keys($_REQUEST['remove_g']);
+		$remove_group_id = array_keys($request->variable('remove_g', array(0 => '')));
 
 		if (isset($remove_group_id[0]))
 		{
@@ -1207,7 +1213,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 
 		// Add Friends if specified
-		$friend_list = (isset($_REQUEST['add_' . $type]) && is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
+		$friend_list = array_keys($request->variable('add_' . $type, array(0)));
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
 		foreach ($user_id_ary as $user_id)
@@ -1224,29 +1230,80 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	// Check for disallowed recipients
 	if (!empty($address_list['u']))
 	{
-		// We need to check their PM status (do they want to receive PM's?)
-		// Only check if not a moderator or admin, since they are allowed to override this user setting
-		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		$can_ignore_allow_pm = $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_');
+
+		// Administrator deactivated users check and we need to check their
+		//		PM status (do they want to receive PM's?)
+		// 		Only check PM status if not a moderator or admin, since they
+		//		are allowed to override this user setting
+		$sql = 'SELECT user_id, user_allow_pm
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
+				AND (
+						(user_type = ' . USER_INACTIVE . '
+						AND user_inactive_reason = ' . INACTIVE_MANUAL . ')
+						' . ($can_ignore_allow_pm ? '' : ' OR user_allow_pm = 0') . '
+					)';
+
+		$result = $db->sql_query($sql);
+
+		$removed_no_pm = $removed_no_permission = false;
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$sql = 'SELECT user_id
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
-					AND user_allow_pm = 0';
-			$result = $db->sql_query($sql);
-
-			$removed = false;
-			while ($row = $db->sql_fetchrow($result))
+			if (!$can_ignore_allow_pm && !$row['user_allow_pm'])
 			{
-				$removed = true;
-				unset($address_list['u'][$row['user_id']]);
+				$removed_no_pm = true;
 			}
-			$db->sql_freeresult($result);
-
-			// print a notice about users not being added who do not want to receive pms
-			if ($removed)
+			else
 			{
-				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+				$removed_no_permission = true;
 			}
+
+			unset($address_list['u'][$row['user_id']]);
+		}
+		$db->sql_freeresult($result);
+
+		// print a notice about users not being added who do not want to receive pms
+		if ($removed_no_pm)
+		{
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+		}
+
+		// print a notice about users not being added who do not have permission to receive PMs
+		if ($removed_no_permission)
+		{
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+		}
+
+		if (!sizeof(array_keys($address_list['u'])))
+		{
+			return;
+		}
+
+		// Check if users have permission to read PMs
+		$can_read = $auth->acl_get_list(array_keys($address_list['u']), 'u_readpm');
+		$can_read = (empty($can_read) || !isset($can_read[0]['u_readpm'])) ? array() : $can_read[0]['u_readpm'];
+		$cannot_read_list = array_diff(array_keys($address_list['u']), $can_read);
+		if (!empty($cannot_read_list))
+		{
+			foreach ($cannot_read_list as $cannot_read)
+			{
+				unset($address_list['u'][$cannot_read]);
+			}
+
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
+		}
+
+		// Check if users are banned
+		$banned_user_list = phpbb_get_banned_user_ids(array_keys($address_list['u']), false);
+		if (!empty($banned_user_list))
+		{
+			foreach ($banned_user_list as $banned_user)
+			{
+				unset($address_list['u'][$banned_user]);
+			}
+
+			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 	}
 }
@@ -1305,5 +1362,3 @@ function get_recipients($address_list, $num_recipients = 1)
 
 	return $recipient;
 }
-
-?>

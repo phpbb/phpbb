@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,7 +21,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/three_users.xml');
 	}
 
-	static public function return_on_error_select_data()
+	public function return_on_error_select_data()
 	{
 		return array(
 			array('phpbb_users', "username_clean = 'bertie'", array(array('username_clean' => 'bertie'))),
@@ -44,7 +48,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	static public function fetchrow_data()
+	public function fetchrow_data()
 	{
 		return array(
 			array('', array(array('username_clean' => 'barfoo'),
@@ -95,7 +99,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	static public function fetchfield_data()
+	public function fetchfield_data()
 	{
 		return array(
 			array('', array('barfoo', 'foobar', 'bertie')),
@@ -192,7 +196,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	static public function like_expression_data()
+	public function like_expression_data()
 	{
 		// * = any_char; # = one_char
 		return array(
@@ -229,7 +233,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	static public function in_set_data()
+	public function in_set_data()
 	{
 		return array(
 			array('user_id', 3, false, false, array(array('username_clean' => 'bertie'))),
@@ -303,7 +307,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	static public function build_array_data()
+	public function build_array_data()
 	{
 		return array(
 			array(array('username_clean' => 'barfoo'), array(array('username_clean' => 'barfoo'))),

@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* groups [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -82,7 +83,7 @@ $lang = array_merge($lang, array(
 	'NOT_LEADER_OF_GROUP'			=> 'The requested operation cannot be taken because you are not a leader of the selected group.',
 	'NOT_MEMBER_OF_GROUP'			=> 'The requested operation cannot be taken because you are not a member of the selected group or your membership has not been approved yet.',
 	'NOT_RESIGN_FROM_DEFAULT_GROUP'	=> 'You are not allowed to resign from your default group.',
-	
+
 	'PRIMARY_GROUP'		=> 'Primary group',
 
 	'REMOVE_SELECTED'		=> 'Remove selected',
@@ -92,5 +93,3 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_DEMOTE_CONFIRM'	=> 'Are you sure you want to demote as group leader from the selected group?',
 	'USER_GROUP_DEMOTED'		=> 'Successfully demoted your leadership.',
 ));
-
-?>

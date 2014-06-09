@@ -1,0 +1,106 @@
+services:
+    feed.helper:
+        class: phpbb\feed\helper
+        arguments:
+            - @config
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+
+    feed.factory:
+        class: phpbb\feed\factory
+        arguments:
+            - @service_container
+            - @config
+            - @dbal.conn
+
+    feed.forum:
+        class: phpbb\feed\forum
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%
+
+    feed.forums:
+        class: phpbb\feed\forums
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%
+
+    feed.news:
+        class: phpbb\feed\news
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%
+
+    feed.overall:
+        class: phpbb\feed\overall
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%
+
+    feed.topic:
+        class: phpbb\feed\topic
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%
+
+    feed.topics:
+        class: phpbb\feed\topics
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%
+
+    feed.topics_active:
+        class: phpbb\feed\topics_active
+        scope: prototype
+        arguments:
+            - @feed.helper
+            - @config
+            - @dbal.conn
+            - @cache.driver
+            - @user
+            - @auth
+            - @content.visibility
+            - %core.php_ext%

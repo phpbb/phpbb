@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_BOT -->
 
@@ -22,27 +22,27 @@
 	<fieldset>
 		<legend>{L_TITLE}</legend>
 	<dl>
-		<dt><label for="bot_name">{L_BOT_NAME}:</label><br /><span>{L_BOT_NAME_EXPLAIN}</span></dt>
+		<dt><label for="bot_name">{L_BOT_NAME}{L_COLON}</label><br /><span>{L_BOT_NAME_EXPLAIN}</span></dt>
 		<dd><input name="bot_name" type="text" id="bot_name" value="{BOT_NAME}" maxlength="255" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_style">{L_BOT_STYLE}:</label><br /><span>{L_BOT_STYLE_EXPLAIN}</span></dt>
+		<dt><label for="bot_style">{L_BOT_STYLE}{L_COLON}</label><br /><span>{L_BOT_STYLE_EXPLAIN}</span></dt>
 		<dd><select id="bot_style" name="bot_style">{S_STYLE_OPTIONS}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_lang">{L_BOT_LANG}:</label><br /><span>{L_BOT_LANG_EXPLAIN}</span></dt>
+		<dt><label for="bot_lang">{L_BOT_LANG}{L_COLON}</label><br /><span>{L_BOT_LANG_EXPLAIN}</span></dt>
 		<dd><select id="bot_lang" name="bot_lang">{S_LANG_OPTIONS}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_active">{L_BOT_ACTIVE}:</label></dt>
+		<dt><label for="bot_active">{L_BOT_ACTIVE}{L_COLON}</label></dt>
 		<dd><select id="bot_active" name="bot_active">{S_ACTIVE_OPTIONS}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_agent">{L_BOT_AGENT}:</label><br /><span>{L_BOT_AGENT_EXPLAIN}</span></dt>
+		<dt><label for="bot_agent">{L_BOT_AGENT}{L_COLON}</label><br /><span>{L_BOT_AGENT_EXPLAIN}</span></dt>
 		<dd><input name="bot_agent" type="text" id="bot_agent" value="{BOT_AGENT}" maxlength="255" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_ip">{L_BOT_IP}:</label><br /><span>{L_BOT_IP_EXPLAIN}</span></dt>
+		<dt><label for="bot_ip">{L_BOT_IP}{L_COLON}</label><br /><span>{L_BOT_IP_EXPLAIN}</span></dt>
 		<dd><input name="bot_ip" type="text" id="bot_ip" value="{BOT_IP}" maxlength="255" /></dd>
 	</dl>
 
@@ -62,7 +62,7 @@
 
 	<form id="acp_bots" method="post" action="{U_ACTION}">
 
-	<table cellspacing="1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_BOT_NAME}</th>
@@ -73,12 +73,12 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN bots -->
-		<!-- IF bots.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td style="width: 50%;">{bots.BOT_NAME}</td>
 			<td style="width: 15%; white-space: nowrap;" align="center">&nbsp;{bots.LAST_VISIT}&nbsp;</td>
-			<td style="text-align: center;">&nbsp;<a href="{bots.U_ACTIVATE_DEACTIVATE}">{bots.L_ACTIVATE_DEACTIVATE}</a>&nbsp;</td>
+			<td style="text-align: center;">&nbsp;<a href="{bots.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{bots.L_ACTIVATE_DEACTIVATE}</a>&nbsp;</td>
 			<td style="text-align: center;">&nbsp;<a href="{bots.U_EDIT}">{L_EDIT}</a>&nbsp;</td>
-			<td style="text-align: center;">&nbsp;<a href="{bots.U_DELETE}">{L_DELETE}</a>&nbsp;</td>
+			<td style="text-align: center;">&nbsp;<a href="{bots.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a>&nbsp;</td>
 			<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{bots.BOT_ID}" /></td>
 		</tr>
 	<!-- END bots -->

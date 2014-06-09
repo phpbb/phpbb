@@ -1,10 +1,10 @@
 <!-- INCLUDE overall_header.html -->
 
-<h2>{L_FAQ_TITLE}</h2>
+<h2 class="faq-title">{L_FAQ_TITLE}</h2>
 
 
 <div class="panel bg1" id="faqlinks">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 		<div class="column1">
 		<!-- BEGIN faq_block -->
 			<!-- IF faq_block.SWITCH_COLUMN or (SWITCH_COLUMN_MANUALLY and faq_block.S_ROW_COUNT == 4) -->
@@ -21,19 +21,15 @@
 			</dl>
 		<!-- END faq_block -->
 		</div>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
-
-
-
-<div class="clear"></div>
 
 <!-- BEGIN faq_block -->
 	<div class="panel <!-- IF faq_block.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
-			<h2>{faq_block.BLOCK_TITLE}</h2>
+			<h2 class="faq-title">{faq_block.BLOCK_TITLE}</h2>
 			<!-- BEGIN faq_row -->
 				<dl class="faq">
 					<dt id="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
@@ -44,7 +40,7 @@
 			<!-- END faq_row -->
 		</div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 <!-- END faq_block -->
 
