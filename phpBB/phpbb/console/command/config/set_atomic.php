@@ -27,23 +27,23 @@ class set_atomic extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
+				$this->user->lang('CLI_CONFIG_OPTION_NAME')
 			)
 			->addArgument(
 				'old',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_2')
+				$this->user->lang('CLI_CONFIG_SET_ATOMIC_ARGUMENT_2')
 			)
 			->addArgument(
 				'new',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_3')
+				$this->user->lang('CLI_CONFIG_SET_ATOMIC_ARGUMENT_3')
 			)
 			->addOption(
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ATOMIC_OPTION')
+				$this->user->lang('CLI_CONFIG_SET_ATOMIC_OPTION')
 			)
 		;
 	}

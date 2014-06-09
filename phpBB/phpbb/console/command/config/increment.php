@@ -27,18 +27,18 @@ class increment extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
+				$this->user->lang('CLI_CONFIG_OPTION_NAME')
 			)
 			->addArgument(
 				'increment',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_2')
+				$this->user->lang('CLI_CONFIG_INCREMENT_ARGUMENT_2')
 			)
 			->addOption(
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_INCREMENT_OPTION')
+				$this->user->lang('CLI_CONFIG_INCREMENT_OPTION')
 			)
 		;
 	}

@@ -225,40 +225,39 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+
+	'CLI_CONFIG_GET_OPTION'				=> 'Set this option if the value should be printed without a new line at the end.',
+	'CLI_CONFIG_INCREMENT_ARGUMENT_2'	=> 'Amount to increment by.',
+	'CLI_CONFIG_INCREMENT_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
 	'CLI_CONFIG_OPTION_NAME'			=> "The configuration option's name.",
+
+	'CLI_CONFIG_SET_ARGUMENT_2'			=> 'New configuration value, use 0 and 1 to specify boolean values.',
+	'CLI_CONFIG_SET_ATOMIC_ARGUMENT_2'	=> 'Current configuration value, use 0 and 1 to specify boolean values.',
+	'CLI_CONFIG_SET_ATOMIC_ARGUMENT_3'	=> 'New configuration value, use 0 and 1 to specify boolean values.',
+	'CLI_CONFIG_SET_ATOMIC_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
+	'CLI_CONFIG_SET_OPTION'				=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
+
+	'CLI_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
 
 	'CLI_DESCRIPTION_CACHE_PURGE'			=> 'Purges the cache.',
 
 	'CLI_DESCRIPTION_CONFIG_DB_MIGRATE'		=> 'Updates the database by applying migrations.',
-
 	'CLI_DESCRIPTION_CONFIG_DELETE'			=> 'Deletes a configuration option.',
-
 	'CLI_DESCRIPTION_CONFIG_GET'			=> "Gets a configuration option's value.",
-	'CLI_DESCRIPTION_CONFIG_GET_OPTION'		=> 'Set this option if the value should be printed without a new line at the end.',
-
-	'CLI_DESCRIPTION_CONFIG_INCREMENT'				=> "Increments a configuration option's value.",
-	'CLI_DESCRIPTION_CONFIG_INCREMENT_ARGUMENT_2'	=> 'Amount to increment by.',
-	'CLI_DESCRIPTION_CONFIG_INCREMENT_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
+	'CLI_DESCRIPTION_CONFIG_INCREMENT'		=> "Increments a configuration option's value.",
 
 	'CLI_DESCRIPTION_CRON_RUN'				=> 'Runs all ready cron tasks.',
-	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
-
 	'CLI_DESCRIPTION_CONFIG_SET'			=> "Sets a configuration option's value.",
-	'CLI_DESCRIPTION_CONFIG_SET_ARGUMENT_2'	=> 'New configuration value, use 0 and 1 to specify boolean values.',
-
-	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC'				=> "Sets a configuration option's value only if the old matches the current value.",
-	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_2'	=> 'Current configuration value, use 0 and 1 to specify boolean values.',
-	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_ARGUMENT_3'	=> 'New configuration value, use 0 and 1 to specify boolean values.',
-	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
-
-	'CLI_DESCRIPTION_CONFIG_SET_OPTION'		=> 'Set this option if the configuration option changes too frequently to be efficiently cached.',
+	'CLI_DESCRIPTION_CONFIG_SET_ATOMIC'		=> "Sets a configuration option's value only if the old matches the current value.",
 
 	'CLI_DESCRIPTION_EXTENSION_DISABLE'				=> 'Disables the specified extension.',
 	'CLI_DESCRIPTION_EXTENSION_ENABLE'				=> 'Enables the specified extension.',
-	'CLI_DESCRIPTION_EXTENSION_NAME_ARGUMENT'		=> 'Name of the extension.',
 	'CLI_DESCRIPTION_EXTENSION_PURGE'				=> 'Purges the specified extension.',
 	'CLI_DESCRIPTION_EXTENSION_SHOW'				=> 'Lists all extensions in the database and on the filesystem.',
+
 	'CLI_DESCRIPTION_FIXUP_RECALCULATE_EMAIL_HASH'	=> 'Recalculates the user_email_hash column of the users table.',
+
+	'CLI_EXTENSION_NAME_ARGUMENT'		=> 'Name of the extension.',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 

@@ -27,18 +27,18 @@ class set extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
+				$this->user->lang('CLI_CONFIG_OPTION_NAME')
 			)
 			->addArgument(
 				'value',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_ARGUMENT_2')
+				$this->user->lang('CLI_CONFIG_SET_ARGUMENT_2')
 			)
 			->addOption(
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_SET_OPTION')
+				$this->user->lang('CLI_CONFIG_SET_OPTION')
 			)
 		;
 	}

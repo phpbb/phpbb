@@ -27,13 +27,13 @@ class get extends command
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_OPTION_NAME')
+				$this->user->lang('CLI_CONFIG_OPTION_NAME')
 			)
 			->addOption(
 				'no-newline',
 				null,
 				InputOption::VALUE_NONE,
-				$this->user->lang('CLI_DESCRIPTION_CONFIG_GET_OPTION')
+				$this->user->lang('CLI_CONFIG_GET_OPTION')
 			)
 		;
 	}
