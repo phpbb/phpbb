@@ -63,18 +63,18 @@ class extension_subscriber_loader
 					{
 						if (is_string($params))
 						{
-							$subscribers[$subscriber_id][$event_name] = array(array($params, 0));
+							$subscribers[$subscriber_id][$event_name] = array($params => 0);
 						}
 						elseif (is_string($params[0]))
 						{
-							$subscribers[$subscriber_id][$event_name] = array(array($params[0], isset($params[1]) ? $params[1] : 0));
+							$subscribers[$subscriber_id][$event_name] = array($params[0] => isset($params[1]) ? $params[1] : 0);
 						}
 						else
 						{
 							$subscribers[$subscriber_id][$event_name] = array();
 							foreach ($params as $listener)
 							{
-								$subscribers[$subscriber_id][$event_name][] = array($listener[0], isset($listener[1]) ? $listener[1] : 0);
+								$subscribers[$subscriber_id][$event_name][$listener[0]] = isset($listener[1]) ? $listener[1] : 0;
 							}
 						}
 					}
@@ -87,9 +87,9 @@ class extension_subscriber_loader
 			{
 				foreach ($events as $event_name => $listeners)
 				{
-					foreach ($listeners as $listener)
+					foreach ($listeners as $method => $priority)
 					{
-						$this->dispatcher->addListenerService($event_name, array($subscriber_id, $listener[0]), $listener[1]);
+						$this->dispatcher->addListenerService($event_name, array($subscriber_id, $method), $priority);
 					}
 				}
 			}
