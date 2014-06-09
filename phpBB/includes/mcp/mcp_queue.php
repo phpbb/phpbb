@@ -655,7 +655,7 @@ class mcp_queue
 					if (!$post_data['topic_posts_approved'])
 					{
 						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
-						
+
 						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
 						{
 							$phpbb_notifications->add_notifications(array('topic'), $post_data);
