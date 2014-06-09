@@ -1194,6 +1194,19 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
+		// Check for out-of-bounds characters that are currently
+		// not supported by utf8_bin
+		if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $this->message, $matches))
+		{
+			$character_list = '';
+			foreach ($matches[0] as $cur_match)
+			{
+				$character_list .= $cur_match . '<br />';
+			}
+			$this->warn_msg[] = $user->lang('UNSUPPORTED_CHARACTERS', $character_list);
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
+		}
+
 		// Check for "empty" message. We do not check here for maximum length, because bbcode, smilies, etc. can add to the length.
 		// The maximum length check happened before any parsings.
 		if ($mode === 'post' && utf8_clean_string($this->message) === '')
