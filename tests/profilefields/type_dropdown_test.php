@@ -6,10 +6,6 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-
 class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 {
     protected $cp;
@@ -24,10 +20,7 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
      */
     public function setUp()
     {
-        global $request, $user, $cache, $db, $table_prefix;Ω
-
         $user = $this->getMock('\phpbb\user');
-        $cache = new phpbb_mock_cache;
         $user->expects($this->any())
             ->method('lang')
             ->will($this->returnCallback(array($this, 'return_callback_implode')));
@@ -35,7 +28,7 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
         $request = $this->getMock('\phpbb\request\request');
         $template = $this->getMock('\phpbb\template\template');
 
-        $lang = $this->getMock('\phpbb\profilefields\lang_helper', array(), array($db, $table_prefix . 'profile_fields_lang'));
+        $lang = $this->getMock('\phpbb\profilefields\lang_helper', array(), array(null, null));
 
         $lang->expects($this->any())
              ->method('get_options_lang');
