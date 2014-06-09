@@ -155,7 +155,10 @@
 	<!-- ELSE -->
 
 			<td align="center" valign="middle">
-				<!-- IF postrow.S_FIRST_UNREAD --><a id="unread" class="anchor" data-url="{postrow.U_MINI_POST}"></a><!-- ENDIF --><a name="p{postrow.POST_ID}" class="anchor"></a>
+				<!-- IF postrow.S_FIRST_UNREAD -->
+					<a id="unread" class="anchor"<!-- IF S_UNREAD_VIEW --> data-url="{postrow.U_MINI_POST}"<!-- ENDIF -->></a>
+				<!-- ENDIF -->
+				<a name="p{postrow.POST_ID}" class="anchor"></a>
 				<b class="postauthor"<!-- IF postrow.POST_AUTHOR_COLOUR --> style="color: {postrow.POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{postrow.POST_AUTHOR}</b>
 			</td>
 			<td width="100%" height="25">
