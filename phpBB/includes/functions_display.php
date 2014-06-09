@@ -1157,7 +1157,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 	$is_watching = 0;
 
-	// Is user watching this thread?
+	// Is user watching this topic?
 	if ($user_id != ANONYMOUS)
 	{
 		$can_watch = true;
