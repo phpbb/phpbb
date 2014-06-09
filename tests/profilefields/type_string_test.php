@@ -6,6 +6,10 @@
  *
  */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
+
 class phpbb_profilefield_type_string_test extends phpbb_test_case
 {
     protected $cp;
@@ -20,10 +24,6 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
     public function setUp()
     {
         global $request, $user, $cache;
-
-        require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-        require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-        require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
         $user = $this->getMock('\phpbb\user');
         $cache = new phpbb_mock_cache;
