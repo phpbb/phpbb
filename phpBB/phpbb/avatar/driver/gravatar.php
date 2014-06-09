@@ -81,7 +81,8 @@ class gravatar extends \phpbb\avatar\driver\driver
 			array(
 				'email' => array(
 					array('string', false, 6, 60),
-					array('email'))
+					array('email'),
+				),
 			)
 		);
 

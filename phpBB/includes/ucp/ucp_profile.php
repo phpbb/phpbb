@@ -66,7 +66,7 @@ class ucp_profile
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'email'				=> array(
 							array('string', false, 6, 60),
-							array('email')),
+							array('user_email')),
 					);
 
 					if ($auth->acl_get('u_chgname') && $config['allow_namechange'])

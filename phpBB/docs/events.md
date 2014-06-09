@@ -64,6 +64,20 @@ acp_overall_header_head_append
 * Since: 3.1.0-a1
 * Purpose: Add assets within the `<head>` tags in the ACP
 
+acp_posting_buttons_after
+===
+* Locations:
+    + adm/style/acp_posting_buttons.html
+* Since: 3.1.0-b4
+* Purpose: Add content after BBCode posting buttons in the ACP
+
+acp_posting_buttons_before
+===
+* Locations:
+    + adm/style/acp_posting_buttons.html
+* Since: 3.1.0-b4
+* Purpose: Add content before BBCode posting buttons in the ACP
+
 acp_simple_footer_after
 ===
 * Location: adm/style/simple_footer.html
@@ -135,20 +149,6 @@ acp_users_prefs_view_prepend
 * Location: adm/style/acp_users_prefs.html
 * Since: 3.1.0-b3
 * Purpose: Add user options fieldset to the top of ACP users view prefs settings
-
-acp_users_signature_editor_buttons_after
-===
-* Locations:
-    + adm/style/acp_users_signature.html
-* Since: 3.1.0-a3
-* Purpose: Add content after BBCode posting buttons in the ACP user signature
-
-acp_users_signature_editor_buttons_before
-===
-* Locations:
-    + adm/style/acp_users_signature.html
-* Since: 3.1.0-a3
-* Purpose: Add content before BBCode posting buttons in the ACP user signature
 
 forumlist_body_category_header_after
 ===

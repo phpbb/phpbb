@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -12,7 +16,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../mock/user.php';
 require_once dirname(__FILE__) . '/validate_data_helper.php';
 
-class phpbb_functions_validate_email_test extends phpbb_database_test_case
+class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $user;
@@ -47,22 +51,22 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 		$user->optionset('banned_users', array('banned@example.com'));
 	}
 
-	public static function validate_email_data()
+	public static function validate_user_email_data()
 	{
 		return array(
-			array('empty', array('EMAIL_INVALID'), ''),		// email does not allow empty
+			array('empty', array(), ''),
 			array('allowed', array(), 'foobar@example.com'),
 			array('valid_complex', array(), "'%$~test@example.com"),
 			array('invalid', array('EMAIL_INVALID'), 'fööbar@example.com'),
-			array('taken', array(), 'admin@example.com'),	// email does not check taken, should use user_email instead
-			array('banned', array(), 'banned@example.com'),	// email does not check ban, should use user_email instead
+			array('taken', array('EMAIL_TAKEN'), 'admin@example.com'),
+			array('banned', array('EMAIL_BANNED'), 'banned@example.com'),
 		);
 	}
 
 	/**
-	* @dataProvider validate_email_data
+	* @dataProvider validate_user_email_data
 	*/
-	public function test_validate_email($case, $errors, $email)
+	public function test_validate_user_email($case, $errors, $email)
 	{
 		$this->set_validation_prerequisites(false);
 
@@ -70,12 +74,12 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 			$case => array(
 				$errors,
 				$email,
-				array('email'),
+				array('user_email'),
 			),
 		));
 	}
 
-	public static function validate_email_mx_data()
+	public static function validate_user_email_mx_data()
 	{
 		return array(
 			array('valid', array(), 'foobar@phpbb.com'),
@@ -84,10 +88,10 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 	}
 
 	/**
-	* @dataProvider validate_email_mx_data
+	* @dataProvider validate_user_email_mx_data
 	* @group slow
 	*/
-	public function test_validate_email_mx($case, $errors, $email)
+	public function test_validate_user_email_mx($case, $errors, $email)
 	{
 		$this->set_validation_prerequisites(true);
 
@@ -95,7 +99,7 @@ class phpbb_functions_validate_email_test extends phpbb_database_test_case
 			$case => array(
 				$errors,
 				$email,
-				array('email'),
+				array('user_email'),
 			),
 		));
 	}
