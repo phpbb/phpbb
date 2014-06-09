@@ -15,7 +15,7 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
      * Sets up basic test objects
      *
      * @access public
-     * @return void
+     * @return null
      */
     public function setUp()
     {
