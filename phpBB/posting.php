@@ -1028,6 +1028,14 @@ if ($submit || $preview || $refresh)
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
 
+	// Check for out-of-bounds characters that are currently
+	// not supported by utf8_bin
+	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
+	{
+		$character_list = implode('<br />', $matches[0]);
+		$error[] = $user->lang('UNSUPPORTED_CHARACTERS_SUBJECT', $character_list);
+	}
+
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
 
 	if ($post_data['poll_option_text'] &&
