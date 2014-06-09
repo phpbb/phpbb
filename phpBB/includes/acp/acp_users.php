@@ -814,7 +814,7 @@ class acp_users
 						$check_ary += array(
 							'email'				=> array(
 								array('string', false, 6, 60),
-								array('email', $user_row['user_email'])
+								array('user_email', $user_row['user_email']),
 							),
 						);
 					}

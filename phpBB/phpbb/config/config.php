@@ -37,7 +37,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	/**
 	* Retrieves an ArrayIterator over the configuration values.
 	*
-	* @return ArrayIterator An iterator over all config data
+	* @return \ArrayIterator An iterator over all config data
 	*/
 	public function getIterator()
 	{
