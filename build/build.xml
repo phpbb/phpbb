@@ -294,14 +294,14 @@
 		<delete dir="${dir}/vendor/ocramius/proxy-manager/tests" />
 		<delete dir="${dir}/vendor/ocramius/proxy-manager/docs" />
 		<delete dir="${dir}/vendor/ocramius/proxy-manager/build" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/.gitignore" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/.travis.yml" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/CONTRIBUTING.md" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/phpdox.xml.dist" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/phpmd.xml.dist" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/phpunit.xml.dist" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/README.md" />
-		<delete file="${dir}/vendor/ocramius/proxy-manager/build/UPGRADE.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.gitignore" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.travis.yml" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpdox.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpmd.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/README.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/UPGRADE.md" />
 
 		<delete dir="${dir}/vendor/psr/log/Psr/Log/Test" />
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
