@@ -37,6 +37,7 @@ class migration_tips extends \phpbb\console\command\command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$migrations = $this->extension_manager->get_finder()
+			->set_extensions(array())
 			->core_path('phpbb/db/migration/data/')
 			->get_classes();
 		$tips = $migrations;

@@ -561,14 +561,14 @@ class acp_modules
 		$directory = $phpbb_root_path . 'includes/' . $module_class . '/info/';
 		$fileinfo = array();
 
-		$finder = $phpbb_extension_manager->get_finder();
+		$finder = $phpbb_extension_manager->get_finder($use_all_available);
 
 		$modules = $finder
 			->extension_suffix('_module')
 			->extension_directory("/$module_class")
 			->core_path("includes/$module_class/info/")
 			->core_prefix($module_class . '_')
-			->get_classes(true, $use_all_available);
+			->get_classes(true);
 
 		foreach ($modules as $cur_module)
 		{

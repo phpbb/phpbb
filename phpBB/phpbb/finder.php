@@ -11,14 +11,14 @@
 *
 */
 
-namespace phpbb\extension;
+namespace phpbb;
 
 /**
-* The extension finder provides a simple way to locate files in active extensions
+* The finder provides a simple way to locate files in the core and a set of extensions
 */
 class finder
 {
-	protected $extension_manager;
+	protected $extensions;
 	protected $filesystem;
 	protected $phpbb_root_path;
 	protected $cache;
@@ -48,9 +48,6 @@ class finder
 	/**
 	* Creates a new finder instance with its dependencies
 	*
-	* @param \phpbb\extension\manager $extension_manager An extension manager
-	*            instance that provides the finder with a list of active
-	*            extensions and their locations
 	* @param \phpbb\filesystem $filesystem Filesystem instance
 	* @param string $phpbb_root_path Path to the phpbb root directory
 	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
@@ -58,9 +55,8 @@ class finder
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(\phpbb\extension\manager $extension_manager, \phpbb\filesystem $filesystem, $phpbb_root_path = '', \phpbb\cache\driver\driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
+	public function __construct(\phpbb\filesystem $filesystem, $phpbb_root_path = '', \phpbb\cache\driver\driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
-		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
@@ -76,15 +72,37 @@ class finder
 			'extension_prefix' => false,
 			'extension_directory' => false,
 		);
+		$this->extensions = array();
 
 		$this->cached_queries = ($this->cache) ? $this->cache->get($this->cache_name) : false;
+	}
+
+	/**
+	* Set the array of extensions
+	*
+	* @param array $extensions		A list of extensions that should be searched aswell
+	* @param bool $replace_list		Should the list be emptied before adding the extensions
+	* @return \phpbb\finder This object for chaining calls
+	*/
+	public function set_extensions(array $extensions, $replace_list = true)
+	{
+		if ($replace_list)
+		{
+			$this->extensions = array();
+		}
+
+		foreach ($extensions as $ext_name)
+		{
+			$this->extensions[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
+		}
+		return $this;
 	}
 
 	/**
 	* Sets a core path to be searched in addition to extensions
 	*
 	* @param string $core_path The path relative to phpbb_root_path
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function core_path($core_path)
 	{
@@ -100,7 +118,7 @@ class finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $suffix A filename suffix
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function suffix($suffix)
 	{
@@ -117,7 +135,7 @@ class finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $extension_suffix A filename suffix
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function extension_suffix($extension_suffix)
 	{
@@ -133,7 +151,7 @@ class finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $core_suffix A filename suffix
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function core_suffix($core_suffix)
 	{
@@ -145,7 +163,7 @@ class finder
 	* Sets the prefix all files found in extensions and core must match
 	*
 	* @param string $prefix A filename prefix
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function prefix($prefix)
 	{
@@ -158,7 +176,7 @@ class finder
 	* Sets a prefix all files found in extensions must match
 	*
 	* @param string $extension_prefix A filename prefix
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function extension_prefix($extension_prefix)
 	{
@@ -170,7 +188,7 @@ class finder
 	* Sets a prefix all files found in the core path must match
 	*
 	* @param string $core_prefix A filename prefix
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function core_prefix($core_prefix)
 	{
@@ -185,7 +203,7 @@ class finder
 	* the current directory.
 	*
 	* @param string $directory
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function directory($directory)
 	{
@@ -198,7 +216,7 @@ class finder
 	* Sets a directory all files found in extensions must be contained in
 	*
 	* @param string $extension_directory
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function extension_directory($extension_directory)
 	{
@@ -210,7 +228,7 @@ class finder
 	* Sets a directory all files found in the core path must be contained in
 	*
 	* @param string $core_directory
-	* @return \phpbb\extension\finder This object for chaining calls
+	* @return \phpbb\finder This object for chaining calls
 	*/
 	public function core_directory($core_directory)
 	{
@@ -246,16 +264,14 @@ class finder
 	* phpBB naming rules an incorrect class name will be returned.
 	*
 	* @param bool $cache Whether the result should be cached
-	* @param bool $use_all_available Use all available instead of just all
-	* 						enabled extensions
 	* @return array An array of found class names
 	*/
-	public function get_classes($cache = true, $use_all_available = false)
+	public function get_classes($cache = true)
 	{
 		$this->query['extension_suffix'] .= '.' . $this->php_ext;
 		$this->query['core_suffix'] .= '.' . $this->php_ext;
 
-		$files = $this->find($cache, false, $use_all_available);
+		$files = $this->find($cache, false);
 
 		return $this->get_classes_from_files($files);
 	}
@@ -290,27 +306,23 @@ class finder
 	* Finds all directories matching the configured options
 	*
 	* @param bool $cache Whether the result should be cached
-	* @param bool $use_all_available Use all available instead of just all
-	* 						enabled extensions
 	* @param bool $extension_keys Whether the result should have extension name as array key
 	* @return array An array of paths to found directories
 	*/
-	public function get_directories($cache = true, $use_all_available = false, $extension_keys = false)
+	public function get_directories($cache = true, $extension_keys = false)
 	{
-		return $this->find_with_root_path($cache, true, $use_all_available, $extension_keys);
+		return $this->find_with_root_path($cache, true, $extension_keys);
 	}
 
 	/**
 	* Finds all files matching the configured options.
 	*
 	* @param bool $cache Whether the result should be cached
-	* @param bool $use_all_available Use all available instead of just all
-	* 						enabled extensions
 	* @return array An array of paths to found files
 	*/
-	public function get_files($cache = true, $use_all_available = false)
+	public function get_files($cache = true)
 	{
-		return $this->find_with_root_path($cache, false, $use_all_available);
+		return $this->find_with_root_path($cache, false);
 	}
 
 	/**
@@ -318,16 +330,14 @@ class finder
 	*
 	* @param bool $cache Whether the result should be cached
 	* @param bool $is_dir Directories will be returned when true, only files
-	*                     otherwise
-	* @param bool $use_all_available Use all available instead of just all
-	* 						enabled extensions
+	*					otherwise
 	* @param bool $extension_keys If true, result will be associative array
 	*					with extension name as key
 	* @return array An array of paths to found items
 	*/
-	protected function find_with_root_path($cache = true, $is_dir = false, $use_all_available = false, $extension_keys = false)
+	protected function find_with_root_path($cache = true, $is_dir = false, $extension_keys = false)
 	{
-		$items = $this->find($cache, $is_dir, $use_all_available);
+		$items = $this->find($cache, $is_dir);
 
 		$result = array();
 		foreach ($items as $item => $ext_name)
@@ -351,21 +361,11 @@ class finder
 	* @param bool $cache Whether the result should be cached
 	* @param bool $is_dir Directories will be returned when true, only files
 	*                     otherwise
-	* @param bool $use_all_available Use all available instead of just all
-	* 						enabled extensions
 	* @return array An array of paths to found items
 	*/
-	public function find($cache = true, $is_dir = false, $use_all_available = false)
+	public function find($cache = true, $is_dir = false)
 	{
-		if ($use_all_available)
-		{
-			$extensions = $this->extension_manager->all_available();
-		}
-		else
-		{
-			$extensions = $this->extension_manager->all_enabled();
-		}
-
+		$extensions = $this->extensions;
 		if ($this->query['core_path'])
 		{
 			$extensions['/'] = $this->phpbb_root_path . $this->query['core_path'];
