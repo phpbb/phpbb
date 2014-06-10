@@ -5030,6 +5030,63 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 }
 
 /**
+* Set the DEBUG_OUTPUT template var
+*/
+function display_debug_output()
+{
+	global $starttime, $template, $db, $config, $auth, $user, $request;
+
+	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
+	{
+		$db->sql_report('display');
+	}
+
+	$debug_info = array();
+
+	// Output page creation time
+	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+	{
+		$mtime = explode(' ', microtime());
+		$totaltime = $mtime[0] + $mtime[1] - $starttime;
+
+		$debug_info[] = sprintf('Time : %.3fs', $totaltime);
+		$debug_info[] = $db->sql_num_queries() . ' Queries';
+
+		if ($auth->acl_get('a_'))
+		{
+			if (function_exists('memory_get_peak_usage'))
+			{
+				if ($memory_usage = memory_get_peak_usage())
+				{
+					$memory_usage = get_formatted_filesize($memory_usage);
+
+					$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
+				}
+			}
+		}
+	}
+
+	if (defined('DEBUG'))
+	{
+		$debug_info[] = 'GZIP : ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off');
+
+		if ($user->load)
+		{
+			$debug_info[] = 'Load : ' . $user->load;
+		}
+
+		if ($auth->acl_get('a_'))
+		{
+			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">Explain</a>';
+		}
+	}
+
+	$template->assign_vars(array(
+			'DEBUG_OUTPUT'			=> implode(' | ', $debug_info),
+	));
+}
+
+/**
 * Generate page footer
 *
 * @param bool $run_cron Whether or not to run the cron
@@ -5061,43 +5118,9 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
-	// Output page creation time
-	if (defined('DISPLAY_LOAD_TIME'))
-	{
-		$mtime = explode(' ', microtime());
-		$totaltime = $mtime[0] + $mtime[1] - $starttime;
-
-		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
-		{
-			$db->sql_report('display');
-		}
-
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
-
-		if ($auth->acl_get('a_'))
-		{
-			if (defined('DISPLAY_LOAD_TIME'))
-			{
-				if (function_exists('memory_get_peak_usage'))
-				{
-					if ($memory_usage = memory_get_peak_usage())
-					{
-						$memory_usage = get_formatted_filesize($memory_usage);
-
-						$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
-					}
-				}
-			}
-
-			if (defined('DEBUG'))
-			{
-				$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
-			}
-		}
-	}
+	display_debug_output();
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> (defined('DISPLAY_LOAD_TIME')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
