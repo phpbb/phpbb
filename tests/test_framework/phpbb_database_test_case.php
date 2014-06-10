@@ -212,8 +212,6 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function new_dbal()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$config = $this->get_database_config();
 
 		$db = new $config['dbms']();
