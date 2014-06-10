@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/phpbb_testcase_extension_manager.php';
-
 abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_TestCase
 {
 	static private $already_connected;
@@ -70,9 +68,10 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			{
 				global $phpbb_root_path, $phpEx, $table_prefix;
 
-				$finder = new \phpbb\extension\finder(new phpbb_testcase_extension_manager(static::setup_extensions()), new \phpbb\filesystem(), $phpbb_root_path);
+				$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
 				$classes = $finder->core_path('phpbb/')
-					->core_directory('db/migration/data')
+					->core_directory('/db/migration/data')
+					->set_extensions($setup_extensions)
 					->extension_directory('migrations')
 					->get_classes();
 
