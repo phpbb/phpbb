@@ -14,7 +14,9 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_extension_finder_test extends phpbb_test_case
 {
+	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
+	/** @var \phpbb\finder */
 	protected $finder;
 
 	public function setUp()
@@ -54,6 +56,47 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			),
 			$classes
 		);
+	}
+
+	public function set_extensions_data()
+	{
+		return array(
+			array(
+				array(),
+				array('\phpbb\default\implementation'),
+			),
+			array(
+				array('vendor3/bar'),
+				array(
+					'\phpbb\default\implementation',
+					'\vendor3\bar\my\hidden_class',
+				),
+			),
+			array(
+				array('vendor2/foo', 'vendor3/bar'),
+				array(
+					'\phpbb\default\implementation',
+					'\vendor2\foo\a_class',
+					'\vendor2\foo\b_class',
+					'\vendor3\bar\my\hidden_class',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider set_extensions_data
+	 */
+	public function test_set_extensions($extensions, $expected)
+	{
+		$classes = $this->finder
+			->set_extensions($extensions)
+			->core_path('phpbb/default/')
+			->extension_suffix('_class')
+			->get_classes();
+
+		sort($classes);
+		$this->assertEquals($expected, $classes);
 	}
 
 	public function test_get_directories()
@@ -201,7 +244,8 @@ class phpbb_extension_finder_test extends phpbb_test_case
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;
-		$finder = new \phpbb\extension\finder($this->extension_manager, new \phpbb\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
+		$finder = new \phpbb\finder(new \phpbb\filesystem(), dirname(__FILE__) . '/', $cache, 'php', '_custom_cache_name');
+		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 		$files = $finder->suffix('_class.php')->get_files();
 
 		$expected_files = array(
@@ -239,8 +283,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 			'is_dir' => false,
 		);
 
-		$finder = new \phpbb\extension\finder(
-			$this->extension_manager,
+		$finder = new \phpbb\finder(
 			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
 			new phpbb_mock_cache(array(
@@ -249,6 +292,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 				),
 			))
 		);
+		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 
 		$classes = $finder
 			->core_path($query['core_path'])
