@@ -28,7 +28,7 @@ class factory
 	public function __construct($phpbb_root_path)
 	{
 		$configuration = new \ProxyManager\Configuration();
-		$configuration->setProxiesTargetDir($phpbb_root_path . '/cache');
+		$configuration->setProxiesTargetDir($phpbb_root_path . 'cache');
 
 		spl_autoload_register($configuration->getProxyAutoloader());
 		$this->factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory($configuration);
