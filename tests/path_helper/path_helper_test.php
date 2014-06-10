@@ -94,41 +94,45 @@ class phpbb_path_helper_test extends phpbb_test_case
 		return array(
 			array(
 				$this->phpbb_root_path . 'test.php',
-				'',
 				'/',
+				null,
+				null,
+				'',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				'../',
 				'//',
+				null,
+				null,
+				'./../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				'../',
 				'//',
 				'foo/bar.php',
 				'bar.php',
+				'./../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				'../../',
 				'/foo/template',
 				'/phpbb3-fork/phpBB/app.php/foo/template',
 				'/phpbb3-fork/phpBB/app.php',
+				'./../../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				'../',
 				'/foo/template',
 				'/phpbb3-fork/phpBB/foo/template',
 				'/phpbb3-fork/phpBB/app.php',
+				'./../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				'../',
 				'/',
 				'/phpbb3-fork/phpBB/app.php/',
 				'/phpbb3-fork/phpBB/app.php',
+				'./../',
 			),
 		);
 	}
@@ -136,7 +140,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	/**
 	* @dataProvider update_web_root_path_data
 	*/
-	public function test_update_web_root_path($input, $correction, $getPathInfo, $getRequestUri = null, $getScriptName = null)
+	public function test_update_web_root_path($input, $getPathInfo, $getRequestUri, $getScriptName, $correction)
 	{
 		$symfony_request = $this->getMock('\phpbb\symfony_request', array(), array(
 			new phpbb_mock_request(),
