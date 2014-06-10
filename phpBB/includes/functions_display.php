@@ -650,6 +650,8 @@ function generate_forum_nav(&$forum_data)
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data);
 
+	$microdata_attr = 'data-forum-id';
+
 	// Build navigation links
 	if (!empty($forum_parents))
 	{
@@ -669,6 +671,7 @@ function generate_forum_nav(&$forum_data)
 				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 				'FORUM_NAME'	=> $parent_name,
 				'FORUM_ID'		=> $parent_forum_id,
+				'MICRODATA'		=> $microdata_attr . '="' . $parent_forum_id . '"',
 				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
 			);
 		}
@@ -680,6 +683,7 @@ function generate_forum_nav(&$forum_data)
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
+		'MICRODATA'		=> $microdata_attr . '="' . $forum_data['forum_id'] . '"',
 		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']))
 	);
 

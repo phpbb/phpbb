@@ -8,7 +8,7 @@
 			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA} data-navbar-reference="index">{L_INDEX}</a></span>
 			<!-- BEGIN navlinks -->
 				<!-- EVENT overall_header_navlink_prepend -->
-				<span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}<!-- IF navlinks.FORUM_ID --> data-forum-id="{navlinks.FORUM_ID}"<!-- ENDIF -->>{navlinks.FORUM_NAME}</a></span>
+				<span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}<!-- IF navlinks.MICRODATA --> {navlinks.MICRODATA}<!-- ENDIF -->>{navlinks.FORUM_NAME}</a></span>
 				<!-- EVENT overall_header_navlink_append -->
 			<!-- END navlinks -->
 			<!-- EVENT overall_header_breadcrumb_append -->
