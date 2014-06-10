@@ -33,7 +33,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 	public function test_provider()
 	{
-		$provider = new \phpbb\controller\provider();
+		$provider = new phpbb_mock_controller_provider(dirname(__FILE__) . '/', 'php');
 		$provider->find_routing_files($this->extension_manager->get_finder());
 		$routes = $provider->find(__DIR__)->get_routes();
 

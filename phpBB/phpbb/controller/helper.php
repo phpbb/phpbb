@@ -14,7 +14,6 @@
 namespace phpbb\controller;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\RequestContext;
 
 /**
@@ -39,6 +38,18 @@ class helper
 	* @var \phpbb\config\config
 	*/
 	protected $config;
+
+	/**
+	* Controller provider object
+	* @var \phpbb\controller\provider
+	*/
+	protected $provider;
+
+	/**
+	* Extension manager object
+	* @var \phpbb\extension\manager
+	*/
+	protected $manager;
 
 	/**
 	* phpBB root path
@@ -68,10 +79,10 @@ class helper
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
+		$this->provider = $provider;
+		$this->manager = $manager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$provider->find_routing_files($manager->get_finder());
-		$this->route_collection = $provider->find($phpbb_root_path)->get_routes();
 	}
 
 	/**
@@ -112,7 +123,8 @@ class helper
 			$anchor = '#' . $params['#'];
 			unset($params['#']);
 		}
-		$url_generator = new UrlGenerator($this->route_collection, new RequestContext());
+
+		$url_generator = $this->provider->get_url_generator($this->manager->get_finder(), new RequestContext());
 		$route_url = $url_generator->generate($route, $params);
 
 		if (strpos($route_url, '/') === 0)

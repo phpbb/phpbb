@@ -43,9 +43,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$finder->set_extensions(array_keys($manager->all_enabled()));
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$provider = new \phpbb\controller\provider();
-		$provider->find_routing_files($finder);
-		$provider->find(dirname(__FILE__) . '/');
+		$provider = new phpbb_mock_controller_provider(dirname(__FILE__) . '/', 'php');
 		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, '', 'php', dirname(__FILE__) . '/');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
