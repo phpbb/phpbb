@@ -138,7 +138,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--no-newline'	=> false,
 		));
 
-		$this->assertSame($this->config['test_key'] . "\n", $command_tester->getDisplay());
+		$this->assertSame($this->config['test_key'] . PHP_EOL, $command_tester->getDisplay());
 	}
 
 	public function test_get_error()
