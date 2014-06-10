@@ -6,7 +6,11 @@
 		<li class="small-icon icon-home breadcrumbs">
 			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA} data-navbar-reference="home">{L_SITE_HOME}</a></span><!-- ENDIF -->
 			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA} data-navbar-reference="index">{L_INDEX}</a></span>
-			<!-- BEGIN navlinks --><!-- EVENT overall_header_navlink_prepend --><span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA} data-forum-id="{navlinks.FORUM_ID}">{navlinks.FORUM_NAME}</a></span><!-- EVENT overall_header_navlink_append --><!-- END navlinks -->
+			<!-- BEGIN navlinks -->
+				<!-- EVENT overall_header_navlink_prepend -->
+				<span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}<!-- IF navlinks.FORUM_ID --> data-forum-id="{navlinks.FORUM_ID}"<!-- ENDIF -->>{navlinks.FORUM_NAME}</a></span>
+				<!-- EVENT overall_header_navlink_append -->
+			<!-- END navlinks -->
 			<!-- EVENT overall_header_breadcrumb_append -->
 		</li>
 
