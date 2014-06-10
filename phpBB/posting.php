@@ -1029,7 +1029,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Check for out-of-bounds characters that are currently
-	// not supported by utf8_bin
+	// not supported by utf8_bin in MySQL
 	if (preg_match_all('/[\x{10000}-\x{10FFFF}]/u', $post_data['post_subject'], $matches))
 	{
 		$character_list = implode('<br />', $matches[0]);

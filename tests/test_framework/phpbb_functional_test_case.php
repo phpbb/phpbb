@@ -996,16 +996,19 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Instead, I send it as a request with the submit button "post" set to true.
 		$crawler = self::request('POST', $posting_url, $form_data);
 
-		if ($expected !== '' && isset($this->lang[$expected]))
+		if ($expected !== '')
 		{
-			$this->assertContainsLang($expected, $crawler->filter('html')->text());
+			if (isset($this->lang[$expected]))
+			{
+				$this->assertContainsLang($expected, $crawler->filter('html')->text());
+			}
+			else
+			{
+				$this->assertContains($expected, $crawler->filter('html')->text());
+			}
 			return null;
 		}
-		else if ($expected !== '')
-		{
-			$this->assertContains($expected, $crawler->filter('html')->text());
-			return null;
-		}
+
 		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
 
 		return array(
