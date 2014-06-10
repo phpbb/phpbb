@@ -350,6 +350,21 @@
 
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 
+	<!-- IF .quickmod -->
+		<div class="dropdown-container dropdown-container-{S_CONTENT_FLOW_BEGIN} dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
+			<span title="{L_QUICK_MOD}" class="dropdown-trigger button icon-button modtools-icon dropdown-select">{L_QUICK_MOD}</span>
+			<div class="dropdown hidden">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents">
+				<!-- BEGIN quickmod -->
+					<!-- DEFINE $QUICKMOD_AJAX = (quickmod.VALUE in ['lock', 'unlock', 'delete_topic', 'restore_topic', 'make_normal', 'make_sticky', 'make_announce', 'make_global']) -->
+					<li><a href="{quickmod.LINK}"<!-- IF $QUICKMOD_AJAX --> data-ajax="true" data-refresh="true"<!-- ENDIF -->>{quickmod.TITLE}</a></li>
+				<!-- END quickmod -->
+				</ul>
+			</div>
+		</div>
+	<!-- ENDIF -->
+
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
 			{TOTAL_POSTS} 
@@ -365,23 +380,6 @@
 
 <!-- EVENT viewtopic_body_footer_before -->
 <!-- INCLUDE jumpbox.html -->
-
-<!-- IF .quickmod -->
-	<div class="dropdown-container dropdown-container-{S_CONTENT_FLOW_END} dropdown-up dropdown-{S_CONTENT_FLOW_BEGIN} dropdown-button-control">
-		<span title="{L_QUICK_MOD}" class="dropdown-trigger button dropdown-select">{L_QUICK_MOD}</span>
-		<div class="dropdown hidden">
-			<div class="pointer"><div class="pointer-inner"></div></div>
-			<ul class="dropdown-contents">
-			<!-- BEGIN quickmod -->
-				<!-- DEFINE $QUICKMOD_AJAX = (quickmod.VALUE in ['lock', 'unlock', 'delete_topic', 'restore_topic', 'make_normal', 'make_sticky', 'make_announce', 'make_global']) -->
-				<li><a href="{quickmod.LINK}"<!-- IF $QUICKMOD_AJAX --> data-ajax="true" data-refresh="true"<!-- ENDIF -->>{quickmod.TITLE}</a></li>
-			<!-- END quickmod -->
-			</ul>
-		</div>
-	</div>
-
-<!-- ENDIF -->
-<span class="clear"></span>
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
 	<div class="stat-block online-list">

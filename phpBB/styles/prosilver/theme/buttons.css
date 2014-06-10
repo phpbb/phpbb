@@ -77,7 +77,11 @@
 .forwardpm-icon:before										{ background-position: -40px 0; }
 .forwardpm-icon:hover:before								{ background-position: -40px -20px; }
 
-.tools-icon:before {
+.modtools-icon {
+	font-size: 0;
+}
+
+.tools-icon:before, .modtools-icon:before {
 	background-position: -80px 0;
 	height: 16px;
 	margin-top: 2px;
@@ -86,6 +90,10 @@
 
 .dropdown-visible .tools-icon:before,
 .nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
+
+.modtools-icon:before										{ background-position: -225px 0; }
+.dropdown-visible .modtools-icon:before,
+.nojs .dropdown-container:hover .modtools-icon:before		{ background-position: -225px -20px; }
 
 /* Icon images
 ---------------------------------------- */
