@@ -5074,19 +5074,25 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 
 		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
-		if ($auth->acl_get('a_') && defined('DISPLAY_LOAD_TIME'))
+		if ($auth->acl_get('a_'))
 		{
-			if (function_exists('memory_get_peak_usage'))
+			if (defined('DISPLAY_LOAD_TIME'))
 			{
-				if ($memory_usage = memory_get_peak_usage())
+				if (function_exists('memory_get_peak_usage'))
 				{
-					$memory_usage = get_formatted_filesize($memory_usage);
+					if ($memory_usage = memory_get_peak_usage())
+					{
+						$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
+						$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
+					}
 				}
 			}
 
-			$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
+			if (defined('DEBUG'))
+			{
+				$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
+			}
 		}
 	}
 
