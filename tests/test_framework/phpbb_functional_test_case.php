@@ -402,11 +402,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$ext_path = str_replace('/', '%2F', $extension);
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(0, $crawler->filter('div.errorbox')->count());
+		$this->assertGreaterThan(0, $crawler->filter('.submit-buttons')->count());
 
 		$form = $crawler->selectButton('Enable')->form();
 		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('div.successbox')->count());
+		$this->add_lang('acp/extensions');
+		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
 		$this->logout();
 	}
