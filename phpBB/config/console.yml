@@ -75,6 +75,13 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.dev.migration_tips:
+        class: phpbb\console\command\dev\migration_tips
+        arguments:
+            - @ext.manager
+        tags:
+            - { name: console.command }
+
     console.command.extension.disable:
         class: phpbb\console\command\extension\disable
         arguments:
