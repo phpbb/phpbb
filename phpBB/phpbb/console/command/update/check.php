@@ -73,17 +73,13 @@ class check extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$recheck = true;
-		if ($input->getOption('cache'))
-		{
-			$recheck = false;
-		}
+		$recheck = !$input->getOption('cache');
 
 		$stability = null;
 		if ($input->getOption('stability'))
 		{
 			$stability = $input->getOption('stability');
-			if (!($stability == 'stable') && !($stability == 'unstable'))
+			if ($stability != 'stable' && $stability != 'unstable')
 			{
 				throw new \RuntimeException($this->user->lang('CLI_ERROR_INVALID_STABILITY', $stability));
 			}
