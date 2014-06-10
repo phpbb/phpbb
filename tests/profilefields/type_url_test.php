@@ -81,8 +81,8 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
             array(
                 'http://example.com/index.html/test/path?document[]=DocType%20test&document[]=AnotherDoc',
                 array(),
-                false,
-                'Field should accept valid URL having multi value parameters',
+                'FIELD_INVALID_URL-field',
+                'Field should reject invalid URL having multi value parameters',
             ),
         );
     }
