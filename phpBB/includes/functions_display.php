@@ -497,10 +497,15 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
 		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? $row['forum_posts'] : '';
 
-		$s_subforums_list = array();
+		$s_subforums_list = $subforums_row = array();
 		foreach ($subforums_list as $subforum)
 		{
 			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['UNREAD_POSTS'] : $user->lang['NO_UNREAD_POSTS']) . '">' . $subforum['name'] . '</a>';
+			$subforums_row[] = array(
+				'U_SUBFORUM'	=> $subforum['link'],
+				'SUBFORUM_NAME'	=> $subforum['name'],
+				'S_UNREAD'		=> $subforum['unread'],
+			);
 		}
 		$s_subforums_list = (string) implode($user->lang['COMMA_SEPARATOR'], $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
@@ -572,22 +577,41 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		* @event core.display_forums_modify_template_vars
 		* @var	array	forum_row		Template data of the forum
 		* @var	array	row				The data of the forum
+		* @var	array	subforums_row	Template data of subforums
 		* @since 3.1.0-a1
+		* @change 3.1.0-b5 Added var subforums_row
 		*/
-		$vars = array('forum_row', 'row');
+		$vars = array('forum_row', 'row', 'subforums_row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
 
 		$template->assign_block_vars('forumrow', $forum_row);
 
 		// Assign subforums loop for style authors
-		foreach ($subforums_list as $subforum)
-		{
-			$template->assign_block_vars('forumrow.subforum', array(
-				'U_SUBFORUM'	=> $subforum['link'],
-				'SUBFORUM_NAME'	=> $subforum['name'],
-				'S_UNREAD'		=> $subforum['unread'])
-			);
-		}
+		$template->assign_block_vars_array('forumrow.subforum', $subforums_row);
+
+		/**
+		* Modify and/or assign additional template data for the forum
+		* after forumrow loop has been assigned. This can be used
+		* to create additional forumrow subloops in extensions.
+		*
+		* This event is triggered once per forum
+		*
+		* @event core.display_forums_add_template_data
+		* @var	array	forum_row		Template data of the forum
+		* @var	array	row				The data of the forum
+		* @var	array	subforums_list	The data of subforums
+		* @var	array	subforums_row	Template data of subforums
+		* @var	bool	catless			The flag indicating whether a forum has a parent category
+		* @since 3.1.0-b5
+		*/
+		$vars = array(
+			'forum_row',
+			'row',
+			'subforums_list',
+			'subforums_row',
+			'catless',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.display_forums_add_template_data', compact($vars)));
 
 		$last_catless = $catless;
 	}
@@ -1157,7 +1181,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 	$is_watching = 0;
 
-	// Is user watching this thread?
+	// Is user watching this topic?
 	if ($user_id != ANONYMOUS)
 	{
 		$can_watch = true;
@@ -1347,7 +1371,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 */
 function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
-	global $ranks, $config, $phpbb_root_path;
+	global $ranks, $config, $phpbb_root_path, $phpbb_path_helper;
 
 	if (empty($ranks))
 	{
@@ -1358,8 +1382,8 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 	if (!empty($user_rank))
 	{
 		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
-		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
-		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
+		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $phpbb_path_helper->update_web_root_path($phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image']) : '';
+		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $rank_img_src . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
 	}
 	else if ($user_posts !== false)
 	{
@@ -1370,8 +1394,8 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 				if ($user_posts >= $rank['rank_min'])
 				{
 					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
-					$rank_img_src = (!empty($rank['rank_image'])) ? $phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image'] : '';
+					$rank_img_src = (!empty($rank['rank_image'])) ? $phpbb_path_helper->update_web_root_path($phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image']) : '';
+					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank_img_src . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
 					break;
 				}
 			}

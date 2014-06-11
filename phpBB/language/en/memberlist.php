@@ -49,6 +49,8 @@ $lang = array_merge($lang, array(
 	'BEFORE'				=> 'Before',
 
 	'CC_EMAIL'				=> 'Send a copy of this email to yourself.',
+	'CONTACT_USER'			=> 'Contact',
+	'CONTACT_ADMIN'			=> 'Contact a Board Administrator',
 
 	'DEST_LANG'				=> 'Language',
 	'DEST_LANG_EXPLAIN'		=> 'Select an appropriate language (if available) for the recipient of this message.',
@@ -61,6 +63,8 @@ $lang = array_merge($lang, array(
 	'EMPTY_MESSAGE_EMAIL'	=> 'You must enter a message to be emailed.',
 	'EMPTY_MESSAGE_IM'		=> 'You must enter a message to be send.',
 	'EMPTY_NAME_EMAIL'		=> 'You must enter the real name of the recipient.',
+	'EMPTY_SENDER_EMAIL'	=> 'You must provide a valid email address.',
+	'EMPTY_SENDER_NAME'		=> 'You must provide a name.',
 	'EMPTY_SUBJECT_EMAIL'	=> 'You must specify a subject for the email.',
 	'EQUAL_TO'				=> 'Equal to',
 
@@ -98,6 +102,8 @@ $lang = array_merge($lang, array(
 
 	'MORE_THAN'				=> 'More than',
 
+	'NO_CONTACT_FORM'		=> 'The board administrator contact form has been disabled.',
+	'NO_CONTACT_PAGE'		=> 'The board administrator contact page has been disabled.',
 	'NO_EMAIL'				=> 'You are not permitted to send email to this user.',
 	'NO_VIEW_USERS'			=> 'You are not authorised to view the member list or profiles.',
 
@@ -113,6 +119,8 @@ $lang = array_merge($lang, array(
 
 	'SELECT_MARKED'			=> 'Select marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
+	'SENDER_EMAIL_ADDRESS'	=> 'Your email address',
+	'SENDER_NAME'			=> 'Your name',
 	'SEND_ICQ_MESSAGE'		=> 'Send ICQ message',
 	'SEND_IM'				=> 'Instant messaging',
 	'SEND_JABBER_MESSAGE'	=> 'Send Jabber message',

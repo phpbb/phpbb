@@ -150,7 +150,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 
 	function get_template()
 	{
-		global $config, $user, $template;
+		global $config, $user, $template, $phpbb_root_path, $phpEx;
 
 		if ($this->is_solved())
 		{
@@ -158,7 +158,8 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		}
 		else
 		{
-			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
 
 			$template->assign_vars(array(
 				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,

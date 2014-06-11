@@ -714,7 +714,7 @@ class migrator
 	/**
 	* Load migration data files from a directory
 	*
-	* @param \phpbb\extension\finder $finder
+	* @param \phpbb\finder $finder
 	* @param string $path Path to migration data files
 	* @param bool $check_fulfillable If TRUE (default), we will check
 	* 	if all of the migrations are fulfillable after loading them.
@@ -723,7 +723,7 @@ class migrator
 	* 	with the last call to prevent throwing errors unnecessarily).
 	* @return array Array of migration names
 	*/
-	public function load_migrations(\phpbb\extension\finder $finder, $path, $check_fulfillable = true)
+	public function load_migrations(\phpbb\finder $finder, $path, $check_fulfillable = true)
 	{
 		if (!is_dir($path))
 		{

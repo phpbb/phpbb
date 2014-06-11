@@ -211,7 +211,7 @@ class ucp_register
 				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'email'				=> array(
 					array('string', false, 6, 60),
-					array('email')),
+					array('user_email')),
 				'tz'				=> array('timezone'),
 				'lang'				=> array('language_iso_name'),
 			));

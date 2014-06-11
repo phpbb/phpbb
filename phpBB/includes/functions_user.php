@@ -1746,24 +1746,20 @@ function validate_password($password)
 }
 
 /**
-* Check to see if email address is banned or already present in the DB
+* Check to see if email address is a valid address and contains a MX record
 *
 * @param string $email The email to check
-* @param string $allowed_email An allowed email, default being $user->data['user_email']
 *
 * @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
-function validate_email($email, $allowed_email = false)
+function phpbb_validate_email($email, $config = null)
 {
-	global $config, $db, $user;
+	if ($config === null)
+	{
+		global $config;
+	}
 
 	$email = strtolower($email);
-	$allowed_email = ($allowed_email === false) ? strtolower($user->data['user_email']) : strtolower($allowed_email);
-
-	if ($allowed_email == $email)
-	{
-		return false;
-	}
 
 	if (!preg_match('/^' . get_preg_expression('email') . '$/i', $email))
 	{
@@ -1780,6 +1776,35 @@ function validate_email($email, $allowed_email = false)
 		{
 			return 'DOMAIN_NO_MX_RECORD';
 		}
+	}
+
+	return false;
+}
+
+/**
+* Check to see if email address is banned or already present in the DB
+*
+* @param string $email The email to check
+* @param string $allowed_email An allowed email, default being $user->data['user_email']
+*
+* @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+*/
+function validate_user_email($email, $allowed_email = false)
+{
+	global $config, $db, $user;
+
+	$email = strtolower($email);
+	$allowed_email = ($allowed_email === false) ? strtolower($user->data['user_email']) : strtolower($allowed_email);
+
+	if ($allowed_email == $email)
+	{
+		return false;
+	}
+
+	$validate_email = phpbb_validate_email($email, $config);
+	if ($validate_email)
+	{
+		return $validate_email;
 	}
 
 	if (($ban_reason = $user->check_ban(false, false, $email, true)) !== false)

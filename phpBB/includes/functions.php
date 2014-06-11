@@ -2818,8 +2818,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					$user->lang[$result['error_msg']],
 					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
-					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
-					($config['board_contact']) ? '</a>' : ''
+					'<a href="' . phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx) . '">',
+					'</a>'
 				);
 			break;
 
@@ -2830,7 +2830,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+					$err = sprintf($user->lang[$result['error_msg']], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') . '">', '</a>');
 				}
 
 			break;
@@ -4922,6 +4922,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_SEARCH_UNREAD'		=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unreadposts'),
 		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
 		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
+		'U_CONTACT_US'			=> ($config['contact_admin_form_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') : '',
 		'U_TEAM'				=> ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
@@ -5297,4 +5298,43 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	}
 
 	throw new \RuntimeException("You have specified an invalid dbms driver: $dbms");
+}
+
+/**
+* Get the board contact details (e.g. for emails)
+*
+* @param \phpbb\config\config	$config
+* @param string					$phpEx
+* @return string
+*/
+function phpbb_get_board_contact(\phpbb\config\config $config, $phpEx)
+{
+	if ($config['contact_admin_form_enable'])
+	{
+		return generate_board_url() . '/memberlist.' . $phpEx . '?mode=contactadmin';
+	}
+	else
+	{
+		return $config['board_contact'];
+	}
+}
+
+/**
+* Get a clickable board contact details link
+*
+* @param \phpbb\config\config	$config
+* @param string					$phpbb_root_path
+* @param string					$phpEx
+* @return string
+*/
+function phpbb_get_board_contact_link(\phpbb\config\config $config, $phpbb_root_path, $phpEx)
+{
+	if ($config['contact_admin_form_enable'])
+	{
+		return append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
+	}
+	else
+	{
+		return 'mailto:' . htmlspecialchars($config['board_contact']);
+	}
 }

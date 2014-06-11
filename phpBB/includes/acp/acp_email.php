@@ -201,7 +201,7 @@ class acp_email
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
-						'CONTACT_EMAIL' => $config['board_contact'],
+						'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
 						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 
