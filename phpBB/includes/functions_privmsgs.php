@@ -1013,7 +1013,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 
 	/**
-	* Get all info for PM(s) that are to be deleted before deletion
+	* Get all info for PM(s) before they are deleted
 	*
 	* @event core.delete_pm_before
 	* @var	int	user_id	 ID of the user requested the message delete
