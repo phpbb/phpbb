@@ -70,7 +70,6 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 				'username' 				=> 'foobar',
 				'user_password'			=> $password_hash,
 				'user_passchg' 			=> '0',
-				'user_pass_convert' 	=> '0',
 				'user_email' 			=> 'example@example.com',
 				'user_type' 			=> '0',
 				'user_login_attempts' 	=> '0',

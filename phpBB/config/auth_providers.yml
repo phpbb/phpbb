@@ -1,8 +1,9 @@
 services:
     auth.provider_collection:
-        class: phpbb\di\service_collection
+        class: phpbb\auth\provider_collection
         arguments:
             - @service_container
+            - @config
         tags:
             - { name: service_collection, tag: auth.provider }
     auth.provider.db:

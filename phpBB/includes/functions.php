@@ -2854,7 +2854,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$s_hidden_fields['credential'] = $credential;
 	}
 
-	$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
+	$provider_collection = $phpbb_container->get('auth.provider_collection');
+	$auth_provider = $provider_collection->get_provider();
 
 	$auth_provider_data = $auth_provider->get_login_data();
 	if ($auth_provider_data)

@@ -184,7 +184,6 @@ function user_add($user_row, $cp_data = false)
 		'username'			=> $user_row['username'],
 		'username_clean'	=> $username_clean,
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
-		'user_pass_convert'	=> 0,
 		'user_email'		=> strtolower($user_row['user_email']),
 		'user_email_hash'	=> phpbb_email_hash($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
