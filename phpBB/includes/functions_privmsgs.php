@@ -1013,16 +1013,16 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 
 	/**
-	* Get all info for PM(s) that are to be deleted
+	* Get all info for PM(s) that are to be deleted before deletion
 	*
-	* @event core.delete_pm
+	* @event core.delete_pm_before
 	* @var	int	user_id	 ID of the user requested the message delete
 	* @var	array	msg_ids	array of all messages to be deleted
 	* @var	int	folder_id	ID of the user folder where the messages are stored
 	* @since 3.1.0-b5
 	*/
 	$vars = array('user_id', 'msg_ids', 'folder_id');
-	extract($phpbb_dispatcher->trigger_event('core.delete_pm', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.delete_pm_before', compact($vars)));
 
 	// Get PM Information for later deleting
 	$sql = 'SELECT msg_id, pm_unread, pm_new
