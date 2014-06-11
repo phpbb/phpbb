@@ -60,7 +60,7 @@ class bcrypt extends base
 	/**
 	* @inheritdoc
 	*/
-	public function check($password, $hash)
+	public function check($password, $hash, $user_row = array())
 	{
 		$salt = substr($hash, 0, 29);
 		if (strlen($salt) != 29)

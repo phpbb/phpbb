@@ -148,7 +148,6 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'username_clean' => 'foobar',
 			'user_password' => $this->password_hash,
 			'user_passchg' => '0',
-			'user_pass_convert' => '0',
 			'user_email' => 'example@example.com',
 			'user_email_hash' => '0',
 			'user_birthday' => '',

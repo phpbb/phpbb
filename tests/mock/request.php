@@ -15,6 +15,8 @@ class phpbb_mock_request implements \phpbb\request\request_interface
 {
 	protected $data;
 
+	protected $super_globals_disabled = false;
+
 	public function __construct($get = array(), $post = array(), $cookie = array(), $server = array(), $request = false, $files = array())
 	{
 		$this->data[\phpbb\request\request_interface::GET] = $get;
@@ -23,6 +25,8 @@ class phpbb_mock_request implements \phpbb\request\request_interface
 		$this->data[\phpbb\request\request_interface::REQUEST] = ($request === false) ? $post + $get : $request;
 		$this->data[\phpbb\request\request_interface::SERVER] = $server;
 		$this->data[\phpbb\request\request_interface::FILES] = $files;
+
+		$this->disable_super_globals();
 	}
 
 	public function overwrite($var_name, $value, $super_global = \phpbb\request\request_interface::REQUEST)
@@ -81,6 +85,21 @@ class phpbb_mock_request implements \phpbb\request\request_interface
 	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST)
 	{
 		return $this->data[$super_global];
+	}
+
+	public function super_globals_disabled()
+	{
+		return $this->super_globals_disabled;
+	}
+
+	public function disable_super_globals()
+	{
+		$this->super_globals_disabled = true;
+	}
+
+	public function enable_super_globals()
+	{
+		$this->super_globals_disabled = false;
 	}
 
 	/* custom methods */

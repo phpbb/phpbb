@@ -24,13 +24,25 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		// Prepare dependencies for manager and driver
 		$config =  new \phpbb\config\config(array());
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
+		$request = new phpbb_mock_request(array(), array(), array(), array(), array('password' => 'töst'));
+		$phpbb_root_path = dirname(__FILE__) . '/../../phpBB/';
+		$php_ext = 'php';
 
 		$this->passwords_drivers = array(
-			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper),
+			'passwords.driver.bcrypt_2y'		=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper),
 			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper),
-			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
+			'passwords.driver.salted_md5'		=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
+			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),
+			'passwords.driver.sha1_smf'		=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
+			'passwords.driver.sha1'			=> new \phpbb\passwords\driver\sha1($config, $this->driver_helper),
+			'passwords.driver.sha1_wcf1'		=> new \phpbb\passwords\driver\sha1_wcf1($config, $this->driver_helper),
+			'passwords.driver.md5_mybb'		=> new \phpbb\passwords\driver\md5_mybb($config, $this->driver_helper),
+			'passwords.driver.md5_vb'		=> new \phpbb\passwords\driver\md5_vb($config, $this->driver_helper),
+			'passwords.driver.sha_xf1'	=> new \phpbb\passwords\driver\sha_xf1($config, $this->driver_helper),
 		);
+		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $phpbb_root_path, $php_ext);
+		$this->passwords_drivers['passwords.driver.bcrypt_wcf2'] = new \phpbb\passwords\driver\bcrypt_wcf2($this->passwords_drivers['passwords.driver.bcrypt'], $this->driver_helper);
 
 		$this->helper = new \phpbb\passwords\helper;
 		// Set up passwords manager
@@ -132,21 +144,39 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	public function check_hash_exceptions_data()
 	{
 		return array(
-			array('foobar', '3858f62230ac3c915f300c664312c63f', true),
-			array('foobar', '$S$b57a939fa4f2c04413a4eea9734a0903647b7adb93181295', false),
-			array('foobar', '$2a\S$kkkkaakdkdiej39023903204j2k3490234jk234j02349', false),
-			array('foobar', '$H$kklk938d023k//k3023', false),
-			array('foobar', '$H$3PtYMgXb39lrIWkgoxYLWtRkZtY3AY/', false),
-			array('foobar', '$2a$kwiweorurlaeirw', false),
+			array('3858f62230ac3c915f300c664312c63f', true),
+			array('$CP$3858f62230ac3c915f300c664312c63f', true), // md5_phpbb2
+			array('$CP$3858f62230ac3c915f300c', false),
+			array('$S$b57a939fa4f2c04413a4eea9734a0903647b7adb93181295', false),
+			array('$2a\S$kkkkaakdkdiej39023903204j2k3490234jk234j02349', false),
+			array('$H$kklk938d023k//k3023', false),
+			array('$H$3PtYMgXb39lrIWkgoxYLWtRkZtY3AY/', false),
+			array('$2a$kwiweorurlaeirw', false),
+			array('6f9e2a1899e1f15708fd2e554103480eb53e8b57', false),
+			array('6f9e2a1899e1f15708fd2e554103480eb53e8b57', false, 'foobar', array('login_name' => 'test')),
+			array('$CP$6f9e2a1899e1f15708fd2e554103480eb53e8b57', true, 'foobar', array('login_name' => 'test')), // sha1_smf
+			array('6f9e2a1899', false, 'foobar', array('login_name' => 'test')),
+			array('ae2fc75e20ee25d4520766788fbc96ae', false, 'fööbar'),
+			array('$CP$ae2fc75e20ee25d4520766788fbc96ae', false, 'fööbar'),
+			array('$CP$ae2fc75e20ee25d4520766788fbc96ae', true, utf8_decode('fööbar')), // md5_phpbb2
+			array('b86ee7e24008bfd2890dcfab1ed31333', false, 'foobar', array('user_passwd_salt' => 'yeOtfFO6')),
+			array('$CP$b86ee7e24008bfd2890dcfab1ed31333', true, 'foobar', array('user_passwd_salt' => 'yeOtfFO6')), // md5_mybb
+			array('$CP$b452c54c44c588fc095d2d000935c470', true, 'foobar', array('user_passwd_salt' => '9^F')), // md5_vb
+			array('$CP$f23a8241bd115d270c703213e3ef7f52', true, 'foobar', array('user_passwd_salt' => 'iaU*U%`CBl;/e~>D%do2m@Xf/,KZB0')), // md5_vb
+			array('$CP$fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff', true, 'foobar', array('user_passwd_salt' => '1a783e478d63f6422783a868db667aed3a857840')), // sha_wcf1
+			array('$2a$08$p8h14U0jsEiVb1Luy.s8oOTXSQ0hVWUXpcNGBoCezeYNXrQyCKHfi', false),
+			array('$CP$$2a$08$p8h14U0jsEiVb1Luy.s8oOTXSQ0hVWUXpcNGBoCezeYNXrQyCKHfi', true), // bcrypt_wcf2
+			array('$CP$7f65d2fa8a826d232f8134772252f8b1aaef8594b1edcabd9ab65e5b0f236ff0', true, 'foobar', array('user_passwd_salt' => '15b6c02cedbd727f563dcca607a89b085287b448966f19c0cc78cae263b1e38c')), // sha_xf1
+			array('$CP$69962ae2079420573a3948cc4dedbabd35680051', true, 'foobar', array('user_passwd_salt' => '15b6c02cedbd727f563dcca607a89b085287b448966f19c0cc78cae263b1e38c')), // sha_xf1
 		);
 	}
 
 	/**
 	* @dataProvider check_hash_exceptions_data
 	*/
-	public function test_check_hash_exceptions($password, $hash, $expected)
+	public function test_check_hash_exceptions($hash, $expected, $password = 'foobar', $user_row = array())
 	{
-		$this->assertEquals($expected, $this->manager->check($password, $hash));
+		$this->assertEquals($expected, $this->manager->check($password, $hash, $user_row));
 	}
 
 	public function data_hash_password_length()
