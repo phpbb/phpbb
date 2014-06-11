@@ -1906,6 +1906,17 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		$phpbb_notifications->add_notifications('pm', $pm_data);
 	}
 
+	/**
+	* Get PM message ID after submission to DB
+	*
+	* @event core.submit_pm_after
+	* @var	int	msg_id	message ID
+	* @since 3.1.0-b5
+	*/
+	$msg_id = $data['msg_id'];
+	$vars = array('msg_id');
+	extract($phpbb_dispatcher->trigger_event('core.submit_pm_after', compact($vars)));
+	
 	return $data['msg_id'];
 }
 
