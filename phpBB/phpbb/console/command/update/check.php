@@ -151,12 +151,10 @@ class check extends \phpbb\console\command\command
 		}
 		else
 		{
-			$output->writeln('');
-			$output->writeln('<question>' . $this->user->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
-
 			if ($input->getOption('verbose'))
 			{
-				$output->writeln('<info>' . $this->user->lang('UPDATE_NOT_NEEDED') . '</info>');
+				$output->writeln('');
+				$output->writeln('<question>' . $this->user->lang('UP_TO_DATE', $metadata['name']) . '</question>');
 			}
 
 			return 0;
