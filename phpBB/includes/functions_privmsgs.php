@@ -1911,10 +1911,14 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	*
 	* @event core.submit_pm_after
 	* @var	int	msg_id	message ID
+	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
+	* @var	string	subject	Subject of the private message
+	* @var	array	data	The whole row data of the PM.
+	* @var	array	pm_data	The data sent to notification class
 	* @since 3.1.0-b5
 	*/
 	$msg_id = $data['msg_id'];
-	$vars = array('msg_id');
+	$vars = array('msg_id', 'mode', 'subject', 'data', 'pm_data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_pm_after', compact($vars)));
 	
 	return $data['msg_id'];
