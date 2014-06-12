@@ -5050,8 +5050,7 @@ function phpbb_generate_debug_output($db, $config, $auth, $user)
 	// Output page creation time
 	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
 	{
-		$mtime = explode(' ', microtime());
-		$totaltime = $mtime[0] + $mtime[1] - $GLOBALS['starttime'];
+		$totaltime = microtime(true) - $GLOBALS['starttime'];
 
 		$debug_info[] = sprintf('Time : %.3fs', $totaltime);
 		$debug_info[] = $db->sql_num_queries() . ' Queries';
