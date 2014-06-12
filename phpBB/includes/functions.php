@@ -5031,10 +5031,14 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 /**
 * Check and display the SQL report if requested.
+*
+* @param phpbb\request\request					$request	Request object
+* @param \phpbb\auth\auth						$auth		Auth object
+* @param \phpbb\db\driver\driver_interface		$db			Database connection
 */
-function phpbb_check_and_display_sql_report($request, $auth, $db)
+function phpbb_check_and_display_sql_report(phpbb\request\request $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
-	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
+	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG'))
 	{
 		$db->sql_report('display');
 	}
@@ -5042,8 +5046,14 @@ function phpbb_check_and_display_sql_report($request, $auth, $db)
 
 /**
 * Generate the debug output string
+*
+* @param \phpbb\db\driver\driver_interface	$db			Database connection
+* @param \phpbb\config\config				$config		Config object
+* @param \phpbb\auth\auth					$auth		Auth object
+* @param \phpbb\user						$user		User object
+* @return string
 */
-function phpbb_generate_debug_output($db, $config, $auth, $user)
+function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user)
 {
 	$debug_info = array();
 
