@@ -146,10 +146,10 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
-	phpbb_check_and_display_sql_report();
+	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output(),
+		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($db, $config, $auth, $user),
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),

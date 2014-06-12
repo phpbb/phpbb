@@ -5032,10 +5032,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 /**
 * Check and display the SQL report if requested.
 */
-function phpbb_check_and_display_sql_report()
+function phpbb_check_and_display_sql_report($request, $auth, $db)
 {
-	global $request, $auth, $db;
-
 	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
 	{
 		$db->sql_report('display');
@@ -5043,19 +5041,17 @@ function phpbb_check_and_display_sql_report()
 }
 
 /**
-* Set the DEBUG_OUTPUT template var
+* Generate the debug output string
 */
-function phpbb_generate_debug_output()
+function phpbb_generate_debug_output($db, $config, $auth, $user)
 {
-	global $starttime, $db, $config, $auth, $user;
-
 	$debug_info = array();
 
 	// Output page creation time
 	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
 	{
 		$mtime = explode(' ', microtime());
-		$totaltime = $mtime[0] + $mtime[1] - $starttime;
+		$totaltime = $mtime[0] + $mtime[1] - $GLOBALS['starttime'];
 
 		$debug_info[] = sprintf('Time : %.3fs', $totaltime);
 		$debug_info[] = $db->sql_num_queries() . ' Queries';
@@ -5122,10 +5118,10 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
-	phpbb_check_and_display_sql_report();
+	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output(),
+		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user),
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
