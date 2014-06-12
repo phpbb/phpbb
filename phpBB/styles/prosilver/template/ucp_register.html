@@ -26,6 +26,7 @@
 	<!-- IF L_REG_COND -->
 		<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
 	<!-- ENDIF -->
+	<!-- EVENT ucp_register_before -->
 	<dl>
 		<dt><label for="username">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
 		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" title="{L_USERNAME}" /></dd>
@@ -43,8 +44,10 @@
 		<dd><input type="password"  tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" /></dd>
 	</dl>
 
+	<!-- EVENT ucp_register_password_after -->
 	<hr />
 
+	<!-- EVENT ucp_register_language_before -->
 	<dl>
 		<dt><label for="lang">{L_LANGUAGE}{L_COLON}</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
@@ -55,6 +58,7 @@
 	<!-- IF .profile_fields -->
 		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
 
+	<!-- EVENT ucp_register_profile_fields_before -->
 	<!-- BEGIN profile_fields -->
 		<dl>
 			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
@@ -65,6 +69,7 @@
 	<!-- END profile_fields -->
 	<!-- ENDIF -->
 
+	<!-- EVENT ucp_register_after -->
 	</fieldset>
 	</div>
 </div>
