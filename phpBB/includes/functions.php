@@ -5032,11 +5032,11 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 /**
 * Check and display the SQL report if requested.
 *
-* @param phpbb\request\request					$request	Request object
+* @param \phpbb\request\request_interface		$request	Request object
 * @param \phpbb\auth\auth						$auth		Auth object
 * @param \phpbb\db\driver\driver_interface		$db			Database connection
 */
-function phpbb_check_and_display_sql_report(phpbb\request\request $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
+function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
 {
 	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG'))
 	{
