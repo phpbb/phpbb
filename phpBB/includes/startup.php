@@ -186,5 +186,4 @@ else
 	require($phpbb_root_path . 'vendor/autoload.php');
 }
 
-$starttime = explode(' ', microtime());
-$starttime = $starttime[1] + $starttime[0];
+$starttime = microtime(true);
