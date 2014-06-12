@@ -5030,16 +5030,24 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 }
 
 /**
-* Set the DEBUG_OUTPUT template var
+* Check and display the SQL report if requested.
 */
-function display_debug_output()
+function phpbb_check_and_display_sql_report()
 {
-	global $starttime, $template, $db, $config, $auth, $user, $request;
+	global $request, $auth, $db;
 
 	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
 	{
 		$db->sql_report('display');
 	}
+}
+
+/**
+* Set the DEBUG_OUTPUT template var
+*/
+function phpbb_generate_debug_output()
+{
+	global $starttime, $db, $config, $auth, $user;
 
 	$debug_info = array();
 
@@ -5052,16 +5060,14 @@ function display_debug_output()
 		$debug_info[] = sprintf('Time : %.3fs', $totaltime);
 		$debug_info[] = $db->sql_num_queries() . ' Queries';
 
-		if ($auth->acl_get('a_'))
+		if (function_exists('memory_get_peak_usage'))
 		{
-			if (function_exists('memory_get_peak_usage'))
+			$memory_usage = memory_get_peak_usage();
+			if ($memory_usage)
 			{
-				if ($memory_usage = memory_get_peak_usage())
-				{
-					$memory_usage = get_formatted_filesize($memory_usage);
+				$memory_usage = get_formatted_filesize($memory_usage);
 
-					$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
-				}
+				$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
 			}
 		}
 	}
@@ -5077,13 +5083,11 @@ function display_debug_output()
 
 		if ($auth->acl_get('a_'))
 		{
-			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">Explain</a>';
+			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">SQL Explain</a>';
 		}
 	}
 
-	$template->assign_vars(array(
-			'DEBUG_OUTPUT'			=> implode(' | ', $debug_info),
-	));
+	return implode(' | ', $debug_info);
 }
 
 /**
@@ -5118,9 +5122,10 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
-	display_debug_output();
+	phpbb_check_and_display_sql_report();
 
 	$template->assign_vars(array(
+		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output(),
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 

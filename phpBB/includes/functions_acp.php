@@ -146,9 +146,10 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
-	display_debug_output();
+	phpbb_check_and_display_sql_report();
 
 	$template->assign_vars(array(
+		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output(),
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
