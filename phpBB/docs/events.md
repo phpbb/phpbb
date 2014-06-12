@@ -813,7 +813,7 @@ ucp_register_after
 * Since: 3.1.0-b5
 * Purpose: Add options in registration page fieldset - after last field.
 
-ucp_register_password_after
+ucp_register_passoword_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_register.html
