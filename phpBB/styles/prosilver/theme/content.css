@@ -226,33 +226,6 @@ dd.option {
 	font-size: 1.1em;
 }
 
-/* Container for post/reply buttons and pagination */
-.topic-actions {
-	margin-bottom: 3px;
-	font-size: 1.1em;
-	height: 28px;
-	min-height: 28px;
-}
-div[class].topic-actions {
-	height: auto;
-}
-
-.topic-actions:after {
-	clear: both;
-	content: '';
-	display: block;
-}
-
-.action-bar {
-	margin: 4px 0;
-}
-
-.action-bar:after {
-	clear: both;
-	content: '';
-	display: block;
-}
-
 /* Post body styles
 ----------------------------------------*/
 .postbody {

@@ -802,6 +802,35 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin-left: 0 !important;
 }
 
+/* Action-bars (container for post/reply buttons, pagination, etc.)
+---------------------------------------- */
+.topic-actions {
+	margin-bottom: 3px;
+	font-size: 1.1em;
+	height: 28px;
+	min-height: 28px;
+}
+div[class].topic-actions {
+	height: auto;
+}
+
+.topic-actions:after {
+	clear: both;
+	content: '';
+	display: block;
+}
+
+.action-bar {
+	font-size: 11px;
+	margin: 4px 0;
+}
+
+.action-bar:after {
+	clear: both;
+	content: '';
+	display: block;
+}
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
@@ -875,16 +904,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
 .pagination li.next a:hover { background-position: -50px -18px; }
 .pagination li.previous a:hover { background-position: -30px -18px; }
-
-/* Memberlist search */
-li.pagination {
-	margin-top: 0;
-}
-
-li.pagination > ul {
-	margin-top: -2px;
-	vertical-align: middle;
-}
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
@@ -1082,6 +1101,16 @@ form > p.post-notice strong {
 
 .icon-notification {
 	position: relative;
+}
+
+.member-search {
+	float: left;
+	margin: 0;
+	padding: 6px 10px;
+}
+
+.member-search strong {
+	font-size: 0.95em;
 }
 
 .dropdown-extended {

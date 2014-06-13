@@ -258,6 +258,10 @@
 	width: 99%;	/* fix for IE6 */
 }
 
+.rtl .member-search {
+	float: right;
+}
+
 /**
 * links.css
 */
