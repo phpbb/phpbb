@@ -94,6 +94,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		if (self::$schema_file !== '')
 		{
 			copy(self::$phpbb_schema_copy, self::$install_schema_file);
+			unlink(self::$schema_file);
 		}
 
 		parent::tearDownAfterClass();
