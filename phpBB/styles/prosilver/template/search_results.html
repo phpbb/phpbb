@@ -12,17 +12,18 @@
 <!-- ENDIF -->
 
 <!-- IF .pagination or SEARCH_MATCHES or PAGE_NUMBER -->
-	<form method="post" action="{S_SEARCH_ACTION}">
-
 	<div class="topic-actions">
 
 	<!-- IF SEARCH_MATCHES -->
-		<div class="search-box">
-			<!-- IF SEARCH_IN_RESULTS -->
-				<label for="add_keywords">{L_SEARCH_IN_RESULTS}{L_COLON} <input type="search" name="add_keywords" id="add_keywords" value="" class="inputbox narrow" /></label>
-				<input class="button2" type="submit" name="submit" value="{L_SEARCH}" />
-			<!-- ENDIF -->
-		</div>
+	<div class="search-box">
+		<form method="post" action="{S_SEARCH_ACTION}">
+		<fieldset>
+			<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" placeholder="{L_SEARCH_IN_RESULTS}" />
+			<input class="button" type="submit" value="{L_SEARCH}" />
+			<a href="{U_SEARCH}" class="button icon-button gear-icon" title="{L_SEARCH_ADV}">{L_SEARCH_ADV}</a>
+		</fieldset>
+		</form>
+	</div>
 	<!-- ENDIF -->
 
 		<div class="rightside pagination">
@@ -35,8 +36,6 @@
 			<!-- ENDIF -->
 		</div>
 	</div>
-
-	</form>
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_TOPICS -->

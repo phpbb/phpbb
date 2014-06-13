@@ -303,6 +303,10 @@ input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-s
 	display: none;
 }
 
+input[type="search"]::-webkit-search-cancel-button {
+	cursor: pointer;
+}
+
 /* Form button styles
 ---------------------------------------- */
 input.button1, input.button2 {
@@ -366,12 +370,46 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 
 /* Topic and forum Search */
 .search-box {
-	margin-top: 3px;
-	margin-left: 5px;
 	float: left;
 }
 
-.search-box input {
+.search-box .inputbox {
+	background-image: none;
+	border: 1px solid transparent;
+	border-right-width: 0;
+	border-radius: 4px 0 0 4px;
+	float: left;
+	height: 24px;
+	padding: 3px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.search-box input.button {
+	border-radius: 0;
+	float: left;
+	font-weight: normal;
+	height: 24px;
+	margin: 0;
+	overflow: hidden;
+	padding: 3px;
+	position: relative;
+	text-indent: -5000px;
+	width: 30px;
+}
+
+.search-box a.button {
+	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
+	float: left;
+	font-size: 0;
+	margin: 0;
+	padding: 2px;
+}
+
+.search-box a.button:before {
+	float: left;
 }
 
 input.search {

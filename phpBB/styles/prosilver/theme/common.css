@@ -206,6 +206,16 @@ a#logo:hover {
 	text-decoration: none;
 }
 
+/* Site description and logo */
+#site-description {
+	float: left;
+	width: 65%;
+}
+
+#site-description h1 {
+	margin-right: 0;
+}
+
 /* Search box
 --------------------------------------------- */
 #search-box {
@@ -214,41 +224,22 @@ a#logo:hover {
 	margin-right: 5px;
 	display: block;
 	float: right;
-	text-align: right;
-	white-space: nowrap; /* For Opera */
 }
 
-#search-box #keywords {
-	width: 95px;
+#search-box fieldset {
+	position: relative;
+	white-space: nowrap;
+	z-index: 1;
 }
 
-#search-box input {
-	border: 1px solid transparent;
-}
-
-/* .button1 style defined later, just a few tweaks for the search button version */
-#search-box input.button1 {
-	padding: 1px 5px;
-}
-
-#search-box li {
-	text-align: right;
-	margin-top: 4px;
-}
-
-#search-box img {
-	vertical-align: middle;
-	margin-right: 3px;
-}
-
-/* Site description and logo */
-#site-description {
-	float: left;
-	width: 70%;
-}
-
-#site-description h1 {
-	margin-right: 0;
+#search-box fieldset:before {
+	content: '';
+	display: block;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: -1;
+	border-radius: 4px;
 }
 
 /* Round cornered boxes and backgrounds

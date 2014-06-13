@@ -71,3 +71,8 @@ dd.option {
 .header-avatar img {
 	height: 25px;
 }
+
+/* Fixes search-box background in IE8 (no gradient, but at least we have an icon) */
+.search-box input.button, .search-box input.button:hover {
+	background: url("./images/icon_textbox_search.gif") no-repeat 50% 50%;
+}

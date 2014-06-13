@@ -36,7 +36,7 @@
 }
 
 .dropdown-select:after {
-	background-position: -103px 10px;
+	background-position: -123px 10px;
 	border-left: 1px solid;
 	content: '';
 	position: absolute;
@@ -47,7 +47,7 @@
 }
 
 .dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
-	background-position: -103px -10px;
+	background-position: -123px -10px;
 }
 
 .buttons, .buttons .button {
@@ -82,6 +82,14 @@
 
 .dropdown-visible .tools-icon:before,
 .nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
+
+.gear-icon:before {
+	background-position: -100px 0;
+	height: 16px;
+	margin: 2px 4px 0 3px;
+	width: 16px;
+}
+.gear-icon:hover:before										{ background-position: -100px -20px; }
 
 /* Icon images
 ---------------------------------------- */
@@ -181,20 +189,20 @@ ul.linklist.bulletin li.small-icon:before {
 	margin-left: 0;
 }
 
-.quote-icon:before							{ background-position: -122px 0; }
-.quote-icon:hover:before					{ background-position: -122px -21px; }
-.edit-icon:before							{ background-position: -137px 0; }
-.edit-icon:hover:before						{ background-position: -137px -21px; }
-.warn-icon:before							{ background-position: -208px 0; }
-.warn-icon:hover:before						{ background-position: -208px -21px; }
-.delete-icon:before							{ background-position: -152px 0; }
-.delete-icon:hover:before					{ background-position: -152px -21px; }
-.report-icon:before							{ background-position: -165px 0; }
-.report-icon:hover:before					{ background-position: -165px -21px; }
-.info-icon:before							{ background-position: -175px 0; }
-.info-icon:hover:before						{ background-position: -175px -21px; }
-.button.responsive-menu-link:before			{ background-position: -191px 0; }
-.button.responsive-menu-link:hover:before	{ background-position: -191px -21px; }
+.quote-icon:before							{ background-position: -142px 0; }
+.quote-icon:hover:before					{ background-position: -142px -21px; }
+.edit-icon:before							{ background-position: -157px 0; }
+.edit-icon:hover:before						{ background-position: -157px -21px; }
+.warn-icon:before							{ background-position: -228px 0; }
+.warn-icon:hover:before						{ background-position: -228px -21px; }
+.delete-icon:before							{ background-position: -172px 0; }
+.delete-icon:hover:before					{ background-position: -172px -21px; }
+.report-icon:before							{ background-position: -185px 0; }
+.report-icon:hover:before					{ background-position: -185px -21px; }
+.info-icon:before							{ background-position: -195px 0; }
+.info-icon:hover:before						{ background-position: -195px -21px; }
+.button.responsive-menu-link:before			{ background-position: -211px 0; }
+.button.responsive-menu-link:hover:before	{ background-position: -211px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {

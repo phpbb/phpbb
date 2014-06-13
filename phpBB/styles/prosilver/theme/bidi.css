@@ -29,18 +29,8 @@
 --------------------------------------------- */
 .rtl #search-box {
 	float: left;
-	text-align: left;
 	margin-right: 0;
 	margin-left: 5px;
-}
-
-.rtl #search-box li {
-	text-align: left;
-}
-
-.rtl #search-box img {
-	margin-right: 0;
-	margin-left: 3px;
 }
 
 .rtl #site-description {
@@ -847,6 +837,33 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-right: 5px;
 	margin-left: 0;
 	float: right;
+}
+
+.rtl .search-box form {
+	float: right;
+}
+
+.rtl .search-box .inputbox {
+	border-left-width: 0;
+	border-right-width: 1px;
+	border-radius: 0 4px 4px 0;
+	float: right;
+	padding: 3px;
+}
+
+.rtl .search-box input.button {
+	float: right;
+}
+
+.rtl .search-box a.button {
+	border-left-width: 1px;
+	border-right-width: 0;
+	border-radius: 4px 0 0 4px;
+	float: right;
+}
+
+.rtl .search-box a.button:before {
+	margin-left: 2px;
 }
 
 .rtl input.search {
