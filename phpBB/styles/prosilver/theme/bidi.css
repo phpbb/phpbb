@@ -641,10 +641,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-left: 0;
 }
 
-.rtl #cp-main .pagination {
-	float: left;
-}
-
 .rtl #cp-main .buttons {
 	margin-right: 0;
 	margin-left: 0;

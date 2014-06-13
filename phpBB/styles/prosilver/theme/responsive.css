@@ -197,10 +197,6 @@ ul.topiclist li.row dt a.subforum {
 
 /* Pagination
 ----------------------------------------*/
-.pagination {
-	margin: 5px 0;
-}
-
 .pagination > ul {
 	margin: 5px 0 0;
 }
@@ -509,21 +505,21 @@ fieldset.display-actions {
 		margin: 0;
 	}
 
-	.topic-actions > .pagination, fieldset.jumpbox, .action-bar > .pagination {
+	.action-bar > .pagination, fieldset.jumpbox {
 		text-align: center;
 	}
 
-	.topic-actions > .pagination, .action-bar > .pagination {
+	.action-bar > .pagination {
 		float: none;
 		clear: both;
 		padding-bottom: 1px;
 	}
 
-	.topic-actions > .pagination li.page-jump {
+	.action-bar > .pagination li.page-jump {
 		margin: 0 2px;
 	}
 
-	.topic-actions > div.search-box, p.jumpbox-return {
+	.action-bar > div.search-box, p.jumpbox-return {
 		display: none;
 	}
 
