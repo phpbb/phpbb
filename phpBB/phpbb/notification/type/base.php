@@ -308,24 +308,15 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		return array(
 			'NOTIFICATION_ID'	=> $this->notification_id,
-
-			'STYLING'			=> $this->get_styling(),
-
+			'STYLING'			=> $this->get_style_class(),
 			'AVATAR'			=> $this->get_avatar(),
-
 			'FORMATTED_TITLE'	=> $this->get_title(),
-
 			'REFERENCE'			=> $this->get_reference(),
-
 			'FORUM'				=> $this->get_forum(),
-
 			'REASON'			=> $this->get_reason(),
-
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
-
 			'UNREAD'			=> !$this->notification_read,
-
 			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
 		);
 	}
@@ -345,11 +336,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Get the styling of the notification (fall back)
+	* Get the CSS style class of the notification (fall back)
 	*
 	* @return string
 	*/
-	public function get_styling()
+	public function get_style_class()
 	{
 		return '';
 	}

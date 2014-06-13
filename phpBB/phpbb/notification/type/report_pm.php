@@ -31,11 +31,11 @@ class report_pm extends \phpbb\notification\type\pm
 	}
 
 	/**
-	* Get the styling of the notification
+	* Get the CSS style class of the notification
 	*
 	* @return string
 	*/
-	public function get_styling()
+	public function get_style_class()
 	{
 		return 'reported';
 	}

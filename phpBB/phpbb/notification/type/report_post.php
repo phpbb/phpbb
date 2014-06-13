@@ -30,11 +30,11 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	}
 
 	/**
-	* Get the styling of the notification
+	* Get the CSS style class of the notification
 	*
 	* @return string
 	*/
-	public function get_styling()
+	public function get_style_class()
 	{
 		return 'reported';
 	}
