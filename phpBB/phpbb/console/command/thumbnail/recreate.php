@@ -71,7 +71,7 @@ class recreate  extends \phpbb\console\command\command
 		$input_delete = new ArrayInput($parameters);
 		$return = $this->getApplication()->run($input_delete, $output);
 
-		if ($return == 0)
+		if ($return === 0)
 		{
 			$parameters['command'] = 'thumbnail:generate';
 
