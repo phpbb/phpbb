@@ -74,6 +74,8 @@ class generate extends \phpbb\console\command\command
 	/**
 	* Executes the command thumbnail:generate.
 	*
+	* Generate a thumbnail for all attachments which need one and don't have it yet.
+	*
 	* @param InputInterface $input The input stream used to get the argument and verboe option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	*

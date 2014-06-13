@@ -48,6 +48,8 @@ class recreate  extends \phpbb\console\command\command
 	/**
 	* Executes the command thumbnail:recreate.
 	*
+	* This command is a "macro" to execute thumbnail:delete and then thumbnail:generate.
+	*
 	* @param InputInterface $input The input stream used to get the argument and verboe option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	*
