@@ -78,22 +78,22 @@
 				-s
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-strict.xml
-				--ignore=phpBB/phpbb/db/migration/data/v30x/*
+				--ignore=${project.basedir}/phpBB/phpbb/db/migration/data/v30x/*
 				phpBB/phpbb"
 			dir="." returnProperty="retval-php-strict" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
 				-s
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-legacy.xml
-				--ignore=phpBB/cache/*
-				--ignore=phpBB/develop/*
-				--ignore=phpBB/includes/diff/*.php
-				--ignore=phpBB/includes/sphinxapi.php
-				--ignore=phpBB/includes/utf/data/*
-				--ignore=phpBB/install/data/*
-				--ignore=phpBB/install/database_update.php
-				--ignore=phpBB/phpbb/*
-				--ignore=phpBB/vendor/*
+				--ignore=${project.basedir}/phpBB/cache/*
+				--ignore=${project.basedir}/phpBB/develop/*
+				--ignore=${project.basedir}/phpBB/includes/diff/*.php
+				--ignore=${project.basedir}/phpBB/includes/sphinxapi.php
+				--ignore=${project.basedir}/phpBB/includes/utf/data/*
+				--ignore=${project.basedir}/phpBB/install/data/*
+				--ignore=${project.basedir}/phpBB/install/database_update.php
+				--ignore=${project.basedir}/phpBB/phpbb/*
+				--ignore=${project.basedir}/phpBB/vendor/*
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
 		<if>
