@@ -61,7 +61,9 @@ class delete  extends \phpbb\console\command\command
 	/**
 	* Executes the command thumbnail:delete.
 	*
-	* @param InputInterface $input The input stream used to get the argument and verboe option.
+	* Delete all the existing thumbnails (and update the database in consequences).
+	*
+	* @param InputInterface $input The input stream used to get the argument and verbose option.
 	* @param OutputInterface $output The output stream, used for printing verbose-mode and error information.
 	*
 	* @return int 0 if all is ok, 1 if a thumbnail couldn't be deleted.
