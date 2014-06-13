@@ -158,12 +158,8 @@ ul.cplist {
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
 #minitabs {
-	margin: -20px 7px 0 0;
-}
-
-.tabs-container #minitabs {
 	float: right;
-	margin-top: 15px;
+	margin: 15px 7px 0 0;
 	max-width: 50%;
 }
 
@@ -220,14 +216,6 @@ ul.cplist {
 #tabs .dropdown-up .dropdown, #minitabs .dropdown-up .dropdown {
 	bottom: 20px;
 	top: auto;
-}
-
-#minitabs .dropdown-up .dropdown { 
-	bottom: 18px;
-}
-
-#tabs .dropdown-right .dropdown, #minitabs .dropdown-right .dropdown {
-	margin-left: -41px;
 }
 
 #tabs .dropdown li {
