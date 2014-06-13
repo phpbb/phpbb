@@ -122,7 +122,7 @@ class generate extends \phpbb\console\command\command
 		}
 		$this->db->sql_freeresult($result);
 
-		if (sizeof($thumbnail_created))
+		if (!empty($thumbnail_created))
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET thumbnail = 1

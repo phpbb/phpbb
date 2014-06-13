@@ -100,7 +100,7 @@ class delete  extends \phpbb\console\command\command
 		}
 		$this->db->sql_freeresult($result);
 
-		if (sizeof($thumbnail_deleted))
+		if (!empty($thumbnail_deleted))
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET thumbnail = 0
