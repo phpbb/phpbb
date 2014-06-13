@@ -574,6 +574,34 @@ class manager
 		return $subscription_methods;
 	}
 
+
+	/**
+	* Get user's notification data
+	*
+	* @param int $user_id The user_id of the user to get the notifications for
+	*
+	* @return array User's notification
+	*/
+	protected function get_user_notifications($user_id)
+	{
+		$sql = 'SELECT method, notify, item_type
+				FROM ' . $this->user_notifications_table . '
+				WHERE user_id = ' . (int) $user_id . '
+					AND item_id = 0';
+
+		$result = $this->db->sql_query($sql);
+		$user_notifications = array();
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$user_notifications[$row['item_type']][] = $row;
+		}
+
+		$this->db->sql_freeresult($result);
+
+		return $user_notifications;
+	}
+
 	/**
 	* Get global subscriptions (item_id = 0)
 	*
@@ -587,28 +615,23 @@ class manager
 
 		$subscriptions = array();
 
-		foreach ($this->get_subscription_types() as $group_name => $types)
+		$user_notifications = $this->get_user_notifications($user_id);
+
+		foreach ($this->get_subscription_types() as $types)
 		{
 			foreach ($types as $id => $type)
 			{
-				$sql = 'SELECT method, notify
-					FROM ' . $this->user_notifications_table . '
-					WHERE user_id = ' . (int) $user_id . "
-						AND item_type = '" . $this->db->sql_escape($id) . "'
-						AND item_id = 0";
-				$result = $this->db->sql_query($sql);
 
-				$row = $this->db->sql_fetchrow($result);
-				if (!$row)
+				if (empty($user_notifications[$id]))
 				{
 					// No rows at all, default to ''
 					$subscriptions[$id] = array('');
 				}
 				else
 				{
-					do
+					foreach ($user_notifications[$id] as $user_notification)
 					{
-						if (!$row['notify'])
+						if (!$user_notification['notify'])
 						{
 							continue;
 						}
@@ -618,12 +641,9 @@ class manager
 							$subscriptions[$id] = array();
 						}
 
-						$subscriptions[$id][] = $row['method'];
+						$subscriptions[$id][] = $user_notification['method'];
 					}
-					while ($row = $this->db->sql_fetchrow($result));
 				}
-
-				$this->db->sql_freeresult($result);
 			}
 		}
 
