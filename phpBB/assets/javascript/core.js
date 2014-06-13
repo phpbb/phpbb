@@ -7,6 +7,7 @@ phpbb.alertTime = 100;
 
 // define a couple constants for keydown functions.
 var keymap = {
+	TAB: 9,
 	ENTER: 13,
 	ESC: 27
 };
