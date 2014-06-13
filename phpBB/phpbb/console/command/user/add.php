@@ -35,6 +35,9 @@ class add extends \phpbb\console\command\command
 	* Construct method
 	*
 	* @param \phpbb\user $user The user object used for language information
+	* @param \phpbb\db\driver\driver_interface $db The database in wich will be inserted the user
+	* @param \phpbb\config\config $config The config object used to get default language and timezone
+	* @param \phpbb\passwords\manager $password_manager The password manager used to store the user's password
 	*/
 	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $password_manager)
 	{
@@ -63,6 +66,17 @@ class add extends \phpbb\console\command\command
 		;
 	}
 
+	/**
+	* Executes the command user:add
+	*
+	* If not given in option, asks the username, password and email.
+	* Then a new user is added in the database, with language and timezone found in the $config passed to the constructor, and the group_id found in the database.
+	*
+	* @param InputInterface $input The input stream used to get the options
+	* @param OutputInterface $output The output stream, used to print messages
+	*
+	* @return int 0 if all is well, 1 if a database error occured while trying to get the group_id
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$dialog = $this->getHelperSet()->get('dialog');
@@ -123,6 +137,17 @@ class add extends \phpbb\console\command\command
 		return 0;
 	}
 
+	/**
+	* Get the password
+	*
+	* Asks a password to the user and asks for confirmation.
+	* This is repeted while the two are not the same
+	*
+	* @param OutputInterface $output The output stream, where messages are printed
+	* @param Symfony\Component\Console\Helper\DialogHelper $dialog The dialog helper used to get answers to questions asked to the user
+	*
+	* @return null
+	*/
 	protected function get_password($output, $dialog)
 	{
 		$current_user = $this->user;
@@ -147,6 +172,14 @@ class add extends \phpbb\console\command\command
 		);
 	}
 
+	/**
+	* Get the group id
+	*
+	* Go and find in the database the group_id corresponding to 'REGISTERED'
+	*
+	* @throws RunTimeException if the group id does not exist in database.
+	* @return null
+	*/
 	protected function get_group_id()
 	{
 		$sql = 'SELECT group_id
@@ -157,7 +190,7 @@ class add extends \phpbb\console\command\command
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if (!$row)
+		if (!$row || !$row['group_id'])
 		{
 			throw new \RunTimeException($this->user->lang('NO_GROUP'));
 		}
