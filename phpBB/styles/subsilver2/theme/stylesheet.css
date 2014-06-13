@@ -1189,12 +1189,21 @@ a.imageset {
 	overflow-x: hidden;
 }
 
+#notification_list table {
+	width: 100%;
+}
+
 #notification_list .notification_title {
-	padding: 5px;
+	padding: 3px;
+}
+
+#notification_list .notification_title:after {
+	clear: both;
+	content: '';
+	display: block;
 }
 
 #notification_list .header {
-	width: 298px;
 	padding: 5px;
 	font-weight: bold;
 	border: 1px solid #A9B8C2;
@@ -1208,7 +1217,6 @@ a.imageset {
 }
 
 #notification_list .footer {
-	width: 300px;
 	text-align: center;
 	font-size: 1.2em;
 	border: 1px solid #A9B8C2;
@@ -1222,4 +1230,13 @@ a.imageset {
 
 #notification_list .footer > a {
 	display: block;
+}
+
+#notification_list .notification-time {
+	font-size: 0.9em;
+	float: right;
+}
+
+.notification_list .notifications_time {
+	font-size: 0.8em;
 }
