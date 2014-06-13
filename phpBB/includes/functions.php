@@ -5066,7 +5066,7 @@ function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpb
 			$debug_info[] = sprintf('Time : %.3fs', $totaltime);
 		}
 
-		$debug_info[] = $db->sql_num_queries() . ' Queries';
+		$debug_info[] = $db->sql_num_queries() . ' Queries (' . $db->sql_num_queries(true) . ' cached)';
 
 		$memory_usage = memory_get_peak_usage();
 		if ($memory_usage)
