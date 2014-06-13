@@ -825,8 +825,8 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	width: auto;
 }
 
-.pagination img {
-	vertical-align: middle;
+.action-bar.bottom .pagination {
+	margin-top: 0;
 }
 
 .pagination > ul {
