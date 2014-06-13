@@ -5068,15 +5068,12 @@ function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpb
 
 		$debug_info[] = $db->sql_num_queries() . ' Queries';
 
-		if (function_exists('memory_get_peak_usage'))
+		$memory_usage = memory_get_peak_usage();
+		if ($memory_usage)
 		{
-			$memory_usage = memory_get_peak_usage();
-			if ($memory_usage)
-			{
-				$memory_usage = get_formatted_filesize($memory_usage);
+			$memory_usage = get_formatted_filesize($memory_usage);
 
-				$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
-			}
+			$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
 		}
 	}
 
