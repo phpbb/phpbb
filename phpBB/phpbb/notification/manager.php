@@ -551,7 +551,6 @@ class manager
 		{
 			foreach ($types as $id => $type)
 			{
-
 				if (empty($user_notifications[$id]))
 				{
 					$subscriptions[$id] = $this->get_default_methods();
@@ -562,20 +561,16 @@ class manager
 					{
 						if (!$user_notification['notify'])
 						{
-							if (($index = array_search($row['method'], $subscriptions[$id])) !== false)
-							{
-								unset($subscriptions[$id][$index]);
-							}
 							continue;
+						}
+
+						if (!isset($subscriptions[$id]))
+						{
+							$subscriptions[$id] = array();
 						}
 
 						$subscriptions[$id][] = $user_notification['method'];
 					}
-				}
-
-				if (empty($subscriptions[$id]))
-				{
-					unset($subscriptions[$id]);
 				}
 			}
 		}

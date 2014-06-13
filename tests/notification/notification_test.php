@@ -72,12 +72,12 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	public function test_subscriptions()
 	{
 		$expected_subscriptions = array(
-			'post'		=> array(''),
-			'topic'		=> array(''),
-			'quote'		=> array(''),
-			'bookmark'	=> array(''),
-			'test'		=> array(''),
-			'pm'		=> array(''),
+			'post'		=> array('board'),
+			'topic'		=> array('board'),
+			'quote'		=> array('board'),
+			'bookmark'	=> array('board'),
+			'test'		=> array('board'),
+			'pm'		=> array('board'),
 		);
 
 		$subscriptions = $this->notifications->get_global_subscriptions(2);
