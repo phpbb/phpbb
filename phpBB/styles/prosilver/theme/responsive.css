@@ -201,11 +201,11 @@ ul.topiclist li.row dt a.subforum {
 	margin: 5px 0;
 }
 
-.pagination ul {
-	margin-top: 5px;
+.pagination > ul {
+	margin: 5px 0 0;
 }
 
-.row .pagination ul {
+.row .pagination > ul {
 	margin-top: 0;
 }
 

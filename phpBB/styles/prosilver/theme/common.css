@@ -812,33 +812,25 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	width: auto;
 }
 
-li.pagination {
-	margin-top: 0;
-}
-
 .pagination img {
 	vertical-align: middle;
 }
 
-.pagination ul {
+.pagination > ul {
 	display: inline-block;
+	list-style: none !important;
 	margin-left: 5px;
 }
 
-li.pagination ul {
-	margin-top: -2px;
-	vertical-align: middle;
-}
-
-.pagination ul li, dl .pagination ul li, dl.icon .pagination ul li {
-	display: inline-block;
+.pagination > ul > li {
+	display: inline-block !important;
 	padding: 0;
 	font-size: 100%;
 	line-height: normal;
 	vertical-align: middle;
 }
 
-.pagination li a, .pagination li span, li .pagination li a, li .pagination li span, .pagination li.active span, .pagination li.ellipsis span {
+.pagination li a, .pagination li span {
 	border: 1px solid transparent;
 	border-radius: 2px;
 	display: block;
@@ -861,6 +853,7 @@ li.pagination ul {
 }
 
 .pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
+	background-repeat: no-repeat;
 	font-size: 0;
 	height: 13px;
 	width: 11px;
@@ -868,36 +861,45 @@ li.pagination ul {
 
 .pagination li.page-jump a {
 	background-position: 0 2px;
-	background-repeat: no-repeat;
 	width: 24px;
 }
 
 .pagination li.next a {
 	background-position: -50px 2px;
-	background-repeat: no-repeat;
 }
 
 .pagination li.previous a {
 	background-position: -30px 2px;
-	background-repeat: no-repeat;
 }
 
 .pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
 .pagination li.next a:hover { background-position: -50px -18px; }
 .pagination li.previous a:hover { background-position: -30px -18px; }
 
+/* Memberlist search */
+li.pagination {
+	margin-top: 0;
+}
+
+li.pagination > ul {
+	margin-top: -2px;
+	vertical-align: middle;
+}
+
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
-	float: right;
-	width: auto;
 	margin-top: 0;
-	padding: 1px 0 1px 8px;
+	padding: 1px 0 1px 15px;
 	font-size: 0.9em;
 	background: none 0 50% no-repeat;
 }
 
-li .pagination li a, li .pagination li span {
+.row .pagination > ul {
+	margin: 0;
+}
+
+.row .pagination li a, .row .pagination li span {
 	border-radius: 1px;
 	padding: 1px;
 }
@@ -1205,20 +1207,6 @@ form > p.post-notice strong {
 
 .dropdown-page-jump.dropdown-up .dropdown {
 	bottom: 20px;
-}
-
-.dropdown-page-jump .dropdown-contents {
-	margin: 0;
-}
-
-.dropdown-page-jump ul.dropdown-contents  {
-	display: inherit;
-}
-
-.dropdown-page-jump .dropdown-contents li {
-	display: list-item;
-	padding-bottom: 4px;
-	padding-top: 4px;
 }
 
 .dropdown-page-jump input.tiny {

@@ -52,16 +52,14 @@
 
 	<div class="action-bar">
 		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
-		<!-- IF .pagination or TOTAL_REPORTS -->
 		<div class="pagination">
-			<!-- IF TOTAL_REPORTS -->{TOTAL_REPORTS}<!-- ENDIF -->
+			{TOTAL_REPORTS}
 			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE --> 
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
-		<!-- ENDIF -->
 	</div>
 
 	<table class="table1">
@@ -102,10 +100,9 @@
 
 	<hr />
 
-	<!-- IF .pagination or TOTAL_REPORTS -->
 	<div class="action-bar">
 		<div class="pagination">
-			<!-- IF TOTAL_REPORTS -->{TOTAL_REPORTS}<!-- ENDIF -->
+			{TOTAL_REPORTS}
 			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE --> 
@@ -113,7 +110,6 @@
 			<!-- ENDIF -->
 		</div>
 	</div>
-	<!-- ENDIF -->
 
 	</div>
 </div>

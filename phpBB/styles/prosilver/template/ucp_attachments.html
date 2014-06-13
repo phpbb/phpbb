@@ -10,11 +10,9 @@
 	<p>{L_ATTACHMENTS_EXPLAIN}</p>
 
 	<!-- IF .attachrow -->
-
-		<!-- IF .pagination or TOTAL_ATTACHMENTS -->
 		<div class="action-bar">
 			<div class="pagination">
-				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE}<!-- ENDIF -->
+				{TOTAL_ATTACHMENTS} {L_TITLE}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
@@ -22,7 +20,6 @@
 				<!-- ENDIF -->
 			</div>
 		</div>
-		<!-- ENDIF -->
 		
 		<ul class="topiclist">
 			<li class="header">
@@ -61,11 +58,10 @@
 		</fieldset>
 
 		<hr />
-		
-		<!-- IF .pagination or TOTAL_ATTACHMENTS -->
+
 		<div class="action-bar">
 			<div class="pagination">
-				<!-- IF TOTAL_ATTACHMENTS -->{TOTAL_ATTACHMENTS} {L_TITLE}<!-- ENDIF -->
+				{TOTAL_ATTACHMENTS} {L_TITLE}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
@@ -73,7 +69,6 @@
 				<!-- ENDIF -->
 			</div>
 		</div>
-		<!-- ENDIF -->
 
 	<!-- ELSE -->
 		<p><strong>{L_UCP_NO_ATTACHMENTS}</strong></p>

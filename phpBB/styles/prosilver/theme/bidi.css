@@ -208,7 +208,7 @@
 	float: left;
 }
 
-.rtl .pagination ul {
+.rtl .pagination > ul {
 	margin-left: 0;
 	margin-right: 5px;
 }
@@ -217,17 +217,16 @@
 .rtl .row .pagination {
 	background-position: 100% 50%;
 	float: left;
-	padding: 1px 15px 1px 0;
+	padding-left: 0;
+	padding-right: 15px;
+}
+
+.rtl .row .pagination > ul {
+	margin: 0;
 }
 
 .rtl .pagination span {
 	direction: ltr;
-}
-
-.rtl .pagination span.page-sep {
-	display: inline;
-	visibility: hidden;
-	position: absolute;
 }
 
 .pagination li.page-jump {

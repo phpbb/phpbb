@@ -159,7 +159,7 @@ dl.details dd {
 /* Pagination
 ---------------------------------------- */
 
-.pagination li a, li .pagination li a {
+.pagination li a {
 	color: #5C758C;
 	background-color: #ECEDEE;
 	border-color: #B4BAC0;
@@ -176,8 +176,7 @@ dl.details dd {
 	border-color: #4692BF;
 }
 
-.pagination li a:hover, .pagination .active a:hover,
-.pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+.pagination li a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
 	border-color: #368AD2;
 	background-color: #368AD2;
 	color: #FFFFFF;
@@ -190,14 +189,6 @@ dl.details dd {
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	background-image: url("./images/icon_pages.gif");
-}
-
-.row .pagination span a, li.pagination span a {
-	background-color: #FFFFFF;
-}
-
-.row .pagination span a:hover, li.pagination span a:hover {
-	background-color: #368AD2;
 }
 
 /* Miscellaneous styles

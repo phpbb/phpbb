@@ -10,10 +10,9 @@
 <div class="panel">
 	<div class="inner">
 
-	<!-- IF .pagination or TOTAL_TOPICS -->
 	<div class="action-bar">
 		<div class="pagination">
-			<!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS}<!-- ENDIF -->
+			{TOTAL_TOPICS}
 			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE --> 
@@ -21,7 +20,6 @@
 			<!-- ENDIF -->
 		</div>
 	</div>
-	<!-- ENDIF -->
 
 	<!-- IF .topicrow -->
 		<ul class="topiclist<!-- IF S_MERGE_SELECT --> missing-column<!-- ENDIF -->">
@@ -103,10 +101,9 @@
 
 	<hr />
 
-	<!-- IF .pagination or TOTAL_TOPICS -->
 	<div class="action-bar">
 		<div class="pagination">
-			<!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS}<!-- ENDIF -->
+			{TOTAL_TOPICS}
 			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE --> 
@@ -114,7 +111,6 @@
 			<!-- ENDIF -->
 		</div>
 	</div>
-	<!-- ENDIF -->
 
 	</div>
 </div>

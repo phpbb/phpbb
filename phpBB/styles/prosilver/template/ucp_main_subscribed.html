@@ -110,10 +110,9 @@
 	<!-- END topicrow -->
 	</ul>
 
-	<!-- IF .pagination or TOTAL_TOPICS -->
 	<div class="action-bar">
 		<div class="pagination">
-			<!-- IF TOTAL_TOPICS -->{TOTAL_TOPICS}<!-- ENDIF -->
+			{TOTAL_TOPICS}
 			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE --> 
@@ -121,7 +120,6 @@
 			<!-- ENDIF -->
 		</div>
 	</div>
-	<!-- ENDIF -->
 
 <!-- ELSEIF S_TOPIC_NOTIFY -->
     <ul class="topiclist">
