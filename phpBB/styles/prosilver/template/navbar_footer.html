@@ -15,15 +15,11 @@
 		<li class="rightside">{S_TIMEZONE}</li>
 		<!-- EVENT overall_footer_timezone_after -->
 		<!-- IF not S_IS_BOT --><li class="small-icon icon-delete-cookies rightside"><a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true" role="menuitem">{L_DELETE_COOKIES}</a></li><!-- ENDIF -->
+		<!-- IF S_REGISTERED_USER and S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" role="menuitem">{L_MEMBERLIST}</a></li><!-- ENDIF -->
 		<!-- EVENT overall_footer_teamlink_before -->
-
-		<!-- IF S_USER_LOGGED_IN and not S_IS_BOT -->
-			<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" role="menuitem">{L_MEMBERLIST}</a></li><!-- ENDIF -->
-			<!-- IF U_TEAM --><li class="small-icon icon-team rightside"><a href="{U_TEAM}" role="menuitem">{L_THE_TEAM}</a></li><!-- ENDIF -->
-		<!-- ENDIF -->
-		<!-- IF U_CONTACT_US --><li class="small-icon icon-contact rightside"><a href="{U_CONTACT_US}" role="menuitem">{L_CONTACT_US}</a></li><!-- ENDIF -->
-
+		<!-- IF S_REGISTERED_USER and U_TEAM --><li class="small-icon icon-team rightside"><a href="{U_TEAM}" role="menuitem">{L_THE_TEAM}</a></li><!-- ENDIF -->
 		<!-- EVENT overall_footer_teamlink_after -->
+		<!-- IF U_CONTACT_US --><li class="small-icon icon-contact rightside"><a href="{U_CONTACT_US}" role="menuitem">{L_CONTACT_US}</a></li><!-- ENDIF -->
 	</ul>
 
 	</div>
