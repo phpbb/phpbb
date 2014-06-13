@@ -146,37 +146,10 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
-	// Output page creation time
-	if (defined('DEBUG'))
-	{
-		$mtime = explode(' ', microtime());
-		$totaltime = $mtime[0] + $mtime[1] - $starttime;
-
-		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
-		{
-			$db->sql_report('display');
-		}
-
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
-
-		if ($auth->acl_get('a_') && defined('DEBUG'))
-		{
-			if (function_exists('memory_get_peak_usage'))
-			{
-				if ($memory_usage = memory_get_peak_usage())
-				{
-					$memory_usage = get_formatted_filesize($memory_usage);
-
-					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
-				}
-			}
-
-			$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
-		}
-	}
+	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($db, $config, $auth, $user),
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),

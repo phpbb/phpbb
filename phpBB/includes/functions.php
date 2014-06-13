@@ -5031,6 +5031,72 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 }
 
 /**
+* Check and display the SQL report if requested.
+*
+* @param \phpbb\request\request_interface		$request	Request object
+* @param \phpbb\auth\auth						$auth		Auth object
+* @param \phpbb\db\driver\driver_interface		$db			Database connection
+*/
+function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
+{
+	if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG'))
+	{
+		$db->sql_report('display');
+	}
+}
+
+/**
+* Generate the debug output string
+*
+* @param \phpbb\db\driver\driver_interface	$db			Database connection
+* @param \phpbb\config\config				$config		Config object
+* @param \phpbb\auth\auth					$auth		Auth object
+* @param \phpbb\user						$user		User object
+* @return string
+*/
+function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user)
+{
+	$debug_info = array();
+
+	// Output page creation time
+	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+	{
+		if (isset($GLOBALS['starttime']))
+		{
+			$totaltime = microtime(true) - $GLOBALS['starttime'];
+			$debug_info[] = sprintf('Time: %.3fs', $totaltime);
+		}
+
+		$debug_info[] = $db->sql_num_queries() . ' Queries (' . $db->sql_num_queries(true) . ' cached)';
+
+		$memory_usage = memory_get_peak_usage();
+		if ($memory_usage)
+		{
+			$memory_usage = get_formatted_filesize($memory_usage);
+
+			$debug_info[] = 'Peak Memory Usage: ' . $memory_usage;
+		}
+	}
+
+	if (defined('DEBUG'))
+	{
+		$debug_info[] = 'GZIP: ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off');
+
+		if ($user->load)
+		{
+			$debug_info[] = 'Load: ' . $user->load;
+		}
+
+		if ($auth->acl_get('a_'))
+		{
+			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">SQL Explain</a>';
+		}
+	}
+
+	return implode(' | ', $debug_info);
+}
+
+/**
 * Generate page footer
 *
 * @param bool $run_cron Whether or not to run the cron
@@ -5062,37 +5128,10 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
-	// Output page creation time
-	if (defined('DEBUG'))
-	{
-		$mtime = explode(' ', microtime());
-		$totaltime = $mtime[0] + $mtime[1] - $starttime;
-
-		if ($request->variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG') && method_exists($db, 'sql_report'))
-		{
-			$db->sql_report('display');
-		}
-
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress'] && @extension_loaded('zlib')) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
-
-		if ($auth->acl_get('a_') && defined('DEBUG'))
-		{
-			if (function_exists('memory_get_peak_usage'))
-			{
-				if ($memory_usage = memory_get_peak_usage())
-				{
-					$memory_usage = get_formatted_filesize($memory_usage);
-
-					$debug_output .= ' | Peak Memory Usage: ' . $memory_usage;
-				}
-			}
-
-			$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
-		}
-	}
+	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user),
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
