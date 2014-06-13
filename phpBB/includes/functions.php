@@ -5060,9 +5060,12 @@ function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpb
 	// Output page creation time
 	if (defined('PHPBB_DISPLAY_LOAD_TIME'))
 	{
-		$totaltime = microtime(true) - $GLOBALS['starttime'];
+		if (isset($GLOBALS['starttime']))
+		{
+			$totaltime = microtime(true) - $GLOBALS['starttime'];
+			$debug_info[] = sprintf('Time : %.3fs', $totaltime);
+		}
 
-		$debug_info[] = sprintf('Time : %.3fs', $totaltime);
 		$debug_info[] = $db->sql_num_queries() . ' Queries';
 
 		if (function_exists('memory_get_peak_usage'))
