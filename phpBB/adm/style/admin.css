@@ -392,10 +392,11 @@ li {
 	background: -ms-linear-gradient(top, #F2F2F2 0%, #DCDEE2 100%);
 	background: linear-gradient(to bottom, #F2F2F2 0%, #DCDEE2 100%);
 	border-color: #999;
+	border-bottom: 1px solid #DCDEE2;
 	box-shadow: 0 1px 1px #FFF inset;
 	color: #23649F;
 	margin: 0 1px 0 0;
-	padding: 7px 10px 6px;
+	padding: 7px 10px 5px;
 }
 
 #tabs .activetab > a:hover {
