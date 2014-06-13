@@ -124,7 +124,7 @@ class helper
 			unset($params['#']);
 		}
 
-		$url_generator = $this->provider->get_url_generator($this->manager->get_finder(), new RequestContext());
+		$url_generator = $this->provider->get_url_generator(new RequestContext());
 		$route_url = $url_generator->generate($route, $params);
 
 		if (strpos($route_url, '/') === 0)

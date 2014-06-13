@@ -13,11 +13,11 @@
 
 class phpbb_mock_controller_provider extends \phpbb\controller\provider
 {
-	public function get_url_generator(\phpbb\finder $finder, \Symfony\Component\Routing\RequestContext $context)
+	public function get_url_generator(\phpbb\extension\manager $manager, \Symfony\Component\Routing\RequestContext $context)
 	{
 		if ($this->routes == null || empty($this->routing_files))
 		{
-			$this->find_routing_files($finder);
+			$this->find_routing_files($manager->get_finder());
 			$this->find($this->phpbb_root_path);
 		}
 

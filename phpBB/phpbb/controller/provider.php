@@ -38,6 +38,12 @@ class provider
 	protected $routes;
 
 	/**
+	* Extension manager
+	* @var \phpbb\extension\manager
+	*/
+	protected $extension_anager;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -52,13 +58,15 @@ class provider
 	/**
 	* Construct method
 	*
+	* @param \phpbb\extension\manager $manager The extension manager
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	* @param array $routing_files Array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct($phpbb_root_path, $php_ext, $routing_files = array())
+	public function __construct(\phpbb\extension\manager $extension_anager, $phpbb_root_path, $php_ext, $routing_files = array())
 	{
+		$this->extension_anager = $extension_anager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->routing_files = $routing_files;
@@ -106,24 +114,23 @@ class provider
 	*/
 	public function get_routes()
 	{
+		if ($this->routes == null || empty($this->routing_files))
+		{
+			$this->find_routing_files($this->extension_anager->get_finder());
+			$this->find($this->phpbb_root_path);
+		}
+
 		return $this->routes;
 	}
 
 	/**
 	* Create and return a new UrlGenerator object
 	*
-	* @param \phpbb\finder					$finder		A finder object
 	* @param \Symfony\Component\Routing\RequestContext	$context	Symfony RequestContext object
 	* @return \Symfony\Component\Routing\Generator\UrlGenerator
 	*/
-	public function get_url_generator(\phpbb\finder $finder, RequestContext $context)
+	public function get_url_generator(RequestContext $context)
 	{
-		if ($this->routes == null || empty($this->routing_files))
-		{
-			$this->find_routing_files($finder);
-			$this->find($this->phpbb_root_path);
-		}
-
 		if (!defined('DEBUG'))
 		{
 			if (!$this->is_url_generator_dumped())
