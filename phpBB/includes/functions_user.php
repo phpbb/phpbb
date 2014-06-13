@@ -180,6 +180,17 @@ function user_add($user_row, $cp_data = false)
 		return false;
 	}
 
+	/**
+	* Event to parse/modify data submited to user_add function
+	*
+	* @event core.user_add_before
+	* @var array	user_row		Array of user details submited to user_add
+	* @var array	cp_data			Array of Custom profile fields submited to user_add
+	* @since 3.1.0-b5
+	*/
+	$vars = array('user_row', 'cp_data');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_before', compact($vars)));
+
 	$sql_ary = array(
 		'username'			=> $user_row['username'],
 		'username_clean'	=> $username_clean,
@@ -343,6 +354,18 @@ function user_add($user_row, $cp_data = false)
 
 		set_config('newest_user_colour', $row['group_colour'], true);
 	}
+
+	/**
+	* Event that returns user id, user detals and user CPF of newly registared user
+	*
+	* @event core.user_add_after
+	* @var int		user_id			User id of newly registared user
+	* @var array	user_row		Array of user details submited to user_add
+	* @var array	cp_data			Array of Custom profile fields submited to user_add
+	* @since 3.1.0-b5
+	*/
+	$vars = array('user_id', 'user_row', 'cp_data');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_after', compact($vars)));
 
 	return $user_id;
 }
