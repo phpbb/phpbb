@@ -62,6 +62,10 @@
 	margin-right: 5px;
 }
 
+#jumpbox .dropdown-select {
+	margin: 0;
+}
+
 /* Big button images */
 .reply-icon:before, .pmreply-icon:before					{ background-position: -20px 0; }
 .reply-icon:hover:before, .pmreply-icon:hover:before		{ background-position: -20px -20px; }

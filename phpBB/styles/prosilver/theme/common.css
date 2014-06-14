@@ -1105,6 +1105,14 @@ form > p.post-notice strong {
 	line-height: 20px;
 }
 
+#jumpbox {
+	margin: 5px 0;
+}
+
+.stat-block {
+	clear: both;
+}
+
 #top {
 	position: absolute;
 	top: -20px;
