@@ -47,6 +47,8 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 
 	public function tearDown()
 	{
+		parent::tearDown();
+
 		$this->login();
 		$this->admin_login();
 
