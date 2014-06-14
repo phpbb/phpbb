@@ -45,7 +45,7 @@ class service_collection_iterator extends \ArrayIterator
 	public function offsetGet($index)
 	{
 		$task = parent::offsetGet($index);
-		if ($task == null)
+		if ($task === null)
 		{
 			$task = $this->container->get($index);
 			$this->offsetSet($index, $task);
@@ -75,7 +75,7 @@ class service_collection_iterator extends \ArrayIterator
 	public function current()
 	{
 		$task = parent::current();
-		if ($task == null)
+		if ($task === null)
 		{
 			$name = $this->key();
 			$task = $this->container->get($name);
