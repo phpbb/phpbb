@@ -773,44 +773,47 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 	static $static_class;
 	static $magic_url_match_args;
 
-	if (!is_array($magic_url_match_args) || $static_class != $class)
+	if (!isset($magic_url_match_args[$server_url]) || $static_class != $class)
 	{
 		$static_class = $class;
 		$class = ($static_class) ? ' class="' . $static_class . '"' : '';
 		$local_class = ($static_class) ? ' class="' . $static_class . '-local"' : '';
 
-		$magic_url_match_args = array();
+		if (!is_array($magic_url_match_args))
+		{
+			$magic_url_match_args = array();
+		}
 
 		// relative urls for this board
-		$magic_url_match_args[] = array(
+		$magic_url_match_args[$server_url][] = array(
 			'#(^|[\n\t (>.])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#i',
 			MAGIC_URL_LOCAL,
 			$local_class,
 		);
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match_args[] = array(
+		$magic_url_match_args[$server_url][] = array(
 			'#(^|[\n\t (>.])(' . get_preg_expression('url_inline') . ')#i',
 			MAGIC_URL_FULL,
 			$class,
 		);
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match_args[] = array(
+		$magic_url_match_args[$server_url][] = array(
 			'#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#i',
 			MAGIC_URL_WWW,
 			$class,
 		);
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match_args[] = array(
+		$magic_url_match_args[$server_url][] = array(
 			'/(^|[\n\t (>])(' . get_preg_expression('email') . ')/i',
 			MAGIC_URL_EMAIL,
 			'',
 		);
 	}
 
-	foreach ($magic_url_match_args as $magic_args)
+	foreach ($magic_url_match_args[$server_url] as $magic_args)
 	{
 		if (preg_match($magic_args[0], $text, $matches))
 		{
