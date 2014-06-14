@@ -148,7 +148,7 @@ interface provider_interface
 	* user_id of an account needed to successfully link an external account to
 	* a forum account.
 	*
-	* @param	array	$link_data	Any data needed to link a phpBB account to
+	* @param	array	$login_link_data	Any data needed to link a phpBB account to
 	*								an external account.
 	* @return	string|null	Returns a string with a language constant if there
 	*						is data missing or null if there is no error.

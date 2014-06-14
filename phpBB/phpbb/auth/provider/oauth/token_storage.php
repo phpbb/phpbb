@@ -17,7 +17,6 @@ namespace phpbb\auth\provider\oauth;
 use OAuth\OAuth1\Token\StdOAuth1Token;
 use OAuth\Common\Token\TokenInterface;
 use OAuth\Common\Storage\TokenStorageInterface;
-use OAuth\Common\Storage\Exception\StorageException;
 use OAuth\Common\Storage\Exception\TokenNotFoundException;
 
 /**
@@ -198,6 +197,7 @@ class token_storage implements TokenStorageInterface
 	/**
 	* Checks to see if an access token exists solely by the session_id of the user
 	*
+	* @param	string	$service	The name of the OAuth service
 	* @return	bool	true if they have token, false if they don't
 	*/
 	public function has_access_token_by_session($service)
@@ -250,6 +250,7 @@ class token_storage implements TokenStorageInterface
 	*
 	* @param	array	$data
 	* @return	mixed
+	* @throws \OAuth\Common\Storage\Exception\TokenNotFoundException
 	*/
 	protected function _retrieve_access_token($data)
 	{
