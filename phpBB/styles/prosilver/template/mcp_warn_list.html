@@ -10,17 +10,17 @@
 	<p>{L_WARNED_USERS_EXPLAIN}</p>
 
 	<!-- IF .user -->
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull;  <!-- ENDIF -->
+		<div class="action-bar top">
+			<div class="pagination">
+				{TOTAL_USERS}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
-					{PAGE_NUMBER}
+					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
-			</li>
-		</ul>
-		
+			</div>
+		</div>
+
 		<table class="table1">
 		<thead>
 			<tr>
@@ -48,18 +48,20 @@
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
 			<input type="submit" name="sort" value="{L_GO}" class="button2" />
 		</fieldset>
+
 		<hr />
 
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS} &bull;  <!-- ENDIF -->
+		<div class="action-bar bottom">
+			<div class="pagination">
+				{TOTAL_USERS}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
-					{PAGE_NUMBER}
+					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
-			</li>
-		</ul>
+			</div>
+		</div>
+
 	<!-- ELSE -->
 		<p><strong>{L_NO_WARNINGS}</strong></p>
 	<!-- ENDIF -->
