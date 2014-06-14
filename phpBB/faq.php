@@ -30,12 +30,12 @@ $mode = request_var('mode', '');
 switch ($mode)
 {
 	case 'bbcode':
-		$l_title = $user->lang['BBCODE_GUIDE'];
+		$l_title = $user->lang('BBCODE_GUIDE');
 		$user->add_lang('bbcode', false, true);
 	break;
 
 	default:
-		$l_title = $user->lang['FAQ_EXPLAIN'];
+		$l_title = $user->lang('FAQ_EXPLAIN');
 		$user->add_lang('faq', false, true);
 	break;
 }
@@ -75,7 +75,7 @@ foreach ($user->help as $help_ary)
 // Lets build a page ...
 $template->assign_vars(array(
 	'L_FAQ_TITLE'				=> $l_title,
-	'L_BACK_TO_TOP'				=> $user->lang['BACK_TO_TOP'],
+	'L_BACK_TO_TOP'				=> $user->lang('BACK_TO_TOP'),
 
 	'SWITCH_COLUMN_MANUALLY'	=> (!$found_switch) ? true : false,
 	'S_IN_FAQ'					=> true,

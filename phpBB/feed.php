@@ -142,7 +142,7 @@ $global_vars = array_merge($global_vars, array(
 	'FEED_TITLE'			=> $config['sitename'],
 	'FEED_SUBTITLE'			=> $config['site_desc'],
 	'FEED_UPDATED'			=> $phpbb_feed_helper->format_date($feed_updated_time),
-	'FEED_LANG'				=> $user->lang['USER_LANG'],
+	'FEED_LANG'				=> $user->lang('USER_LANG'),
 	'FEED_AUTHOR'			=> $config['sitename'],
 ));
 
@@ -230,7 +230,7 @@ foreach ($item_vars as $row)
 
 	if (!empty($row['statistics']))
 	{
-		echo '<p>' . $user->lang['STATISTICS'] . ': ' . $row['statistics'] . '</p>';
+		echo '<p>' . $user->lang('STATISTICS') . ': ' . $row['statistics'] . '</p>';
 	}
 
 	echo '<hr />' . "\n" . ']]></content>' . "\n";
