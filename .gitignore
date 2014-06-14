@@ -10,7 +10,13 @@
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
 /phpBB/images/avatars/upload/*
+/phpBB/images/ranks/*
+/phpBB/language/*
+!/phpBB/language/en
 /phpBB/store/*
+/phpBB/styles/*
+!/phpBB/styles/prosilver
+!/phpBB/styles/subsilver2
 /phpBB/vendor
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
