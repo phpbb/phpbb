@@ -100,13 +100,16 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		self::visit('install/index.php?mode=install');
+		$page = self::visit('install/index.php?mode=install');
+		self::assertContains('Welcome to Installation', $page->findById('main')->getText());
 
 		// install/index.php?mode=install&sub=requirements
 		$page = self::click_submit();
+		self::assertContains('Installation compatibility', $page->findById('main')->getText());
 
 		// install/index.php?mode=install&sub=database
 		$page = self::click_submit();
+		self::assertContains('Database configuration', $page->findById('main')->getText());
 
 		$page->findById('dbms')->setValue(str_replace('phpbb\db\driver\\', '',  self::$config['dbms']));
 		$page->findById('dbhost')->setValue(self::$config['dbhost']);
@@ -116,18 +119,26 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 		$page->findById('dbpasswd')->setValue(self::$config['dbpasswd']);
 		$page->findById('table_prefix')->setValue(self::$config['table_prefix']);
 
+		// install/index.php?mode=install&sub=database
 		$page = self::click_submit();
+		self::assertContains('Successful connection', $page->findById('main')->getText());
 
+		// install/index.php?mode=install&sub=administrator
 		$page = self::click_submit();
+		self::assertContains('Administrator configuration', $page->findById('main')->getText());
 
 		$page->findById('admin_name')->setValue('admin');
 		$page->findById('admin_pass1')->setValue('adminadmin');
 		$page->findById('admin_pass2')->setValue('adminadmin');
 		$page->findById('board_email')->setValue('nobody@example.com');
 
+		// install/index.php?mode=install&sub=administrator
 		$page = self::click_submit();
+		self::assertContains('Tests passed', $page->findById('main')->getText());
 
+		// install/index.php?mode=install&sub=config_file
 		$page = self::click_submit();
+		self::assertContains('The configuration file has been written', $page->findById('main')->getText());
 
 		// Installer has created a config.php file, we will overwrite it with a
 		// config file of our own in order to get the DEBUG constants defined
@@ -138,7 +149,9 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 			self::markTestSkipped("Could not write $config_file file.");
 		}
 
+		// install/index.php?mode=install&sub=advanced
 		$page = self::click_submit();
+		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $page->findById('main')->getText());
 
 		$page->findById('smtp_delivery')->setValue('1');
 		$page->findById('smtp_host')->setValue('nxdomain.phpbb.com');
@@ -149,9 +162,14 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 		$page->findById('server_port')->setValue(isset($parseURL['port']) ? $parseURL['port'] : 80);
 		$page->findById('script_path')->setValue($parseURL['path']);
 
+		// install/index.php?mode=install&sub=create_table
 		$page = self::click_submit();
+		self::assertContains('The database tables used by phpBB', $page->findById('main')->getText());
+		self::assertContains('have been created and populated with some initial data.', $page->findById('main')->getText());
 
+		// install/index.php?mode=install&sub=final
 		$page = self::click_submit();
+		self::assertContains('You have successfully installed', $page->getText());
 
 		copy($config_file, $config_file_test);
 
