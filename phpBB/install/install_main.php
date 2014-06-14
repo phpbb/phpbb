@@ -56,7 +56,7 @@ class install_main extends module
 
 			case 'license' :
 				$title = $lang['GPL'];
-				$body = implode("<br/>\n", file('../docs/COPYING'));
+				$body = implode("<br/>\n", file(__DIR__ . '/../docs/LICENSE.txt'));
 			break;
 
 			case 'support' :
