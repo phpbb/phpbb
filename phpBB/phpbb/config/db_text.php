@@ -105,8 +105,8 @@ class db_text
 			if (!$this->db->sql_affectedrows($result))
 			{
 				$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', array(
-					'config_name'	=> $key,
-					'config_value'	=> $value,
+					'config_name'	=> (string) $key,
+					'config_value'	=> (string) $value,
 				));
 				$this->db->sql_query($sql);
 			}
