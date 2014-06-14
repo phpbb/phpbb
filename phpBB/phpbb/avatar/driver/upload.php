@@ -19,7 +19,7 @@ namespace phpbb\avatar\driver;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_data($row, $ignore_config = false)
 	{
@@ -31,7 +31,7 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
@@ -49,7 +49,7 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
@@ -143,7 +143,7 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function prepare_form_acp($user)
 	{
@@ -155,7 +155,7 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function delete($row)
 	{
@@ -171,7 +171,7 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_template_name()
 	{

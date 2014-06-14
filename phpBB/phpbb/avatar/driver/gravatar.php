@@ -24,7 +24,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	const GRAVATAR_URL = '//secure.gravatar.com/avatar/';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_data($row)
 	{
@@ -36,7 +36,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_custom_html($user, $row, $alt = '')
 	{
@@ -47,7 +47,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
@@ -61,7 +61,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
@@ -151,7 +151,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_template_name()
 	{
@@ -161,6 +161,8 @@ class gravatar extends \phpbb\avatar\driver\driver
 	/**
 	* Build gravatar URL for output on page
 	*
+	* @param array $row User data or group data that has been cleaned with
+	*        \phpbb\avatar\manager::clean_row
 	* @return string Gravatar URL
 	*/
 	protected function get_gravatar_url($row)

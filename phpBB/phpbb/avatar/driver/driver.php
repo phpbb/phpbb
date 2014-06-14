@@ -73,10 +73,9 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	* Construct a driver object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
-	* @param \phpbb\request\request $request Request object
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param \phpbb_path_helper $path_helper phpBB path helper
+	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
 	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
@@ -89,7 +88,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_custom_html($user, $row, $alt = '')
 	{
@@ -97,7 +96,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function prepare_form_acp($user)
 	{
@@ -105,7 +104,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function delete($row)
 	{
@@ -113,7 +112,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_name()
 	{
