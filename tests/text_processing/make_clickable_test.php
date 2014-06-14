@@ -104,5 +104,50 @@ class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 		$this->assertEquals($expected, $result, $label);
 	}
 
+	public function make_clickable_mixed_serverurl_data()
+	{
+		$urls = array(
+			'http://thisdomain.org' => array('tag' => 'm', 'url' => false, 'text' => false),
+			'http://thisdomain.org/' => array('tag' => 'm', 'url' => false, 'text' => false),
+			'http://thisdomain.org/1' => array('tag' => 'm', 'url' => false, 'text' => false),
+			'http://thisdomain.org/path/some?query=abc#test' => array('tag' => 'm', 'url' => false, 'text' => false),
+
+			'https://www.phpbb.com' => array('tag' => 'm', 'url' => false, 'text' => false),
+			'https://www.phpbb.com/' => array('tag' => 'm', 'url' => false, 'text' => false),
+			'https://www.phpbb.com/1' => array('tag' => 'l', 'url' => false, 'text' => '1'),
+			'https://www.phpbb.com/path/some?query=abc#test' => array('tag' => 'l', 'url' => false, 'text' => 'path/some?query=abc#test'),
+		);
+
+		$test_data = array();
+
+		// run the test for each combination
+		foreach ($urls as $url => $url_type)
+		{
+			// false means it's the same as the url, less typing
+			$url_type['url'] = ($url_type['url']) ? $url_type['url'] : $url;
+			$url_type['text'] = ($url_type['text']) ? $url_type['text'] : $url;
+
+			$class = ($url_type['tag'] === 'l') ? 'postlink-local' : 'postlink';
+
+			// replace the url with the desired output format
+			$output = '<!-- ' . $url_type['tag'] . ' --><a class="' . $class . '" href="' . $url_type['url'] . '">' . $url_type['text'] . '</a><!-- ' . $url_type['tag'] . ' -->';
+
+			$test_data[] = array($url, $output);
+		}
+
+		return $test_data;
+	}
+
+	/**
+	* @dataProvider make_clickable_mixed_serverurl_data
+	*/
+	public function test_make_clickable_mixed_serverurl($input, $expected)
+	{
+		$result = make_clickable($input, 'https://www.phpbb.com');
+
+		$label = 'Making text clickable: ' . $input;
+		$this->assertEquals($expected, $result, $label);
+	}
+
 }
 
