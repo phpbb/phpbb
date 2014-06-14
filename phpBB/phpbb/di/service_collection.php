@@ -40,7 +40,7 @@ class service_collection extends \ArrayObject
 	*/
 	public function getIterator()
 	{
-		return new service_collection_iterator($this->container, $this);
+		return new service_collection_iterator($this);
 	}
 
 	// Because of a PHP issue we have to redefine offsetExists
