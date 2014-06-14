@@ -10,6 +10,8 @@
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
 /phpBB/images/avatars/upload/*
+/phpBB/language/*
+!/phpBB/language/en
 /phpBB/store/*
 /phpBB/styles/*
 !/phpBB/styles/prosilver
