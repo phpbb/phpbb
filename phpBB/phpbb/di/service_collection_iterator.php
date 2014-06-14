@@ -16,9 +16,9 @@ namespace phpbb\di;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
-* Collection of services to be configured at container compile time.
+* Iterator which loads the services when they are requested
 */
-class service_collection extends \ArrayObject
+class service_collection_iterator extends \ArrayIterator
 {
 	/**
 	* @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -26,37 +26,18 @@ class service_collection extends \ArrayObject
 	protected $container;
 
 	/**
-	* Constructor
+	* Construct an ArrayIterator for service_collection
 	*
 	* @param ContainerInterface $container Container object
+	* @param array $array The array or object to be iterated on.
+	* @param int $flags Flags to control the behaviour of the ArrayObject object.
+	* @see ArrayObject::setFlags()
 	*/
-	public function __construct(ContainerInterface $container)
+	public function __construct(ContainerInterface $container, $array = array(), $flags = 0)
 	{
+		parent::__construct($array, $flags);
 		$this->container = $container;
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function getIterator()
-	{
-		return new service_collection_iterator($this->container, $this);
-	}
-
-	// Because of a PHP issue we have to redefine offsetExists
-	// (even with a call to the parent):
-	// 		https://bugs.php.net/bug.php?id=66834
-	// 		https://bugs.php.net/bug.php?id=67067
-	// But it triggers a sniffer issue that we have to skip
-	// @codingStandardsIgnoreStart
-	/**
-	* {@inheritdoc}
-	*/
-	public function offsetExists($index)
-	{
-		return parent::offsetExists($index);
-	}
-	// @codingStandardsIgnoreEnd
 
 	/**
 	* {@inheritdoc}
@@ -73,14 +54,34 @@ class service_collection extends \ArrayObject
 		return $task;
 	}
 
+	// Because of a PHP issue we have to redefine offsetExists
+	// (even with a call to the parent):
+	// 		https://bugs.php.net/bug.php?id=66834
+	// 		https://bugs.php.net/bug.php?id=67067
+	// But it triggers a sniffer issue that we have to skip
+	// @codingStandardsIgnoreStart
 	/**
-	* Add a service to the collection
-	*
-	* @param string $name The service name
-	* @return null
+	* {@inheritdoc}
 	*/
-	public function add($name)
+	public function offsetExists($index)
 	{
-		$this->offsetSet($name, null);
+		parent::offsetExists($index);
+	}
+	// @codingStandardsIgnoreEnd
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function current()
+	{
+		$task = parent::current();
+		if ($task === null)
+		{
+			$name = $this->key();
+			$task = $this->container->get($name);
+			$this->offsetSet($name, $task);
+		}
+
+		return $task;
 	}
 }
