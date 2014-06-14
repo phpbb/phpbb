@@ -40,11 +40,11 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 
 	public function tearDown()
 	{
-		parent::tearDown();
-
 		global $config, $user;
 		$user = null;
 		$config = array();
+
+		parent::tearDown();
 	}
 
 	public function test_invalid_extension()

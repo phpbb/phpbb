@@ -59,8 +59,8 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 
 	protected function tearDown()
 	{
-		parent::tearDown();
 		self::$session->reset();
+		parent::tearDown();
 	}
 
 	static protected function visit($path)

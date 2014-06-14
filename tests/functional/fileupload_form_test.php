@@ -27,8 +27,6 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 	public function tearDown()
 	{
-		parent::tearDown();
-
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
 		foreach ($iterator as $fileinfo)
 		{
@@ -44,6 +42,8 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 			unlink($fileinfo->getPathname());
 		}
+
+		parent::tearDown();
 	}
 
 	private function upload_file($filename, $mimetype)

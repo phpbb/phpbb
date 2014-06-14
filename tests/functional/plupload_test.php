@@ -41,8 +41,6 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 	public function tearDown()
 	{
-		parent::tearDown();
-
 		$this->set_extension_group_permission(0);
 		$iterator = new DirectoryIterator(__DIR__ . '/../../phpBB/files/');
 		foreach ($iterator as $fileinfo)
@@ -59,6 +57,8 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			unlink($fileinfo->getPathname());
 		}
+
+		parent::tearDown();
 	}
 
 	public function get_urls()

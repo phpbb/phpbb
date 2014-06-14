@@ -117,8 +117,6 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 	protected function tearDown()
 	{
-		parent::tearDown();
-
 		if ($this->db instanceof \phpbb\db\driver\driver_interface)
 		{
 			// Close the database connections again this test
@@ -126,6 +124,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		}
 
 		self::$cookieJar->clear();
+		parent::tearDown();
 	}
 
 	/**
