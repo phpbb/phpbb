@@ -14,7 +14,6 @@ use Symfony\Component\BrowserKit\CookieJar;
 
 class phpbb_functional_test_case extends phpbb_mink_test_case
 {
-	static protected $client;
 	static protected $cookieJar;
 
 	protected $cache = null;
@@ -41,6 +40,24 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
 		self::$root_url = self::$config['phpbb_functional_url'];
+
+		self::$cookieJar = new CookieJar;
+		self::$client = new \Behat\Mink\Driver\Goutte\Client(array(), null, self::$cookieJar);
+
+		$client_options = array(
+			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
+			'curl.options'	=> array(
+				CURLOPT_TIMEOUT	=> 120,
+			),
+		);
+
+		self::$client->setClient(new Guzzle\Http\Client('', $client_options));
+
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		self::$client->getClient()->getCurlMulti()->reset(true);
+
+		self::$driver = new \Behat\Mink\Driver\GoutteDriver(self::$client);
 
 		// Important: this is used both for installation and by
 		// test cases for querying the tables.
@@ -73,12 +90,6 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		parent::setUp();
 
 		$this->bootstrap();
-
-		self::$cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
-		// Reset the curl handle because it is 0 at this point and not a valid
-		// resource
-		self::$client->getClient()->getCurlMulti()->reset(true);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -113,6 +124,8 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 			// Close the database connections again this test
 			$this->db->sql_close();
 		}
+
+		self::$cookieJar->clear();
 	}
 
 	/**
