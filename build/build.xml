@@ -291,6 +291,18 @@
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
 
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/tests" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/docs" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/build" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.gitignore" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.travis.yml" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpdox.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpmd.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/README.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/UPGRADE.md" />
+
 		<delete dir="${dir}/vendor/psr/log/Psr/Log/Test" />
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
 		<delete file="${dir}/vendor/psr/log/README.md" />
@@ -365,6 +377,12 @@
 		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.markdown" />
+
+		<delete file="${dir}/vendor/symfony/zendframework/zend-code/Zend/Code/README.md" />
+
+		<delete file="${dir}/vendor/symfony/zendframework/zend-eventmanager/Zend/EventManager/README.md" />
+
+		<delete file="${dir}/vendor/symfony/zendframework/zend-stdlib/Zend/Stdlib/README.md" />
 	</target>
 
 	<target name="clean-diff-dir">

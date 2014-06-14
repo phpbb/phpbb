@@ -317,6 +317,11 @@ services:
             - @php_ini
             - @mimetype.guesser
 
+    proxy.factory:
+        class: phpbb\proxy\factory
+        arguments:
+            - %core.root_path%
+
     request:
         class: phpbb\request\request
 
@@ -333,6 +338,7 @@ services:
             - @user
             - @template_context
             - @ext.manager
+            - @proxy.factory
 
     template_context:
         class: phpbb\template\context
