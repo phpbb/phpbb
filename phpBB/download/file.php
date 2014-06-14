@@ -11,10 +11,6 @@
 *
 */
 
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-
 /**
 * @ignore
 */
@@ -273,7 +269,7 @@ else if ($download_id)
 		if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
 		{
 			send_status_line(403, 'Forbidden');
-			trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
+			trigger_error(sprintf($user->lang('EXTENSION_DISABLED_AFTER_POSTING'), $attachment['extension']));
 		}
 	}
 
@@ -314,7 +310,7 @@ else if ($download_id)
 			if (!@is_dir($phpbb_root_path . $config['upload_path']))
 			{
 				send_status_line(500, 'Internal Server Error');
-				trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
+				trigger_error($user->lang('PHYSICAL_DOWNLOAD_NOT_POSSIBLE'));
 			}
 
 			redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
@@ -454,7 +450,7 @@ else
 	if (!$files_added && !empty($disallowed_extension))
 	{
 		// None of the attachments had a valid extension
-		$disallowed_extension = implode($user->lang['COMMA_SEPARATOR'], $disallowed_extension);
+		$disallowed_extension = implode($user->lang('COMMA_SEPARATOR'), $disallowed_extension);
 		send_status_line(403, 'Forbidden');
 		trigger_error($user->lang('EXTENSION_DISABLED_AFTER_POSTING', $disallowed_extension));
 	}
