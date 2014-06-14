@@ -11,6 +11,8 @@
 *
 */
 use Symfony\Component\BrowserKit\CookieJar;
+use \Behat\Mink\Driver\Goutte\Client;
+use \Behat\Mink\Driver\GoutteDriver;
 
 class phpbb_functional_test_case extends phpbb_mink_test_case
 {
@@ -42,7 +44,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		self::$root_url = self::$config['phpbb_functional_url'];
 
 		self::$cookieJar = new CookieJar;
-		self::$client = new \Behat\Mink\Driver\Goutte\Client(array(), null, self::$cookieJar);
+		self::$client = new Client(array(), null, self::$cookieJar);
 
 		$client_options = array(
 			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
@@ -57,7 +59,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		// resource
 		self::$client->getClient()->getCurlMulti()->reset(true);
 
-		self::$driver = new \Behat\Mink\Driver\GoutteDriver(self::$client);
+		self::$driver = new GoutteDriver(self::$client);
 
 		// Important: this is used both for installation and by
 		// test cases for querying the tables.
