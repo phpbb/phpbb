@@ -21,6 +21,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class service_collection extends \ArrayObject
 {
 	/**
+	* @var \Symfony\Component\DependencyInjection\ContainerInterface
+	*/
+	protected $container;
+
+	/**
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
@@ -59,7 +64,7 @@ class service_collection extends \ArrayObject
 	public function offsetGet($index)
 	{
 		$task = parent::offsetGet($index);
-		if ($task == null)
+		if ($task === null)
 		{
 			$task = $this->container->get($index);
 			$this->offsetSet($index, $task);
