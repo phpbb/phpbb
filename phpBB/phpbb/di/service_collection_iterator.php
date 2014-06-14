@@ -41,14 +41,6 @@ class service_collection_iterator extends \ArrayIterator
 	*/
 	public function current()
 	{
-		$task = parent::current();
-		if ($task === null)
-		{
-			$name = $this->key();
-			$task = $this->collection->offsetGet($name);
-			$this->offsetSet($name, $task);
-		}
-
-		return $task;
+		return $this->collection->offsetGet($this->key());
 	}
 }
