@@ -969,6 +969,25 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 		text-align: right !important;
 	}
 
+	/* User profile
+	----------------------------------------*/
+	.rtl .column1, .rtl .column2, .rtl .left-box.profile-details {
+		float: none;
+	}
+
+	@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+	{
+		.rtl dl.details dt, .rtl dl.details dd {
+			float: none;
+			text-align: right;	
+		}
+
+		.rtl dl.details dd {
+			margin-left: 0;
+			margin-right: 20px;
+		}
+	}
+
 	/* Post
 	----------------------------------------*/
 	.rtl .postprofile, .rtl .postbody, .rtl .search .postbody {
