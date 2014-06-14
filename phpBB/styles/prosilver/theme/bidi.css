@@ -968,4 +968,20 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	.rtl table.responsive td {
 		text-align: right !important;
 	}
+
+	/* Post
+	----------------------------------------*/
+	.rtl .postprofile, .rtl .postbody, .rtl .search .postbody {
+		float: none;
+	}
+
+	.rtl .post .postprofile {
+		border-width: 0 0 1px 0;
+	}
+
+	.rtl .postprofile .avatar {
+		float: right;
+		margin-left: 5px;
+		margin-right: 0;
+	}
 }
