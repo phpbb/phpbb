@@ -5311,7 +5311,7 @@ function phpbb_convert_30_dbms_to_31($dbms)
 	// true for mysqli class.
 	// However, per the docblock any valid 3.1 driver name should be
 	// recognized by this function, and have priority over 3.0 dbms.
-	if (class_exists('phpbb\db\driver\\' . $dbms))
+	if (strpos($dbms, 'phpbb\db\driver') === false && class_exists('phpbb\db\driver\\' . $dbms))
 	{
 		return 'phpbb\db\driver\\' . $dbms;
 	}
