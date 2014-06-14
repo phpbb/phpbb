@@ -226,23 +226,6 @@ dd.option {
 	font-size: 1.1em;
 }
 
-/* Container for post/reply buttons and pagination */
-.topic-actions {
-	margin-bottom: 3px;
-	font-size: 1.1em;
-	height: 28px;
-	min-height: 28px;
-}
-div[class].topic-actions {
-	height: auto;
-}
-
-.topic-actions:after {
-	content: '';
-	clear: both;
-	display: block;
-}
-
 /* Post body styles
 ----------------------------------------*/
 .postbody {
@@ -784,7 +767,7 @@ dl.pmlist dd {
 	margin-bottom: 2px;
 }
 
-.topic-actions div.dl_links {
+.action-bar div.dl_links {
 	padding: 10px 0 0 10px;
 }
 

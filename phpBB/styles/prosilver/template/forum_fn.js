@@ -25,20 +25,12 @@ function popup(url, width, height, name) {
 /**
 * Jump to page
 */
-function jumpto(item) {
-	if (!item || !item.length) {
-		item = $('a.pagination-trigger[data-lang-jump-page]');
-		if (!item.length) {
-			return;
-		}
-	}
+function pageJump(item) {
 
-	var jump_page = item.attr('data-lang-jump-page'),
-		on_page = item.attr('data-on-page'),
+	var page = item.val(),
 		per_page = item.attr('data-per-page'),
 		base_url = item.attr('data-base-url'),
-		start_name = item.attr('data-start-name'),
-		page = prompt(jump_page, on_page);
+		start_name = item.attr('data-start-name');
 
 	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0) {
 		if (base_url.indexOf('?') === -1) {
@@ -363,8 +355,26 @@ function parse_document(container)
 	/**
 	* Pagination
 	*/
-	container.find('a.pagination-trigger').click(function() {
-		jumpto($(this));
+	container.find('.pagination .page-jump-form :button').click(function() {
+		$input = $(this).siblings('input.inputbox');
+		pageJump($input);
+	});
+
+	container.find('.pagination .page-jump-form input.inputbox').on('keypress', function(event) {
+		if (event.which == 13 || event.keyCode == 13) {
+			event.preventDefault();
+			pageJump($(this));
+		}
+	});
+
+	container.find('.pagination .dropdown-trigger').click(function() {
+		$dropdown_container = $(this).parent();
+		// Wait a little bit to make sure the dropdown has activated
+		setTimeout(function() { 
+			if ($dropdown_container.hasClass('dropdown-visible')) {
+				$dropdown_container.find('input.inputbox').focus();
+			}
+		},100);
 	});
 
 	/**

@@ -159,15 +159,13 @@
 	</tbody>
 	</table>
 
-	<ul class="linklist">
-		<li class="leftside pagination">
-			<!-- IF .pagination --> 
-				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
-				{PAGE_NUMBER}
-			<!-- ENDIF -->
-		</li>
-	</ul>
+	<!-- IF .pagination -->
+	<div class="action-bar bottom">
+		<div class="pagination"> 
+			<!-- INCLUDE pagination.html -->
+		</div>
+	</div>
+	<!-- ENDIF -->
 
 	</div>
 </div>

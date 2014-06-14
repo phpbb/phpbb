@@ -35,7 +35,7 @@
 <!-- ENDIF -->
 
 <!-- IF S_DISPLAY_POST_INFO or .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
-	<div class="topic-actions" <!-- IF S_HAS_SUBFORUM -->style="margin-top: 2em;"<!-- ENDIF -->>
+	<div class="action-bar top" <!-- IF S_HAS_SUBFORUM -->style="margin-top: 2em;"<!-- ENDIF -->>
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
 		<div class="buttons">
@@ -58,12 +58,12 @@
 	<!-- ENDIF -->
 
 	<div class="pagination">
-		<!-- IF not S_IS_BOT and U_MARK_TOPICS and .topicrow --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="mark_topics_read">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
-		{TOTAL_TOPICS} &bull; 
+		<!-- IF not S_IS_BOT and U_MARK_TOPICS and .topicrow --><a href="{U_MARK_TOPICS}" class="mark" accesskey="m" data-ajax="mark_topics_read">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
+		{TOTAL_TOPICS} 
 		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
 		<!-- ELSE -->
-			{PAGE_NUMBER}
+			&bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
 
@@ -208,8 +208,6 @@
 <!-- IF S_SELECT_SORT_DAYS and not S_DISPLAY_ACTIVE -->
 	<form method="post" action="{S_FORUM_ACTION}">
 		<fieldset class="display-options">
-			<!-- IF U_PREVIOUS_PAGE --><a href="{U_PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
-			<!-- IF U_NEXT_PAGE --><a href="{U_NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 	<!-- IF not S_IS_BOT -->
 			<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
@@ -222,7 +220,7 @@
 <!-- ENDIF -->
 
 <!-- IF .topicrow and not S_DISPLAY_ACTIVE -->
-	<div class="topic-actions">
+	<div class="action-bar bottom">
 		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
 			<div class="buttons">
 				<a href="{U_POST_NEW_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
@@ -233,11 +231,11 @@
 
 		<div class="pagination">
 			<!-- IF not S_IS_BOT and U_MARK_TOPICS and .topicrow --><a href="{U_MARK_TOPICS}" data-ajax="mark_topics_read">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
-			{TOTAL_TOPICS} &bull; 
+			{TOTAL_TOPICS} 
 			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->
-				{PAGE_NUMBER}
+				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
 	</div>

@@ -7,19 +7,17 @@
 <div class="panel">
 	<div class="inner">
 
-	<ul class="linklist">
-		<li class="leftside">
-			{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
-		</li>
-		<li class="rightside pagination">
-			<!-- IF TOTAL -->{TOTAL} &bull; <!-- ENDIF -->
+	<div class="action-bar top">
+		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		<div class="pagination">
+			{TOTAL}
 			<!-- IF .pagination --> 
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE --> 
-				{PAGE_NUMBER}
+				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
-		</li>
-	</ul>
+		</div>
+	</div>
 
 	<table class="table1">
 	<thead>
@@ -54,8 +52,6 @@
 
 	<!-- IF .log -->
 		<fieldset class="display-options">
-			<!-- IF U_NEXT_PAGE --><a href="{U_NEXT_PAGE}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-			<!-- IF U_PREVIOUS_PAGE --><a href="{U_PREVIOUS_PAGE}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
 			<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR}</label>
@@ -64,16 +60,17 @@
 
 		<hr />
 
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL -->{TOTAL} &bull; <!-- ENDIF -->
+		<div class="action-bar bottom">
+			<div class="pagination">
+				{TOTAL}
 				<!-- IF .pagination --> 
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE --> 
-					{PAGE_NUMBER}
+					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
-			</li>
-		</ul>
+			</div>
+		</div>
+
 		{S_FORM_TOKEN}
 		</div>
 	</div>

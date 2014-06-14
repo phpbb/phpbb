@@ -206,25 +206,38 @@
 .rtl .pagination {
 	text-align: left;
 	float: left;
-	padding-left: 5px;
+}
+
+.rtl .pagination > ul {
+	margin-left: 0;
+	margin-right: 5px;
 }
 
 /* Pagination in viewforum for multipage topics */
 .rtl .row .pagination {
 	background-position: 100% 50%;
 	float: left;
-	padding: 1px 15px 1px 0;
+	padding-left: 0;
+	padding-right: 15px;
+}
+
+.rtl .row .pagination > ul {
+	margin: 0;
 }
 
 .rtl .pagination span {
 	direction: ltr;
 }
 
-.rtl .pagination span.page-sep {
-	display: inline;
-	visibility: hidden;
-	position: absolute;
+.pagination li.page-jump {
+	margin-left: 5px;
+	margin-right: 0;
 }
+
+.pagination li.previous a { background-position: -50px 2px; }
+.pagination li.next a { background-position: -30px 2px; }
+.pagination li.previous a:hover { background-position: -50px -18px; }
+.pagination li.next a:hover { background-position: -30px -18px; }
 
 /* Miscellaneous styles
 ---------------------------------------- */
@@ -243,6 +256,10 @@
 
 .rtl .forumbg {
 	width: 99%;	/* fix for IE6 */
+}
+
+.rtl .member-search {
+	float: right;
 }
 
 /**
@@ -622,10 +639,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl #cp-main .panel ol {
 	margin-right: 2em;
 	margin-left: 0;
-}
-
-.rtl #cp-main .pagination {
-	float: left;
 }
 
 .rtl #cp-main .buttons {
