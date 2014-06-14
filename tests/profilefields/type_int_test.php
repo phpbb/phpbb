@@ -114,29 +114,22 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
     {
         return array(
             array(
-                    '124',
-                    array('field_minlen' => 2, 'field_maxlen' => 4, 'field_required' => true),
+                    '15',
+                    array('field_minlen' => 10, 'field_maxlen' => 20, 'field_required' => true),
                     false,
-                    'Field should accept input of correct length',
+                    'Field should accept input of correct boundaries',
             ),
             array(
                     '556476',
-                    array('field_maxlen' => 4, 'field_required' => true),
-                    'FIELD_TOO_LARGE-4-field',
-                    'Field should reject value of greater length',
+                    array('field_maxlen' => 50000, 'field_required' => true),
+                    'FIELD_TOO_LARGE-50000-field',
+                    'Field should reject value of greater value than max',
             ),
             array(
                     '9',
-                    array('field_minlen' => 2, 'field_required' => true),
-                    'FIELD_TOO_SMALL-2-field',
-                    'Field should reject value which is less than defined minlength',
-            ),
-
-            array(
-                    '',
-                    array('field_required' => true),
-                    'FIELD_REQUIRED-field',
-                    'Field should reject value for being empty',
+                    array('field_minlen' => 10, 'field_required' => true),
+                    'FIELD_TOO_SMALL-10-field',
+                    'Field should reject value which is less than defined minimum',
             ),
         );
     }
