@@ -531,7 +531,7 @@ $s_quickmod_action = append_sid(
 		'start'		=> $start,
 		'quickmod'	=> 1,
 		'redirect'	=> urlencode(str_replace('&amp;', '&', $viewtopic_url)),
-	), 
+	),
 	true,
 	$user->session_id
 );
