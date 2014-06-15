@@ -54,8 +54,8 @@ class db
 	*
 	* You have to call acquire() to actually create the lock.
 	*
-	* @param	string	$config_name	A config variable to be used for locking
-	* @param	array	$config			The phpBB configuration
+	* @param	string								$config_name	A config variable to be used for locking
+	* @param	\phpbb\config\config				$config			The phpBB configuration
 	* @param	\phpbb\db\driver\driver_interface	$db				A database connection
 	*/
 	public function __construct($config_name, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
