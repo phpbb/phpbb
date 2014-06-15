@@ -40,7 +40,7 @@
 }
 
 .dropdown-select:after {
-	background-position: -103px 10px;
+	background-position: -143px 10px;
 	border-left: 1px solid;
 	content: '';
 	position: absolute;
@@ -51,7 +51,7 @@
 }
 
 .dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
-	background-position: -103px -10px;
+	background-position: -143px -10px;
 }
 
 .buttons, .buttons .button {
@@ -92,15 +92,18 @@
 	width: 16px;
 }
 
+.dropdown-visible .tools-icon:before,
+.nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
+
 .sort-icon:before {
-	background-position: -999px 0;
+	background-position: -120px 0;
 	height: 16px;
 	margin-top: 2px;
 	width: 16px;
 }
 
-.dropdown-visible .tools-icon:before,
-.nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
+.dropdown-visible .sort-icon:before,
+.nojs .dropdown-container:hover .sort-icon:before			{ background-position: -120px -20px; }
 
 .search-icon:before											{ background-position: -245px 0; }
 .search-icon:hover:before									{ background-position: -245px -20px; }
@@ -223,20 +226,20 @@ ul.linklist.bulletin > li.small-icon:before {
 	margin-left: 0;
 }
 
-.quote-icon:before							{ background-position: -122px 0; }
-.quote-icon:hover:before					{ background-position: -122px -21px; }
-.edit-icon:before							{ background-position: -137px 0; }
-.edit-icon:hover:before						{ background-position: -137px -21px; }
-.warn-icon:before							{ background-position: -208px 0; }
-.warn-icon:hover:before						{ background-position: -208px -21px; }
-.delete-icon:before							{ background-position: -152px 0; }
-.delete-icon:hover:before					{ background-position: -152px -21px; }
-.report-icon:before							{ background-position: -165px 0; }
-.report-icon:hover:before					{ background-position: -165px -21px; }
-.info-icon:before							{ background-position: -175px 0; }
-.info-icon:hover:before						{ background-position: -175px -21px; }
-.button.responsive-menu-link:before			{ background-position: -191px 0; }
-.button.responsive-menu-link:hover:before	{ background-position: -191px -21px; }
+.quote-icon:before							{ background-position: -162px 0; }
+.quote-icon:hover:before					{ background-position: -162px -21px; }
+.edit-icon:before							{ background-position: -177px 0; }
+.edit-icon:hover:before						{ background-position: -177px -21px; }
+.warn-icon:before							{ background-position: -248px 0; }
+.warn-icon:hover:before						{ background-position: -248px -21px; }
+.delete-icon:before							{ background-position: -192px 0; }
+.delete-icon:hover:before					{ background-position: -192px -21px; }
+.report-icon:before							{ background-position: -205px 0; }
+.report-icon:hover:before					{ background-position: -205px -21px; }
+.info-icon:before							{ background-position: -215px 0; }
+.info-icon:hover:before						{ background-position: -215px -21px; }
+.button.responsive-menu-link:before			{ background-position: -231px 0; }
+.button.responsive-menu-link:hover:before	{ background-position: -231px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {

@@ -3,37 +3,35 @@
 	<div class="dropdown hidden">
 		<div class="pointer"><div class="pointer-inner"></div></div>
 		<div class="dropdown-contents">
-
-<!-- IF S_VIEWFORUM -->
-<form method="post" action="{S_FORUM_ACTION}">
-<!-- ELSEIF S_VIEWTOPIC -->
-<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
-<!-- ELSEIF S_IN_SEARCH -->
-<form method="post" action="{S_SEARCH_ACTION}">
-<!-- ENDIF -->
-
-<fieldset class="display-options">
-<!-- IF S_SORT_OPTIONS -->
-	<label for="sk">{L_SORT_BY}{L_COLON} <select name="sk" id="sk">{S_SORT_OPTIONS}</select></label>
-	<label>{L_SORT_DIRECTION}{L_COLON} <select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
-	<input class="button2" type="submit" name="sort" value="{L_SORT}" />
-<!-- ELSE -->
-	<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-	<!-- IF S_SELECT_SORT_KEY -->
-	<label>{L_SORT_BY}{L_COLON} {S_SELECT_SORT_KEY}</label>
-	<label>{L_SORT_DIRECTION}{L_COLON} {S_SELECT_SORT_DIR}</label>
-	<!-- ENDIF -->
-	<input type="submit" name="sort" value="{L_GO}" class="button2" />
-	<!-- IF S_IN_MCP and TOPIC_ID -->
-	<label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <strong>{L_ONLY_TOPIC}</strong></label>
-	<!-- ENDIF -->
-<!-- ENDIF -->
-</fieldset>
-
-<!-- IF S_VIEWFORUM or S_VIEWTOPIC or S_IN_SEARCH -->
-</form>
-<!-- ENDIF -->
-
+			<!-- IF S_VIEWFORUM -->
+			<form method="post" action="{S_FORUM_ACTION}">
+			<!-- ELSEIF S_VIEWTOPIC -->
+			<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
+			<!-- ELSEIF S_IN_SEARCH -->
+			<form method="post" action="{S_SEARCH_ACTION}">
+			<!-- ENDIF -->
+				<fieldset class="display-options">
+				<!-- IF S_SORT_OPTIONS -->
+					<label for="sk">{L_SORT_BY}{L_COLON} <select name="sk" id="sk">{S_SORT_OPTIONS}</select></label>
+					<label>{L_SORT_DIRECTION}{L_COLON} <select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
+					<hr class="dashed" />
+					<input class="button2" type="submit" name="sort" value="{L_SORT}" />
+				<!-- ELSE -->
+					<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
+					<!-- IF S_SELECT_SORT_KEY -->
+					<label>{L_SORT_BY}{L_COLON} {S_SELECT_SORT_KEY}</label>
+					<label>{L_SORT_DIRECTION}{L_COLON} {S_SELECT_SORT_DIR}</label>
+					<!-- ENDIF -->
+					<hr class="dashed" />
+					<!-- IF S_IN_MCP and TOPIC_ID -->
+					<label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <strong>{L_ONLY_TOPIC}</strong></label>
+					<!-- ENDIF -->
+					<input type="submit" name="sort" value="{L_GO}" class="button2" />
+				<!-- ENDIF -->
+				</fieldset>
+			<!-- IF S_VIEWFORUM or S_VIEWTOPIC or S_IN_SEARCH -->
+			</form>
+			<!-- ENDIF -->
 		</div>
 	</div>
 </div>

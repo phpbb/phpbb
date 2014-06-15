@@ -178,6 +178,7 @@ fieldset.display-options a {
 }
 
 .dropdown fieldset.display-options {
+	font-size: 1em;
 	margin: 0;
 	padding: 0;
 }
