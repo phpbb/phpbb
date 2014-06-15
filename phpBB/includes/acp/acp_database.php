@@ -26,8 +26,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $cache, $db, $user, $auth, $template, $table_prefix;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $cache, $db, $user, $template, $table_prefix, $phpbb_root_path;
 
 		$this->db_tools = new \phpbb\db\tools($db);
 
@@ -37,7 +36,6 @@ class acp_database
 		$this->page_title = 'ACP_DATABASE';
 
 		$action	= request_var('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
 
 		$template->assign_vars(array(
 			'MODE'	=> $mode
@@ -59,7 +57,7 @@ class acp_database
 
 						if (!sizeof($table))
 						{
-							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('TABLE_SELECT_ERROR') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$store = $download = $structure = $schema_data = false;
@@ -172,7 +170,7 @@ class acp_database
 							exit;
 						}
 
-						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
+						trigger_error($user->lang('BACKUP_SUCCESS') . adm_back_link($this->u_action));
 					break;
 
 					default:
@@ -227,14 +225,14 @@ class acp_database
 
 						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$file_name = $phpbb_root_path . 'store/' . $matches[0];
 
 						if (!file_exists($file_name) || !is_readable($file_name))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('BACKUP_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if ($delete)
@@ -243,11 +241,11 @@ class acp_database
 							{
 								unlink($file_name);
 								add_log('admin', 'LOG_DB_DELETE');
-								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
+								trigger_error($user->lang('BACKUP_DELETE') . adm_back_link($this->u_action));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
+								confirm_box(false, 'DELETE_SELECTED_BACKUP', build_hidden_fields(array('delete' => $delete, 'file' => $file)));
 							}
 						}
 						else if ($download || confirm_box(true))
@@ -363,7 +361,7 @@ class acp_database
 											{
 												if ($sub === false)
 												{
-													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
+													trigger_error($user->lang('RESTORE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
 												}
 												pg_put_line($db->get_db_connect_id(), $sub . "\n");
 											}
@@ -396,12 +394,12 @@ class acp_database
 							$cache->purge();
 
 							add_log('admin', 'LOG_DB_RESTORE');
-							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
+							trigger_error($user->lang('RESTORE_SUCCESS') . adm_back_link($this->u_action));
 							break;
 						}
 						else if (!$download)
 						{
-							confirm_box(false, $user->lang['RESTORE_SELECTED_BACKUP'], build_hidden_fields(array('file' => $file)));
+                            confirm_box(false, 'RESTORE_SELECTED_BACKUP', build_hidden_fields(array('file' => $file)));
 						}
 
 					default:
@@ -692,7 +690,7 @@ class mysql_extractor extends base_extractor
 				}
 				else
 				{
-					$query  .= ',(';
+					$query = ',(';
 				}
 
 				for ($j = 0; $j < $fields_cnt; $j++)
@@ -776,7 +774,7 @@ class mysql_extractor extends base_extractor
 				}
 				else
 				{
-					$query  .= ',(';
+					$query = ',(';
 				}
 
 				for ($j = 0; $j < $fields_cnt; $j++)
@@ -2026,8 +2024,6 @@ class oracle_extractor extends base_extractor
 			$ary_type[$i] = ocicolumntype($result, $i + 1);
 			$ary_name[$i] = ocicolumnname($result, $i + 1);
 		}
-
-		$sql_data = '';
 
 		while ($row = $db->sql_fetchrow($result))
 		{

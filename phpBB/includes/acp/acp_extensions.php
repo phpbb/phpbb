@@ -34,7 +34,7 @@ class acp_extensions
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx, $phpbb_log, $cache;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $cache;
 
 		$this->db = $db;
 		$this->config = $config;
@@ -94,12 +94,12 @@ class acp_extensions
 						'force_unstable'	=> $force_unstable,
 					));
 
-					confirm_box(false, $user->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+					confirm_box(false, 'EXTENSION_FORCE_UNSTABLE_CONFIRM', $s_hidden_fields);
 				}
 				else
 				{
 					$config->set('extension_force_unstable', false);
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 				break;
 
@@ -108,7 +108,7 @@ class acp_extensions
 				if (confirm_box(true))
 				{
 					$config->set('extension_force_unstable', true);
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 
 				$this->list_enabled_exts($phpbb_extension_manager);
@@ -129,12 +129,12 @@ class acp_extensions
 			case 'enable_pre':
 				if (!$md_manager->validate_dir())
 				{
-					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('EXTENSION_DIR_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('EXTENSION_NOT_AVAILABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->is_enabled($ext_name))
@@ -154,12 +154,12 @@ class acp_extensions
 			case 'enable':
 				if (!$md_manager->validate_dir())
 				{
-					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('EXTENSION_DIR_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('EXTENSION_NOT_AVAILABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->is_enabled($ext_name))

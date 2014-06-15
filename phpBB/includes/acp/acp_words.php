@@ -28,8 +28,7 @@ class acp_words
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $cache;
 
 		$user->add_lang('acp/posting');
 
@@ -54,7 +53,7 @@ class acp_words
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -85,7 +84,7 @@ class acp_words
 
 				if (!check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$word_id		= request_var('id', 0);
@@ -94,7 +93,7 @@ class acp_words
 
 				if ($word === '' || $replacement === '')
 				{
-					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('ENTER_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Replace multiple consecutive asterisks with single one as those are not needed
@@ -119,7 +118,7 @@ class acp_words
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
 				add_log('admin', $log_action, $word);
 
-				$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
+				$message = ($word_id) ? $user->lang('WORD_UPDATED') : $user->lang('WORD_ADDED');
 				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
@@ -130,7 +129,7 @@ class acp_words
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_WORD') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -150,11 +149,11 @@ class acp_words
 
 					add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
 
-					trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('WORD_REMOVED') . adm_back_link($this->u_action));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'id'		=> $word_id,

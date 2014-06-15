@@ -25,7 +25,7 @@ class acp_prune
 
 	function main($id, $mode)
 	{
-		global $user, $phpEx, $phpbb_admin_path, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_root_path;
 
 		$user->add_lang('acp/prune');
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -51,8 +51,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template;
 
 		$all_forums = request_var('all_forums', 0);
 		$forum_id = request_var('f', array(0));
@@ -161,7 +160,7 @@ class acp_prune
 			}
 			else
 			{
-				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields(array(
+				confirm_box(false, 'PRUNE_FORUM_CONFIRM', build_hidden_fields(array(
 					'i'				=> $id,
 					'mode'			=> $mode,
 					'submit'		=> 1,
@@ -198,7 +197,7 @@ class acp_prune
 			if (!$row)
 			{
 				$db->sql_freeresult($result);
-				trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$forum_list = $s_hidden_fields = '';
@@ -214,7 +213,7 @@ class acp_prune
 			$l_selected_forums = (sizeof($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
 
 			$template->assign_vars(array(
-				'L_SELECTED_FORUMS'		=> $user->lang[$l_selected_forums],
+				'L_SELECTED_FORUMS'		=> $user->lang($l_selected_forums),
 				'U_ACTION'				=> $this->u_action,
 				'U_BACK'				=> $this->u_action,
 				'FORUM_LIST'			=> $forum_list,
@@ -228,8 +227,8 @@ class acp_prune
 	*/
 	function prune_users($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('memberlist');
 
@@ -269,11 +268,11 @@ class acp_prune
 					}
 
 					add_log('admin', $l_log, implode(', ', $usernames));
-					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
+					$msg = $user->lang('USER_' . strtoupper($action) . '_SUCCESS');
 				}
 				else
 				{
-					$msg = $user->lang['USER_PRUNE_FAILURE'];
+					$msg = $user->lang('USER_PRUNE_FAILURE');
 				}
 
 				trigger_error($msg . adm_back_link($this->u_action));
@@ -286,7 +285,7 @@ class acp_prune
 
 				if (!sizeof($user_ids))
 				{
-					trigger_error($user->lang['USER_PRUNE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('USER_PRUNE_FAILURE') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Assign to template
@@ -305,7 +304,7 @@ class acp_prune
 					'S_DELETE'			=> ($action == 'delete') ? true : false,
 				));
 
-				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+				confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 					'i'				=> $id,
 					'mode'			=> $mode,
 					'prune'			=> 1,
@@ -316,7 +315,7 @@ class acp_prune
 			}
 		}
 
-		$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
+		$find_count = array('lt' => $user->lang('LESS_THAN'), 'eq' => $user->lang('EQUAL_TO'), 'gt' => $user->lang('MORE_THAN'));
 		$s_find_count = '';
 
 		foreach ($find_count as $key => $value)
@@ -325,7 +324,7 @@ class acp_prune
 			$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
 
-		$find_time = array('lt' => $user->lang['BEFORE'], 'gt' => $user->lang['AFTER']);
+		$find_time = array('lt' => $user->lang('BEFORE'), 'gt' => $user->lang('AFTER'));
 		$s_find_active_time = '';
 		foreach ($find_time as $key => $value)
 		{
@@ -349,7 +348,7 @@ class acp_prune
 		{
 			// Only prepend the "All groups" option if there are groups,
 			// otherwise we don't want to display this option at all.
-			$s_group_list = '<option value="0">' . $user->lang['PRUNE_USERS_GROUP_NONE'] . '</option>' . $s_group_list;
+			$s_group_list = '<option value="0">' . $user->lang('PRUNE_USERS_GROUP_NONE') . '</option>' . $s_group_list;
 		}
 
 		$template->assign_vars(array(
@@ -429,11 +428,10 @@ class acp_prune
 
 			if ((sizeof($active) && sizeof($active) != 3) || (sizeof($joined_before) && sizeof($joined_before) != 3) || (sizeof($joined_after) && sizeof($joined_after) != 3))
 			{
-				trigger_error($user->lang['WRONG_ACTIVE_JOINED_DATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('WRONG_ACTIVE_JOINED_DATE') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
-			$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
 
 			$where_sql = '';
 			$where_sql .= ($username) ? ' AND username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($username))) : '';

@@ -263,7 +263,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $template, $user, $db, $phpbb_container;
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		// Define names for template loops, might be able to be set
@@ -297,7 +297,7 @@ class auth_admin extends \phpbb\auth\auth
 		$ug_names_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['ug_name']] : $row['ug_name']);
+			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : (($row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $row['ug_name']) : $row['ug_name']);
 		}
 		$db->sql_freeresult($result);
 
@@ -407,7 +407,7 @@ class auth_admin extends \phpbb\auth\auth
 				{
 					if ($groups[$row['group_id']]['group_type'] == GROUP_SPECIAL)
 					{
-						$user_groups_default[$row['user_id']][] = $user->lang['G_' . $groups[$row['group_id']]['group_name']];
+						$user_groups_default[$row['user_id']][] = $user->lang('G_' . $groups[$row['group_id']]['group_name']);
 					}
 					else
 					{
@@ -470,8 +470,8 @@ class auth_admin extends \phpbb\auth\auth
 					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
 					{
-						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
-						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang($role_row['role_description']) : nl2br($role_row['role_description']);
+						$role_name = $user->lang($role_row['role_name']);
 
 						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
 						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
@@ -479,7 +479,7 @@ class auth_admin extends \phpbb\auth\auth
 
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang('NO_ROLE_ASSIGNED_EXPLAIN')) . '">' . $user->lang('NO_ROLE_ASSIGNED') . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -532,8 +532,8 @@ class auth_admin extends \phpbb\auth\auth
 					'NAME'			=> $ug_name,
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
-					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && sizeof($user_groups_default[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_default[$ug_id]) : '',
-					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && sizeof($user_groups_custom[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_custom[$ug_id]) : '',
+					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && sizeof($user_groups_default[$ug_id])) ? implode($user->lang('COMMA_SEPARATOR'), $user_groups_default[$ug_id]) : '',
+					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && sizeof($user_groups_custom[$ug_id])) ? implode($user->lang('COMMA_SEPARATOR'), $user_groups_custom[$ug_id]) : '',
 					'L_ACL_TYPE'			=> $l_acl_type,
 
 					'S_LOCAL'		=> ($local) ? true : false,
@@ -556,8 +556,8 @@ class auth_admin extends \phpbb\auth\auth
 					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
 					{
-						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
-						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang($role_row['role_description']) : nl2br($role_row['role_description']);
+						$role_name = $user->lang($role_row['role_name']);
 
 						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
 						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
@@ -565,7 +565,7 @@ class auth_admin extends \phpbb\auth\auth
 
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang('NO_ROLE_ASSIGNED_EXPLAIN')) . '">' . $user->lang('NO_ROLE_ASSIGNED') . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -608,7 +608,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function display_role_mask(&$hold_ary)
 	{
-		global $db, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $template, $user, $phpbb_root_path, $phpEx;
 
 		if (!sizeof($hold_ary))
 		{
@@ -635,7 +635,7 @@ class auth_admin extends \phpbb\auth\auth
 			$auth_ary = $hold_ary[$forum_id];
 
 			$template->assign_block_vars('role_mask', array(
-				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_name,
+				'NAME'				=> ($forum_id == 0) ? $user->lang('GLOBAL_MASK') : $forum_name,
 				'FORUM_ID'			=> $forum_id)
 			);
 
@@ -670,7 +670,7 @@ class auth_admin extends \phpbb\auth\auth
 				{
 					$template->assign_block_vars('role_mask.groups', array(
 						'GROUP_ID'		=> $row['group_id'],
-						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
+						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $row['group_name']) : $row['group_name'],
 						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g={$row['group_id']}"))
 					);
 				}
@@ -1103,7 +1103,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
 	{
-		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
+		global $template, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
@@ -1181,7 +1181,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
 	{
-		global $user, $phpbb_container;
+		global $phpbb_container;
 
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 

@@ -31,8 +31,8 @@ class acp_users
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $config, $db, $user, $auth, $template;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $phpbb_dispatcher, $request;
 		global $phpbb_container;
 
@@ -62,7 +62,7 @@ class acp_users
 			$ipwhois = user_ipwhois($user_ip);
 
 			$template->assign_vars(array(
-				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], $domain),
+				'MESSAGE_TITLE'		=> $user->lang('IP_WHOIS_FOR', $domain),
 				'MESSAGE_TEXT'		=> nl2br($ipwhois))
 			);
 
@@ -96,7 +96,7 @@ class acp_users
 
 			if (!$user_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('NO_USER') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -112,7 +112,7 @@ class acp_users
 
 		if (!$user_row)
 		{
-			trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_USER') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Generate overall "header" for user admin
@@ -142,7 +142,7 @@ class acp_users
 		foreach ($dropdown_modes as $module_mode => $null)
 		{
 			$selected = ($mode == $module_mode) ? ' selected="selected"' : '';
-			$s_form_options .= '<option value="' . $module_mode . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($module_mode)] . '</option>';
+			$s_form_options .= '<option value="' . $module_mode . '"' . $selected . '>' . $user->lang('ACP_USER_' . strtoupper($module_mode)) . '</option>';
 		}
 
 		$template->assign_vars(array(
@@ -156,7 +156,7 @@ class acp_users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NOT_MANAGE_FOUNDER') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$this->page_title = $user_row['username'] . ' :: ' . $user->lang('ACP_USER_' . strtoupper($mode));
@@ -179,24 +179,24 @@ class acp_users
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						// Check if the user wants to remove himself or the guest user account
 						if ($user_id == ANONYMOUS)
 						{
-							trigger_error($user->lang['CANNOT_REMOVE_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('CANNOT_REMOVE_ANONYMOUS') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						// Founders can not be deleted.
 						if ($user_row['user_type'] == USER_FOUNDER)
 						{
-							trigger_error($user->lang['CANNOT_REMOVE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('CANNOT_REMOVE_FOUNDER') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						if ($user_id == $user->data['user_id'])
 						{
-							trigger_error($user->lang['CANNOT_REMOVE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('CANNOT_REMOVE_YOURSELF') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						if ($delete_type)
@@ -206,11 +206,11 @@ class acp_users
 								user_delete($delete_type, $user_id, $user_row['username']);
 
 								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
-								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
+								trigger_error($user->lang('USER_DELETED') . adm_back_link($this->u_action));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 									'u'				=> $user_id,
 									'i'				=> $id,
 									'mode'			=> $mode,
@@ -223,7 +223,7 @@ class acp_users
 						}
 						else
 						{
-							trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('NO_MODE') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 					}
 
@@ -236,22 +236,22 @@ class acp_users
 
 							if ($user_id == $user->data['user_id'])
 							{
-								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_BAN_YOURSELF') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_id == ANONYMOUS)
 							{
-								trigger_error($user->lang['CANNOT_BAN_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_BAN_ANONYMOUS') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
-								trigger_error($user->lang['CANNOT_BAN_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_BAN_FOUNDER') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if (!check_form_key($form_name))
 							{
-								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$ban = array();
@@ -289,13 +289,13 @@ class acp_users
 								break;
 							}
 
-							$ban_reason = utf8_normalize_nfc(request_var('ban_reason', $user->lang[$reason], true));
+							$ban_reason = utf8_normalize_nfc(request_var('ban_reason', $user->lang($reason), true));
 							$ban_give_reason = utf8_normalize_nfc(request_var('ban_give_reason', '', true));
 
 							// Log not used at the moment, we simply utilize the ban function.
 							$result = user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
 
-							trigger_error((($result === false) ? $user->lang['BAN_ALREADY_ENTERED'] : $user->lang['BAN_SUCCESSFUL']) . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error((($result === false) ? $user->lang('BAN_ALREADY_ENTERED') : $user->lang('BAN_SUCCESSFUL')) . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -303,22 +303,22 @@ class acp_users
 
 							if ($user_id == $user->data['user_id'])
 							{
-								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_FORCE_REACT_YOURSELF') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if (!check_form_key($form_name))
 							{
-								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
-								trigger_error($user->lang['CANNOT_FORCE_REACT_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_FORCE_REACT_FOUNDER') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_IGNORE)
 							{
-								trigger_error($user->lang['CANNOT_FORCE_REACT_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_FORCE_REACT_BOT') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($config['email_enable'])
@@ -359,7 +359,7 @@ class acp_users
 								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
-									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+									'WELCOME_MSG'	=> htmlspecialchars_decode($user->lang('WELCOME_SUBJECT', $config['sitename'])),
 									'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);
@@ -369,7 +369,7 @@ class acp_users
 								add_log('admin', 'LOG_USER_REACTIVATE', $user_row['username']);
 								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
 
-								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang('FORCE_REACTIVATION_SUCCESS') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 
 						break;
@@ -379,22 +379,22 @@ class acp_users
 							if ($user_id == $user->data['user_id'])
 							{
 								// It is only deactivation since the user is already activated (else he would not have reached this page)
-								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_DEACTIVATE_YOURSELF') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if (!check_form_key($form_name))
 							{
-								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
-								trigger_error($user->lang['CANNOT_DEACTIVATE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_DEACTIVATE_FOUNDER') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_IGNORE)
 							{
-								trigger_error($user->lang['CANNOT_DEACTIVATE_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('CANNOT_DEACTIVATE_BOT') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							user_active_flip('flip', $user_id);
@@ -430,7 +430,7 @@ class acp_users
 							add_log('admin', $log, $user_row['username']);
 							add_log('user', $user_id, $log . '_USER');
 
-							trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang($message) . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -438,7 +438,7 @@ class acp_users
 
 							if (!check_form_key($form_name))
 							{
-								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$sql_ary = array(
@@ -454,7 +454,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
 
-							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang('USER_ADMIN_SIG_REMOVED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -462,7 +462,7 @@ class acp_users
 
 							if (!check_form_key($form_name))
 							{
-								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$sql_ary = array(
@@ -488,7 +488,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_AVATAR_USER');
 
-							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang('USER_ADMIN_AVATAR_REMOVED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						break;
 
 						case 'delposts':
@@ -499,11 +499,11 @@ class acp_users
 								delete_posts('poster_id', $user_id);
 
 								add_log('admin', 'LOG_USER_DEL_POSTS', $user_row['username']);
-								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang('USER_POSTS_DELETED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 									'u'				=> $user_id,
 									'i'				=> $id,
 									'mode'			=> $mode,
@@ -521,11 +521,11 @@ class acp_users
 								delete_attachments('user', $user_id);
 
 								add_log('admin', 'LOG_USER_DEL_ATTACH', $user_row['username']);
-								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang('USER_ATTACHMENTS_REMOVED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 									'u'				=> $user_id,
 									'i'				=> $id,
 									'mode'			=> $mode,
@@ -572,11 +572,11 @@ class acp_users
 								}
 								$db->sql_freeresult($result);
 
-								trigger_error($user->lang['USER_OUTBOX_' . $lang] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang('USER_OUTBOX_' . $lang) . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 									'u'				=> $user_id,
 									'i'				=> $id,
 									'mode'			=> $mode,
@@ -590,7 +590,7 @@ class acp_users
 
 							if (!check_form_key($form_name))
 							{
-								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$user->add_lang('acp/forums');
@@ -621,12 +621,12 @@ class acp_users
 
 							if (!$forum_info)
 							{
-								trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('NO_FORUM') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($forum_info['forum_type'] != FORUM_POST)
 							{
-								trigger_error($user->lang['MOVE_POSTS_NO_POSTABLE_FORUM'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('MOVE_POSTS_NO_POSTABLE_FORUM') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							// Two stage?
@@ -740,7 +740,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
 
-							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang('USER_POSTS_MOVED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -751,11 +751,11 @@ class acp_users
 								remove_newly_registered($user_id, $user_row);
 
 								add_log('admin', 'LOG_USER_REMOVED_NR', $user_row['username']);
-								trigger_error($user->lang['USER_LIFTED_NR'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang('USER_LIFTED_NR') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 									'u'				=> $user_id,
 									'i'				=> $id,
 									'mode'			=> $mode,
@@ -854,12 +854,12 @@ class acp_users
 									// Make sure the user is not setting an Inactive or ignored user to be a founder
 									if ($user_row['user_type'] == USER_IGNORE)
 									{
-										trigger_error($user->lang['CANNOT_SET_FOUNDER_IGNORED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+										trigger_error($user->lang('CANNOT_SET_FOUNDER_IGNORED') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 
 									if ($user_row['user_type'] == USER_INACTIVE)
 									{
-										trigger_error($user->lang['CANNOT_SET_FOUNDER_INACTIVE'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+										trigger_error($user->lang('CANNOT_SET_FOUNDER_INACTIVE') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 
 									$sql_ary['user_type'] = USER_FOUNDER;
@@ -881,7 +881,7 @@ class acp_users
 									}
 									else
 									{
-										trigger_error($user->lang['AT_LEAST_ONE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+										trigger_error($user->lang('AT_LEAST_ONE_FOUNDER') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 								}
 							}
@@ -946,7 +946,7 @@ class acp_users
 
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
 
-						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang('USER_OVERVIEW_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1013,10 +1013,10 @@ class acp_users
 				$vars = array('user_row', 'quick_tool_ary');
 				extract($phpbb_dispatcher->trigger_event('core.acp_users_display_overview', compact($vars)));
 
-				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
+				$s_action_options = '<option class="sep" value="">' . $user->lang('SELECT_OPTION') . '</option>';
 				foreach ($quick_tool_ary as $value => $lang)
 				{
-					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
+					$s_action_options .= '<option value="' . $value . '">' . $user->lang('USER_ADMIN_' . $lang) . '</option>';
 				}
 
 				$last_active = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
@@ -1024,24 +1024,24 @@ class acp_users
 				$inactive_reason = '';
 				if ($user_row['user_type'] == USER_INACTIVE)
 				{
-					$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
+					$inactive_reason = $user->lang('INACTIVE_REASON_UNKNOWN');
 
 					switch ($user_row['user_inactive_reason'])
 					{
 						case INACTIVE_REGISTER:
-							$inactive_reason = $user->lang['INACTIVE_REASON_REGISTER'];
+							$inactive_reason = $user->lang('INACTIVE_REASON_REGISTER');
 						break;
 
 						case INACTIVE_PROFILE:
-							$inactive_reason = $user->lang['INACTIVE_REASON_PROFILE'];
+							$inactive_reason = $user->lang('INACTIVE_REASON_PROFILE');
 						break;
 
 						case INACTIVE_MANUAL:
-							$inactive_reason = $user->lang['INACTIVE_REASON_MANUAL'];
+							$inactive_reason = $user->lang('INACTIVE_REASON_MANUAL');
 						break;
 
 						case INACTIVE_REMIND:
-							$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+							$inactive_reason = $user->lang('INACTIVE_REASON_REMIND');
 						break;
 					}
 				}
@@ -1118,7 +1118,7 @@ class acp_users
 				{
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					$where_sql = '';
@@ -1149,19 +1149,19 @@ class acp_users
 				{
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
 
-					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+					trigger_error($user->lang('USER_FEEDBACK_ADDED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
 
 				// Sorting
-				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-				$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+				$limit_days = array(0 => $user->lang('ALL_ENTRIES'), 1 => $user->lang('1_DAY'), 7 => $user->lang('7_DAYS'), 14 => $user->lang('2_WEEKS'), 30 => $user->lang('1_MONTH'), 90 => $user->lang('3_MONTHS'), 180 => $user->lang('6_MONTHS'), 365 => $user->lang('1_YEAR'));
+				$sort_by_text = array('u' => $user->lang('SORT_USERNAME'), 't' => $user->lang('SORT_DATE'), 'i' => $user->lang('SORT_IP'), 'o' => $user->lang('SORT_ACTION'));
 				$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -1205,17 +1205,10 @@ class acp_users
 				$user->add_lang('mcp');
 
 				// Set up general vars
-				$start		= request_var('start', 0);
 				$deletemark	= (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$confirm	= (isset($_POST['confirm'])) ? true : false;
 				$marked		= request_var('mark', array(0));
-				$message	= utf8_normalize_nfc(request_var('message', '', true));
-
-				// Sort keys
-				$sort_days	= request_var('st', 0);
-				$sort_key	= request_var('sk', 't');
-				$sort_dir	= request_var('sd', 'd');
 
 				// Delete entries if requested and able
 				if ($deletemark || $deleteall || $confirm)
@@ -1281,7 +1274,7 @@ class acp_users
 						}
 						if (isset($_POST['delall']) || (isset($_POST['delmarked']) && sizeof($marked)))
 						{
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+							confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields($s_hidden_fields));
 						}
 					}
 				}
@@ -1301,11 +1294,11 @@ class acp_users
 					if (!$row['log_operation'])
 					{
 						// We do not have a log-entry anymore, so there is no data available
-						$row['action'] = $user->lang['USER_WARNING_LOG_DELETED'];
+						$row['action'] = $user->lang('USER_WARNING_LOG_DELETED');
 					}
 					else
 					{
-						$row['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
+						$row['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang($row['log_operation']) : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
 						if (!empty($row['log_data']))
 						{
 							$log_data_ary = @unserialize($row['log_data']);
@@ -1417,7 +1410,7 @@ class acp_users
 						// Update Custom Fields
 						$cp->update_profile_field_data($user_id, $cp_data);
 
-						trigger_error($user->lang['USER_PROFILE_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang('USER_PROFILE_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1437,7 +1430,6 @@ class acp_users
 					$selected = ($i == $data['bday_month']) ? ' selected="selected"' : '';
 					$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
-				$s_birthday_year_options = '';
 
 				$now = getdate();
 				$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';
@@ -1613,7 +1605,7 @@ class acp_users
 								}
 							}
 
-							trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang('USER_PREFS_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						}
 					}
 
@@ -1625,7 +1617,7 @@ class acp_users
 				foreach ($user->lang['dateformats'] as $format => $null)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
-					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
+					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang('VARIANT_DATE_SEPARATOR') . $user->format_date(time(), $format, true) : '');
 					$dateformat_options .= '</option>';
 				}
 
@@ -1637,17 +1629,9 @@ class acp_users
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
 				}
-				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+				$dateformat_options .= '>' . $user->lang('CUSTOM_DATEFORMAT') . '</option>';
 
-				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
-
-				// Topic ordering options
-				$limit_topic_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-				$sort_by_topic_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
-
-				// Post ordering options
-				$limit_post_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-				$sort_by_post_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+				$sort_dir_text = array('a' => $user->lang('ASCENDING'), 'd' => $user->lang('DESCENDING'));
 
 				$_options = array('topic', 'post');
 				foreach ($_options as $sort_option)
@@ -1776,7 +1760,7 @@ class acp_users
 										WHERE user_id = ' . (int) $user_id;
 
 									$db->sql_query($sql);
-									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+									trigger_error($user->lang('USER_AVATAR_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 								}
 							}
 							else
@@ -1800,12 +1784,12 @@ class acp_users
 									WHERE user_id = ' . (int) $user_id;
 
 								$db->sql_query($sql);
-								trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang('USER_AVATAR_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 						}
 						else
 						{
-							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 					}
 
@@ -1850,7 +1834,7 @@ class acp_users
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+					'L_AVATAR_EXPLAIN'	=> $user->lang('AVATAR_EXPLAIN', $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 
 					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 				));
@@ -1863,7 +1847,7 @@ class acp_users
 				{
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					$rank_id = request_var('user_rank', 0);
@@ -1873,7 +1857,7 @@ class acp_users
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
 
-					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+					trigger_error($user->lang('USER_RANK_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
 
 				$sql = 'SELECT *
@@ -1882,7 +1866,7 @@ class acp_users
 					ORDER BY rank_title';
 				$result = $db->sql_query($sql);
 
-				$s_rank_options = '<option value="0"' . ((!$user_row['user_rank']) ? ' selected="selected"' : '') . '>' . $user->lang['NO_SPECIAL_RANK'] . '</option>';
+				$s_rank_options = '<option value="0"' . ((!$user_row['user_rank']) ? ' selected="selected"' : '') . '>' . $user->lang('NO_SPECIAL_RANK') . '</option>';
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -1951,7 +1935,7 @@ class acp_users
 							WHERE user_id = ' . $user_id;
 						$db->sql_query($sql);
 
-						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang('USER_SIG_UPDATED') . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1979,11 +1963,11 @@ class acp_users
 					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? ' checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? ' checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
-					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
-					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? $user->lang('BBCODE_IS_ON', '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : $user->lang('BBCODE_IS_OFF', '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
+					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang('SMILIES_ARE_ON') : $user->lang('SMILIES_ARE_OFF'),
+					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang('IMAGES_ARE_ON') : $user->lang('IMAGES_ARE_OFF'),
+					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang('FLASH_IS_ON') : $user->lang('FLASH_IS_OFF'),
+					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang('URL_IS_ON') : $user->lang('URL_IS_OFF'),
 
 					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
 
@@ -2045,14 +2029,14 @@ class acp_users
 
 						delete_attachments('attach', $marked);
 
-						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
+						$message = (sizeof($log_attachments) == 1) ? $user->lang('ATTACHMENT_DELETED') : $user->lang('ATTACHMENTS_DELETED');
 
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang['COMMA_SEPARATOR'], $log_attachments));
+						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang('COMMA_SEPARATOR'), $log_attachments));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 							'u'				=> $user_id,
 							'i'				=> $id,
 							'mode'			=> $mode,
@@ -2063,10 +2047,10 @@ class acp_users
 					}
 				}
 
-				$sk_text = array('a' => $user->lang['SORT_FILENAME'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
+				$sk_text = array('a' => $user->lang('SORT_FILENAME'), 'c' => $user->lang('SORT_EXTENSION'), 'd' => $user->lang('SORT_SIZE'), 'e' => $user->lang('SORT_DOWNLOADS'), 'f' => $user->lang('SORT_POST_TIME'), 'g' => $user->lang('SORT_TOPIC_TITLE'));
 				$sk_sql = array('a' => 'a.real_filename', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
-				$sd_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+				$sd_text = array('a' => $user->lang('ASCENDING'), 'd' => $user->lang('DESCENDING'));
 
 				$s_sort_key = '';
 				foreach ($sk_text as $key => $value)
@@ -2170,12 +2154,8 @@ class acp_users
 
 					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
 					{
-						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang('NOT_ALLOWED_MANAGE_GROUP') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
-				}
-				else
-				{
-					$founder_manage = 0;
 				}
 
 				switch ($action)
@@ -2185,7 +2165,7 @@ class acp_users
 					case 'default':
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 						group_user_attributes($action, $group_id, $user_id);
 
@@ -2201,12 +2181,12 @@ class acp_users
 						{
 							if (!$group_id)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($error = group_user_del($group_id, $user_id))
 							{
-								trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang($error) . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$error = array();
@@ -2223,7 +2203,7 @@ class acp_users
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 								'u'				=> $user_id,
 								'i'				=> $id,
 								'mode'			=> $mode,
@@ -2240,13 +2220,13 @@ class acp_users
 						{
 							if (!$group_id)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+								trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 							group_user_attributes($action, $group_id, $user_id);
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 								'u'				=> $user_id,
 								'i'				=> $id,
 								'mode'			=> $mode,
@@ -2264,18 +2244,18 @@ class acp_users
 
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					if (!$group_id)
 					{
-						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					// Add user/s to group
 					if ($error = group_user_add($group_id, $user_id))
 					{
-						trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						trigger_error($user->lang($error) . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					$error = array();
@@ -2325,7 +2305,7 @@ class acp_users
 						continue;
 					}
 
-					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $row['group_name']) : $row['group_name']) . '</option>';
 				}
 				$db->sql_freeresult($result);
 
@@ -2336,7 +2316,7 @@ class acp_users
 					{
 						$template->assign_block_vars('group', array(
 							'S_NEW_GROUP_TYPE'		=> true,
-							'GROUP_TYPE'			=> $user->lang['USER_GROUP_' . strtoupper($group_type)])
+							'GROUP_TYPE'			=> $user->lang('USER_GROUP_' . strtoupper($group_type)))
 						);
 					}
 
@@ -2349,8 +2329,8 @@ class acp_users
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_APPROVE'			=> ($group_type == 'pending') ? $this->u_action . "&amp;action=approve&amp;u=$user_id&amp;g=" . $data['group_id'] : '',
 
-							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name'],
-							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE'],
+							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang('G_' . $data['group_name']) : $data['group_name'],
+							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang('GROUP_DEMOTE') : $user->lang('GROUP_PROMOTE'),
 
 							'S_IS_MEMBER'		=> ($group_type != 'pending') ? true : false,
 							'S_NO_DEFAULT'		=> ($user_row['group_id'] != $data['group_id']) ? true : false,
@@ -2417,7 +2397,7 @@ class acp_users
 					$db->sql_freeresult($result);
 				}
 
-				$s_forum_options = '<option value="0"' . ((!$forum_id) ? ' selected="selected"' : '') . '>' . $user->lang['VIEW_GLOBAL_PERMS'] . '</option>';
+				$s_forum_options = '<option value="0"' . ((!$forum_id) ? ' selected="selected"' : '') . '>' . $user->lang('VIEW_GLOBAL_PERMS') . '</option>';
 				$s_forum_options .= make_forum_select($forum_id, false, true, false, false, false);
 
 				$template->assign_vars(array(

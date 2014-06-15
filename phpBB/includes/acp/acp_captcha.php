@@ -25,8 +25,8 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template;
+		global $config, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/board');
 
@@ -90,14 +90,14 @@ class acp_captcha
 					}
 					else
 					{
-						trigger_error($user->lang['CAPTCHA_UNAVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('CAPTCHA_UNAVAILABLE') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
-				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			else
 			{
@@ -137,8 +137,6 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $db, $user, $config;
-
 		$captcha = phpbb_captcha_factory::get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();

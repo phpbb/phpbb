@@ -26,7 +26,7 @@ class acp_groups
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('acp/groups');
@@ -71,13 +71,13 @@ class acp_groups
 
 			if (!$group_row)
 			{
-				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			// Check if the user is allowed to manage this group if set to founder only.
 			if ($user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
 			{
-				trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('NOT_ALLOWED_MANAGE_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -89,16 +89,16 @@ class acp_groups
 			case 'promote':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Approve, demote or promote
-				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $group_row['group_name']) : $group_row['group_name'];
 				$error = group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
 
 				if (!$error)
@@ -118,11 +118,11 @@ class acp_groups
 						break;
 					}
 
-					trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang($message) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error($user->lang($error) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 			break;
@@ -130,22 +130,22 @@ class acp_groups
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				else if (empty($mark_ary))
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
 				{
-					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $group_row['group_name']) : $group_row['group_name'];
 					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang('GROUP_DEFS_UPDATED') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
 						'i'			=> $id,
@@ -158,7 +158,7 @@ class acp_groups
 			case 'set_default_on_all':
 				if (confirm_box(true))
 				{
-					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $group_row['group_name']) : $group_row['group_name'];
 
 					$start = 0;
 
@@ -191,11 +191,11 @@ class acp_groups
 					}
 					while ($start);
 
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang('GROUP_DEFS_UPDATED') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
 						'i'			=> $id,
@@ -208,16 +208,16 @@ class acp_groups
 			case 'deleteusers':
 				if (empty($mark_ary))
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 			case 'delete':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -229,14 +229,14 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
 						break;
 
 						case 'deleteusers':
-							$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+							$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $group_row['group_name']) : $group_row['group_name'];
 							$error = group_user_del($group_id, $mark_ary, false, $group_name);
 						break;
 					}
@@ -245,15 +245,15 @@ class acp_groups
 
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($back_link), E_USER_WARNING);
+						trigger_error($user->lang($error) . adm_back_link($back_link), E_USER_WARNING);
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
-					trigger_error($user->lang[$message] . adm_back_link($back_link));
+					trigger_error($user->lang($message) . adm_back_link($back_link));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, 'CONFIRM_OPERATION', build_hidden_fields(array(
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
 						'i'			=> $id,
@@ -266,30 +266,30 @@ class acp_groups
 			case 'addusers':
 				if (!check_form_key($form_key))
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error($user->lang('NO_USERS') . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
-				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $group_row['group_name']) : $group_row['group_name'];
 
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error($user->lang($error) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				trigger_error($user->lang($message) . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
 			case 'edit':
@@ -301,12 +301,12 @@ class acp_groups
 
 				if ($action == 'edit' && !$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_AUTH_OPERATION') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$error = array();
@@ -336,7 +336,7 @@ class acp_groups
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$group_name	= utf8_normalize_nfc(request_var('group_name', '', true));
@@ -576,7 +576,7 @@ class acp_groups
 							$cache->destroy('sql', array(GROUPS_TABLE, TEAMPAGE_TABLE));
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+							trigger_error($user->lang($message) . adm_back_link($this->u_action));
 						}
 					}
 
@@ -619,7 +619,7 @@ class acp_groups
 					ORDER BY rank_title';
 				$result = $db->sql_query($sql);
 
-				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $user->lang['USER_DEFAULT'] . '</option>';
+				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $user->lang('USER_DEFAULT') . '</option>';
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -697,7 +697,7 @@ class acp_groups
 					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
 
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
+					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang('G_' . $group_name) : $group_name,
 					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESC'			=> $group_desc_data['text'],
 					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
@@ -776,7 +776,7 @@ class acp_groups
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_GROUP') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->page_title = 'GROUP_MEMBERS';
@@ -820,7 +820,7 @@ class acp_groups
 
 				foreach ($options as $option => $lang)
 				{
-					$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
+					$s_action_options .= '<option value="' . $option . '">' . $user->lang('GROUP_' . $lang) . '</option>';
 				}
 
 				$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
@@ -831,7 +831,7 @@ class acp_groups
 					'S_GROUP_SPECIAL'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 
-					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
+					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $group_row['group_name']) : $group_row['group_name'],
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
@@ -931,7 +931,7 @@ class acp_groups
 
 			foreach ($row_ary as $group_id => $row)
 			{
-				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang('G_' . $row['group_name']) : $row['group_name'];
 
 				$template->assign_block_vars('groups', array(
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
@@ -963,7 +963,7 @@ class acp_groups
 		if ($field && !in_array($field, array('legend', 'teampage')))
 		{
 			// Invalid mode
-			trigger_error($user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_MODE') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		else if ($field && in_array($field, array('legend', 'teampage')))
 		{
@@ -1038,12 +1038,12 @@ class acp_groups
 				case 'set_config_teampage':
 					$config->set('teampage_forums', $request->variable('teampage_forums', 0));
 					$config->set('teampage_memberships', $request->variable('teampage_memberships', 0));
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				break;
 
 				case 'set_config_legend':
 					$config->set('legend_sort_groupname', $request->variable('legend_sort_groupname', 0));
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				break;
 			}
 		}
@@ -1059,16 +1059,15 @@ class acp_groups
 			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
 		$result = $db->sql_query($sql);
 
-		$s_group_select_legend = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $row['group_name']) : $row['group_name'];
 			if ($row['group_legend'])
 			{
 				$template->assign_block_vars('legend', array(
 					'GROUP_NAME'	=> $group_name,
 					'GROUP_COLOUR'	=> ($row['group_colour']) ? '#' . $row['group_colour'] : '',
-					'GROUP_TYPE'	=> $user->lang[\phpbb\groupposition\legend::group_type_language($row['group_type'])],
+					'GROUP_TYPE'	=> $user->lang(\phpbb\groupposition\legend::group_type_language($row['group_type'])),
 
 					'U_MOVE_DOWN'	=> "{$this->u_action}&amp;field=legend&amp;action=move_down&amp;g=" . $row['group_id'],
 					'U_MOVE_UP'		=> "{$this->u_action}&amp;field=legend&amp;action=move_up&amp;g=" . $row['group_id'],
@@ -1097,7 +1096,6 @@ class acp_groups
 			ORDER BY t.teampage_position ASC';
 		$result = $db->sql_query($sql);
 
-		$category_data = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ($row['teampage_id'] == $category_id)
@@ -1110,8 +1108,8 @@ class acp_groups
 
 			if ($row['group_id'])
 			{
-				$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-				$group_type = $user->lang[\phpbb\groupposition\teampage::group_type_language($row['group_type'])];
+				$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $row['group_name']) : $row['group_name'];
+				$group_type = $user->lang(\phpbb\groupposition\teampage::group_type_language($row['group_type']));
 			}
 			else
 			{
@@ -1140,10 +1138,9 @@ class acp_groups
 			ORDER BY g.group_type DESC, g.group_name ASC';
 		$result = $db->sql_query($sql);
 
-		$s_group_select_teampage = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang('G_' . $row['group_name']) : $row['group_name'];
 			$template->assign_block_vars('add_teampage', array(
 				'GROUP_ID'		=> (int) $row['group_id'],
 				'GROUP_NAME'	=> $group_name,

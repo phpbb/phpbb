@@ -32,7 +32,7 @@ class acp_language
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $template;
-		global $phpbb_root_path, $phpEx, $request;
+		global $phpbb_root_path, $phpEx;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -65,12 +65,12 @@ class acp_language
 
 				if (!$submit || !check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_LANG_ID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -92,14 +92,14 @@ class acp_language
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
 
-				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('LANGUAGE_DETAILS_UPDATED') . adm_back_link($this->u_action));
 			break;
 
 			case 'details':
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_LANG_ID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
@@ -113,7 +113,7 @@ class acp_language
 
 				if (!$lang_entries)
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('LANGUAGE_PACK_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$lang_iso = $lang_entries['lang_iso'];
@@ -193,7 +193,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_LANG_ID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -205,7 +205,7 @@ class acp_language
 
 				if ($row['lang_iso'] == $config['default_lang'])
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('NO_REMOVE_DEFAULT_LANG') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -226,7 +226,7 @@ class acp_language
 
 					add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
-					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
+					trigger_error($user->lang('LANGUAGE_PACK_DELETED', $row['lang_english_name']) . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -246,7 +246,7 @@ class acp_language
 
 				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/iso.txt"))
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('LANGUAGE_PACK_NOT_EXIST') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$file = file("{$phpbb_root_path}language/$lang_iso/iso.txt");
@@ -268,12 +268,12 @@ class acp_language
 
 				if ($row)
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('LANGUAGE_PACK_ALREADY_INSTALLED') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$lang_pack['name'] || !$lang_pack['local_name'])
 				{
-					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('INVALID_LANGUAGE_PACK') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Add language pack
@@ -331,8 +331,8 @@ class acp_language
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
-				$message = sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']);
-				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang['LANGUAGE_PACK_CPF_UPDATE'] : '';
+				$message = $user->lang('LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
+				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang('LANGUAGE_PACK_CPF_UPDATE') : '';
 				trigger_error($message . adm_back_link($this->u_action));
 
 			break;

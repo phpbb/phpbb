@@ -29,8 +29,8 @@ class acp_jabber
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template;
+		global $config, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/board');
 
@@ -62,12 +62,10 @@ class acp_jabber
 		{
 			if (!check_form_key($form_name))
 			{
-				trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error($user->lang('FORM_INVALID'). adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$error = array();
-
-			$message = $user->lang['JAB_SETTINGS_CHANGED'];
+			$message = $user->lang('JAB_SETTINGS_CHANGED');
 			$log = 'JAB_SETTINGS_CHANGED';
 
 			// Is this feature enabled? Then try to establish a connection
@@ -77,13 +75,13 @@ class acp_jabber
 
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('ERR_JAB_CONNECT') . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// We'll try to authorise using this account
 				if (!$jabber->login())
 				{
-					trigger_error($user->lang['ERR_JAB_AUTH'] . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('ERR_JAB_AUTH') . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$jabber->disconnect();
@@ -118,7 +116,7 @@ class acp_jabber
 		$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
 			'JAB_ENABLE'			=> $jab_enable,
-			'L_JAB_SERVER_EXPLAIN'	=> sprintf($user->lang['JAB_SERVER_EXPLAIN'], '<a href="http://www.jabber.org/">', '</a>'),
+			'L_JAB_SERVER_EXPLAIN'	=> $user->lang('JAB_SERVER_EXPLAIN', '<a href="http://www.jabber.org/">', '</a>'),
 			'JAB_HOST'				=> $jab_host,
 			'JAB_PORT'				=> ($jab_port) ? $jab_port : '',
 			'JAB_USERNAME'			=> $jab_username,

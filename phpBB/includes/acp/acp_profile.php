@@ -29,9 +29,8 @@ class acp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
-		global $request, $phpbb_container;
+		global $config, $db, $user, $template, $phpbb_container;
+		global $phpbb_root_path, $phpEx, $request;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -48,7 +47,7 @@ class acp_profile
 
 		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
 		{
-			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang('NO_FIELD_ID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$cp = $phpbb_container->get('profilefields.manager');
@@ -188,7 +187,7 @@ class acp_profile
 					$db->sql_transaction('commit');
 
 					add_log('admin', 'LOG_PROFILE_FIELD_REMOVED', $field_ident);
-					trigger_error($user->lang['REMOVED_PROFILE_FIELD'] . adm_back_link($this->u_action));
+					trigger_error($user->lang('REMOVED_PROFILE_FIELD') . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -213,7 +212,7 @@ class acp_profile
 
 				if (!in_array($default_lang_id, $this->lang_defs['entry'][$field_id]))
 				{
-					trigger_error($user->lang['DEFAULT_LANGUAGE_NOT_FILLED'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('DEFAULT_LANGUAGE_NOT_FILLED') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
@@ -238,7 +237,7 @@ class acp_profile
 					));
 				}
 
-				trigger_error($user->lang['PROFILE_FIELD_ACTIVATED'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('PROFILE_FIELD_ACTIVATED') . adm_back_link($this->u_action));
 
 			break;
 
@@ -266,7 +265,7 @@ class acp_profile
 
 				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
 
-				trigger_error($user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
+				trigger_error($user->lang('PROFILE_FIELD_DEACTIVATED') . adm_back_link($this->u_action));
 
 			break;
 
@@ -339,7 +338,7 @@ class acp_profile
 
 						if (!$field_row)
 						{
-							trigger_error($user->lang['FIELD_NOT_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang('FIELD_NOT_FOUND') . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$this->edit_lang_id = $field_row['lang_id'];
@@ -373,7 +372,7 @@ class acp_profile
 
 					if (!isset($this->type_collection[$field_type]))
 					{
-						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang('NO_FIELD_TYPE') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$profile_field = $this->type_collection[$field_type];
@@ -524,22 +523,22 @@ class acp_profile
 					// Check values for step 1
 					if ($cp->vars['field_ident'] == '')
 					{
-						$error[] = $user->lang['EMPTY_FIELD_IDENT'];
+						$error[] = $user->lang('EMPTY_FIELD_IDENT');
 					}
 
 					if (!preg_match('/^[a-z_]+$/', $cp->vars['field_ident']))
 					{
-						$error[] = $user->lang['INVALID_CHARS_FIELD_IDENT'];
+						$error[] = $user->lang('INVALID_CHARS_FIELD_IDENT');
 					}
 
 					if (strlen($cp->vars['field_ident']) > 17)
 					{
-						$error[] = $user->lang['INVALID_FIELD_IDENT_LEN'];
+						$error[] = $user->lang('INVALID_FIELD_IDENT_LEN');
 					}
 
 					if ($cp->vars['lang_name'] == '')
 					{
-						$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
+						$error[] = $user->lang('EMPTY_USER_FIELD_NAME');
 					}
 
 					$error = $profile_field->validate_options_on_submit($error, $cp->vars);
@@ -556,7 +555,7 @@ class acp_profile
 
 						if ($row)
 						{
-							$error[] = $user->lang['FIELD_IDENT_ALREADY_EXIST'];
+							$error[] = $user->lang('FIELD_IDENT_ALREADY_EXIST');
 						}
 					}
 				}
@@ -610,8 +609,8 @@ class acp_profile
 					'S_EDIT_MODE'		=> ($action == 'edit') ? true : false,
 					'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'L_TITLE'			=> $user->lang['STEP_' . $step . '_TITLE_' . strtoupper($action)],
-					'L_EXPLAIN'			=> $user->lang['STEP_' . $step . '_EXPLAIN_' . strtoupper($action)],
+					'L_TITLE'			=> $user->lang('STEP_' . $step . '_TITLE_' . strtoupper($action)),
+					'L_EXPLAIN'			=> $user->lang('STEP_' . $step . '_EXPLAIN_' . strtoupper($action)),
 
 					'U_ACTION'			=> $this->u_action . "&amp;action=$action&amp;step=$step",
 					'U_BACK'			=> $this->u_action)
@@ -637,7 +636,7 @@ class acp_profile
 							'FIELD_CONTACT_DESC'=> $cp->vars['field_contact_desc'],
 							'FIELD_CONTACT_URL'	=> $cp->vars['field_contact_url'],
 
-							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
+							'L_LANG_SPECIFIC'	=> $user->lang('LANG_SPECIFIC_OPTIONS', $config['default_lang']),
 							'FIELD_TYPE'		=> $profile_field->get_name(),
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
@@ -656,7 +655,7 @@ class acp_profile
 
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
+							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang('SAVE') : $user->lang('PROFILE_LANG_OPTIONS'))
 						);
 
 						// Build options based on profile type
@@ -678,7 +677,7 @@ class acp_profile
 						foreach ($options as $lang_id => $lang_ary)
 						{
 							$template->assign_block_vars('options', array(
-								'LANGUAGE'		=> sprintf($user->lang[(($lang_id == $this->edit_lang_id) ? 'DEFAULT_' : '') . 'ISO_LANGUAGE'], $lang_ary['lang_iso']))
+								'LANGUAGE'		=> $user->lang((($lang_id == $this->edit_lang_id) ? 'DEFAULT_' : '') . 'ISO_LANGUAGE', $lang_ary['lang_iso']))
 							);
 
 							foreach ($lang_ary['fields'] as $field_ident => $field_ary)
@@ -727,7 +726,7 @@ class acp_profile
 				'FIELD_IDENT'		=> $row['field_ident'],
 				'FIELD_TYPE'		=> $profile_field->get_name(),
 
-				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
+				'L_ACTIVATE_DEACTIVATE'		=> $user->lang($active_lang),
 				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
 				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
@@ -763,7 +762,7 @@ class acp_profile
 	*/
 	function build_language_options(&$cp, $field_type, $action = 'create')
 	{
-		global $user, $config, $db, $phpbb_container;
+		global $user, $config, $db;
 
 		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
 
@@ -789,13 +788,13 @@ class acp_profile
 		{
 			$lang_options[1]['lang_iso'] = $this->lang_defs['id'][$default_lang_id];
 			$lang_options[1]['fields'][$field] = array(
-				'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
+				'TITLE'		=> $user->lang('CP_' . strtoupper($field)),
 				'FIELD'		=> '<dd>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : bbcode_nl2br($cp->vars[$field])) . '</dd>'
 			);
 
 			if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
 			{
-				$lang_options[1]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
+				$lang_options[1]['fields'][$field]['EXPLAIN'] = $user->lang('CP_' . strtoupper($field) . '_EXPLAIN');
 			}
 		}
 
@@ -814,17 +813,17 @@ class acp_profile
 						case 'two_options':
 
 							$lang_options[$lang_id]['fields'][$field] = array(
-								'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
+								'TITLE'		=> $user->lang('CP_' . strtoupper($field)),
 								'FIELD'		=> '
-											<dd><input class="medium" name="l_' . $field . '[' . $lang_id . '][]" value="' . ((isset($value[$lang_id][0])) ? $value[$lang_id][0] : $var[0]) . '" /> ' . $user->lang['FIRST_OPTION'] . '</dd>
-											<dd><input class="medium" name="l_' . $field . '[' . $lang_id . '][]" value="' . ((isset($value[$lang_id][1])) ? $value[$lang_id][1] : $var[1]) . '" /> ' . $user->lang['SECOND_OPTION'] . '</dd>'
+											<dd><input class="medium" name="l_' . $field . '[' . $lang_id . '][]" value="' . ((isset($value[$lang_id][0])) ? $value[$lang_id][0] : $var[0]) . '" /> ' . $user->lang('FIRST_OPTION') . '</dd>
+											<dd><input class="medium" name="l_' . $field . '[' . $lang_id . '][]" value="' . ((isset($value[$lang_id][1])) ? $value[$lang_id][1] : $var[1]) . '" /> ' . $user->lang('SECOND_OPTION') . '</dd>'
 							);
 						break;
 
 						case 'optionfield':
 							$value = ((isset($value[$lang_id])) ? ((is_array($value[$lang_id])) ?  implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var));
 							$lang_options[$lang_id]['fields'][$field] = array(
-								'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
+								'TITLE'		=> $user->lang('CP_' . strtoupper($field)),
 								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . $value . '</textarea></dd>'
 							);
 						break;
@@ -832,7 +831,7 @@ class acp_profile
 
 					if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
 					{
-						$lang_options[$lang_id]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
+						$lang_options[$lang_id]['fields'][$field]['EXPLAIN'] = $user->lang('CP_' . strtoupper($field) . '_EXPLAIN');
 					}
 				}
 				else
@@ -840,13 +839,13 @@ class acp_profile
 					$var = ($action == 'create' || !is_array($cp->vars[$field])) ? $cp->vars[$field] : $cp->vars[$field][$lang_id];
 
 					$lang_options[$lang_id]['fields'][$field] = array(
-						'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
+						'TITLE'		=> $user->lang('CP_' . strtoupper($field)),
 						'FIELD'		=> ($field_type == 'string') ? '<dd><input class="medium" type="text" name="l_' . $field . '[' . $lang_id . ']" value="' . ((isset($value[$lang_id])) ? $value[$lang_id] : $var) . '" /></dd>' : '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="3" cols="80">' . ((isset($value[$lang_id])) ? $value[$lang_id] : $var) . '</textarea></dd>'
 					);
 
 					if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
 					{
-						$lang_options[$lang_id]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
+						$lang_options[$lang_id]['fields'][$field]['EXPLAIN'] = $user->lang('CP_' . strtoupper($field) . '_EXPLAIN');
 					}
 				}
 			}
@@ -1132,12 +1131,12 @@ class acp_profile
 		if ($action == 'edit')
 		{
 			add_log('admin', 'LOG_PROFILE_FIELD_EDIT', $cp->vars['field_ident'] . ':' . $cp->vars['lang_name']);
-			trigger_error($user->lang['CHANGED_PROFILE_FIELD'] . adm_back_link($this->u_action));
+			trigger_error($user->lang('CHANGED_PROFILE_FIELD') . adm_back_link($this->u_action));
 		}
 		else
 		{
 			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 3) . ':' . $cp->vars['lang_name']);
-			trigger_error($user->lang['ADDED_PROFILE_FIELD'] . adm_back_link($this->u_action));
+			trigger_error($user->lang('ADDED_PROFILE_FIELD') . adm_back_link($this->u_action));
 		}
 	}
 
