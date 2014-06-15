@@ -20,6 +20,9 @@
  <!-- Call-time pass-by-reference MUST not be used. -->
  <rule ref="Generic.Functions.CallTimePassByReference.NotAllowed" />
 
+ <!-- There MUST be exactly one space after a cast. -->
+ <rule ref="Generic.Formatting.SpaceAfterCast" />
+
  <!-- Class constants MUST be declared in all upper case with underscore separators. -->
  <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
 

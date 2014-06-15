@@ -534,7 +534,7 @@ else
 					return '';
 				}
 
-				$lx = (int)((-$length) / 65535);
+				$lx = (int) ((-$length) / 65535);
 				$ly = (-$length) % 65535;
 
 				// negative length requires ... capture everything

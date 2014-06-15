@@ -693,7 +693,7 @@ class fulltext_sphinx
 	{
 		if ($mode == 'edit')
 		{
-			$this->sphinx->UpdateAttributes($this->indexes, array('forum_id', 'poster_id'), array((int)$post_id => array((int)$forum_id, (int)$poster_id)));
+			$this->sphinx->UpdateAttributes($this->indexes, array('forum_id', 'poster_id'), array((int) $post_id => array((int) $forum_id, (int) $poster_id)));
 		}
 		else if ($mode != 'post' && $post_id)
 		{
@@ -718,7 +718,7 @@ class fulltext_sphinx
 			$post_time = time();
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$post_updates[(int)$row['post_id']] = array($post_time);
+				$post_updates[(int) $row['post_id']] = array($post_time);
 			}
 			$this->db->sql_freeresult($result);
 

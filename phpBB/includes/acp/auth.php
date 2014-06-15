@@ -835,7 +835,7 @@ class auth_admin extends \phpbb\auth\auth
 		}
 
 		// Remove current auth options...
-		$auth_option_ids = array((int)$any_option_id);
+		$auth_option_ids = array((int) $any_option_id);
 		foreach ($auth as $auth_option => $auth_setting)
 		{
 			$auth_option_ids[] = (int) $this->acl_options['id'][$auth_option];
