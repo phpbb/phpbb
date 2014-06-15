@@ -15,7 +15,7 @@ namespace phpbb\template\twig\node;
 
 abstract class includeasset extends \Twig_Node
 {
-	/** @var Twig_Environment */
+	/** @var \Twig_Environment */
 	protected $environment;
 
 	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
@@ -25,10 +25,10 @@ abstract class includeasset extends \Twig_Node
 		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
 	}
 	/**
-	 * Compiles the node to PHP.
-	 *
-	 * @param Twig_Compiler A Twig_Compiler instance
-	 */
+	* Compiles the node to PHP.
+	*
+	* @param \Twig_Compiler A Twig_Compiler instance
+	*/
 	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);
@@ -74,7 +74,7 @@ abstract class includeasset extends \Twig_Node
 	/**
 	* Append the output code for the asset
 	*
-	* @param Twig_Compiler A Twig_Compiler instance
+	* @param \Twig_Compiler A Twig_Compiler instance
 	* @return null
 	*/
 	abstract protected function append_asset(\Twig_Compiler $compiler);

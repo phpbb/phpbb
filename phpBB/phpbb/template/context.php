@@ -55,6 +55,7 @@ class context
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to assign to variable
+	* @return true
 	*/
 	public function assign_var($varname, $varval)
 	{
@@ -70,6 +71,7 @@ class context
 	*
 	* @param string $varname Variable name
 	* @param string $varval Value to append to variable
+	* @return true
 	*/
 	public function append_var($varname, $varval)
 	{
@@ -117,6 +119,7 @@ class context
 	*
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
+	* @return true
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
@@ -206,6 +209,7 @@ class context
 	*
 	* @param string $blockname Name of block to assign $block_vars_array to
 	* @param array $block_vars_array An array of hashes of variable name => value pairs
+	* @return true
 	*/
 	public function assign_block_vars_array($blockname, array $block_vars_array)
 	{
@@ -374,6 +378,7 @@ class context
 	* Reset/empty complete block
 	*
 	* @param string $blockname Name of block to destroy
+	* @return true
 	*/
 	public function destroy_block_vars($blockname)
 	{
