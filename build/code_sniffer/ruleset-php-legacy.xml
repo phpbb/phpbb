@@ -38,6 +38,9 @@
  <!-- Each file MUST end with exactly one newline character -->
  <rule ref="PSR2.Files.EndFileNewline" />
 
+ <!-- When referencing arrays you should not put whitespace around the opening bracket or before the closing bracket. -->
+ <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
+
  <!-- In the argument list, there MUST NOT be a space before each comma,
       and there MUST be one space after each comma. -->
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
