@@ -23,6 +23,7 @@ class kernel_pass implements CompilerPassInterface
 	*
 	* @param ContainerBuilder $container ContainerBuilder object
 	* @return null
+	* @throws \InvalidArgumentException
 	*/
 	public function process(ContainerBuilder $container)
 	{
