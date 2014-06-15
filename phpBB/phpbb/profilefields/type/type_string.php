@@ -39,7 +39,6 @@ class type_string extends type_string_common
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
-	* @param	string		$language_table		Table where the language strings are stored
 	*/
 	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
