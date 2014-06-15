@@ -66,6 +66,7 @@ class config implements \phpbb\db\migration\tool\tool_interface
 	* 	like to update
 	* @param mixed $config_value The value of the config setting
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function update($config_name, $config_value)
 	{
@@ -87,6 +88,7 @@ class config implements \phpbb\db\migration\tool\tool_interface
 	* 	like to update
 	* @param mixed $config_value The value of the config setting
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function update_if_equals($compare, $config_name, $config_value)
 	{

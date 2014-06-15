@@ -167,6 +167,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* 			modules in that info file.
 	* 	path, specify that here
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function add($class, $parent = 0, $data = array())
 	{
@@ -331,6 +332,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* @param int|string $module The module id|module_langname
 	* 	specify that here
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function remove($class, $parent = 0, $module = '')
 	{
@@ -466,6 +468,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* @param string $class Module Class
 	* @param string $basename Module Basename
 	* @return array Module Information
+	* @throws \phpbb\db\migration\exception
 	*/
 	protected function get_module_info($class, $basename)
 	{
