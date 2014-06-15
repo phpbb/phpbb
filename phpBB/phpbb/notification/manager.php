@@ -12,6 +12,7 @@
 */
 
 namespace phpbb\notification;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
 * Notifications service class
@@ -24,7 +25,7 @@ class manager
 	/** @var array */
 	protected $notification_methods;
 
-	/** @var ContainerBuilder */
+	/** @var ContainerInterface */
 	protected $phpbb_container;
 
 	/** @var \phpbb\user_loader */
@@ -62,7 +63,7 @@ class manager
 	*
 	* @param array $notification_types
 	* @param array $notification_methods
-	* @param ContainerBuilder $phpbb_container
+	* @param ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
@@ -74,7 +75,7 @@ class manager
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
@@ -886,6 +887,7 @@ class manager
 	*
 	* @param string $notification_type_name The name
 	* @return int the notification_type_id
+	* @throws \phpbb\notification\exception
 	*/
 	public function get_notification_type_id($notification_type_name)
 	{
