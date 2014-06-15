@@ -1021,7 +1021,9 @@ class install_convert extends module
 			// Now process queries and execute functions that have to be executed prior to the conversion
 			if (!empty($convert->convertor['execute_first']))
 			{
+				// @codingStandardsIgnoreStart
 				eval($convert->convertor['execute_first']);
+				// @codingStandardsIgnoreEnd
 			}
 
 			if (!empty($convert->convertor['query_first']))
@@ -1091,7 +1093,9 @@ class install_convert extends module
 				// process execute_first and query_first for this table...
 				if (!empty($schema['execute_first']))
 				{
+					// @codingStandardsIgnoreStart
 					eval($schema['execute_first']);
+					// @codingStandardsIgnoreEnd
 				}
 
 				if (!empty($schema['query_first']))
@@ -1156,7 +1160,9 @@ class install_convert extends module
 			// it gets split because of time restrictions
 			if (!empty($schema['execute_always']))
 			{
+				// @codingStandardsIgnoreStart
 				eval($schema['execute_always']);
+				// @codingStandardsIgnoreEnd
 			}
 
 			//
@@ -1667,13 +1673,17 @@ class install_convert extends module
 			{
 				if (!is_array($convert->convertor['execute_last']))
 				{
+					// @codingStandardsIgnoreStart
 					eval($convert->convertor['execute_last']);
+					// @codingStandardsIgnoreEnd
 				}
 				else
 				{
 					while ($last_statement < sizeof($convert->convertor['execute_last']))
 					{
+						// @codingStandardsIgnoreStart
 						eval($convert->convertor['execute_last'][$last_statement]);
+						// @codingStandardsIgnoreEnd
 
 						$template->assign_block_vars('checks', array(
 							'TITLE'		=> $convert->convertor['execute_last'][$last_statement],
@@ -2035,7 +2045,9 @@ class install_convert extends module
 
 								$execution = str_replace('{RESULT}', '$value', $execution);
 								$execution = str_replace('{VALUE}', '$value', $execution);
+								// @codingStandardsIgnoreStart
 								eval($execution);
+								// @codingStandardsIgnoreEnd
 							}
 						}
 					}
@@ -2082,7 +2094,9 @@ class install_convert extends module
 
 								$execution = str_replace('{RESULT}', '$value', $execution);
 								$execution = str_replace('{VALUE}', '$value', $execution);
+								// @codingStandardsIgnoreStart
 								eval($execution);
+								// @codingStandardsIgnoreEnd
 							}
 						}
 					}

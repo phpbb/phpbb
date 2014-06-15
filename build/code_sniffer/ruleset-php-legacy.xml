@@ -41,6 +41,9 @@
  </rule>
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
 
+ <!-- The eval() function MUST NOT be used. -->
+ <rule ref="Squiz.PHP.Eval" />
+
  <!-- There MUST NOT be trailing whitespace at the end of lines. -->
  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
 
