@@ -331,14 +331,6 @@ class acp_permissions
 			}
 		}
 
-		// Setting permissions screen
-		$s_hidden_fields = build_hidden_fields(array(
-			'user_id'		=> $user_id,
-			'group_id'		=> $group_id,
-			'forum_id'		=> $forum_id,
-			'type'			=> $permission_type)
-		);
-
 		// Go through the screens/options needed and present them in correct order
 		foreach ($permission_victim as $victim)
 		{
@@ -471,6 +463,14 @@ class acp_permissions
 			// If there are more than 5 forums selected the admin is not able to select all users/groups too.
 			// We need to see if the number of forums can be increased or need to be decreased.
 
+			// Setting permissions screen
+			$s_hidden_fields = build_hidden_fields(array(
+					'user_id'		=> $user_id,
+					'group_id'		=> $group_id,
+					'forum_id'		=> $forum_id,
+					'type'			=> $permission_type,
+			));
+
 			$template->assign_vars(array(
 				'U_ACTION'				=> $this->u_action,
 				'ANONYMOUS_USER_ID'		=> ANONYMOUS,
@@ -506,6 +506,14 @@ class acp_permissions
 
 			return;
 		}
+
+		// Setting permissions screen
+		$s_hidden_fields = build_hidden_fields(array(
+				'user_id'		=> $user_id,
+				'group_id'		=> $group_id,
+				'forum_id'		=> $forum_id,
+				'type'			=> $permission_type,
+		));
 
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (sizeof($forum_id) && !sizeof($user_id) && !sizeof($group_id))
