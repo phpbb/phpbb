@@ -106,7 +106,7 @@ class message
 	/**
 	* Add a recipient from \phpbb\user
 	*
-	* @param \phpbb\user $user
+	* @param array $user
 	* @return null
 	*/
 	public function add_recipient_from_user_row(array $user)
@@ -231,7 +231,7 @@ class message
 	* Send the email
 	*
 	* @param \messenger $messenger
-	* @param string $phpEx
+	* @param string $contact
 	* @return null
 	*/
 	public function send(\messenger $messenger, $contact)
