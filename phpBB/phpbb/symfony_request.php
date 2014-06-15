@@ -20,7 +20,7 @@ class symfony_request extends Request
 	/**
 	* Constructor
 	*
-	* @param phpbb\request\request_interface $phpbb_request
+	* @param \phpbb\request\request_interface $phpbb_request
 	*/
 	public function __construct(\phpbb\request\request_interface $phpbb_request)
 	{

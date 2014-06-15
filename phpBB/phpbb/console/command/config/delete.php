@@ -14,11 +14,13 @@ namespace phpbb\console\command\config;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class delete extends command
 {
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -32,6 +34,17 @@ class delete extends command
 		;
 	}
 
+	/**
+	* Executes the command config:delete.
+	*
+	* Removes a configuration option
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return null
+	* @see \phpbb\config\config::delete()
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$key = $input->getArgument('key');

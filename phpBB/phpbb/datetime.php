@@ -39,8 +39,8 @@ class datetime extends \DateTime
 	* the user context and modify the timezone to the users selected timezone if one is not set.
 	*
 	* @param string $time String in a format accepted by strtotime().
-	* @param DateTimeZone $timezone Time zone of the time.
-	* @param user User object for context.
+	* @param \DateTimeZone $timezone Time zone of the time.
+	* @param user $user object for context.
 	*/
 	public function __construct($user, $time = 'now', \DateTimeZone $timezone = null)
 	{
@@ -120,7 +120,7 @@ class datetime extends \DateTime
 	/**
 	* Magic method to convert DateTime object to string
 	*
-	* @return Formatted date time, according to the users default settings.
+	* @return string Formatted date time, according to the users default settings.
 	*/
 	public function __toString()
 	{

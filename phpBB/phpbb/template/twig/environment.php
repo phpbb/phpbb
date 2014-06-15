@@ -40,7 +40,7 @@ class environment extends \Twig_Environment
 	* @param \phpbb\path_helper
 	* @param \phpbb\extension\manager
 	* @param string $phpbb_root_path
-	* @param Twig_LoaderInterface $loader
+	* @param \Twig_LoaderInterface $loader
 	* @param array $options Array of options to pass to Twig
 	*/
 	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
@@ -122,7 +122,7 @@ class environment extends \Twig_Environment
 	* Set the namespace look up order to load templates from
 	*
 	* @param array $namespace
-	* @return Twig_Environment
+	* @return \Twig_Environment
 	*/
 	public function setNamespaceLookUpOrder($namespace)
 	{
@@ -132,12 +132,13 @@ class environment extends \Twig_Environment
 	}
 
 	/**
-	 * Loads a template by name.
-	 *
-	 * @param string  $name  The template name
-	 * @param integer $index The index if it is an embedded template
-	 * @return Twig_TemplateInterface A template instance representing the given template name
-	 */
+	* Loads a template by name.
+	*
+	* @param string  $name  The template name
+	* @param integer $index The index if it is an embedded template
+	* @return \Twig_TemplateInterface A template instance representing the given template name
+	* @throws \Twig_Error_Loader
+	*/
 	public function loadTemplate($name, $index = null)
 	{
 		if (strpos($name, '@') === false)
@@ -168,11 +169,12 @@ class environment extends \Twig_Environment
 	}
 
 	/**
-	 * Finds a template by name.
-	 *
-	 * @param string  $name  The template name
-	 * @return string
-	 */
+	* Finds a template by name.
+	*
+	* @param string  $name  The template name
+	* @return string
+	* @throws \Twig_Error_Loader
+	*/
 	public function findTemplate($name)
 	{
 		if (strpos($name, '@') === false)
@@ -188,7 +190,7 @@ class environment extends \Twig_Environment
 
 					return parent::getLoader()->getCacheKey('@' . $namespace . '/' . $name);
 				}
-				catch (Twig_Error_Loader $e)
+				catch (\Twig_Error_Loader $e)
 				{
 				}
 			}

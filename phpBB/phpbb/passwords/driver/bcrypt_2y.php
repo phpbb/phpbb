@@ -18,7 +18,7 @@ class bcrypt_2y extends bcrypt
 	const PREFIX = '$2y$';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -26,7 +26,7 @@ class bcrypt_2y extends bcrypt
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_supported()
 	{

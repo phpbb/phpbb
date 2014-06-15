@@ -46,7 +46,7 @@ class pagination
 	*							If you use page numbers inside your controller route, start name should be the string
 	*							that should be removed for the first page (example: /page/%d)
 	* @param int $per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
-	* @return URL for the requested page
+	* @return string URL for the requested page
 	*/
 	protected function generate_page_link($base_url, $on_page, $start_name, $per_page)
 	{

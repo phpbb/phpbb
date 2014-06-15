@@ -16,7 +16,7 @@ namespace phpbb\template\twig\node;
 
 class php extends \Twig_Node
 {
-	/** @var Twig_Environment */
+	/** @var \Twig_Environment */
 	protected $environment;
 
 	public function __construct(\Twig_Node_Text $text, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
@@ -27,10 +27,10 @@ class php extends \Twig_Node
 	}
 
 	/**
-	 * Compiles the node to PHP.
-	 *
-	 * @param Twig_Compiler A Twig_Compiler instance
-	 */
+	* Compiles the node to PHP.
+	*
+	* @param \Twig_Compiler A Twig_Compiler instance
+	*/
 	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);

@@ -15,10 +15,10 @@ namespace phpbb\passwords\driver;
 
 abstract class base implements driver_interface
 {
-	/** @var phpbb\config\config */
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var phpbb\passwords\driver\helper */
+	/** @var \phpbb\passwords\driver\helper */
 	protected $helper;
 
 	/** @var driver name */
@@ -37,7 +37,7 @@ abstract class base implements driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_supported()
 	{
@@ -45,7 +45,7 @@ abstract class base implements driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_legacy()
 	{
@@ -53,7 +53,7 @@ abstract class base implements driver_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_settings_only($hash, $full = false)
 	{

@@ -24,7 +24,7 @@ class loader extends \Twig_Loader_Filesystem
 	* Set safe directories
 	*
 	* @param array $directories Array of directories that are safe (empty to clear)
-	* @return Twig_Loader_Filesystem
+	* @return \Twig_Loader_Filesystem
 	*/
 	public function setSafeDirectories($directories = array())
 	{
@@ -45,7 +45,7 @@ class loader extends \Twig_Loader_Filesystem
 	* Add safe directory
 	*
 	* @param string $directory Directory that should be added
-	* @return Twig_Loader_Filesystem
+	* @return \Twig_Loader_Filesystem
 	*/
 	public function addSafeDirectory($directory)
 	{
@@ -110,7 +110,7 @@ class loader extends \Twig_Loader_Filesystem
 			// Try validating the name (which may throw an exception)
 			parent::validateName($name);
 		}
-		catch (Twig_Error_Loader $e)
+		catch (\Twig_Error_Loader $e)
 		{
 			if (strpos($e->getRawMessage(), 'Looks like you try to load a template outside configured directories') === 0)
 			{

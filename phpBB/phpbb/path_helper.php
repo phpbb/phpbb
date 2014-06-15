@@ -317,7 +317,7 @@ class path_helper
 	*
 	* @param string $url URL to append parameters to
 	* @param array $new_params Parameters to add in the form of array(name => value)
-	* @param string $is_amp Is the parameter separator &amp;. Defaults to true.
+	* @param bool $is_amp Is the parameter separator &amp;. Defaults to true.
 	* @return string Returns the new URL.
 	*/
 	public function append_url_params($url, $new_params, $is_amp = true)

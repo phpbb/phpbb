@@ -18,7 +18,7 @@ class phpass extends salted_md5
 	const PREFIX = '$P$';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{

@@ -16,7 +16,7 @@ namespace phpbb\passwords\driver;
 class helper
 {
 	/**
-	* @var phpbb\config\config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
@@ -29,7 +29,7 @@ class helper
 	/**
 	* Construct a driver helper object
 	*
-	* @param phpbb\config\config $config phpBB configuration
+	* @param \phpbb\config\config $config phpBB configuration
 	*/
 	public function __construct(\phpbb\config\config $config)
 	{

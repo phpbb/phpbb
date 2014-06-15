@@ -142,7 +142,7 @@ interface driver_interface
 	* Fetch a field from the current row of a cached database result (database)
 	*
 	* @param int $query_id
-	* @param $field 				The name of the column.
+	* @param string $field 			The name of the column.
 	* @return string|bool 			The field of the query result if found in the cache,
 	* 								otherwise false.
 	*/

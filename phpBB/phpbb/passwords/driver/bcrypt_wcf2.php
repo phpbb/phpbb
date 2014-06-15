@@ -20,7 +20,7 @@ class bcrypt_wcf2 extends base
 	/** @var \phpbb\passwords\driver\bcrypt */
 	protected $bcrypt;
 
-	/** @var phpbb\passwords\driver\helper */
+	/** @var \phpbb\passwords\driver\helper */
 	protected $helper;
 
 	/**
@@ -36,7 +36,7 @@ class bcrypt_wcf2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -44,7 +44,7 @@ class bcrypt_wcf2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_legacy()
 	{
@@ -52,7 +52,7 @@ class bcrypt_wcf2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function hash($password, $user_row = '')
 	{
@@ -61,7 +61,7 @@ class bcrypt_wcf2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function check($password, $hash, $user_row = array())
 	{

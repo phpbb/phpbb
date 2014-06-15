@@ -103,7 +103,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	*
 	* @return bool	True if the lock was acquired, false if it has been acquired previously
 	*
-	* @throws RuntimeException If the lock could not be acquired
+	* @throws \RuntimeException If the lock could not be acquired
 	*/
 	protected function acquire_lock()
 	{
@@ -121,7 +121,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function insert(array $additional_data)
 	{
@@ -176,6 +176,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	*
 	* @param int	$item_id	The item to be deleted
 	* @return array		Item ids that have been removed
+	* @throws \OutOfBoundsException
 	*/
 	protected function remove_item_from_nestedset($item_id)
 	{
@@ -199,7 +200,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function delete($item_id)
 	{
@@ -214,7 +215,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function move($item_id, $delta)
 	{
@@ -332,7 +333,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function move_down($item_id)
 	{
@@ -340,7 +341,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function move_up($item_id)
 	{
@@ -348,7 +349,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function move_children($current_parent_id, $new_parent_id)
 	{
@@ -454,7 +455,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function change_parent($item_id, $new_parent_id)
 	{
@@ -553,7 +554,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_path_and_subtree_data($item_id, $order_asc = true, $include_item = true)
 	{
@@ -564,7 +565,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_path_data($item_id, $order_asc = true, $include_item = true)
 	{
@@ -574,7 +575,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_subtree_data($item_id, $order_asc = true, $include_item = true)
 	{

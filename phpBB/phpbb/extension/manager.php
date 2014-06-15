@@ -148,7 +148,7 @@ class manager
 	* Instantiates the metadata manager for the extension with the given name
 	*
 	* @param string $name The extension name
-	* @param string $template The template manager
+	* @param \phpbb\template\template $template The template manager
 	* @return \phpbb\extension\metadata_manager Instance of the metadata manager
 	*/
 	public function create_extension_metadata_manager($name, \phpbb\template\template $template)

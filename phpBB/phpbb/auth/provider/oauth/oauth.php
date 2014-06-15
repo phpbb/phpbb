@@ -14,7 +14,6 @@
 namespace phpbb\auth\provider\oauth;
 
 use OAuth\Common\Consumer\Credentials;
-use OAuth\Common\Http\Uri\Uri;
 
 /**
 * OAuth authentication provider for phpBB3
@@ -224,7 +223,7 @@ class oauth extends \phpbb\auth\provider\base
 
 			if (!$row)
 			{
-				throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_ENTRY');
+				throw new \Exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_ENTRY');
 			}
 
 			// Update token storage to store the user_id
@@ -278,9 +277,10 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	array	$service_credentials	{@see \phpbb\auth\provider\oauth\oauth::get_service_credentials}
 	* @param	string	$query					The query string of the
 	*											current_uri used in redirection
-	* @param	array	$scope					The scope of the request against
+	* @param	array	$scopes					The scope of the request against
 	*											the api.
 	* @return	\OAuth\Common\Service\ServiceInterface
+	* @throws	\Exception
 	*/
 	protected function get_service($service_name, \phpbb\auth\provider\oauth\token_storage $storage, array $service_credentials, $query, array $scopes = array())
 	{
@@ -298,7 +298,7 @@ class oauth extends \phpbb\auth\provider\base
 
 		if (!$service)
 		{
-			throw new Exception('AUTH_PROVIDER_OAUTH_ERROR_SERVICE_NOT_CREATED');
+			throw new \Exception('AUTH_PROVIDER_OAUTH_ERROR_SERVICE_NOT_CREATED');
 		}
 
 		return $service;
@@ -617,7 +617,5 @@ class oauth extends \phpbb\auth\provider\base
 		$service_name = 'auth.provider.oauth.service.' . strtolower($link_data['oauth_service']);
 		$storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->auth_provider_oauth_token_storage_table);
 		$storage->clearToken($service_name);
-
-		return;
 	}
 }

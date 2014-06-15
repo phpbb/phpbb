@@ -217,7 +217,7 @@ class schema_generator
 	* Check if one of the migrations files' dependencies can't be resolved
 	* by the supplied list of migrations
 	*
-	* @throws UnexpectedValueException If a dependency can't be resolved
+	* @throws \UnexpectedValueException If a dependency can't be resolved
 	*/
 	protected function check_dependencies()
 	{

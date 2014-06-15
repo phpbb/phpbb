@@ -18,7 +18,7 @@ class md5_vb extends base
 	const PREFIX = '$md5_vb$';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -26,7 +26,7 @@ class md5_vb extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_legacy()
 	{
@@ -34,7 +34,7 @@ class md5_vb extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function hash($password, $user_row = '')
 	{
@@ -43,7 +43,7 @@ class md5_vb extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function check($password, $hash, $user_row = array())
 	{

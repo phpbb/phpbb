@@ -65,7 +65,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Returns the teampage position for a given group, if the group exists.
 	*
-	* {@inheritDoc}
+	* @param	int		$group_id	group_id of the group to be selected
+	* @return	int			position of the group
+	* @throws \phpbb\groupposition\exception
 	*/
 	public function get_group_value($group_id)
 	{
@@ -93,6 +95,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	*
 	* @param	int		$group_id	group_id of the group to be selected
 	* @return	array			Data row of the group
+	* @throws \phpbb\groupposition\exception
 	*/
 	public function get_group_values($group_id)
 	{
@@ -120,6 +123,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	*
 	* @param	int		$teampage_id	Teampage_id of the selected item
 	* @return	int			Teampage position of the item
+	* @throws \phpbb\groupposition\exception
 	*/
 	public function get_teampage_value($teampage_id)
 	{
@@ -144,6 +148,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	*
 	* @param	int		$teampage_id	Teampage_id of the selected item
 	* @return	array			Teampage row of the item
+	* @throws \phpbb\groupposition\exception
 	*/
 	public function get_teampage_values($teampage_id)
 	{
@@ -165,8 +170,6 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 
 
 	/**
-	* Get number of items displayed
-	*
 	* {@inheritDoc}
 	*/
 	public function get_group_count()
@@ -182,8 +185,6 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Adds a group by group_id
-	*
 	* {@inheritDoc}
 	*/
 	public function add_group($group_id)
@@ -288,7 +289,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Deletes a group from the list and closes the gap in the position list.
 	*
-	* {@inheritDoc}
+	* @param	int		$group_id		group_id of the group to be deleted
+	* @param	bool	$skip_group		Skip setting the value for this group, to save the query, when you need to update it anyway.
+	* @return	bool		True if the group was deleted successfully
 	*/
 	public function delete_group($group_id, $skip_group = false)
 	{
@@ -347,8 +350,6 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Moves a group up by group_id
-	*
 	* {@inheritDoc}
 	*/
 	public function move_up($group_id)
@@ -359,7 +360,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Moves an item up by teampage_id
 	*
-	* @param	int		$group_id	group_id of the group to be moved
+	* @param	int		$teampage_id	teampage_id of the item to be move
 	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_up_teampage($teampage_id)
@@ -368,8 +369,6 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Moves a group down by group_id
-	*
 	* {@inheritDoc}
 	*/
 	public function move_down($group_id)
@@ -378,9 +377,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Movesan item down by teampage_id
+	* Moves an item down by teampage_id
 	*
-	* @param	int		$group_id	group_id of the group to be moved
+	* @param	int		$teampage_id	teampage_id of the item to be moved
 	* @return	bool		True if the group was moved successfully
 	*/
 	public function move_down_teampage($teampage_id)
@@ -389,8 +388,6 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Moves a group up/down
-	*
 	* {@inheritDoc}
 	*/
 	public function move($group_id, $delta)

@@ -13,6 +13,8 @@
 
 namespace phpbb\feed;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
 * Factory class to return correct object
 */
@@ -20,7 +22,7 @@ class factory
 {
 	/**
 	* Service container object
-	* @var object
+	* @var ContainerInterface
 	*/
 	protected $container;
 
@@ -33,12 +35,11 @@ class factory
 	/**
 	* Constructor
 	*
-	* @param objec				$container	Container object
-	* @param \phpbb\config\config		$config		Config object
+	* @param ContainerInterface					$container	Container object
+	* @param \phpbb\config\config				$config		Config object
 	* @param \phpbb\db\driver\driver_interface	$db			Database connection
-	* @return	null
 	*/
-	public function __construct($container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
+	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->container = $container;
 		$this->config = $config;
