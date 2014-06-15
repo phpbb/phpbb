@@ -456,7 +456,9 @@ class p_master
 		);
 
 		$is_auth = false;
+		// @codingStandardsIgnoreStart
 		eval('$is_auth = (int) (' .	$module_auth . ');');
+		// @codingStandardsIgnoreEnd
 
 		return $is_auth;
 	}
