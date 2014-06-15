@@ -164,6 +164,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	* @param int $forum_id Forum ID of forum that should be pruned
 	* @param string $prune_mode Prune mode
 	* @param int $prune_flags Prune flags
+	* @param int $prune_days Prune date in days
 	* @param int $prune_freq Prune frequency
 	* @return null
 	*/

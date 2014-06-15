@@ -34,7 +34,7 @@ class manager
 	/**
 	* Constructor. Loads all available tasks.
 	*
-	* @param array|Traversable $tasks Provides an iterable set of task names
+	* @param array|\Traversable $tasks Provides an iterable set of task names
 	*/
 	public function __construct($tasks, $phpbb_root_path, $php_ext)
 	{
@@ -48,7 +48,7 @@ class manager
 	* Loads tasks given by name, wraps them
 	* and puts them into $this->tasks.
 	*
-	* @param array|Traversable $tasks		Array of instances of \phpbb\cron\task\task
+	* @param array|\Traversable $tasks		Array of instances of \phpbb\cron\task\task
 	*
 	* @return null
 	*/
