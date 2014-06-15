@@ -248,6 +248,17 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
 	}
 
+	public function test_column_remove_similar_name()
+	{
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_vchar'));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_vchar_size'));
+
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_vchar'));
+
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_vchar'));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_vchar_size'));
+	}
+
 	public function test_column_remove_with_index()
 	{
 		// Create column
