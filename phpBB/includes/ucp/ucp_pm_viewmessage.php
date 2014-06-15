@@ -204,7 +204,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (int) $user_info['user_posts'],
-		'CONTACT_USER'		=> $user->lang('CONTACT_USER' . get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username'])), //$row['contact_user'],
+		'CONTACT_USER'		=> $user->lang('CONTACT_USER', $user_info['username']),
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
