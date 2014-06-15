@@ -1148,8 +1148,10 @@ class fulltext_native extends \phpbb\search\base
 		*/
 		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
 
+		// @codingStandardsIgnoreStart
 		while (strlen($word))
 		{
+			// @codingStandardsIgnoreEnd
 			if (strlen($word) > 255 || strlen($word) <= $isset_min)
 			{
 				/**

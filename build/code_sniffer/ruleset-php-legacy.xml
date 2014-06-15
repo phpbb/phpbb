@@ -41,6 +41,9 @@
  </rule>
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
 
+ <!-- Size-based functions MUST NOT be used in loop conditions. -->
+ <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops" />
+
  <!-- There MUST NOT be trailing whitespace at the end of lines. -->
  <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
 

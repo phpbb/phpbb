@@ -479,7 +479,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 				$dir->close();
 			}
 
-			for ($i = 0; $i < sizeof($dirlist); ++$i)
+			for ($i = 0, $dir_number = sizeof($dirlist); $i < $dir_number; ++$i)
 			{
 				$dir = $dirlist[$i];
 
@@ -1425,8 +1425,10 @@ function get_path($src_path, $src_url, $test_file)
 		$path_array = array();
 
 		$phpbb_parts = explode('/', $script_path);
+		// @codingStandardsIgnoreStart
 		for ($i = 0; $i < sizeof($url_parts); ++$i)
 		{
+			// @codingStandardsIgnoreEnd
 			if ($i < sizeof($phpbb_parts[$i]) && $url_parts[$i] == $phpbb_parts[$i])
 			{
 				$path_array[] = $url_parts[$i];
@@ -1435,7 +1437,7 @@ function get_path($src_path, $src_url, $test_file)
 			else
 			{
 				$path = '';
-				for ($j = $i; $j < sizeof($phpbb_parts); ++$j)
+				for ($j = $i, $nb_parts = sizeof($phpbb_parts); $j < $nb_parts; ++$j)
 				{
 					$path .= '../';
 				}
@@ -2267,7 +2269,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 			"\n\n"
 		);
 
-		for ($i = 0; $i < sizeof($str_from); ++$i)
+		for ($i = 0, $nb_from = sizeof($str_from); $i < $nb_from; ++$i)
 		{
 			$origx[] = '#\\' . str_replace(']', '\\]', $str_from[$i]) . '#is';
 			$replx[] = $str_to[$i];
@@ -2276,7 +2278,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 	if (preg_match_all('#\[email=([^\]]+)\](.*?)\[/email\]#i', $message, $m))
 	{
-		for ($i = 0; $i < sizeof($m[1]); ++$i)
+		for ($i = 0, $nb_match = sizeof($m[1]); $i < $nb_match; ++$i)
 		{
 			if ($m[1][$i] == $m[2][$i])
 			{
@@ -2337,7 +2339,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 	$parts = explode('/', $trg);
 	unset($parts[sizeof($parts) - 1]);
 
-	for ($i = 0; $i < sizeof($parts); ++$i)
+	for ($i = 0, $nb_parts = sizeof($parts); $i < $nb_parts; ++$i)
 	{
 		$path .= $parts[$i] . '/';
 
@@ -2434,7 +2436,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 
 	if ($copy_subdirs)
 	{
-		for ($i = 0; $i < sizeof($dirlist); ++$i)
+		for ($i = 0, $nb_dir = sizeof($dirlist); $i < $nb_dir; ++$i)
 		{
 			$dir = $dirlist[$i];
 
@@ -2469,7 +2471,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		$convert->p_master->error(sprintf($str, implode('<br />', $bad_dirs)), __LINE__, __FILE__);
 	}
 
-	for ($i = 0; $i < sizeof($filelist); ++$i)
+	for ($i = 0, $nb_files = sizeof($filelist); $i < $nb_files; ++$i)
 	{
 		copy_file($src . $filelist[$i], $trg . $filelist[$i], $overwrite, $die_on_failure, $source_relative_path);
 	}

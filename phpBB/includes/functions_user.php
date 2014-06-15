@@ -1987,7 +1987,8 @@ function validate_jabber($jid)
 	$pos = 0;
 	$result = true;
 
-	while ($pos < strlen($username))
+	$username_length = strlen($username);
+	while ($pos < $username_length)
 	{
 		$len = $uni = 0;
 		for ($i = 0; $i <= 5; $i++)

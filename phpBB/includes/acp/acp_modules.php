@@ -887,7 +887,7 @@ class acp_modules
 		$diff = sizeof($moved_modules) * 2;
 
 		$moved_ids = array();
-		for ($i = 0; $i < sizeof($moved_modules); ++$i)
+		for ($i = 0, $moved_modules_number = sizeof($moved_modules); $i < $moved_modules_number; ++$i)
 		{
 			$moved_ids[] = $moved_modules[$i]['module_id'];
 		}

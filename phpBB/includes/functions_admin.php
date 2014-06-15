@@ -1267,8 +1267,10 @@ function delete_topic_shadows($forum_id, $sql_more = '', $auto_sync = true)
 				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 			$db->sql_query($sql);
 		}
+		// @codingStandardsIgnoreStart
 	}
 	while (sizeof($topic_ids) == $batch_size);
+	// @codingStandardsIgnoreEnd
 
 	if ($auto_sync)
 	{

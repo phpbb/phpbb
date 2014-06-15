@@ -929,7 +929,8 @@ class install_convert extends module
 								$val = array($val);
 							}
 
-							for ($j = 0; $j < sizeof($val); ++$j)
+							$nb_val = sizeof($val);
+							for ($j = 0; $j < $nb_val; ++$j)
 							{
 								if (preg_match('/LEFT JOIN ([a-z0-9_]+) AS ([a-z0-9_]+)/i', $val[$j], $m))
 								{
@@ -1070,7 +1071,8 @@ class install_convert extends module
 		));
 
 		// This loop takes one target table and processes it
-		while ($current_table < sizeof($convert->convertor['schema']))
+		$nb_tables = sizeof($convert->convertor['schema']);
+		while ($current_table < $nb_tables)
 		{
 			$schema = $convert->convertor['schema'][$current_table];
 
@@ -1671,7 +1673,8 @@ class install_convert extends module
 				}
 				else
 				{
-					while ($last_statement < sizeof($convert->convertor['execute_last']))
+					$nb_execute_last = sizeof($convert->convertor['execute_last']);
+					while ($last_statement < $nb_execute_last)
 					{
 						eval($convert->convertor['execute_last'][$last_statement]);
 

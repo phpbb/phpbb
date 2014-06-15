@@ -1482,7 +1482,8 @@ function phpbb_attachment_forum_perms($forum_permissions)
 	$two_char_encoding = '.';
 
 	$auth_len = 1;
-	for ($pos = 0; $pos < strlen($forum_permissions); $pos += $auth_len)
+	$forum_permissions_len = strlen($forum_permissions);
+	for ($pos = 0; $pos < $forum_permissions_len; $pos += $auth_len)
 	{
 		$forum_auth = substr($forum_permissions, $pos, 1);
 		if ($forum_auth == $one_char_encoding)

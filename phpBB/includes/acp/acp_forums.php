@@ -1411,7 +1411,7 @@ class acp_forums
 		$diff = sizeof($moved_forums) * 2;
 
 		$moved_ids = array();
-		for ($i = 0; $i < sizeof($moved_forums); ++$i)
+		for ($i = 0, $forums_number = sizeof($moved_forums); $i < $forums_number; ++$i)
 		{
 			$moved_ids[] = $moved_forums[$i]['forum_id'];
 		}
@@ -1908,8 +1908,9 @@ class acp_forums
 								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $ids));
 							}
 						}
+						$ids_number = sizeof($ids);
 					}
-					while (sizeof($ids) == $batch_size);
+					while ($ids_number == $batch_size);
 				}
 				unset($ids);
 
