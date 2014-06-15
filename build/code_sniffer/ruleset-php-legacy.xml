@@ -23,6 +23,10 @@
  <!-- Lowercase filenames are required. -->
  <rule ref="Generic.Files.LowercasedFilename" />
 
+ <!-- Function declarations follow the "BSD/Allman style".
+	 The function brace is on the line following the function declaration and is indented to the same column as the start of the function declaration. -->
+ <rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman" />
+
  <!-- There MUST be exactly one space after a cast. -->
  <rule ref="Generic.Formatting.SpaceAfterCast" />
 
