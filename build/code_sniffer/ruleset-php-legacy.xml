@@ -45,6 +45,9 @@
  <!-- When referencing arrays you should not put whitespace around the opening bracket or before the closing bracket. -->
  <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
 
+ <!-- Verifies that there are not elseif statements. The else and the if should be separated by a space. -->
+ <rule ref="Squiz.ControlStructures.ElseIfDeclaration" />
+
  <!-- In the argument list, there MUST NOT be a space before each comma,
       and there MUST be one space after each comma. -->
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">

@@ -53,7 +53,7 @@ class provider_collection extends \phpbb\di\service_collection
 			return $this->offsetGet('auth.provider.' . basename(trim($this->config['auth_method'])));
 		}
 		// Revert to db auth provider if selected method does not exist
-		elseif ($this->offsetExists('auth.provider.db'))
+		else if ($this->offsetExists('auth.provider.db'))
 		{
 			return $this->offsetGet('auth.provider.db');
 		}
