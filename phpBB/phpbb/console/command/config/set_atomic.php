@@ -19,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class set_atomic extends command
 {
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -48,6 +51,18 @@ class set_atomic extends command
 		;
 	}
 
+	/**
+	* Executes the command config:set-atomic.
+	*
+	* Sets a configuration option's value only if the old_value matches the
+	* current configuration value or the configuration value does not exist yet.
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return bool True if the value was changed, false otherwise.
+	* @see \phpbb\config\config::set_atomic()
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$key = $input->getArgument('key');

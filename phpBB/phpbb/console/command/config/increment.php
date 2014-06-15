@@ -19,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class increment extends command
 {
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -43,6 +46,17 @@ class increment extends command
 		;
 	}
 
+	/**
+	* Executes the command config:increment.
+	*
+	* Increments an integer configuration value.
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return null
+	* @see \phpbb\config\config::increment()
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$key = $input->getArgument('key');

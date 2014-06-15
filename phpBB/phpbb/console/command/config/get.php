@@ -19,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class get extends command
 {
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -38,6 +41,17 @@ class get extends command
 		;
 	}
 
+	/**
+	* Executes the command config:get.
+	*
+	* Retrieves a configuration value.
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return null
+	* @see \phpbb\config\config::offsetGet()
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$key = $input->getArgument('key');

@@ -19,6 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class set extends command
 {
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -43,6 +46,17 @@ class set extends command
 		;
 	}
 
+	/**
+	* Executes the command config:set.
+	*
+	* Sets a configuration option's value.
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return null
+	* @see \phpbb\config\config::set()
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$key = $input->getArgument('key');
