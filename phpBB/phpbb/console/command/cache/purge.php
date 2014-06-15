@@ -35,6 +35,16 @@ class purge extends \phpbb\console\command\command
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/**
+	* Constructor
+	*
+	* @param \phpbb\cache\driver\driver_interface	$cache	Cache instance
+	* @param \phpbb\db\driver\driver_interface		$db		Database connection
+	* @param \phpbb\auth\auth						$auth	Auth instance
+	* @param \phpbb\log\log							$log	Logger instance
+	* @param \phpbb\user							$user	User instance
+	* @param \phpbb\config\config					$config	Config instance
+	*/
 	public function __construct(\phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log $log, \phpbb\user $user, \phpbb\config\config $config)
 	{
 		$this->cache = $cache;
@@ -46,6 +56,9 @@ class purge extends \phpbb\console\command\command
 		parent::__construct();
 	}
 
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -54,6 +67,16 @@ class purge extends \phpbb\console\command\command
 		;
 	}
 
+	/**
+	* Executes the command cache:purge.
+	*
+	* Purge the cache (including permissions) and increment the asset_version number
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return null
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$this->config->increment('assets_version', 1);
