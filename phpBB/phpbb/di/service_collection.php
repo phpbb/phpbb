@@ -40,7 +40,7 @@ class service_collection extends \ArrayObject
 	*/
 	public function getIterator()
 	{
-		return new service_collection_iterator($this->container, $this);
+		return new service_collection_iterator($this);
 	}
 
 	// Because of a PHP issue we have to redefine offsetExists
@@ -63,14 +63,7 @@ class service_collection extends \ArrayObject
 	*/
 	public function offsetGet($index)
 	{
-		$task = parent::offsetGet($index);
-		if ($task === null)
-		{
-			$task = $this->container->get($index);
-			$this->offsetSet($index, $task);
-		}
-
-		return $task;
+		return $this->container->get($index);
 	}
 
 	/**
