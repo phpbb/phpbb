@@ -239,6 +239,24 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
 	}
 
+	public function test_column_change_with_composite_primary()
+	{
+		// Remove the old primary key
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_id'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_id', array('UINT', 0)));
+
+		// Create a composite key
+		$this->assertTrue($this->tools->sql_create_primary_key('prefix_table_name', array('c_id', 'c_uint')));
+
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12643'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12643', array('DECIMAL', 0)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12643'));
+
+		// Change type from int to string
+		$this->assertTrue($this->tools->sql_column_change('prefix_table_name', 'c_bug_12643', array('VCHAR:100', '')));
+	}
+
 	public function test_column_remove()
 	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));

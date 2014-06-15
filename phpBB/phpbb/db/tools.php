@@ -2561,7 +2561,18 @@ class tools
 
 				foreach ($old_table_cols as $key => $declaration)
 				{
-					$entities = preg_split('#\s+#', trim($declaration));
+					$declaration = trim($declaration);
+
+					// Check for the beginning of the constraint section and stop
+					if (preg_match('/[^\(]*\s*PRIMARY KEY\s+\(/', $declaration) ||
+						preg_match('/[^\(]*\s*UNIQUE\s+\(/', $declaration) ||
+						preg_match('/[^\(]*\s*FOREIGN KEY\s+\(/', $declaration) ||
+						preg_match('/[^\(]*\s*CHECK\s+\(/', $declaration))
+					{
+						break;
+					}
+
+					$entities = preg_split('#\s+#', $declaration);
 					$column_list[] = $entities[0];
 					if ($entities[0] == $column_name)
 					{
