@@ -63,6 +63,9 @@
  </rule>
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
 
+ <!-- All PHP built-in functions should be lowercased when called. -->
+ <rule ref="Squiz.Functions.LowercaseFunctionKeywords" />
+
  <!-- The eval() function MUST NOT be used. -->
  <rule ref="Squiz.PHP.Eval" />
 
