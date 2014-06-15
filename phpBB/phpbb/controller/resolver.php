@@ -122,7 +122,7 @@ class resolver implements ControllerResolverInterface
 	*
 	* @param \Symfony\Component\HttpFoundation\Request $request Symfony Request object
 	* @param mixed $controller A callable (controller class, method)
-	* @return bool False
+	* @return array An array of arguments to pass to the controller
 	* @throws \phpbb\controller\exception
 	*/
 	public function getArguments(Request $request, $controller)
