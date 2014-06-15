@@ -32,7 +32,6 @@ class permissions
 	*
 	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher
 	* @param	\phpbb\user				$user				User Object
-	* @return	null
 	*/
 	public function __construct(\phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\user $user)
 	{

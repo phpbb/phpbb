@@ -21,7 +21,7 @@ abstract class guesser_base implements guesser_interface
 	protected $priority;
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_priority()
 	{
@@ -29,7 +29,7 @@ abstract class guesser_base implements guesser_interface
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function set_priority($priority)
 	{

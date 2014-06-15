@@ -15,8 +15,6 @@ namespace phpbb\di\extension;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\Config\FileLocator;
 
 /**
 * Container config extension
@@ -34,7 +32,7 @@ class config extends Extension
 	* @param array            $config    An array of configuration values
 	* @param ContainerBuilder $container A ContainerBuilder instance
 	*
-	* @throws InvalidArgumentException When provided tag is not defined in this extension
+	* @throws \InvalidArgumentException When provided tag is not defined in this extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
@@ -68,7 +66,7 @@ class config extends Extension
 	* Convert 3.0 ACM type to 3.1 cache driver class name
 	*
 	* @param string $acm_type ACM type
-	* @return cache driver class
+	* @return string cache driver class
 	*/
 	protected function convert_30_acm_type($acm_type)
 	{

@@ -21,22 +21,22 @@ class facebook extends base
 	/**
 	* phpBB config
 	*
-	* @var phpbb\config\config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* phpBB request
 	*
-	* @var phpbb\request\request_interface
+	* @var \phpbb\request\request_interface
 	*/
 	protected $request;
 
 	/**
 	* Constructor
 	*
-	* @param	phpbb\config\config					$config
-	* @param	phpbb\request\request_interface 	$request
+	* @param	\phpbb\config\config				$config
+	* @param	\phpbb\request\request_interface 	$request
 	*/
 	public function __construct(\phpbb\config\config $config, \phpbb\request\request_interface $request)
 	{

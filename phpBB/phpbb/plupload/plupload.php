@@ -69,8 +69,6 @@ class plupload
 	* @param \phpbb\user $user
 	* @param \phpbb\php\ini $php_ini
 	* @param \phpbb\mimetype\guesser $mimetype_guesser
-	*
-	* @return null
 	*/
 	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \phpbb\php\ini $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{

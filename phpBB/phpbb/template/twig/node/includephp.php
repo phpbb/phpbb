@@ -17,7 +17,7 @@ namespace phpbb\template\twig\node;
 
 class includephp extends \Twig_Node
 {
-	/** @var Twig_Environment */
+	/** @var \Twig_Environment */
 	protected $environment;
 
 	public function __construct(\Twig_Node_Expression $expr, \phpbb\template\twig\environment $environment, $lineno, $ignoreMissing = false, $tag = null)
@@ -28,10 +28,10 @@ class includephp extends \Twig_Node
 	}
 
 	/**
-	 * Compiles the node to PHP.
-	 *
-	 * @param Twig_Compiler A Twig_Compiler instance
-	 */
+	* Compiles the node to PHP.
+	*
+	* @param \Twig_Compiler A Twig_Compiler instance
+	*/
 	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);

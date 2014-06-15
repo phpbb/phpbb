@@ -470,7 +470,7 @@ class extension_guesser extends guesser_base
 	);
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_supported()
 	{
@@ -478,7 +478,7 @@ class extension_guesser extends guesser_base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function guess($file, $file_name = '')
 	{

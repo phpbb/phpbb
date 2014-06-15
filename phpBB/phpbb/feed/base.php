@@ -70,15 +70,14 @@ abstract class base
 	/**
 	* Constructor
 	*
-	* @param \phpbb\feed\helper $helper Feed helper
-	* @param \phpbb\config\config		$config		Config object
+	* @param \phpbb\feed\helper					$helper		Feed helper
+	* @param \phpbb\config\config				$config		Config object
 	* @param \phpbb\db\driver\driver_interface	$db			Database connection
-	* @param \phpbb\cache\driver\driver_interface	$cache			Cache object
-	* @param \phpbb\user			$user		User object
-	* @param \phpbb\auth\auth			$auth		Auth object
-	* @param \phpbb\content_visibility	$content_visibility		Auth object
-	* @param string				$phpEx		php file extension
-	* @return	null
+	* @param \phpbb\cache\driver\driver_interface	$cache	Cache object
+	* @param \phpbb\user						$user		User object
+	* @param \phpbb\auth\auth					$auth		Auth object
+	* @param \phpbb\content_visibility			$content_visibility		Auth object
+	* @param string								$phpEx		php file extension
 	*/
 	function __construct(\phpbb\feed\helper $helper, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\content_visibility $content_visibility, $phpEx)
 	{
@@ -133,6 +132,9 @@ abstract class base
 
 	/**
 	* Set key
+	*
+	* @param string $key Key
+	* @param mixed $value Value
 	*/
 	function set($key, $value)
 	{
@@ -141,6 +143,9 @@ abstract class base
 
 	/**
 	* Get key
+	*
+	* @param string $key Key
+	* @return mixed
 	*/
 	function get($key)
 	{

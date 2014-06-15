@@ -127,7 +127,7 @@ class extension extends \Twig_Extension
 	/**
 	* Grabs a subset of a loop
 	*
-	* @param Twig_Environment $env          A Twig_Environment instance
+	* @param \Twig_Environment $env          A Twig_Environment instance
 	* @param mixed            $item         A variable
 	* @param integer          $start        Start of the subset
 	* @param integer          $end   	     End of the subset

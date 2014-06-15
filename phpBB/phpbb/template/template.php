@@ -175,6 +175,7 @@ interface template
 	/**
 	* Get path to template for handle (required for BBCode parser)
 	*
+	* @param string $handle Handle to retrieve the source file
 	* @return string
 	*/
 	public function get_source_file_for_handle($handle);

@@ -15,7 +15,6 @@ namespace phpbb\console\command\cron;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class run extends \phpbb\console\command\command
@@ -35,7 +34,7 @@ class run extends \phpbb\console\command\command
 	* @param \phpbb\cron\manager $cron_manager The cron manager containing
 	*		the cron tasks to be executed.
 	* @param \phpbb\lock\db $lock_db The lock for accessing database.
-	* @param \phobb\user $user The user object (used to get language information)
+	* @param \phpbb\user $user The user object (used to get language information)
 	*/
 	public function __construct(\phpbb\cron\manager $cron_manager, \phpbb\lock\db $lock_db, \phpbb\user $user)
 	{
@@ -102,7 +101,7 @@ class run extends \phpbb\console\command\command
 		}
 	}
 
-	/*
+	/**
 	* Executes all ready cron tasks.
 	*
 	* If verbose mode is set, an info message will be printed if there is no task to
@@ -140,7 +139,7 @@ class run extends \phpbb\console\command\command
 		return 0;
 	}
 
-	/*
+	/**
 	* Executes a given cron task, if it is ready.
 	*
 	* If there is a task whose name matches $task_name, it is run and 0 is returned.

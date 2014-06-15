@@ -39,23 +39,23 @@ class manager
 
 	/**
 	* Passwords helper
-	* @var phpbb\passwords\helper
+	* @var \phpbb\passwords\helper
 	*/
 	protected $helper;
 
 	/**
 	* phpBB configuration
-	* @var phpbb\config\config
+	* @var \phpbb\config\config
 	*/
 	protected $config;
 
 	/**
 	* Construct a passwords object
 	*
-	* @param phpbb\config\config $config phpBB configuration
+	* @param \phpbb\config\config $config phpBB configuration
 	* @param array $hashing_algorithms Hashing driver
 	*			service collection
-	* @param phpbb\passwords\helper $helper Passwords helper object
+	* @param \phpbb\passwords\helper $helper Passwords helper object
 	* @param string $defaults List of default driver types
 	*/
 	public function __construct(\phpbb\config\config $config, $hashing_algorithms, helper $helper, $defaults)
@@ -89,7 +89,7 @@ class manager
 	/**
 	* Fill algorithm type map
 	*
-	* @param phpbb\di\service_collection $hashing_algorithms
+	* @param \phpbb\di\service_collection $hashing_algorithms
 	*/
 	protected function fill_type_map($hashing_algorithms)
 	{

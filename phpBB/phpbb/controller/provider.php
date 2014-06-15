@@ -37,7 +37,7 @@ class provider
 	/**
 	* Construct method
 	*
-	* @param array() $routing_files Array of strings containing paths
+	* @param array $routing_files Array of strings containing paths
 	*							to YAML files holding route information
 	*/
 	public function __construct($routing_files = array())
@@ -46,6 +46,8 @@ class provider
 	}
 
 	/**
+	* Find the list of routing files
+	*
 	* @param \phpbb\finder $finder
 	* @return null
 	*/
@@ -61,10 +63,10 @@ class provider
 	}
 
 	/**
-	* Find a list of controllers and return it
+	* Find a list of controllers
 	*
 	* @param string $base_path Base path to prepend to file paths
-	* @return null
+	* @return provider
 	*/
 	public function find($base_path = '')
 	{

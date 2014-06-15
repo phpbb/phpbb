@@ -167,8 +167,9 @@ class migrator
 	/**
 	* Attempts to apply a step of the given migration or one of its dependencies
 	*
-	* @param	string	The class name of the migration
+	* @param	string	$name The class name of the migration
 	* @return	bool	Whether any update step was successfully run
+	* @throws \phpbb\db\migration\exception
 	*/
 	protected function try_apply($name)
 	{
@@ -302,7 +303,7 @@ class migrator
 	/**
 	* Attempts to revert a step of the given migration or one of its dependencies
 	*
-	* @param	string	The class name of the migration
+	* @param	string	$name The class name of the migration
 	* @return	bool	Whether any update step was successfully run
 	*/
 	protected function try_revert($name)
@@ -368,6 +369,7 @@ class migrator
 	* @param bool|string $state Current state of the migration
 	* @param bool $revert true to revert a data step
 	* @return bool|string migration state. True if completed, serialized array if not finished
+	* @throws \phpbb\db\migration\exception
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
 	{
@@ -464,6 +466,7 @@ class migrator
 	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
+	* @throws \phpbb\db\migration\exception
 	*/
 	protected function get_callable_from_step(array $step, $last_result = 0, $reverse = false)
 	{
@@ -722,6 +725,7 @@ class migrator
 	* 	to prevent errors (if including multiple directories, check
 	* 	with the last call to prevent throwing errors unnecessarily).
 	* @return array Array of migration names
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function load_migrations(\phpbb\finder $finder, $path, $check_fulfillable = true)
 	{

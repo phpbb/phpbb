@@ -54,10 +54,13 @@ class content_visibility
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	\phpbb\db\driver\driver_interface	$db		Database object
-	* @param	\phpbb\user		$user	User object
+	* @param	\phpbb\user		$user			User object
 	* @param	string		$phpbb_root_path	Root path
 	* @param	string		$php_ext			PHP Extension
-	* @return	null
+	* @param	string		$forums_table		Forums table name
+	* @param	string		$posts_table		Posts table name
+	* @param	string		$topics_table		Topics table name
+	* @param	string		$users_table		Users table name
 	*/
 	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{

@@ -67,7 +67,7 @@ class twig extends \phpbb\template\base
 	/**
 	* Twig Environment
 	*
-	* @var Twig_Environment
+	* @var \Twig_Environment
 	*/
 	protected $twig;
 
@@ -347,9 +347,7 @@ class twig extends \phpbb\template\base
 	}
 
 	/**
-	* Get path to template for handle (required for BBCode parser)
-	*
-	* @return string
+	* {@inheritdoc}
 	*/
 	public function get_source_file_for_handle($handle)
 	{

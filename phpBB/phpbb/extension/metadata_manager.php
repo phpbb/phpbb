@@ -90,11 +90,11 @@ class metadata_manager
 	}
 
 	/**
-	 * Processes and gets the metadata requested
-	 *
-	 * @param  string $element			All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
-	 * @return array					Contains all of the requested metadata, throws an exception on failure
-	 */
+	* Processes and gets the metadata requested
+	*
+	* @param  string $element			All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
+	* @return array					Contains all of the requested metadata, throws an exception on failure
+	*/
 	public function get_metadata($element = 'all')
 	{
 		$this->set_metadata_file();
@@ -136,10 +136,10 @@ class metadata_manager
 	}
 
 	/**
-	 * Sets the filepath of the metadata file
-	 *
-	 * @return boolean  Set to true if it exists, throws an exception on failure
-	 */
+	* Sets the filepath of the metadata file
+	*
+	* @throws \phpbb\extension\exception
+	*/
 	private function set_metadata_file()
 	{
 		$ext_filepath = $this->extension_manager->get_extension_path($this->ext_name);
@@ -154,10 +154,11 @@ class metadata_manager
 	}
 
 	/**
-	 * Gets the contents of the composer.json file
-	 *
-	 * @return bool True if success, throws an exception on failure
-	 */
+	* Gets the contents of the composer.json file
+	*
+	* @return bool True if success, throws an exception on failure
+	* @throws \phpbb\extension\exception
+	*/
 	private function fetch_metadata()
 	{
 		if (!file_exists($this->metadata_file))
@@ -183,10 +184,10 @@ class metadata_manager
 	}
 
 	/**
-	 * This array handles the cleaning of the array
-	 *
-	 * @return array Contains the cleaned metadata array
-	 */
+	* This array handles the cleaning of the array
+	*
+	* @return array Contains the cleaned metadata array
+	*/
 	private function clean_metadata_array()
 	{
 		return $this->metadata;
@@ -199,6 +200,7 @@ class metadata_manager
 	* 						"display" for name, type, and authors
 	* 						"name", "type")
 	* @return Bool True if valid, throws an exception if invalid
+	* @throws \phpbb\extension\exception
 	*/
 	public function validate($name = 'display')
 	{
@@ -247,10 +249,11 @@ class metadata_manager
 	}
 
 	/**
-	 * Validates the contents of the authors field
-	 *
-	 * @return boolean True when passes validation, throws exception if invalid
-	 */
+	* Validates the contents of the authors field
+	*
+	* @return boolean True when passes validation, throws exception if invalid
+	* @throws \phpbb\extension\exception
+	*/
 	public function validate_authors()
 	{
 		if (empty($this->metadata['authors']))
@@ -270,10 +273,10 @@ class metadata_manager
 	}
 
 	/**
-	 * This array handles the verification that this extension can be enabled on this board
-	 *
-	 * @return bool True if validation succeeded, False if failed
-	 */
+	* This array handles the verification that this extension can be enabled on this board
+	*
+	* @return bool True if validation succeeded, False if failed
+	*/
 	public function validate_enable()
 	{
 		// Check for valid directory & phpBB, PHP versions
@@ -286,10 +289,10 @@ class metadata_manager
 	}
 
 	/**
-	 * Validates the most basic directory structure to ensure it follows <vendor>/<ext> convention.
-	 *
-	 * @return boolean True when passes validation
-	 */
+	* Validates the most basic directory structure to ensure it follows <vendor>/<ext> convention.
+	*
+	* @return boolean True when passes validation
+	*/
 	public function validate_dir()
 	{
 		return (substr_count($this->ext_name, '/') === 1 && $this->ext_name == $this->get_metadata('name'));
@@ -297,10 +300,10 @@ class metadata_manager
 
 
 	/**
-	 * Validates the contents of the phpbb requirement field
-	 *
-	 * @return boolean True when passes validation
-	 */
+	* Validates the contents of the phpbb requirement field
+	*
+	* @return boolean True when passes validation
+	*/
 	public function validate_require_phpbb()
 	{
 		if (!isset($this->metadata['require']['phpbb/phpbb']))
@@ -312,10 +315,10 @@ class metadata_manager
 	}
 
 	/**
-	 * Validates the contents of the php requirement field
-	 *
-	 * @return boolean True when passes validation
-	 */
+	* Validates the contents of the php requirement field
+	*
+	* @return boolean True when passes validation
+	*/
 	public function validate_require_php()
 	{
 		if (!isset($this->metadata['require']['php']))
@@ -348,10 +351,10 @@ class metadata_manager
 	}
 
 	/**
-	 * Outputs the metadata into the template
-	 *
-	 * @return null
-	 */
+	* Outputs the metadata into the template
+	*
+	* @return null
+	*/
 	public function output_template_data()
 	{
 		$this->template->assign_vars(array(

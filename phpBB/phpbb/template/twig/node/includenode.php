@@ -17,10 +17,10 @@ namespace phpbb\template\twig\node;
 class includenode extends \Twig_Node_Include
 {
 	/**
-	 * Compiles the node to PHP.
-	 *
-	 * @param Twig_Compiler A Twig_Compiler instance
-	 */
+	* Compiles the node to PHP.
+	*
+	* @param \Twig_Compiler A Twig_Compiler instance
+	*/
 	public function compile(\Twig_Compiler $compiler)
 	{
 		$compiler->addDebugInfo($this);

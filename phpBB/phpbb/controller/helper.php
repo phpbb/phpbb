@@ -101,7 +101,7 @@ class helper
 	* @param string	$route		Name of the route to travel
 	* @param array	$params		String or array of additional url parameters
 	* @param bool	$is_amp		Is url using &amp; (true) or & (false)
-	* @param string	$session_id	Possibility to use a custom session id instead of the global one
+	* @param string|bool	$session_id	Possibility to use a custom session id instead of the global one
 	* @return string The URL already passed through append_sid()
 	*/
 	public function route($route, array $params = array(), $is_amp = true, $session_id = false)
@@ -139,8 +139,8 @@ class helper
 	* Output an error, effectively the same thing as trigger_error
 	*
 	* @param string $message The error message
-	* @param string $code The error code (e.g. 404, 500, 503, etc.)
-	* @return Response A Reponse instance
+	* @param int $code The error code (e.g. 404, 500, 503, etc.)
+	* @return Response A Response instance
 	*/
 	public function error($message, $code = 500)
 	{

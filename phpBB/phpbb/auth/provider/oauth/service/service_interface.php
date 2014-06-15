@@ -67,7 +67,7 @@ interface service_interface
 	/**
 	* Sets the external library service provider
 	*
-	* @param	\OAuth\Common\Service\ServiceInterface	$service
+	* @param	\OAuth\Common\Service\ServiceInterface	$service_provider
 	*/
 	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider);
 }

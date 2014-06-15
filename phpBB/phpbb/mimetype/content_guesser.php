@@ -16,7 +16,7 @@ namespace phpbb\mimetype;
 class content_guesser extends guesser_base
 {
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_supported()
 	{
@@ -24,7 +24,7 @@ class content_guesser extends guesser_base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function guess($file, $file_name = '')
 	{

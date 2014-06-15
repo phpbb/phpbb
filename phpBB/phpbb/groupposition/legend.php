@@ -53,7 +53,9 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Returns the group_legend for a given group, if the group exists.
 	*
-	* {@inheritDoc}
+	* @param	int		$group_id	group_id of the group to be selected
+	* @return	int			position of the group
+	* @throws \phpbb\groupposition\exception
 	*/
 	public function get_group_value($group_id)
 	{
@@ -76,7 +78,7 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Get number of groups, displayed on the legend
 	*
-	* {@inheritDoc}
+	* @return	int		value of the last item displayed
 	*/
 	public function get_group_count()
 	{
@@ -91,8 +93,6 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Adds a group by group_id
-	*
 	* {@inheritDoc}
 	*/
 	public function add_group($group_id)
@@ -118,7 +118,9 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	/**
 	* Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
 	*
-	* {@inheritDoc}
+	* @param	int		$group_id		group_id of the group to be deleted
+	* @param	bool	$skip_group		Skip setting the value for this group, to save the query, when you need to update it anyway.
+	* @return	bool		True if the group was deleted successfully
 	*/
 	public function delete_group($group_id, $skip_group = false)
 	{
@@ -150,8 +152,6 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Moves a group up by group_id
-	*
 	* {@inheritDoc}
 	*/
 	public function move_up($group_id)
@@ -160,8 +160,6 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Moves a group down by group_id
-	*
 	* {@inheritDoc}
 	*/
 	public function move_down($group_id)
@@ -170,8 +168,6 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Moves a group up/down
-	*
 	* {@inheritDoc}
 	*/
 	public function move($group_id, $delta)

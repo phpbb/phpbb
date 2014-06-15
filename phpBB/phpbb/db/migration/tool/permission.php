@@ -283,6 +283,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string $old_role_name The old role name
 	* @param string $new_role_name The new role name
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function role_update($old_role_name, $new_role_name)
 	{
@@ -345,6 +346,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param bool $has_permission True if you want to give them permission,
 	* 	false if you want to deny them permission
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function permission_set($name, $auth_option, $type = 'role', $has_permission = true)
 	{
@@ -490,6 +492,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* 	auth_options you would like to set
 	* @param string $type The type (role|group)
 	* @return null
+	* @throws \phpbb\db\migration\exception
 	*/
 	public function permission_unset($name, $auth_option, $type = 'role')
 	{

@@ -23,6 +23,12 @@ class cron_list extends \phpbb\console\command\command
 	/** @var \phpbb\user */
 	protected $user;
 
+	/**
+	* Constructor
+	*
+	* @param \phpbb\cron\manager	$cron_manager	Cron manager
+	* @param \phpbb\user			$user			User instance
+	*/
 	public function __construct(\phpbb\cron\manager $cron_manager, \phpbb\user $user)
 	{
 		$this->cron_manager = $cron_manager;
@@ -30,6 +36,9 @@ class cron_list extends \phpbb\console\command\command
 		parent::__construct();
 	}
 
+	/**
+	* {@inheritdoc}
+	*/
 	protected function configure()
 	{
 		$this
@@ -38,6 +47,16 @@ class cron_list extends \phpbb\console\command\command
 		;
 	}
 
+	/**
+	* Executes the command cron:list.
+	*
+	* Prints a list of ready and unready cron jobs.
+	*
+	* @param InputInterface  $input  An InputInterface instance
+	* @param OutputInterface $output An OutputInterface instance
+	*
+	* @return null
+	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$tasks = $this->cron_manager->get_tasks();
@@ -80,6 +99,12 @@ class cron_list extends \phpbb\console\command\command
 		}
 	}
 
+	/**
+	* Print a list of cron jobs
+	*
+	* @param array				$tasks A list of task to display
+	* @param OutputInterface	$output An OutputInterface instance
+	*/
 	protected function print_tasks_names(array $tasks, OutputInterface $output)
 	{
 		foreach ($tasks as $task)
