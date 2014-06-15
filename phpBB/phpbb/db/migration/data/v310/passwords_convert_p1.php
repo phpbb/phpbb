@@ -42,7 +42,6 @@ class passwords_convert_p1 extends \phpbb\db\migration\migration
 		$sql = 'SELECT user_password, user_id
 			FROM ' . $this->table_prefix . 'users
 			WHERE user_pass_convert = 1
-			GROUP BY user_id
 			ORDER BY user_id';
 		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
