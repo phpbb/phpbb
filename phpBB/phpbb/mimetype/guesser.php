@@ -21,7 +21,7 @@ class guesser
 	const PRIORITY_DEFAULT = 0;
 
 	/**
-	* @var mimetype guessers
+	* @var array guessers
 	*/
 	protected $guessers;
 
