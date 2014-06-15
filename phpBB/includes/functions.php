@@ -1362,8 +1362,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 				// We get the ten most minimum stored time offsets and its associated topic ids
 				$time_keys = array();
+				// @codingStandardsIgnoreStart
 				for ($i = 0; $i < 10 && sizeof($tracking['t']); $i++)
 				{
+					// @codingStandardsIgnoreEnd
 					$min_value = min($tracking['t']);
 					$m_tkey = array_search($min_value, $tracking['t']);
 					unset($tracking['t'][$m_tkey]);

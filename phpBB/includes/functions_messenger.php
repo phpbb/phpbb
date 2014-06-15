@@ -1693,12 +1693,16 @@ function mail_encode($str, $eol = "\r\n")
 	$array = utf8_str_split($str);
 	$str = '';
 
+	// @codingStandardsIgnoreStart
 	while (sizeof($array))
 	{
+		// @codingStandardsIgnoreEnd
 		$text = '';
 
+		// @codingStandardsIgnoreStart
 		while (sizeof($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
 		{
+			// @codingStandardsIgnoreEnd
 			$text .= array_shift($array);
 		}
 

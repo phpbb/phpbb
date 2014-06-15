@@ -826,7 +826,8 @@ class jabber
 			array_push($children, $vals[$i]['value']);
 		}
 
-		while (++$i < sizeof($vals))
+		$nb_vals = sizeof($vals);
+		while (++$i < $nb_vals)
 		{
 			switch ($vals[$i]['type'])
 			{
