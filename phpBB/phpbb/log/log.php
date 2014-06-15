@@ -70,7 +70,7 @@ class log implements \phpbb\log\log_interface
 
 	/**
 	* Event dispatcher object
-	* @var phpbb_dispatcher
+	* @var \phpbb\event\dispatcher
 	*/
 	protected $dispatcher;
 
@@ -103,7 +103,6 @@ class log implements \phpbb\log\log_interface
 	* @param	string		$relative_admin_path	Relative admin root path
 	* @param	string		$php_ext			PHP Extension
 	* @param	string		$log_table		Name of the table we use to store our logs
-	* @return	null
 	*/
 	public function __construct($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, $relative_admin_path, $php_ext, $log_table)
 	{
@@ -159,8 +158,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* This function returns the state of the log system.
-	*
 	* {@inheritDoc}
 	*/
 	public function is_enabled($type = '')
@@ -173,12 +170,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* Disable log
-	*
-	* This function allows disabling the log system or parts of it, for this
-	* page call. When add_log is called and the type is disabled,
-	* the log will not be added to the database.
-	*
 	* {@inheritDoc}
 	*/
 	public function disable($type = '')
@@ -201,10 +192,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* Enable log
-	*
-	* This function allows re-enabling the log system.
-	*
 	* {@inheritDoc}
 	*/
 	public function enable($type = '')
@@ -227,8 +214,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* Adds a log to the database
-	*
 	* {@inheritDoc}
 	*/
 	public function add($mode, $user_id, $log_ip, $log_operation, $log_time = false, $additional_data = array())
@@ -425,8 +410,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* Grab the logs from the database
-	*
 	* {@inheritDoc}
 	*/
 	public function get_logs($mode, $count_logs = true, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $log_time = 0, $sort_by = 'l.log_time DESC', $keywords = '')
@@ -863,8 +846,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* Get total log count
-	*
 	* {@inheritDoc}
 	*/
 	public function get_log_count()
@@ -873,8 +854,6 @@ class log implements \phpbb\log\log_interface
 	}
 
 	/**
-	* Get offset of the last valid log page
-	*
 	* {@inheritDoc}
 	*/
 	public function get_valid_offset()
