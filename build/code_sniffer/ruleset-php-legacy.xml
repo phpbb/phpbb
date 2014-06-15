@@ -20,6 +20,9 @@
  <!-- Call-time pass-by-reference MUST not be used. -->
  <rule ref="Generic.Functions.CallTimePassByReference.NotAllowed" />
 
+ <!-- Lowercase filenames are required. -->
+ <rule ref="Generic.Files.LowercasedFilename" />
+
  <!-- There MUST be exactly one space after a cast. -->
  <rule ref="Generic.Formatting.SpaceAfterCast" />
 
