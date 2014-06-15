@@ -51,6 +51,9 @@
  <!-- There should be a space between each element of a foreach loop and the as keyword should be lowercase. -->
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
 
+ <!-- In a for loop declaration, there should be no space inside the brackets and there should be 0 spaces before and 1 space after semicolons. -->
+ <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
+
  <!-- In the argument list, there MUST NOT be a space before each comma,
       and there MUST be one space after each comma. -->
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">

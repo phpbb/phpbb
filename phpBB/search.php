@@ -1256,7 +1256,7 @@ $s_characters .= '<option value="0">0</option>';
 $s_characters .= '<option value="25">25</option>';
 $s_characters .= '<option value="50">50</option>';
 
-for ($i = 100; $i <= 1000 ; $i += 100)
+for ($i = 100; $i <= 1000; $i += 100)
 {
 	$selected = ($i == 300) ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';

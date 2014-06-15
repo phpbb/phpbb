@@ -2297,7 +2297,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 		$message = preg_replace('#\[size=([0-9]+)\](.*?)\[/size\]#i', '[size=\1]\2[/size]', $message);
 		$message = preg_replace('#\[size=[0-9]{2,}\](.*?)\[/size\]#i', '[size=29]\1[/size]', $message);
 
-		for ($i = sizeof($size); $i; )
+		for ($i = sizeof($size); $i;)
 		{
 			$i--;
 			$message = str_replace('[size=' . $i . ']', '[size=' . $size[$i] . ']', $message);
