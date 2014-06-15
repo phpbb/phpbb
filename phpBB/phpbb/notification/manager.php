@@ -12,6 +12,7 @@
 */
 
 namespace phpbb\notification;
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
