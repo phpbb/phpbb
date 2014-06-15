@@ -58,7 +58,7 @@ abstract class provider implements \IteratorAggregate
 	/**
 	* Retrieve an iterator over all items
 	*
-	* @return ArrayIterator An iterator for the array of template paths
+	* @return \ArrayIterator An iterator for the array of template paths
 	*/
 	public function getIterator()
 	{
