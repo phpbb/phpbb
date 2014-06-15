@@ -752,12 +752,16 @@ class module
 			break;
 
 			case 'select':
+				// @codingStandardsIgnoreStart
 				eval('$s_options = ' . str_replace('{VALUE}', $value, $options) . ';');
+				// @codingStandardsIgnoreEnd
 				$tpl = '<select id="' . $name . '" name="' . $name . '">' . $s_options . '</select>';
 			break;
 
 			case 'custom':
+				// @codingStandardsIgnoreStart
 				eval('$tpl = ' . str_replace('{VALUE}', $value, $options) . ';');
+				// @codingStandardsIgnoreEnd
 			break;
 
 			default:
