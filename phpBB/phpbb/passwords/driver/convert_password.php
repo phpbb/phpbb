@@ -18,7 +18,7 @@ class convert_password extends base
 	const PREFIX = '$CP$';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -26,7 +26,7 @@ class convert_password extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function hash($password, $user_row = '')
 	{
@@ -34,7 +34,7 @@ class convert_password extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function check($password, $hash, $user_row = array())
 	{

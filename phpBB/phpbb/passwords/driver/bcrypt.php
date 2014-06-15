@@ -18,7 +18,7 @@ class bcrypt extends base
 	const PREFIX = '$2a$';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -26,7 +26,7 @@ class bcrypt extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function hash($password, $salt = '')
 	{
@@ -58,7 +58,7 @@ class bcrypt extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
@@ -86,7 +86,7 @@ class bcrypt extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_settings_only($hash, $full = false)
 	{

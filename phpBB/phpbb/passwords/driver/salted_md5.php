@@ -46,7 +46,7 @@ class salted_md5 extends base
 	const PREFIX = '$H$';
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -54,7 +54,7 @@ class salted_md5 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_legacy()
 	{
@@ -62,7 +62,7 @@ class salted_md5 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function hash($password, $setting = '')
 	{
@@ -98,7 +98,7 @@ class salted_md5 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
@@ -160,7 +160,7 @@ class salted_md5 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_settings_only($hash, $full = false)
 	{

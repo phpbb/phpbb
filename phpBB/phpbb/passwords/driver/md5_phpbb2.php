@@ -23,10 +23,10 @@ class md5_phpbb2 extends base
 	/** @var \phpbb\passwords\driver\salted_md5 */
 	protected $salted_md5;
 
-	/** @var phpBB root path */
+	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	/** @var php file extension */
+	/** @var string php file extension */
 	protected $php_ext;
 
 	/**
@@ -46,7 +46,7 @@ class md5_phpbb2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
@@ -54,7 +54,7 @@ class md5_phpbb2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function is_legacy()
 	{
@@ -62,7 +62,7 @@ class md5_phpbb2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function hash($password, $user_row = '')
 	{
@@ -71,7 +71,7 @@ class md5_phpbb2 extends base
 	}
 
 	/**
-	* @inheritdoc
+	* {@inheritdoc}
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
