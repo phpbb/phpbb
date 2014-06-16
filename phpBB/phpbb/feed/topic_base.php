@@ -52,11 +52,11 @@ abstract class topic_base extends \phpbb\feed\attachments_base
 
 			if ($this->is_moderator_approve_forum($row['forum_id']))
 			{
-				if ( (int)$row['topic_visibility'] === ITEM_DELETED)
+				if ((int) $row['topic_visibility'] === ITEM_DELETED)
 				{
 					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang['TOPIC_DELETED'];
 				}
-				else if ((int)$row['topic_visibility'] === ITEM_UNAPPROVED)
+				else if ((int) $row['topic_visibility'] === ITEM_UNAPPROVED)
 				{
 					$item_row['statistics'] .= ' ' . $this->separator_stats . ' ' . $this->user->lang['TOPIC_UNAPPROVED'];
 				}

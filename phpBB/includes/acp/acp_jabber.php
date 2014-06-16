@@ -47,13 +47,13 @@ class acp_jabber
 		$this->tpl_name = 'acp_jabber';
 		$this->page_title = 'ACP_JABBER_SETTINGS';
 
-		$jab_enable			= request_var('jab_enable',			(bool)		$config['jab_enable']);
-		$jab_host			= request_var('jab_host',			(string)	$config['jab_host']);
-		$jab_port			= request_var('jab_port',			(int)		$config['jab_port']);
-		$jab_username		= request_var('jab_username',		(string)	$config['jab_username']);
-		$jab_password		= request_var('jab_password',		(string)	$config['jab_password']);
-		$jab_package_size	= request_var('jab_package_size',	(int)		$config['jab_package_size']);
-		$jab_use_ssl		= request_var('jab_use_ssl',		(bool)		$config['jab_use_ssl']);
+		$jab_enable			= request_var('jab_enable',			(bool) $config['jab_enable']);
+		$jab_host			= request_var('jab_host',			(string) $config['jab_host']);
+		$jab_port			= request_var('jab_port',			(int) $config['jab_port']);
+		$jab_username		= request_var('jab_username',		(string) $config['jab_username']);
+		$jab_password		= request_var('jab_password',		(string) $config['jab_password']);
+		$jab_package_size	= request_var('jab_package_size',	(int) $config['jab_package_size']);
+		$jab_use_ssl		= request_var('jab_use_ssl',		(bool) $config['jab_use_ssl']);
 
 		$form_name = 'acp_jabber';
 		add_form_key($form_name);
