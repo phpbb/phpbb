@@ -755,7 +755,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		else
 		{
 			$ban_other = explode('-', $ban_len_other);
-			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
+			if (sizeof($ban_other) == 3 && ((int) $ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
 				$ban_end = max($current_time, $user->create_datetime()
@@ -2086,7 +2086,7 @@ function avatar_delete($mode, $row, $clean_db = false)
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
 	{
-		if (strpos($row['user_avatar'], 'g') === 0 || (((int)$row['user_avatar'] !== 0) && ((int)$row['user_avatar'] !== (int)$row['user_id'])))
+		if (strpos($row['user_avatar'], 'g') === 0 || (((int) $row['user_avatar'] !== 0) && ((int) $row['user_avatar'] !== (int) $row['user_id'])))
 		{
 			return false;
 		}
@@ -2419,7 +2419,7 @@ function group_correct_avatar($group_id, $old_entry)
 {
 	global $config, $db, $phpbb_root_path;
 
-	$group_id		= (int)$group_id;
+	$group_id		= (int) $group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
 	$old_filename 	= get_avatar_filename($old_entry);
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
@@ -2844,7 +2844,7 @@ function remove_default_avatar($group_id, $user_ids)
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_id = ' . (int)$group_id;
+		WHERE group_id = ' . (int) $group_id;
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
@@ -2885,7 +2885,7 @@ function remove_default_rank($group_id, $user_ids)
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_id = ' . (int)$group_id;
+		WHERE group_id = ' . (int) $group_id;
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
@@ -2896,9 +2896,9 @@ function remove_default_rank($group_id, $user_ids)
 
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_rank = 0
-		WHERE group_id = ' . (int)$group_id . '
+		WHERE group_id = ' . (int) $group_id . '
 			AND user_rank <> 0
-			AND user_rank = ' . (int)$row['group_rank'] . '
+			AND user_rank = ' . (int) $row['group_rank'] . '
 			AND ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
 }

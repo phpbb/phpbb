@@ -1007,8 +1007,8 @@ function get_remote_avatar_dim($src, $axis)
 		{
 			$bigger = ($remote_avatar_cache[$src][0] > $remote_avatar_cache[$src][1]) ? 0 : 1;
 			$ratio = $default[$bigger] / $remote_avatar_cache[$src][$bigger];
-			$remote_avatar_cache[$src][0] = (int)($remote_avatar_cache[$src][0] * $ratio);
-			$remote_avatar_cache[$src][1] = (int)($remote_avatar_cache[$src][1] * $ratio);
+			$remote_avatar_cache[$src][0] = (int) ($remote_avatar_cache[$src][0] * $ratio);
+			$remote_avatar_cache[$src][1] = (int) ($remote_avatar_cache[$src][1] * $ratio);
 		}
 	}
 
