@@ -60,7 +60,7 @@ class helper
 			$data[$type] .= ($data[$type] !== '$') ? '\\' : '';
 			$data[$type] .= str_replace('$', '', $value);
 		}
-		elseif ($type == 'settings')
+		else if ($type == 'settings')
 		{
 			$data[$type] .= ($data[$type] !== '$') ? '$' : '';
 			$data[$type] .= $value;

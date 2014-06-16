@@ -60,7 +60,7 @@ class get extends command
 		{
 			$output->write($this->config[$key]);
 		}
-		elseif (isset($this->config[$key]))
+		else if (isset($this->config[$key]))
 		{
 			$output->writeln($this->config[$key]);
 		}

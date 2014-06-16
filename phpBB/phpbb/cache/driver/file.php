@@ -224,7 +224,7 @@ class file extends \phpbb\cache\driver\base
 			{
 				$this->remove_dir($fileInfo->getPathname());
 			}
-			elseif (strpos($filename, 'container_') === 0 ||
+			else if (strpos($filename, 'container_') === 0 ||
 				strpos($filename, 'url_matcher') === 0 ||
 				strpos($filename, 'sql_') === 0 ||
 				strpos($filename, 'data_') === 0)

@@ -489,7 +489,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
-	elseif ($action == 'delete' && strpos($user->data['session_page'], 'mode=pm_report_details') !== false)
+	else if ($action == 'delete' && strpos($user->data['session_page'], 'mode=pm_report_details') !== false)
 	{
 		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=pm_reports');
 	}
