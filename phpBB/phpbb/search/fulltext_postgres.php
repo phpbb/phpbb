@@ -263,12 +263,12 @@ class fulltext_postgres extends \phpbb\search\base
 					$this->search_query .= $word . ' ';
 					$this->tsearch_query .= '&' . substr($word, 1) . ' ';
 				}
-				elseif (strpos($word, '-') === 0)
+				else if (strpos($word, '-') === 0)
 				{
 					$this->search_query .= $word . ' ';
 					$this->tsearch_query .= '&!' . substr($word, 1) . ' ';
 				}
-				elseif (strpos($word, '|') === 0)
+				else if (strpos($word, '|') === 0)
 				{
 					$this->search_query .= $word . ' ';
 					$this->tsearch_query .= '|' . substr($word, 1) . ' ';

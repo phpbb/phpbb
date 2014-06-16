@@ -496,11 +496,11 @@ function mcp_move_topic($topic_ids)
 			{
 				$topics_moved++;
 			}
-			elseif ($topic_info['topic_visibility'] == ITEM_UNAPPROVED || $topic_info['topic_visibility'] == ITEM_REAPPROVE)
+			else if ($topic_info['topic_visibility'] == ITEM_UNAPPROVED || $topic_info['topic_visibility'] == ITEM_REAPPROVE)
 			{
 				$topics_moved_unapproved++;
 			}
-			elseif ($topic_info['topic_visibility'] == ITEM_DELETED)
+			else if ($topic_info['topic_visibility'] == ITEM_DELETED)
 			{
 				$topics_moved_softdeleted++;
 			}

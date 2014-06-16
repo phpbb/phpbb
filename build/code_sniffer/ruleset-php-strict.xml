@@ -22,6 +22,9 @@
  <!-- PHP keywords MUST be in lower case. -->
  <rule ref="Generic.PHP.LowerCaseKeyword" />
 
+ <!-- Constructors MUST be called __construct() instead of after the class. -->
+ <rule ref="Generic.NamingConventions.ConstructorName" />
+
  <!-- Classes etc. MUST be namespaced -->
  <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace" />
 
