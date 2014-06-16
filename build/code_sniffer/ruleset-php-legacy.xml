@@ -20,11 +20,11 @@
  <!-- Call-time pass-by-reference MUST not be used. -->
  <rule ref="Generic.Functions.CallTimePassByReference.NotAllowed" />
 
- <!-- Lowercase filenames are required. -->
+ <!-- Filenames MUST be lowercase. -->
  <rule ref="Generic.Files.LowercasedFilename" />
 
- <!-- Function declarations follow the "BSD/Allman style".
-	 The function brace is on the line following the function declaration and is indented to the same column as the start of the function declaration. -->
+ <!-- The function brace MUST be on the line following the function declaration
+      and MUST be indented to the same column as the start of the function declaration. -->
  <rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman" />
 
  <!-- There MUST be exactly one space after a cast. -->
@@ -42,16 +42,18 @@
  <!-- Each file MUST end with exactly one newline character -->
  <rule ref="PSR2.Files.EndFileNewline" />
 
- <!-- When referencing arrays you should not put whitespace around the opening bracket or before the closing bracket. -->
+ <!-- When referencing arrays there MUST NOT be any whitespace around the opening bracket
+      or before the closing bracket. -->
  <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
 
- <!-- Verifies that there are not elseif statements. The else and the if should be separated by a space. -->
+ <!-- The "else if" statement MUST be written with a space between the words else and if. -->
  <rule ref="Squiz.ControlStructures.ElseIfDeclaration" />
 
- <!-- There should be a space between each element of a foreach loop and the as keyword should be lowercase. -->
+ <!-- There MUST be a space between each element of a foreach loop. -->
  <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
 
- <!-- In a for loop declaration, there should be no space inside the brackets and there should be 0 spaces before and 1 space after semicolons. -->
+ <!-- In a for loop declaration, there MUST be no space inside the brackets
+      and there MUST be 0 spaces before and 1 space after semicolons. -->
  <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
 
  <!-- In the argument list, there MUST NOT be a space before each comma,
@@ -63,7 +65,7 @@
  </rule>
  <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
 
- <!-- All PHP built-in functions should be lowercased when called. -->
+ <!-- All built-in PHP functions MUST be called lowercased. -->
  <rule ref="Squiz.Functions.LowercaseFunctionKeywords" />
 
  <!-- The eval() function MUST NOT be used. -->

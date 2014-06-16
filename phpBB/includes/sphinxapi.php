@@ -1,5 +1,4 @@
 <?php
-// @codingStandardsIgnoreFile
 
 //
 // $Id: sphinxapi.php 3087 2012-01-30 23:07:35Z shodan $
