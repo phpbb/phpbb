@@ -29,7 +29,7 @@ class provider_collection extends \phpbb\di\service_collection
 	* @param ContainerInterface $container Container object
 	* @param \phpbb\config\config $config phpBB config
 	*/
-	public function __construct($container, \phpbb\config\config $config)
+	public function __construct(ContainerInterface $container, \phpbb\config\config $config)
 	{
 		$this->container = $container;
 		$this->config = $config;

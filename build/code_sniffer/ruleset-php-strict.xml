@@ -42,4 +42,7 @@
  <!-- There MUST be one blank line after the namespace declaration -->
  <rule ref="PSR2.Namespaces.NamespaceDeclaration" />
 
+ <!-- There MUST NOT be unused use statements. -->
+ <rule ref="./phpbb/Sniffs/Namespaces/UnusedUseSniff.php" />
+
 </ruleset>
