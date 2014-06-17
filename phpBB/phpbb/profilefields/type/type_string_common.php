@@ -21,6 +21,7 @@ abstract class type_string_common extends type_base
 		'ALPHA_ONLY'		=> '[\w]+',
 		'ALPHA_UNDERSCORE'	=> '[\w_]+',
 		'ALPHA_SPACERS'		=> '[\w_\+\. \-\[\]]+',
+		'ALPHA_DOTS'        => '[\w.]+',
 	);
 
 	/**
