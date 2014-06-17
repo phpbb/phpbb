@@ -84,6 +84,13 @@ class delete extends \phpbb\console\command\command
 			if (@unlink($thumbnail_path))
 			{
 				$thumbnail_deleted[] = $row['attach_id'];
+
+				if (sizeof($thumbnail_deleted) === 250)
+				{
+					$this->commit_changes($thumbnail_deleted);
+					$thumbnail_deleted = array();
+				}
+
 				if ($input->getOption('verbose'))
 				{
 					$output->writeln($this->user->lang('THUMBNAIL_DELETED', $row['real_filename'], $row['physical_filename']));
@@ -102,12 +109,22 @@ class delete extends \phpbb\console\command\command
 
 		if (!empty($thumbnail_deleted))
 		{
-			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-				SET thumbnail = 0
-				WHERE ' . $this->db->sql_in_set('attach_id', $thumbnail_deleted);
-			$this->db->sql_query($sql);
+			$this->commit_changes($thumbnail_deleted);
 		}
 
 		return $return;
+	}
+
+	/**
+	* Commits the changes to the database
+	*
+	* @param array $thumbnail_deleted
+	*/
+	protected function commit_changes(array $thumbnail_deleted)
+	{
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+				SET thumbnail = 0
+				WHERE ' . $this->db->sql_in_set('attach_id', $thumbnail_deleted);
+		$this->db->sql_query($sql);
 	}
 }

@@ -106,6 +106,13 @@ class generate extends \phpbb\console\command\command
 				if (create_thumbnail($source, $destination, $row['mimetype']))
 				{
 					$thumbnail_created[] = (int) $row['attach_id'];
+
+					if (sizeof($thumbnail_created) === 250)
+					{
+						$this->commit_changes($thumbnail_created);
+						$thumbnail_created = array();
+					}
+
 					if ($input->getOption('verbose'))
 					{
 						$output->writeln($this->user->lang('THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
@@ -124,12 +131,22 @@ class generate extends \phpbb\console\command\command
 
 		if (!empty($thumbnail_created))
 		{
-			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-				SET thumbnail = 1
-				WHERE ' . $this->db->sql_in_set('attach_id', $thumbnail_created);
-			$this->db->sql_query($sql);
+			$this->commit_changes($thumbnail_created);
 		}
 
 		return 0;
+	}
+
+	/**
+	* Commits the changes to the database
+	*
+	* @param array $thumbnail_created
+	*/
+	protected function commit_changes(array $thumbnail_created)
+	{
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+				SET thumbnail = 1
+				WHERE ' . $this->db->sql_in_set('attach_id', $thumbnail_created);
+		$this->db->sql_query($sql);
 	}
 }
