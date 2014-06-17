@@ -66,7 +66,7 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
                 'Field should reject invalid input',
             ),
             array(
-                'http://onetwthree.aol.io',
+                'http://onetwothree.example.io',
                 array(),
                 false,
                 'Field should accept valid URL',
