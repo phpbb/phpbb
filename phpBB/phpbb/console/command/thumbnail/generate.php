@@ -103,19 +103,19 @@ class generate extends \phpbb\console\command\command
 				$source = $this->phpbb_root_path . 'files/' . $row['physical_filename'];
 				$destination = $this->phpbb_root_path . 'files/thumb_' . $row['physical_filename'];
 
-				if (!create_thumbnail($source, $destination, $row['mimetype']))
-				{
-					if ($input->getOption('verbose'))
-					{
-						$output->writeln('<info>' . $this->user->lang('THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
-					}
-				}
-				else
+				if (create_thumbnail($source, $destination, $row['mimetype']))
 				{
 					$thumbnail_created[] = $row['attach_id'];
 					if ($input->getOption('verbose'))
 					{
 						$output->writeln($this->user->lang('THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
+					}
+				}
+				else
+				{
+					if ($input->getOption('verbose'))
+					{
+						$output->writeln('<info>' . $this->user->lang('THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
 					}
 				}
 			}
