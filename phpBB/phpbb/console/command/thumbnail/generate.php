@@ -105,7 +105,7 @@ class generate extends \phpbb\console\command\command
 
 				if (create_thumbnail($source, $destination, $row['mimetype']))
 				{
-					$thumbnail_created[] = $row['attach_id'];
+					$thumbnail_created[] = (int) $row['attach_id'];
 					if ($input->getOption('verbose'))
 					{
 						$output->writeln($this->user->lang('THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
