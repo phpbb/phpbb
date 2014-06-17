@@ -144,4 +144,5 @@ $lang = array_merge($lang, array(
 	'USERS_PER_PAGE'		=> 'Users per page',
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
+	'VIEW_TWITTER_PROFILE'  => 'View Twitter Profile',
 ));
