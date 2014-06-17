@@ -61,6 +61,30 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
                     'Field should not accept empty values for required fields',
             ),
             array(
+                    null,
+                    array('field_required' => true),
+                    'FIELD_REQUIRED-field',
+                    'Field should not accept empty values for required field',
+            ),
+            array(
+                    0,
+                    array('field_required' => true),
+                    false,
+                    'Field should accept a non-empty input',
+            ),
+            array(
+                    'false',
+                    array('field_required' => true),
+                    false,
+                    'Field should accept a non-empty input',
+            ),
+            array(
+                    10,
+                    array('field_required' => true),
+                    false,
+                    'Field should accept a non-empty input',
+            ),
+            array(
                     'tas',
                     array('field_minlen' => 2, 'field_maxlen' => 5),
                     false,
