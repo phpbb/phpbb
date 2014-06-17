@@ -51,7 +51,7 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
         );
     }
 
-    public function get_validate_profile_field_data()
+    public function validate_profile_field_data()
     {
         return array(
             array(
@@ -142,7 +142,7 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
     }
 
     /**
-     * @dataProvider get_validate_profile_field_data
+     * @dataProvider validate_profile_field_data
      */
     public function test_validate_profile_field($value, $field_options, $expected, $description)
     {
@@ -153,7 +153,7 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
         $this->assertSame($expected, $result, $description);
     }
 
-    public function get_profile_value_data()
+    public function profile_value_data()
     {
         return array(
             array(
@@ -185,7 +185,7 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 
 
     /**
-     * @dataProvider get_profile_value_data
+     * @dataProvider profile_value_data
      */
     public function test_get_profile_value($value, $field_options, $expected, $description)
     {
