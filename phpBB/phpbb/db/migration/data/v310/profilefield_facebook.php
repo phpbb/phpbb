@@ -57,6 +57,4 @@ class profilefield_facebook extends \phpbb\db\migration\profilefield_base_migrat
         'field_contact_desc'	=> 'VIEW_FACEBOOK_PROFILE',
         'field_contact_url'		=> 'http://facebook.com/%s/',
     );
-
-
 }
