@@ -73,12 +73,12 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
     public function validate_profile_field_data()
     {
         return array(
-                array(
+            array(
                     false,
                     array('field_required' => true),
                     'FIELD_REQUIRED-field',
                     'Field should not accept empty values for required fields',
-                ),
+            ),
         );
     }
 
@@ -97,24 +97,24 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
     public function profile_value_data()
     {
         return array(
-                array(
+            array(
                     false,
                     array('field_show_novalue' => true),
                     'No',
                     'Field should output the default value',
-                ),
-                array(
+            ),
+            array(
                     false,
                     array('field_show_novalue' => false, 'field_length' => 2),
                     null,
                     'Field should not show anything for empty value',
-                ),
-                array(
+            ),
+            array(
                     0,
                     array(),
                     'Yes',
                     'Field should show the set value',
-                ),
+            ),
         );
     }
 
