@@ -128,6 +128,42 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
                 'FIELD_INVALID_DATE-field',
                 'Field should reject value for being invalid',
             ),
+            array(
+                'string',
+                array(),
+                false,
+                'Field should reject value for being invalid',
+            ),
+            array(
+                'string',
+                array('field_required' => true),
+                'FIELD_REQUIRED-field',
+                'Field should reject value for being invalid',
+            ),
+            array(
+                100,
+                array(),
+                false,
+                'Field should reject value for being invalid',
+            ),
+            array(
+                100,
+                array('field_required' => true),
+                'FIELD_REQUIRED-field',
+                'Field should reject value for being invalid',
+            ),
+            array(
+                null,
+                array('field_required' => true),
+                'FIELD_REQUIRED-field',
+                'Field should reject value for being empty',
+            ),
+            array(
+                true,
+                array('field_required' => true),
+                'FIELD_REQUIRED-field',
+                'Field should reject value for being empty',
+            )
         );
     }
 
