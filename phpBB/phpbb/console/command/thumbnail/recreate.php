@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class recreate  extends \phpbb\console\command\command
+class recreate extends \phpbb\console\command\command
 {
 	/** @var \phpbb\user */
 	protected $user;
