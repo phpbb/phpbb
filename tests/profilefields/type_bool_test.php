@@ -113,7 +113,6 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
         );
     }
 
-
     /**
      * @dataProvider get_profile_value_data
      */
