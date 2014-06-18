@@ -7,16 +7,8 @@ a {
 	unicode-bidi: embed;
 }
 
-a:link, a:visited { 
-	text-decoration: none;
-}
-
 a:hover	{ 
 	text-decoration: underline;
-}
-
-a:active {
-	text-decoration: none;
 }
 
 /* Coloured usernames */
@@ -27,20 +19,12 @@ a:active {
 }
 
 /* Links on gradient backgrounds */
-#search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
-	text-decoration: none;
-}
-
-#search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
+#search-box a, .navbg a, .forumbg .header a, .forabg .header a, th a {
 	text-decoration: none;
 }
 
 #search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	text-decoration: underline;
-}
-
-#search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
-	text-decoration: none;
 }
 
 /* Navigation bar links */
@@ -118,13 +102,13 @@ a.lastsubject:hover {
 	text-decoration: none;
 }
 
-.signature a, .signature a:visited, .signature a:hover, .signature a:active {
+.signature a, .signature a:hover {
 	border: none;
 	text-decoration: underline;
 }
 
 /* Profile links */
-.postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
+.postprofile a, .postprofile dt.author a {
 	font-weight: bold;
 	text-decoration: none;
 }
@@ -132,14 +116,6 @@ a.lastsubject:hover {
 .postprofile a:hover, .postprofile dt.author a:hover {
 	text-decoration: underline;
 }
-
-/* CSS spec requires a:link, a:visited, a:hover and a:active rules to be specified in this order. */
-/* See http://www.phpbb.com/bugs/phpbb3/59685 */
-.postprofile a:active {
-	font-weight: bold;
-	text-decoration: none;
-}
-
 
 /* Profile searchresults */	
 .search .postprofile a {
@@ -182,7 +158,7 @@ a.arrow-down		{ background: none no-repeat right center; }
 a.arrow-left		{ background: none no-repeat 3px 60%; }
 a.arrow-right		{ background: none no-repeat 95% 60%; }
 
-a.arrow-up, a.arrow-up:link, a.arrow-up:active, a.arrow-up:visited {
+a.arrow-up {
 	padding-left: 10px;
 	text-decoration: none;
 	border-bottom-width: 0;
@@ -192,7 +168,7 @@ a.arrow-up:hover {
 	background-position: left top;
 }
 
-a.arrow-down, a.arrow-down:link, a.arrow-down:active, a.arrow-down:visited {
+a.arrow-down {
 	padding-right: 10px;
 }
 
@@ -201,7 +177,7 @@ a.arrow-down:hover {
 	text-decoration: none;
 }
 
-a.arrow-left, a.arrow-left:active, a.arrow-left:visited {
+a.arrow-left {
 	padding-left: 12px;
 }
 
@@ -210,7 +186,7 @@ a.arrow-left:hover {
 	background-position: 0 60%;
 }
 
-a.arrow-right, a.arrow-right:active, a.arrow-right:visited {
+a.arrow-right {
 	padding-right: 12px;
 }
 

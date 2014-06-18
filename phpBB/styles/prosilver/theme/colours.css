@@ -241,16 +241,10 @@ Colours and backgrounds for links.css
 -------------------------------------------------------------- */
 
 a { color: #105289; }
-a:visited	{ color: #105289; }
 a:hover	{ color: #D31141; }
-a:active	{ color: #368AD2; }
 
 /* Links on gradient backgrounds */
-#search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
-	color: #FFFFFF;
-}
-
-#search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
+.headerbar form a, .navbg a, .forumbg .header a, .forabg .header a, th a {
 	color: #FFFFFF;
 }
 
@@ -258,42 +252,9 @@ a:active	{ color: #368AD2; }
 	color: #A8D8FF;
 }
 
-#search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
-	color: #C8E6FF;
-}
-
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
 	background-color: #FFFFFF;
-}
-
-/* Links for forum/topic lists */
-a.forumtitle {
-	color: #105289;
-}
-
-/* a.forumtitle:visited { color: #105289; } */
-
-a.forumtitle:hover {
-	color: #BC2A4D;
-}
-
-a.forumtitle:active {
-	color: #105289;
-}
-
-a.topictitle {
-	color: #105289;
-}
-
-/* a.topictitle:visited { color: #368AD2; } */
-
-a.topictitle:hover {
-	color: #BC2A4D;
-}
-
-a.topictitle:active {
-	color: #105289;
 }
 
 /* Post body links */
@@ -307,7 +268,7 @@ a.topictitle:active {
 	border-bottom-color: #5D8FBD;
 }
 
-.postlink:active {
+.postlink {
 	color: #368AD2;
 }
 
@@ -316,30 +277,8 @@ a.topictitle:active {
 	color: #0D4473;
 }
 
-.signature a, .signature a:visited, .signature a:hover, .signature a:active {
+.signature a, .signature a:hover {
 	background-color: transparent;
-}
-
-/* Profile links */
-.postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
-	color: #105289;
-}
-
-.postprofile a:hover, .postprofile dt.author a:hover {
-	color: #D31141;
-}
-
-.postprofile a:active {
-	color: #105289;
-}
-
-/* Profile searchresults */
-.search .postprofile a {
-	color: #105289;
-}
-
-.search .postprofile a:hover {
-	color: #D31141;
 }
 
 /* Back to top of page */
@@ -658,7 +597,7 @@ dd.profile-warnings {
 --------------------------------------------------------------
 Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
-.button, .button:visited {
+.button {
 	border-color: #C7C3BF;
 	background-color: #FFFFFF;
 	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
@@ -1079,7 +1018,7 @@ a.button2, input.button2, input.button3 {
 }
 
 /* <a> button in the style of the form buttons */
-a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
+a.button1, a.button2 {
 	color: #000000;
 }
 
