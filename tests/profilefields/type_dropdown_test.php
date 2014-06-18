@@ -83,6 +83,18 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
                     'Invalid value should throw error',
             ),
             array(
+                    true,
+                    array('field_required' => true),
+                    false,
+                    'Boolean would evaluate to 1 and hence correct value',
+            ),
+            array(
+                    'string',
+                    array('field_required' => true),
+                    'FIELD_REQUIRED-field',
+                    'String should be rejected for value',
+            ),
+            array(
                     2,
                     array(),
                     false,
