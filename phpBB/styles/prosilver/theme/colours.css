@@ -244,7 +244,7 @@ a { color: #105289; }
 a:hover	{ color: #D31141; }
 
 /* Links on gradient backgrounds */
-.headerbar form a, .navbg a, .forumbg .header a, .forabg .header a, th a {
+#search-box a, .navbg a, .forumbg .header a, .forabg .header a, th a {
 	color: #FFFFFF;
 }
 
