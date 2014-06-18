@@ -21,11 +21,11 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	protected $field_options;
 
 	/**
-	 * Sets up basic test objects
-	 *
-	 * @access public
-	 * @return null
-	 */
+	* Sets up basic test objects
+	*
+	* @access public
+	* @return null
+	*/
 	public function setUp()
 	{
 		global $request, $user, $cache;
@@ -147,8 +147,8 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	}
 
 	/**
-	 * @dataProvider validate_profile_field_data
-	 */
+	* @dataProvider validate_profile_field_data
+	*/
 	public function test_validate_profile_field($value, $field_options, $expected, $description)
 	{
 		$field_options = array_merge($this->field_options, $field_options);
@@ -190,8 +190,8 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 
 
 	/**
-	 * @dataProvider profile_value_data
-	 */
+	* @dataProvider profile_value_data
+	*/
 	public function test_get_profile_value($value, $field_options, $expected, $description)
 	{
 		$field_options = array_merge($this->field_options, $field_options);

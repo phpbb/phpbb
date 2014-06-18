@@ -17,11 +17,11 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 	protected $field_options;
 
 	/**
-	 * Sets up basic test objects
-	 *
-	 * @access public
-	 * @return null
-	 */
+	* Sets up basic test objects
+	*
+	* @access public
+	* @return null
+	*/
 	public function setUp()
 	{
 		$user = $this->getMock('\phpbb\user');

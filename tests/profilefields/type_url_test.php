@@ -19,11 +19,11 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	protected $field_options;
 
 	/**
-	 * Sets up basic test objects
-	 *
-	 * @access public
-	 * @return null
-	 */
+	* Sets up basic test objects
+	*
+	* @access public
+	* @return null
+	*/
 	public function setUp()
 	{
 		$user = $this->getMock('\phpbb\user');
@@ -93,8 +93,8 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	}
 
 	/**
-	 * @dataProvider validate_profile_field_data
-	 */
+	* @dataProvider validate_profile_field_data
+	*/
 	public function test_validate_profile_field($value, $field_options, $expected, $description)
 	{
 		$field_options = array_merge($this->field_options, $field_options);
