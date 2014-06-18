@@ -15,28 +15,28 @@ namespace phpbb\profilefields\type;
 
 class type_googleplus extends type_string
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function get_name_short()
-    {
-        return 'googleplus';
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_name_short()
+	{
+		return 'googleplus';
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public function get_default_option_values()
-    {
-        return array(
-            'field_length'		    => 20,
-            'field_minlen'		    => 3,
-            'field_maxlen'		    => '',
-            'field_validation'	    => '[\w]+',
-            'field_novalue'		    => '',
-            'field_default_value'	=> '',
-        );
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_default_option_values()
+	{
+		return array(
+			'field_length'		    => 20,
+			'field_minlen'		    => 3,
+			'field_maxlen'		    => '',
+			'field_validation'	    => '[\w]+',
+			'field_novalue'		    => '',
+			'field_default_value'	=> '',
+		);
+	}
 
 	/**
 	 * {@inheritDoc}
