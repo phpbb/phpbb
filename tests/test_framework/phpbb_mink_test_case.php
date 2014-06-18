@@ -22,7 +22,7 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 	static protected $config = array();
 	static protected $root_url;
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	public function __construct($name = null, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
 
