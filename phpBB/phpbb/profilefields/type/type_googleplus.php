@@ -53,4 +53,12 @@ class type_googleplus extends type_string
 
 		return $field_value;
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_template_filename()
+	{
+		return 'profilefields/string.html';
+	}
 }
