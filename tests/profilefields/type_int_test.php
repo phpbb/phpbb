@@ -136,6 +136,24 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
                     'FIELD_TOO_SMALL-10-field',
                     'Field should reject value which is less than defined minimum',
             ),
+            array(
+                    true,
+                    array('field_maxlen' => 20),
+                    false,
+                    'Field should accept correct boolean value',
+            ),
+            array(
+                    'string',
+                    array('field_maxlen' => 10, 'field_required' => true),
+                    false,
+                    'Field should accept correct string value',
+            ),
+            array(
+                    null,
+                    array('field_minlen' => 1, 'field_maxlen' => 10, 'field_required' => true),
+                    'FIELD_TOO_SMALL-1-field',
+                    'Field should not accept an empty value',
+            ),
         );
     }
 
