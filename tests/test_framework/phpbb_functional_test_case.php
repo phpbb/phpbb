@@ -11,8 +11,8 @@
 *
 */
 use Symfony\Component\BrowserKit\CookieJar;
-use \Behat\Mink\Driver\Goutte\Client;
-use \Behat\Mink\Driver\GoutteDriver;
+use Behat\Mink\Driver\Goutte\Client;
+use Behat\Mink\Driver\GoutteDriver;
 
 class phpbb_functional_test_case extends phpbb_mink_test_case
 {

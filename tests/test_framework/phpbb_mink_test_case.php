@@ -40,12 +40,12 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 	{
 		parent::setUp();
 
-		if(!self::$driver)
+		if (!self::$driver)
 		{
 			self::markTestSkipped('Mink driver not initialized.');
 		}
 
-		if(!self::$session)
+		if (!self::$session)
 		{
 			self::$session = new Session(self::$driver);
 		}
