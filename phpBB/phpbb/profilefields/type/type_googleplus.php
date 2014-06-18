@@ -16,16 +16,16 @@ namespace phpbb\profilefields\type;
 class type_googleplus extends type_string
 {
 	/**
-	 * {@inheritDoc}
-	 */
+	* {@inheritDoc}
+	*/
 	public function get_name_short()
 	{
 		return 'googleplus';
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
+	* {@inheritDoc}
+	*/
 	public function get_default_option_values()
 	{
 		return array(
@@ -39,8 +39,8 @@ class type_googleplus extends type_string
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
+	* {@inheritDoc}
+	*/
 	public function get_profile_contact_value($field_value, $field_data)
 	{
 		if (!$field_value && !$field_data['field_show_novalue'])
