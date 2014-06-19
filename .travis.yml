@@ -6,19 +6,19 @@ matrix:
       env: DB=mysqli
     - php: 5.3
       env: DB=mysqli # MyISAM
-    - php: 5.4
+    - php: 5.4.27
       env: DB=mysqli
-    - php: 5.4
+    - php: 5.4.27
       env: DB=mysql
-    - php: 5.4
+    - php: 5.4.27
       env: DB=mariadb
-    - php: 5.4
+    - php: 5.4.27
       env: DB=postgres
-    - php: 5.4
+    - php: 5.4.27
       env: DB=sqlite3
-    - php: 5.5
+    - php: 5.5.11
       env: DB=mysqli
-    - php: 5.6
+    - php: 5.6.0beta1
       env: DB=mysqli
     - php: hhvm
       env: DB=mysqli
@@ -39,5 +39,5 @@ script:
   - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION
   - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION
   - phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' -a '$DB' = 'mysqli' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5.11' -a '$DB' = 'mysqli' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
 
