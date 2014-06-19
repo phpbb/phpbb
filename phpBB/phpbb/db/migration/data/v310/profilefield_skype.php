@@ -55,6 +55,6 @@ class profilefield_skype extends \phpbb\db\migration\profilefield_base_migration
 		'field_active'			=> 1,
 		'field_is_contact'		=> 1,
 		'field_contact_desc'	=> 'VIEW_SKYPE_PROFILE',
-		'field_contact_url'		=> 'skype:%s?chat',
+		'field_contact_url'		=> 'skype:%s?userinfo',
 	);
 }
