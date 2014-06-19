@@ -53,6 +53,7 @@ else
 		user = $USER
 		group = $USER
 		listen = $APP_SOCK
+		listen.mode = 0666
 		pm = static
 		pm.max_children = 2
 
