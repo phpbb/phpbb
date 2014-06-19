@@ -676,6 +676,7 @@ $lang = array_merge($lang, array(
 	'SETTINGS'					=> 'Settings',
 	'SIGNATURE'					=> 'Signature',
 	'SKIP'						=> 'Skip to content',
+	'SKYPE'						=> 'Skype',
 	'SMTP_NO_AUTH_SUPPORT'		=> 'SMTP server does not support authentication.',
 	'SORRY_AUTH_READ'			=> 'You are not authorised to read this forum.',
 	'SORRY_AUTH_VIEW_ATTACH'	=> 'You are not authorised to download this attachment.',
