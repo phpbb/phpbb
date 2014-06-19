@@ -84,6 +84,9 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			copy(self::$install_schema_file, self::$phpbb_schema_copy);
 			copy(self::$schema_file, self::$install_schema_file);
+
+			// Make sure we load up to date schema
+			self::$already_connected = false;
 		}
 
 		parent::setUpBeforeClass();
