@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Legacy Standard">
+
+ <description>phpBB legacy coding standard for PHP files</description>
+
+ <rule ref="./ruleset-phpbb-php-legacy.xml" />
+ <rule ref="./ruleset-php-strict.xml" />
+
+</ruleset>

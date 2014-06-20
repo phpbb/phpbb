@@ -77,14 +77,14 @@
 		<exec command="phpBB/vendor/bin/phpcs
 				-s
 				--extensions=php
-				--standard=build/code_sniffer/ruleset-php-strict.xml
+				--standard=build/code_sniffer/ruleset-phpbb-php-strict.xml
 				--ignore=${project.basedir}/phpBB/phpbb/db/migration/data/v30x/*
 				phpBB/phpbb"
 			dir="." returnProperty="retval-php-strict" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
 				-s
 				--extensions=php
-				--standard=build/code_sniffer/ruleset-php-legacy.xml
+				--standard=build/code_sniffer/ruleset-phpbb-php-legacy.xml
 				--ignore=${project.basedir}/phpBB/cache/*
 				--ignore=${project.basedir}/phpBB/develop/*
 				--ignore=${project.basedir}/phpBB/includes/diff/*.php
