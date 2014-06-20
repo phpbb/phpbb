@@ -143,6 +143,18 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 				false,
 				'Required field should accept a characters only field',
 			),
+			array(
+				'Valid.Username123',
+				array('field_validation' => '[\w.]+'),
+				false,
+				'Required field should accept a alphanumeric field with dots',
+			),
+			array(
+				'Invalid.,username123',
+				array('field_validation' => '[\w.]+'),
+				'FIELD_INVALID_CHARS_ALPHA_DOTS-field',
+				'Required field should reject field with comma',
+			),
 		);
 	}
 
