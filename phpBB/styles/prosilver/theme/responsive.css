@@ -457,11 +457,6 @@ p.rightside {
 	margin-bottom: 0;
 }
 
-.column1, .column2 {
-	width: auto;
-	float: none;
-}
-
 fieldset.quickmod {
 	width: auto;
 	float: none;

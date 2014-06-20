@@ -209,6 +209,9 @@ li {
 
 #page-footer {
 	clear: both;
+}
+
+.copyright {
 	font-size: 0.75em;
 	text-align: center;
 }
@@ -984,6 +987,10 @@ table.fixed-width-table {
 		margin-bottom: 1px;
 	}
 
+	.rtl table.responsive td {
+		text-align: right !important;
+	}
+
 	table.responsive td.empty {
 		display: none !important;
 	}
@@ -1002,6 +1009,10 @@ table.fixed-width-table {
 		float: left;
 		-moz-box-sizing: border-box;
 		box-sizing: border-box;
+	}
+
+	.rtl table.responsive.two-columns td {
+		float: right;
 	}
 
 	table.responsive.two-columns td:nth-child(2n+1) {
@@ -1594,7 +1605,6 @@ input.button1:focus, input.button2:focus {
 	z-index: 50;
 	padding: 25px;
 	padding: 0 25px 20px 25px;
-	text-align: left;
 }
 
 .phpbb_alert .alert_close {
