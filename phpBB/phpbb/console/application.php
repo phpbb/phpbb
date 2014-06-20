@@ -77,7 +77,7 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function register_container_commands(ContainerInterface $container)
 	{
-		foreach($container->get('console.command_collection') as $service_command)
+		foreach ($container->get('console.command_collection') as $service_command)
 		{
 			$this->add($service_command);
 		}
