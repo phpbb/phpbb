@@ -772,6 +772,7 @@ $lang = array_merge($lang, array(
 		2	=> 'Total members <strong>%d</strong>',
 	),
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
+	'TWITTER'			=> 'Twitter',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image. Please verify that the URL you entered is correct.',
 	'UNABLE_TO_DELIVER_FILE'=> 'Unable to deliver file.',

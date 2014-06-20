@@ -145,4 +145,5 @@ $lang = array_merge($lang, array(
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VIEW_FACEBOOK_PROFILE' => 'View Facebook Profile',
+	'VIEW_TWITTER_PROFILE'  => 'View Twitter Profile',
 ));
