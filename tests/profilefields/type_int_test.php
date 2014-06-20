@@ -52,60 +52,60 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 	{
 		return array(
 			array(
-					'10',
-					array('field_show_novalue' => true),
-					10,
-					'Field should output integer value of given input',
+				'10',
+				array('field_show_novalue' => true),
+				10,
+				'Field should output integer value of given input',
 			),
 			array(
-					'0',
-					array('field_show_novalue' => true),
-					0,
-					'Field should output integer value of given input',
+				'0',
+				array('field_show_novalue' => true),
+				0,
+				'Field should output integer value of given input',
 			),
 			array(
-					'',
-					array('field_show_novalue' => true),
-					0,
-					'Field should translate empty value to 0 as integer',
-					false,
+				'',
+				array('field_show_novalue' => true),
+				0,
+				'Field should translate empty value to 0 as integer',
+				false,
 			),
 			array(
-					null,
-					array('field_show_novalue' => true),
-					0,
-					'Field should translate null value to 0 as integer',
+				null,
+				array('field_show_novalue' => true),
+				0,
+				'Field should translate null value to 0 as integer',
 			),
 			array(
-					'10',
-					array('field_show_novalue' => false),
-					10,
-					'Field should output integer value of given input',
+				'10',
+				array('field_show_novalue' => false),
+				10,
+				'Field should output integer value of given input',
 			),
 			array(
-					'0',
-					array('field_show_novalue' => false),
-					0,
-					'Field should output integer value of given input',
+				'0',
+				array('field_show_novalue' => false),
+				0,
+				'Field should output integer value of given input',
 			),
 			array(
-					'',
-					array('field_show_novalue' => false),
-					null,
-					'Field should leave empty value as is',
+				'',
+				array('field_show_novalue' => false),
+				null,
+				'Field should leave empty value as is',
 			),
 			array(
-					null,
-					array('field_show_novalue' => false),
-					null,
-					'Field should leave empty value as is',
+				null,
+				array('field_show_novalue' => false),
+				null,
+				'Field should leave empty value as is',
 			),
 		);
 	}
 
 	/**
-	 * @dataProvider profile_value_data
-	 */
+	* @dataProvider profile_value_data
+	*/
 	public function test_get_profile_value($value, $field_options, $expected, $description)
 	{
 		$field_options = array_merge($this->field_options, $field_options);
@@ -119,47 +119,47 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 	{
 		return array(
 			array(
-					'15',
-					array('field_minlen' => 10, 'field_maxlen' => 20, 'field_required' => true),
-					false,
-					'Field should accept input of correct boundaries',
+				'15',
+				array('field_minlen' => 10, 'field_maxlen' => 20, 'field_required' => true),
+				false,
+				'Field should accept input of correct boundaries',
 			),
 			array(
-					'556476',
-					array('field_maxlen' => 50000, 'field_required' => true),
-					'FIELD_TOO_LARGE-50000-field',
-					'Field should reject value of greater value than max',
+				'556476',
+				array('field_maxlen' => 50000, 'field_required' => true),
+				'FIELD_TOO_LARGE-50000-field',
+				'Field should reject value of greater value than max',
 			),
 			array(
-					'9',
-					array('field_minlen' => 10, 'field_required' => true),
-					'FIELD_TOO_SMALL-10-field',
-					'Field should reject value which is less than defined minimum',
+				'9',
+				array('field_minlen' => 10, 'field_required' => true),
+				'FIELD_TOO_SMALL-10-field',
+				'Field should reject value which is less than defined minimum',
 			),
 			array(
-					true,
-					array('field_maxlen' => 20),
-					false,
-					'Field should accept correct boolean value',
+				true,
+				array('field_maxlen' => 20),
+				false,
+				'Field should accept correct boolean value',
 			),
 			array(
-					'string',
-					array('field_maxlen' => 10, 'field_required' => true),
-					false,
-					'Field should accept correct string value',
+				'string',
+				array('field_maxlen' => 10, 'field_required' => true),
+				false,
+				'Field should accept correct string value',
 			),
 			array(
-					null,
-					array('field_minlen' => 1, 'field_maxlen' => 10, 'field_required' => true),
-					'FIELD_TOO_SMALL-1-field',
-					'Field should not accept an empty value',
+				null,
+				array('field_minlen' => 1, 'field_maxlen' => 10, 'field_required' => true),
+				'FIELD_TOO_SMALL-1-field',
+				'Field should not accept an empty value',
 			),
 		);
 	}
 
 	/**
-	 * @dataProvider validate_profile_field_data
-	 */
+	* @dataProvider validate_profile_field_data
+	*/
 	public function test_validate_profile_field($value, $field_options, $expected, $description)
 	{
 		$field_options = array_merge($this->field_options, $field_options);

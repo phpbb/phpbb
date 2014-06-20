@@ -77,40 +77,40 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 	{
 		return array(
 			array(
-					7,
-					array(),
-					'FIELD_INVALID_VALUE-field',
-					'Invalid value should throw error',
+				7,
+				array(),
+				'FIELD_INVALID_VALUE-field',
+				'Invalid value should throw error',
 			),
 			array(
-					true,
-					array('field_required' => true),
-					false,
-					'Boolean would evaluate to 1 and hence correct value',
+				true,
+				array('field_required' => true),
+				false,
+				'Boolean would evaluate to 1 and hence correct value',
 			),
 			array(
-					'string',
-					array('field_required' => true),
-					'FIELD_REQUIRED-field',
-					'String should be rejected for value',
+				'string',
+				array('field_required' => true),
+				'FIELD_REQUIRED-field',
+				'String should be rejected for value',
 			),
 			array(
-					2,
-					array(),
-					false,
-					'Valid value should not throw error'
+				2,
+				array(),
+				false,
+				'Valid value should not throw error'
 			),
 			array(
-					0,
-					array(),
-					false,
-					'Empty value should be acceptible',
+				0,
+				array(),
+				false,
+				'Empty value should be acceptible',
 			),
 			array(
-					0,
-					array('field_required' => true),
-					'FIELD_REQUIRED-field',
-					'Required field should not accept empty value',
+				0,
+				array('field_required' => true),
+				'FIELD_REQUIRED-field',
+				'Required field should not accept empty value',
 			),
 		);
 	}
@@ -131,28 +131,28 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 	{
 		return array(
 			array(
-					1,
-					array('field_show_novalue' => true),
-					'Option 1',
-					'Field should output the given value',
+				1,
+				array('field_show_novalue' => true),
+				'Option 1',
+				'Field should output the given value',
 			),
 			array(
-					4,
-					array('field_show_novalue' => false),
-					'Option 4',
-					'Field should output the given value',
+				4,
+				array('field_show_novalue' => false),
+				'Option 4',
+				'Field should output the given value',
 			),
 			array(
-					'',
-					array('field_show_novalue' => true),
-					'<No Value>',
-					'Field should output nothing for empty value',
+				'',
+				array('field_show_novalue' => true),
+				'<No Value>',
+				'Field should output nothing for empty value',
 			),
 			array(
-					'',
-					array('field_show_novalue' => false),
-					null,
-					'Field should simply output null for empty value',
+				'',
+				array('field_show_novalue' => false),
+				null,
+				'Field should simply output null for empty value',
 			),
 		);
 	}

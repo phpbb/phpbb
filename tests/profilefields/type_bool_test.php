@@ -98,22 +98,22 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 	{
 		return array(
 			array(
-					false,
-					array('field_show_novalue' => true),
-					'No',
-					'Field should output the default value',
+				false,
+				array('field_show_novalue' => true),
+				'No',
+				'Field should output the default value',
 			),
 			array(
-					false,
-					array('field_show_novalue' => false, 'field_length' => 2),
-					null,
-					'Field should not show anything for empty value',
+				false,
+				array('field_show_novalue' => false, 'field_length' => 2),
+				null,
+				'Field should not show anything for empty value',
 			),
 			array(
-					0,
-					array(),
-					'Yes',
-					'Field should show the set value',
+				0,
+				array(),
+				'Yes',
+				'Field should show the set value',
 			),
 		);
 	}
