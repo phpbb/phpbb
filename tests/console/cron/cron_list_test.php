@@ -98,6 +98,6 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 		$this->get_cron_manager($tasks);
 		$this->command_tester = $this->get_command_tester();
-		$this->command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
+		$this->command_tester->execute(array('command' => $this->command_name), array('decorated' => false));
 	}
 }
