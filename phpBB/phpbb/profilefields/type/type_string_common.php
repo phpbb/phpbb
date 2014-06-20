@@ -21,7 +21,7 @@ abstract class type_string_common extends type_base
 		'ALPHA_ONLY'		=> '[\w]+',
 		'ALPHA_UNDERSCORE'	=> '[\w_]+',
 		'ALPHA_SPACERS'		=> '[\w_\+\. \-\[\]]+',
-		'ALPHA_PUNCTUATION' => '[a-zA-Z][\w\.,\-_]+'
+		'ALPHA_PUNCTUATION' => '[a-zA-Z][\w\.,\-_]+',
 	);
 
 	/**
