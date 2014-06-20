@@ -2096,6 +2096,10 @@
                 "VCHAR",
                 ""
             ],
+            "pf_phpbb_youtube": [
+                "VCHAR",
+                ""
+            ],
             "pf_phpbb_facebook": [
                 "VCHAR",
                 ""
