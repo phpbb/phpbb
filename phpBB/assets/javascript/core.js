@@ -874,19 +874,6 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 	}
 };
 
-// Toggle notification list
-$('#notification_list_button').click(function(e) {
-	$('#notification_list').toggle();
-	e.preventDefault();
-});
-$('#phpbb').click(function(e) {
-	var target = $(e.target);
-
-	if (!target.is('#notification_list, #notification_list_button') && !target.parents().is('#notification_list, #notification_list_button')) {
-		$('#notification_list').hide();
-	}
-});
-
 phpbb.ajaxCallbacks = {};
 
 /**
@@ -1516,11 +1503,37 @@ phpbb.getFunctionByName = function (functionName) {
 };
 
 /**
-* Apply code editor to all textarea elements with data-bbcode attribute
+* Register page dropdowns.
 */
-$(document).ready(function() {
-	$('textarea[data-bbcode]').each(function() {
-		phpbb.applyCodeEditor(this);
+phpbb.registerPageDropdowns = function() {
+	$('body').find('.dropdown-container').each(function() {
+		var $this = $(this),
+			trigger = $this.find('.dropdown-trigger:first'),
+			contents = $this.find('.dropdown'),
+			options = {
+				direction: 'auto',
+				verticalDirection: 'auto'
+			},
+			data;
+
+		if (!trigger.length) {
+			data = $this.attr('data-dropdown-trigger');
+			trigger = data ? $this.children(data) : $this.children('a:first');
+		}
+
+		if (!contents.length) {
+			data = $this.attr('data-dropdown-contents');
+			contents = data ? $this.children(data) : $this.children('div:first');
+		}
+
+		if (!trigger.length || !contents.length) return;
+
+		if ($this.hasClass('dropdown-up')) options.verticalDirection = 'up';
+		if ($this.hasClass('dropdown-down')) options.verticalDirection = 'down';
+		if ($this.hasClass('dropdown-left')) options.direction = 'left';
+		if ($this.hasClass('dropdown-right')) options.direction = 'right';
+
+		phpbb.registerDropdown(trigger, contents, options);
 	});
 
 	// Hide active dropdowns when click event happens outside
@@ -1530,6 +1543,17 @@ $(document).ready(function() {
 			$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
 		}
 	});
+}
+
+/**
+* Apply code editor to all textarea elements with data-bbcode attribute
+*/
+$(document).ready(function() {
+	$('textarea[data-bbcode]').each(function() {
+		phpbb.applyCodeEditor(this);
+	});
+
+	phpbb.registerPageDropdowns();
 
 	$('#color_palette_placeholder').each(function() {
 		phpbb.registerPalette($(this));

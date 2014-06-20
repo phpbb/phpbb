@@ -317,7 +317,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 .rtl ul.topiclist.missing-column dt {
 	margin-right: 0;
-	margin-left: -330px;
+	margin-left: -345px;
 }
 
 .rtl ul.topiclist.two-long-columns dt {
@@ -348,10 +348,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl ul.topiclist.two-columns dt .list-inner {
 	margin-right: 0;
 	margin-left: 80px;
-}
-
-.rtl ul.topiclist dl {
-	position: static;	/* fix for IE6 */
 }
 
 .rtl ul.topiclist dd {
@@ -404,10 +400,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl dl.icon dt .list-inner {
 	padding-left: 0;
 	padding-right: 45px;					/* Space for folder icon */
-}
-
-.rtl dl.icon dt {							/* fix for topic row icon links */
-	position: relative;
 }
 
 .rtl dl a.icon-link {						/* topic row icon links */
@@ -619,6 +611,19 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-right: 0;
 }
 
+/* Poster contact icons
+ ----------------------------------------*/
+.rtl .contact-icons a {
+	border-left-width: 1px;
+	border-left-style: dotted;
+	border-right: none;
+	float: right;
+}
+
+.rtl .contact-icons .last-cell {
+	border-left: none;
+}
+
 /**
 * cp.css
 */
@@ -729,6 +734,15 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 /* Avatar gallery */
 .rtl #gallery label {
 	float: right;
+}
+
+/* Responsive *CP navigation
+----------------------------------------*/
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+{
+	.rtl #cp-menu, .rtl #navigation, .rtl #cp-main {
+		float: none;
+	}
 }
 
 /**
@@ -878,10 +892,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 }
 
 /* Former imageset */
-.rtl .imageset.site_logo {
-	padding-right: 139px;
-	padding-left: 0;
-}
 .rtl .imageset.forum_link, .rtl .imageset.forum_read, .rtl .imageset.forum_read_locked, .rtl .imageset.forum_read_subforum, .rtl .imageset.forum_unread, .rtl .imageset.forum_unread_locked, .rtl .imageset.forum_unread_subforum, .rtl .imageset.topic_moved, .rtl .imageset.topic_read, .rtl .imageset.topic_read_mine, .rtl .imageset.topic_read_hot, .rtl .imageset.topic_read_hot_mine, .rtl .imageset.topic_read_locked, .rtl .imageset.topic_read_locked_mine, .rtl .imageset.topic_unread, .rtl .imageset.topic_unread_mine, .rtl .imageset.topic_unread_hot, .rtl .imageset.topic_unread_hot_mine, .rtl .imageset.topic_unread_locked, .rtl .imageset.topic_unread_locked_mine, .rtl .imageset.sticky_read, .rtl .imageset.sticky_read_mine, .rtl .imageset.sticky_read_locked, .rtl .imageset.sticky_read_locked_mine, .rtl .imageset.sticky_unread, .rtl .imageset.sticky_unread_mine, .rtl .imageset.sticky_unread_locked, .rtl .imageset.sticky_unread_locked_mine, .rtl .imageset.announce_read, .rtl .imageset.announce_read_mine, .rtl .imageset.announce_read_locked, .rtl .imageset.announce_read_locked_mine, .rtl .imageset.announce_unread, .rtl .imageset.announce_unread_mine, .rtl .imageset.announce_unread_locked, .rtl .imageset.announce_unread_locked_mine, .rtl .imageset.global_read, .rtl .imageset.global_read_mine, .rtl .imageset.global_read_locked, .rtl .imageset.global_read_locked_mine, .rtl .imageset.global_unread, .rtl .imageset.global_unread_mine, .rtl .imageset.global_unread_locked, .rtl .imageset.global_unread_locked_mine, .rtl .imageset.pm_read, .rtl .imageset.pm_unread {
 	padding-right: 27px;
 	padding-left: 0;
@@ -905,4 +915,105 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 .rtl .imageset.icon_topic_reported, .rtl .imageset.icon_topic_unapproved {
 	padding-right: 16px;
 	padding-left: 0;
+}
+
+/**
+* plupload.css
+*/
+
+.rtl .attach-controls {
+	float: left;
+}
+
+/**
+* responsive.css
+*/
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+{
+	/* .topiclist lists
+	----------------------------------------*/
+	.rtl ul.topiclist li.header dt, .rtl ul.topiclist li.header dt .list-inner {
+		margin-left: 0 !important;
+		padding-left: 0;
+	}
+
+	.rtl ul.topiclist dt, .rtl ul.topiclist dt .list-inner,
+	.rtl ul.topiclist.missing-column dt, .rtl ul.topiclist.missing-column dt .list-inner,
+	.rtl ul.topiclist.two-long-columns dt, .rtl ul.topiclist.two-long-columns dt .list-inner,
+	.rtl ul.topiclist.two-columns dt, .rtl ul.topiclist.two-columns dt .list-inner {
+		margin-left: 0;
+	}
+
+	.rtl ul.topiclist dt .list-inner.with-mark {
+		padding-left: 34px;
+	}
+
+	/* Forums and topics lists
+	----------------------------------------*/
+	.rtl ul.topiclist.forums dt, .rtl ul.topiclist.topics dt {
+		margin-left: -250px;
+	}
+	.rtl ul.topiclist.forums dt .list-inner, .rtl ul.topiclist.topics dt .list-inner {
+		margin-left: 250px;
+	}
+
+	.rtl ul.topiclist dd.mark {
+		left: 5px;
+		right: auto;
+		text-align: right;
+	}
+
+	@media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
+	{
+		.rtl ul.topiclist.forums dt, .rtl ul.topiclist.topics dt {
+			margin-left: 0;
+		}
+
+		.rtl ul.topiclist.forums dt .list-inner, .rtl ul.topiclist.topics dt .list-inner {
+			margin-left: 0;
+		}
+	}
+
+	.rtl table.responsive.show-header thead, .rtl table.responsive.show-header th:first-child {
+		text-align: right !important;
+	}
+
+	.rtl table.responsive td {
+		text-align: right !important;
+	}
+
+	/* User profile
+	----------------------------------------*/
+	.rtl .column1, .rtl .column2, .rtl .left-box.profile-details {
+		float: none;
+	}
+
+	@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+	{
+		.rtl dl.details dt, .rtl dl.details dd {
+			float: none;
+			text-align: right;	
+		}
+
+		.rtl dl.details dd {
+			margin-left: 0;
+			margin-right: 20px;
+		}
+	}
+
+	/* Post
+	----------------------------------------*/
+	.rtl .postprofile, .rtl .postbody, .rtl .search .postbody {
+		float: none;
+	}
+
+	.rtl .post .postprofile {
+		border-width: 0 0 1px 0;
+	}
+
+	.rtl .postprofile .avatar {
+		float: right;
+		margin-left: 5px;
+		margin-right: 0;
+	}
 }
