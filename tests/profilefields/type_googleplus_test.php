@@ -53,7 +53,7 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 			'lang_id'	 	   => 1,
 			'lang_name'        => 'field',
 			'field_required'   => false,
-			'field_validation' => '.*',
+			'field_validation' => '[\w]+',
 		);
 		$field_options = array_merge($default_field_options, $field_options);
 
