@@ -155,6 +155,18 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 				'FIELD_INVALID_CHARS_ALPHA_DOTS-field',
 				'Required field should reject field with comma',
 			),
+			array(
+				'skype.test.name,_this',
+				array('field_validation' => '[a-zA-Z][\w\.,\-_]+'),
+				false,
+				'Required field should accept alphanumeric field with punctuations',
+			),
+			array(
+				'1skype.this.should.faila',
+				array('field_validation' => '[a-zA-Z][\w\.,\-_]+'),
+				'FIELD_INVALID_CHARS_ALPHA_PUNCTUATION-field',
+				'Required field should reject field having invalid input for the given validation',
+			),
 		);
 	}
 
