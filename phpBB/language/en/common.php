@@ -226,6 +226,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <strong>%s</strong> has been deactivated and can no longer be displayed.',
 	'EXTENSION_DOES_NOT_EXIST'			=> 'The extension <strong>%s</strong> does not exist.',
 
+	'FACEBOOK'				=> 'Facebook',
 	'FAQ'					=> 'FAQ',
 	'FAQ_EXPLAIN'			=> 'Frequently Asked Questions',
 	'FILENAME'				=> 'Filename',

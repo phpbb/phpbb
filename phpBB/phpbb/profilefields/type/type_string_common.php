@@ -20,6 +20,7 @@ abstract class type_string_common extends type_base
 		'NUMBERS_ONLY'		=> '[0-9]+',
 		'ALPHA_ONLY'		=> '[\w]+',
 		'ALPHA_UNDERSCORE'	=> '[\w_]+',
+		'ALPHA_DOTS'        => '[\w.]+',
 		'ALPHA_SPACERS'		=> '[\w_\+\. \-\[\]]+',
 	);
 
