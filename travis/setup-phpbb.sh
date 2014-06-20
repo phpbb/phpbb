@@ -13,6 +13,7 @@ set -x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
+FUNCTIONAL_TESTS=$3
 
 if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
 then
@@ -29,7 +30,7 @@ then
 	travis/setup-php-extensions.sh
 fi
 
-if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` == "1" ]
+if [ "$FUNCTIONAL_TESTS" == "1" -a `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` == "1" ]
 then
 	travis/setup-webserver.sh
 fi
