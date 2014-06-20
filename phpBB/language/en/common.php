@@ -857,6 +857,7 @@ $lang = array_merge($lang, array(
 	'WROTE'						=> 'wrote',
 
 	'YAHOO'				=> 'Yahoo Messenger',
+	'YOUTUBE'			=> 'YouTube',
 	'YEAR'				=> 'Year',
 	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',
 	'YES'				=> 'Yes',
