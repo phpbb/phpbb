@@ -18,9 +18,9 @@ class type_googleplus extends type_string
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_name_short()
+	public function get_service_name()
 	{
-		return 'googleplus';
+		return 'profilefields.type.googleplus';
 	}
 
 	/**
@@ -54,13 +54,5 @@ class type_googleplus extends type_string
 		}
 
 		return $field_value;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	public function get_template_filename()
-	{
-		return 'profilefields/string.html';
 	}
 }
