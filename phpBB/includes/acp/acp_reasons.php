@@ -252,7 +252,6 @@ class acp_reasons
 						// Teh standard
 						case 'postgres':
 						case 'oracle':
-						case 'firebird':
 						case 'sqlite':
 						case 'sqlite3':
 							// Change the reports using this reason to 'other'

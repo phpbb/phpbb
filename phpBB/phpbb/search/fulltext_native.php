@@ -1485,7 +1485,6 @@ class fulltext_native extends \phpbb\search\base
 		{
 			case 'sqlite':
 			case 'sqlite3':
-			case 'firebird':
 				$this->db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
 				$this->db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
 				$this->db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);

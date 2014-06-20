@@ -1804,13 +1804,6 @@ function phpbb_create_userconv_table()
 	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	switch ($map_dbms)
 	{
-		case 'firebird':
-			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
-				user_id INTEGER NOT NULL,
-				username_clean VARCHAR(255) CHARACTER SET UTF8 DEFAULT \'\' NOT NULL COLLATE UNICODE
-			)';
-		break;
-
 		case 'mssql':
 			$create_sql = 'CREATE TABLE [' . USERCONV_TABLE . '] (
 				[user_id] [int] NOT NULL ,

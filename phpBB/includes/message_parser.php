@@ -1360,12 +1360,6 @@ class parse_message extends bbcode_firstpass
 						ORDER BY LEN(code) DESC';
 				break;
 
-				case 'firebird':
-					$sql = 'SELECT *
-						FROM ' . SMILIES_TABLE . '
-						ORDER BY CHAR_LENGTH(code) DESC';
-				break;
-
 				// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
 				default:
 					$sql = 'SELECT *

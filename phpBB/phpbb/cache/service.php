@@ -316,13 +316,6 @@ class service
 					ORDER BY LEN(bot_agent) DESC';
 				break;
 
-				case 'firebird':
-					$sql = 'SELECT user_id, bot_agent, bot_ip
-						FROM ' . BOTS_TABLE . '
-						WHERE bot_active = 1
-					ORDER BY CHAR_LENGTH(bot_agent) DESC';
-				break;
-
 				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...
 				default:
 					$sql = 'SELECT user_id, bot_agent, bot_ip

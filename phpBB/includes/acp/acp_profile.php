@@ -1267,11 +1267,6 @@ class acp_profile
 
 			break;
 
-			case 'firebird':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' ADD "' . strtoupper($field_ident) . '" ' . $sql_type;
-
-			break;
-
 			case 'oracle':
 				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident " . $sql_type;
 
