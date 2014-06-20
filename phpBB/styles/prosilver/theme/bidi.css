@@ -20,7 +20,7 @@
 
 /* Main blocks
 ---------------------------------------- */
-.rtl #logo {
+.rtl .logo {
 	float: right;
 	padding: 10px 10px 0 13px;
 }
