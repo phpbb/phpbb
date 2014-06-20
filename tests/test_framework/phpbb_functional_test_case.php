@@ -1076,9 +1076,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		if ($expected !== '')
 		{
-			$this->assertContainsLang($expected, $crawler->filter('html')->text());
+			if (isset($this->lang[$expected]))
+			{
+				$this->assertContainsLang($expected, $crawler->filter('html')->text());
+			}
+			else
+			{
+				$this->assertContains($expected, $crawler->filter('html')->text());
+			}
 			return null;
 		}
+
 		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
 
 		return array(
