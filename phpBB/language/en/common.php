@@ -226,6 +226,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <strong>%s</strong> has been deactivated and can no longer be displayed.',
 	'EXTENSION_DOES_NOT_EXIST'			=> 'The extension <strong>%s</strong> does not exist.',
 
+	'FACEBOOK'				=> 'Facebook',
 	'FAQ'					=> 'FAQ',
 	'FAQ_EXPLAIN'			=> 'Frequently Asked Questions',
 	'FILENAME'				=> 'Filename',
@@ -676,6 +677,7 @@ $lang = array_merge($lang, array(
 	'SETTINGS'					=> 'Settings',
 	'SIGNATURE'					=> 'Signature',
 	'SKIP'						=> 'Skip to content',
+	'SKYPE'						=> 'Skype',
 	'SMTP_NO_AUTH_SUPPORT'		=> 'SMTP server does not support authentication.',
 	'SORRY_AUTH_READ'			=> 'You are not authorised to read this forum.',
 	'SORRY_AUTH_VIEW_ATTACH'	=> 'You are not authorised to download this attachment.',
@@ -771,6 +773,7 @@ $lang = array_merge($lang, array(
 		2	=> 'Total members <strong>%d</strong>',
 	),
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
+	'TWITTER'			=> 'Twitter',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image. Please verify that the URL you entered is correct.',
 	'UNABLE_TO_DELIVER_FILE'=> 'Unable to deliver file.',
@@ -857,6 +860,7 @@ $lang = array_merge($lang, array(
 	'WROTE'						=> 'wrote',
 
 	'YAHOO'				=> 'Yahoo Messenger',
+	'YOUTUBE'			=> 'YouTube',
 	'YEAR'				=> 'Year',
 	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',
 	'YES'				=> 'Yes',

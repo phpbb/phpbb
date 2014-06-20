@@ -2088,6 +2088,22 @@
                 "UINT",
                 0
             ],
+            "pf_phpbb_skype": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_twitter": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_youtube": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_facebook": [
+                "VCHAR",
+                ""
+            ],
             "pf_phpbb_interests": [
                 "MTEXT",
                 ""
