@@ -49,7 +49,9 @@ class type_googleplus extends type_string
 		}
 
 		if (!is_numeric($field_value))
+		{
 			$field_value = '+' . $field_value;
+		}
 
 		return $field_value;
 	}
