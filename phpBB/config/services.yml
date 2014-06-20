@@ -79,6 +79,7 @@ services:
         class: phpbb\content_visibility
         arguments:
             - @auth
+            - @config
             - @dbal.conn
             - @user
             - %core.root_path%
