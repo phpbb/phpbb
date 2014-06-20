@@ -40,7 +40,7 @@ class profilefield_googleplus extends \phpbb\db\migration\profilefield_base_migr
 		'field_ident'			=> 'phpbb_googleplus',
 		'field_length'			=> '20',
 		'field_minlen'			=> '3',
-		'field_maxlen'			=> '',
+		'field_maxlen'			=> '255',
 		'field_novalue'			=> '',
 		'field_default_value'	=> '',
 		'field_validation'		=> '[\w]+',
