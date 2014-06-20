@@ -29,11 +29,11 @@ class type_googleplus extends type_string
 	public function get_default_option_values()
 	{
 		return array(
-			'field_length'		    => 20,
-			'field_minlen'		    => 3,
-			'field_maxlen'		    => '',
-			'field_validation'	    => '[\w]+',
-			'field_novalue'		    => '',
+			'field_length'			=> 10,
+			'field_minlen'			=> 3,
+			'field_maxlen'			=> '',
+			'field_validation'		=> '[\w]+',
+			'field_novalue'			=> '',
 			'field_default_value'	=> '',
 		);
 	}
