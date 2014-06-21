@@ -3,7 +3,7 @@
 
  <description>phpBB legacy coding standard for PHP files</description>
 
- <rule ref="./ruleset-phpbb-php-legacy.xml" />
+ <rule ref="./ruleset-php-legacy-core.xml" />
  <rule ref="./ruleset-php-strict.xml" />
 
 </ruleset>
