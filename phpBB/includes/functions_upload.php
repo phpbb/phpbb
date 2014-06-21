@@ -466,6 +466,9 @@ class fileupload
 	var $max_height = 0;
 	var $error_prefix = '';
 
+	/** @var int Timeout for remote upload */
+	var $upload_timeout = 5;
+
 	/**
 	* Init file upload class.
 	*
@@ -785,6 +788,9 @@ class fileupload
 			return $file;
 		}
 
+		// Set a proper timeout for the socket
+		socket_set_timeout($fsock, $this->upload_timeout);
+
 		// Make sure $path not beginning with /
 		if (strpos($path, '/') === 0)
 		{
@@ -797,6 +803,8 @@ class fileupload
 
 		$get_info = false;
 		$data = '';
+		$upload_start = time();
+
 		while (!@feof($fsock))
 		{
 			if ($get_info)
@@ -813,6 +821,13 @@ class fileupload
 				}
 
 				$data .= $block;
+
+				// Cancel upload if we exceed timeout
+				if ((time() - $upload_start) >= $this->upload_timeout)
+				{
+					$file = new fileerror($user->lang[$this->error_prefix . 'EMPTY_REMOTE_DATA']);
+					return $file;
+				}
 			}
 			else
 			{
