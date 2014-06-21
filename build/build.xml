@@ -87,6 +87,7 @@
 				--standard=build/code_sniffer/ruleset-php-legacy-core.xml
 				--ignore=${project.basedir}/phpBB/cache/*
 				--ignore=${project.basedir}/phpBB/develop/*
+				--ignore=${project.basedir}/phpBB/ext/*
 				--ignore=${project.basedir}/phpBB/includes/diff/*.php
 				--ignore=${project.basedir}/phpBB/includes/sphinxapi.php
 				--ignore=${project.basedir}/phpBB/includes/utf/data/*
@@ -96,10 +97,17 @@
 				--ignore=${project.basedir}/phpBB/vendor/*
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
+		<exec command="phpBB/vendor/bin/phpcs
+				-s
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-extensions.xml
+				phpBB/ext"
+			dir="." returnProperty="retval-php-ext" passthru="true" />
 		<if>
 			<or>
 				<not><equals arg1="${retval-php-strict}" arg2="0" /></not>
 				<not><equals arg1="${retval-php-legacy}" arg2="0" /></not>
+				<not><equals arg1="${retval-php-ext}" arg2="0" /></not>
 			</or>
 			<then>
 				<fail message="PHP Code Sniffer failed." />
