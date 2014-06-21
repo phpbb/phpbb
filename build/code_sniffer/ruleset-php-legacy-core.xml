@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<ruleset name="phpBB PHP Legacy Standard">
+<ruleset name="phpBB PHP Legacy Standard Core">
 
- <description>phpBB legacy coding standard for PHP files</description>
+ <description>phpBB legacy coding standard for PHP files of phpBB core</description>
 
  <rule ref="./ruleset-php-legacy.xml" />
 
