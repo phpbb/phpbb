@@ -5,9 +5,7 @@
 
  <rule ref="./ruleset-php-legacy.xml" />
 
- <!-- THe header file MUST contains:
-      - the phpBB copyright: (c) phpBB Limited <https://www.phpbb.com>
-      - the phpBB License: GNU General Public License, version 2 (GPL-2.0) -->
+ <!-- Each file MUST start with a valid header as defined by the Coding Guidelines -->
  <rule ref="./phpbb/Sniffs/Commenting/FileCommentSniff.php" />
 
 </ruleset>
