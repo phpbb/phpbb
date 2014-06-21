@@ -12,9 +12,8 @@
 */
 
 /**
-* Checks that each source file contains the standard header.
-*
-* Based on Coding Guidelines 1.ii File Header.
+* Checks that each PHP source file contains a valid header as defined by the
+* phpBB Coding Guidelines.
 *
 * @package code_sniffer
 * @author Manuel Pichler <mapi@phpundercontrol.org>
