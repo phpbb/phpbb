@@ -78,6 +78,7 @@ class lang_helper
 				{
 					$field_id[$k] = (int) $id;
 				}
+				$field_id = array_unique($field_id);
 			}
 			else
 			{
