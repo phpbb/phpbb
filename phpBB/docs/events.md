@@ -805,7 +805,7 @@ ucp_register_credentials_before
 * Since: 3.1.0-b5
 * Purpose: Add options in registration page fieldset - before first field.
 
-ucp_register_progile_fields_after
+ucp_register_profile_fields_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_register.html
