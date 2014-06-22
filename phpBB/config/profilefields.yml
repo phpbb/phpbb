@@ -5,6 +5,7 @@ services:
             - @auth
             - @dbal.conn
             - @dispatcher
+            - @profilefields.lang_helper
             - @request
             - @template
             - @profilefields.type_collection
