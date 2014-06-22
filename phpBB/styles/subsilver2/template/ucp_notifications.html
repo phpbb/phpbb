@@ -92,9 +92,11 @@
 					<td valign="top">
 						<span class="gen">
 						<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-							<strong>{notification_list.FORMATTED_TITLE}</strong>
+							{notification_list.FORMATTED_TITLE}<!-- IF notification_list.REFERENCE --> {notification_list.REFERENCE}<!-- ENDIF -->
 						<!-- IF notification_list.URL --></a><!-- ENDIF --><br />
-						{notification_list.TIME}
+						<!-- IF notification_list.FORUM --><span class="notifications_forum">{notification_list.FORUM}</span><br /><!-- ENDIF -->
+						<!-- IF notification_list.REASON --><span class="notifications_reason">{notification_list.REASON}</span><br /><!-- ENDIF -->
+							<span class="notifications_time">{notification_list.TIME}</span>
 						</span>
 					</td>
 					<td align="center">

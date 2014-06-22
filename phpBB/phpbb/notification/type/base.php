@@ -308,16 +308,15 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		return array(
 			'NOTIFICATION_ID'	=> $this->notification_id,
-
+			'STYLING'			=> $this->get_style_class(),
 			'AVATAR'			=> $this->get_avatar(),
-
 			'FORMATTED_TITLE'	=> $this->get_title(),
-
+			'REFERENCE'			=> $this->get_reference(),
+			'FORUM'				=> $this->get_forum(),
+			'REASON'			=> $this->get_reason(),
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
-
 			'UNREAD'			=> !$this->notification_read,
-
 			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
 		);
 	}
@@ -337,11 +336,51 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
+	* Get the CSS style class of the notification (fall back)
+	*
+	* @return string
+	*/
+	public function get_style_class()
+	{
+		return '';
+	}
+
+	/**
 	* Get the user's avatar (fall back)
 	*
 	* @return string
 	*/
 	public function get_avatar()
+	{
+		return '';
+	}
+
+	/**
+	* Get the reference of the notifcation (fall back)
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return '';
+	}
+
+	/**
+	* Get the forum of the notification reference (fall back)
+	*
+	* @return string
+	*/
+	public function get_forum()
+	{
+		return '';
+	}
+
+	/**
+	* Get the reason for the notifcation (fall back)
+	*
+	* @return string
+	*/
+	public function get_reason()
 	{
 		return '';
 	}

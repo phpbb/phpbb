@@ -169,7 +169,7 @@ function marklist(id, name, state)
 						</div>
 
 						<div class="notification_scroll">
-							<table class="tablebg" width="310" cellspacing="1">
+							<table class="tablebg" cellspacing="1">
 								<!-- BEGIN notifications -->
 									<tr class="row<!-- IF notifications.UNREAD -->2<!-- ELSE -->1<!-- ENDIF -->">
 										<td width="50">
@@ -180,7 +180,11 @@ function marklist(id, name, state)
 												<!-- IF notifications.URL --><a href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->"><!-- ENDIF -->
 													{notifications.FORMATTED_TITLE}
 												<!-- IF notifications.URL --></a><!-- ENDIF -->
-													<br />&raquo; {notifications.TIME}
+
+												<!-- IF notifications.REFERENCE --><br /><span class="notification-reference">{notifications.REFERENCE}</span><!-- ENDIF -->
+												<!-- IF notifications.FORUM --><br /><span class="notification-forum">{notifications.FORUM}</span><!-- ENDIF -->
+												<!-- IF notifications.REASON --><br /><span class="notification-reason">{notifications.REASON}</span><!-- ENDIF -->
+													<br /><span class="notification-time">{notifications.TIME}</span>
 												<!-- IF not notifications.URL and notifications.UNREAD -->
 													<br /><a href="{notifications.U_MARK_READ}">{L_MARK_READ}</a>
 												<!-- ENDIF -->

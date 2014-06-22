@@ -112,6 +112,32 @@
 	padding-right: 10px;
 }
 
+.rtl .dropdown-extended .header .header_settings {
+	float: left;
+}
+
+/* Notifications
+----------------------------------------*/
+.rtl .notification_list ul li img {
+	float: right;
+	margin-left: 5px;
+	margin-right: 0;
+}
+
+.rtl .notification_list div.notifications {
+	margin-left: 0;
+	margin-right: 50px;
+}
+
+.rtl .notification_text {
+	margin-left: 0;
+	margin-right: 58px;
+}
+
+.rtl .notification_list p.notification-time {
+	text-align: left;
+}
+
 /* Responsive breadcrumbs
 ----------------------------------------*/
 .rtl .breadcrumbs .crumb {
