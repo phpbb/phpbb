@@ -368,6 +368,34 @@ class manager
 	}
 
 	/**
+	* Cache user's profile fields' language options
+	* @param array	$profile_row		Array with users profile field data
+	* @return void
+	*/
+	public function cache_profile_fields_lang_options($profile_row)
+	{
+		if (!empty($profile_row))
+		{
+			$field_ids = array();
+			foreach ($profile_row as $ident_ary)
+			{
+				if (empty($field_ids[$ident_ary['data']['lang_id']]))
+				{
+					$field_ids[$ident_ary['data']['lang_id']] = array();
+
+				}
+
+				$field_ids[$ident_ary['data']['lang_id']][] = $ident_ary['data']['field_id'];
+			}
+
+			foreach ($field_ids as $lang => $fields)
+			{
+				$this->lang_helper->get_option_lang($fields, $lang, false);
+			}
+		}
+	}
+
+	/**
 	* Assign the user's profile fields data to the template
 	*
 	* @param array	$profile_row		Array with users profile field data
@@ -392,25 +420,6 @@ class manager
 		*/
 		$vars = array('profile_row', 'tpl_fields', 'use_contact_fields');
 		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_data_before', compact($vars)));
-
-		if (!empty($profile_row))
-		{
-			$field_ids = array();
-			foreach ($profile_row as $ident_ary)
-			{
-				if (empty($field_ids[$ident_ary['data']['lang_id']]))
-				{
-					$field_ids[$ident_ary['data']['lang_id']] = array();
-
-				}
-				$field_ids[$ident_ary['data']['lang_id']][] = $ident_ary['data']['field_id'];
-			}
-
-			foreach ($field_ids as $lang => $fields)
-			{
-				$this->lang_helper->get_option_lang($fields, $lang, false);
-			}
-		}
 
 		foreach ($profile_row as $ident => $ident_ary)
 		{
