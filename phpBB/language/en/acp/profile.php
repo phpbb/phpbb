@@ -93,6 +93,7 @@ $lang = array_merge($lang, array(
 	'FIELD_DESCRIPTION'			=> 'Field description',
 	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The explanation for this field presented to the user.',
 	'FIELD_DROPDOWN'			=> 'Dropdown box',
+	'FIELD_GOOGLEPLUS'			=> 'Google+',
 	'FIELD_IDENT'				=> 'Field identification',
 	'FIELD_IDENT_ALREADY_EXIST'	=> 'The chosen field identification already exist. Please choose another name.',
 	'FIELD_IDENT_EXPLAIN'		=> 'The field identification is a name to identify the profile field within the database and the templates.',
