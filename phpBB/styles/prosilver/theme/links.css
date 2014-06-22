@@ -5,11 +5,10 @@
 a {
 	direction: ltr;
 	unicode-bidi: embed;
+	text-decoration: none;
 }
 
-a:hover	{ 
-	text-decoration: underline;
-}
+a:hover	{ text-decoration: underline; }
 
 /* Coloured usernames */
 .username-coloured {
@@ -117,14 +116,14 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
-/* Profile searchresults */	
+/* Profile searchresults */
 .search .postprofile a {
-	text-decoration: none; 
+	text-decoration: none;
 	font-weight: normal;
 }
 
 .search .postprofile a:hover {
-	text-decoration: underline; 
+	text-decoration: underline;
 }
 
 /* Back to top of page */
