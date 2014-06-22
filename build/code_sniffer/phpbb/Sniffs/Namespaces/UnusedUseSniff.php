@@ -29,7 +29,8 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 	*/
 	public function process(PHP_CodeSniffer_File $phpcsFile, $stackPtr)
 	{
-		if ($this->should_ignore_use($phpcsFile, $stackPtr) === true) {
+		if ($this->should_ignore_use($phpcsFile, $stackPtr) === true)
+		{
 			return;
 		}
 
@@ -108,7 +109,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 				$ok = true;
 			}
 		}
-		
+
 		// Checks in implements
 		$old_implements = $stackPtr;
 		while (($implements = $phpcsFile->findNext(T_IMPLEMENTS, ($old_implements + 1))) !== false)
