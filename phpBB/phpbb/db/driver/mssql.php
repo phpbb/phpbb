@@ -163,7 +163,7 @@ class mssql extends \phpbb\db\driver\driver
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0 && $this->query_result !== true)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
@@ -238,7 +238,7 @@ class mssql extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		if (!$query_id)
+		if (!$query_id || $query_id === true)
 		{
 			return false;
 		}
@@ -267,6 +267,11 @@ class mssql extends \phpbb\db\driver\driver
 		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if ($query_id === true)
+		{
+			return false;
 		}
 
 		if ($cache && $cache->sql_exists($query_id))
@@ -306,6 +311,11 @@ class mssql extends \phpbb\db\driver\driver
 		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if ($query_id === true)
+		{
+			return false;
 		}
 
 		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
