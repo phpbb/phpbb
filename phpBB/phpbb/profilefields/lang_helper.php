@@ -74,11 +74,7 @@ class lang_helper
 		{
 			if (is_array($field_id))
 			{
-				foreach ($field_id as $k => $id)
-				{
-					$field_id[$k] = (int) $id;
-				}
-				$field_id = array_unique($field_id);
+				$field_id = array_map('intval', array_unique($field_id));
 			}
 			else
 			{
