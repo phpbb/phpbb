@@ -1918,7 +1918,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	*/
 	$vars = array('mode', 'subject', 'data', 'pm_data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_pm_after', compact($vars)));
-	
+
 	return $data['msg_id'];
 }
 
