@@ -175,7 +175,7 @@ abstract class driver implements driver_interface
 			$query_id = $this->query_result;
 		}
 
-		if ($query_id !== false)
+		if ($query_id)
 		{
 			$result = array();
 			while ($row = $this->sql_fetchrow($query_id))
@@ -206,7 +206,7 @@ abstract class driver implements driver_interface
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		if ($query_id === false)
+		if (!$query_id)
 		{
 			return false;
 		}
@@ -214,7 +214,7 @@ abstract class driver implements driver_interface
 		$this->sql_freeresult($query_id);
 		$query_id = $this->sql_query($this->last_query_text);
 
-		if ($query_id === false)
+		if (!$query_id)
 		{
 			return false;
 		}
@@ -243,7 +243,7 @@ abstract class driver implements driver_interface
 			$query_id = $this->query_result;
 		}
 
-		if ($query_id !== false)
+		if ($query_id)
 		{
 			if ($rownum !== false)
 			{

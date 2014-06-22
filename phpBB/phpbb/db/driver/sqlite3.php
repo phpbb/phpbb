@@ -50,7 +50,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 			$this->dbo = new \SQLite3($this->server, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			$this->db_connect_id = true;
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return array('message' => $e->getMessage());
 		}
@@ -136,6 +136,11 @@ class sqlite3 extends \phpbb\db\driver\driver
 				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
+				}
+
+				if (!$this->query_result)
+				{
+					return false;
 				}
 
 				if ($cache && $cache_ttl)
@@ -362,9 +367,12 @@ class sqlite3 extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = $this->dbo->query($query);
-				while ($void = $result->fetchArray(SQLITE3_ASSOC))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+						while ($void = $result->fetchArray(SQLITE3_ASSOC))
+						{
+							// Take the time spent on parsing rows into account
+						}
 				}
 
 				$splittime = explode(' ', microtime());
