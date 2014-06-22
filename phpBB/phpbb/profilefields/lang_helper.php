@@ -51,7 +51,7 @@ class lang_helper
 	/**
 	* Get language entries for options and store them here for later use
 	*/
-	public function get_option_lang($field_id, $lang_id, $field_type, $preview_options)
+	public function get_option_lang($field_id, $lang_id, $preview_options)
 	{
 		if ($preview_options !== false)
 		{
@@ -72,17 +72,28 @@ class lang_helper
 		}
 		else
 		{
-			$sql = 'SELECT option_id, lang_value
+			if (is_array($field_id))
+			{
+				foreach ($field_id as $k => $id)
+				{
+					$field_id[$k] = (int) $id;
+				}
+			}
+			else
+			{
+				$field_id = array((int) $field_id);
+			}
+
+			$sql = 'SELECT field_id, option_id, lang_value
 				FROM ' . $this->language_table . '
-					WHERE field_id = ' . (int) $field_id . '
+					WHERE ' . $this->db->sql_in_set('field_id', $field_id) . '
 					AND lang_id = ' . (int) $lang_id . "
-					AND field_type = '" . $this->db->sql_escape($field_type) . "'
 				ORDER BY option_id";
 			$result = $this->db->sql_query($sql);
 
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
+				$this->options_lang[$row['field_id']][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
 			}
 			$this->db->sql_freeresult($result);
 		}

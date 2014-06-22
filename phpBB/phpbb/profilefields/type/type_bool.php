@@ -155,7 +155,7 @@ class type_bool extends type_base
 
 		if (!$this->lang_helper->is_set($field_id, $lang_id))
 		{
-			$this->lang_helper->get_option_lang($field_id, $lang_id, FIELD_BOOL, false);
+			$this->lang_helper->get_option_lang($field_id, $lang_id, false);
 		}
 
 		if (!$field_value && $field_data['field_show_novalue'])
@@ -203,7 +203,7 @@ class type_bool extends type_base
 		{
 			if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 			{
-				$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $this->get_service_name(), $preview_options);
+				$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $preview_options);
 			}
 
 			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
