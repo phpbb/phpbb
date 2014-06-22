@@ -988,7 +988,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
+	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -1011,6 +1011,18 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	{
 		return false;
 	}
+
+	/**
+	* Get all info for PM(s) before they are deleted
+	*
+	* @event core.delete_pm_before
+	* @var	int	user_id	 ID of the user requested the message delete
+	* @var	array	msg_ids	array of all messages to be deleted
+	* @var	int	folder_id	ID of the user folder where the messages are stored
+	* @since 3.1.0-b5
+	*/
+	$vars = array('user_id', 'msg_ids', 'folder_id');
+	extract($phpbb_dispatcher->trigger_event('core.delete_pm_before', compact($vars)));
 
 	// Get PM Information for later deleting
 	$sql = 'SELECT msg_id, pm_unread, pm_new
