@@ -226,18 +226,6 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return new phpbb_database_test_connection_manager($config);
 	}
 
-	/**
-	* Converts a match in the middle of a string to uppercase.
-	*
-	* @param $matches The array of matches from a regular expression
-	*
-	* @return string The string with the specified match converted to uppercase
-	*/
-	static public function to_upper($matches)
-	{
-		return $matches[1] . strtoupper($matches[2]) . $matches[3];
-	}
-
 	public function assert_array_content_equals($one, $two)
 	{
 		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
