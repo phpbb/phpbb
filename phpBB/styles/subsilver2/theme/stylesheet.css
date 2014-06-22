@@ -632,7 +632,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .postimage {
-	max-width: 99%;
+	max-width: 100%;
 }
 
 .syntaxbg {
