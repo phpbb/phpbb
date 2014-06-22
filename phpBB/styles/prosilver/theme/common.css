@@ -196,13 +196,13 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	margin-top: 20px;
 }
 
-#logo {
+.logo {
 	float: left;
 	width: auto;
 	padding: 10px 13px 0 10px;
 }
 
-a#logo:hover {
+.logo:hover {
 	text-decoration: none;
 }
 
