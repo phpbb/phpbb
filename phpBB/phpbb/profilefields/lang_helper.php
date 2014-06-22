@@ -50,6 +50,10 @@ class lang_helper
 
 	/**
 	* Get language entries for options and store them here for later use
+	*
+	* @param	mixed	$field_id		Can be an int or an array of int for multiple field IDs
+	* @param	int		$lang_id
+	* @param	mixed	$preview_options		If set to not false, $field_id cannot be an array
 	*/
 	public function get_option_lang($field_id, $lang_id, $preview_options)
 	{
