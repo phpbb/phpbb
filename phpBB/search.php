@@ -923,16 +923,19 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		* @var	array	attachments				Array with posts attachments data
 		* @var	string	hilit					String to highlight
 		* @var	array	rowset					Array with the search results data
+		* @var	string	show_results			String indicating the show results mode
 		* @var	array	topic_tracking_info		Array with the topics tracking data
 		* @var	string	u_hilit					Highlight string to be injected into URL
 		* @var	string	view					Search results view mode
 		* @var	array	zebra					Array with zebra data for the current user
 		* @since 3.1.0-b4
+		* @changed 3.1.0-b5 Added var show_results
 		*/
 		$vars = array(
 			'attachments',
 			'hilit',
 			'rowset',
+			'show_results',
 			'topic_tracking_info',
 			'u_hilit',
 			'view',
