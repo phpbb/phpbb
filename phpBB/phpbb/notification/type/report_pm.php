@@ -37,7 +37,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_style_class()
 	{
-		return 'reported';
+		return 'notification-reported';
 	}
 
 	/**

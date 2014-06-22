@@ -37,7 +37,7 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	*/
 	public function get_style_class()
 	{
-		return 'reported';
+		return 'notification-disapproved';
 	}
 
 	/**

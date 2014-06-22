@@ -37,7 +37,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	*/
 	public function get_style_class()
 	{
-		return 'reported';
+		return 'notification-disapproved';
 	}
 
 	/**
