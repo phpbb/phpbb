@@ -848,7 +848,7 @@ class fulltext_native extends \phpbb\search\base
 			$sql_calc = $this->db->sql_build_query('SELECT', $sql_array_copy);
 			unset($sql_array_copy);
 
-			$this->db->sql_query($sql_calc);
+			$result = $this->db->sql_query($sql_calc);
 			$this->db->sql_freeresult($result);
 
 			$sql_count = 'SELECT FOUND_ROWS() as total_results';
