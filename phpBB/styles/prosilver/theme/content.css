@@ -803,6 +803,10 @@ div.dl_links {
 	white-space: nowrap;
 }
 
+table.fixed-width-table {
+	table-layout: fixed;
+}
+
 /* Show scrollbars for items with overflow on iOS devices
 ----------------------------------------*/
 .postbody .content::-webkit-scrollbar, #topicreview::-webkit-scrollbar, #post_details::-webkit-scrollbar, .codebox code::-webkit-scrollbar, .attachbox dd::-webkit-scrollbar, .attach-image::-webkit-scrollbar, .dropdown-extended ul::-webkit-scrollbar {
