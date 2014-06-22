@@ -172,7 +172,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 		if (!$ok)
 		{
-			$error = 'There must not be unused USE statement.';
+			$error = 'There must not be unused USE statements.';
 			$phpcsFile->addError($error, $stackPtr, 'Unused');
 		}
 	}
