@@ -202,7 +202,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
