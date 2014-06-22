@@ -2045,7 +2045,6 @@ function update_topics_posted()
 	{
 		case 'sqlite':
 		case 'sqlite3':
-		case 'firebird':
 			$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 		break;
 

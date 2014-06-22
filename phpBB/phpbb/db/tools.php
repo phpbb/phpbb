@@ -109,36 +109,6 @@ class tools
 				'VARBINARY'	=> 'varbinary(255)',
 			),
 
-			'firebird'	=> array(
-				'INT:'		=> 'INTEGER',
-				'BINT'		=> 'DOUBLE PRECISION',
-				'UINT'		=> 'INTEGER',
-				'UINT:'		=> 'INTEGER',
-				'TINT:'		=> 'INTEGER',
-				'USINT'		=> 'INTEGER',
-				'BOOL'		=> 'INTEGER',
-				'VCHAR'		=> 'VARCHAR(255) CHARACTER SET NONE',
-				'VCHAR:'	=> 'VARCHAR(%d) CHARACTER SET NONE',
-				'CHAR:'		=> 'CHAR(%d) CHARACTER SET NONE',
-				'XSTEXT'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-				'STEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-				'TEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-				'MTEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-				'XSTEXT_UNI'=> 'VARCHAR(100) CHARACTER SET UTF8',
-				'STEXT_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
-				'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
-				'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
-				'TIMESTAMP'	=> 'INTEGER',
-				'DECIMAL'	=> 'DOUBLE PRECISION',
-				'DECIMAL:'	=> 'DOUBLE PRECISION',
-				'PDECIMAL'	=> 'DOUBLE PRECISION',
-				'PDECIMAL:'	=> 'DOUBLE PRECISION',
-				'VCHAR_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
-				'VCHAR_UNI:'=> 'VARCHAR(%d) CHARACTER SET UTF8',
-				'VCHAR_CI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
-				'VARBINARY'	=> 'CHAR(255) CHARACTER SET NONE',
-			),
-
 			'mssql'		=> array(
 				'INT:'		=> '[int]',
 				'BINT'		=> '[float]',
@@ -331,7 +301,7 @@ class tools
 	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
 	* @var array
 	*/
-	var $supported_dbms = array('firebird', 'mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite', 'sqlite3');
+	var $supported_dbms = array('mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite', 'sqlite3');
 
 	/**
 	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
@@ -439,13 +409,6 @@ class tools
 			case 'postgres':
 				$sql = 'SELECT relname
 					FROM pg_stat_user_tables';
-			break;
-
-			case 'firebird':
-				$sql = 'SELECT rdb$relation_name
-					FROM rdb$relations
-					WHERE rdb$view_source is null
-						AND rdb$system_flag = 0';
 			break;
 
 			case 'oracle':
@@ -580,7 +543,6 @@ class tools
 		// Close the table for two DBMS and add to the statements
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
 			case 'mssql':
 			case 'mssqlnative':
 				$table_sql .= "\n);";
@@ -610,7 +572,6 @@ class tools
 						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
 					break;
 
-					case 'firebird':
 					case 'mssql':
 					case 'mssqlnative':
 						// We need the data here
@@ -682,19 +643,6 @@ class tools
 					$trigger .= "\tFROM dual;\n";
 					$trigger .= "END;";
 
-					$statements[] = $trigger;
-				}
-			break;
-
-			case 'firebird':
-				if ($create_sequence)
-				{
-					$statements[] = "CREATE GENERATOR {$table_name}_gen;";
-					$statements[] = "SET GENERATOR {$table_name}_gen TO 0;";
-
-					$trigger = "CREATE TRIGGER t_$table_name FOR $table_name\n";
-					$trigger .= "BEFORE INSERT\nAS\nBEGIN\n";
-					$trigger .= "\tNEW.{$create_sequence} = GEN_ID({$table_name}_gen, 1);\nEND;";
 					$statements[] = $trigger;
 				}
 			break;
@@ -1174,12 +1122,6 @@ class tools
 					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
 			break;
 
-			case 'firebird':
-				$sql = "SELECT RDB\$FIELD_NAME as FNAME
-					FROM RDB\$RELATION_FIELDS
-					WHERE RDB\$RELATION_NAME = '" . strtoupper($table) . "'";
-			break;
-
 			case 'sqlite':
 			case 'sqlite3':
 				$sql = "SELECT sql
@@ -1278,15 +1220,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
-					FROM RDB\$INDICES
-					WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
-						AND RDB\$UNIQUE_FLAG IS NULL
-						AND RDB\$FOREIGN_KEY IS NULL";
-				$col = 'index_name';
-			break;
-
 			case 'postgres':
 				$sql = "SELECT ic.relname as index_name
 					FROM pg_class bc, pg_class ic, pg_index i
@@ -1332,7 +1265,6 @@ class tools
 			// These DBMS prefix index name with the table name
 			switch ($this->sql_layer)
 			{
-				case 'firebird':
 				case 'oracle':
 				case 'postgres':
 				case 'sqlite':
@@ -1385,15 +1317,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
-					FROM RDB\$INDICES
-					WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
-						AND RDB\$UNIQUE_FLAG IS NOT NULL
-						AND RDB\$FOREIGN_KEY IS NULL";
-				$col = 'index_name';
-			break;
-
 			case 'postgres':
 				$sql = "SELECT ic.relname as index_name, i.indisunique
 					FROM pg_class bc, pg_class ic, pg_index i
@@ -1460,7 +1383,6 @@ class tools
 					}
 				break;
 
-				case 'firebird':
 				case 'postgres':
 				case 'sqlite':
 				case 'sqlite3':
@@ -1536,32 +1458,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				$sql .= " {$column_type} ";
-				$return_array['column_type_sql_type'] = " {$column_type} ";
-
-				if (!is_null($column_data[1]))
-				{
-					$sql .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
-					$return_array['column_type_sql_default'] = ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
-				}
-
-				$sql .= 'NOT NULL';
-
-				// This is a UNICODE column and thus should be given it's fair share
-				if (preg_match('/^X?STEXT_UNI|VCHAR_(CI|UNI:?)/', $column_data[0]))
-				{
-					$sql .= ' COLLATE UNICODE';
-				}
-
-				$return_array['auto_increment'] = false;
-				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
-				{
-					$return_array['auto_increment'] = true;
-				}
-
-			break;
-
 			case 'mssql':
 			case 'mssqlnative':
 				$sql .= " {$column_type} ";
@@ -1772,11 +1668,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				// Does not support AFTER statement, only POSITION (and there you need the column position)
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
-			break;
-
 			case 'mssql':
 			case 'mssqlnative':
 				// Does not support AFTER, only through temporary table
@@ -1894,10 +1785,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP "' . strtoupper($column_name) . '"';
-			break;
-
 			case 'mssql':
 			case 'mssqlnative':
 				// We need the data here
@@ -2036,7 +1923,6 @@ class tools
 				$statements[] = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
 			break;
 
-			case 'firebird':
 			case 'oracle':
 			case 'postgres':
 			case 'sqlite':
@@ -2065,21 +1951,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				$sql = 'SELECT RDB$GENERATOR_NAME as gen
-					FROM RDB$GENERATORS
-					WHERE RDB$SYSTEM_FLAG = 0
-						AND RDB$GENERATOR_NAME = \'' . strtoupper($table_name) . "_GEN'";
-				$result = $this->db->sql_query($sql);
-
-				// does a generator exist?
-				if ($row = $this->db->sql_fetchrow($result))
-				{
-					$statements[] = "DROP GENERATOR {$row['gen']};";
-				}
-				$this->db->sql_freeresult($result);
-			break;
-
 			case 'oracle':
 				$sql = 'SELECT A.REFERENCED_NAME
 					FROM USER_DEPENDENCIES A, USER_TRIGGERS B
@@ -2125,7 +1996,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
 			case 'postgres':
 			case 'mysql_40':
 			case 'mysql_41':
@@ -2217,7 +2087,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
 			case 'postgres':
 			case 'oracle':
 			case 'sqlite':
@@ -2261,7 +2130,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
 			case 'postgres':
 			case 'oracle':
 			case 'sqlite':
@@ -2320,15 +2188,6 @@ class tools
 		{
 			switch ($this->sql_layer)
 			{
-				case 'firebird':
-					$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
-						FROM RDB\$INDICES
-						WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
-							AND RDB\$UNIQUE_FLAG IS NULL
-							AND RDB\$FOREIGN_KEY IS NULL";
-					$col = 'index_name';
-				break;
-
 				case 'postgres':
 					$sql = "SELECT ic.relname as index_name
 						FROM pg_class bc, pg_class ic, pg_index i
@@ -2373,7 +2232,6 @@ class tools
 
 				switch ($this->sql_layer)
 				{
-					case 'firebird':
 					case 'oracle':
 					case 'postgres':
 					case 'sqlite':
@@ -2400,20 +2258,6 @@ class tools
 
 		switch ($this->sql_layer)
 		{
-			case 'firebird':
-				// Change type...
-				if (!empty($column_data['column_type_sql_default']))
-				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" SET DEFAULT ' . ' ' . $column_data['column_type_sql_default'];
-				}
-				else
-				{
-					// TODO: try to change pkey without removing trigger, generator or constraints. ATM this query may fail.
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
-				}
-			break;
-
 			case 'mssql':
 			case 'mssqlnative':
 				// We need the data here

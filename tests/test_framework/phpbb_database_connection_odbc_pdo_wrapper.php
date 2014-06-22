@@ -25,7 +25,7 @@ if (!class_exists('PDO'))
 */
 class phpbb_database_connection_odbc_pdo_wrapper extends PDO
 {
-	// Name of the driver being used (i.e. mssql, firebird)
+	// Name of the driver being used (i.e. mssql)
 	public $driver = '';
 
 	// Version number of driver since PDO::getAttribute(PDO::ATTR_CLIENT_VERSION) is pretty useless for this

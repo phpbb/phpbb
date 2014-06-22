@@ -182,7 +182,7 @@ header('Content-type: text/html; charset=UTF-8');
 define('IN_DB_UPDATE', true);
 
 /**
-* @todo firebird/mysql update?
+* @todo mysql update?
 */
 
 // End startup code
