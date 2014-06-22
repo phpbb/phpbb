@@ -929,6 +929,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		* @var	string	view					Search results view mode
 		* @var	array	zebra					Array with zebra data for the current user
 		* @since 3.1.0-b4
+		* @changed 3.1.0-b5 Added var show_results
 		*/
 		$vars = array(
 			'attachments',
