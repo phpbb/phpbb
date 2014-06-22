@@ -192,12 +192,14 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 		// Ignore USE keywords inside closures.
 		$next = $phpcsFile->findNext(T_WHITESPACE, ($stackPtr + 1), null, true);
-		if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS) {
+		if ($tokens[$next]['code'] === T_OPEN_PARENTHESIS)
+		{
 			return true;
 		}
 
 		// Ignore USE keywords for traits.
-		if ($phpcsFile->hasCondition($stackPtr, array(T_CLASS, T_TRAIT)) === true) {
+		if ($phpcsFile->hasCondition($stackPtr, array(T_CLASS, T_TRAIT)) === true)
+		{
 			return true;
 		}
 
