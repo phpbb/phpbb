@@ -151,8 +151,32 @@ class topic extends \phpbb\notification\type\base
 
 		return $this->user->lang(
 			$this->language_key,
-			$username,
-			censor_text($this->get_data('topic_title')),
+			$username
+		);
+	}
+
+	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_REFERENCE',
+			censor_text($this->get_data('topic_title'))
+		);
+	}
+
+	/**
+	* Get the forum of the notification reference
+	*
+	* @return string
+	*/
+	public function get_forum()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_FORUM',
 			$this->get_data('forum_name')
 		);
 	}

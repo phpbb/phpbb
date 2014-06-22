@@ -1173,3 +1173,14 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 #minitabs .dropdown-contents {
 	background-color: #F1F8FF;
 }
+
+/* Notifications
+---------------------------------------- */
+
+.notification_list p.notification-time {
+	color: #4C5D77;
+}
+
+li.notification-reported strong, li.notification-disapproved strong {
+	color: #D31141;
+}

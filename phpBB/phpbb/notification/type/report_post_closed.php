@@ -114,7 +114,19 @@ class report_post_closed extends \phpbb\notification\type\post
 
 		return $this->user->lang(
 			$this->language_key,
-			$username,
+			$username
+		);
+	}
+
+	/**
+	* Get the HTML formatted reference of the notification
+	*
+	* @return string
+	*/
+	public function get_reference()
+	{
+		return $this->user->lang(
+			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('post_subject'))
 		);
 	}
