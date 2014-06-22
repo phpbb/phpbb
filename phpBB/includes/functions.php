@@ -5064,10 +5064,10 @@ function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpb
 		if (isset($GLOBALS['starttime']))
 		{
 			$totaltime = microtime(true) - $GLOBALS['starttime'];
-			$debug_info[] = sprintf('Time: %.3fs', $totaltime);
+			$debug_info[] = sprintf('<abbr title="SQL time: %.3fs / PHP time: %.3fs">Time: %.3fs</abbr>', $db->sql_time, ($totaltime - $db->sql_time), $totaltime);
 		}
 
-		$debug_info[] = $db->sql_num_queries() . ' Queries (' . $db->sql_num_queries(true) . ' cached)';
+		$debug_info[] = sprintf('<abbr title="Cached: %d">Queries: %d</abbr>', $db->sql_num_queries(true), $db->sql_num_queries());
 
 		$memory_usage = memory_get_peak_usage();
 		if ($memory_usage)

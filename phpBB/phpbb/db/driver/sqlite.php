@@ -121,6 +121,10 @@ class sqlite extends \phpbb\db\driver\driver
 			{
 				$this->sql_report('start', $query);
 			}
+			else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+			{
+				$this->curtime = microtime(true);
+			}
 
 			$this->query_result = ($cache && $cache_ttl) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
@@ -135,6 +139,10 @@ class sqlite extends \phpbb\db\driver\driver
 				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
+				}
+				else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+				{
+					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
 				if ($cache && $cache_ttl)
