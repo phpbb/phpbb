@@ -2445,7 +2445,6 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	{
 		case 'sqlite':
 		case 'sqlite3':
-		case 'firebird':
 			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
 		break;
 
@@ -2898,17 +2897,6 @@ function get_database_size()
 					$db->sql_freeresult($result);
 				}
 			}
-		break;
-
-		case 'firebird':
-			global $dbname;
-
-			// if it on the local machine, we can get lucky
-			if (file_exists($dbname))
-			{
-				$database_size = filesize($dbname);
-			}
-
 		break;
 
 		case 'sqlite':

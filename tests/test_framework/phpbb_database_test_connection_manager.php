@@ -116,7 +116,7 @@ class phpbb_database_test_connection_manager
 
 		// These require different connection strings on the phpBB side than they do in PDO
 		// so you must provide a DSN string for ODBC separately
-		if (!empty($this->config['custom_dsn']) && ($this->config['dbms'] == 'phpbb\db\driver\mssql' || $this->config['dbms'] == 'phpbb\db\driver\firebird'))
+		if (!empty($this->config['custom_dsn']) && $this->config['dbms'] == 'phpbb\db\driver\mssql')
 		{
 			$dsn = 'odbc:' . $this->config['custom_dsn'];
 		}
@@ -129,14 +129,6 @@ class phpbb_database_test_connection_manager
 				case 'phpbb\db\driver\mssql_odbc':
 					$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('mssql', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
 				break;
-
-				case 'phpbb\db\driver\firebird':
-					if (!empty($this->config['custom_dsn']))
-					{
-						$this->pdo = new phpbb_database_connection_odbc_pdo_wrapper('firebird', 0, $dsn, $this->config['dbuser'], $this->config['dbpasswd']);
-						break;
-					}
-					// Fall through if they're using the firebird PDO driver and not the generic ODBC driver
 
 				default:
 					$this->pdo = new PDO($dsn, $this->config['dbuser'], $this->config['dbpasswd']);
@@ -197,7 +189,6 @@ class phpbb_database_test_connection_manager
 		{
 			case 'phpbb\db\driver\sqlite':
 			case 'phpbb\db\driver\sqlite3':
-			case 'phpbb\db\driver\firebird':
 				$this->connect();
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
@@ -296,13 +287,6 @@ class phpbb_database_test_connection_manager
 			case 'phpbb\db\driver\postgres':
 				$sql = 'SELECT relname
 					FROM pg_stat_user_tables';
-			break;
-
-			case 'phpbb\db\driver\firebird':
-				$sql = 'SELECT rdb$relation_name
-					FROM rdb$relations
-					WHERE rdb$view_source is null
-						AND rdb$system_flag = 0';
 			break;
 
 			case 'phpbb\db\driver\oracle':
@@ -404,11 +388,6 @@ class phpbb_database_test_connection_manager
 	protected function get_dbms_data($dbms)
 	{
 		$available_dbms = array(
-			'phpbb\db\driver\firebird'	=> array(
-				'SCHEMA'		=> 'firebird',
-				'DELIM'			=> ';;',
-				'PDO'			=> 'firebird',
-			),
 			'phpbb\db\driver\mysqli'	=> array(
 				'SCHEMA'		=> 'mysql_41',
 				'DELIM'			=> ';',
@@ -478,18 +457,6 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb\db\driver\firebird':
-				$sql = 'SELECT RDB$GENERATOR_NAME
-					FROM RDB$GENERATORS
-					WHERE RDB$SYSTEM_FLAG = 0';
-				$result = $this->pdo->query($sql);
-
-				while ($row = $result->fetch(PDO::FETCH_NUM))
-				{
-					$queries[] = 'DROP GENERATOR ' . current($row);
-				}
-			break;
-
 			case 'phpbb\db\driver\oracle':
 				$sql = 'SELECT sequence_name
 					FROM USER_SEQUENCES';

@@ -273,7 +273,6 @@ class acp_main
 						{
 							case 'sqlite':
 							case 'sqlite3':
-							case 'firebird':
 								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 							break;
 
@@ -379,7 +378,6 @@ class acp_main
 							{
 								case 'sqlite':
 								case 'sqlite3':
-								case 'firebird':
 									$db->sql_query("DELETE FROM $table");
 								break;
 

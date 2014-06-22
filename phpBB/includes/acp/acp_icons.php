@@ -542,7 +542,6 @@ class acp_icons
 						{
 							case 'sqlite':
 							case 'sqlite3':
-							case 'firebird':
 								$db->sql_query('DELETE FROM ' . $table);
 							break;
 

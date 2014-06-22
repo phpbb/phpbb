@@ -119,10 +119,6 @@ class acp_database
 							case 'mssqlnative':
 								$extractor = new mssql_extractor($format, $filename, $time, $download, $store);
 							break;
-
-							case 'firebird':
-								$extractor = new firebird_extractor($format, $filename, $time, $download, $store);
-							break;
 						}
 
 						$extractor->write_start($table_prefix);
@@ -141,7 +137,6 @@ class acp_database
 								{
 									case 'sqlite':
 									case 'sqlite3':
-									case 'firebird':
 										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
 									break;
 
@@ -335,20 +330,6 @@ class acp_database
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
 										$db->sql_query($sql);
-									}
-								break;
-
-								case 'firebird':
-									$delim = ";\n";
-									while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
-									{
-										$query = trim($sql);
-										if (substr($query, 0, 8) === 'SET TERM')
-										{
-											$delim = $query[9] . "\n";
-											continue;
-										}
-										$db->sql_query($query);
 									}
 								break;
 
@@ -2107,235 +2088,6 @@ class oracle_extractor extends base_extractor
 		$sql_data .= "-- DATE : " . gmdate("d-m-Y H:i:s", $this->time) . " GMT\n";
 		$sql_data .= "--\n";
 		$this->flush($sql_data);
-	}
-}
-
-class firebird_extractor extends base_extractor
-{
-	function write_start($prefix)
-	{
-		$sql_data = "--\n";
-		$sql_data .= "-- phpBB Backup Script\n";
-		$sql_data .= "-- Dump of tables for $prefix\n";
-		$sql_data .= "-- DATE : " . gmdate("d-m-Y H:i:s", $this->time) . " GMT\n";
-		$sql_data .= "--\n";
-		$this->flush($sql_data);
-	}
-
-	function write_data($table_name)
-	{
-		global $db;
-		$ary_type = $ary_name = array();
-
-		// Grab all of the data from current table.
-		$sql = "SELECT *
-			FROM $table_name";
-		$result = $db->sql_query($sql);
-
-		$i_num_fields = ibase_num_fields($result);
-
-		for ($i = 0; $i < $i_num_fields; $i++)
-		{
-			$info = ibase_field_info($result, $i);
-			$ary_type[$i] = $info['type'];
-			$ary_name[$i] = $info['name'];
-		}
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$schema_vals = $schema_fields = array();
-
-			// Build the SQL statement to recreate the data.
-			for ($i = 0; $i < $i_num_fields; $i++)
-			{
-				$str_val = $row[strtolower($ary_name[$i])];
-
-				if (preg_match('#char|text|bool|varbinary|blob#i', $ary_type[$i]))
-				{
-					$str_quote = '';
-					$str_empty = "''";
-					$str_val = sanitize_data_generic(str_replace("'", "''", $str_val));
-				}
-				else if (preg_match('#date|timestamp#i', $ary_type[$i]))
-				{
-					if (empty($str_val))
-					{
-						$str_quote = '';
-					}
-					else
-					{
-						$str_quote = "'";
-					}
-				}
-				else
-				{
-					$str_quote = '';
-					$str_empty = 'NULL';
-				}
-
-				if (empty($str_val) && $str_val !== '0')
-				{
-					$str_val = $str_empty;
-				}
-
-				$schema_vals[$i] = $str_quote . $str_val . $str_quote;
-				$schema_fields[$i] = '"' . $ary_name[$i] . '"';
-			}
-
-			// Take the ordered fields and their associated data and build it
-			// into a valid sql statement to recreate that field in the data.
-			$sql_data = "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
-
-			$this->flush($sql_data);
-		}
-		$db->sql_freeresult($result);
-	}
-
-	function write_table($table_name)
-	{
-		global $db;
-
-		$sql_data = '-- Table: ' . $table_name . "\n";
-		$sql_data .= "DROP TABLE $table_name;\n";
-
-		$data_types = array(7 => 'SMALLINT', 8 => 'INTEGER', 10 => 'FLOAT', 12 => 'DATE', 13 => 'TIME', 14 => 'CHARACTER', 27 => 'DOUBLE PRECISION', 35 => 'TIMESTAMP', 37 => 'VARCHAR', 40 => 'CSTRING', 261 => 'BLOB', 701 => 'DECIMAL', 702 => 'NUMERIC');
-
-		$sql_data .= "\nCREATE TABLE $table_name (\n";
-
-		$sql = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
-			FROM RDB$RELATION_FIELDS R
-			JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE=F.RDB$FIELD_NAME
-			LEFT JOIN RDB$FIELD_DIMENSIONS D ON R.RDB$FIELD_SOURCE = D.RDB$FIELD_NAME
-			WHERE F.RDB$SYSTEM_FLAG = 0
-				AND R.RDB$RELATION_NAME = \''. $table_name . '\'
-			ORDER BY R.RDB$FIELD_POSITION';
-		$result = $db->sql_query($sql);
-
-		$rows = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$line = "\t" . '"' . $row['fname'] . '" ' . $data_types[$row['ftype']];
-
-			if ($row['ftype'] == 261 && $row['stype'] == 1)
-			{
-				$line .= ' SUB_TYPE TEXT';
-			}
-
-			if ($row['ftype'] == 37 || $row['ftype'] == 14)
-			{
-				$line .= ' (' . $row['flen'] . ')';
-			}
-
-			if (!empty($row['dsource']))
-			{
-				$line .= ' ' . $row['dsource'];
-			}
-
-			if (!empty($row['nflag']))
-			{
-				$line .= ' NOT NULL';
-			}
-			$rows[] = $line;
-		}
-		$db->sql_freeresult($result);
-
-		$sql_data .= implode(",\n", $rows);
-		$sql_data .= "\n);\n";
-		$keys = array();
-
-		$sql = 'SELECT I.RDB$FIELD_NAME as NAME
-			FROM RDB$RELATION_CONSTRAINTS RC, RDB$INDEX_SEGMENTS I, RDB$INDICES IDX
-			WHERE (I.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
-				AND (IDX.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
-				AND (RC.RDB$RELATION_NAME = \''. $table_name . '\')
-			ORDER BY I.RDB$FIELD_POSITION';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$keys[] = $row['name'];
-		}
-
-		if (sizeof($keys))
-		{
-			$sql_data .= "\nALTER TABLE $table_name ADD PRIMARY KEY (" . implode(', ', $keys) . ');';
-		}
-
-		$db->sql_freeresult($result);
-
-		$sql = 'SELECT I.RDB$INDEX_NAME as INAME, I.RDB$UNIQUE_FLAG as UFLAG, S.RDB$FIELD_NAME as FNAME
-			FROM RDB$INDICES I JOIN RDB$INDEX_SEGMENTS S ON S.RDB$INDEX_NAME=I.RDB$INDEX_NAME
-			WHERE (I.RDB$SYSTEM_FLAG IS NULL  OR  I.RDB$SYSTEM_FLAG=0)
-				AND I.RDB$FOREIGN_KEY IS NULL
-				AND I.RDB$RELATION_NAME = \''. $table_name . '\'
-				AND I.RDB$INDEX_NAME NOT STARTING WITH \'RDB$\'
-			ORDER BY S.RDB$FIELD_POSITION';
-		$result = $db->sql_query($sql);
-
-		$index = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$index[$row['iname']]['unique'] = !empty($row['uflag']);
-			$index[$row['iname']]['values'][] = $row['fname'];
-		}
-
-		foreach ($index as $index_name => $data)
-		{
-			$sql_data .= "\nCREATE ";
-			if ($data['unique'])
-			{
-				$sql_data .= 'UNIQUE ';
-			}
-			$sql_data .= "INDEX $index_name ON $table_name(" . implode(', ', $data['values']) . ");";
-		}
-		$sql_data .= "\n";
-
-		$db->sql_freeresult($result);
-
-		$sql = 'SELECT D1.RDB$DEPENDENT_NAME as DNAME, D1.RDB$FIELD_NAME as FNAME, D1.RDB$DEPENDENT_TYPE, R1.RDB$RELATION_NAME
-			FROM RDB$DEPENDENCIES D1
-			LEFT JOIN RDB$RELATIONS R1 ON ((D1.RDB$DEPENDENT_NAME = R1.RDB$RELATION_NAME) AND (NOT (R1.RDB$VIEW_BLR IS NULL)))
-			WHERE (D1.RDB$DEPENDED_ON_TYPE = 0)
-				AND (D1.RDB$DEPENDENT_TYPE <> 3)
-				AND (D1.RDB$DEPENDED_ON_NAME = \'' . $table_name . '\')
-			UNION SELECT DISTINCT F2.RDB$RELATION_NAME, D2.RDB$FIELD_NAME, D2.RDB$DEPENDENT_TYPE, R2.RDB$RELATION_NAME FROM RDB$DEPENDENCIES D2, RDB$RELATION_FIELDS F2
-			LEFT JOIN RDB$RELATIONS R2 ON ((F2.RDB$RELATION_NAME = R2.RDB$RELATION_NAME) AND (NOT (R2.RDB$VIEW_BLR IS NULL)))
-			WHERE (D2.RDB$DEPENDENT_TYPE = 3)
-				AND (D2.RDB$DEPENDENT_NAME = F2.RDB$FIELD_SOURCE)
-				AND (D2.RDB$DEPENDED_ON_NAME = \'' . $table_name . '\')
-			ORDER BY 1, 2';
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME as GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE
-				FROM RDB$DEPENDENCIES T1
-				WHERE (T1.RDB$DEPENDENT_NAME = \'' . $row['dname'] . '\')
-					AND (T1.RDB$DEPENDENT_TYPE = 2 AND T1.RDB$DEPENDED_ON_TYPE = 14)
-				UNION ALL SELECT DISTINCT D.RDB$DEPENDED_ON_NAME, D.RDB$FIELD_NAME, D.RDB$DEPENDED_ON_TYPE
-				FROM RDB$DEPENDENCIES D, RDB$RELATION_FIELDS F
-				WHERE (D.RDB$DEPENDENT_TYPE = 3)
-					AND (D.RDB$DEPENDENT_NAME = F.RDB$FIELD_SOURCE)
-					AND (F.RDB$RELATION_NAME = \'' . $row['dname'] . '\')
-				ORDER BY 1,2';
-			$result2 = $db->sql_query($sql);
-			$row2 = $db->sql_fetchrow($result2);
-			$db->sql_freeresult($result2);
-			$gen_name = $row2['gen'];
-
-			$sql_data .= "\nDROP GENERATOR " . $gen_name . ";";
-			$sql_data .= "\nSET TERM ^ ;";
-			$sql_data .= "\nCREATE GENERATOR " . $gen_name . "^";
-			$sql_data .= "\nSET GENERATOR  " . $gen_name . " TO 0^\n";
-			$sql_data .= "\nCREATE TRIGGER {$row['dname']} FOR $table_name";
-			$sql_data .= "\nBEFORE INSERT\nAS\nBEGIN";
-			$sql_data .= "\n  NEW.{$row['fname']} = GEN_ID(" . $gen_name . ", 1);";
-			$sql_data .= "\nEND^\n";
-			$sql_data .= "\nSET TERM ; ^\n";
-		}
-
-		$this->flush($sql_data);
-
-		$db->sql_freeresult($result);
 	}
 }
 

@@ -145,25 +145,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function createXMLDataSet($path)
 	{
-		$db_config = $this->get_database_config();
-
-		// Firebird requires table and column names to be uppercase
-		if ($db_config['dbms'] == 'phpbb\db\driver\firebird')
-		{
-			$xml_data = file_get_contents($path);
-			$xml_data = preg_replace_callback('/(?:(<table name="))([a-z_]+)(?:(">))/', 'phpbb_database_test_case::to_upper', $xml_data);
-			$xml_data = preg_replace_callback('/(?:(<column>))([a-z_]+)(?:(<\/column>))/', 'phpbb_database_test_case::to_upper', $xml_data);
-
-			$new_fixture = tmpfile();
-			fwrite($new_fixture, $xml_data);
-			fseek($new_fixture, 0);
-
-			$meta_data = stream_get_meta_data($new_fixture);
-			$path = $meta_data['uri'];
-		}
-
 		$this->fixture_xml_data = parent::createXMLDataSet($path);
-
 		return $this->fixture_xml_data;
 	}
 
@@ -242,19 +224,6 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	protected function create_connection_manager($config)
 	{
 		return new phpbb_database_test_connection_manager($config);
-	}
-
-	/**
-	* Converts a match in the middle of a string to uppercase.
-	* This is necessary for transforming the fixture information for Firebird tests
-	*
-	* @param $matches The array of matches from a regular expression
-	*
-	* @return string The string with the specified match converted to uppercase
-	*/
-	static public function to_upper($matches)
-	{
-		return $matches[1] . strtoupper($matches[2]) . $matches[3];
 	}
 
 	public function assert_array_content_equals($one, $two)
