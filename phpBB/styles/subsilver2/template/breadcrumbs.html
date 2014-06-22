@@ -2,7 +2,7 @@
 	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" style="margin-top: 5px;">
 	<tr>
 		<td class="row1">
-			<p class="breadcrumbs"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a> <strong>&#187;</strong> <!-- ENDIF --><a href="{U_INDEX}"{$MICRODATA}>{L_INDEX}</a><!-- BEGIN navlinks --><!-- EVENT overall_header_navlink_prepend --> &#187; <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a><!-- EVENT overall_header_navlink_append --><!-- END navlinks -->
+			<p class="breadcrumbs"><!-- IF U_SITE_HOME --><a href="{U_SITE_HOME}"{$MICRODATA} data-navbar-reference="home">{L_SITE_HOME}</a> <strong>&#187;</strong> <!-- ENDIF --><a href="{U_INDEX}"{$MICRODATA} data-navbar-reference="index">{L_INDEX}</a><!-- BEGIN navlinks --><!-- EVENT overall_header_navlink_prepend --> &#187; <a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}<!-- IF navlinks.MICRODATA --> {navlinks.MICRODATA}<!-- ENDIF -->>{navlinks.FORUM_NAME}</a><!-- EVENT overall_header_navlink_append --><!-- END navlinks -->
 			<!-- EVENT overall_header_breadcrumb_append --></p>
 			<!-- EVENT overall_footer_timezone_before -->
 			<p class="datetime">{S_TIMEZONE}</p>
