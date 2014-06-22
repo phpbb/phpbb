@@ -607,7 +607,7 @@ Colours and backgrounds for buttons.css
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='#E9E9E9')";
 	box-shadow: 0 0 0 1px #FFFFFF inset;
 	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #BC2A4D;
+	color: #D31141;
 }
 
 .button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
@@ -753,7 +753,7 @@ ul.cplist {
 
 #tabs .tab > a:hover {
 	background: #DDEDFB;
-	color: #BC2A4D;
+	color: #D31141;
 }
 
 #tabs .activetab > a,
@@ -793,8 +793,8 @@ ul.cplist {
 	border-color: #536482;
 }
 
-.responsive-tab .responsive-tab-link:hover:before {
-	border-color: #BC2A4D;
+.responsive-tab .responsive-tab-link:hover span:before {
+	border-color: #D31141;
 }
 
 /* UCP navigation menu
