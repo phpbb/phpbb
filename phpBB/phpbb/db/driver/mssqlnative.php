@@ -127,6 +127,10 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 			{
 				$this->sql_report('start', $query);
 			}
+			else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+			{
+				$this->curtime = microtime(true);
+			}
 
 			$this->last_query_text = $query;
 			$this->query_result = ($cache && $cache_ttl) ? $cache->sql_load($query) : false;
@@ -144,6 +148,10 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 				if (defined('DEBUG'))
 				{
 					$this->sql_report('stop', $query);
+				}
+				else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
+				{
+					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
 				if ($cache && $cache_ttl)
