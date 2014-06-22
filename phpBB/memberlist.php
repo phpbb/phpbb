@@ -1382,6 +1382,7 @@ switch ($mode)
 			{
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
 				$profile_fields_cache = $cp->grab_profile_fields_data($user_list);
+				$profile_rows = array();
 
 				// Filter the fields we don't want to show
 				foreach ($profile_fields_cache as $user_id => $user_profile_fields)
@@ -1392,8 +1393,14 @@ switch ($mode)
 						{
 							unset($profile_fields_cache[$user_id][$field_ident]);
 						}
+						else
+						{
+							$profile_rows[] = $profile_field;
+						}
 					}
 				}
+
+				$cp->cache_profile_fields_lang_options($profile_rows);
 			}
 
 			// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
