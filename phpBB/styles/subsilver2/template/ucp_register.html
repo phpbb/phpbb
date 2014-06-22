@@ -34,7 +34,7 @@
 	</tr>
 <!-- ENDIF -->
 
-<!-- EVENT ucp_register_before -->
+<!-- EVENT ucp_register_credentials_before -->
 <tr>
 	<td class="row1" width="38%"><b class="genmed">{L_USERNAME}{L_COLON} </b><br /><span class="gensmall">{L_USERNAME_EXPLAIN}</span></td>
 	<td class="row2"><input class="post" type="text" name="username" size="25" value="{USERNAME}" /></td>
@@ -51,8 +51,8 @@
 	<td class="row1"><b class="genmed">{L_CONFIRM_PASSWORD}{L_COLON} </b></td>
 	<td class="row2"><input class="post" type="password" name="password_confirm" size="25" value="{PASSWORD_CONFIRM}" /></td>
 </tr>
-<!-- EVENT ucp_register_password_after -->
-<!-- EVENT ucp_register_language_before -->
+<!-- EVENT ucp_register_credentials_after -->
+<!-- EVENT ucp_register_options_before -->
 <tr>
 	<td class="row1"><b class="genmed">{L_LANGUAGE}{L_COLON} </b></td>
 	<td class="row2"><select name="lang" onchange="change_language(this.value); return false;">{S_LANG_OPTIONS}</select></td>
@@ -77,7 +77,7 @@
 	
 <!-- END profile_fields -->
 <!-- ENDIF -->
-<!-- EVENT ucp_register_after -->
+<!-- EVENT ucp_register_profile_fields_after -->
 		<!-- IF CAPTCHA_TEMPLATE -->
 		<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 		<!-- ENDIF -->

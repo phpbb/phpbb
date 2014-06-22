@@ -797,7 +797,7 @@ ucp_prefs_view_select_menu_append
 * Purpose: Add options to the bottom of the drop-down lists block of the Edit 
 Display Options screen
 
-ucp_register_before
+ucp_register_credentials_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_register.html
@@ -805,7 +805,7 @@ ucp_register_before
 * Since: 3.1.0-b5
 * Purpose: Add options in registration page fieldset - before first field.
 
-ucp_register_after
+ucp_register_progile_fields_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_register.html
@@ -813,7 +813,7 @@ ucp_register_after
 * Since: 3.1.0-b5
 * Purpose: Add options in registration page fieldset - after last field.
 
-ucp_register_password_after
+ucp_register_credentials_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_register.html
@@ -821,7 +821,7 @@ ucp_register_password_after
 * Since: 3.1.0-b5
 * Purpose: Add options in registration page fieldset - after password field.
 
-ucp_register_language_before
+ucp_register_options_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_register.html
