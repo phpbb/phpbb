@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Legacy Standard Core">
+
+ <description>phpBB legacy coding standard for PHP files of phpBB core</description>
+
+ <rule ref="./ruleset-php-legacy.xml" />
+
+ <!-- Each file MUST start with a valid header as defined by the Coding Guidelines -->
+ <rule ref="./phpbb/Sniffs/Commenting/FileCommentSniff.php" />
+
+</ruleset>

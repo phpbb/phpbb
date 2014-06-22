@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Strict Standard Core">
+
+ <description>phpBB coding standard for PHP files of phpBB core</description>
+
+ <rule ref="./ruleset-php-legacy-core.xml" />
+ <rule ref="./ruleset-php-strict.xml" />
+
+</ruleset>
