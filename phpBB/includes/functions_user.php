@@ -261,10 +261,13 @@ function user_add($user_row, $cp_data = false)
 	* Use this event to modify the values to be inserted when a user is added
 	*
 	* @event core.user_add_modify_data
+	* @var array	user_row		Array of user details submited to user_add
+	* @var array	cp_data			Array of Custom profile fields submited to user_add
 	* @var array	sql_ary		Array of data to be inserted when a user is added
 	* @since 3.1.0-a1
+	* @change 3.1.0-b5
 	*/
-	$vars = array('sql_ary');
+	$vars = array('user_row', 'cp_data', 'sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
 
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -343,6 +346,18 @@ function user_add($user_row, $cp_data = false)
 
 		set_config('newest_user_colour', $row['group_colour'], true);
 	}
+
+	/**
+	* Event that returns user id, user detals and user CPF of newly registared user
+	*
+	* @event core.user_add_after
+	* @var int		user_id			User id of newly registared user
+	* @var array	user_row		Array of user details submited to user_add
+	* @var array	cp_data			Array of Custom profile fields submited to user_add
+	* @since 3.1.0-b5
+	*/
+	$vars = array('user_id', 'user_row', 'cp_data');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_after', compact($vars)));
 
 	return $user_id;
 }
