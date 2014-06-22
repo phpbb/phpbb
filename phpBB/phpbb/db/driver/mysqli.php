@@ -293,9 +293,14 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			return $cache->sql_freeresult($query_id);
 		}
 
-		if (!$this->query_result)
+		if (!$query_id)
 		{
 			return false;
+		}
+
+		if ($query_id === true)
+		{
+			return true;
 		}
 
 		return mysqli_free_result($query_id);
