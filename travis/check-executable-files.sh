@@ -38,15 +38,19 @@ then
 					-name 'composer.phar'			\
 				')'									\
 			-a '('									\
-				-type f -a							\
-				-not -perm 644						\
+				'('									\
+					-type f -a						\
+					-perm +111						\
+				')' -o								\
+				-not -perm +600						\
 			')'										\
 		')'											\
 	)
 
 	if [ "$executables_files" != '' ]
 	then
-		echo "$executables_files MUST have the right 644.";
+		ls -la $executables_files
+		echo "$executables_files MUST NOT be executable.";
 		exit 1;
 	fi
 fi
