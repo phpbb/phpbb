@@ -1140,6 +1140,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				'username'			=> $row['username'],
 				'user_colour'		=> $row['user_colour'],
+				'contact_user'		=> '',
 
 				'warnings'			=> 0,
 				'allow_pm'			=> 0,
