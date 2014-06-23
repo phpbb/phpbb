@@ -9,6 +9,7 @@
 # the docs/CREDITS.txt file.
 #
 set -e
+set -x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
