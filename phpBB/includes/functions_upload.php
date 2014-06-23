@@ -825,7 +825,7 @@ class fileupload
 				// Cancel upload if we exceed timeout
 				if ((time() - $upload_start) >= $this->upload_timeout)
 				{
-					$file = new fileerror($user->lang[$this->error_prefix . 'EMPTY_REMOTE_DATA']);
+					$file = new fileerror($user->lang[$this->error_prefix . 'REMOTE_UPLOAD_TIMEOUT']);
 					return $file;
 				}
 			}
