@@ -2489,7 +2489,7 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 /**
 * Show upload popup (progress bar)
 */
-function upload_popup($forum_style = 0)
+function phpbb_upload_popup($forum_style = 0)
 {
 	global $template, $user;
 

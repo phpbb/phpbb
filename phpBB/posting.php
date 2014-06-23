@@ -195,7 +195,7 @@ switch ($mode)
 		}
 		else
 		{
-			upload_popup();
+			phpbb_upload_popup();
 			return;
 		}
 	break;
@@ -233,7 +233,7 @@ if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'b
 
 if ($mode == 'popup')
 {
-	upload_popup($post_data['forum_style']);
+	phpbb_upload_popup($post_data['forum_style']);
 	return;
 }
 
