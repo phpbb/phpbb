@@ -43,7 +43,7 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	$post_info = $post_info[$post_id];
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
 	switch ($action)
 	{

@@ -22,12 +22,12 @@ if (!defined('IN_PHPBB'))
 /**
 * Functions used to generate additional URL paramters
 */
-function _module__url($mode, &$module_row)
+function phpbb_module__url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_notes_url($mode, &$module_row)
+function phpbb_module_notes_url($mode, &$module_row)
 {
 	if ($mode == 'front')
 	{
@@ -38,7 +38,7 @@ function _module_notes_url($mode, &$module_row)
 	return ($user_id) ? "&amp;u=$user_id" : '';
 }
 
-function _module_warn_url($mode, &$module_row)
+function phpbb_module_warn_url($mode, &$module_row)
 {
 	if ($mode == 'front' || $mode == 'list')
 	{
@@ -64,32 +64,32 @@ function _module_warn_url($mode, &$module_row)
 	}
 }
 
-function _module_main_url($mode, &$module_row)
+function phpbb_module_main_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_logs_url($mode, &$module_row)
+function phpbb_module_logs_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_ban_url($mode, &$module_row)
+function phpbb_module_ban_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_queue_url($mode, &$module_row)
+function phpbb_module_queue_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_reports_url($mode, &$module_row)
+function phpbb_module_reports_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function extra_url()
+function phpbb_extra_url()
 {
 	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 

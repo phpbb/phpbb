@@ -27,7 +27,7 @@ function mcp_topic_view($id, $mode, $action)
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth, $cache, $phpbb_container;
 
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
 	$user->add_lang('viewtopic');
 	$pagination = $phpbb_container->get('pagination');
