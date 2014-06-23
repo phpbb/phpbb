@@ -382,7 +382,6 @@ class manager
 				if (empty($field_ids[$ident_ary['data']['lang_id']]))
 				{
 					$field_ids[$ident_ary['data']['lang_id']] = array();
-
 				}
 
 				$field_ids[$ident_ary['data']['lang_id']][] = $ident_ary['data']['field_id'];
