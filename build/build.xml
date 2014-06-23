@@ -258,7 +258,7 @@
 							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
 							checkreturn="true" />
 						<exec dir="${dir}"
-							command="php composer.phar install --no-dev"
+							command="php composer.phar install --no-dev --optimize-autoloader"
 							checkreturn="true"
 							passthru="true" />
 						<delete file="${dir}/composer.phar" />
