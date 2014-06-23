@@ -1588,7 +1588,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	return $template_data;
 }
 
-function _sort_last_active($first, $second)
+function phpbb_sort_last_active($first, $second)
 {
 	global $id_cache, $sort_dir;
 

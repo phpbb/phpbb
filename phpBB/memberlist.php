@@ -1400,7 +1400,7 @@ switch ($mode)
 			if ($sort_key == 'l')
 			{
 //				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
-				usort($user_list,  '_sort_last_active');
+				usort($user_list,  'phpbb_sort_last_active');
 			}
 
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
