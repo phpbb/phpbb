@@ -2514,9 +2514,9 @@ function upload_popup($forum_style = 0)
 /**
 * Do the various checks required for removing posts as well as removing it
 */
-function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $soft_delete_reason = '')
+function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $soft_delete_reason = '')
 {
-	global $user, $db, $auth, $config, $request;
+	global $user, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
 
 	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
