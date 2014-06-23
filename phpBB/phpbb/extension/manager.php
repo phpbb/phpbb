@@ -423,7 +423,7 @@ class manager
 
 		foreach ($iterator as $file_info)
 		{
-			if ($file_info->isFile() && $file_info->getFilename() == 'ext.' . $this->php_ext)
+			if ($file_info->isFile() && $file_info->getFilename() == 'composer.json')
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
 				$composer_file = $iterator->getPath() . '/composer.json';
