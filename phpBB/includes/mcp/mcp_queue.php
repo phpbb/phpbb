@@ -159,7 +159,7 @@ class mcp_queue
 
 				if ($topic_id)
 				{
-					$topic_info = get_topic_data(array($topic_id), 'm_approve');
+					$topic_info = phpbb_get_topic_data(array($topic_id), 'm_approve');
 					if (isset($topic_info[$topic_id]['topic_first_post_id']))
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
@@ -174,7 +174,7 @@ class mcp_queue
 
 				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
 
-				$post_info = get_post_data(array($post_id), 'm_approve', true);
+				$post_info = phpbb_get_post_data(array($post_id), 'm_approve', true);
 
 				if (!sizeof($post_info))
 				{
@@ -343,7 +343,7 @@ class mcp_queue
 
 				if ($topic_id)
 				{
-					$topic_info = get_topic_data(array($topic_id));
+					$topic_info = phpbb_get_topic_data(array($topic_id));
 
 					if (!sizeof($topic_info))
 					{
@@ -389,7 +389,7 @@ class mcp_queue
 				}
 				else
 				{
-					$forum_info = get_forum_data(array($forum_id), $m_perm);
+					$forum_info = phpbb_get_forum_data(array($forum_id), $m_perm);
 
 					if (!sizeof($forum_info))
 					{
@@ -591,7 +591,7 @@ class mcp_queue
 			'redirect'		=> $redirect,
 		));
 
-		$post_info = get_post_data($post_id_list, 'm_approve');
+		$post_info = phpbb_get_post_data($post_id_list, 'm_approve');
 
 		if (confirm_box(true))
 		{
@@ -813,7 +813,7 @@ class mcp_queue
 			'redirect'		=> $redirect,
 		));
 
-		$topic_info = get_topic_data($topic_id_list, 'm_approve');
+		$topic_info = phpbb_get_topic_data($topic_id_list, 'm_approve');
 
 		if (confirm_box(true))
 		{
@@ -1016,7 +1016,7 @@ class mcp_queue
 			}
 		}
 
-		$post_info = get_post_data($post_id_list, 'm_approve');
+		$post_info = phpbb_get_post_data($post_id_list, 'm_approve');
 
 		$is_disapproving = false;
 		foreach ($post_info as $post_id => $post_data)

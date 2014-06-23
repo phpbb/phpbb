@@ -106,7 +106,7 @@ class mcp_reports
 				$parse_post_flags += $report['reported_post_enable_smilies'] ? OPTION_FLAG_SMILIES : 0;
 				$parse_post_flags += $report['reported_post_enable_magic_url'] ? OPTION_FLAG_LINKS : 0;
 
-				$post_info = get_post_data(array($post_id), 'm_report', true);
+				$post_info = phpbb_get_post_data(array($post_id), 'm_report', true);
 
 				if (!sizeof($post_info))
 				{
@@ -269,7 +269,7 @@ class mcp_reports
 
 				if ($topic_id)
 				{
-					$topic_info = get_topic_data(array($topic_id));
+					$topic_info = phpbb_get_topic_data(array($topic_id));
 
 					if (!sizeof($topic_info))
 					{
@@ -312,7 +312,7 @@ class mcp_reports
 				}
 				else
 				{
-					$forum_info = get_forum_data(array($forum_id), 'm_report');
+					$forum_info = phpbb_get_forum_data(array($forum_id), 'm_report');
 
 					if (!sizeof($forum_info))
 					{
@@ -515,7 +515,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 	if (confirm_box(true))
 	{
-		$post_info = ($pm) ? get_pm_data($post_id_list) : get_post_data($post_id_list, 'm_report');
+		$post_info = ($pm) ? phpbb_get_pm_data($post_id_list) : phpbb_get_post_data($post_id_list, 'm_report');
 
 		$sql = "SELECT r.report_id, r.$id_column, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
 			FROM " . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u

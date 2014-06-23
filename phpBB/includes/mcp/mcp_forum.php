@@ -380,7 +380,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	$sync_topics = array_merge($topic_ids, array($to_topic_id));
 
-	$topic_data = get_topic_data($sync_topics, 'm_merge');
+	$topic_data = phpbb_get_topic_data($sync_topics, 'm_merge');
 
 	if (!sizeof($topic_data) || empty($topic_data[$to_topic_id]))
 	{

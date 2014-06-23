@@ -100,7 +100,7 @@ class mcp_pm_reports
 				$pm_id = $report['pm_id'];
 				$report_id = $report['report_id'];
 
-				$pm_info = get_pm_data(array($pm_id));
+				$pm_info = phpbb_get_pm_data(array($pm_id));
 
 				if (!sizeof($pm_info))
 				{

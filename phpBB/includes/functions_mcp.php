@@ -106,7 +106,7 @@ function phpbb_extra_url()
 /**
 * Get simple topic data
 */
-function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
+function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 {
 	global $auth, $db, $config, $user;
 	static $rowset = array();
@@ -195,7 +195,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 /**
 * Get simple post data
 */
-function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
+function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
 	global $db, $auth, $config, $user;
 
@@ -269,7 +269,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 /**
 * Get simple forum data
 */
-function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
+function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
 	global $auth, $db, $user, $config, $phpbb_container;
 
@@ -322,9 +322,9 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 /**
 * Get simple pm data
 */
-function get_pm_data($pm_ids)
+function phpbb_get_pm_data($pm_ids)
 {
-	global $db, $auth, $config, $user;
+	global $db;
 
 	$rowset = array();
 

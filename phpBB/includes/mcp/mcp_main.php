@@ -187,7 +187,7 @@ class mcp_main
 
 				$forum_id = request_var('f', 0);
 
-				$forum_info = get_forum_data($forum_id, 'm_', true);
+				$forum_info = phpbb_get_forum_data($forum_id, 'm_', true);
 
 				if (!sizeof($forum_info))
 				{
@@ -286,7 +286,7 @@ function lock_unlock($action, $ids)
 			WHERE ' . $db->sql_in_set($sql_id, $ids);
 		$db->sql_query($sql);
 
-		$data = ($action == 'lock' || $action == 'unlock') ? get_topic_data($ids) : get_post_data($ids);
+		$data = ($action == 'lock' || $action == 'unlock') ? phpbb_get_topic_data($ids) : phpbb_get_post_data($ids);
 
 		foreach ($data as $id => $row)
 		{
@@ -388,7 +388,7 @@ function change_topic_type($action, $topic_ids)
 
 		if (sizeof($topic_ids))
 		{
-			$data = get_topic_data($topic_ids);
+			$data = phpbb_get_topic_data($topic_ids);
 
 			foreach ($data as $topic_id => $row)
 			{
@@ -442,7 +442,7 @@ function mcp_move_topic($topic_ids)
 
 	if ($to_forum_id)
 	{
-		$forum_data = get_forum_data($to_forum_id, 'f_post');
+		$forum_data = phpbb_get_forum_data($to_forum_id, 'f_post');
 
 		if (!sizeof($forum_data))
 		{
@@ -479,7 +479,7 @@ function mcp_move_topic($topic_ids)
 
 	if (confirm_box(true))
 	{
-		$topic_data = get_topic_data($topic_ids);
+		$topic_data = phpbb_get_topic_data($topic_ids);
 		$leave_shadow = (isset($_POST['move_leave_shadow'])) ? true : false;
 
 		$forum_sync_data = array();
@@ -697,7 +697,7 @@ function mcp_restore_topic($topic_ids)
 	{
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_RESTORED_SUCCESS' : 'TOPICS_RESTORED_SUCCESS';
 
-		$data = get_topic_data($topic_ids);
+		$data = phpbb_get_topic_data($topic_ids);
 
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		foreach ($data as $topic_id => $row)
@@ -770,7 +770,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 	{
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_DELETED_SUCCESS' : 'TOPICS_DELETED_SUCCESS';
 
-		$data = get_topic_data($topic_ids);
+		$data = phpbb_get_topic_data($topic_ids);
 
 		foreach ($data as $topic_id => $row)
 		{
@@ -896,7 +896,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 
 	if (confirm_box(true) && $is_soft)
 	{
-		$post_info = get_post_data($post_ids);
+		$post_info = phpbb_get_post_data($post_ids);
 
 		$topic_info = $approve_log = array();
 
@@ -984,7 +984,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		$affected_topics = sizeof($topic_id_list);
 		$db->sql_freeresult($result);
 
-		$post_data = get_post_data($post_ids);
+		$post_data = phpbb_get_post_data($post_ids);
 
 		foreach ($post_data as $id => $row)
 		{
@@ -1124,7 +1124,7 @@ function mcp_fork_topic($topic_ids)
 
 	if ($to_forum_id)
 	{
-		$forum_data = get_forum_data($to_forum_id, 'f_post');
+		$forum_data = phpbb_get_forum_data($to_forum_id, 'f_post');
 
 		if (!sizeof($topic_ids))
 		{
@@ -1161,7 +1161,7 @@ function mcp_fork_topic($topic_ids)
 
 	if (confirm_box(true))
 	{
-		$topic_data = get_topic_data($topic_ids, 'f_post');
+		$topic_data = phpbb_get_topic_data($topic_ids, 'f_post');
 
 		$total_topics = $total_topics_unapproved = $total_topics_softdeleted = 0;
 		$total_posts = $total_posts_unapproved = $total_posts_softdeleted = 0;
