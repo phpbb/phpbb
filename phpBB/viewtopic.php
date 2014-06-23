@@ -1197,7 +1197,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				'username'			=> $row['username'],
 				'user_colour'		=> $row['user_colour'],
-				'contact_user' 		=> $user->lang('CONTACT_USER', $row['username']),
+				'contact_user' 		=> $user->lang('CONTACT_USER', get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['username'])),
 
 				'online'		=> false,
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
