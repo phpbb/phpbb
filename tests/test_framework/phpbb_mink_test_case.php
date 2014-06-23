@@ -69,9 +69,9 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 		return self::$session->getPage();
 	}
 
-	static protected function click_submit()
+	static protected function click_submit($submit_button_id = 'submit')
 	{
-		self::$session->getPage()->findById('submit')->click();
+		self::$session->getPage()->findById($submit_button_id)->click();
 		return self::$session->getPage();
 	}
 
