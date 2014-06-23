@@ -3549,7 +3549,7 @@ function phpbb_get_banned_user_ids($user_ids = array(), $ban_end = true)
 /**
 * Function for assigning a template var if the zebra module got included
 */
-function _module_zebra($mode, &$module_row)
+function phpbb_module_zebra($mode, &$module_row)
 {
 	global $template;
 

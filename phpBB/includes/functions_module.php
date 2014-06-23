@@ -256,7 +256,7 @@ class p_master
 			$lang_func = '_module_' . $short_name . '_lang';
 
 			// Custom function for calling parameters on module init (for example assigning template variables)
-			$custom_func = '_module_' . $short_name;
+			$custom_func = 'phpbb_module_' . $short_name;
 
 			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
 
@@ -285,6 +285,14 @@ class p_master
 			if (function_exists($custom_func))
 			{
 				$custom_func($row['module_mode'], $module_row);
+			}
+			else
+			{
+				$custom_func = '_module_' . $short_name;
+				if (function_exists($custom_func))
+				{
+					$custom_func($row['module_mode'], $module_row);
+				}
 			}
 
 			/**
