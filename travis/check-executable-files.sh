@@ -9,7 +9,6 @@
 # the docs/CREDITS.txt file.
 #
 set -e
-set -x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
@@ -42,7 +41,7 @@ then
 					-type f -a						\
 					-perm +111						\
 				')' -o								\
-				-not -perm +600						\
+				-not -perm -600						\
 			')'										\
 		')'											\
 	)
@@ -50,7 +49,7 @@ then
 	if [ "$executables_files" != '' ]
 	then
 		ls -la $executables_files
-		echo "$executables_files MUST NOT be executable.";
+		echo "MUST NOT be executable and MUST be readable and writable by the owner.";
 		exit 1;
 	fi
 fi
