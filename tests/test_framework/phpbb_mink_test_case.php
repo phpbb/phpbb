@@ -138,7 +138,6 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 
 		// install/index.php?mode=install&sub=config_file
 		$page = self::click_submit();
-		self::assertContains('The configuration file has been written', $page->findById('main')->getText());
 
 		// Installer has created a config.php file, we will overwrite it with a
 		// config file of our own in order to get the DEBUG constants defined
@@ -148,6 +147,12 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 		{
 			self::markTestSkipped("Could not write $config_file file.");
 		}
+
+		if (strpos($page->findById('main')->getText(), 'The configuration file has been written') === false)
+		{
+			$page = self::click_submit('dldone');
+		}
+		self::assertContains('The configuration file has been written', $page->findById('main')->getText());
 
 		// install/index.php?mode=install&sub=advanced
 		$page = self::click_submit();
