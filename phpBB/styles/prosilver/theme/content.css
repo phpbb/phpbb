@@ -267,7 +267,7 @@ dd.option {
 }
 
 .postbody img.postimage {
-	max-width: 99%;
+	max-width: 100%;
 }
 
 .search .postbody {
@@ -602,6 +602,7 @@ dl.file dd {
 dl.thumbnail img {
 	padding: 3px;
 	border: 1px solid transparent;
+	box-sizing: border-box;
 }
 
 dl.thumbnail dd {
