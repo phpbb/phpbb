@@ -328,7 +328,7 @@ function mcp_resync_topics($topic_ids)
 		trigger_error('NO_TOPIC_SELECTED');
 	}
 
-	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
+	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
 	}
@@ -420,7 +420,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		return;
 	}
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
+	if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
 	{
 		return;
 	}

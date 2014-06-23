@@ -252,7 +252,7 @@ function lock_unlock($action, $ids)
 
 	$orig_ids = $ids;
 
-	if (!check_ids($ids, $table, $sql_id, array('m_lock')))
+	if (!phpbb_check_ids($ids, $table, $sql_id, array('m_lock')))
 	{
 		// Make sure that for f_user_lock only the lock action is triggered.
 		if ($action != 'lock')
@@ -262,7 +262,7 @@ function lock_unlock($action, $ids)
 
 		$ids = $orig_ids;
 
-		if (!check_ids($ids, $table, $sql_id, array('f_user_lock')))
+		if (!phpbb_check_ids($ids, $table, $sql_id, array('f_user_lock')))
 		{
 			return;
 		}
@@ -346,7 +346,7 @@ function change_topic_type($action, $topic_ids)
 		break;
 	}
 
-	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', $check_acl, true);
+	$forum_id = phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', $check_acl, true);
 
 	if ($forum_id === false)
 	{
@@ -422,7 +422,7 @@ function mcp_move_topic($topic_ids)
 	global $phpEx, $phpbb_root_path;
 
 	// Here we limit the operation to one forum only
-	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
+	$forum_id = phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
 
 	if ($forum_id === false)
 	{
@@ -677,7 +677,7 @@ function mcp_restore_topic($topic_ids)
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
+	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
 	{
 		return;
 	}
@@ -750,7 +750,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
+	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
 		return;
 	}
@@ -878,7 +878,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
+	if (!phpbb_check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
 	{
 		return;
 	}
@@ -1105,7 +1105,7 @@ function mcp_fork_topic($topic_ids)
 	global $auth, $user, $db, $template, $config;
 	global $phpEx, $phpbb_root_path;
 
-	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
+	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
 	}

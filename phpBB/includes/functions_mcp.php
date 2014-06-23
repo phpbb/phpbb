@@ -594,7 +594,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 *					Additionally, this value can be the forum_id assigned if $single_forum was set.
 *					Therefore checking the result for with !== false is the best method.
 */
-function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
+function phpbb_check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
 {
 	global $db, $auth;
 

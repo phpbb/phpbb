@@ -368,7 +368,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_split')))
+	if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_split')))
 	{
 		return;
 	}
@@ -619,7 +619,7 @@ function merge_posts($topic_id, $to_topic_id)
 		return;
 	}
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
+	if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
 	{
 		return;
 	}

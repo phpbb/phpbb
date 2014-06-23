@@ -572,7 +572,7 @@ class mcp_queue
 		global $db, $template, $user, $config, $request, $phpbb_container;
 		global $phpEx, $phpbb_root_path;
 
-		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
+		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -795,7 +795,7 @@ class mcp_queue
 		global $db, $template, $user, $config;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-		if (!check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
+		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -964,7 +964,7 @@ class mcp_queue
 		global $db, $template, $user, $config, $phpbb_container;
 		global $phpEx, $phpbb_root_path, $request;
 
-		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
+		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}

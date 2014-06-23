@@ -479,7 +479,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	}
 	else
 	{
-		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
+		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
