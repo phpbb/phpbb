@@ -357,23 +357,3 @@ $module->assign_tpl_vars(append_sid("{$phpbb_root_path}ucp.$phpEx"));
 
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title());
-
-/**
-* Function for assigning a template var if the zebra module got included
-*/
-function _module_zebra($mode, &$module_row)
-{
-	global $template;
-
-	$template->assign_var('S_ZEBRA_ENABLED', true);
-
-	if ($mode == 'friends')
-	{
-		$template->assign_var('S_ZEBRA_FRIENDS_ENABLED', true);
-	}
-
-	if ($mode == 'foes')
-	{
-		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
-	}
-}

@@ -3545,3 +3545,23 @@ function phpbb_get_banned_user_ids($user_ids = array(), $ban_end = true)
 
 	return $banned_ids_list;
 }
+
+/**
+* Function for assigning a template var if the zebra module got included
+*/
+function _module_zebra($mode, &$module_row)
+{
+	global $template;
+
+	$template->assign_var('S_ZEBRA_ENABLED', true);
+
+	if ($mode == 'friends')
+	{
+		$template->assign_var('S_ZEBRA_FRIENDS_ENABLED', true);
+	}
+
+	if ($mode == 'foes')
+	{
+		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
+	}
+}
