@@ -342,14 +342,17 @@ class phpbb_database_test_connection_manager
 
 		$filename = $directory . $schema . '_schema.sql';
 
-		$queries = file_get_contents($filename);
-		$sql = phpbb_remove_comments($queries);
-
-		$sql = split_sql_file($sql, $this->dbms['DELIM']);
-
-		foreach ($sql as $query)
+		if (file_exists($filename))
 		{
-			$this->pdo->exec($query);
+			$queries = file_get_contents($filename);
+			$sql = phpbb_remove_comments($queries);
+
+			$sql = split_sql_file($sql, $this->dbms['DELIM']);
+
+			foreach ($sql as $query)
+			{
+				$this->pdo->exec($query);
+			}
 		}
 
 		// Ok we have the db info go ahead and work on building the table

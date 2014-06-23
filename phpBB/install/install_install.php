@@ -1153,21 +1153,25 @@ class install_install extends module
 
 		// How should we treat this schema?
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
-		$sql_query = @file_get_contents($dbms_schema);
-		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
-		$sql_query = phpbb_remove_comments($sql_query);
-		$sql_query = split_sql_file($sql_query, $delimiter);
 
-		foreach ($sql_query as $sql)
+		if (file_exists($dbms_schema))
 		{
-			//$sql = trim(str_replace('|', ';', $sql));
-			if (!$db->sql_query($sql))
+			$sql_query = @file_get_contents($dbms_schema);
+			$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
+			$sql_query = phpbb_remove_comments($sql_query);
+			$sql_query = split_sql_file($sql_query, $delimiter);
+
+			foreach ($sql_query as $sql)
 			{
-				$error = $db->sql_error();
-				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+				//$sql = trim(str_replace('|', ';', $sql));
+				if (!$db->sql_query($sql))
+				{
+					$error = $db->sql_error();
+					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+				}
 			}
+			unset($sql_query);
 		}
-		unset($sql_query);
 
 		// Ok we have the db info go ahead and work on building the table
 		$db_table_schema = @file_get_contents('schemas/schema.json');
