@@ -640,7 +640,7 @@ switch ($mode)
 		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
 
-		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
+		$template->assign_vars(phpbb_show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
@@ -1416,7 +1416,7 @@ switch ($mode)
 					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
-				$memberrow = array_merge(show_profile($row), array(
+				$memberrow = array_merge(phpbb_show_profile($row), array(
 					'ROW_NUMBER'		=> $i + ($start + 1),
 
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
