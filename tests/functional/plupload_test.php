@@ -57,6 +57,8 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			unlink($fileinfo->getPathname());
 		}
+
+		parent::tearDown();
 	}
 
 	public function get_urls()
