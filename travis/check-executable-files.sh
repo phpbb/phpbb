@@ -10,7 +10,6 @@
 #
 set -e
 
-
 DB=$1
 TRAVIS_PHP_VERSION=$2
 path="$3"
@@ -46,7 +45,7 @@ then
 
 	if [ "$executables_files" != '' ]
 	then
-	  echo "$executables_files MUST NOT be executable.";
-	  exit 1;
+		echo "$executables_files MUST NOT be executable.";
+		exit 1;
 	fi
 fi
