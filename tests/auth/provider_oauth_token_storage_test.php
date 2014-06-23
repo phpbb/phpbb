@@ -77,7 +77,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_retrieveAccessToken_wrong_token()
 	{
-		$this->user->data['session_id'] = 9999;
+		$this->user->data['session_id'] = 'abcd';
 		try
 		{
 			$this->token_storage->retrieveAccessToken($this->service_name);
@@ -87,7 +87,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		{
 		}
 
-		$row = $this->get_token_row_by_session_id(9999);
+		$row = $this->get_token_row_by_session_id('abcd');
 		$this->assertFalse($row);
 	}
 

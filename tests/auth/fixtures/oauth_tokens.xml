@@ -7,7 +7,7 @@
 		<column>oauth_token</column>
 		<row>
 			<value>1</value>
-			<value>9999</value>
+			<value>abcd</value>
 			<value>auth.provider.oauth.service.testing</value>
 			<value>{"token_class":"phpbb_not_a_token","accessToken":"error","refreshToken":0,"endOfLife":null,"extraParams":null}</value>
 		</row>
