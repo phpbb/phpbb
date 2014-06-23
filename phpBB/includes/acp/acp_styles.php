@@ -209,8 +209,8 @@ class acp_styles
 			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$message = implode('<br />', $messages);
-		$message .= '<br /><br />' . sprintf($this->user->lang['STYLE_INSTALLED_RETURN_STYLES'], $this->u_base_action . '&amp;mode=style');
-		$message .= '<br /><br />' . sprintf($this->user->lang['STYLE_INSTALLED_RETURN_UNINSTALLED'], $this->u_base_action . '&amp;mode=install');
+		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=style' . '">&laquo; ' . $this->user->lang('STYLE_INSTALLED_RETURN_INSTALLED_STYLES') . '</a>';
+		$message .= '<br /><br /><a href="' . $this->u_base_action . '&amp;mode=install' . '">&raquo; ' . $this->user->lang('STYLE_INSTALLED_RETURN_UNINSTALLED_STYLES') . '</a>';
 		trigger_error($message, E_USER_NOTICE);
 	}
 
