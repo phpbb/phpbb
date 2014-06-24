@@ -1108,7 +1108,6 @@ form > p.post-notice strong {
 
 .dropdown-extended {
 	display: none;
-	width: 340px;
 	z-index: 1;
 }
 
@@ -1140,6 +1139,7 @@ form > p.post-notice strong {
 
 .dropdown-extended .dropdown-contents {
 	max-height: none;
+	max-width: 340px !important;
 	padding: 0;
 }
 
