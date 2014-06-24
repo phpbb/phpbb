@@ -22,12 +22,12 @@ if (!defined('IN_PHPBB'))
 /**
 * Functions used to generate additional URL paramters
 */
-function _module__url($mode, &$module_row)
+function phpbb_module__url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_notes_url($mode, &$module_row)
+function phpbb_module_notes_url($mode, &$module_row)
 {
 	if ($mode == 'front')
 	{
@@ -38,7 +38,7 @@ function _module_notes_url($mode, &$module_row)
 	return ($user_id) ? "&amp;u=$user_id" : '';
 }
 
-function _module_warn_url($mode, &$module_row)
+function phpbb_module_warn_url($mode, &$module_row)
 {
 	if ($mode == 'front' || $mode == 'list')
 	{
@@ -64,32 +64,32 @@ function _module_warn_url($mode, &$module_row)
 	}
 }
 
-function _module_main_url($mode, &$module_row)
+function phpbb_module_main_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_logs_url($mode, &$module_row)
+function phpbb_module_logs_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_ban_url($mode, &$module_row)
+function phpbb_module_ban_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_queue_url($mode, &$module_row)
+function phpbb_module_queue_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function _module_reports_url($mode, &$module_row)
+function phpbb_module_reports_url($mode, &$module_row)
 {
-	return extra_url();
+	return phpbb_extra_url();
 }
 
-function extra_url()
+function phpbb_extra_url()
 {
 	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 
@@ -106,7 +106,7 @@ function extra_url()
 /**
 * Get simple topic data
 */
-function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
+function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 {
 	global $auth, $db, $config, $user;
 	static $rowset = array();
@@ -195,7 +195,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 /**
 * Get simple post data
 */
-function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
+function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
 	global $db, $auth, $config, $user;
 
@@ -269,7 +269,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 /**
 * Get simple forum data
 */
-function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
+function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
 	global $auth, $db, $user, $config, $phpbb_container;
 
@@ -322,9 +322,9 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 /**
 * Get simple pm data
 */
-function get_pm_data($pm_ids)
+function phpbb_get_pm_data($pm_ids)
 {
-	global $db, $auth, $config, $user;
+	global $db;
 
 	$rowset = array();
 
@@ -366,7 +366,7 @@ function get_pm_data($pm_ids)
 * $mode reports and reports_closed: the $where parameters uses aliases p for posts table and r for report table
 * $mode unapproved_posts: the $where parameters uses aliases p for posts table and t for topic table
 */
-function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
+function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
 	global $db, $user, $auth, $template;
 
@@ -594,7 +594,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 *					Additionally, this value can be the forum_id assigned if $single_forum was set.
 *					Therefore checking the result for with !== false is the best method.
 */
-function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
+function phpbb_check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
 {
 	global $db, $auth;
 

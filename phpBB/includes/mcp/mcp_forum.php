@@ -102,7 +102,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$sort_days = $total = 0;
 	$sort_key = $sort_dir = '';
 	$sort_by_sql = $sort_order_sql = array();
-	mcp_sorting('viewforum', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id);
+	phpbb_mcp_sorting('viewforum', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id);
 
 	$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -328,7 +328,7 @@ function mcp_resync_topics($topic_ids)
 		trigger_error('NO_TOPIC_SELECTED');
 	}
 
-	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
+	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
 	}
@@ -380,7 +380,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	$sync_topics = array_merge($topic_ids, array($to_topic_id));
 
-	$topic_data = get_topic_data($sync_topics, 'm_merge');
+	$topic_data = phpbb_get_topic_data($sync_topics, 'm_merge');
 
 	if (!sizeof($topic_data) || empty($topic_data[$to_topic_id]))
 	{
@@ -420,7 +420,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		return;
 	}
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
+	if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
 	{
 		return;
 	}
