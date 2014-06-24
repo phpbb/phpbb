@@ -803,13 +803,23 @@ class fileupload
 
 		$get_info = false;
 		$data = '';
+		$length = false;
 		$timer_stop = time() + $this->upload_timeout;
 
-		while (!@feof($fsock))
+		while (!($length && $filesize >= $length) && !@feof($fsock))
 		{
 			if ($get_info)
 			{
-				$block = @fread($fsock, 1024);
+				if ($length)
+				{
+					// Don't attempt to read past end of file if server indicated length
+					$block = @fread($fsock, min($length - $filesize, 1024));
+				}
+				else
+				{
+					$block = @fread($fsock, 1024);
+				}
+
 				$filesize += strlen($block);
 
 				if ($remote_max_filesize && $filesize > $remote_max_filesize)
