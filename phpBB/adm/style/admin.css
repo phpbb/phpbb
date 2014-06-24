@@ -320,176 +320,156 @@ li {
 
 
 /* Tabbed menu
-	Based on: http://www.alistapart.com/articles/slidingdoors2/
 ----------------------------------------*/
 #tabs {
+	font-family: Arial, Helvetica, sans-serif;
 	line-height: normal;
 	margin: 0 7px;
-	min-width: 600px;
 	position: relative;
 	z-index: 2;
 }
 
-#tabs ul {
-	margin:0;
-	padding: 0;
+#tabs > ul {
 	list-style: none;
-}
-
-#tabs ul:after {
-	content: '';
-	display: block;
-	clear: both;
-}
-
-#tabs li {
-	display: block;
-	float: left;
 	margin: 0;
 	padding: 0;
-	font-size: 0.85em;
-	font-weight: bold;
 }
 
-#tabs li:after {
+#tabs > ul:after {
 	content: '';
 	display: block;
 	clear: both;
 }
 
-#tabs a {
+#tabs .tab {
+	display: inline-block;
 	float: left;
-	background:url("../images/bg_tabs1.gif") no-repeat 0% -34px;
-	margin: 0 1px 0 0;
-	padding: 0 0 0 7px;
-	text-decoration: none;
-	position: relative;
-}
-
-.rtl #tabs li {
-	float: right;
-}
-
-#tabs a span {
-	float: left;
-	display: block;
-	background: url("../images/bg_tabs2.gif") no-repeat 100% -34px;
-	padding: 7px 10px 4px 4px;
-	min-height: 14px;
-	color: #767676;
-	white-space: nowrap;
-	font-family: Arial, Helvetica, sans-serif;
-	text-transform: uppercase;
+	font-size: 0.85em;
 	font-weight: bold;
+	line-height: 14px;
 }
 
-.rtl #tabs a span {
+.rtl #tabs .tab {
 	float: right;
 }
 
-/* Commented Backslash Hack hides rule from IE5-Mac \*/
-#tabs a span, .rtl #tabs a span { float:none;}
-/* End hack */
+#tabs .tab > a {
+	background: #D4D6DA;
+	background: -moz-linear-gradient(top, #CACBCF 0%, #D4D6DA 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #CACBCF), color-stop(100%, #D4D6DA));
+	background: -webkit-linear-gradient(top, #CACBCF 0%, #D4D6DA 100%);
+	background: -o-linear-gradient(top, #CACBCF 0%, #D4D6DA 100%);
+	background: -ms-linear-gradient(top, #CACBCF 0%, #D4D6DA 100%);
+	background: linear-gradient(to bottom, #CACBCF 0%, #D4D6DA 100%);
+	border: 1px solid #BBB;
+	border-bottom-width: 0;
+	border-radius: 5px 5px 0 0;
+	color: #767676;
+	display: block;
+	font-weight: bold;
+	margin: 1px 1px 2px 0;
+	padding: 6px 9px 4px;
+	position: relative;
+	text-decoration: none;
+	text-transform: uppercase;
+	white-space: nowrap;
+	cursor: pointer;
+}
 
-#tabs a:hover span {
+#tabs .tab > a:hover {
+	background: #F1F1EE;
+	border-color: #C0BFBB;
 	color: #BC2A4D;
 }
 
-#tabs a:hover {
-	background-position: 0 -69px;
-}
-
-#tabs a:hover span {
-	background-position: 100% -69px;
-}
-
-#tabs .activetab a {
-	background-position: 0 0;
-	border-bottom: 1px solid #DCDEE2;
-}
-
-#tabs .activetab a span {
-	background-position: 100% 0;
-	padding-bottom: 5px;
+#tabs .activetab > a,
+#tabs .activetab > a:hover {
+	background: #DCDEE2;
+	background: -moz-linear-gradient(top, #F2F2F2 0%, #DCDEE2 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F2F2F2), color-stop(100%, #DCDEE2));
+	background: -webkit-linear-gradient(top, #F2F2F2 0%, #DCDEE2 100%);
+	background: -o-linear-gradient(top, #F2F2F2 0%, #DCDEE2 100%);
+	background: -ms-linear-gradient(top, #F2F2F2 0%, #DCDEE2 100%);
+	background: linear-gradient(to bottom, #F2F2F2 0%, #DCDEE2 100%);
+	border-color: #999;
+	border-bottom: 2px solid #DCDEE2;
+	box-shadow: 0 1px 1px #FFF inset;
 	color: #23649F;
+	margin: 0 1px 0 0;
+	padding: 7px 10px 4px;
 }
 
-#tabs .activetab a:hover span {
+#tabs .activetab > a:hover {
 	color: #115098;
 }
 
+/* Responsive tabs
+----------------------------------------*/
 .responsive-tab {
 	position: relative;
 }
 
-.responsive-tab .responsive-tab-link span {
-	display: inline-block;
+.responsive-tab > a.responsive-tab-link {
+	display: block;
 	font-size: 16px;
 	position: relative;
 	width: 16px;
 	line-height: 14px;
 	text-decoration: none;
+	padding-left: 9px !important;
+	padding-right: 9px !important;
 }
 
-.responsive-tab .responsive-tab-link span:before {
+.responsive-tab .responsive-tab-link:before {
 	content: '';
 	position: absolute;
-	left: 5px;
-	top: 8px;
+	left: 10px;
+	top: 7px;
 	height: .125em;
 	width: 14px;
 	border-bottom: 0.125em solid #767676;
 	border-top: 0.375em double #767676;
 }
 
-.responsive-tab .responsive-tab-link:hover span:before {
+.responsive-tab .responsive-tab-link:hover:before {
 	border-color: #BC2A4D;
 }
 
-.responsive-tab.activetab .responsive-tab-link span:before {
+.responsive-tab.activetab .responsive-tab-link:before {
 	border-color: #23649F;
 }
 
-.responsive-tab.activetab .responsive-tab-link:hover span:before {
+.responsive-tab.activetab .responsive-tab-link:hover:before {
 	border-color: #115098;
 }
 
-#tabs .dropdown {
-	top: 18px;
-	margin-right: -1px;
+#tabs .dropdown, #minitabs .dropdown {
+	top: 20px;
+	margin-right: -2px;
+	font-weight: normal;
 }
 
 #tabs .dropdown-right .dropdown {
 	margin-left: -2px;
 }
 
-#tabs .dropdown li {
-	display: block !important;
-	float: none;
-	background: transparent none;
-	padding: 0;
-}
-
-#tabs .dropdown a, #tabs .dropdown a span {
-	background: transparent;
-	display: block;
-	border-width: 0;
-	float: none;
+#tabs .dropdown-contents {
+	list-style: none;
 	margin: 0;
-	padding: 0;
-	text-align: right;
 }
 
-#tabs .dropdown a span {
+#tabs .dropdown li {
+	border-bottom: 1px dotted #DCDCDC;
+}
+
+#tabs .dropdown li:last-child {
+	border-bottom: none;
+}
+
+#tabs .dropdown a {
+	display: block;
 	padding: 4px 8px;
-	color: inherit !important;
-}
-
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
-{
-	#tabs {
-		min-width: 0;
-	}
+	text-align: right;
 }
 
 /* Main Panel

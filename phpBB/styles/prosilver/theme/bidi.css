@@ -684,32 +684,61 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 /* CP tabbed menu
 ----------------------------------------*/
 .rtl #tabs {
-	margin: 20px 7px -1px 0;
+	margin-left: 0;
+	margin-right: 7px;
 }
 
-.rtl #tabs a {
+.rtl #tabs .tab {
 	float: right;
 }
 
-/*.rtl #tabs a span {
-	float: right;
-}*/
+.rtl #tabs .tab > a {
+	margin-left: 1px;
+	margin-right: 0;
+}
 
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
 .rtl #minitabs {
+	float: left;
 	margin-right: 0;
 	margin-left: 7px;
 }
 
-.rtl .tabs-container #minitabs {
+.rtl #minitabs .tab {
 	float: left;
 }
 
-.rtl #minitabs li {
-	float: left;
+.rtl #minitabs .tab > a {
 	margin-right: 2px;
 	margin-left: 0;
+}
+
+/* Responsive tabs
+----------------------------------------*/
+.rtl #tabs .dropdown {
+	margin-left: -2px;
+}
+
+.rtl #tabs .dropdown li {
+	text-align: left;
+}
+
+.rtl #minitabs .dropdown {
+	margin-left: -4px;
+}
+
+.rtl #minitabs .dropdown li {
+	text-align: right;
+}
+
+/* Responsive *CP navigation
+----------------------------------------*/
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+{
+	.rtl #cp-menu, .rtl #navigation, .rtl #cp-main {
+		float: none;
+	}
 }
 
 /* UCP navigation menu
