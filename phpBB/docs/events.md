@@ -344,25 +344,53 @@ memberlist_view_user_statistics_before
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
 
-navbar_header_username_append
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b4
-* Purpose: Add text and HTMl after the username shown in the navbar.
-
 navbar_header_logged_out_content
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b4
+* Since: 3.1.0-b5
 * Purpose: Add text and HTML in place of the username when not logged in.
+
+navbar_header_profile_list_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the bottom of the profile drop-down menu in the header navbar
+
+navbar_header_profile_list_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the top of the profile drop-down menu in the header navbar
+
+navbar_header_quick_links_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the bottom of the quick-links drop-down menu in the header
+
+navbar_header_quick_links_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add links to the top of the quick-links drop-down menu in the header
+
+navbar_header_username_append
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.0-b5
+* Purpose: Add text and HTMl after the username shown in the navbar.
 
 navbar_header_username_prepend
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b4
+* Since: 3.1.0-b5
 
 overall_footer_after
 ===
@@ -514,34 +542,6 @@ overall_header_page_body_before
     + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-header, but before the page-body
-
-overall_header_profile_list_after
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
-* Purpose: Add links to the bottom of the profile drop-down menu in the page-header
-
-overall_header_profile_list_before
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
-* Purpose: Add links to the top of the profile drop-down menu in the page-header
-
-overall_header_quick_links_after
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
-* Purpose: Add links to the bottom of the quick-links drop-down menu in the header
-
-overall_header_quick_links_before
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
-* Purpose: Add links to the top of the quick-links drop-down menu in the header
 
 posting_editor_buttons_after
 ===
