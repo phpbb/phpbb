@@ -251,7 +251,7 @@ index_body_markforums_after
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC2
 * Purpose: Add content after the mark-read link above the forum list on Board index
 
 index_body_markforums_before
@@ -259,7 +259,7 @@ index_body_markforums_before
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC2
 * Purpose: Add content before the mark-read link above the forum list on Board index
 
 index_body_stat_blocks_after
@@ -348,49 +348,50 @@ navbar_header_logged_out_content
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC1
 * Purpose: Add text and HTML in place of the username when not logged in.
 
 navbar_header_profile_list_after
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC2
 * Purpose: Add links to the bottom of the profile drop-down menu in the header navbar
 
 navbar_header_profile_list_before
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC2
 * Purpose: Add links to the top of the profile drop-down menu in the header navbar
 
 navbar_header_quick_links_after
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC2
 * Purpose: Add links to the bottom of the quick-links drop-down menu in the header
 
 navbar_header_quick_links_before
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC2
 * Purpose: Add links to the top of the quick-links drop-down menu in the header
 
 navbar_header_username_append
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC1
 * Purpose: Add text and HTMl after the username shown in the navbar.
 
 navbar_header_username_prepend
 ===
 * Locations:
     + styles/prosilver/template/navbar_header.html
-* Since: 3.1.0-b5
+* Since: 3.1.0-RC1
+* Purpose: Add text and HTMl before the username shown in the navbar.
 
 overall_footer_after
 ===
