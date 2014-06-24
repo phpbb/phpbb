@@ -491,7 +491,8 @@ function parse_document(container)
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
 			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-			filterLastList = links.filter(filterLast);
+			filterLastList = links.filter(filterLast),
+			slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured. 
 
 		if (!persist) {
 			if (links.is('.rightside'))
@@ -543,7 +544,7 @@ function parse_document(container)
 			}
 
 			// Nothing to resize if block's height is not bigger than tallest element's height
-			if ($this.height() <= (maxHeight + 1)) {
+			if ($this.height() <= (maxHeight + slack)) {
 				return;
 			}
 
@@ -557,7 +558,7 @@ function parse_document(container)
 				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
 			});
 
-			if ($this.height() <= (maxHeight + 1)) {
+			if ($this.height() <= (maxHeight + slack)) {
 				return;
 			}
 
@@ -605,7 +606,7 @@ function parse_document(container)
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 				});
 
-				if ($this.height() <= (maxHeight + 1)) {
+				if ($this.height() <= (maxHeight + slack)) {
 					menu.children().filter(filterLast).css('display', 'none');
 					return;
 				}
