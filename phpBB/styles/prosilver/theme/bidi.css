@@ -65,7 +65,7 @@
 	margin-left: 7px;
 }
 
-.rtl ul.linklist > li.rightside, .rtl p.rightside {
+.rtl ul.linklist > li.rightside, .rtl p.rightside, .rtl a.rightside {
 	float: left;
 	margin-right: 7px;
 	margin-left: 0;

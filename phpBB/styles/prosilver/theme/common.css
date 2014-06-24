@@ -337,7 +337,7 @@ ul.linklist > li {
 	padding-top: 1px;
 }
 
-ul.linklist > li.rightside, p.rightside {
+ul.linklist > li.rightside, p.rightside, a.rightside {
 	float: right;
 	margin-right: 0;
 	margin-left: 7px;

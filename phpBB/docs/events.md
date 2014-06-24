@@ -246,21 +246,21 @@ index_body_block_stats_prepend
 * Since: 3.1.0-b3
 * Purpose: Prepend content to the statistics list on the Board index
 
-index_body_linklist_after
+index_body_markforums_after
 ===
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
-* Since: 3.1.0-a3
-* Purpose: Add content after the linklist above the forum list on Board index
+* Since: 3.1.0-b5
+* Purpose: Add content after the mark-read link above the forum list on Board index
 
-index_body_linklist_before
+index_body_markforums_before
 ===
 * Locations:
     + styles/prosilver/template/index_body.html
     + styles/subsilver2/template/index_body.html
-* Since: 3.1.0-a3
-* Purpose: Add content before the linklist above the forum list on Board index
+* Since: 3.1.0-b5
+* Purpose: Add content before the mark-read link above the forum list on Board index
 
 index_body_stat_blocks_after
 ===
