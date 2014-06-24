@@ -169,6 +169,60 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
+	public function get_profile_value_raw_data()
+	{
+		return array(
+			array(
+				'10',
+				array('field_show_novalue' => true),
+				10,
+				'Field should return the correct raw value',
+			),
+			array(
+				'0',
+				array('field_show_novalue' => true),
+				0,
+				'Field should return correct raw value',
+			),
+			array(
+				'',
+				array('field_show_novalue' => true),
+				0,
+				'Field should return correct raw value',
+			),
+			array(
+				'10',
+				array('field_show_novalue' => false),
+				10,
+				'Field should return the correct raw value',
+			),
+			array(
+				'0',
+				array('field_show_novalue' => false),
+				0,
+				'Field should return correct raw value',
+			),
+			array(
+				'',
+				array('field_show_novalue' => false),
+				null,
+				'Field should return correct raw value',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider get_profile_value_raw_data
+	*/
+	public function test_get_profile_value_raw($value, $field_options, $expected, $description)
+	{
+		$field_options = array_merge($this->field_options, $field_options);
+
+		$result = $this->cp->get_profile_value_raw($value, $field_options);
+
+		$this->assertSame($expected, $result, $description);
+	}
+
 	public function return_callback_implode()
 	{
 		return implode('-', func_get_args());
