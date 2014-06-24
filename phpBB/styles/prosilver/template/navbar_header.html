@@ -39,7 +39,9 @@
 
 	<!-- IF S_REGISTERED_USER -->
 		<li id="username_logged_in" class="rightside dropdown-container<!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
+			<!-- EVENT navbar_header_username_prepend -->
 			<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_SIMPLE}</a>
+			<!-- EVENT navbar_header_username_append -->
 			<div class="dropdown hidden">
 				<div class="pointer"><div class="pointer-inner"></div></div>
 				<ul class="dropdown-contents" role="menu">
@@ -68,24 +70,23 @@
 				<!-- INCLUDE notification_dropdown.html -->
 			</li>
 		<!-- ENDIF -->
-	<!-- ENDIF -->
-
-	<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
+	<!-- ELSE -->
 		<li class="small-icon icon-logout rightside"  data-skip-responsive="true"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">{L_LOGIN_LOGOUT}</a></li>
 		<!-- IF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) -->
 			<li class="small-icon icon-register rightside" data-skip-responsive="true"><a href="{U_REGISTER}" role="menuitem">{L_REGISTER}</a></li>
 		<!-- ENDIF -->
+		<li id="logged_out" class="rightside"><!-- EVENT navbar_header_logged_out_content --></li>
 	<!-- ENDIF -->
 	</ul>
 
 	<ul id="nav-breadcrumbs" class="linklist navlinks" role="menubar">
 		<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
 		<li class="small-icon icon-home breadcrumbs" role="navigation">
-			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a></span><!-- ENDIF -->
-			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a></span>
+			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA} data-navbar-reference="home">{L_SITE_HOME}</a></span><!-- ENDIF -->
+			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA} data-navbar-reference="index">{L_INDEX}</a></span>
 			<!-- BEGIN navlinks -->
 				<!-- EVENT overall_header_navlink_prepend -->
-				<span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span>
+				<span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}<!-- IF navlinks.MICRODATA --> {navlinks.MICRODATA}<!-- ENDIF -->>{navlinks.FORUM_NAME}</a></span>
 				<!-- EVENT overall_header_navlink_append -->
 			<!-- END navlinks -->
 			<!-- EVENT overall_header_breadcrumb_append -->
