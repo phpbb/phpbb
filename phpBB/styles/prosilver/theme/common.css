@@ -435,7 +435,12 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	display: none !important;
 }
 
-/* Avatar in overall_header.html */
+/* Profile in overall_header.html */
+.header-profile {
+	display: inline-block;
+	vertical-align: top;
+}
+
 .header-avatar:hover {
 	text-decoration: none;
 }

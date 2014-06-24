@@ -38,26 +38,28 @@
 		<!-- EVENT overall_header_navigation_append -->
 
 	<!-- IF S_REGISTERED_USER -->
-		<li id="username_logged_in" class="rightside dropdown-container<!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
+		<li id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
 			<!-- EVENT navbar_header_username_prepend -->
-			<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_SIMPLE}</a>
-			<!-- EVENT navbar_header_username_append -->
-			<div class="dropdown hidden">
-				<div class="pointer"><div class="pointer-inner"></div></div>
-				<ul class="dropdown-contents" role="menu">
-					<!-- IF U_RESTORE_PERMISSIONS --><li class="small-icon icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li><!-- ENDIF -->
-
-					<!-- EVENT navbar_header_profile_list_before -->
-
-					<li class="small-icon icon-ucp"><a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">{L_PROFILE}</a></li>
-					<li class="small-icon icon-profile"><a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">{L_READ_PROFILE}</a></li>
-
-					<!-- EVENT navbar_header_profile_list_after -->
-
-					<li class="separator"></li>
-					<li class="small-icon icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">{L_LOGIN_LOGOUT}</a></li>
-				</ul>
+			<div class="header-profile dropdown-container">
+				<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_SIMPLE}</a>
+				<div class="dropdown hidden">
+					<div class="pointer"><div class="pointer-inner"></div></div>
+					<ul class="dropdown-contents" role="menu">
+						<!-- IF U_RESTORE_PERMISSIONS --><li class="small-icon icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li><!-- ENDIF -->
+	
+						<!-- EVENT navbar_header_profile_list_before -->
+	
+						<li class="small-icon icon-ucp"><a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">{L_PROFILE}</a></li>
+						<li class="small-icon icon-profile"><a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">{L_READ_PROFILE}</a></li>
+	
+						<!-- EVENT navbar_header_profile_list_after -->
+	
+						<li class="separator"></li>
+						<li class="small-icon icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">{L_LOGIN_LOGOUT}</a></li>
+					</ul>
+				</div>
 			</div>
+			<!-- EVENT navbar_header_username_append -->
 		</li>
 		<!-- IF S_DISPLAY_PM -->
 			<li class="small-icon icon-pm rightside" data-skip-responsive="true">
