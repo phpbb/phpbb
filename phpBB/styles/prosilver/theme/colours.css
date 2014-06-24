@@ -1134,7 +1134,7 @@ input.disabled {
 }
 
 .dropdown-extended ul li {
-	border-bottom-color: #B9B9B9;
+	border-top-color: #B9B9B9;
 }
 
 .dropdown-extended ul li:hover {
