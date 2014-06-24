@@ -41,7 +41,9 @@ function phpbb_end_update($cache, $config)
 		</div>
 
 		<div id="page-footer">
-			Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited
+			<div class="copyright">
+				Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited
+			</div>
 		</div>
 	</div>
 </body>
