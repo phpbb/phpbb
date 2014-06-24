@@ -466,6 +466,9 @@ class fileupload
 	var $max_height = 0;
 	var $error_prefix = '';
 
+	/** @var int Timeout for remote upload */
+	var $upload_timeout = 6;
+
 	/**
 	* Init file upload class.
 	*
@@ -795,13 +798,28 @@ class fileupload
 		fputs($fsock, "HOST: " . $host . "\r\n");
 		fputs($fsock, "Connection: close\r\n\r\n");
 
+		// Set a proper timeout for the socket
+		socket_set_timeout($fsock, $this->upload_timeout);
+
 		$get_info = false;
 		$data = '';
-		while (!@feof($fsock))
+		$length = false;
+		$timer_stop = time() + $this->upload_timeout;
+
+		while ((!$length || $filesize < $length) && !@feof($fsock))
 		{
 			if ($get_info)
 			{
-				$block = @fread($fsock, 1024);
+				if ($length)
+				{
+					// Don't attempt to read past end of file if server indicated length
+					$block = @fread($fsock, min($length - $filesize, 1024));
+				}
+				else
+				{
+					$block = @fread($fsock, 1024);
+				}
+
 				$filesize += strlen($block);
 
 				if ($remote_max_filesize && $filesize > $remote_max_filesize)
@@ -846,6 +864,15 @@ class fileupload
 						return $file;
 					}
 				}
+			}
+
+			$stream_meta_data = stream_get_meta_data($fsock);
+
+			// Cancel upload if we exceed timeout
+			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
+			{
+				$file = new fileerror($user->lang[$this->error_prefix . 'REMOTE_UPLOAD_TIMEOUT']);
+				return $file;
 			}
 		}
 		@fclose($fsock);
