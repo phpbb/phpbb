@@ -59,7 +59,7 @@ body {
 	font-size: 10px;
 	line-height: normal;
 	margin: 0;
-	padding: 12px 0;
+	padding: 0;
 	word-wrap: break-word;
 }
 
@@ -175,8 +175,10 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 /* Main blocks
 ---------------------------------------- */
 #wrap {
-	padding: 0 20px;
 	min-width: 650px;
+	max-width: 1152px;
+	margin: 0 auto;
+	padding: 12px;
 }
 
 #simple-wrap {
