@@ -97,117 +97,82 @@ ul.cplist {
 }
 
 .tabs-container:after {
-	display: block;
 	clear: both;
 	content: '';
+	display: block;
 }
 
-/* CP tabbed menu
+/* CP tabs shared
 ----------------------------------------*/
-#tabs {
+#tabs, #minitabs {
 	line-height: normal;
-	margin: 20px 0 -1px 7px;
-	*overflow: hidden;
 }
 
-#tabs ul {
-	margin:0;
-	padding: 0;
+#tabs > ul, #minitabs > ul {
 	list-style: none;
-}
-
-#tabs ul:after {
-	content: '';
-	display: block;
-	clear: both;
-}
-
-#tabs li {
-	display: inline;
 	margin: 0;
 	padding: 0;
-	font-size: 1em;
-	font-weight: bold;
+	position: relative;
 }
 
-#tabs a {
+#tabs > ul:after, #minitabs > ul:after {
+	clear: both;
+	content: '';
+	display: block;
+}
+
+#tabs .tab, #minitabs .tab {
+	display: inline-block;
 	float: left;
-	background: none no-repeat 0% -35px;
-	margin: 0 1px 0 0;
-	padding: 0 0 0 5px;
-	text-decoration: none;
+	font-size: 1em;
+	font-weight: bold;
+	line-height: 14px;
+}
+
+#tabs .tab > a, #minitabs .tab > a {
+	display: block;
+	padding: 5px 9px;
 	position: relative;
+	text-decoration: none;
+	white-space: nowrap;
 	cursor: pointer;
 }
 
-#tabs a span {
-	float: left;
-	display: block;
-	background: none no-repeat 100% -35px;
-	padding: 6px 10px 6px 5px;
-	white-space: nowrap;
+/* CP tabbed menu 
+----------------------------------------*/
+#tabs {
+	margin: 20px 0 0 7px;
 }
 
-#tabs .activetab a {
-	background-position: 0 0;
-	border-bottom: 1px solid transparent;
+#tabs .tab > a {
+	border: 1px solid transparent;
+	border-radius: 4px 4px 0 0;
+	margin: 1px 1px 0 0;
 }
 
-#tabs .activetab a span {
-	background-position: 100% 0;
+#tabs .activetab > a {
+	margin-top: 0;
 	padding-bottom: 7px;
-}
-
-#tabs a:hover {
-	background-position: 0 -70px;
-}
-
-#tabs a:hover span {
-	background-position:100% -70px;
-}
-
-#tabs .activetab a:hover {
-	background-position: 0 0;
-}
-
-#tabs .activetab a:hover span {
-	background-position: 100% 0;
 }
 
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
 #minitabs {
-	line-height: normal;
-	margin: -20px 7px 0 0;
-}
-
-.tabs-container #minitabs {
 	float: right;
-	margin-top: 19px;
+	margin: 15px 7px 0 0;
 	max-width: 50%;
 }
 
-#minitabs ul {
-	margin:0;
-	padding: 0;
-	list-style: none;
+#minitabs .tab {
+	float: right;
 }
 
-#minitabs li {
-	display: block;
-	float: right;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	padding: 5px 10px 4px 10px;
-	font-size: 1em;
-	font-weight: bold;
+#minitabs .tab > a {
+	border-radius: 5px 5px 0 0;
 	margin-left: 2px;
 }
 
-#minitabs a {
-}
-
-#minitabs a:hover {
+#minitabs .tab > a:hover {
 	text-decoration: none;
 }
 
@@ -217,8 +182,8 @@ ul.cplist {
 	position: relative;
 }
 
-.responsive-tab .responsive-tab-link span {
-	display: inline-block;
+.responsive-tab > a.responsive-tab-link {
+	display: block;
 	font-size: 16px;
 	position: relative;
 	width: 16px;
@@ -226,79 +191,40 @@ ul.cplist {
 	text-decoration: none;
 }
 
-#minitabs .responsive-tab .responsive-tab-link span {
-	display: block;
-}
-
-.responsive-tab .responsive-tab-link span:before {
+.responsive-tab .responsive-tab-link:before {
 	content: '';
 	position: absolute;
-	left: 5px;
-	top: 8px;
+	left: 10px;
+	top: 7px;
 	height: .125em;
 	width: 14px;
 	border-bottom: 0.125em solid transparent;
 	border-top: 0.375em double transparent;
 }
 
-#minitabs .responsive-tab .responsive-tab-link span:before {
-	left: 0;
-	top: 2px;
-}
-
-#tabs ul, #minitabs ul {
-	position: relative;
-}
-
 #tabs .dropdown, #minitabs .dropdown {
-	top: 29px;
-	margin-right: -1px;
+	top: 20px;
+	margin-right: -2px;
+	font-size: 1.1em;
+	font-weight: normal;
 }
 
 #minitabs .dropdown {
-	top: 18px;
+	margin-right: -4px;
 }
 
 #tabs .dropdown-up .dropdown, #minitabs .dropdown-up .dropdown {
-	bottom: -5px;
+	bottom: 20px;
 	top: auto;
 }
 
-#minitabs .dropdown-up .dropdown {
-	bottom: 18px;
-}
-
-#tabs .dropdown-right .dropdown, #minitabs .dropdown-right .dropdown {
-	margin-left: -41px;
-}
-
-#tabs .dropdown li, #minitabs .dropdown li {
-	display: block !important;
-	background: transparent none;
-	padding: 0;
-}
-
-.tabs-container #minitabs .dropdown a span {
-	display: block;
-}
-
-#tabs .dropdown a, #tabs .dropdown a span, #minitabs .dropdown a, #minitabs .dropdown a span {
-	background: transparent;
-	float: none;
-	margin: 0;
-	padding: 0;
+#tabs .dropdown li {
 	text-align: right;
 }
 
-.tabs-container #minitabs .dropdown a span {
+#minitabs .dropdown li {
 	text-align: left;
 }
-
-#tabs .dropdown a span, #minitabs .dropdown a span {
-	padding: 5px 8px;
-	color: inherit !important;
-}
-
 
 /* UCP navigation menu
 ----------------------------------------*/
@@ -309,15 +235,15 @@ ul.cplist {
 }
 
 #navigation ul {
-	list-style:none;
+	list-style: none;
 }
 
 /* Default list state */
 #navigation li {
+	display: inline;
+	font-weight: bold;
 	margin: 1px 0;
 	padding: 0;
-	font-weight: bold;
-	display: inline;
 }
 
 /* Link styles for the sub-section links */
@@ -326,18 +252,10 @@ ul.cplist {
 	padding: 5px;
 	margin: 1px 0;
 	text-decoration: none;
-	font-weight: bold;
-	background: transparent none repeat-y 100% 0;
 }
 
 #navigation a:hover {
 	text-decoration: none;
-	background-image: none;
-}
-
-#navigation #active-subsection a {
-	display: block;
-	background-image: none;
 }
 
 /* Preferences pane layout
