@@ -1108,11 +1108,8 @@ form > p.post-notice strong {
 
 .dropdown-extended {
 	display: none;
-	position: absolute;
-	left: 0;
 	width: 340px;
 	z-index: 1;
-	top: 22px;
 }
 
 .dropdown-extended ul {
