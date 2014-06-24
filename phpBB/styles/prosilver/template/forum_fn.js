@@ -382,7 +382,7 @@ function parse_document(container)
 	*/
 	if (oldBrowser) {
 		// Fix .linklist.bulletin lists
-		container.find('ul.linklist.bulletin li:first-child, ul.linklist.bulletin li.rightside:last-child').addClass('no-bulletin');
+		container.find('ul.linklist.bulletin > li:first-child, ul.linklist.bulletin > li.rightside:last-child').addClass('no-bulletin');
 	}
 
 	/**

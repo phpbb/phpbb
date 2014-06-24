@@ -423,7 +423,10 @@ ul.linklist.bulletin > li:before {
 }
 
 ul.linklist.bulletin > li:first-child:before, 
-ul.linklist.bulletin > li.rightside:last-child:before,
+ul.linklist.bulletin > li.rightside:last-child:before {
+	content: none;
+}
+
 ul.linklist.bulletin > li.no-bulletin:before {
 	content: none;
 }
@@ -1141,6 +1144,7 @@ form > p.post-notice strong {
 	max-height: none;
 	max-width: 340px !important;
 	padding: 0;
+	position: absolute;
 }
 
 .dropdown-extended .header {
