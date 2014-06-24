@@ -25,7 +25,7 @@ then
 	files_skipped="-name composer.phar"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/*"
+	executable_files="-path ${path}bin/\*"
 
 	incorect_files=$( 								\
 		find ${path}								\
@@ -45,7 +45,7 @@ then
 						'('							\
 							${executable_files}		\
 						')' -a						\
-						-not -perm -100				\
+						-not -perm +100				\
 					')' -o							\
 					'('								\
 						-not '('					\
