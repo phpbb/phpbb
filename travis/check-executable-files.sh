@@ -9,7 +9,7 @@
 # the docs/CREDITS.txt file.
 #
 set -e
-
+set -x
 DB=$1
 TRAVIS_PHP_VERSION=$2
 path="$3"
@@ -18,6 +18,7 @@ if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
 then
 	# Check the permissions of the files
 
+	# The following variables MUST NOT contain any wildcard
 	# Directories to skip
 	directories_skipped="-path ${path}develop -o -path ${path}vendor"
 
@@ -25,7 +26,7 @@ then
 	files_skipped="-name composer.phar"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/\*"
+	executable_files="-path ${path}bin/phpbbcli.php"
 
 	incorect_files=$( 								\
 		find ${path}								\
