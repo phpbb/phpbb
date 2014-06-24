@@ -225,6 +225,7 @@ $lang = array_merge($lang, array(
 	),
 	'QUOTE_NO_NESTING'			=> 'You may not embed quotes within each other.',
 
+	'REMOTE_UPLOAD_TIMEOUT'		=> 'The specified file could not be uploaded because the request timed out.',
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
 	'SAVE_DRAFT'				=> 'Save draft',
