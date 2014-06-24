@@ -104,6 +104,36 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
+	public function get_profile_value_raw_data()
+	{
+		return array(
+			array(
+				'http://example.com',
+				array('field_show_novalue' => true),
+				'http://example.com',
+				'Field should return the correct raw value',
+			),
+			array(
+				'http://example.com',
+				array('field_show_novalue' => false),
+				'http://example.com',
+				'Field should return correct raw value',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider get_profile_value_raw_data
+	*/
+	public function test_get_profile_value_raw($value, $field_options, $expected, $description)
+	{
+		$field_options = array_merge($this->field_options, $field_options);
+
+		$result = $this->cp->get_profile_value_raw($value, $field_options);
+
+		$this->assertSame($expected, $result, $description);
+	}
+
 	public function return_callback_implode()
 	{
 		return implode('-', func_get_args());
