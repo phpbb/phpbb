@@ -16,40 +16,51 @@ path="$3"
 
 if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
 then
-	# Get the list of the executables files under a given path
-	# The part "-name 'develop' -o -name 'vendor'" defines a set
-	# of ignored directories.
-	# The part "-path '*/bin/phpbbcli.php' -o -name 'composer.phar'"
-	# defines a whitelist.
+	# Check the permissions of the files
 
-	executables_files=$( 							\
+	# Directories to skip
+	directories_skipped="-path ${path}develop -o -path ${path}vendor"
+
+	# Files to skip
+	files_skipped="-name composer.phar"
+
+	# Files which have to be executable
+	executable_files="-path ${path}bin/*"
+
+	incorect_files=$( 								\
 		find ${path}								\
 			'('										\
 				'('									\
-					-name 'develop' -o				\
-					-name 'vendor'					\
+					${directories_skipped}			\
 				')'									\
 				-a -type d -prune -a -type f		\
-			')'										\
-			-o '('									\
+			')' -o 									\
+			'('										\
+				-type f -a							\
 				-not '('							\
-					-path '*/bin/phpbbcli.php' -o	\
-					-name 'composer.phar'			\
-				')'									\
-			-a '('									\
+					${files_skipped}				\
+				')' -a								\
 				'('									\
-					-type f -a						\
-					-perm +111						\
-				')' -o								\
-				-not -perm -600						\
+					'('								\
+						'('							\
+							${executable_files}		\
+						')' -a						\
+						-not -perm -100				\
+					')' -o							\
+					'('								\
+						-not '('					\
+							${executable_files}		\
+						')' -a						\
+						-perm +111					\
+					')'								\
+				')'									\
 			')'										\
-		')'											\
-	)
+		)
 
-	if [ "$executables_files" != '' ]
+	if [ "${incorect_files}" != '' ]
 	then
-		ls -la $executables_files
-		echo "MUST NOT be executable and MUST be readable and writable by the owner.";
+		ls -la ${incorect_files}
+		echo "does not have the proper permissions.";
 		exit 1;
 	fi
 fi
