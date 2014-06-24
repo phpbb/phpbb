@@ -218,14 +218,11 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	white-space: nowrap; /* For Opera */
 }
 
-#search-box #keywords {
-	width: 95px;
-}
+#search-box #keywords { width: 95px; }
+#search-box input { border: 1px solid transparent; }
 
 /* .button1 style defined later, just a few tweaks for the search button version */
-#search-box input.button1 {
-	padding: 1px 5px;
-}
+#search-box input.button1 { padding: 1px 5px; }
 
 #search-box li {
 	text-align: right;
@@ -908,14 +905,14 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .phpbb_alert {
 	border: 1px solid transparent;
 	display: none;
-	left: 0; 
+	left: 0;
 	padding: 0 25px 20px 25px;
 	position: fixed;
-	right: 0; 
+	right: 0;
 	top: 150px;
 	z-index: 50;
 	width: 620px;
-	margin: 0 auto; 
+	margin: 0 auto;
 }
 
 @media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
@@ -1139,7 +1136,7 @@ form > p.post-notice strong {
 	font-size: 11px;
 	font-weight: bold;
 	text-shadow: 1px 1px 1px white;
-	text-transform: uppercase;	
+	text-transform: uppercase;
 	line-height: 30px;
 	border-bottom: 1px solid;
 	border-radius: 5px 5px 0 0;
