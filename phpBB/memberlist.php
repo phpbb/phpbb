@@ -640,7 +640,7 @@ switch ($mode)
 		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
 
-		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
+		$template->assign_vars(phpbb_show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
@@ -1400,7 +1400,7 @@ switch ($mode)
 			if ($sort_key == 'l')
 			{
 //				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
-				usort($user_list,  '_sort_last_active');
+				usort($user_list,  'phpbb_sort_last_active');
 			}
 
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
@@ -1416,7 +1416,7 @@ switch ($mode)
 					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
-				$memberrow = array_merge(show_profile($row), array(
+				$memberrow = array_merge(phpbb_show_profile($row), array(
 					'ROW_NUMBER'		=> $i + ($start + 1),
 
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,

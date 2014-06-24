@@ -33,7 +33,7 @@ function mcp_post_details($id, $mode, $action)
 	$start	= request_var('start', 0);
 
 	// Get post data
-	$post_info = get_post_data(array($post_id), false, true);
+	$post_info = phpbb_get_post_data(array($post_id), false, true);
 
 	add_form_key('mcp_post_details');
 
@@ -43,7 +43,7 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	$post_info = $post_info[$post_id];
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
 	switch ($action)
 	{
@@ -508,7 +508,7 @@ function change_poster(&$post_info, $userdata)
 	$to_username = $userdata['username'];
 
 	// Renew post info
-	$post_info = get_post_data(array($post_id), false, true);
+	$post_info = phpbb_get_post_data(array($post_id), false, true);
 
 	if (!sizeof($post_info))
 	{

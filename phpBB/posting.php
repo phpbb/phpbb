@@ -195,7 +195,7 @@ switch ($mode)
 		}
 		else
 		{
-			upload_popup();
+			phpbb_upload_popup();
 			return;
 		}
 	break;
@@ -233,7 +233,7 @@ if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'b
 
 if ($mode == 'popup')
 {
-	upload_popup($post_data['forum_style']);
+	phpbb_upload_popup($post_data['forum_style']);
 	return;
 }
 
@@ -439,7 +439,7 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 
 	$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
 	$soft_delete_reason = ($mode == 'soft_delete' && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
-	handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
+	phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
 	return;
 }
 
@@ -1259,7 +1259,7 @@ if ($submit || $preview || $refresh)
 			{
 				$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
 				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
-				handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
+				phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
 				return;
 			}
 

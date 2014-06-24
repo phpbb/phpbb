@@ -159,7 +159,7 @@ class mcp_queue
 
 				if ($topic_id)
 				{
-					$topic_info = get_topic_data(array($topic_id), 'm_approve');
+					$topic_info = phpbb_get_topic_data(array($topic_id), 'm_approve');
 					if (isset($topic_info[$topic_id]['topic_first_post_id']))
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
@@ -174,7 +174,7 @@ class mcp_queue
 
 				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
 
-				$post_info = get_post_data(array($post_id), 'm_approve', true);
+				$post_info = phpbb_get_post_data(array($post_id), 'm_approve', true);
 
 				if (!sizeof($post_info))
 				{
@@ -343,7 +343,7 @@ class mcp_queue
 
 				if ($topic_id)
 				{
-					$topic_info = get_topic_data(array($topic_id));
+					$topic_info = phpbb_get_topic_data(array($topic_id));
 
 					if (!sizeof($topic_info))
 					{
@@ -389,7 +389,7 @@ class mcp_queue
 				}
 				else
 				{
-					$forum_info = get_forum_data(array($forum_id), $m_perm);
+					$forum_info = phpbb_get_forum_data(array($forum_id), $m_perm);
 
 					if (!sizeof($forum_info))
 					{
@@ -409,7 +409,7 @@ class mcp_queue
 				$sort_days = $total = 0;
 				$sort_key = $sort_dir = '';
 				$sort_by_sql = $sort_order_sql = array();
-				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
+				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
 				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -572,7 +572,7 @@ class mcp_queue
 		global $db, $template, $user, $config, $request, $phpbb_container;
 		global $phpEx, $phpbb_root_path;
 
-		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
+		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -591,7 +591,7 @@ class mcp_queue
 			'redirect'		=> $redirect,
 		));
 
-		$post_info = get_post_data($post_id_list, 'm_approve');
+		$post_info = phpbb_get_post_data($post_id_list, 'm_approve');
 
 		if (confirm_box(true))
 		{
@@ -795,7 +795,7 @@ class mcp_queue
 		global $db, $template, $user, $config;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-		if (!check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
+		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -813,7 +813,7 @@ class mcp_queue
 			'redirect'		=> $redirect,
 		));
 
-		$topic_info = get_topic_data($topic_id_list, 'm_approve');
+		$topic_info = phpbb_get_topic_data($topic_id_list, 'm_approve');
 
 		if (confirm_box(true))
 		{
@@ -964,7 +964,7 @@ class mcp_queue
 		global $db, $template, $user, $config, $phpbb_container;
 		global $phpEx, $phpbb_root_path, $request;
 
-		if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
+		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -1016,7 +1016,7 @@ class mcp_queue
 			}
 		}
 
-		$post_info = get_post_data($post_id_list, 'm_approve');
+		$post_info = phpbb_get_post_data($post_id_list, 'm_approve');
 
 		$is_disapproving = false;
 		foreach ($post_info as $post_id => $post_data)

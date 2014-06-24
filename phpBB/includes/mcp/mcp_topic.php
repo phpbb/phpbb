@@ -27,13 +27,13 @@ function mcp_topic_view($id, $mode, $action)
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth, $cache, $phpbb_container;
 
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
 	$user->add_lang('viewtopic');
 	$pagination = $phpbb_container->get('pagination');
 
 	$topic_id = request_var('t', 0);
-	$topic_info = get_topic_data(array($topic_id), false, true);
+	$topic_info = phpbb_get_topic_data(array($topic_id), false, true);
 
 	if (!sizeof($topic_info))
 	{
@@ -114,7 +114,7 @@ function mcp_topic_view($id, $mode, $action)
 	$sort_days = $total = 0;
 	$sort_key = $sort_dir = '';
 	$sort_by_sql = $sort_order_sql = array();
-	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
+	phpbb_mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
 	$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
@@ -278,7 +278,7 @@ function mcp_topic_view($id, $mode, $action)
 		// Has the user selected a topic for merge?
 		if ($to_topic_id)
 		{
-			$to_topic_info = get_topic_data(array($to_topic_id), 'm_merge');
+			$to_topic_info = phpbb_get_topic_data(array($to_topic_id), 'm_merge');
 
 			if (!sizeof($to_topic_info))
 			{
@@ -368,13 +368,13 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_split')))
+	if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_split')))
 	{
 		return;
 	}
 
 	$post_id = $post_id_list[0];
-	$post_info = get_post_data(array($post_id));
+	$post_info = phpbb_get_post_data(array($post_id));
 
 	if (!sizeof($post_info))
 	{
@@ -398,7 +398,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	$forum_info = get_forum_data(array($to_forum_id), 'f_post');
+	$forum_info = phpbb_get_forum_data(array($to_forum_id), 'f_post');
 
 	if (!sizeof($forum_info))
 	{
@@ -438,7 +438,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			$sort_days = $total = 0;
 			$sort_key = $sort_dir = '';
 			$sort_by_sql = $sort_order_sql = array();
-			mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
+			phpbb_mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
 			$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
@@ -505,7 +505,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
-		$topic_info = get_topic_data(array($topic_id));
+		$topic_info = phpbb_get_topic_data(array($topic_id));
 		$topic_info = $topic_info[$topic_id];
 
 		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_SPLIT_DESTINATION', $subject);
@@ -594,7 +594,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 	$sync_topics = array($topic_id, $to_topic_id);
 
-	$topic_data = get_topic_data($sync_topics, 'm_merge');
+	$topic_data = phpbb_get_topic_data($sync_topics, 'm_merge');
 
 	if (!sizeof($topic_data) || empty($topic_data[$to_topic_id]))
 	{
@@ -619,7 +619,7 @@ function merge_posts($topic_id, $to_topic_id)
 		return;
 	}
 
-	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
+	if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
 	{
 		return;
 	}

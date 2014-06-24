@@ -118,7 +118,7 @@ if (!$auth->acl_getf_global('m_'))
 	$allow_user = false;
 	if ($quickmod && isset($user_quickmod_actions[$action]) && $user->data['is_registered'] && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
 	{
-		$topic_info = get_topic_data(array($topic_id));
+		$topic_info = phpbb_get_topic_data(array($topic_id));
 		if ($topic_info[$topic_id]['topic_poster'] == $user->data['user_id'])
 		{
 			$allow_user = true;

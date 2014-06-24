@@ -250,13 +250,25 @@ class p_master
 			// Function for building 'url_extra'
 			$short_name = $this->get_short_name($row['module_basename']);
 
-			$url_func = '_module_' . $short_name . '_url';
+			$url_func = 'phpbb_module_' . $short_name . '_url';
+			if (!function_exists($url_func))
+			{
+				$url_func = '_module_' . $short_name . '_url';
+			}
 
 			// Function for building the language name
-			$lang_func = '_module_' . $short_name . '_lang';
+			$lang_func = 'phpbb_module_' . $short_name . '_lang';
+			if (!function_exists($lang_func))
+			{
+				$lang_func = '_module_' . $short_name . '_lang';
+			}
 
 			// Custom function for calling parameters on module init (for example assigning template variables)
-			$custom_func = '_module_' . $short_name;
+			$custom_func = 'phpbb_module_' . $short_name;
+			if (!function_exists($custom_func))
+			{
+				$custom_func = '_module_' . $short_name;
+			}
 
 			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
 
