@@ -806,7 +806,7 @@ class fileupload
 		$length = false;
 		$timer_stop = time() + $this->upload_timeout;
 
-		while (!($length && $filesize >= $length) && !@feof($fsock))
+		while ((!$length || $filesize < $length) && !@feof($fsock))
 		{
 			if ($get_info)
 			{
