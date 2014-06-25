@@ -550,7 +550,7 @@ class php_exporter
 	public function validate_since($line)
 	{
 		$match = array();
-		preg_match('#^\* @since (\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?)$#', ltrim($line, "\t"), $match);
+		preg_match('#^\* @since (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)$#', ltrim($line, "\t"), $match);
 		if (!isset($match[1]))
 		{
 			throw new \LogicException("Invalid '@since' information for event "

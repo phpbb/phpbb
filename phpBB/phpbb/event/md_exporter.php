@@ -227,7 +227,7 @@ class md_exporter
 	*/
 	public function validate_since($since)
 	{
-		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|rc|pl)\d+)?$#', $since))
+		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?$#', $since))
 		{
 			throw new \LogicException("Invalid since information found for event '{$this->current_event}'");
 		}

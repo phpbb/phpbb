@@ -118,6 +118,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array('* @since 3.1.0-a1', '3.1.0-a1'),
 			array('* @since 3.1.0-b3', '3.1.0-b3'),
 			array('	* @since 3.1.0-b3', '3.1.0-b3'),
+			array('* @since 3.1.0-RC2', '3.1.0-RC2'),
 		);
 	}
 
@@ -137,6 +138,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array('* @since 3.1.0-a1 bertie is cool'),
 			array('bertie* @since 3.1.0-a1'),
 			array('* @since 3.1-A2'),
+			array('* @since 3.1.0-rc1'),
 		);
 	}
 
