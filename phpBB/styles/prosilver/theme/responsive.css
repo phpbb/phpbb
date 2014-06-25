@@ -191,7 +191,7 @@ ul.topiclist li.row dt a.subforum {
 @media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
 {
 	.dropdown-extended .dropdown-contents {
-		max-width: 300px !important;
+		width: auto;
 	}
 }
 

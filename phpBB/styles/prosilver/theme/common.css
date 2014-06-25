@@ -1147,9 +1147,9 @@ form > p.post-notice strong {
 
 .dropdown-extended .dropdown-contents {
 	max-height: none;
-	max-width: 340px !important;
 	padding: 0;
 	position: absolute;
+	width: 340px;
 }
 
 .dropdown-extended .header {
