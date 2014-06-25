@@ -135,7 +135,7 @@ class type_dropdown extends type_base
 		// retrieve option lang data if necessary
 		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], 1))
 		{
-			$this->lang_helper->get_option_lang($field_data['field_id'], $field_data['lang_id'], false);
+			$this->lang_helper->load_option_lang($field_data['lang_id']);
 		}
 
 		if (!$this->lang_helper->is_set($field_data['field_id'], $field_data['lang_id'], $field_value))
@@ -160,7 +160,7 @@ class type_dropdown extends type_base
 		$lang_id = $field_data['lang_id'];
 		if (!$this->lang_helper->is_set($field_id, $lang_id))
 		{
-			$this->lang_helper->get_option_lang($field_id, $lang_id, false);
+			$this->lang_helper->load_option_lang($lang_id);
 		}
 
 		if ($field_value == $field_data['field_novalue'] && !$field_data['field_show_novalue'])
@@ -199,7 +199,7 @@ class type_dropdown extends type_base
 
 		if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 		{
-			$this->lang_helper->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], $preview_options);
+			$this->lang_helper->load_preview_options($profile_row['field_id'], $profile_row['lang_id'], $preview_options);
 		}
 
 		$profile_row['field_value'] = (int) $value;

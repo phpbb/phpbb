@@ -1270,7 +1270,6 @@ if ($config['load_cpf_viewtopic'])
 
 	// filter out fields not to be displayed on viewtopic. Yes, it's a hack, but this shouldn't break any MODs.
 	$profile_fields_cache = array();
-	$profile_rows = array();
 	foreach ($profile_fields_tmp as $profile_user_id => $profile_fields)
 	{
 		$profile_fields_cache[$profile_user_id] = array();
@@ -1279,15 +1278,10 @@ if ($config['load_cpf_viewtopic'])
 			if ($profile_field['data']['field_show_on_vt'])
 			{
 				$profile_fields_cache[$profile_user_id][$used_ident] = $profile_field;
-				$profile_rows[] = $profile_field;
 			}
 		}
 	}
-
-	// Cache the language options for optimisation
-	$cp->cache_profile_fields_lang_options($profile_rows);
-
-	unset($profile_fields_tmp, $profile_rows);
+	unset($profile_fields_tmp);
 }
 
 // Generate online information for user
