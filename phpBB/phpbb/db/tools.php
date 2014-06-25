@@ -1572,6 +1572,12 @@ class tools
 					$return_array['null'] = 'NOT NULL';
 					$sql .= 'NOT NULL ';
 				}
+				else
+				{
+					$default_val = "'" . $column_data[1] . "'";
+					$return_array['null'] = 'NULL';
+					$sql .= 'NULL ';
+				}
 
 				$return_array['default'] = $default_val;
 
