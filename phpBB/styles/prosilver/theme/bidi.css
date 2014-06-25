@@ -586,6 +586,10 @@ li.breadcrumbs span:first-child > a {
 	margin-right: 8px;
 }
 
+.rtl .postprofile .avatar {
+	float: right;
+}
+
 .rtl .online {
 	background-position: 0 0;
 }
@@ -1078,8 +1082,11 @@ li.breadcrumbs span:first-child > a {
 		border-width: 0 0 1px 0;
 	}
 
+	.rtl .postprofile dt, .rtl .postprofile dd.profile-rank, .rtl .search .postprofile dd {
+		margin: 0;
+	}
+
 	.rtl .postprofile .avatar {
-		float: right;
 		margin-left: 5px;
 		margin-right: 0;
 	}

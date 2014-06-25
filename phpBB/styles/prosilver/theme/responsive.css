@@ -424,16 +424,22 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	margin: 0;
 }
 
+.postprofile .has-avatar .avatar-container {
+	margin: 0;
+	overflow: inherit;
+}
+
+.postprofile .avatar-container:after {
+	clear: none;
+}
+
 .postprofile .avatar {
-	display: block;
-	float: left;
 	margin-right: 5px;
 }
 
 .postprofile .avatar img {
 	width: auto !important;
 	height: auto !important;
-	display: block;
 	max-height: 32px;
 }
 

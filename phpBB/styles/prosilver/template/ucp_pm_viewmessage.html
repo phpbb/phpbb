@@ -18,7 +18,14 @@
 <div class="inner">
 
 	<dl class="postprofile" id="profile{MESSAGE_ID}">
-		<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF -->"><!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->{MESSAGE_AUTHOR_FULL}</dt>
+		<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF AUTHOR_AVATAR -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
+			<div class="avatar-container">
+				<!-- EVENT ucp_pm_viewmessage_avatar_before -->
+				<!-- IF AUTHOR_AVATAR --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR}</a><!-- ENDIF -->
+				<!-- EVENT ucp_pm_viewmessage_avatar_after -->
+			</div>
+			{MESSAGE_AUTHOR_FULL}
+		</dt>
 
 		<!-- IF RANK_TITLE or RANK_IMG --><dd class="profile-rank">{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
 
