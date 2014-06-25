@@ -1141,6 +1141,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				'username'			=> $row['username'],
 				'user_colour'		=> $row['user_colour'],
+				'contact_user'		=> '',
 
 				'warnings'			=> 0,
 				'allow_pm'			=> 0,
@@ -1198,6 +1199,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				'username'			=> $row['username'],
 				'user_colour'		=> $row['user_colour'],
+				'contact_user' 		=> $user->lang('CONTACT_USER', get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['username'])),
 
 				'online'		=> false,
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
@@ -1699,6 +1701,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'],
 		'POSTER_WARNINGS'	=> $auth->acl_get('m_warn') ? $user_cache[$poster_id]['warnings'] : '',
 		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
+		'CONTACT_USER'		=> $user_cache[$poster_id]['contact_user'],
 
 		'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
 		'POST_SUBJECT'		=> $row['post_subject'],
