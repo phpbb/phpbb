@@ -1487,8 +1487,16 @@ class tools
 
 				$return_array['textimage'] = $column_type === '[text]';
 
-				$sql .= 'NOT NULL';
-				$sql_default .= 'NOT NULL';
+				if (!is_null($column_data[1]))
+				{
+					$sql .= 'NOT NULL';
+					$sql_default .= 'NOT NULL';
+				}
+				else
+				{
+					$sql .= 'NULL';
+					$sql_default .= 'NULL';
+				}
 
 				$return_array['column_type_sql_default'] = $sql_default;
 
@@ -1503,7 +1511,15 @@ class tools
 				{
 					$sql .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 				}
-				$sql .= 'NOT NULL';
+
+				if (!is_null($column_data[1]))
+				{
+					$sql .= 'NOT NULL';
+				}
+				else
+				{
+					$sql .= 'NULL';
+				}
 
 				if (isset($column_data[2]))
 				{
@@ -1528,7 +1544,7 @@ class tools
 				// Oracle does not like setting NOT NULL on a column that is already NOT NULL (this happens only on number fields)
 				if (!preg_match('/number/i', $column_type))
 				{
-					$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
+					$sql .= ($column_data[1] === '' || $column_data[1] === null) ? '' : 'NOT NULL';
 				}
 
 				$return_array['auto_increment'] = false;
@@ -1588,8 +1604,11 @@ class tools
 					$sql .= ' ' . $column_type;
 				}
 
-				$sql .= ' NOT NULL ';
-				$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}'" : '';
+				if (!is_null($column_data[1]))
+				{
+					$sql .= ' NOT NULL ';
+					$sql .= "DEFAULT '{$column_data[1]}'";
+				}
 
 			break;
 		}
