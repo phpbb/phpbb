@@ -37,12 +37,6 @@ class manager
 	protected $dispatcher;
 
 	/**
-	* Profile fields language helper
-	* @var \phpbb\profilefields\lang_helper
-	*/
-	protected $lang_helper;
-
-	/**
 	* Request object
 	* @var \phpbb\request\request
 	*/
@@ -80,7 +74,6 @@ class manager
 	* @param	\phpbb\auth\auth			$auth		Auth object
 	* @param	\phpbb\db\driver\driver_interface	$db			Database object
 	* @param	\phpbb\event\dispatcher		$dispatcher	Event dispatcher object
-	* @param	\phpbb\profilefields\lang_helper	$lang_helper	Language helper object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\di\service_collection $type_collection
@@ -89,12 +82,11 @@ class manager
 	* @param	string				$fields_language_table
 	* @param	string				$fields_data_table
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher $dispatcher, \phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher $dispatcher, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
-		$this->lang_helper = $lang_helper;
 		$this->request = $request;
 		$this->template = $template;
 		$this->type_collection = $type_collection;
