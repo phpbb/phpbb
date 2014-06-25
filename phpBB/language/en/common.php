@@ -563,6 +563,7 @@ $lang = array_merge($lang, array(
 	'POSTED_ON_DATE'		=> 'on',
 	'POSTS'					=> 'Posts',
 	'POSTS_UNAPPROVED'		=> 'At least one post in this topic has not been approved.',
+	'POSTS_UNAPPROVED_FORUM'=> 'At least one post in this forum has not been approved.',
 	'POST_BY_AUTHOR'		=> 'by',
 	'POST_BY_FOE'			=> '<strong>%1$s</strong>, who is currently on your ignore list, made this post.',
 	'POST_DISPLAY'			=> '%1$sDisplay this post%2$s.',
