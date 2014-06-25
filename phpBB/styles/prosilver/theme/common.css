@@ -218,11 +218,18 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	white-space: nowrap; /* For Opera */
 }
 
-#search-box #keywords { width: 95px; }
-#search-box input { border: 1px solid transparent; }
+#search-box #keywords {
+	width: 95px;
+}
+
+#search-box input {
+	border: 1px solid transparent;
+}
 
 /* .button1 style defined later, just a few tweaks for the search button version */
-#search-box input.button1 { padding: 1px 5px; }
+#search-box input.button1 {
+	padding: 1px 5px;
+}
 
 #search-box li {
 	text-align: right;
