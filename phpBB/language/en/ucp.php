@@ -359,6 +359,7 @@ $lang = array_merge($lang, array(
 	),
 	'NO_ACTION_MODE'				=> 'No message action specified.',
 	'NO_AUTHOR'						=> 'No author defined for this message',
+	'NO_AVATAR'						=> 'No avatar selected',
 	'NO_AVATAR_CATEGORY'			=> 'None',
 
 	'NO_AUTH_DELETE_MESSAGE'		=> 'You are not authorised to delete private messages.',
