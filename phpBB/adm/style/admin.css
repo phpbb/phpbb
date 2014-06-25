@@ -1125,7 +1125,12 @@ input.langvalue, textarea.langvalue {
 }
 
 input[type="number"], dd input[type="number"] {
+	padding-right: 0;
 	width: 60px;
+}
+.rtl input[type="number"], .rtl dd input[type="number"] {
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 optgroup, select {
