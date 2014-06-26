@@ -448,7 +448,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-right: 2px;
 }
 
-.rtl dd.lastpost span, .rtl ul.topiclist dd.info span, .rtl ul.topiclist dd.time span, .rtl dd.redirect span, .rtl dd.moderation span {
+.rtl dd.lastpost > span, .rtl ul.topiclist dd.info > span, .rtl ul.topiclist dd.time > span, .rtl dd.redirect > span, .rtl dd.moderation > span {
 	padding-left: 0;
 	padding-right: 5px;
 }
