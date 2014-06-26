@@ -21,9 +21,12 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 */
 class config extends Extension
 {
-	public function __construct($config_file)
+	/** @var array */
+	protected $config_file_data;
+
+	public function __construct($config_file_data)
 	{
-		$this->config_file = $config_file;
+		$this->config_file_data = $config_file_data;
 	}
 
 	/**
@@ -36,7 +39,7 @@ class config extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		require($this->config_file);
+		extract($this->config_file_data);
 
 		$container->setParameter('core.adm_relative_path', (isset($phpbb_adm_relative_path) ? $phpbb_adm_relative_path : 'adm/'));
 		$container->setParameter('core.table_prefix', $table_prefix);
