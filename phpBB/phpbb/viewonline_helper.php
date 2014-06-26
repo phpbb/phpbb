@@ -14,16 +14,16 @@
 namespace phpbb;
 
 /**
- * Class to handle viewonline related tasks
- */
+* Class to handle viewonline related tasks
+*/
 class viewonline_helper
 {
 	/**
-	 * Get user page
-	 *
-	 * @param string $session_page User's session page
-	 * @return array Match array filled by preg_match()
-	 */
+	* Get user page
+	*
+	* @param string $session_page User's session page
+	* @return array Match array filled by preg_match()
+	*/
 	public function get_user_page($session_page)
 	{
 		preg_match('#^([./\\]*+[a-z0-9/_-]+)#i', $session_page, $on_page);
