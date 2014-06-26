@@ -154,7 +154,6 @@ function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
 {
 	$config_file = $phpbb_root_path . 'config.' . $php_ext;
 	return phpbb_create_compiled_container(
-		$config_file,
 		array(
 			new phpbb\di\extension\config($config_file),
 			new phpbb\di\extension\core($config_path),
@@ -177,7 +176,7 @@ function phpbb_create_update_container($phpbb_root_path, $php_ext, $config_path)
 * @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_compiled_container($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
+function phpbb_create_compiled_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	// Create the final container to be compiled and cached
 	$container = phpbb_create_container($extensions, $phpbb_root_path, $php_ext);
@@ -201,7 +200,7 @@ function phpbb_create_compiled_container($config_file, array $extensions, array 
 * @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_dumped_container($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
+function phpbb_create_dumped_container(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	// Check for our cached container; if it exists, use it
 	$container_filename = phpbb_container_filename($phpbb_root_path, $php_ext);
@@ -211,7 +210,7 @@ function phpbb_create_dumped_container($config_file, array $extensions, array $p
 		return new phpbb_cache_container();
 	}
 
-	$container = phpbb_create_compiled_container($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
+	$container = phpbb_create_compiled_container($extensions, $passes, $phpbb_root_path, $php_ext);
 
 	// Lastly, we create our cached container class
 	$dumper = new PhpDumper($container);
@@ -241,10 +240,10 @@ function phpbb_create_dumped_container($config_file, array $extensions, array $p
 * @param string $php_ext PHP Extension
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_dumped_container_unless_debug($config_file, array $extensions, array $passes, $phpbb_root_path, $php_ext)
+function phpbb_create_dumped_container_unless_debug(array $extensions, array $passes, $phpbb_root_path, $php_ext)
 {
 	$container_factory = defined('DEBUG_CONTAINER') ? 'phpbb_create_compiled_container' : 'phpbb_create_dumped_container';
-	return $container_factory($config_file, $extensions, $passes, $phpbb_root_path, $php_ext);
+	return $container_factory($extensions, $passes, $phpbb_root_path, $php_ext);
 }
 
 /**
@@ -262,7 +261,6 @@ function phpbb_create_default_container($phpbb_root_path, $php_ext)
 	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
 
 	return phpbb_create_dumped_container_unless_debug(
-		$config_file,
 		array(
 			new \phpbb\di\extension\config($config_file),
 			new \phpbb\di\extension\core($phpbb_root_path . 'config'),
