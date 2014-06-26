@@ -145,7 +145,7 @@ class acp_attachments
 						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
 						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
-						'secure_allow_empty_referer'	=> array('lang' => 'SECURE_EMPTY_REFERER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'secure_allow_empty_referer'	=> array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'check_attachment_content' 		=> array('lang' => 'CHECK_CONTENT', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'					=> $l_legend_cat_images,
