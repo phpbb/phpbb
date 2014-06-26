@@ -5,10 +5,10 @@
 		<div class="dropdown-contents">
 			<fieldset class="display-options">
 			<!-- IF S_SORT_OPTIONS -->
-				<label for="sk">{L_SORT_BY}{L_COLON} <select name="sk" id="sk">{S_SORT_OPTIONS}</select></label>
+				<label>{L_SORT_BY}{L_COLON} <select name="sk" id="sk">{S_SORT_OPTIONS}</select></label>
 				<label>{L_SORT_DIRECTION}{L_COLON} <select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
 				<hr class="dashed" />
-				<input class="button2" type="submit" name="sort" value="{L_SORT}" />
+				<input type="submit" class="button2" name="sort" value="{L_SORT}" />
 			<!-- ELSE -->
 				<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 				<!-- IF S_SELECT_SORT_KEY -->
@@ -16,7 +16,7 @@
 				<label>{L_SORT_DIRECTION}{L_COLON} {S_SELECT_SORT_DIR}</label>
 				<!-- ENDIF -->
 				<hr class="dashed" />
-				<input type="submit" name="sort" value="{L_GO}" class="button2" />
+				<input type="submit" class="button2" name="sort" value="{L_GO}" />
 			<!-- ENDIF -->
 			</fieldset>
 		</div>
