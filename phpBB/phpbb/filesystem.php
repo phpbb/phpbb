@@ -35,7 +35,7 @@ class filesystem
 				continue;
 			}
 
-			if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '..')
+			if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '.' && $filtered[sizeof($filtered) - 1] !== '..')
 			{
 				array_pop($filtered);
 			}

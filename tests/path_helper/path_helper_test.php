@@ -13,6 +13,7 @@
 
 class phpbb_path_helper_test extends phpbb_test_case
 {
+	/** @var \phpbb\path_helper */
 	protected $path_helper;
 	protected $phpbb_root_path = '';
 
@@ -20,7 +21,8 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->set_phpbb_root_path();
+		$filesystem = new \phpbb\filesystem();
+		$this->set_phpbb_root_path($filesystem);
 
 		$this->path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
@@ -40,9 +42,9 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*	any time we wish to use it in one of these functions (and
 	*	also in general for everything else)
 	*/
-	public function set_phpbb_root_path()
+	public function set_phpbb_root_path($filesystem)
 	{
-		$this->phpbb_root_path = dirname(__FILE__) . './../../phpBB/';
+		$this->phpbb_root_path = $filesystem->clean_path(dirname(__FILE__) . '/../../phpBB/');
 	}
 
 	public function test_get_web_root_path()
@@ -53,7 +55,8 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 	public function basic_update_web_root_path_data()
 	{
-		$this->set_phpbb_root_path();
+		$filesystem = new \phpbb\filesystem();
+		$this->set_phpbb_root_path($filesystem);
 
 		return array(
 			array(
@@ -71,7 +74,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 			),
 			array(
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
+				$filesystem->clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
 			),
 		);
 	}
@@ -81,51 +84,55 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_basic_update_web_root_path($input, $expected)
 	{
-		$this->assertEquals($expected, $this->path_helper->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($expected, $this->path_helper->update_web_root_path($input));
 	}
 
 	public function update_web_root_path_data()
 	{
-		$this->set_phpbb_root_path();
+		$this->set_phpbb_root_path(new \phpbb\filesystem());
 
 		return array(
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . 'test.php',
 				'/',
+				null,
+				null,
+				'',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . '../test.php',
 				'//',
+				null,
+				null,
+				'./../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . '../test.php',
 				'//',
 				'foo/bar.php',
 				'bar.php',
+				'./../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . '../../test.php',
 				'/foo/template',
 				'/phpbb3-fork/phpBB/app.php/foo/template',
 				'/phpbb3-fork/phpBB/app.php',
+				'./../../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . '../test.php',
 				'/foo/template',
 				'/phpbb3-fork/phpBB/foo/template',
 				'/phpbb3-fork/phpBB/app.php',
+				'./../',
 			),
 			array(
 				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . '../test.php',
 				'/',
 				'/phpbb3-fork/phpBB/app.php/',
 				'/phpbb3-fork/phpBB/app.php',
+				'./../',
 			),
 		);
 	}
@@ -133,9 +140,9 @@ class phpbb_path_helper_test extends phpbb_test_case
 	/**
 	* @dataProvider update_web_root_path_data
 	*/
-	public function test_update_web_root_path($input, $expected, $getPathInfo, $getRequestUri = null, $getScriptName = null)
+	public function test_update_web_root_path($input, $getPathInfo, $getRequestUri, $getScriptName, $correction)
 	{
-		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
+		$symfony_request = $this->getMock('\phpbb\symfony_request', array(), array(
 			new phpbb_mock_request(),
 		));
 		$symfony_request->expects($this->any())
@@ -155,7 +162,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 			'php'
 		);
 
-		$this->assertEquals($expected, $path_helper->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($correction . $input, $path_helper->update_web_root_path($input, $symfony_request));
 	}
 
 	public function clean_url_data()
