@@ -176,7 +176,7 @@ header('Content-type: text/html; charset=UTF-8');
 
 								<br />
 
-								<p><?php echo $user->lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
+								<p><?php echo $user->lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->get_sql_layer(); ?></strong><br />
 								<?php echo $user->lang['PREVIOUS_VERSION']; ?> :: <strong><?php echo $config['version']; ?></strong><br />
 
 <?php

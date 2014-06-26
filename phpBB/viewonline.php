@@ -102,7 +102,7 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'sqlite':
 		case 'sqlite3':

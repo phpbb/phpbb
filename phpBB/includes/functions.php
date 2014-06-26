@@ -3998,7 +3998,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 
 	// Get number of online guests
 
-	if ($db->sql_layer === 'sqlite' || $db->sql_layer === 'sqlite3')
+	if ($db->get_sql_layer() === 'sqlite' || $db->get_sql_layer() === 'sqlite3')
 	{
 		$sql = 'SELECT COUNT(session_ip) as num_guests
 			FROM (
@@ -5064,7 +5064,7 @@ function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpb
 		if (isset($GLOBALS['starttime']))
 		{
 			$totaltime = microtime(true) - $GLOBALS['starttime'];
-			$debug_info[] = sprintf('<abbr title="SQL time: %.3fs / PHP time: %.3fs">Time: %.3fs</abbr>', $db->sql_time, ($totaltime - $db->sql_time), $totaltime);
+			$debug_info[] = sprintf('<abbr title="SQL time: %.3fs / PHP time: %.3fs">Time: %.3fs</abbr>', $db->get_sql_time(), ($totaltime - $db->get_sql_time()), $totaltime);
 		}
 
 		$debug_info[] = sprintf('<abbr title="Cached: %d">Queries: %d</abbr>', $db->sql_num_queries(true), $db->sql_num_queries());

@@ -76,7 +76,7 @@ class release_3_0_7_rc1 extends \phpbb\db\migration\migration
 	{
 		// Delete all text-templates from the template_data
 		$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
-			WHERE template_filename ' . $this->db->sql_like_expression($this->db->any_char . '.txt');
+			WHERE template_filename ' . $this->db->sql_like_expression($this->db->get_any_char() . '.txt');
 		$this->sql_query($sql);
 	}
 }

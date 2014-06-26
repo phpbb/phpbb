@@ -1532,10 +1532,10 @@ class install_install extends module
 				$_module->update_module_data($module_data, true);
 
 				// Check for last sql error happened
-				if ($db->sql_error_triggered)
+				if ($db->get_sql_error_triggered())
 				{
-					$error = $db->sql_error($db->sql_error_sql);
-					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+					$error = $db->sql_error($db->get_sql_error_sql());
+					$this->p_master->db_error($error['message'], $db->get_sql_error_sql(), __LINE__, __FILE__);
 				}
 
 				$categories[$cat_name]['id'] = (int) $module_data['module_id'];
@@ -1566,10 +1566,10 @@ class install_install extends module
 						$_module->update_module_data($module_data, true);
 
 						// Check for last sql error happened
-						if ($db->sql_error_triggered)
+						if ($db->get_sql_error_triggered())
 						{
-							$error = $db->sql_error($db->sql_error_sql);
-							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+							$error = $db->sql_error($db->get_sql_error_sql());
+							$this->p_master->db_error($error['message'], $db->get_sql_error_sql(), __LINE__, __FILE__);
 						}
 
 						$categories[$level2_name]['id'] = (int) $module_data['module_id'];
@@ -1606,10 +1606,10 @@ class install_install extends module
 						$_module->update_module_data($module_data, true);
 
 						// Check for last sql error happened
-						if ($db->sql_error_triggered)
+						if ($db->get_sql_error_triggered())
 						{
-							$error = $db->sql_error($db->sql_error_sql);
-							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+							$error = $db->sql_error($db->get_sql_error_sql());
+							$this->p_master->db_error($error['message'], $db->get_sql_error_sql(), __LINE__, __FILE__);
 						}
 					}
 				}
@@ -1772,10 +1772,10 @@ class install_install extends module
 						$_module->update_module_data($module_data, true);
 
 						// Check for last sql error happened
-						if ($db->sql_error_triggered)
+						if ($db->get_sql_error_triggered())
 						{
-							$error = $db->sql_error($db->sql_error_sql);
-							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+							$error = $db->sql_error($db->get_sql_error_sql());
+							$this->p_master->db_error($error['message'], $db->get_sql_error_sql(), __LINE__, __FILE__);
 						}
 					}
 				}
@@ -1824,10 +1824,10 @@ class install_install extends module
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $lang_pack));
 
 				$installed_languages[] = (int) $db->sql_nextid();
-				if ($db->sql_error_triggered)
+				if ($db->get_sql_error_triggered())
 				{
-					$error = $db->sql_error($db->sql_error_sql);
-					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+					$error = $db->sql_error($db->get_sql_error_sql());
+					$this->p_master->db_error($error['message'], $db->get_sql_error_sql(), __LINE__, __FILE__);
 				}
 			}
 		}
@@ -1913,7 +1913,7 @@ class install_install extends module
 			if (!$user_id)
 			{
 				// If we can't insert this user then continue to the next one to avoid inconsistent data
-				$this->p_master->db_error('Unable to insert bot into users table', $db->sql_error_sql, __LINE__, __FILE__, true);
+				$this->p_master->db_error('Unable to insert bot into users table', $db->get_sql_error_sql(), __LINE__, __FILE__, true);
 				continue;
 			}
 

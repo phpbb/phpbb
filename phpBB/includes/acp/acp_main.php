@@ -269,7 +269,7 @@ class acp_main
 					break;
 
 					case 'db_track':
-						switch ($db->sql_layer)
+						switch ($db->get_sql_layer())
 						{
 							case 'sqlite':
 							case 'sqlite3':
@@ -374,7 +374,7 @@ class acp_main
 
 						foreach ($tables as $table)
 						{
-							switch ($db->sql_layer)
+							switch ($db->get_sql_layer())
 							{
 								case 'sqlite':
 								case 'sqlite3':

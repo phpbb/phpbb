@@ -758,7 +758,7 @@ class fulltext_native extends \phpbb\search\base
 				);
 			}
 
-			switch ($this->db->sql_layer)
+			switch ($this->db->get_sql_layer())
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -978,7 +978,7 @@ class fulltext_native extends \phpbb\search\base
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
-			switch ($this->db->sql_layer)
+			switch ($this->db->get_sql_layer())
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -1000,7 +1000,7 @@ class fulltext_native extends \phpbb\search\base
 					}
 					else
 					{
-						if ($this->db->sql_layer == 'sqlite' || $this->db->sql_layer == 'sqlite3')
+						if ($this->db->get_sql_layer() == 'sqlite' || $this->db->get_sql_layer() == 'sqlite3')
 						{
 							$sql = 'SELECT COUNT(topic_id) as total_results
 								FROM (SELECT DISTINCT t.topic_id';
@@ -1017,7 +1017,7 @@ class fulltext_native extends \phpbb\search\base
 								$post_visibility
 								$sql_fora
 								AND t.topic_id = p.topic_id
-								$sql_time" . (($this->db->sql_layer == 'sqlite' || $this->db->sql_layer == 'sqlite3') ? ')' : '');
+								$sql_time" . (($this->db->get_sql_layer() == 'sqlite' || $this->db->get_sql_layer() == 'sqlite3') ? ')' : '');
 					}
 					$result = $this->db->sql_query($sql);
 
@@ -1481,7 +1481,7 @@ class fulltext_native extends \phpbb\search\base
 	*/
 	public function delete_index($acp_module, $u_action)
 	{
-		switch ($this->db->sql_layer)
+		switch ($this->db->get_sql_layer())
 		{
 			case 'sqlite':
 			case 'sqlite3':

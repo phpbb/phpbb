@@ -37,7 +37,7 @@ class local_url_bbcode extends \phpbb\db\migration\migration
 	{
 		$sql = 'SELECT *
 			FROM ' . BBCODES_TABLE . '
-			WHERE bbcode_match ' . $this->db->sql_like_expression($this->db->any_char . 'LOCAL_URL' . $this->db->any_char);
+			WHERE bbcode_match ' . $this->db->sql_like_expression($this->db->get_any_char() . 'LOCAL_URL' . $this->db->get_any_char());
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))

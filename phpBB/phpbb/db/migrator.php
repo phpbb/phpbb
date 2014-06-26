@@ -110,7 +110,7 @@ class migrator
 			FROM " . $this->migrations_table;
 		$result = $this->db->sql_query($sql);
 
-		if (!$this->db->sql_error_triggered)
+		if (!$this->db->get_sql_error_triggered())
 		{
 			while ($migration = $this->db->sql_fetchrow($result))
 			{

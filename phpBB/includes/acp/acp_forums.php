@@ -1827,7 +1827,7 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		switch ($db->sql_layer)
+		switch ($db->get_sql_layer())
 		{
 			case 'mysql4':
 			case 'mysqli':

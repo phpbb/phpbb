@@ -282,7 +282,7 @@ class base
 			$sql_where = '';
 			foreach ($words as $word)
 			{
-				$sql_where .= " OR search_keywords " . $db->sql_like_expression($db->any_char . $word . $db->any_char);
+				$sql_where .= " OR search_keywords " . $db->sql_like_expression($db->get_any_char() . $word . $db->get_any_char());
 			}
 
 			$sql = 'SELECT search_key
@@ -303,7 +303,7 @@ class base
 			$sql_where = '';
 			foreach ($authors as $author)
 			{
-				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors ' . $db->sql_like_expression($db->any_char . ' ' . (int) $author . ' ' . $db->any_char);
+				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors ' . $db->sql_like_expression($db->get_any_char() . ' ' . (int) $author . ' ' . $db->get_any_char());
 			}
 
 			$sql = 'SELECT search_key

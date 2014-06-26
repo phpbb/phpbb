@@ -688,7 +688,7 @@ class module
 		));
 
 		// Rollback if in transaction
-		if ($db->transaction)
+		if ($db->get_transaction())
 		{
 			$db->sql_transaction('rollback');
 		}

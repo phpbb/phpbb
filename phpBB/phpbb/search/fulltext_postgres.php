@@ -107,7 +107,7 @@ class fulltext_postgres extends \phpbb\search\base
 
 		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
 
-		if ($this->db->sql_layer == 'postgres')
+		if ($this->db->get_sql_layer() == 'postgres')
 		{
 			$pgsql_version = explode(',', substr($this->db->sql_server_info(), 10));
 			$this->version = trim($pgsql_version[0]);
@@ -185,7 +185,7 @@ class fulltext_postgres extends \phpbb\search\base
 	*/
 	public function init()
 	{
-		if ($this->db->sql_layer != 'postgres')
+		if ($this->db->get_sql_layer() != 'postgres')
 		{
 			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
 		}
@@ -869,7 +869,7 @@ class fulltext_postgres extends \phpbb\search\base
 	 */
 	protected function get_stats()
 	{
-		if ($this->db->sql_layer != 'postgres')
+		if ($this->db->get_sql_layer() != 'postgres')
 		{
 			$this->stats = array();
 			return;
@@ -919,7 +919,7 @@ class fulltext_postgres extends \phpbb\search\base
 			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
-		if ($this->db->sql_layer == 'postgres' && $this->tsearch_usable)
+		if ($this->db->get_sql_layer() == 'postgres' && $this->tsearch_usable)
 		{
 			$sql = 'SELECT cfgname AS ts_name
 				  FROM pg_ts_config';

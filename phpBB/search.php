@@ -145,7 +145,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			trigger_error($user->lang('TOO_FEW_AUTHOR_CHARS', (int) $config['min_search_author_chars']));
 		}
 
-		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
@@ -159,7 +159,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		$db->sql_freeresult($result);
 
-		$sql_where = (strpos($author, '*') !== false) ? ' post_username ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " post_username = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+		$sql_where = (strpos($author, '*') !== false) ? ' post_username ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " post_username = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
 
 		$sql = 'SELECT 1 as guest_post
 			FROM ' . POSTS_TABLE . "
@@ -172,7 +172,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if ($found_guest_post)
 		{
 			$author_id_ary[] = ANONYMOUS;
-			$sql_author_match = (strpos($author, '*') !== false) ? ' ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+			$sql_author_match = (strpos($author, '*') !== false) ? ' ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($author))) : " = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
 		}
 
 		if (!sizeof($author_id_ary))
@@ -1296,7 +1296,7 @@ $template->assign_vars(array(
 if ($auth->acl_get('a_search'))
 {
 	// Handle large objects differently for Oracle and MSSQL
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'oracle':
 			$sql = 'SELECT search_time, search_keywords

@@ -1435,7 +1435,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 	{
 		case 'topic_moved':
 			$db->sql_transaction('begin');
-			switch ($db->sql_layer)
+			switch ($db->get_sql_layer())
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -2441,7 +2441,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'sqlite':
 		case 'sqlite3':
@@ -2491,7 +2491,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
-				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
+				AND o.auth_option " . $db->sql_like_expression('m_' . $db->get_any_char()),
 		);
 		$sql = $db->sql_build_query('SELECT', $sql_ary_deny);
 		$result = $db->sql_query($sql);
@@ -2697,11 +2697,11 @@ function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 			return;
 		}
 
-		switch ($db->sql_layer)
+		switch ($db->get_sql_layer())
 		{
 			case 'mysqli':
 			case 'mysql4':
-				$sql = 'DELETE ' . (($db->sql_layer === 'mysqli' || version_compare($db->sql_server_info(true), '4.1', '>=')) ? 'z.*' : ZEBRA_TABLE) . '
+				$sql = 'DELETE ' . (($db->get_sql_layer() === 'mysqli' || version_compare($db->sql_server_info(true), '4.1', '>=')) ? 'z.*' : ZEBRA_TABLE) . '
 					FROM ' . ZEBRA_TABLE . ' z, ' . USER_GROUP_TABLE . ' ug
 					WHERE z.zebra_id = ug.user_id
 						AND z.foe = 1
@@ -2854,7 +2854,7 @@ function get_database_size()
 	$database_size = false;
 
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'mysql':
 		case 'mysql4':
@@ -2870,7 +2870,7 @@ function get_database_size()
 
 				if (preg_match('#(3\.23|[45]\.)#', $version))
 				{
-					$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`{$db->dbname}`" : $db->dbname;
+					$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`{$db->get_db_name()}`" : $db->get_db_name();
 
 					$sql = 'SHOW TABLE STATUS
 						FROM ' . $db_name;
@@ -2946,7 +2946,7 @@ function get_database_size()
 
 			if ($row['proname'] == 'pg_database_size')
 			{
-				$database = $db->dbname;
+				$database = $db->get_db_name();
 				if (strpos($database, '.') !== false)
 				{
 					list($database, ) = explode('.', $database);

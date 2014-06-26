@@ -22,7 +22,7 @@ class phpbb_dbal_order_lower_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		if (strpos($db->sql_layer, 'mysql') === 0 && version_compare($db->sql_server_info(true, false), '5.6', '>='))
+		if (strpos($db->get_sql_layer(), 'mysql') === 0 && version_compare($db->sql_server_info(true, false), '5.6', '>='))
 		{
 			$this->markTestSkipped('MySQL 5.6 fails to order things correctly. See also: http://tracker.phpbb.com/browse/PHPBB3-11571 http://bugs.mysql.com/bug.php?id=69005');
 		}
