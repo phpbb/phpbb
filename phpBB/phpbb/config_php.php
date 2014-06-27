@@ -36,6 +36,13 @@ class config_php
 	protected $config_data = array();
 
 	/**
+	* The path to the config file. (Defaults: $phpbb_root_path . 'config.' . $php_ext)
+	*
+	* @var string
+	*/
+	protected $config_file;
+
+	/**
 	* Constructor
 	*
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
@@ -45,6 +52,18 @@ class config_php
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->config_file = $this->phpbb_root_path . 'config.' . $this->php_ext;
+	}
+
+	/**
+	* Set the path to the config file.
+	*
+	* @param string $config_file
+	*/
+	public function set_config_file($config_file)
+	{
+		$this->config_file = $config_file;
+		$this->config_loaded = false;
 	}
 
 	/**
@@ -87,12 +106,12 @@ class config_php
 	{
 		if (!$this->config_loaded)
 		{
-			if (file_exists($this->phpbb_root_path . 'config.' . $this->php_ext))
+			if (file_exists($this->config_file))
 			{
 				$defined_vars = null;
 				$defined_vars = get_defined_vars();
 
-				require($this->phpbb_root_path . 'config.' . $this->php_ext);
+				require($this->config_file);
 				$this->config_data = array_diff_key(get_defined_vars(), $defined_vars);
 
 				$this->config_loaded = true;

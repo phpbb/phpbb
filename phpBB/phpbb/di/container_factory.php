@@ -71,6 +71,13 @@ class container_factory
 	protected $use_custom_pass = true;
 
 	/**
+	* Indicates if the kernel compile pass have to be used (default to true).
+	*
+	* @var bool
+	*/
+	protected $use_kernel_pass = true;
+
+	/**
 	* Indicates if a dump container should be used (default to true).
 	*
 	* If DEBUG_CONTAINER is set this option is ignored and a new container is build.
@@ -143,7 +150,11 @@ class container_factory
 			if ($this->use_custom_pass)
 			{
 				$this->container->addCompilerPass(new \phpbb\di\pass\collection_pass());
-				$this->container->addCompilerPass(new \phpbb\di\pass\kernel_pass());
+
+				if ($this->use_kernel_pass)
+				{
+					$this->container->addCompilerPass(new \phpbb\di\pass\kernel_pass());
+				}
 			}
 
 			$this->inject_custom_parameters();
@@ -179,9 +190,19 @@ class container_factory
 	*
 	* @param bool $use_custom_pass
 	*/
-	public function set_use_customPass($use_custom_pass)
+	public function set_use_custom_pass($use_custom_pass)
 	{
 		$this->use_custom_pass = $use_custom_pass;
+	}
+
+	/**
+	* Set if the kernel compile pass have to be used.
+	*
+	* @param bool $use_kernel_pass
+	*/
+	public function set_use_kernel_pass($use_kernel_pass)
+	{
+		$this->use_kernel_pass = $use_kernel_pass;
 	}
 
 	/**
