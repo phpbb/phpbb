@@ -545,9 +545,11 @@ class manager
 	/**
 	* Check to see if a given extension is configured
 	*
+	* All enabled and disabled extensions are considered configured. A purged
+	* extension that is no longer in the database is not configured.
+	*
 	* @param string $name Extension name to check
 	* @return bool Depending on whether or not the extension is configured
-	* @see all_configured()
 	*/
 	public function is_configured($name)
 	{
