@@ -66,7 +66,9 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
-		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container;
+		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container, $phpbb_config_php_handler;
+
+		extract($phpbb_config_php_handler->get_all());
 
 		// We must enable super globals, otherwise creating a new instance of the request class,
 		// using the new container with a dbal connection will fail with the following PHP Notice:
@@ -74,14 +76,14 @@ class install_update extends module
 		$request->enable_super_globals();
 
 		// Create a normal container now
+		$phpbb_container_factory = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+		$phpbb_container_factory->set_dump_container(false);
+		$phpbb_container_factory->set_use_extensions(false);
 		if (file_exists($phpbb_root_path . 'install/update/new/config'))
 		{
-			$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'install/update/new/config');
+			$phpbb_container_factory->set_config_path($phpbb_root_path . 'install/update/new/config');
 		}
-		else
-		{
-			$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, $phpbb_root_path . 'config');
-		}
+		$phpbb_container = $phpbb_container_factory->get_container();
 
 		// Writes into global $cache
 		$cache = $phpbb_container->get('cache');
@@ -93,7 +95,6 @@ class install_update extends module
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
 
 		// Init DB
-		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 		// Special options for conflicts/modified files
