@@ -170,7 +170,7 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
-	public function get_profile_value_raw_data()
+	public function profile_value_raw_data()
 	{
 		return array(
 			array(
@@ -207,7 +207,7 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider get_profile_value_raw_data
+	* @dataProvider profile_value_raw_data
 	*/
 	public function test_get_profile_value_raw($value, $field_options, $expected, $description)
 	{
