@@ -38,7 +38,9 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 if (isset($_GET['avatar']))
 {
 	require($phpbb_root_path . 'includes/startup.' . $phpEx);
-	require($phpbb_root_path . 'config.' . $phpEx);
+	require($phpbb_root_path . 'includes/functions.' . $phpEx);
+	$config_file_data = phpbb_load_config_file_as_array($phpbb_root_path . 'config.' . $phpEx);
+	extract($config_file_data);
 
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	{
@@ -48,7 +50,6 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
-	require($phpbb_root_path . 'includes/functions.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
@@ -60,7 +61,7 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->register();
 
 	// Set up container
-	$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+	$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx, $config_file_data);
 
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

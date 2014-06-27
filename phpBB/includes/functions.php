@@ -5378,3 +5378,17 @@ function phpbb_get_board_contact_link(\phpbb\config\config $config, $phpbb_root_
 		return 'mailto:' . htmlspecialchars($config['board_contact']);
 	}
 }
+
+/**
+* Returns the variables defined by a file as an array.
+*
+* @param string $x6482a3f94854f5920ef720dbf7944d49 Path to config file.
+* @return array
+*/
+function phpbb_load_config_file_as_array($x6482a3f94854f5920ef720dbf7944d49)
+{
+	$x7eeee37ce4d5f1ce4d968ed8fdd9bcbb = null;
+	$x7eeee37ce4d5f1ce4d968ed8fdd9bcbb = get_defined_vars();
+	require($x6482a3f94854f5920ef720dbf7944d49);
+	return array_diff_key(get_defined_vars(), $x7eeee37ce4d5f1ce4d968ed8fdd9bcbb);
+}

@@ -22,9 +22,10 @@ define('IN_PHPBB', true);
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
-require($phpbb_root_path . 'config.' . $phpEx);
-require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+$config_file_data = phpbb_load_config_file_as_array($phpbb_root_path . 'config.' . $phpEx);
+extract($config_file_data);
+require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
@@ -35,7 +36,7 @@ $phpbb_class_loader->register();
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$phpbb_root_path/config");
+$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$phpbb_root_path/config", $config_file_data);
 $phpbb_container->get('request')->enable_super_globals();
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
