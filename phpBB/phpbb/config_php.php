@@ -102,6 +102,7 @@ class config_php
 				return false;
 			}
 		}
+
 		return true;
 	}
 }
