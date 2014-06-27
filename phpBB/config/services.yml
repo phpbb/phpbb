@@ -69,6 +69,9 @@ services:
             - @cache.driver
             - %tables.config%
 
+    config.php:
+        synthetic: true
+
     config_text:
         class: phpbb\config\db_text
         arguments:

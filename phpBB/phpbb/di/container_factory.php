@@ -43,13 +43,6 @@ class container_factory
 	protected $installed_exts = null;
 
 	/**
-	* Indicates if the php config file has been loaded.
-	*
-	* @var bool
-	*/
-	protected $config_loaded = false;
-
-	/**
 	* The content of the php config file
 	*
 	* @var array
@@ -109,11 +102,13 @@ class container_factory
 	/**
 	* Constructor
 	*
+	* @param \phpbb\config_php $config_php_handler
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	*/
-	function __construct($phpbb_root_path, $php_ext)
+	function __construct(\phpbb\config_php $config_php_handler, $phpbb_root_path, $php_ext)
 	{
+		$this->config_php_handler = $config_php_handler;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -135,9 +130,9 @@ class container_factory
 		{
 			if ($this->config_path === null)
 			{
-				$config_path = $this->phpbb_root_path . 'config';
+				$this->config_path = $this->phpbb_root_path . 'config';
 			}
-			$container_extensions = array(new \phpbb\di\extension\core($config_path));
+			$container_extensions = array(new \phpbb\di\extension\core($this->config_path));
 
 			if ($this->use_extensions)
 			{
@@ -147,7 +142,7 @@ class container_factory
 
 			if ($this->inject_config)
 			{
-				$this->load_config_file();
+				$this->config_data = $this->config_php_handler->load_config_file();
 				$container_extensions[] = new \phpbb\di\extension\config($this->config_data);
 			}
 
@@ -169,44 +164,12 @@ class container_factory
 			}
 		}
 
-		// Impossible because we have a compiled (and so frozen) container
-		/*if ($this->inject_config)
-		{
-			$this->inject_config();
-		}*/
+		$this->container->set('config.php', $this->config_php_handler);
 
 		// Frozen container, we can't modify either the services or the parameters
 		//$this->inject_dbal();
 
 		return $this->container;
-	}
-
-	/**
-	* Load the config file, store the information and return them
-	*
-	* @return bool|array Return the content of the config file or false if the file does not exists.
-	*/
-	public function load_config_file()
-	{
-		if (!$this->config_loaded)
-		{
-			if (file_exists($this->phpbb_root_path . 'config.' . $this->php_ext))
-			{
-				$x7eeee37ce4d5f1ce4d968ed8fdd9bcbb = null;
-				$x7eeee37ce4d5f1ce4d968ed8fdd9bcbb = get_defined_vars();
-
-				require($this->phpbb_root_path . 'config.' . $this->php_ext);
-				$this->config_data = array_diff_key(get_defined_vars(), $x7eeee37ce4d5f1ce4d968ed8fdd9bcbb);
-
-				$this->config_loaded = true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		return $this->config_data;
 	}
 
 	/**
@@ -308,7 +271,7 @@ class container_factory
 	{
 		if ($this->dbal_connection === null)
 		{
-			$this->load_config_file();
+			$this->config_data = $this->config_php_handler->load_config_file();
 			$dbal_driver_class = phpbb_convert_30_dbms_to_31($this->config_data['dbms']);
 			$this->dbal_connection = new $dbal_driver_class();
 			$this->dbal_connection->sql_connect(
@@ -378,8 +341,8 @@ class container_factory
 		if ($this->custom_parameters === null)
 		{
 			$this->custom_parameters = array(
-				'core.root_path', $this->phpbb_root_path,
-				'core.php_ext', $this->php_ext,
+				'core.root_path' => $this->phpbb_root_path,
+				'core.php_ext' => $this->php_ext,
 			);
 		}
 
