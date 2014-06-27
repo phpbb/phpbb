@@ -25,7 +25,8 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 
 if (file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
-	require($phpbb_root_path . 'config.' . $phpEx);
+	$config_file_data = phpbb_load_config_file_as_array($phpbb_root_path . 'config.' . $phpEx);
+	extract($config_file_data);
 }
 
 if (!defined('PHPBB_INSTALLED'))
