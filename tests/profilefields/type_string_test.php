@@ -243,6 +243,30 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 				'[b]bbcode test[/b]',
 				'Field should return correct raw value',
 			),
+			array(
+				125,
+				array('field_show_novalue' => false),
+				125,
+				'Field should return value of integer as is',
+			),
+			array(
+				0,
+				array('field_show_novalue' => false),
+				null,
+				'Field should return null for empty integer without show_novalue',
+			),
+			array(
+				0,
+				array('field_show_novalue' => true),
+				0,
+				'Field should return 0 for empty integer with show_novalue',
+			),
+			array(
+				null,
+				array('field_show_novalue' => true),
+				null,
+				'field should return null value as is',
+			),
 		);
 	}
 
