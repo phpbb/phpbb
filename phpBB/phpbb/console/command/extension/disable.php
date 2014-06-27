@@ -37,7 +37,7 @@ class disable extends command
 		$this->manager->disable($name);
 		$this->manager->load_extensions();
 
-		if ($this->manager->enabled($name))
+		if ($this->manager->is_enabled($name))
 		{
 			$output->writeln("<error>Could not disable extension $name</error>");
 			return 1;
