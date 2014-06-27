@@ -94,6 +94,19 @@ class container_factory
 	protected $dump_container = true;
 
 	/**
+	* Custom parameters to inject into the container.
+	*
+	* Default to true:
+	* 	array(
+	* 		'core.root_path', $this->phpbb_root_path,
+	* 		'core.php_ext', $this->php_ext,
+	* );
+	*
+	* @var array
+	*/
+	protected $custom_parameters = null;
+
+	/**
 	* Constructor
 	*
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
@@ -146,8 +159,7 @@ class container_factory
 				$this->container->addCompilerPass(new \phpbb\di\pass\kernel_pass());
 			}
 
-			$this->container->setParameter('core.root_path', $this->phpbb_root_path);
-			$this->container->setParameter('core.php_ext', $this->php_ext);
+			$this->inject_custom_parameters();
 
 			$this->container->compile();
 
@@ -234,7 +246,7 @@ class container_factory
 	*
 	* @var bool $dump_container
 	*/
-	public function setDumpContainer($dump_container)
+	public function set_dump_container($dump_container)
 	{
 		$this->dump_container = $dump_container;
 	}
@@ -244,9 +256,19 @@ class container_factory
 	*
 	* @param string $config_path
 	*/
-	public function setConfigPath($config_path)
+	public function set_config_path($config_path)
 	{
 		$this->config_path = $config_path;
+	}
+
+	/**
+	* Set custom parameters to inject into the container.
+	*
+	* @param array $custom_parameters
+	*/
+	public function set_custom_parameters($custom_parameters)
+	{
+		$this->custom_parameters = $custom_parameters;
 	}
 
 	/**
@@ -346,6 +368,25 @@ class container_factory
 		}
 
 		return $container;
+	}
+
+	/**
+	* Inject the customs parameters into the container
+	*/
+	protected function inject_custom_parameters()
+	{
+		if ($this->custom_parameters === null)
+		{
+			$this->custom_parameters = array(
+				'core.root_path', $this->phpbb_root_path,
+				'core.php_ext', $this->php_ext,
+			);
+		}
+
+		foreach ($this->custom_parameters as $key => $value)
+		{
+			$this->container->setParameter($key, $value);
+		}
 	}
 
 	/**
