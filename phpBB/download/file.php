@@ -39,12 +39,17 @@ if (isset($_GET['avatar']))
 {
 	require($phpbb_root_path . 'includes/startup.' . $phpEx);
 
+	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
+	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+	$phpbb_class_loader->register();
+
+	$phpbb_config_php_handler = new \phpbb\config_php($phpbb_root_path, $phpEx);
+	extract($phpbb_config_php_handler->get_all());
+
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	{
 		exit;
 	}
-
-	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
@@ -52,15 +57,8 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 	// Setup class loader first
-	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-	$phpbb_class_loader->register();
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
-
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
-
-	$phpbb_config_php_handler = new \phpbb\config_php($phpbb_root_path, $phpEx);
-	extract($phpbb_config_php_handler->get_all());
 
 	// Set up container
 	$phpbb_container_factory = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);

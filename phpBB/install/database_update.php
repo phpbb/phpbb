@@ -78,7 +78,6 @@ $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_ro
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
-require($phpbb_root_path . 'config.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
