@@ -11,9 +11,6 @@
 *
 */
 
-/**
-* @group profilefields
-*/
 class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 {
 	public function get_profile_contact_value_data()

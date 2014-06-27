@@ -13,9 +13,6 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
-/**
-* @group profilefields
-*/
 class phpbb_profilefield_type_url_test extends phpbb_test_case
 {
 	protected $cp;
