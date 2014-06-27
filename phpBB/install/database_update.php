@@ -56,7 +56,7 @@ function phpbb_end_update($cache, $config)
 }
 
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
-
+require($phpbb_root_path . 'includes/functions.' . $phpEx);
 include($phpbb_root_path . 'config.' . $phpEx);
 if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 {
@@ -70,7 +70,6 @@ $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_ro
 // Include files
 require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 
