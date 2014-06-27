@@ -79,12 +79,13 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		$sql = 'SELECT lang_id
 			FROM ' . LANG_TABLE;
 		$result = $this->db->sql_query($sql);
+		$lang_name = (strpos($this->profilefield_name, 'phpbb_') === 0) ? strtoupper(substr($this->profilefield_name, 6)) : strtoupper($this->profilefield_name);
 		while ($lang_id = (int) $this->db->sql_fetchfield('lang_id'))
 		{
 			$insert_buffer->insert(array(
 				'field_id'				=> $field_id,
 				'lang_id'				=> $lang_id,
-				'lang_name'				=> strtoupper(substr($this->profilefield_name, 6)),// Remove phpbb_ from field name
+				'lang_name'				=> $lang_name,
 				'lang_explain'			=> '',
 				'lang_default_value'	=> '',
 			));
