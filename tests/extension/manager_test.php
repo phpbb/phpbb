@@ -53,6 +53,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertSame(true, $this->extension_manager->is_enabled('vendor2/foo'));
 		$this->assertSame(false, $this->extension_manager->is_enabled('vendor/moo'));
 		$this->assertSame(false, $this->extension_manager->is_enabled('vendor2/bar'));
+		$this->assertSame(false, $this->extension_manager->is_enabled('bertie/worlddominationplan'));
 	}
 
 	public function test_is_disabled()
@@ -60,6 +61,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->extension_manager->is_disabled('vendor2/foo'));
 		$this->assertSame(true, $this->extension_manager->is_disabled('vendor/moo'));
 		$this->assertSame(false, $this->extension_manager->is_disabled('vendor2/bar'));
+		$this->assertSame(false, $this->extension_manager->is_disabled('bertie/worlddominationplan'));
 	}
 
 	public function test_is_purged()
@@ -67,6 +69,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->extension_manager->is_purged('vendor2/foo'));
 		$this->assertSame(false, $this->extension_manager->is_purged('vendor/moo'));
 		$this->assertSame(true, $this->extension_manager->is_purged('vendor2/bar'));
+		$this->assertSame(false, $this->extension_manager->is_purged('bertie/worlddominationplan'));
 	}
 
 	public function test_is_configured()
@@ -74,6 +77,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertSame(true, $this->extension_manager->is_configured('vendor2/foo'));
 		$this->assertSame(true, $this->extension_manager->is_configured('vendor/moo'));
 		$this->assertSame(false, $this->extension_manager->is_configured('vendor2/bar'));
+		$this->assertSame(false, $this->extension_manager->is_configured('bertie/worlddominationplan'));
 	}
 
 	public function test_is_available()
@@ -81,6 +85,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertSame(true, $this->extension_manager->is_available('vendor2/foo'));
 		$this->assertSame(true, $this->extension_manager->is_available('vendor/moo'));
 		$this->assertSame(true, $this->extension_manager->is_available('vendor2/bar'));
+		$this->assertSame(false, $this->extension_manager->is_available('bertie/worlddominationplan'));
 	}
 
 	public function test_enable()
