@@ -203,7 +203,14 @@ class type_bool extends type_base
 		{
 			if (!$this->lang_helper->is_set($profile_row['field_id'], $profile_row['lang_id'], 1))
 			{
-				$this->lang_helper->load_preview_options($profile_row['field_id'], $profile_row['lang_id'], $preview_options);
+				if ($preview_options)
+				{
+					$this->lang_helper->load_preview_options($profile_row['field_id'], $profile_row['lang_id'], $preview_options);
+				}
+				else
+				{
+					$this->lang_helper->load_option_lang($profile_row['lang_id']);
+				}
 			}
 
 			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
