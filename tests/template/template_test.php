@@ -352,6 +352,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				"13FOOBAR|foobar",
 			),
+			array(
+				'if_nested_tags.html',
+				array('S_VALUE' => true,),
+				array(),
+				array(),
+				'inner_value',
+			),
 		);
 	}
 
