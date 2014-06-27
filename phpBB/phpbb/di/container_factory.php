@@ -170,7 +170,7 @@ class container_factory
 				$this->container->compile();
 			}
 
-			if ($this->dump_container && defined('DEBUG'))
+			if ($this->dump_container && !defined('DEBUG'))
 			{
 				$this->dump_container($container_filename);
 			}

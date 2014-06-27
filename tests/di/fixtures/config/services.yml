@@ -1,0 +1,9 @@
+parameters:
+    core: true
+
+services:
+    dispatcher:
+        class: phpbb\db\driver\container_mock
+
+    config.php:
+        synthetic: true
