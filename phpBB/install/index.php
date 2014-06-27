@@ -120,7 +120,29 @@ $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/"
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_install_container($phpbb_root_path, $phpEx);
+$phpbb_config_php_handler = new \phpbb\config_php($phpbb_root_path, $phpEx);
+$phpbb_container_factory = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+$phpbb_container_factory->set_use_extensions(false);
+$phpbb_container_factory->set_dump_container(false);
+$phpbb_container_factory->set_use_custom_pass(false);
+$phpbb_container_factory->set_inject_config(false);
+$phpbb_container_factory->set_compile_container(false);
+
+$other_config_path = $phpbb_root_path . 'install/update/new/config/';
+$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path . 'config/';
+$phpbb_container_factory->set_config_path($config_path);
+
+$phpbb_container_factory->set_custom_parameters(array(
+	'core.root_path'			=> $phpbb_root_path,
+	'core.adm_relative_path'	=> $phpbb_adm_relative_path,
+	'core.php_ext'				=> $phpEx,
+	'core.table_prefix'			=> '',
+	'cache.driver.class'		=> 'phpbb\cache\driver\file',
+));
+
+$phpbb_container = $phpbb_container_factory->get_container();
+$phpbb_container->register('dbal.conn')->setSynthetic(true);
+$phpbb_container->compile();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

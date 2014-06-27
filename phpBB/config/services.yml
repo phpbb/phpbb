@@ -39,9 +39,6 @@ services:
     cache.driver:
         class: %cache.driver.class%
 
-    cache.driver.install:
-        class: phpbb\cache\driver\file
-
     class_loader:
         class: phpbb\class_loader
         arguments:

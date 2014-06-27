@@ -14,7 +14,6 @@
 namespace phpbb\di;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
 class container_factory
@@ -28,7 +27,7 @@ class container_factory
 	/**
 	* The container under construction
 	*
-	* @var ContainerInterface
+	* @var ContainerBuilder
 	*/
 	protected $container;
 
@@ -85,6 +84,13 @@ class container_factory
 	* @var bool
 	*/
 	protected $dump_container = true;
+
+	/**
+	* Indicates if the container should be compiled automatically (default to true).
+	*
+	* @var bool
+	*/
+	protected $compile_container = true;
 
 	/**
 	* Custom parameters to inject into the container.
@@ -159,7 +165,10 @@ class container_factory
 
 			$this->inject_custom_parameters();
 
-			$this->container->compile();
+			if ($this->compile_container)
+			{
+				$this->container->compile();
+			}
 
 			if ($this->dump_container && defined('DEBUG'))
 			{
@@ -225,6 +234,16 @@ class container_factory
 	public function set_dump_container($dump_container)
 	{
 		$this->dump_container = $dump_container;
+	}
+
+	/**
+	* Set if the container should be compiled automatically (default to true).
+	*
+	* @var bool $dump_container
+	*/
+	public function set_compile_container($compile_container)
+	{
+		$this->compile_container = $compile_container;
 	}
 
 	/**
