@@ -13,6 +13,8 @@
 
 use OAuth\OAuth2\Token\StdOAuth2Token;
 
+require_once dirname(__FILE__) . '/phpbb_not_a_token.php';
+
 class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_case
 {
 	protected $db;
@@ -71,6 +73,22 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 		$stored_token = $this->token_storage->retrieveAccessToken($this->service_name);
 		$this->assertEquals($token, $stored_token);
+	}
+
+	public function test_retrieveAccessToken_wrong_token()
+	{
+		$this->user->data['session_id'] = 'abcd';
+		try
+		{
+			$this->token_storage->retrieveAccessToken($this->service_name);
+			$this->fail('The token can not be deserialized and an exception should be thrown.');
+		}
+		catch (\OAuth\Common\Storage\Exception\TokenNotFoundException $e)
+		{
+		}
+
+		$row = $this->get_token_row_by_session_id('abcd');
+		$this->assertFalse($row);
 	}
 
 	public function test_retrieveAccessToken_from_db()

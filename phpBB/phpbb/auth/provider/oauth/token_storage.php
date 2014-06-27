@@ -266,7 +266,7 @@ class token_storage implements TokenStorageInterface
 		// Ensure that the token was serialized/unserialized correctly
 		if (!($token instanceof TokenInterface))
 		{
-			$this->clearToken();
+			$this->clearToken($data['provider']);
 			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
 		}
 
