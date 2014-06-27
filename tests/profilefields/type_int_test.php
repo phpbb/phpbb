@@ -211,6 +211,12 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 				null,
 				'Field should return correct raw value',
 			),
+			array(
+				'string',
+				array('field_show_novalue' => false),
+				0,
+				'Field should return int cast of passed string'
+			),
 		);
 	}
 
