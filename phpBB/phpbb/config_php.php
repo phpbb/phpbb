@@ -48,21 +48,52 @@ class config_php
 	}
 
 	/**
-	* Load the config file, store the information and return them
+	* Returns an array containing all the variables defined into the config.php file
 	*
 	* @return bool|array Return the content of the config file or false if the file does not exists.
 	*/
-	public function load_config_file()
+	public function get_all()
+	{
+		if (!$this->load_config_file())
+		{
+			return false;
+		}
+
+		return $this->config_data;
+	}
+
+	/**
+	* Return the value of a variable defined into the config.php file and false if the variable does not exist.
+	*
+	* @param string $variable The name of the variable
+	* @return mixed
+	*/
+	public function get($variable)
+	{
+		if (!$this->load_config_file())
+		{
+			return false;
+		}
+
+		return isset($this->config_data[$variable]) ? $this->config_data[$variable] : false;
+	}
+
+	/**
+	* Load the config file and store the information.
+	*
+	* @return bool True if the file was correctly loaded, false otherwise.
+	*/
+	protected function load_config_file()
 	{
 		if (!$this->config_loaded)
 		{
 			if (file_exists($this->phpbb_root_path . 'config.' . $this->php_ext))
 			{
-				$x7eeee37ce4d5f1ce4d968ed8fdd9bcbb = null;
-				$x7eeee37ce4d5f1ce4d968ed8fdd9bcbb = get_defined_vars();
+				$defined_vars = null;
+				$defined_vars = get_defined_vars();
 
 				require($this->phpbb_root_path . 'config.' . $this->php_ext);
-				$this->config_data = array_diff_key(get_defined_vars(), $x7eeee37ce4d5f1ce4d968ed8fdd9bcbb);
+				$this->config_data = array_diff_key(get_defined_vars(), $defined_vars);
 
 				$this->config_loaded = true;
 			}
@@ -71,7 +102,5 @@ class config_php
 				return false;
 			}
 		}
-
-		return $this->config_data;
 	}
 }
