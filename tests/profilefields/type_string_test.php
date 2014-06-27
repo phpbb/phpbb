@@ -15,6 +15,9 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
+/**
+* @group profilefields
+*/
 class phpbb_profilefield_type_string_test extends phpbb_test_case
 {
 	protected $cp;

@@ -11,6 +11,9 @@
 *
 */
 
+/**
+* @group profilefields
+*/
 class phpbb_profilefield_type_bool_test extends phpbb_test_case
 {
 	protected $cp;
