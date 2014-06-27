@@ -30,7 +30,7 @@ class container_factory
 	*
 	* @var ContainerInterface
 	*/
-	protected $container = null;
+	protected $container;
 
 	/**
 	* @var \phpbb\db\driver\driver_interface
