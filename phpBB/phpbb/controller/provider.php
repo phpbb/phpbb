@@ -41,7 +41,7 @@ class provider
 	* Extension manager
 	* @var \phpbb\extension\manager
 	*/
-	protected $extension_anager;
+	protected $extension_manager;
 
 	/**
 	* phpBB root path
@@ -58,15 +58,15 @@ class provider
 	/**
 	* Construct method
 	*
-	* @param \phpbb\extension\manager $manager The extension manager
+	* @param \phpbb\extension\manager $extension_manager The extension manager
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	* @param array $routing_files Array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct(\phpbb\extension\manager $extension_anager, $phpbb_root_path, $php_ext, $routing_files = array())
+	public function __construct(\phpbb\extension\manager $extension_manager, $phpbb_root_path, $php_ext, $routing_files = array())
 	{
-		$this->extension_anager = $extension_anager;
+		$this->extension_manager = $extension_manager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->routing_files = $routing_files;
@@ -116,7 +116,7 @@ class provider
 	{
 		if ($this->routes == null || empty($this->routing_files))
 		{
-			$this->find_routing_files($this->extension_anager->get_finder());
+			$this->find_routing_files($this->extension_manager->get_finder());
 			$this->find($this->phpbb_root_path);
 		}
 
