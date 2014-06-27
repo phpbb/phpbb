@@ -186,13 +186,13 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 				'',
 				array('field_show_novalue' => false),
 				null,
-				'Field should return correct raw value',
+				'Field should null for empty value without show_novalue',
 			),
 			array(
 				'',
 				array('field_show_novalue' => true),
 				0,
-				'Field should return correct raw value',
+				'Field should return 0 for empty value with show_novalue',
 			),
 			array(
 				null,
@@ -204,7 +204,7 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 				null,
 				array('field_show_novalue' => true),
 				0,
-				'Field should return correct raw value',
+				'Field should return 0 for empty value with show_novalue',
 			),
 		);
 	}
