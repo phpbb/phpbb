@@ -22,11 +22,11 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 class config extends Extension
 {
 	/** @var array */
-	protected $config_file_data;
+	protected $config_php;
 
-	public function __construct($config_file_data)
+	public function __construct(\phpbb\config_php $config_php)
 	{
-		$this->config_file_data = $config_file_data;
+		$this->config_php = $config_php;
 	}
 
 	/**
@@ -39,17 +39,15 @@ class config extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		extract($this->config_file_data);
-
 		$container->setParameter('core.adm_relative_path', (isset($phpbb_adm_relative_path) ? $phpbb_adm_relative_path : 'adm/'));
-		$container->setParameter('core.table_prefix', $table_prefix);
-		$container->setParameter('cache.driver.class', $this->convert_30_acm_type($acm_type));
-		$container->setParameter('dbal.driver.class', phpbb_convert_30_dbms_to_31($dbms));
-		$container->setParameter('dbal.dbhost', $dbhost);
-		$container->setParameter('dbal.dbuser', $dbuser);
-		$container->setParameter('dbal.dbpasswd', $dbpasswd);
-		$container->setParameter('dbal.dbname', $dbname);
-		$container->setParameter('dbal.dbport', $dbport);
+		$container->setParameter('core.table_prefix', $this->config_php->get('table_prefix'));
+		$container->setParameter('cache.driver.class', $this->convert_30_acm_type($this->config_php->get('acm_type')));
+		$container->setParameter('dbal.driver.class', phpbb_convert_30_dbms_to_31($this->config_php->get('dbms')));
+		$container->setParameter('dbal.dbhost', $this->config_php->get('dbhost'));
+		$container->setParameter('dbal.dbuser', $this->config_php->get('dbuser'));
+		$container->setParameter('dbal.dbpasswd', $this->config_php->get('dbpasswd'));
+		$container->setParameter('dbal.dbname', $this->config_php->get('dbname'));
+		$container->setParameter('dbal.dbport', $this->config_php->get('dbport'));
 		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
 	}
 

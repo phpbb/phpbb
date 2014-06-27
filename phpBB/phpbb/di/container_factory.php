@@ -43,13 +43,6 @@ class container_factory
 	protected $installed_exts = null;
 
 	/**
-	* The content of the php config file
-	*
-	* @var array
-	*/
-	protected $config_data = array();
-
-	/**
 	* Indicates if the php config file should be injecting into the container (default to true).
 	*
 	* @var bool
@@ -142,8 +135,7 @@ class container_factory
 
 			if ($this->inject_config)
 			{
-				$this->config_data = $this->config_php_handler->load_config_file();
-				$container_extensions[] = new \phpbb\di\extension\config($this->config_data);
+				$container_extensions[] = new \phpbb\di\extension\config($this->config_php_handler);
 			}
 
 			$this->container = $this->create_container($container_extensions);
@@ -271,15 +263,14 @@ class container_factory
 	{
 		if ($this->dbal_connection === null)
 		{
-			$this->config_data = $this->config_php_handler->load_config_file();
-			$dbal_driver_class = phpbb_convert_30_dbms_to_31($this->config_data['dbms']);
+			$dbal_driver_class = phpbb_convert_30_dbms_to_31($this->config_php_handler->get('dbms'));
 			$this->dbal_connection = new $dbal_driver_class();
 			$this->dbal_connection->sql_connect(
-				$this->config_data['dbhost'],
-				$this->config_data['dbuser'],
-				$this->config_data['dbpasswd'],
-				$this->config_data['dbname'],
-				$this->config_data['dbport'],
+				$this->config_php_handler->get('dbhost'),
+				$this->config_php_handler->get('dbuser'),
+				$this->config_php_handler->get('dbpasswd'),
+				$this->config_php_handler->get('dbname'),
+				$this->config_php_handler->get('dbport'),
 				defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
 			);
 		}
@@ -295,7 +286,7 @@ class container_factory
 	protected function get_installed_extensions()
 	{
 		$db = $this->get_dbal_connection();
-		$extension_table = $this->config_data['table_prefix'] . 'ext';
+		$extension_table = $this->config_php_handler->get('table_prefix') . 'ext';
 
 		$sql = 'SELECT *
 			FROM ' . $extension_table . '
