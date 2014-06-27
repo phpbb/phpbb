@@ -108,11 +108,11 @@ class config_php
 		{
 			if (file_exists($this->config_file))
 			{
-				$defined_vars = null;
-				$defined_vars = get_defined_vars();
+				$this->defined_vars = null;
+				$this->defined_vars = get_defined_vars();
 
 				require($this->config_file);
-				$this->config_data = array_diff_key(get_defined_vars(), $defined_vars);
+				$this->config_data = array_diff_key(get_defined_vars(), $this->defined_vars);
 
 				$this->config_loaded = true;
 			}
