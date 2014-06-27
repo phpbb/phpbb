@@ -32,29 +32,15 @@ if (!defined('IN_PHPBB'))
 * @param string $config_file
 * @return \phpbb\db\driver\driver_interface
 */
-function phpbb_bootstrap_db_connection($config_file)
+function phpbb_bootstrap_db_connection(array $config_file_data)
 {
-	require($config_file);
+	extract($config_file_data);
 	$dbal_driver_class = phpbb_convert_30_dbms_to_31($dbms);
 
 	$db = new $dbal_driver_class();
 	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, defined('PHPBB_DB_NEW_LINK'));
 
 	return $db;
-}
-
-/**
-* Get table prefix from config.php.
-*
-* Used to bootstrap the container.
-*
-* @param string $config_file
-* @return string table prefix
-*/
-function phpbb_bootstrap_table_prefix($config_file)
-{
-	require($config_file);
-	return $table_prefix;
 }
 
 /**
@@ -66,14 +52,12 @@ function phpbb_bootstrap_table_prefix($config_file)
 * @param string $phpbb_root_path
 * @return array enabled extensions
 */
-function phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path)
+function phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path, array $config_file_data)
 {
-	$db = phpbb_bootstrap_db_connection($config_file);
-	$table_prefix = phpbb_bootstrap_table_prefix($config_file);
-	$extension_table = $table_prefix.'ext';
+	$db = phpbb_bootstrap_db_connection($config_file_data);
 
 	$sql = 'SELECT *
-			FROM ' . $extension_table . '
+			FROM ' . $config_file_data['table_prefix'] . 'ext
 			WHERE ext_active = 1';
 
 	$result = $db->sql_query($sql);
@@ -253,16 +237,16 @@ function phpbb_create_dumped_container_unless_debug(array $extensions, array $pa
 *
 * @param array $extensions Array of Container extension objects
 * @param array $passes Array of Compiler Pass objects
+* @param array $config_file_data Array containing data from config file.
 * @return ContainerBuilder object (compiled)
 */
-function phpbb_create_default_container($phpbb_root_path, $php_ext)
+function phpbb_create_default_container($phpbb_root_path, $php_ext, array $config_file_data)
 {
-	$config_file = $phpbb_root_path . 'config.' . $php_ext;
-	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
+	$installed_exts = phpbb_bootstrap_enabled_exts($config_file_data, $phpbb_root_path, $config_file_data);
 
 	return phpbb_create_dumped_container_unless_debug(
 		array(
-			new \phpbb\di\extension\config($config_file),
+			new \phpbb\di\extension\config($config_file_data),
 			new \phpbb\di\extension\core($phpbb_root_path . 'config'),
 			new \phpbb\di\extension\ext($installed_exts),
 		),

@@ -36,7 +36,7 @@ $phpbb_class_loader->register();
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$phpbb_root_path/config");
+$phpbb_container = phpbb_create_update_container($phpbb_root_path, $phpEx, "$phpbb_root_path/config", $config_file_data);
 $phpbb_container->get('request')->enable_super_globals();
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 

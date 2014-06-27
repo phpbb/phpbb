@@ -94,7 +94,7 @@ $container_extensions = array(
 $container_passes = array(
 	new \phpbb\di\pass\collection_pass(),
 );
-$phpbb_container = phpbb_create_container($container_extensions, $phpbb_root_path, $phpEx);
+$phpbb_container = phpbb_create_container($container_extensions, $phpbb_root_path, $phpEx, $config_file_data);
 
 // Compile the container
 foreach ($container_passes as $pass)
