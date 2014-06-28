@@ -32,7 +32,7 @@ namespace
 			$this->config_php = new \phpbb\config_php($this->phpbb_root_path . 'fixtures/', 'php');
 			$this->factory = new phpbb_mock_container_factory($this->config_php, $this->phpbb_root_path . 'fixtures/', 'php');
 
-			$this->filename = $this->phpbb_root_path . '../tmp/cache/container.php';
+			$this->filename = $this->phpbb_root_path . '../tmp/container.php';
 			if (is_file($this->filename))
 			{
 				unlink($this->filename);

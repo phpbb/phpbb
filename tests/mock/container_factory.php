@@ -15,6 +15,6 @@ class phpbb_mock_container_factory extends \phpbb\di\container_factory
 {
 	protected function get_container_filename()
 	{
-		return $this->phpbb_root_path . '../../tmp/cache/container.' . $this->php_ext;
+		return $this->phpbb_root_path . '../../tmp/container.' . $this->php_ext;
 	}
 }
