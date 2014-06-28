@@ -13,10 +13,10 @@
 		"role": "Developer"
 	}],
 	"require": {
-		"php": ">=5.3",
-		"phpbb/phpbb": "3.1.*@dev"
+		"php": ">=5.3"
 	},
 	"extra": {
-		"display-name": "phpBB 3.1 Extension Testing"
+		"display-name": "phpBB 3.1 Extension Testing",
+		"phpbb/phpbb": "3.1.*@dev"
 	}
 }

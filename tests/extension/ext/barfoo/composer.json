@@ -13,10 +13,10 @@
 			"role": "N/A"
 		}],
 	"require": {
-		"php": ">=5.3",
-		"phpbb/phpbb": "3.1.*@dev"
+		"php": ">=5.3"
 	},
 	"extra": {
-		"display-name": "phpBB BarFoo Extension"
+		"display-name": "phpBB BarFoo Extension",
+		"phpbb/phpbb": "3.1.*@dev"
 	}
 }

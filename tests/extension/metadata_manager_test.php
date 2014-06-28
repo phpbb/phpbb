@@ -296,6 +296,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> '10.0.0',
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '3.2.0', // config is set to 3.1.0
 			),
 		));
@@ -315,6 +317,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> '5.3.0',
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '3.1.0-beta', // config is set to 3.1.0
 			),
 		));
@@ -334,6 +338,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> '>' . phpversion(),
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '>3.1.0', // config is set to 3.1.0
 			),
 		));
@@ -353,6 +359,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> '<' . phpversion(),
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '<3.1.0', // config is set to 3.1.0
 			),
 		));
@@ -372,6 +380,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> phpversion(),
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '3.1.0', // config is set to 3.1.0
 			),
 		));
@@ -391,6 +401,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> '>=' . phpversion(),
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '>=3.1.0', // config is set to 3.1.0
 			),
 		));
@@ -410,6 +422,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$manager->merge_metadata(array(
 			'require'		=> array(
 				'php'		=> '<=' . phpversion(),
+			),
+			'extra'		=> array(
 				'phpbb/phpbb'		=> '<=3.1.0', // config is set to 3.1.0
 			),
 		));
