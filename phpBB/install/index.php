@@ -102,7 +102,6 @@ $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_ro
 phpbb_require_updated('phpbb/class_loader.' . $phpEx);
 
 phpbb_require_updated('includes/functions.' . $phpEx);
-phpbb_require_updated('includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
