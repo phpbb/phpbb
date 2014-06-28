@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_factory
+class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 {
 	protected function get_container_filename()
 	{

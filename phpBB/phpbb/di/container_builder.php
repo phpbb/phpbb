@@ -16,7 +16,7 @@ namespace phpbb\di;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 
-class container_factory
+class container_builder
 {
 	/** @var string phpBB Root Path */
 	protected $phpbb_root_path;

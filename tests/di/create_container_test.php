@@ -20,7 +20,7 @@ namespace
 		protected $config_php;
 
 		/**
-		* @var \phpbb\di\container_factory
+		* @var \phpbb\di\container_builder
 		*/
 		protected $builder;
 		protected $phpbb_root_path;

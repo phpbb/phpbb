@@ -38,7 +38,7 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
 $phpbb_container_builder->set_use_extensions(false);
 $phpbb_container_builder->set_dump_container(false);
 

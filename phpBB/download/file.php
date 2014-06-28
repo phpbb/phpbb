@@ -61,7 +61,7 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->register();
 
 	// Set up container
-	$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
 	$phpbb_container = $phpbb_container_builder->get_container();
 
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
