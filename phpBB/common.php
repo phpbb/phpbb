@@ -27,8 +27,8 @@ require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
-$phpbb_config_php_handler = new \phpbb\config_php($phpbb_root_path, $phpEx);
-extract($phpbb_config_php_handler->get_all());
+$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
+extract($phpbb_config_php_file->get_all());
 
 if (!defined('PHPBB_INSTALLED'))
 {
@@ -95,7 +95,7 @@ $phpbb_class_loader_ext->register();
 phpbb_load_extensions_autoloaders($phpbb_root_path);
 
 // Set up container
-$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_file, $phpbb_root_path, $phpEx);
 $phpbb_container = $phpbb_container_builder->get_container();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));

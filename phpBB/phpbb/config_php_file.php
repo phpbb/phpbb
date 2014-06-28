@@ -13,7 +13,7 @@
 
 namespace phpbb;
 
-class config_php
+class config_php_file
 {
 	/** @var string phpBB Root Path */
 	protected $phpbb_root_path;

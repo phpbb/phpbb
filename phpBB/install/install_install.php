@@ -51,7 +51,7 @@ class install_install extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $language, $phpbb_root_path, $phpEx;
-		global $phpbb_container, $cache, $phpbb_log, $request, $phpbb_config_php_handler;
+		global $phpbb_container, $cache, $phpbb_log, $request, $phpbb_config_php_file;
 
 		switch ($sub)
 		{
@@ -104,7 +104,7 @@ class install_install extends module
 				$request->enable_super_globals();
 
 				// Create a normal container now
-				$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+				$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_file, $phpbb_root_path, $phpEx);
 				$phpbb_container = $phpbb_container_builder->get_container();
 
 				// Sets the global variables

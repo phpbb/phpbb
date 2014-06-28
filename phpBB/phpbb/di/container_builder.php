@@ -108,11 +108,11 @@ class container_factory
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config_php $config_php_handler
+	* @param \phpbb\config_php_file $config_php_handler
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	*/
-	function __construct(\phpbb\config_php $config_php_handler, $phpbb_root_path, $php_ext)
+	function __construct(\phpbb\config_php_file $config_php_handler, $phpbb_root_path, $php_ext)
 	{
 		$this->config_php_handler = $config_php_handler;
 		$this->phpbb_root_path = $phpbb_root_path;

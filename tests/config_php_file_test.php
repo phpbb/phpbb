@@ -11,18 +11,18 @@
 *
 */
 
-class phpbb_config_php_test extends phpbb_test_case
+class phpbb_config_php_file_test extends phpbb_test_case
 {
 	public function test_default()
 	{
-		$config_php = new \phpbb\config_php(dirname( __FILE__ ) . '/fixtures/', 'php');
+		$config_php = new \phpbb\config_php_file(dirname( __FILE__ ) . '/fixtures/', 'php');
 		$this->assertSame('bar', $config_php->get('foo'));
 		$this->assertSame(array('foo' => 'bar', 'foo_foo' => 'bar bar'), $config_php->get_all());
 	}
 
 	public function test_set_config_file()
 	{
-		$config_php = new \phpbb\config_php(dirname( __FILE__ ) . '/fixtures/', 'php');
+		$config_php = new \phpbb\config_php_file(dirname( __FILE__ ) . '/fixtures/', 'php');
 		$config_php->set_config_file(dirname( __FILE__ ) . '/fixtures/config_other.php');
 		$this->assertSame('foo', $config_php->get('bar'));
 		$this->assertSame(array('bar' => 'foo', 'bar_bar' => 'foo foo'), $config_php->get_all());

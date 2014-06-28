@@ -107,7 +107,7 @@ class install_convert extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language, $table_prefix;
-		global $convert, $request, $phpbb_container, $phpbb_config_php_handler;
+		global $convert, $request, $phpbb_container, $phpbb_config_php_file;
 
 		$this->tpl_name = 'install_convert';
 		$this->mode = $mode;
@@ -127,7 +127,7 @@ class install_convert extends module
 		// Enable super globals to prevent issues with the new \phpbb\request\request object
 		$request->enable_super_globals();
 		// Create a normal container now
-		$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+		$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_file, $phpbb_root_path, $phpEx);
 		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Create cache
@@ -136,8 +136,8 @@ class install_convert extends module
 		switch ($sub)
 		{
 			case 'intro':
-				$phpbb_config_php_handler->set_config_file($phpbb_root_path . 'config.' . $phpEx);
-				extract($phpbb_config_php_handler->get_all());
+				$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
+				extract($phpbb_config_php_file->get_all());
 
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
@@ -227,8 +227,8 @@ class install_convert extends module
 				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 				$cache->purge();
 
-				$phpbb_config_php_handler->set_config_file($phpbb_root_path . 'config.' . $phpEx);
-				extract($phpbb_config_php_handler->get_all());
+				$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
+				extract($phpbb_config_php_file->get_all());
 
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
@@ -375,10 +375,10 @@ class install_convert extends module
 	*/
 	function get_convert_settings($sub)
 	{
-		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache, $phpbb_config_php_handler;
+		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache, $phpbb_config_php_file;
 
-		$phpbb_config_php_handler->set_config_file($phpbb_root_path . 'config.' . $phpEx);
-		extract($phpbb_config_php_handler->get_all());
+		$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
+		extract($phpbb_config_php_file->get_all());
 
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
@@ -621,10 +621,10 @@ class install_convert extends module
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
-		global $request, $phpbb_config_php_handler;
+		global $request, $phpbb_config_php_file;
 
-		$phpbb_config_php_handler->set_config_file($phpbb_root_path . 'config.' . $phpEx);
-		extract($phpbb_config_php_handler->get_all());
+		$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
+		extract($phpbb_config_php_file->get_all());
 
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);

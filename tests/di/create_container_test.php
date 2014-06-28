@@ -29,7 +29,7 @@ namespace
 		public function setUp()
 		{
 			$this->phpbb_root_path = dirname(__FILE__) . '/';
-			$this->config_php = new \phpbb\config_php($this->phpbb_root_path . 'fixtures/', 'php');
+			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
 			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->config_php, $this->phpbb_root_path . 'fixtures/', 'php');
 
 			$this->filename = $this->phpbb_root_path . '../tmp/container.php';

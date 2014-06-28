@@ -24,7 +24,7 @@ class config extends Extension
 	/** @var array */
 	protected $config_php;
 
-	public function __construct(\phpbb\config_php $config_php)
+	public function __construct(\phpbb\config_php_file $config_php)
 	{
 		$this->config_php = $config_php;
 	}

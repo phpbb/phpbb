@@ -66,9 +66,9 @@ class install_update extends module
 	function main($mode, $sub)
 	{
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
-		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container, $phpbb_config_php_handler;
+		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container, $phpbb_config_php_file;
 
-		extract($phpbb_config_php_handler->get_all());
+		extract($phpbb_config_php_file->get_all());
 
 		// We must enable super globals, otherwise creating a new instance of the request class,
 		// using the new container with a dbal connection will fail with the following PHP Notice:
@@ -76,7 +76,7 @@ class install_update extends module
 		$request->enable_super_globals();
 
 		// Create a normal container now
-		$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+		$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_file, $phpbb_root_path, $phpEx);
 		$phpbb_container_builder->set_dump_container(false);
 		$phpbb_container_builder->set_use_extensions(false);
 		if (file_exists($phpbb_root_path . 'install/update/new/config'))
