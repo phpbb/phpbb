@@ -29,7 +29,7 @@ use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 *     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
-class dispatcher extends ContainerAwareEventDispatcher
+class dispatcher extends ContainerAwareEventDispatcher implements dispatcher_interface
 {
 	public function trigger_event($eventName, $data = array())
 	{
