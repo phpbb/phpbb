@@ -486,7 +486,7 @@ function parse_document(container)
 		var $this = $(this),
 			$body = $('body'),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.pagination, .icon-faq, .icon-members, .icon-team, .icon-contact, .icon-subscribe, .mark-read, .edit-icon, .quote-icon',
+			filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
 			persist = $this.attr('id') == 'nav-main',
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
