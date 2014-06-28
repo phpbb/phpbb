@@ -127,8 +127,8 @@ class install_convert extends module
 		// Enable super globals to prevent issues with the new \phpbb\request\request object
 		$request->enable_super_globals();
 		// Create a normal container now
-		$phpbb_container_factory = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
-		$phpbb_container = $phpbb_container_factory->get_container();
+		$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Create cache
 		$cache = $phpbb_container->get('cache');

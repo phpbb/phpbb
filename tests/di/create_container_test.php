@@ -22,7 +22,7 @@ namespace
 		/**
 		* @var \phpbb\di\container_factory
 		*/
-		protected $factory;
+		protected $builder;
 		protected $phpbb_root_path;
 		protected $filename;
 
@@ -30,7 +30,7 @@ namespace
 		{
 			$this->phpbb_root_path = dirname(__FILE__) . '/';
 			$this->config_php = new \phpbb\config_php($this->phpbb_root_path . 'fixtures/', 'php');
-			$this->factory = new phpbb_mock_container_factory($this->config_php, $this->phpbb_root_path . 'fixtures/', 'php');
+			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->config_php, $this->phpbb_root_path . 'fixtures/', 'php');
 
 			$this->filename = $this->phpbb_root_path . '../tmp/container.php';
 			if (is_file($this->filename))
@@ -43,7 +43,7 @@ namespace
 
 		public function test_default_container()
 		{
-			$container = $this->factory->get_container();
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			// Checks the core services
@@ -67,7 +67,7 @@ namespace
 			$this->assertTrue(is_file($this->filename));
 
 			// Checks the construction of a dumped container
-			$container = $this->factory->get_container();
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('phpbb_cache_container', $container);
 			$this->assertFalse($container->isFrozen());
 			$container->getParameterBag(); // needed, otherwise the container is not marked as frozen
@@ -76,15 +76,15 @@ namespace
 
 		public function test_dump_container()
 		{
-			$this->factory->set_dump_container(false);
-			$container = $this->factory->get_container();
+			$this->builder->set_dump_container(false);
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			// Checks dump_container
 			$this->assertFalse(is_file($this->filename));
 
 			// Checks the construction of a dumped container
-			$container = $this->factory->get_container();
+			$container = $this->builder->get_container();
 			$this->assertNotInstanceOf('phpbb_cache_container', $container);
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 			$this->assertTrue($container->isFrozen());
@@ -92,8 +92,8 @@ namespace
 
 		public function test_use_extensions()
 		{
-			$this->factory->set_use_extensions(false);
-			$container = $this->factory->get_container();
+			$this->builder->set_use_extensions(false);
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			// Checks the core services
@@ -107,8 +107,8 @@ namespace
 
 		public function test_compile_container()
 		{
-			$this->factory->set_compile_container(false);
-			$container = $this->factory->get_container();
+			$this->builder->set_compile_container(false);
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			// Checks compile_container
@@ -117,8 +117,8 @@ namespace
 
 		public function test_inject_config()
 		{
-			$this->factory->set_inject_config(false);
-			$container = $this->factory->get_container();
+			$this->builder->set_inject_config(false);
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			// Checks inject_config
@@ -127,8 +127,8 @@ namespace
 
 		public function test_set_config_path()
 		{
-			$this->factory->set_config_path($this->phpbb_root_path . 'fixtures/other_config/');
-			$container = $this->factory->get_container();
+			$this->builder->set_config_path($this->phpbb_root_path . 'fixtures/other_config/');
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			$this->assertTrue($container->hasParameter('other_config'));
@@ -137,8 +137,8 @@ namespace
 
 		public function test_set_custom_parameters()
 		{
-			$this->factory->set_custom_parameters(array('my_parameter' => true));
-			$container = $this->factory->get_container();
+			$this->builder->set_custom_parameters(array('my_parameter' => true));
+			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			$this->assertTrue($container->hasParameter('my_parameter'));

@@ -76,14 +76,14 @@ class install_update extends module
 		$request->enable_super_globals();
 
 		// Create a normal container now
-		$phpbb_container_factory = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
-		$phpbb_container_factory->set_dump_container(false);
-		$phpbb_container_factory->set_use_extensions(false);
+		$phpbb_container_builder = new \phpbb\di\container_factory($phpbb_config_php_handler, $phpbb_root_path, $phpEx);
+		$phpbb_container_builder->set_dump_container(false);
+		$phpbb_container_builder->set_use_extensions(false);
 		if (file_exists($phpbb_root_path . 'install/update/new/config'))
 		{
-			$phpbb_container_factory->set_config_path($phpbb_root_path . 'install/update/new/config');
+			$phpbb_container_builder->set_config_path($phpbb_root_path . 'install/update/new/config');
 		}
-		$phpbb_container = $phpbb_container_factory->get_container();
+		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Writes into global $cache
 		$cache = $phpbb_container->get('cache');
