@@ -31,6 +31,9 @@ use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 */
 class dispatcher extends ContainerAwareEventDispatcher implements dispatcher_interface
 {
+	/**
+	* {@inheritdoc}
+	*/
 	public function trigger_event($eventName, $data = array())
 	{
 		$event = new \phpbb\event\data($data);
