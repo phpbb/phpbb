@@ -42,6 +42,8 @@ class config_php_file
 	*/
 	protected $config_file;
 
+	private $defined_vars;
+
 	/**
 	* Constructor
 	*
@@ -108,7 +110,6 @@ class config_php_file
 		{
 			if (file_exists($this->config_file))
 			{
-				$this->defined_vars = null;
 				$this->defined_vars = get_defined_vars();
 
 				require($this->config_file);
