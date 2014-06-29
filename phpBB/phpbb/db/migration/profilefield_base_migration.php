@@ -112,6 +112,36 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	}
 
 	/**
+	* Create Custom profile fields languguage entries
+	*/
+	public function create_language_entries()
+	{
+		$field_id = $this->get_custom_profile_field_id();
+		
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, PROFILE_FIELDS_LANG_TABLE);
+		
+		$sql = 'SELECT lang_id
+			FROM ' . LANG_TABLE;
+		$result = $this->db->sql_query($sql);
+		while ($lang_id = (int) $this->db->sql_fetchfield('lang_id'))
+		{
+			foreach ($this->profilefield_language_data as $language_data)
+			{
+				$insert_buffer->insert(array(
+					'field_id'	=> $field_id,
+					'lang_id'	=> $lang_id,
+					'option_id'	=> $language_data['option_id'],
+					'field_type'	=> $language_data['field_type'],
+					'lang_value'	=> $language_data['lang_value'],
+				));
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		$insert_buffer->flush();
+	}
+
+	/**
 	* Get custom profile field id
 	* @return	int	custom profile filed id
 	*/
