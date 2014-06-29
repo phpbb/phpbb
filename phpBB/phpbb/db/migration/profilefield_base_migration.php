@@ -150,7 +150,7 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	}
 
 	/**
-	* Clean db after purging of extension
+	* Clean database when reverting the migration
 	*/
 	public function delete_custom_profile_field_data()
 	{
@@ -175,8 +175,8 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	*/
 	public function get_custom_profile_field_id()
 	{
-		$sql = "SELECT field_id 
-				FROM " . PROFILE_FIELDS_TABLE . " 
+		$sql = 'SELECT field_id 
+				FROM ' . PROFILE_FIELDS_TABLE . " 
 				WHERE field_name = '" . $this->profilefield_name . "'";
 		$result = $this->db->sql_query($sql);
 		$field_id = (int) $this->db->sql_fetchfield('field_id');
