@@ -142,7 +142,7 @@ class install_convert extends module
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+				$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -233,7 +233,7 @@ class install_convert extends module
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+				$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -383,7 +383,7 @@ class install_convert extends module
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -465,7 +465,8 @@ class install_convert extends module
 			{
 				$error[] = sprintf($lang['TABLE_PREFIX_SAME'], $src_table_prefix);
 			}
-			$src_dbms  = phpbb_convert_30_dbms_to_31($src_dbms);
+
+			$src_dbms = $phpbb_config_php_file->convert_30_dbms_to_31($src_dbms);
 
 			// Check table prefix
 			if (!sizeof($error))
@@ -629,7 +630,7 @@ class install_convert extends module
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
