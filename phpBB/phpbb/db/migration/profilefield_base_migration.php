@@ -22,7 +22,7 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	protected $profilefield_data;
 
 	/**
-	*Language data should be in array -> each language_data in seaprte key
+	* Language data should be in array -> each language_data in separate key
 	* array(
 	*		array(
 	*			'option_id'	=> value,
