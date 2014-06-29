@@ -142,6 +142,29 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	}
 
 	/**
+	* Clean db after purging of extension
+	* function should be called from migration
+	* using revert_data()
+	*/
+	public function clean_cpf_db_entries()
+	{
+		$field_id = $this->get_custom_profile_field_id();
+
+		//Let's clean the field
+		//1. PROFILE_FIELDS_TABLE
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . ' WHERE field_id = ' . $field_id;
+		$this->db->sql_query($sql);
+
+		//2. PPROFILE_LANG_TABLE
+		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE field_id = ' . $field_id;
+		$this->db->sql_query($sql);
+
+		//3. PROFILE_FIELDS_LANG_TABLE
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE field_id = ' . $field_id;
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	* Get custom profile field id
 	* @return	int	custom profile filed id
 	*/
