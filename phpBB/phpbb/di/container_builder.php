@@ -273,7 +273,6 @@ class container_builder
 	*/
 	protected function dump_container($container_filename)
 	{
-		// Lastly, we create our cached container class
 		$dumper = new PhpDumper($this->container);
 		$cached_container_dump = $dumper->dump(array(
 			'class'         => 'phpbb_cache_container',

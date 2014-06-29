@@ -39,7 +39,7 @@ class config extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		$container->setParameter('core.adm_relative_path', (isset($phpbb_adm_relative_path) ? $phpbb_adm_relative_path : 'adm/'));
+		$container->setParameter('core.adm_relative_path', ($this->config_php->get('phpbb_adm_relative_path') ? $this->config_php->get('phpbb_adm_relative_path') : 'adm/'));
 		$container->setParameter('core.table_prefix', $this->config_php->get('table_prefix'));
 		$container->setParameter('cache.driver.class', $this->convert_30_acm_type($this->config_php->get('acm_type')));
 		$container->setParameter('dbal.driver.class', phpbb_convert_30_dbms_to_31($this->config_php->get('dbms')));
