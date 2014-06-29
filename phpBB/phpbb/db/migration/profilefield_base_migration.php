@@ -21,6 +21,22 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 
 	protected $profilefield_data;
 
+	/*Language data should be in array -> each language_data in seaprte key
+	* array(
+	*		'1'	=> array(
+	*			'option_id'	=> value,
+	*			'field_type'	=> value,
+	*			'lang_value'	=> value,
+	*		),
+	*		'2'	=> array(
+	*			'option_id'	=> value,
+	*			'field_type'	=> value,
+	*			'lang_value'	=> value,
+	*		),
+	*	)
+	*/
+	protected $profilefield_language_data;
+
 	protected $user_column_name;
 
 	public function effectively_installed()
