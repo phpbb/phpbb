@@ -747,7 +747,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// I use a request because the form submission method does not allow you to send data that is not
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
-		return  self::request('POST', $posting_url, $form_data);
+		return self::request('POST', $posting_url, $form_data);
 	}
 
 	/**
