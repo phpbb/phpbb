@@ -21,14 +21,15 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 
 	protected $profilefield_data;
 
-	/*Language data should be in array -> each language_data in seaprte key
+	/**
+	*Language data should be in array -> each language_data in seaprte key
 	* array(
-	*		'1'	=> array(
+	*		array(
 	*			'option_id'	=> value,
 	*			'field_type'	=> value,
 	*			'lang_value'	=> value,
 	*		),
-	*		'2'	=> array(
+	*		array(
 	*			'option_id'	=> value,
 	*			'field_type'	=> value,
 	*			'lang_value'	=> value,
@@ -71,6 +72,13 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		return array(
 			array('custom', array(array($this, 'create_custom_field'))),
 			array('custom', array(array($this, 'convert_user_field_to_custom_field'))),
+		);
+	}
+
+	public function revert_data()
+	{
+		return array(
+			array('custom', array(array($this, 'delete_custom_profile_field_data'))),
 		);
 	}
 
@@ -143,24 +151,21 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 
 	/**
 	* Clean db after purging of extension
-	* function should be called from migration
-	* using revert_data()
 	*/
-	public function clean_cpf_db_entries()
+	public function delete_custom_profile_field_data()
 	{
 		$field_id = $this->get_custom_profile_field_id();
 
-		//Let's clean the field
-		//1. PROFILE_FIELDS_TABLE
-		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . ' WHERE field_id = ' . $field_id;
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . ' 
+				WHERE field_id = ' . $field_id;
 		$this->db->sql_query($sql);
 
-		//2. PPROFILE_LANG_TABLE
-		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE field_id = ' . $field_id;
+		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' 
+				WHERE field_id = ' . $field_id;
 		$this->db->sql_query($sql);
 
-		//3. PROFILE_FIELDS_LANG_TABLE
-		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE field_id = ' . $field_id;
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+				WHERE field_id = ' . $field_id;
 		$this->db->sql_query($sql);
 	}
 
@@ -170,9 +175,12 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	*/
 	public function get_custom_profile_field_id()
 	{
-		$sql = 'SELECT field_id FROM ' . PROFILE_FIELDS_TABLE . ' WHERE field_name = \'' . $this->profilefield_name . '\'';
+		$sql = "SELECT field_id 
+				FROM " . PROFILE_FIELDS_TABLE . " 
+				WHERE field_name = '" . $this->profilefield_name . "'";
 		$result = $this->db->sql_query($sql);
 		$field_id = (int) $this->db->sql_fetchfield('field_id');
+		$this->db->sql_freeresult($result);
 
 		return $field_id;
 	}
