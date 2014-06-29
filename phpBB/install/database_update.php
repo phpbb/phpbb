@@ -58,7 +58,6 @@ function phpbb_end_update($cache, $config)
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
-// Setup class loader first
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 

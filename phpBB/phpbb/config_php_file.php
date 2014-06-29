@@ -22,7 +22,7 @@ class config_php_file
 	protected $php_ext;
 
 	/**
-	* Indicates if the php config file has been loaded.
+	* Indicates whether the php config file has been loaded.
 	*
 	* @var bool
 	*/
@@ -36,7 +36,7 @@ class config_php_file
 	protected $config_data = array();
 
 	/**
-	* The path to the config file. (Defaults: $phpbb_root_path . 'config.' . $php_ext)
+	* The path to the config file. (Default: $phpbb_root_path . 'config.' . $php_ext)
 	*
 	* @var string
 	*/
@@ -45,7 +45,7 @@ class config_php_file
 	/**
 	* Constructor
 	*
-	* @param string $phpbb_root_path Path to the phpbb includes directory.
+	* @param string $phpbb_root_path phpBB Root Path
 	* @param string $php_ext php file extension
 	*/
 	function __construct($phpbb_root_path, $php_ext)
@@ -67,7 +67,7 @@ class config_php_file
 	}
 
 	/**
-	* Returns an array containing all the variables defined into the config.php file
+	* Returns an associative array containing the variables defined by the config file.
 	*
 	* @return bool|array Return the content of the config file or false if the file does not exists.
 	*/
