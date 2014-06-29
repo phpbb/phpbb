@@ -112,6 +112,19 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	}
 
 	/**
+	* Get custom profile field id
+	* @return	int	custom profile filed id
+	*/
+	public function get_custom_profile_field_id()
+	{
+		$sql = 'SELECT field_id FROM ' . PROFILE_FIELDS_TABLE . ' WHERE field_name = \'' . $this->profilefield_name . '\'';
+		$result = $this->db->sql_query($sql);
+		$field_id = (int) $this->db->sql_fetchfield('field_id');
+
+		return $field_id;
+	}
+
+	/**
 	* @param int			$start		Start of staggering step
 	* @return		mixed		int start of the next step, null if the end was reached
 	*/
