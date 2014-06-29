@@ -199,7 +199,7 @@ class path_helper
 		{
 			$referer_web_root_path = $this->get_web_root_path_from_ajax_referer(
 				$this->symfony_request->get('_referer'),
-				$this->symfony_request->getUriForPath('')
+				$this->symfony_request->getSchemeAndHttpHost() . $this->symfony_request->getBasePath()
 			);
 			return $this->web_root_path = $this->phpbb_root_path . $referer_web_root_path;
 		}
