@@ -192,11 +192,13 @@ class path_helper
 		*	app.php/foo/bar		memberlist.php		../../
 		*	../page.php			memberlist.php		./phpBB/
 		*	../sub/page.php		memberlist.php		./../phpBB/
+		*
+		* The referer must be specified as a parameter in the query.
 		*/
-		if ($this->request->is_ajax() && $this->request->header('Referer'))
+		if ($this->request->is_ajax() && $this->symfony_request->get('_referer'))
 		{
 			$referer_web_root_path = $this->get_web_root_path_from_ajax_referer(
-				$this->request->header('Referer'),
+				$this->symfony_request->get('_referer'),
 				$this->symfony_request->getUriForPath('')
 			);
 			return $this->web_root_path = $this->phpbb_root_path . $referer_web_root_path;
