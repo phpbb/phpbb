@@ -117,9 +117,9 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	public function create_language_entries()
 	{
 		$field_id = $this->get_custom_profile_field_id();
-		
+
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, PROFILE_FIELDS_LANG_TABLE);
-		
+
 		$sql = 'SELECT lang_id
 			FROM ' . LANG_TABLE;
 		$result = $this->db->sql_query($sql);
