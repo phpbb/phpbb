@@ -42,42 +42,42 @@ class container_builder
 	protected $installed_exts = null;
 
 	/**
-	* Indicates if the php config file should be injecting into the container (default to true).
+	* Indicates whether the php config file should be injected into the container (default to true).
 	*
 	* @var bool
 	*/
 	protected $inject_config = true;
 
 	/**
-	* Indicates if the extensions should be used (default to true).
+	* Indicates whether extensions should be used (default to true).
 	*
 	* @var bool
 	*/
 	protected $use_extensions = true;
 
 	/**
-	* Defines a custom path to find the configuration of the container.
+	* Defines a custom path to find the configuration of the container (default to $this->phpbb_root_path . 'config')
 	*
 	* @var string
 	*/
 	protected $config_path = null;
 
 	/**
-	* Indicates if the phpBB compile pass have to be used (default to true).
+	* Indicates whether the phpBB compile pass should be used (default to true).
 	*
 	* @var bool
 	*/
 	protected $use_custom_pass = true;
 
 	/**
-	* Indicates if the kernel compile pass have to be used (default to true).
+	* Indicates whether the kernel compile pass should be used (default to true).
 	*
 	* @var bool
 	*/
 	protected $use_kernel_pass = true;
 
 	/**
-	* Indicates if a dump container should be used (default to true).
+	* Indicates whether the container should be dumped to the filesystem (default to true).
 	*
 	* If DEBUG_CONTAINER is set this option is ignored and a new container is build.
 	*
@@ -106,15 +106,20 @@ class container_builder
 	protected $custom_parameters = null;
 
 	/**
+	* @var \phpbb\config_php_file
+	*/
+	protected $config_php_file;
+
+	/**
 	* Constructor
 	*
-	* @param \phpbb\config_php_file $config_php_handler
+	* @param \phpbb\config_php_file $config_php_file
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	*/
-	function __construct(\phpbb\config_php_file $config_php_handler, $phpbb_root_path, $php_ext)
+	function __construct(\phpbb\config_php_file $config_php_file, $phpbb_root_path, $php_ext)
 	{
-		$this->config_php_handler = $config_php_handler;
+		$this->config_php_file = $config_php_file;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
