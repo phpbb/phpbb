@@ -136,7 +136,6 @@ class install_convert extends module
 		switch ($sub)
 		{
 			case 'intro':
-				$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
 				extract($phpbb_config_php_file->get_all());
 
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -227,7 +226,6 @@ class install_convert extends module
 				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 				$cache->purge();
 
-				$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
 				extract($phpbb_config_php_file->get_all());
 
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -377,7 +375,6 @@ class install_convert extends module
 	{
 		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache, $phpbb_config_php_file;
 
-		$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
 		extract($phpbb_config_php_file->get_all());
 
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -624,7 +621,6 @@ class install_convert extends module
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
 		global $request, $phpbb_config_php_file;
 
-		$phpbb_config_php_file->set_config_file($phpbb_root_path . 'config.' . $phpEx);
 		extract($phpbb_config_php_file->get_all());
 
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
