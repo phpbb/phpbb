@@ -515,7 +515,7 @@ class manager
 	* @param string $name Extension name to check NOTE: Can be user input
 	* @return bool Depending on whether or not the extension is available
 	*/
-	public function available($name)
+	public function is_available($name)
 	{
 		return file_exists($this->get_extension_path($name, true));
 	}
@@ -526,9 +526,47 @@ class manager
 	* @param string $name Extension name to check
 	* @return bool Depending on whether or not the extension is enabled
 	*/
-	public function enabled($name)
+	public function is_enabled($name)
 	{
 		return isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'];
+	}
+
+	/**
+	* Check to see if a given extension is disabled
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is disabled
+	*/
+	public function is_disabled($name)
+	{
+		return isset($this->extensions[$name]) && !$this->extensions[$name]['ext_active'];
+	}
+
+	/**
+	* Check to see if a given extension is configured
+	*
+	* All enabled and disabled extensions are considered configured. A purged
+	* extension that is no longer in the database is not configured.
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is configured
+	*/
+	public function is_configured($name)
+	{
+		return isset($this->extensions[$name]);
+	}
+
+	/**
+	* Check to see if a given extension is purged
+	*
+	* An extension is purged if it is available, not enabled and not disabled.
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is purged
+	*/
+	public function is_purged($name)
+	{
+		return $this->is_available($name) && !$this->is_configured($name);
 	}
 
 	/**

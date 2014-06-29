@@ -37,7 +37,7 @@ class purge extends command
 		$this->manager->purge($name);
 		$this->manager->load_extensions();
 
-		if ($this->manager->enabled($name))
+		if ($this->manager->is_enabled($name))
 		{
 			$output->writeln("<error>Could not purge extension $name</error>");
 			return 1;

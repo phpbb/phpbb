@@ -137,7 +137,7 @@ class acp_extensions
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if ($phpbb_extension_manager->enabled($ext_name))
+				if ($phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -162,7 +162,7 @@ class acp_extensions
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if ($phpbb_extension_manager->enabled($ext_name))
+				if ($phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -194,7 +194,7 @@ class acp_extensions
 			break;
 
 			case 'disable_pre':
-				if (!$phpbb_extension_manager->enabled($ext_name))
+				if (!$phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -209,7 +209,7 @@ class acp_extensions
 			break;
 
 			case 'disable':
-				if (!$phpbb_extension_manager->enabled($ext_name))
+				if (!$phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -234,7 +234,7 @@ class acp_extensions
 			break;
 
 			case 'delete_data_pre':
-				if ($phpbb_extension_manager->enabled($ext_name))
+				if ($phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -248,7 +248,7 @@ class acp_extensions
 			break;
 
 			case 'delete_data':
-				if ($phpbb_extension_manager->enabled($ext_name))
+				if ($phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
