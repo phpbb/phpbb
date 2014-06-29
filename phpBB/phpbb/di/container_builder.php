@@ -153,7 +153,7 @@ class container_builder
 
 			if ($this->inject_config)
 			{
-				$container_extensions[] = new \phpbb\di\extension\config($this->config_php_handler);
+				$container_extensions[] = new \phpbb\di\extension\config($this->config_php_file);
 			}
 
 			$this->container = $this->create_container($container_extensions);
@@ -181,7 +181,7 @@ class container_builder
 			}
 		}
 
-		$this->container->set('config.php', $this->config_php_handler);
+		$this->container->set('config.php', $this->config_php_file);
 
 		// Frozen container, we can't modify either the services or the parameters
 		//$this->inject_dbal();
@@ -307,14 +307,14 @@ class container_builder
 	{
 		if ($this->dbal_connection === null)
 		{
-			$dbal_driver_class = $this->config_php_handler->convert_30_dbms_to_31($this->config_php_handler->get('dbms'));
+			$dbal_driver_class = $this->config_php_file->convert_30_dbms_to_31($this->config_php_file->get('dbms'));
 			$this->dbal_connection = new $dbal_driver_class();
 			$this->dbal_connection->sql_connect(
-				$this->config_php_handler->get('dbhost'),
-				$this->config_php_handler->get('dbuser'),
-				$this->config_php_handler->get('dbpasswd'),
-				$this->config_php_handler->get('dbname'),
-				$this->config_php_handler->get('dbport'),
+				$this->config_php_file->get('dbhost'),
+				$this->config_php_file->get('dbuser'),
+				$this->config_php_file->get('dbpasswd'),
+				$this->config_php_file->get('dbname'),
+				$this->config_php_file->get('dbport'),
 				defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
 			);
 		}
@@ -330,7 +330,7 @@ class container_builder
 	protected function get_installed_extensions()
 	{
 		$db = $this->get_dbal_connection();
-		$extension_table = $this->config_php_handler->get('table_prefix') . 'ext';
+		$extension_table = $this->config_php_file->get('table_prefix') . 'ext';
 
 		$sql = 'SELECT *
 			FROM ' . $extension_table . '
