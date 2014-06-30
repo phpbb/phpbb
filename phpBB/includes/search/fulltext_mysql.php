@@ -688,7 +688,12 @@ class fulltext_mysql extends search_backend
 	/**
 	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated.
 	*
-	* @param string $mode contains the post mode: edit, post, reply, quote ...
+	* @param string $mode 		Contains the post mode: edit, post, reply, quote ...
+	* @param int	$post_id	The id of the post which is modified/created
+	* @param string &$message	New or updated post content
+	* @param string &$subject	New or updated post subject
+	* @param int	$poster_id	Post author's user id
+	* @param int	$forum_id	The id of the forum in which the post is located
 	*/
 	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
