@@ -85,7 +85,16 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Editing information
 	if ($message_row['message_edit_count'] && $config['display_last_edited'])
 	{
-		$l_edited_by = '<br /><br />' . $user->lang('EDITED_TIMES_TOTAL', (int) $message_row['message_edit_count'], (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], $user->format_date($message_row['message_edit_time'], false, true));
+		if (!$message_row['message_edit_user'])
+		{
+			$display_username = get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour']);
+		}
+		else
+		{
+			$edit_user_info = get_user_information($message_row['message_edit_user'], false);
+			$display_username = get_username_string('full', $message_row['message_edit_user'], $edit_user_info['username'], $edit_user_info['user_colour']);
+		}
+		$l_edited_by = '<br /><br />' . $user->lang('EDITED_TIMES_TOTAL', (int) $message_row['message_edit_count'], $display_username, $user->format_date($message_row['message_edit_time'], false, true));
 	}
 	else
 	{
