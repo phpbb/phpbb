@@ -184,128 +184,32 @@
 
 		<form id="install_update" method="post" action="{U_UPDATE_ACTION}">
 
-		<!-- IF .up_to_date -->
-			<h2>{L_FILES_UP_TO_DATE}</h2>
-			<p>{L_FILES_UP_TO_DATE_EXPLAIN}</p>
+		<!-- IF .deleted -->
+			<h2>{L_FILES_DELETED}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('deleted', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_DELETED_EXPLAIN}</p>
 
-			<fieldset>
-				<legend><img src="{T_IMAGE_PATH}file_up_to_date.gif" alt="{L_STATUS_UP_TO_DATE}" /></legend>
-			<!-- BEGIN up_to_date -->
+			<fieldset id="deleted">
+				<legend><img src="{T_IMAGE_PATH}icon_delete.gif" alt="{L_STATUS_DELETED}" /></legend>
+				<!-- BEGIN deleted -->
 				<dl>
-					<dd class="full" style="text-align: {S_CONTENT_FLOW_BEGIN};"><strong>{up_to_date.FILENAME}</strong></dd>
+					<dt style="width: 60%;"><strong><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<br /><!-- ENDIF -->{deleted.FILE_PART}</strong></dt>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">
+						<!-- IF not deleted.S_BINARY -->[<a href="{deleted.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{deleted.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+					</dd>
 				</dl>
-			<!-- END up_to_date -->
-			</fieldset>
-
-		<!-- ENDIF -->
-
-		<!-- IF .new -->
-			<h2>{L_FILES_NEW}</h2>
-			<p>{L_FILES_NEW_EXPLAIN}</p>
-
-			<fieldset>
-				<legend><img src="{T_IMAGE_PATH}file_new.gif" alt="{L_STATUS_NEW}" /></legend>
-			<!-- BEGIN new -->
-				<dl>
-					<dt style="width: 60%;"><strong><!-- IF new.DIR_PART -->{new.DIR_PART}<br /><!-- ENDIF -->{new.FILE_PART}</strong>
-					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
-				</dt>
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
-					<!-- IF not new.S_BINARY -->[<a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
-				</dd>
-				<!-- IF new.S_CUSTOM -->
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{new.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
-				<!-- ENDIF -->
-				</dl>
-			<!-- END new -->
-			</fieldset>
-
-		<!-- ENDIF -->
-
-		<!-- IF .not_modified -->
-			<h2>{L_FILES_NOT_MODIFIED}</h2>
-			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('not_modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
-			<p>{L_FILES_NOT_MODIFIED_EXPLAIN}</p>
-
-			<fieldset id="not_modified" style="display: none;">
-				<legend><img src="{T_IMAGE_PATH}file_not_modified.gif" alt="{L_STATUS_NOT_MODIFIED}" /></legend>
-			<!-- BEGIN not_modified -->
-				<dl>
-					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br /><!-- ENDIF -->{not_modified.FILE_PART}</strong>
-						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
-					</dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
-					<!-- IF not_modified.S_CUSTOM -->
-						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{not_modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
-					<!-- ENDIF -->
-				</dl>
-			<!-- END not_modified -->
-			</fieldset>
-
-		<!-- ENDIF -->
-
-		<!-- IF .modified -->
-			<h2>{L_FILES_MODIFIED}</h2>
-			<p>{L_FILES_MODIFIED_EXPLAIN}</p>
-
-			<!-- BEGIN modified -->
-			<fieldset>
-				<legend><img src="{T_IMAGE_PATH}file_modified.gif" alt="{L_STATUS_MODIFIED}" /></legend>
-				<dl>
-					<dt style="width: 60%;"><strong><!-- IF modified.DIR_PART -->{modified.DIR_PART}<br /><!-- ENDIF -->{modified.FILE_PART}</strong>
-					<!-- IF modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
-				</dt>
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">&nbsp;</dd>
-				<!-- IF modified.S_CUSTOM -->
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
-				<!-- ENDIF -->
-				</dl>
-				<dl>
-					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="0" checked="checked" /> {L_MERGE_MODIFICATIONS_OPTION}</label></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
-				</dl>
-				<dl>
-					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
-				</dl>
-				<dl>
-					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
-				</dl>
-			</fieldset>
-			<!-- END modified -->
-
-		<!-- ENDIF -->
-
-		<!-- IF .new_conflict -->
-			<h2>{L_FILES_NEW_CONFLICT}</h2>
-			<p>{L_FILES_NEW_CONFLICT_EXPLAIN}</p>
-
-			<fieldset>
-				<legend><img src="{T_IMAGE_PATH}file_new_conflict.gif" alt="{L_STATUS_NEW_CONFLICT}" /></legend>
-			<!-- BEGIN new_conflict -->
-				<dl>
-					<dt style="width: 60%;"><strong><!-- IF new_conflict.DIR_PART -->{new_conflict.DIR_PART}<br /><!-- ENDIF -->{new_conflict.FILE_PART}</strong>
-					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
-				</dt>
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
-					<!-- IF not new_conflict.S_BINARY -->[<a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
-				</dd>
-				<!-- IF new_conflict.S_CUSTOM -->
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{new_conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
-				<!-- ENDIF -->
-				</dl>
-			<!-- END new_conflict -->
+				<!-- END deleted -->
 			</fieldset>
 
 		<!-- ENDIF -->
 
 		<!-- IF .conflict -->
 			<h2>{L_FILES_CONFLICT}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('conflict', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
 			<p>{L_FILES_CONFLICT_EXPLAIN}</p>
 
 			<!-- BEGIN conflict -->
-			<fieldset>
+			<fieldset id="conflict">
 				<legend><img src="{T_IMAGE_PATH}file_conflict.gif" alt="{L_STATUS_CONFLICT}" /></legend>
 				<dl>
 					<dt style="width: 60%;"><strong><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<br /><!-- ENDIF -->{conflict.FILE_PART}</strong>
@@ -348,20 +252,122 @@
 
 		<!-- ENDIF -->
 
-		<!-- IF .deleted -->
-			<h2>{L_FILES_DELETED}</h2>
-			<p>{L_FILES_DELETED_EXPLAIN}</p>
+		<!-- IF .new_conflict -->
+			<h2>{L_FILES_NEW_CONFLICT}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('new_conflict', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_NEW_CONFLICT_EXPLAIN}</p>
 
-			<fieldset>
-				<legend><img src="{T_IMAGE_PATH}icon_delete.gif" alt="{L_STATUS_DELETED}" /></legend>
-				<!-- BEGIN deleted -->
+			<fieldset id="new_conflict">
+				<legend><img src="{T_IMAGE_PATH}file_new_conflict.gif" alt="{L_STATUS_NEW_CONFLICT}" /></legend>
+			<!-- BEGIN new_conflict -->
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<br /><!-- ENDIF -->{deleted.FILE_PART}</strong></dt>
-					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">
-						<!-- IF not deleted.S_BINARY -->[<a href="{deleted.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{deleted.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
-					</dd>
+					<dt style="width: 60%;"><strong><!-- IF new_conflict.DIR_PART -->{new_conflict.DIR_PART}<br /><!-- ENDIF -->{new_conflict.FILE_PART}</strong>
+					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+				</dt>
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
+					<!-- IF not new_conflict.S_BINARY -->[<a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+				</dd>
+				<!-- IF new_conflict.S_CUSTOM -->
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{new_conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+				<!-- ENDIF -->
 				</dl>
-				<!-- END deleted -->
+			<!-- END new_conflict -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .modified -->
+			<h2>{L_FILES_MODIFIED}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_MODIFIED_EXPLAIN}</p>
+
+			<!-- BEGIN modified -->
+			<fieldset id="modified">
+				<legend><img src="{T_IMAGE_PATH}file_modified.gif" alt="{L_STATUS_MODIFIED}" /></legend>
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF modified.DIR_PART -->{modified.DIR_PART}<br /><!-- ENDIF -->{modified.FILE_PART}</strong>
+					<!-- IF modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+				</dt>
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">&nbsp;</dd>
+				<!-- IF modified.S_CUSTOM -->
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+				<!-- ENDIF -->
+				</dl>
+				<dl>
+					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="0" checked="checked" /> {L_MERGE_MODIFICATIONS_OPTION}</label></dt>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+				</dl>
+				<dl>
+					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+				</dl>
+				<dl>
+					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+				</dl>
+			</fieldset>
+			<!-- END modified -->
+
+		<!-- ENDIF -->
+
+		<!-- IF .new -->
+			<h2>{L_FILES_NEW}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('new_files', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_NEW_EXPLAIN}</p>
+
+			<fieldset id="new_files" style="display: none;">
+				<legend><img src="{T_IMAGE_PATH}file_new.gif" alt="{L_STATUS_NEW}" /></legend>
+			<!-- BEGIN new -->
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF new.DIR_PART -->{new.DIR_PART}<br /><!-- ENDIF -->{new.FILE_PART}</strong>
+					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+				</dt>
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
+					<!-- IF not new.S_BINARY -->[<a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+				</dd>
+				<!-- IF new.S_CUSTOM -->
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{new.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+				<!-- ENDIF -->
+				</dl>
+			<!-- END new -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .not_modified -->
+			<h2>{L_FILES_NOT_MODIFIED}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('not_modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_NOT_MODIFIED_EXPLAIN}</p>
+
+			<fieldset id="not_modified" style="display: none;">
+				<legend><img src="{T_IMAGE_PATH}file_not_modified.gif" alt="{L_STATUS_NOT_MODIFIED}" /></legend>
+			<!-- BEGIN not_modified -->
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br /><!-- ENDIF -->{not_modified.FILE_PART}</strong>
+						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					</dt>
+					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+					<!-- IF not_modified.S_CUSTOM -->
+						<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><label><input type="checkbox" name="no_update[]" value="{not_modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+					<!-- ENDIF -->
+				</dl>
+			<!-- END not_modified -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .up_to_date -->
+			<h2>{L_FILES_UP_TO_DATE}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('up_to_date', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_UP_TO_DATE_EXPLAIN}</p>
+
+			<fieldset id="up_to_date" style="display: none;">
+				<legend><img src="{T_IMAGE_PATH}file_up_to_date.gif" alt="{L_STATUS_UP_TO_DATE}" /></legend>
+			<!-- BEGIN up_to_date -->
+				<dl>
+					<dd class="full" style="text-align: {S_CONTENT_FLOW_BEGIN};"><strong>{up_to_date.FILENAME}</strong></dd>
+				</dl>
+			<!-- END up_to_date -->
 			</fieldset>
 
 		<!-- ENDIF -->
