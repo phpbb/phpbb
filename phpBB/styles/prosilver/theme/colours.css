@@ -793,7 +793,7 @@ ul.cplist {
 	border-color: #536482;
 }
 
-.responsive-tab .responsive-tab-link:hover span:before {
+.responsive-tab .responsive-tab-link:hover:before {
 	border-color: #D31141;
 }
 
