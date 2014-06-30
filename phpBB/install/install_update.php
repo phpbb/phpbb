@@ -68,8 +68,6 @@ class install_update extends module
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth, $language;
 		global $request, $phpbb_admin_path, $phpbb_adm_relative_path, $phpbb_container, $phpbb_config_php_file;
 
-		extract($phpbb_config_php_file->get_all());
-
 		// We must enable super globals, otherwise creating a new instance of the request class,
 		// using the new container with a dbal connection will fail with the following PHP Notice:
 		// Object of class phpbb_request_deactivated_super_global could not be converted to int
@@ -95,6 +93,7 @@ class install_update extends module
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
 
 		// Init DB
+		extract($phpbb_config_php_file->get_all());
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 		// Special options for conflicts/modified files
