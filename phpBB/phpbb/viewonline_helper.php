@@ -27,7 +27,7 @@ class viewonline_helper
 	public function get_user_page($session_page)
 	{
 		preg_match('#^([./\\]*+[a-z0-9/_-]+)#i', $session_page, $on_page);
-		if (!sizeof($on_page))
+		if (empty($on_page))
 		{
 			$on_page[1] = '';
 		}
