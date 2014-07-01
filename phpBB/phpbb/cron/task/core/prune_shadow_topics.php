@@ -45,11 +45,11 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	* @param string $phpbb_root_path The root path
 	* @param string $php_ext The PHP extension
 	* @param \phpbb\config\config $config The config
-	* @param \phpbb\db\driver\driver $db The db connection
+	* @param \phpbb\db\driver\driver_interface $db The db connection
 	* @param \phpbb\log\log $log The phpBB log system
 	* @param \phpbb\user $user The phpBB user object
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\log\log $log, \phpbb\user $user)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, \phpbb\user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
