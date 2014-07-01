@@ -175,8 +175,24 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 /* Main blocks
 ---------------------------------------- */
 #wrap {
-	padding: 0 20px;
+	border: 1px solid transparent;
+	border-radius: 12px;
+	margin: 0 auto;
+	max-width: 1152px;
 	min-width: 650px;
+	padding: 12px 20px;
+}
+
+@media only screen and (max-width: 1192px), only screen and (max-device-width: 1192px)
+{
+	body {
+		padding: 0;
+	}
+
+	#wrap {
+		border: none;
+		border-radius: 0;
+	}
 }
 
 #simple-wrap {

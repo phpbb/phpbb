@@ -4,6 +4,11 @@ These style definitions are IE 7 and 8 specific
 tweaks required due to its poor CSS support.
 -------------------------------------------------*/
 
+/* No body padding since IE8 doesn't support media-queries */
+body {
+	padding: 0;
+}
+
 /* Clear float fix for IE7 */
 .inner {
 	zoom: 1;
