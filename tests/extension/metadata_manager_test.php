@@ -245,47 +245,33 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		return array(
 			array(
 				'10.0.0',
-				'100.2.0',
-				false,
 				false,
 				'Versions are not compared at the moment',
 			),
 			array(
 				'5.3.0',
-				'3.1.0-beta',
-				true,
 				true,
 			),
 			array(
 				'>' . phpversion(),
-				'>3.1.0',
-				false,
 				false,
 				'Versions are not compared at the moment',
 			),
 			array(
 				'<' . phpversion(),
-				'<3.1.0',
-				false,
 				false,
 				'Versions are not compared at the moment',
 			),
 			array(
 				phpversion(),
-				'3.1.0',
-				true,
 				true,
 			),
 			array(
 				'>=' . phpversion(),
-				'>=3.1.0',
-				true,
 				true,
 			),
 			array(
 				'<=' . phpversion(),
-				'<=3.1.0',
-				true,
 				true,
 			),
 		);
@@ -294,7 +280,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	/**
 	* @dataProvider validator_requirements_data
 	*/
-	public function test_validator_requirements($php_version, $phpbb_version, $expected_php, $expected_phpbb, $incomplete_reason = '')
+	public function test_validator_requirements($php_version, $expected_php, $incomplete_reason = '')
 	{
 		if ($incomplete_reason)
 		{
@@ -308,13 +294,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			'require'		=> array(
 				'php'		=> $php_version,
 			),
-			'extra'		=> array(
-				'phpbb/phpbb'		=> $phpbb_version, // config is set to 3.1.0
-			),
 		));
 
 		$this->assertEquals($expected_php, $manager->validate_require_php());
-		$this->assertEquals($expected_phpbb, $manager->validate_require_phpbb());
 	}
 
 	/**
