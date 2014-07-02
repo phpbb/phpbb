@@ -50,6 +50,9 @@ then
 	echo 'apc.enable_cli=1' >> "$php_ini_file"
 fi
 
+echo 'Enabling Oracle Client Instant PHP extension'
+register_php_extension 'pdo_oci' "$php_ini_file"
+
 # redis
 # Disabled redis for now as it causes travis to fail
 # git clone git://github.com/nicolasff/phpredis.git redis
