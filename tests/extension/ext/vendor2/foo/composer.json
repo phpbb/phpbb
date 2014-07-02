@@ -12,8 +12,7 @@
 			"role": "N/A"
 		}],
 	"require": {
-		"php": ">=5.3",
-		"phpbb/phpbb": "3.1.*@dev"
+		"php": ">=5.3"
 	},
 	"extra": {
 		"display-name": "phpBB Foo Extension"

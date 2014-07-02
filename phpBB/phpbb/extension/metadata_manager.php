@@ -279,8 +279,8 @@ class metadata_manager
 	*/
 	public function validate_enable()
 	{
-		// Check for valid directory & phpBB, PHP versions
-		if (!$this->validate_dir() || !$this->validate_require_phpbb() || !$this->validate_require_php())
+		// Check for valid directory and PHP versions
+		if (!$this->validate_dir() || !$this->validate_require_php())
 		{
 			return false;
 		}
@@ -296,22 +296,6 @@ class metadata_manager
 	public function validate_dir()
 	{
 		return (substr_count($this->ext_name, '/') === 1 && $this->ext_name == $this->get_metadata('name'));
-	}
-
-
-	/**
-	* Validates the contents of the phpbb requirement field
-	*
-	* @return boolean True when passes validation
-	*/
-	public function validate_require_phpbb()
-	{
-		if (!isset($this->metadata['require']['phpbb/phpbb']))
-		{
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -368,9 +352,6 @@ class metadata_manager
 
 			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? htmlspecialchars($this->metadata['require']['php']) : '',
 			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
-
-			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['require']['phpbb/phpbb'])) ? htmlspecialchars($this->metadata['require']['phpbb/phpbb']) : '',
-			'META_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
 
 			'META_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? htmlspecialchars($this->metadata['extra']['display-name']) : '',
 		));
