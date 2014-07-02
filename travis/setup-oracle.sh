@@ -49,7 +49,6 @@ sudo chmod 755 /usr/bin/free
 # ok, bc, is the dependency that is required by DB2 as well => let's remove it from oracle xe dependencies and provide 64bit one only
 #
 sudo apt-get update
-sudo apt-get upgrade
 
 # Install the Oracle 10g dependant packages
 sudo apt-get install -qq --force-yes libc6:i386
