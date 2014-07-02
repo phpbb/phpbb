@@ -183,7 +183,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	padding: 12px 20px;
 }
 
-@media only screen and (max-width: 1192px), only screen and (max-device-width: 1192px)
+@media only screen and (max-width: 1210px), only screen and (max-device-width: 1210px)
 {
 	body {
 		padding: 0;
