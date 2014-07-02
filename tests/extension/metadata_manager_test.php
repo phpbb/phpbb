@@ -309,7 +309,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				'php'		=> $php_version,
 			),
 			'extra'		=> array(
-				'phpbb/phpbb'		=> $phpbb_version, // config is set to 3.1.0
+				'soft-require'	=> array(
+					'phpbb/phpbb'		=> $phpbb_version, // config is set to 3.1.0
+				),
 			),
 		));
 

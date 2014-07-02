@@ -17,6 +17,8 @@
 	},
 	"extra": {
 		"display-name": "phpBB BarFoo Extension",
-		"phpbb/phpbb": "3.1.*@dev"
+		"soft-require": {
+			"phpbb/phpbb": "3.1.*@dev"
+		}
 	}
 }

@@ -16,6 +16,8 @@
 	},
 	"extra": {
 		"display-name": "phpBB Foo Extension",
-		"phpbb/phpbb": "3.1.*@dev"
+		"soft-require": {
+			"phpbb/phpbb": "3.1.*@dev"
+		}
 	}
 }
