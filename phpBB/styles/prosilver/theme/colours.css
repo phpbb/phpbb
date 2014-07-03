@@ -5,7 +5,7 @@ Colours and backgrounds for common.css
 
 html, body {
 	color: #536482;
-	background-color: #FFFFFF;
+	background-color: #F5F7FA;
 }
 
 h1 {
@@ -43,6 +43,11 @@ hr {
 
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
+#wrap {
+	background-color: #FFF;
+	border-color: #E6E9ED;
+}
+
 .headerbar {
 	background-color: #12A3EB;
 	background-image: url("./images/bg_header.gif");

@@ -12,13 +12,12 @@ html {
 	height: auto;
 }
 
-body {
-	padding: 0 5px;
-}
-
 #wrap {
-	min-width: 300px;
-	padding: 0;
+	border: none;
+	border-radius: 0;
+	margin: 0;
+	min-width: 290px;
+	padding: 0 5px;
 }
 
 /* Common block wrappers
