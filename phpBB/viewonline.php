@@ -44,6 +44,7 @@ if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 }
 
 $pagination = $phpbb_container->get('pagination');
+$viewonline_helper = $phpbb_container->get('viewonline_helper');
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
 $sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
@@ -213,11 +214,7 @@ while ($row = $db->sql_fetchrow($result))
 		continue;
 	}
 
-	preg_match('#^([a-z0-9/_-]+)#i', $row['session_page'], $on_page);
-	if (!sizeof($on_page))
-	{
-		$on_page[1] = '';
-	}
+	$on_page = $viewonline_helper->get_user_page($row['session_page']);
 
 	switch ($on_page[1])
 	{

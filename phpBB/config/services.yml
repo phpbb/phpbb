@@ -354,3 +354,6 @@ services:
             - @cache
             - @config
             - @user
+
+    viewonline_helper:
+        class: phpbb\viewonline_helper
