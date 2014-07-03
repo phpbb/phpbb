@@ -154,6 +154,18 @@ class type_int extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_profile_value_raw($field_value, $field_data)
+	{
+		if (($field_value === '' || $field_value === null) && !$field_data['field_show_novalue'])
+		{
+			return null;
+		}
+		return (int) $field_value;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function generate_field($profile_row, $preview_options = false)
 	{
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];

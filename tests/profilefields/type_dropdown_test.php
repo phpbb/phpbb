@@ -170,6 +170,54 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
+	public function profile_value_raw_data()
+	{
+		return array(
+			array(
+				'4',
+				array('field_show_novalue' => true),
+				'4',
+				'Field should return the correct raw value',
+			),
+			array(
+				'',
+				array('field_show_novalue' => false),
+				null,
+				'Field should null for empty value without show_novalue',
+			),
+			array(
+				'',
+				array('field_show_novalue' => true),
+				0,
+				'Field should return 0 for empty value with show_novalue',
+			),
+			array(
+				null,
+				array('field_show_novalue' => false),
+				null,
+				'Field should return correct raw value',
+			),
+			array(
+				null,
+				array('field_show_novalue' => true),
+				0,
+				'Field should return 0 for empty value with show_novalue',
+			),
+		);
+	}
+
+	/**
+	* @dataProvider profile_value_raw_data
+	*/
+	public function test_get_profile_value_raw($value, $field_options, $expected, $description)
+	{
+		$field_options = array_merge($this->field_options, $field_options);
+
+		$result = $this->cp->get_profile_value_raw($value, $field_options);
+
+		$this->assertSame($expected, $result, $description);
+	}
+
 	public function is_set_callback($field_id, $lang_id, $field_value)
 	{
 		return isset($this->dropdown_options[$field_value]);
