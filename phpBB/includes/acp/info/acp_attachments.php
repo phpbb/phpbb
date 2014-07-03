@@ -18,7 +18,6 @@ class acp_attachments_info
 		return array(
 			'filename'	=> 'acp_attachments',
 			'title'		=> 'ACP_ATTACHMENTS',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'attach'		=> array('title' => 'ACP_ATTACHMENT_SETTINGS', 'auth' => 'acl_a_attach', 'cat' => array('ACP_BOARD_CONFIGURATION', 'ACP_ATTACHMENTS')),
 				'extensions'	=> array('title' => 'ACP_MANAGE_EXTENSIONS', 'auth' => 'acl_a_attach', 'cat' => array('ACP_ATTACHMENTS')),

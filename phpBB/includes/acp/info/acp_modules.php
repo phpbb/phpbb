@@ -18,7 +18,6 @@ class acp_modules_info
 		return array(
 			'filename'	=> 'acp_modules',
 			'title'		=> 'ACP_MODULE_MANAGEMENT',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
 				'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
