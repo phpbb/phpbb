@@ -285,7 +285,7 @@ class lexer extends \Twig_Lexer
 			return "<!-- {$matches[1]}IF{$inner}-->";
 		};
 
-		return preg_replace_callback('#<!-- (ELSE)?IF((.*?) \(*!?[\$|\.]([^\s]+)(.*?))-->#', $callback, $code);
+		return preg_replace_callback('#<!-- (ELSE)?IF((.*?) (?:\(*!?[\$|\.]([^\s]+)(.*?))?)-->#', $callback, $code);
 	}
 
 	/**
