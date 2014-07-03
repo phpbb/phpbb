@@ -936,7 +936,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	$topic_rows = array();
 	if (sizeof($topic_ids))
 	{
-		$sql = 'SELECT topic_id, forum_id, topic_title
+		$sql = 'SELECT topic_id, forum_id, topic_title, topic_poster
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 		$result = $db->sql_query($sql);
