@@ -36,13 +36,17 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 		),
 		\RecursiveIteratorIterator::SELF_FIRST
 	);
-	$iterator->setMaxDepth(3);
+	$iterator->setMaxDepth(2);
 
 	foreach ($iterator as $file_info)
 	{
-		if ($file_info->getFilename() === 'autoload.php' && $file_info->getPathInfo()->getFilename() === 'vendor')
+		if ($file_info->getFilename() === 'vendor' && $iterator->getDepth() === 2)
 		{
-			require $file_info->getRealPath();
+			$filename = $file_info->getRealPath() . '/autoload.php';
+			if (file_exists($filename))
+			{
+				require $filename;
+			}
 		}
 	}
 }
