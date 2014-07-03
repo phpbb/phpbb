@@ -5,7 +5,7 @@ Colours and backgrounds for common.css
 
 html, body {
 	color: #536482;
-	background-color: #DDDDE0;
+	background-color: #F5F7FA;
 }
 
 h1 {
@@ -45,8 +45,7 @@ hr {
 ---------------------------------------- */
 #wrap {
 	background-color: #FFF;
-	border-color: #FFF;
-	box-shadow: 0 0 10px rgba(16, 82, 137, 0.12), inset 0 0 10px rgba(16, 82, 137, 0.08);
+	border-color: #E6E9ED;
 }
 
 .headerbar {
