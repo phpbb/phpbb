@@ -327,14 +327,13 @@ ul.linklist:after {
 }
 
 ul.linklist > li {
-	display: block;
-	list-style-type: none;
 	float: left;
-	width: auto;
-	margin-right: 7px;
 	font-size: 1.1em;
 	line-height: 2.2em;
+	list-style-type: none;
+	margin-right: 7px;
 	padding-top: 1px;
+	width: auto;
 }
 
 ul.linklist > li.rightside, p.rightside, a.rightside {
@@ -404,12 +403,13 @@ li.responsive-menu.dropdown-left .dropdown {
 	right: -6px;
 }
 
-ul.linklist .dropdown-down .dropdown {
+ul.linklist .dropdown {
 	top: 22px;
 }
 
 ul.linklist .dropdown-up .dropdown {
 	bottom: 18px;
+	top: auto;
 }
 
 /* Bulletin icons for list items
@@ -1150,6 +1150,10 @@ form > p.post-notice strong {
 	padding: 0;
 	position: absolute;
 	width: 340px;
+}
+
+.nojs .dropdown-extended .dropdown-contents {
+	position: relative;
 }
 
 .dropdown-extended .header {

@@ -519,6 +519,14 @@ function parse_document(container)
 				return;
 			}
 
+			// Unhide the quick-links menu if it has content
+			if (persist) {
+				item.addClass('hidden');
+				if (menu.find('li:not(.separator, .clone)').length || (responsive && menu.find('li.clone').length)) {
+					item.removeClass('hidden');
+				}
+			}
+
 			// Reset responsive and compact layout
 			if (responsive) {
 				responsive = false;
