@@ -12,13 +12,10 @@ html {
 	height: auto;
 }
 
-body {
-	padding: 0;
-}
-
 #wrap {
 	border: none;
 	border-radius: 0;
+	margin: 0;
 	min-width: 290px;
 	padding: 0 5px;
 }
