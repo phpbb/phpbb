@@ -50,9 +50,10 @@ class sqlite3 extends \phpbb\db\driver\driver
 			$this->dbo = new \SQLite3($this->server, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
 			$this->db_connect_id = true;
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
-			return array('message' => $e->getMessage());
+			$this->connect_error = $e->getMessage();
+			return array('message' => $this->connect_error);
 		}
 
 		return true;
@@ -272,7 +273,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 	*/
 	protected function _sql_error()
 	{
-		if (class_exists('SQLite3', false))
+		if (class_exists('SQLite3', false) && isset($this->dbo))
 		{
 			$error = array(
 				'message'	=> $this->dbo->lastErrorMsg(),
