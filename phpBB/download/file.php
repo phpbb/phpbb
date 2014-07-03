@@ -59,6 +59,8 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
 
+	phpbb_load_extensions_autoloaders($phpbb_root_path);
+
 	// Set up container
 	$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 
