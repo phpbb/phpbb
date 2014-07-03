@@ -94,6 +94,15 @@ interface type_interface
 	public function get_profile_value($field_value, $field_data);
 
 	/**
+	* Get Profile Value ID for display (the raw, unprocessed user data)
+	*
+	* @param mixed	$field_value		Field value as stored in the database
+	* @param array	$field_data			Array with requirements of the field
+	* @return mixed		Field value ID to display
+	*/
+	public function get_profile_value_raw($field_value, $field_data);
+
+	/**
 	* Get Profile Value for display
 	*
 	* When displaying a contact field, we don't want to have links already parsed and more
