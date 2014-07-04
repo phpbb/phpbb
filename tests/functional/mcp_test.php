@@ -35,11 +35,7 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	public function test_handle_quickmod($crawler)
 	{
 		// Test moving a post
-		$form = $crawler->selectButton('Go')->eq(1)->form();
-		$form['action']->select('merge');
-		$crawler = self::submit($form);
-
-		return $crawler;
+		return $this->get_quickmod_page(0, 'MERGE_POSTS', $crawler);
 	}
 
 	/**

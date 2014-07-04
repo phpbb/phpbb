@@ -356,37 +356,6 @@ $('.display_post').click(function(e) {
 	$('#post_hidden' + post_id).hide();
 });
 
-
-
-/**
- * This AJAXifies the quick-mod tools. The reason it cannot be a standard
- * callback / data attribute is that it requires filtering - some of the options
- * can be ajaxified, while others cannot.
- */
-phpbb.ajaxify({
-	selector: '#quickmodform',
-	refresh: true,
-	filter: function (data) {
-		var action = $('#quick-mod-select').val();
-
-		if (action === 'make_normal') {
-			return $(this).find('select option[value="make_global"]').length > 0;
-		} else if (action === 'lock' || action === 'unlock') {
-			return true;
-		}
-
-		if (action === 'delete_topic' || action === 'make_sticky' || action === 'make_announce' || action === 'make_global') {
-			return true;
-		}
-
-		return false;
-	}
-});
-
-$('#quick-mod-select').change(function () {
-	$('#quickmodform').submit();
-});
-
 $('#delete_permanent').click(function () {
 	if ($(this).prop('checked')) {
 		$('#delete_reason').hide();
