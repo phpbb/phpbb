@@ -183,8 +183,7 @@ class container_builder
 
 		$this->container->set('config.php', $this->config_php_file);
 
-		// Frozen container, we can't modify either the services or the parameters
-		//$this->inject_dbal();
+		$this->inject_dbal();
 
 		return $this->container;
 	}
@@ -294,7 +293,7 @@ class container_builder
 	{
 		if ($this->dbal_connection !== null)
 		{
-			$this->container->set('dbal.conn', $this->dbal_connection);
+			$this->container->get('dbal.conn')->set_driver($this->dbal_connection);
 		}
 	}
 
