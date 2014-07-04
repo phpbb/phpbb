@@ -219,8 +219,8 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	{
 		$db = $this->new_dbal();
 
-		$like_expression = str_replace('*', $db->any_char, $like_expression);
-		$like_expression = str_replace('#', $db->one_char, $like_expression);
+		$like_expression = str_replace('*', $db->get_any_char(), $like_expression);
+		$like_expression = str_replace('#', $db->get_one_char(), $like_expression);
 		$where = ($like_expression) ? 'username_clean ' . $db->sql_like_expression($like_expression) : '';
 
 		$result = $db->sql_query('SELECT username_clean

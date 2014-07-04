@@ -36,7 +36,7 @@ class release_3_0_4 extends \phpbb\db\migration\migration
 
 	public function rename_log_delete_topic()
 	{
-		if ($this->db->sql_layer == 'oracle')
+		if ($this->db->get_sql_layer() == 'oracle')
 		{
 			// log_operation is CLOB - but we can change this later
 			$sql = 'UPDATE ' . $this->table_prefix . "log

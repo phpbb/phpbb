@@ -248,7 +248,7 @@ class install_convert extends module
 					));
 				}
 
-				switch ($db->sql_layer)
+				switch ($db->get_sql_layer())
 				{
 					case 'sqlite':
 					case 'sqlite3':
@@ -727,7 +727,7 @@ class install_convert extends module
 			$src_db->sql_query("SET NAMES 'binary'");
 		}
 
-		switch ($db->sql_layer)
+		switch ($db->get_sql_layer())
 		{
 			case 'sqlite':
 			case 'sqlite3':
@@ -1129,7 +1129,7 @@ class install_convert extends module
 
 				if (!empty($schema['autoincrement']))
 				{
-					switch ($db->sql_layer)
+					switch ($db->get_sql_layer())
 					{
 						case 'postgres':
 							$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $schema['autoincrement'] . ")>0 then max(" . $schema['autoincrement'] . ")+1 else 1 end from " . $schema['target'] . '));');
@@ -1268,7 +1268,7 @@ class install_convert extends module
 
 				if (!empty($schema['autoincrement']))
 				{
-					switch ($db->sql_layer)
+					switch ($db->get_sql_layer())
 					{
 						case 'mssql':
 						case 'mssql_odbc':
@@ -1301,7 +1301,7 @@ class install_convert extends module
 
 					if ($sql_flag === true)
 					{
-						switch ($db->sql_layer)
+						switch ($db->get_sql_layer())
 						{
 							// If MySQL, we'll wait to have num_wait_rows rows to submit at once
 							case 'mysql':
@@ -1396,7 +1396,7 @@ class install_convert extends module
 
 				if (!empty($schema['autoincrement']))
 				{
-					switch ($db->sql_layer)
+					switch ($db->get_sql_layer())
 					{
 						case 'mssql':
 						case 'mssql_odbc':
@@ -1635,7 +1635,7 @@ class install_convert extends module
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
-			if ($db->sql_error_triggered)
+			if ($db->get_sql_error_triggered())
 			{
 				$template->assign_vars(array(
 					'S_ERROR_BOX'	=> true,
@@ -1808,7 +1808,7 @@ class install_convert extends module
 		global $convert;
 
 		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
+		$sql_ignore = (strpos($db->get_sql_layer(), 'mysql') === 0 && !defined('DEBUG')) ? 'IGNORE ' : '';
 		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();

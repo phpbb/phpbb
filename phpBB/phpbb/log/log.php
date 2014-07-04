@@ -737,7 +737,7 @@ class log implements \phpbb\log\log_interface
 			for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
 			{
 				$keywords_pattern[] = preg_quote($keywords[$i], '#');
-				$keywords[$i] = $this->db->sql_like_expression($this->db->any_char . $keywords[$i] . $this->db->any_char);
+				$keywords[$i] = $this->db->sql_like_expression($this->db->get_any_char() . $keywords[$i] . $this->db->get_any_char());
 			}
 
 			$keywords_pattern = '#' . implode('|', $keywords_pattern) . '#ui';

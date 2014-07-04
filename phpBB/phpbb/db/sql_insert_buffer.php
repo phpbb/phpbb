@@ -92,7 +92,7 @@ class sql_insert_buffer
 
 		// Flush buffer if it is full or when DB does not support multi inserts.
 		// In the later case, the buffer will always only contain one row.
-		if (!$this->db->multi_insert || sizeof($this->buffer) >= $this->max_buffered_rows)
+		if (!$this->db->get_multi_insert() || sizeof($this->buffer) >= $this->max_buffered_rows)
 		{
 			return $this->flush();
 		}

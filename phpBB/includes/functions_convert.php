@@ -1647,7 +1647,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		switch ($sql_type)
 		{
 			case 'insert':
-				switch ($db->sql_layer)
+				switch ($db->get_sql_layer())
 				{
 					case 'mysql':
 					case 'mysql4':
@@ -2041,7 +2041,7 @@ function update_topics_posted()
 {
 	global $db, $config;
 
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'sqlite':
 		case 'sqlite3':

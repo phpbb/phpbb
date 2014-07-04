@@ -18,7 +18,7 @@ class mysql_fulltext_drop extends \phpbb\db\migration\migration
 	public function effectively_installed()
 	{
 		// This migration is irrelevant for all non-MySQL DBMSes.
-		return strpos($this->db->sql_layer, 'mysql') === false;
+		return strpos($this->db->get_sql_layer(), 'mysql') === false;
 	}
 
 	static public function depends_on()

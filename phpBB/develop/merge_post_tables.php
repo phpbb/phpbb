@@ -46,7 +46,7 @@ $sql = "CREATE TABLE {$table_prefix}posts
 		WHERE pt.post_id = p.post_id";
 $db->sql_query($sql);
 
-switch ($db->sql_layer)
+switch ($db->get_sql_layer())
 {
 	case 'mysql':
 	case 'mysql4':
@@ -142,7 +142,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-switch ($db->sql_layer)
+switch ($db->get_sql_layer())
 {
 	case 'oracle':
 		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id

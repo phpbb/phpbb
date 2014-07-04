@@ -538,7 +538,7 @@ class acp_icons
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						switch ($db->sql_layer)
+						switch ($db->get_sql_layer())
 						{
 							case 'sqlite':
 							case 'sqlite3':

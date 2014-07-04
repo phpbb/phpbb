@@ -64,9 +64,10 @@ function phpbb_bootstrap_table_prefix($config_file)
 *
 * @param string $config_file
 * @param string $phpbb_root_path
+* @param \phpbb\db\driver\driver_interface $db The generated connection
 * @return array enabled extensions
 */
-function phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path)
+function phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path, &$db)
 {
 	$db = phpbb_bootstrap_db_connection($config_file);
 	$table_prefix = phpbb_bootstrap_table_prefix($config_file);
@@ -133,7 +134,7 @@ function phpbb_create_install_container($phpbb_root_path, $php_ext)
 	$container->setParameter('core.php_ext', $php_ext);
 	$container->setParameter('core.table_prefix', '');
 
-	$container->register('dbal.conn')->setSynthetic(true);
+	$container->register('dbal.conn.driver')->setSynthetic(true);
 
 	$container->setAlias('cache.driver', 'cache.driver.install');
 
@@ -259,9 +260,10 @@ function phpbb_create_dumped_container_unless_debug($config_file, array $extensi
 function phpbb_create_default_container($phpbb_root_path, $php_ext)
 {
 	$config_file = $phpbb_root_path . 'config.' . $php_ext;
-	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path);
+	$db = null;
+	$installed_exts = phpbb_bootstrap_enabled_exts($config_file, $phpbb_root_path, $db);
 
-	return phpbb_create_dumped_container_unless_debug(
+	$container = phpbb_create_dumped_container_unless_debug(
 		$config_file,
 		array(
 			new \phpbb\di\extension\config($config_file),
@@ -275,6 +277,10 @@ function phpbb_create_default_container($phpbb_root_path, $php_ext)
 		$phpbb_root_path,
 		$php_ext
 	);
+
+	$container->get('dbal.conn')->set_driver($db);
+
+	return $container;
 }
 
 /**

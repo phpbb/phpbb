@@ -160,11 +160,11 @@ abstract class migration
 		else
 		{
 			$result = $this->db->sql_query($sql);
-			if ($this->db->sql_error_triggered)
+			if ($this->db->get_sql_error_triggered())
 			{
 				$this->errors[] = array(
-					'sql'	=> $this->db->sql_error_sql,
-					'code'	=> $this->db->sql_error_returned,
+					'sql'	=> $this->db->get_sql_error_sql(),
+					'code'	=> $this->db->get_sql_error_returned(),
 				);
 			}
 		}

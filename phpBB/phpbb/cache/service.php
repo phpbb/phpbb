@@ -305,7 +305,7 @@ class service
 	{
 		if (($bots = $this->driver->get('_bots')) === false)
 		{
-			switch ($this->db->sql_layer)
+			switch ($this->db->get_sql_layer())
 			{
 				case 'mssql':
 				case 'mssql_odbc':

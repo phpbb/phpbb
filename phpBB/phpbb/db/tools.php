@@ -323,7 +323,7 @@ class tools
 		$this->dbms_type_map = self::get_dbms_type_map();
 
 		// Determine mapping database type
-		switch ($this->db->sql_layer)
+		switch ($this->db->get_sql_layer())
 		{
 			case 'mysql':
 				$this->sql_layer = 'mysql_40';
@@ -354,7 +354,7 @@ class tools
 			break;
 
 			default:
-				$this->sql_layer = $this->db->sql_layer;
+				$this->sql_layer = $this->db->get_sql_layer();
 			break;
 		}
 	}
@@ -377,7 +377,7 @@ class tools
 	*/
 	function sql_list_tables()
 	{
-		switch ($this->db->sql_layer)
+		switch ($this->db->get_sql_layer())
 		{
 			case 'mysql':
 			case 'mysql4':
@@ -711,7 +711,7 @@ class tools
 		$sqlite = false;
 
 		// For SQLite we need to perform the schema changes in a much more different way
-		if (($this->db->sql_layer == 'sqlite' || $this->db->sql_layer == 'sqlite3') && $this->return_statements)
+		if (($this->db->get_sql_layer() == 'sqlite' || $this->db->get_sql_layer() == 'sqlite3') && $this->return_statements)
 		{
 			$sqlite_data = array();
 			$sqlite = true;

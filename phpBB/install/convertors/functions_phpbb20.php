@@ -92,7 +92,7 @@ function phpbb_insert_forums()
 		$src_db->sql_query("SET NAMES 'utf8'");
 	}
 
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'mssql':
 		case 'mssql_odbc':
@@ -289,7 +289,7 @@ function phpbb_insert_forums()
 	}
 	$src_db->sql_freeresult($result);
 
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'postgres':
 			$db->sql_query("SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));');
@@ -1768,7 +1768,7 @@ function phpbb_create_userconv_table()
 	global $db, $src_db, $convert, $table_prefix, $user, $lang;
 
 	$map_dbms = '';
-	switch ($db->sql_layer)
+	switch ($db->get_sql_layer())
 	{
 		case 'mysql':
 			$map_dbms = 'mysql_40';
@@ -1796,7 +1796,7 @@ function phpbb_create_userconv_table()
 		break;
 
 		default:
-			$map_dbms = $db->sql_layer;
+			$map_dbms = $db->get_sql_layer();
 		break;
 	}
 

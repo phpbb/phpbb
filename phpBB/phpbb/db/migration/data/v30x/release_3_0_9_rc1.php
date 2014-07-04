@@ -89,7 +89,7 @@ class release_3_0_9_rc1 extends \phpbb\db\migration\migration
 		// Update file extension group names to use language strings, again.
 		$sql = 'SELECT group_id, group_name
 			FROM ' . EXTENSION_GROUPS_TABLE . '
-			WHERE group_name ' . $this->db->sql_like_expression('EXT_GROUP_' . $this->db->any_char);
+			WHERE group_name ' . $this->db->sql_like_expression('EXT_GROUP_' . $this->db->get_any_char());
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))

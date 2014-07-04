@@ -87,6 +87,102 @@ abstract class driver implements driver_interface
 	}
 
 	/**
+	* {@inheritdoc}
+	*/
+	public function get_sql_layer()
+	{
+		return $this->sql_layer;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_db_name()
+	{
+		return $this->dbname;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_any_char()
+	{
+		return $this->any_char;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_one_char()
+	{
+		return $this->one_char;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_db_connect_id()
+	{
+		return $this->db_connect_id;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_sql_error_triggered()
+	{
+		return $this->sql_error_triggered;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_sql_error_sql()
+	{
+		return $this->sql_error_sql;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_transaction()
+	{
+		return $this->transaction;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_sql_time()
+	{
+		return $this->sql_time;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_sql_error_returned()
+	{
+		return $this->sql_error_returned;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_multi_insert()
+	{
+		return $this->multi_insert;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_multi_insert($multi_insert)
+	{
+		$this->multi_insert = $multi_insert;
+	}
+
+	/**
 	* {@inheritDoc}
 	*/
 	function sql_return_on_error($fail = false)

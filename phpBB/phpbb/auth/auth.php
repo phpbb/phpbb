@@ -1043,7 +1043,7 @@ class auth
 		{
 			if (strpos($auth_options, '%') !== false)
 			{
-				$sql_opts = "AND $key " . $db->sql_like_expression(str_replace('%', $db->any_char, $auth_options));
+				$sql_opts = "AND $key " . $db->sql_like_expression(str_replace('%', $db->get_any_char(), $auth_options));
 			}
 			else
 			{
@@ -1074,7 +1074,7 @@ class auth
 				{
 					if (strpos($option, '%') !== false)
 					{
-						$sql[] = $key . ' ' . $db->sql_like_expression(str_replace('%', $db->any_char, $option));
+						$sql[] = $key . ' ' . $db->sql_like_expression(str_replace('%', $db->get_any_char(), $option));
 					}
 					else
 					{

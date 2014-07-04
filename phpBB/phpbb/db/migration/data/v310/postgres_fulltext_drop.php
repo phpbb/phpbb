@@ -18,7 +18,7 @@ class postgres_fulltext_drop extends \phpbb\db\migration\migration
 	public function effectively_installed()
 	{
 		// This migration is irrelevant for all non-PostgreSQL DBMSes.
-		return strpos($this->db->sql_layer, 'postgres') === false;
+		return strpos($this->db->get_sql_layer(), 'postgres') === false;
 	}
 
 	static public function depends_on()
