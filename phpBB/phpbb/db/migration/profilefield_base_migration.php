@@ -135,13 +135,10 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		{
 			foreach ($this->profilefield_language_data as $language_data)
 			{
-				$insert_buffer->insert(array(
+				$insert_buffer->insert(array_merge(array(
 					'field_id'	=> $field_id,
 					'lang_id'	=> $lang_id,
-					'option_id'	=> $language_data['option_id'],
-					'field_type'	=> $language_data['field_type'],
-					'lang_value'	=> $language_data['lang_value'],
-				));
+					), $language_data));
 			}
 		}
 		$this->db->sql_freeresult($result);
