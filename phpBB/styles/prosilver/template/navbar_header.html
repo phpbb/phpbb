@@ -1,9 +1,89 @@
-<div class="navbar">
+<div class="navbar" role="navigation">
 	<div class="inner">
 
-	<ul class="linklist navlinks">
+	<ul id="nav-main" class="linklist bulletin" role="menubar">
+
+		<li id="quick-links" class="small-icon responsive-menu dropdown-container<!-- IF not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH --> hidden<!-- ENDIF -->" data-skip-responsive="true">
+			<a href="#" class="responsive-menu-link dropdown-trigger">{L_QUICK_LINKS}</a>
+			<div class="dropdown hidden">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents" role="menu">
+					<!-- EVENT navbar_header_quick_links_before -->
+
+					<!-- IF S_DISPLAY_SEARCH -->
+						<li class="separator"></li>
+						<!-- IF S_REGISTERED_USER -->
+							<li class="small-icon icon-search-self"><a href="{U_SEARCH_SELF}" role="menuitem">{L_SEARCH_SELF}</a></li>
+						<!-- ENDIF -->
+						<li class="small-icon icon-search-unanswered"><a href="{U_SEARCH_UNANSWERED}" role="menuitem">{L_SEARCH_UNANSWERED}</a></li>
+						<!-- IF S_LOAD_UNREADS --> 
+							<li class="small-icon icon-search-unread"><a href="{U_SEARCH_UNREAD}" role="menuitem">{L_SEARCH_UNREAD}</a></li>
+						<!-- ENDIF -->
+						<!-- IF S_USER_LOGGED_IN -->
+							<li class="small-icon icon-search-new"><a href="{U_SEARCH_NEW}" role="menuitem">{L_SEARCH_NEW}</a></li>
+						<!-- ENDIF -->
+						<li class="small-icon icon-search-active"><a href="{U_SEARCH_ACTIVE_TOPICS}" role="menuitem">{L_SEARCH_ACTIVE_TOPICS}</a></li>
+					<!-- ENDIF -->
+					<li class="separator"></li>
+
+					<!-- EVENT navbar_header_quick_links_after -->
+				</ul>
+			</div>
+		</li>
+		<!-- IF U_ACP --><li class="small-icon icon-acp" data-skip-responsive="true"><a href="{U_ACP}" title="{L_ACP}" role="menuitem">{L_ACP_SHORT}</a></li><!-- ENDIF -->
+		<!-- IF U_MCP --><li class="small-icon icon-mcp" data-skip-responsive="true"><a href="{U_MCP}" title="{L_MCP}" role="menuitem">{L_MCP_SHORT}</a></li><!-- ENDIF -->
+
+		<!-- EVENT overall_header_navigation_prepend -->
+		<li class="small-icon icon-faq" <!-- IF not S_USER_LOGGED_IN -->data-skip-responsive="true"<!-- ELSE -->data-last-responsive="true"<!-- ENDIF -->><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" role="menuitem">{L_FAQ}</a></li>
+		<!-- EVENT overall_header_navigation_append -->
+
+	<!-- IF S_REGISTERED_USER -->
+		<li id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
+			<!-- EVENT navbar_header_username_prepend -->
+			<div class="header-profile dropdown-container">
+				<a href="{U_PROFILE}" class="header-avatar dropdown-trigger"><!-- IF CURRENT_USER_AVATAR -->{CURRENT_USER_AVATAR} <!-- ENDIF -->{CURRENT_USERNAME_SIMPLE}</a>
+				<div class="dropdown hidden">
+					<div class="pointer"><div class="pointer-inner"></div></div>
+					<ul class="dropdown-contents" role="menu">
+						<!-- IF U_RESTORE_PERMISSIONS --><li class="small-icon icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li><!-- ENDIF -->
+	
+						<!-- EVENT navbar_header_profile_list_before -->
+	
+						<li class="small-icon icon-ucp"><a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">{L_PROFILE}</a></li>
+						<li class="small-icon icon-profile"><a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">{L_READ_PROFILE}</a></li>
+	
+						<!-- EVENT navbar_header_profile_list_after -->
+	
+						<li class="separator"></li>
+						<li class="small-icon icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">{L_LOGIN_LOGOUT}</a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- EVENT navbar_header_username_append -->
+		</li>
+		<!-- IF S_DISPLAY_PM -->
+			<li class="small-icon icon-pm rightside" data-skip-responsive="true">
+				<a href="{U_PRIVATEMSGS}" role="menuitem"><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></a>
+			</li>
+		<!-- ENDIF -->
+		<!-- IF S_NOTIFICATIONS_DISPLAY -->
+			<li class="small-icon icon-notification dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
+				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
+				<!-- INCLUDE notification_dropdown.html -->
+			</li>
+		<!-- ENDIF -->
+	<!-- ELSE -->
+		<li class="small-icon icon-logout rightside"  data-skip-responsive="true"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">{L_LOGIN_LOGOUT}</a></li>
+		<!-- IF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) -->
+			<li class="small-icon icon-register rightside" data-skip-responsive="true"><a href="{U_REGISTER}" role="menuitem">{L_REGISTER}</a></li>
+		<!-- ENDIF -->
+		<!-- EVENT navbar_header_logged_out_content -->
+	<!-- ENDIF -->
+	</ul>
+
+	<ul id="nav-breadcrumbs" class="linklist navlinks" role="menubar">
 		<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
-		<li class="small-icon icon-home breadcrumbs">
+		<li class="small-icon icon-home breadcrumbs" role="navigation">
 			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA} data-navbar-reference="home">{L_SITE_HOME}</a></span><!-- ENDIF -->
 			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA} data-navbar-reference="index">{L_INDEX}</a></span>
 			<!-- BEGIN navlinks -->
@@ -14,55 +94,9 @@
 			<!-- EVENT overall_header_breadcrumb_append -->
 		</li>
 
-		<!-- IF S_REGISTERED_USER -->
-			<li id="username_logged_in" class="rightside">
-				<!-- EVENT navbar_header_username_prepend -->
-				<!-- IF CURRENT_USER_AVATAR -->
-					<a href="{U_USER_PROFILE}" class="header-avatar">{CURRENT_USER_AVATAR}</a>
-				<!-- ENDIF -->
-				{CURRENT_USERNAME_FULL}
-				<!-- EVENT navbar_header_username_append -->
-			</li>
-		<!-- ELSE -->
-			<li id="logged_out" class="rightside">
-				<!-- EVENT navbar_header_logged_out_content -->
-			</li>
+		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
+			<li class="rightside responsive-search" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}" role="menuitem">{L_SEARCH}</a></li>
 		<!-- ENDIF -->
-		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH --><li class="responsive-search rightside" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH}</a></li><!-- ENDIF -->
-	</ul>
-
-	<ul class="linklist bulletin">
-	<!-- IF not S_IS_BOT and S_USER_LOGGED_IN -->
-		<!-- IF S_NOTIFICATIONS_DISPLAY -->
-		<li class="small-icon icon-notification dropdown-container dropdown-{S_CONTENT_FLOW_END}" data-skip-responsive="true">
-			<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
-			<!-- INCLUDE notification_dropdown.html -->
-		</li>
-		<!-- ENDIF -->
-		<!-- IF S_DISPLAY_PM -->
-			<li class="small-icon icon-pm">
-				<a href="{U_PRIVATEMSGS}"><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></a>
-			</li>
-		<!-- ENDIF -->
-		<li class="small-icon icon-ucp">
-			<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
-		</li>
-		<!-- IF S_DISPLAY_SEARCH -->
-			<li class="icon-search-self"><a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a></li>
-		<!-- ENDIF -->
-		<!-- IF U_RESTORE_PERMISSIONS -->
-			<li class="icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li>
-		<!-- ENDIF -->
-	<!-- ENDIF -->
-
-		<!-- EVENT overall_header_navigation_append -->
-		<!-- IF not S_IS_BOT -->
-			<li class="small-icon icon-logout rightside no-bulletin"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x">{L_LOGIN_LOGOUT}</a></li>
-			<!-- IF not S_USER_LOGGED_IN and S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) --><li class="small-icon icon-register rightside no-bulletin"><a href="{U_REGISTER}">{L_REGISTER}</a></li><!-- ENDIF -->
-			<!-- IF S_DISPLAY_MEMBERLIST --><li class="small-icon icon-members rightside no-bulletin"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}">{L_MEMBERLIST}</a></li><!-- ENDIF -->
-		<!-- ENDIF -->
-		<li class="small-icon icon-faq rightside no-bulletin"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}">{L_FAQ}</a></li>
-		<!-- EVENT overall_header_navigation_prepend -->
 	</ul>
 
 	</div>

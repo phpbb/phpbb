@@ -7,16 +7,12 @@
 				<!-- EVENT viewtopic_topic_tools_before -->
 				<!-- IF U_WATCH_TOPIC -->
 					<li class="small-icon icon-<!-- IF S_WATCHING_TOPIC -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->">
-						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon icon-<!-- IF not S_WATCHING_TOPIC -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">
-							{S_WATCH_TOPIC_TITLE}
-						</a>
+						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="small-icon icon-<!-- IF not S_WATCHING_TOPIC -->unsubscribe<!-- ELSE -->subscribe<!-- ENDIF -->" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">{S_WATCH_TOPIC_TITLE}</a>
 					</li>
 				<!-- ENDIF -->
 				<!-- IF U_BOOKMARK_TOPIC -->
 					<li class="small-icon icon-bookmark">
-						<a href="{U_BOOKMARK_TOPIC}" class="bookmark-link" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}" data-update-all=".bookmark-link">
-							{S_BOOKMARK_TOPIC}
-						</a>
+						<a href="{U_BOOKMARK_TOPIC}" class="bookmark-link" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}" data-update-all=".bookmark-link">{S_BOOKMARK_TOPIC}</a>
 					</li>
 				<!-- ENDIF -->
 				<!-- IF U_BUMP_TOPIC --><li class="small-icon icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->

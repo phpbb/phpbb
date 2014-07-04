@@ -1301,6 +1301,20 @@ phpbb.toggleDropdown = function() {
 
 		if (direction == 'left') {
 			options.dropdown.css('margin-left', '-' + freeSpace + 'px');
+
+			// Try to position the notification dropdown correctly in RTL-responsive mode
+			if (options.dropdown.hasClass('dropdown-extended')) {
+				var contentWidth,
+					fullFreeSpace = freeSpace + parent.outerWidth();
+
+				options.dropdown.find('.dropdown-contents').each(function() {
+					contentWidth = parseInt($(this).outerWidth());
+					$(this).css({marginLeft: 0, left: 0});
+				});
+
+				var maxOffset = Math.min(contentWidth, fullFreeSpace) + 'px';
+				options.dropdown.css({'width': maxOffset, 'margin-left': '-' + maxOffset});
+			}
 		} else {
 			options.dropdown.css('margin-right', '-' + (windowWidth + freeSpace) + 'px');
 		}

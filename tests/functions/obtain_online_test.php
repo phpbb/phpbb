@@ -128,19 +128,19 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		return array(
 			array(0, false, array(
-				'online_userlist'	=> 'REGISTERED_USERS 2, 3',
+				'online_userlist'	=> 'REGISTERED_USERS <span class="username">2</span>, <span class="username">3</span>',
 				'l_online_users'	=> 'ONLINE_USERS_TOTAL 5 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 3',
 			)),
 			array(0, true, array(
-				'online_userlist'	=> 'REGISTERED_USERS 2, 3',
+				'online_userlist'	=> 'REGISTERED_USERS <span class="username">2</span>, <span class="username">3</span>',
 				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 7 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 3 GUEST_USERS_TOTAL 2',
 			)),
 			array(1, false, array(
-				'online_userlist'	=> 'BROWSING_FORUM 3',
+				'online_userlist'	=> 'BROWSING_FORUM <span class="username">3</span>',
 				'l_online_users'	=> 'ONLINE_USERS_TOTAL 2 REG_USERS_TOTAL 1 HIDDEN_USERS_TOTAL 1',
 			)),
 			array(1, true, array(
-				'online_userlist'	=> 'BROWSING_FORUM_GUESTS 1 3',
+				'online_userlist'	=> 'BROWSING_FORUM_GUESTS 1 <span class="username">3</span>',
 				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 3 REG_USERS_TOTAL 1 HIDDEN_USERS_TOTAL 1 GUEST_USERS_TOTAL 1',
 			)),
 			array(2, false, array(

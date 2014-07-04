@@ -72,7 +72,7 @@ html {
 .responsive-search a {
 	display: block;
 	width: 16px;
-	height: 18px;
+	height: 22px;
 	text-indent: 99px;
 	overflow: hidden;
 	background-position: 50% 50%;
@@ -189,8 +189,8 @@ ul.topiclist li.row dt a.subforum {
 ----------------------------------------*/
 @media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
 {
-	.dropdown-extended {
-		width: 250px;
+	.dropdown-extended .dropdown-contents {
+		width: auto;
 	}
 }
 
