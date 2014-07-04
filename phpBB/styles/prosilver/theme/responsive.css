@@ -12,6 +12,10 @@ html {
 	height: auto;
 }
 
+body {
+	padding: 0;
+}
+
 #wrap {
 	border: none;
 	border-radius: 0;

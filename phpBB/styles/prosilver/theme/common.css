@@ -185,7 +185,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 @media only screen and (max-width: 1220px), only screen and (max-device-width: 1220px) {
 	#wrap {
-		margin: 12px;
+		margin: 0 12px;
 	}
 }
 
