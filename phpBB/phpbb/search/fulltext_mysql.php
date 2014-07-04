@@ -140,7 +140,7 @@ class fulltext_mysql extends \phpbb\search\base
 	*/
 	public function init()
 	{
-		if ($this->db->sql_layer != 'mysql4' && $this->db->sql_layer != 'mysqli')
+		if ($this->db->get_sql_layer() != 'mysql4' && $this->db->get_sql_layer() != 'mysqli')
 		{
 			return $this->user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'];
 		}
@@ -764,7 +764,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 		if (!isset($this->stats['post_subject']))
 		{
-			if ($this->db->sql_layer == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
+			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$alter[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
@@ -777,7 +777,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 		if (!isset($this->stats['post_content']))
 		{
-			if ($this->db->sql_layer == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
+			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			}
@@ -872,7 +872,7 @@ class fulltext_mysql extends \phpbb\search\base
 	 */
 	protected function get_stats()
 	{
-		if (strpos($this->db->sql_layer, 'mysql') === false)
+		if (strpos($this->db->get_sql_layer(), 'mysql') === false)
 		{
 			$this->stats = array();
 			return;

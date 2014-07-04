@@ -75,11 +75,6 @@ if (isset($_GET['avatar']))
 	$db			= $phpbb_container->get('dbal.conn');
 	$phpbb_log	= $phpbb_container->get('log');
 
-	// Connect to DB
-	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
-	{
-		exit;
-	}
 	unset($dbpasswd);
 
 	request_var('', 0, false, false, $request);

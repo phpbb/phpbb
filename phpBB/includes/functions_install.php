@@ -290,7 +290,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		switch ($dbms_details['DRIVER'])
 		{
 			case 'phpbb\db\driver\mysqli':
-				if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
+				if (version_compare(mysqli_get_server_info($db->get_db_connect_id()), '4.1.3', '<'))
 				{
 					$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 				}

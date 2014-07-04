@@ -32,7 +32,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 	public function test_multi_insert_disabled_insert_and_flush()
 	{
-		$this->db->multi_insert = false;
+		$this->db->set_multi_insert(false);
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
 		$this->assert_config_count(3);
 		$this->assertFalse($this->buffer->flush());
@@ -50,7 +50,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 	public function test_multi_insert_disabled_insert_with_flush()
 	{
-		$this->db->multi_insert = false;
+		$this->db->set_multi_insert(false);
 		$this->assertTrue($this->buffer->insert($this->get_row(1)));
 		$this->assert_config_count(3);
 		$this->assertTrue($this->buffer->insert($this->get_row(2)));
@@ -68,7 +68,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 	public function test_multi_insert_disabled_insert_all_and_flush()
 	{
-		$this->db->multi_insert = false;
+		$this->db->set_multi_insert(false);
 		$this->assertTrue($this->buffer->insert_all($this->get_rows(3)));
 		$this->assert_config_count(5);
 	}
@@ -93,7 +93,7 @@ class phpbb_dbal_sql_insert_buffer_test extends phpbb_database_test_case
 
 	protected function check_multi_insert_support()
 	{
-		if (!$this->db->multi_insert)
+		if (!$this->db->get_multi_insert())
 		{
 			$this->markTestSkipped('Database does not support multi_insert');
 		}

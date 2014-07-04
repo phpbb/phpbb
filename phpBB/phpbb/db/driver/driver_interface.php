@@ -16,6 +16,90 @@ namespace phpbb\db\driver;
 interface driver_interface
 {
 	/**
+	* Gets the name of the sql layer.
+	*
+	* @return string
+	*/
+	public function get_sql_layer();
+
+	/**
+	* Gets the name of the database.
+	*
+	* @return string
+	*/
+	public function get_db_name();
+
+	/**
+	* Wildcards for matching any (%) character within LIKE expressions
+	*
+	* @return string
+	*/
+	public function get_any_char();
+
+	/**
+	* Wildcards for matching exactly one (_) character within LIKE expressions
+	*
+	* @return string
+	*/
+	public function get_one_char();
+
+	/**
+	* Gets the time spent into the queries
+	*
+	* @return int
+	*/
+	public function get_sql_time();
+
+	/**
+	* Gets the connect ID.
+	*
+	* @return mixed
+	*/
+	public function get_db_connect_id();
+
+	/**
+	* Indicates if an error was triggered.
+	*
+	* @return bool
+	*/
+	public function get_sql_error_triggered();
+
+	/**
+	* Gets the last faulty query
+	*
+	* @return string
+	*/
+	public function get_sql_error_sql();
+
+	/**
+	* Indicates if we are in a transaction.
+	*
+	* @return bool
+	*/
+	public function get_transaction();
+
+	/**
+	* Gets the returned error.
+	*
+	* @return array
+	*/
+	public function get_sql_error_returned();
+
+	/**
+	* Indicates if multiple insertion can be used
+	*
+	* @return bool
+	*/
+	public function get_multi_insert();
+
+	/**
+	* Set if multiple insertion can be used
+	*
+	* @param bool $multi_insert
+	*/
+	public function set_multi_insert($multi_insert);
+
+	/**
 	* Gets the exact number of rows in a specified table.
 	*
 	* @param string $table_name Table name

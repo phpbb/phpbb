@@ -90,7 +90,7 @@ class acp_database
 						$time = time();
 
 						$filename = 'backup_' . $time . '_' . unique_id();
-						switch ($db->sql_layer)
+						switch ($db->get_sql_layer())
 						{
 							case 'mysqli':
 							case 'mysql4':
@@ -133,7 +133,7 @@ class acp_database
 							else
 							{
 								// We might wanna empty out all that junk :D
-								switch ($db->sql_layer)
+								switch ($db->get_sql_layer())
 								{
 									case 'sqlite':
 									case 'sqlite3':
@@ -320,7 +320,7 @@ class acp_database
 								break;
 							}
 
-							switch ($db->sql_layer)
+							switch ($db->get_sql_layer())
 							{
 								case 'mysql':
 								case 'mysql4':
@@ -365,10 +365,10 @@ class acp_database
 												{
 													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
 												}
-												pg_put_line($db->db_connect_id, $sub . "\n");
+												pg_put_line($db->get_db_connect_id(), $sub . "\n");
 											}
-											pg_put_line($db->db_connect_id, "\\.\n");
-											pg_end_copy($db->db_connect_id);
+											pg_put_line($db->get_db_connect_id(), "\\.\n");
+											pg_end_copy($db->get_db_connect_id());
 										}
 									}
 								break;
@@ -623,7 +623,7 @@ class mysql_extractor extends base_extractor
 
 		if ($new_extract === null)
 		{
-			if ($db->sql_layer === 'mysqli' || version_compare($db->sql_server_info(true), '3.23.20', '>='))
+			if ($db->get_sql_layer() === 'mysqli' || version_compare($db->sql_server_info(true), '3.23.20', '>='))
 			{
 				$new_extract = true;
 			}
@@ -646,7 +646,7 @@ class mysql_extractor extends base_extractor
 	function write_data($table_name)
 	{
 		global $db;
-		if ($db->sql_layer === 'mysqli')
+		if ($db->get_sql_layer() === 'mysqli')
 		{
 			$this->write_data_mysqli($table_name);
 		}
@@ -661,7 +661,7 @@ class mysql_extractor extends base_extractor
 		global $db;
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
+		$result = mysqli_query($db->get_db_connect_id(), $sql, MYSQLI_USE_RESULT);
 		if ($result != false)
 		{
 			$fields_cnt = mysqli_num_fields($result);
@@ -740,7 +740,7 @@ class mysql_extractor extends base_extractor
 		global $db;
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = mysql_unbuffered_query($sql, $db->db_connect_id);
+		$result = mysql_unbuffered_query($sql, $db->get_db_connect_id());
 
 		if ($result != false)
 		{
@@ -993,11 +993,11 @@ class sqlite_extractor extends base_extractor
 	{
 		global $db;
 
-		$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
+		$col_types = sqlite_fetch_column_types($db->get_db_connect_id(), $table_name);
 
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = sqlite_unbuffered_query($db->db_connect_id, $sql);
+		$result = sqlite_unbuffered_query($db->get_db_connect_id(), $sql);
 		$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
 		$sql_insert = 'INSERT INTO ' . $table_name . ' (' . implode(', ', array_keys($col_types)) . ') VALUES (';
 		foreach ($rows as $row)
@@ -1553,11 +1553,11 @@ class mssql_extractor extends base_extractor
 	{
 		global $db;
 
-		if ($db->sql_layer === 'mssql')
+		if ($db->get_sql_layer() === 'mssql')
 		{
 			$this->write_data_mssql($table_name);
 		}
-		else if($db->sql_layer === 'mssqlnative')
+		else if($db->get_sql_layer() === 'mssqlnative')
 		{
 			$this->write_data_mssqlnative($table_name);
 		}

@@ -1238,7 +1238,7 @@ class acp_permissions
 
 		$sql = 'SELECT auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . '
-			WHERE auth_option ' . $db->sql_like_expression($permission_type . $db->any_char);
+			WHERE auth_option ' . $db->sql_like_expression($permission_type . $db->get_any_char());
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
