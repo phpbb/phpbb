@@ -88,11 +88,6 @@
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools,
-.rtl .dropdown-container.sort-tools {
-	float: right;
-}
-
 .rtl .dropdown li {
 	text-align: right;
 }
