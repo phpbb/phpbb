@@ -96,7 +96,7 @@ ul.linklist li.small-icon {
 	padding-left: 0;
 }
 
-ul.linklist.bulletin li.small-icon:before {
+ul.linklist.bulletin > li.small-icon:before {
 	display: none;
 }
 
@@ -157,7 +157,7 @@ ul.linklist.bulletin li.small-icon:before {
 	margin-top: 2px;
 }
 
-.post-buttons li {
+.post-buttons > li {
 	float: left;
 	margin-right: 3px;
 }

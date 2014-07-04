@@ -40,7 +40,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -59,7 +59,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -78,7 +78,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -97,7 +97,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -118,7 +118,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -139,7 +139,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -160,7 +160,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -177,11 +177,11 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'reportee_id'			=> 2,
 				'reportee_username'		=> 'admin',
-				'reportee_username_full'=> 'admin',
+				'reportee_username_full'=> '<span class="username">admin</span>',
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -196,11 +196,11 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'reportee_id'			=> 1,
 				'reportee_username'		=> 'Anonymous',
-				'reportee_username_full'=> 'Anonymous',
+				'reportee_username_full'=> '<span class="username">Anonymous</span>',
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -219,7 +219,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,
@@ -238,7 +238,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 
 				'user_id'			=> 1,
 				'username'			=> 'Anonymous',
-				'username_full'		=> 'Anonymous',
+				'username_full'		=> '<span class="username">Anonymous</span>',
 
 				'ip'				=> '127.0.0.1',
 				'time'				=> 1,

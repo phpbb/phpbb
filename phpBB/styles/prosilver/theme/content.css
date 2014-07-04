@@ -210,7 +210,7 @@ dd.time {
 	line-height: 200%;
 }
 
-dd.lastpost span, ul.topiclist dd.info span, ul.topiclist dd.time span, dd.redirect span, dd.moderation span {
+dd.lastpost > span, ul.topiclist dd.info > span, ul.topiclist dd.time > span, dd.redirect > span, dd.moderation > span {
 	display: block;
 	padding-left: 5px;
 }
@@ -349,10 +349,6 @@ dd.option {
 	font-size: 1.2em;
 	margin-bottom: 1em;
 	line-height: 1.4em;
-}
-
-span.corners-top, span.corners-bottom {
-    display: none;
 }
 
 dl.faq {

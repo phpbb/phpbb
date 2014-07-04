@@ -86,7 +86,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 3),
 					),			
 				),
-				'<strong>Reply</strong> from A and B in topic:',
+				'<strong>Reply</strong> from A and <span class="username">B</span> in topic:',
 			),
 			array(
 				array(
@@ -98,7 +98,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 4),
 					),			
 				),
-				'<strong>Reply</strong> from A, B, and C in topic:',
+				'<strong>Reply</strong> from A, <span class="username">B</span>, and <span class="username">C</span> in topic:',
 			),
 			array(
 				array(
@@ -111,7 +111,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 5),
 					),			
 				),
-				'<strong>Reply</strong> from A, B, C, and D in topic:',
+				'<strong>Reply</strong> from A, <span class="username">B</span>, <span class="username">C</span>, and <span class="username">D</span> in topic:',
 			),
 			array(
 				array(
@@ -125,7 +125,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 6),
 					),			
 				),
-				'<strong>Reply</strong> from A, B, C, and 2 others in topic:',
+				'<strong>Reply</strong> from A, <span class="username">B</span>, <span class="username">C</span>, and 2 others in topic:',
 			),
 		);
 	}

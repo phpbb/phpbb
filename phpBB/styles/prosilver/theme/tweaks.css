@@ -69,5 +69,5 @@ dd.option {
 
 /* Fixes header-avatar aspect-ratio in IE8 */
 .header-avatar img {
-	height: 25px;
+	height: 20px;
 }

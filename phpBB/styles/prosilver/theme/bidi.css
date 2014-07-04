@@ -59,20 +59,20 @@
 
 /* Horizontal lists
 ----------------------------------------*/
-.rtl ul.linklist li {
+.rtl ul.linklist > li {
 	float: right;
 	margin-right: 0;
-	margin-left: 5px;
+	margin-left: 7px;
 }
 
-.rtl ul.linklist li.rightside, .rtl p.rightside {
+.rtl ul.linklist > li.rightside, .rtl p.rightside, .rtl a.rightside {
 	float: left;
-	margin-right: 5px;
+	margin-right: 7px;
 	margin-left: 0;
 	text-align: left;
 }
 
-.rtl ul.leftside li, .rtl ul.rightside li {
+.rtl ul.leftside > li, .rtl ul.rightside > li {
 	float: left;
 }
 
@@ -92,9 +92,14 @@
 
 /* Bulletin icons for list items
 ----------------------------------------*/
-.rtl ul.linklist.bulletin li:before {
+.rtl ul.linklist.bulletin > li:before {
 	padding-left: 4px;
 	padding-right: 0;
+}
+
+.rtl ul.linklist li.responsive-menu a.responsive-menu-link:before {
+	left: auto;
+	right: 0;
 }
 
 /* Dropdown menu
@@ -110,6 +115,10 @@
 .rtl .dropdown li li {
 	padding-left: 0;
 	padding-right: 10px;
+}
+
+.rtl .dropdown-extended .header {
+	text-align: right;
 }
 
 .rtl .dropdown-extended .header .header_settings {
@@ -276,12 +285,15 @@
 	text-align: left;
 }
 
-.rtl .forabg {
-	width: 99%;	/* fix for IE6 */
+.rtl #quick-links {
+	margin-left: 7px;
+	margin-right: 0;
 }
 
-.rtl .forumbg {
-	width: 99%;	/* fix for IE6 */
+.rtl .header-avatar span:after {
+	float: left;
+	margin-left: 0;
+	margin-right: 2px;
 }
 
 .rtl .member-search {
@@ -436,7 +448,7 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-right: 2px;
 }
 
-.rtl dd.lastpost span, .rtl ul.topiclist dd.info span, .rtl ul.topiclist dd.time span, .rtl dd.redirect span, .rtl dd.moderation span {
+.rtl dd.lastpost > span, .rtl ul.topiclist dd.info > span, .rtl ul.topiclist dd.time > span, .rtl dd.redirect > span, .rtl dd.moderation > span {
 	padding-left: 0;
 	padding-right: 5px;
 }
@@ -616,7 +628,8 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 .rtl .small-icon {
 	background-position: 100% 50%;
-	padding: 0 19px 0 0;
+	padding-left: 0;
+	padding-right: 19px;
 }
 
 .rtl ul.linklist li.small-icon {

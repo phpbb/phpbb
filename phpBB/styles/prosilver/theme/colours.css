@@ -111,7 +111,7 @@ table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
 ----------------------------------------*/
 
 ul.navlinks {
-	border-bottom-color: #FFFFFF;
+	border-top-color: #FFFFFF;
 }
 
 /* Table styles
@@ -373,7 +373,6 @@ a.arrow-left:hover {
 a.arrow-right:hover {
 	color: #368AD2;
 }
-
 
 /*
 --------------------------------------------------------------
@@ -699,24 +698,37 @@ Colours and backgrounds for buttons.css
 
 /* Icon images
 ---------------------------------------- */
-.icon-faq						{ background-image: url("./images/icon_faq.gif"); }
-.icon-members					{ background-image: url("./images/icon_members.gif"); }
-.icon-home						{ background-image: url("./images/icon_home.gif"); }
-.icon-ucp						{ background-image: url("./images/icon_ucp.gif"); }
-.icon-register					{ background-image: url("./images/icon_register.gif"); }
-.icon-logout					{ background-image: url("./images/icon_logout.gif"); }
-.icon-bookmark					{ background-image: url("./images/icon_bookmark.gif"); }
-.icon-bump						{ background-image: url("./images/icon_bump.gif"); }
-.icon-subscribe					{ background-image: url("./images/icon_subscribe.gif"); }
-.icon-unsubscribe				{ background-image: url("./images/icon_unsubscribe.gif"); }
-.icon-pages						{ background-image: url("./images/icon_pages.gif"); }
+.icon-acp					{ background-image: url("./images/icon_acp.gif"); }
+.icon-bookmark				{ background-image: url("./images/icon_bookmark.gif"); }
+.icon-bump					{ background-image: url("./images/icon_bump.gif"); }
+.icon-contact				{ background-image: url("./images/icon_pm.gif"); }
+.icon-delete-cookies		{ background-image: url("./images/icon_delete_cookies.gif"); }
+.icon-download				{ background-image: url("./images/icon_download.gif"); }
+.icon-faq					{ background-image: url("./images/icon_faq.gif"); }
+.icon-home					{ background-image: url("./images/icon_home.gif"); }
+.icon-logout				{ background-image: url("./images/icon_logout.gif"); }
+.icon-mark					{ background-image: url("./images/icon_mark.gif"); }
+.icon-mcp					{ background-image: url("./images/icon_mcp.gif"); }
+.icon-members				{ background-image: url("./images/icon_members.gif"); }
+.icon-notification			{ background-image: url("./images/icon_notification.gif"); }
+.icon-pages					{ background-image: url("./images/icon_pages.gif"); }
+.icon-pm					{ background-image: url("./images/icon_pm.gif"); }
+.icon-print					{ background-image: url("./images/icon_print.gif"); }
+.icon-profile				{ background-image: url("./images/icon_profile.gif"); }
+.icon-quick-links			{ background-image: url("./images/icon_quick_links.gif"); }
+.icon-register				{ background-image: url("./images/icon_register.gif"); }
 .icon-search, .responsive-search a	{ background-image: url("./images/icon_search.gif"); }
-.icon-notification				{ background-image: url("./images/icon_notification.gif"); }
-.icon-pm						{ background-image: url("./images/icon_pm.gif"); }
-.icon-download					{ background-image: url("./images/icon_download.gif"); }
-.icon-mark						{ background-image: url("./images/icon_mark.gif"); }
-.icon-sendemail					{ background-image: url("./images/icon_sendemail.gif"); }
-.icon-print						{ background-image: url("./images/icon_print.gif"); }
+.icon-search-active			{ background-image: url("./images/subforum_read.gif"); }
+.icon-search-advanced		{ background-image: url("./images/icon_search_adv.gif"); }
+.icon-search-new			{ background-image: url("./images/subforum_unread.gif"); }
+.icon-search-self			{ background-image: url("./images/icon_topic_latest.gif"); }
+.icon-search-unanswered		{ background-image: url("./images/icon_post_target.gif"); }
+.icon-search-unread			{ background-image: url("./images/subforum_unread.gif"); }
+.icon-sendemail				{ background-image: url("./images/icon_sendemail.gif"); }
+.icon-subscribe				{ background-image: url("./images/icon_subscribe.gif"); }
+.icon-team					{ background-image: url("./images/icon_team.gif"); }
+.icon-ucp					{ background-image: url("./images/icon_ucp.gif"); }
+.icon-unsubscribe			{ background-image: url("./images/icon_unsubscribe.gif"); }
 
 /* Profile & navigation icons */
 .contact-icon													{ background-image: url("./images/icons_contact.png"); }
@@ -1127,7 +1139,7 @@ input.disabled {
 }
 
 .dropdown-extended ul li {
-	border-bottom-color: #B9B9B9;
+	border-top-color: #B9B9B9;
 }
 
 .dropdown-extended ul li:hover {
@@ -1186,6 +1198,10 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 }
 
 .dropdown li, .dropdown li li {
+	border-color: #DCDCDC;
+}
+
+.dropdown li.separator {
 	border-color: #DCDCDC;
 }
 
