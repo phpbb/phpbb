@@ -205,12 +205,8 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 			),
 		));
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Download Topic #1']}&sid={$this->sid}");
-
 		$this->add_lang('posting');
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('delete_topic');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Download Topic #1'], 'DELETE_TOPIC');
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$this->add_lang('mcp');

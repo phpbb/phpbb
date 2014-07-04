@@ -20,18 +20,16 @@ class phpbb_functional_jumpbox_test extends phpbb_functional_test_case
 	{
 		$this->login();
 
-		$crawler = self::request('GET', "viewtopic.php?t=1&sid={$this->sid}");
-		$form = $crawler->filter('#quickmodform')->selectButton($this->lang('GO'))->form(array(
-			'action'	=> 'merge_topic',
-		));
+		$this->crawler = $this->get_quickmod_page(1, 'MERGE_TOPIC');
+		$this->check_valid_jump('Your first forum');
 
-		$crawler = self::submit($form);
-		$this->assertContains($this->lang('FORUM') . ': Your first forum', $crawler->filter('#cp-main h2')->text());
-		$form = $crawler->filter('#jumpbox')->selectButton($this->lang('GO'))->form(array(
-			'f'	=> 1,
-		));
+		$link = $this->crawler->filter('#jumpbox')->selectLink('Your first category')->link()->getUri();
+		$this->crawler = self::request('GET', substr($link, strpos($link, 'mcp.')));
+		$this->check_valid_jump('Your first category');
+	}
 
-		$crawler = self::submit($form);
-		$this->assertContains($this->lang('FORUM') . ': Your first category', $crawler->filter('#cp-main h2')->text());
+	protected function check_valid_jump($forum)
+	{
+		$this->assertContains($this->lang('FORUM') . ": $forum", $this->crawler->filter('#cp-main h2')->text(), $this->crawler->text());
 	}
 }

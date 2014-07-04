@@ -1296,6 +1296,10 @@ phpbb.toggleDropdown = function() {
 			else if ((offset + width + 2) > windowWidth) {
 				$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
 			}
+
+			// Check whether the vertical scrollbar is present.
+			$this.toggleClass('dropdown-nonscroll', this.scrollHeight === $this.innerHeight());
+
 		});
 		var freeSpace = parent.offset().left - 4;
 

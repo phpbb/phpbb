@@ -186,11 +186,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_last_post_id'		=> 0,
 		), 'before moving #2');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('move');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #1'], 'MOVE_TOPIC');
 		$this->assertContainsLang('SELECT_DESTINATION_FORUM', $crawler->text());
 
 		$this->add_lang('mcp');
@@ -261,12 +257,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
 		), 'before softdeleting #2');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-
 		$this->add_lang('posting');
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('delete_topic');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #1'], 'DELETE_TOPIC');
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$this->add_lang('mcp');
@@ -336,11 +328,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_last_post_id'		=> 0,
 		), 'before moving #2');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('move');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #1'], 'MOVE_TOPIC');
 		$this->assertContainsLang('SELECT_DESTINATION_FORUM', $crawler->text());
 
 		$this->add_lang('mcp');
@@ -484,12 +472,9 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_last_post_id'		=> 0,
 		), 'before splitting #2');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #1'], 'SPLIT_TOPIC');
 
 		$this->add_lang('mcp');
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('split');
-		$crawler = self::submit($form);
 		$this->assertContainsLang('SPLIT_TOPIC_EXPLAIN', $crawler->text());
 
 		$form = $crawler->selectButton('Submit')->form(array(
@@ -546,12 +531,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			),
 		));
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #2']}&sid={$this->sid}");
-
-		$form = $crawler->selectButton('Go')->eq(1)->form();
-		$form['action']->select('move');
-		$crawler = self::submit($form);
-
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #2'], 'MOVE_TOPIC');
 		$form = $crawler->selectButton('Yes')->form();
 		$form['to_forum_id']->select($this->data['forums']['Soft Delete #1']);
 		$crawler = self::submit($form);
@@ -605,9 +585,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assertContainsLang('BOOKMARK_ADDED', $crawler_bookmark->text());
 
 		$this->add_lang('mcp');
-		$form = $crawler->selectButton('Go')->eq(1)->form();
-		$form['action']->select('merge_topic');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #2'], 'MERGE_TOPIC', $crawler); 
 		$this->assertContainsLang('SELECT_MERGE', $crawler->text());
 
 		$crawler = self::request('GET', "mcp.php?f={$this->data['forums']['Soft Delete #1']}&t={$this->data['topics']['Soft Delete Topic #2']}&i=main&mode=forum_view&action=merge_topic&to_topic_id={$this->data['topics']['Soft Delete Topic #1']}");
@@ -670,12 +648,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_last_post_id'		=> 0,
 		), 'before forking #2');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-
 		$this->add_lang('mcp');
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('fork');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #1'], 'FORK_TOPIC');
 		$this->assertContainsLang('FORK_TOPIC', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();

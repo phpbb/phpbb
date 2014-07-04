@@ -619,12 +619,8 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			),
 		));
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Feeds #1 - Topic #2']}&sid={$this->sid}");
-
 		$this->add_lang('posting');
-		$form = $crawler->selectButton('Go')->eq(2)->form();
-		$form['action']->select('delete_topic');
-		$crawler = self::submit($form);
+		$crawler = $this->get_quickmod_page($this->data['topics']['Feeds #1 - Topic #2'], 'DELETE_TOPIC');
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$this->add_lang('mcp');

@@ -201,24 +201,6 @@ fieldset.forum-selection2 {
 	float: right;
 }
 
-/* Jumpbox */
-fieldset.jumpbox {
-	text-align: right;
-	margin-top: 15px;
-	min-height: 2.5em;
-}
-
-fieldset.jumpbox select {
-	max-width: 50%;
-}
-
-fieldset.quickmod {
-	width: 50%;
-	float: right;
-	text-align: right;
-	height: 2.5em;
-}
-
 /* Submit button fieldset */
 fieldset.submit-buttons {
 	text-align: center;
