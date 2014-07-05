@@ -71,9 +71,7 @@ class phpbb_dbal_migrator_tool_config_text_test extends phpbb_database_test_case
 
 	public function test_reverse_remove()
 	{
-		$this->config_text->delete('foo');
-
 		$this->tool->reverse('remove', 'foo');
-		$this->assertEquals('', $this->config_text->get('foo'));
+		$this->assertSame('', $this->config_text->get('foo'));
 	}
 }
