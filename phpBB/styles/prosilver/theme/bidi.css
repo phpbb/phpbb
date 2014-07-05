@@ -878,6 +878,10 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 	margin-right: 0;
 }
 
+.rtl input[type="number"] {
+	padding-left: 0;
+}
+
 /* Quick-login on index page */
 .rtl fieldset.quick-login input.inputbox {
 	margin-left: 5px;

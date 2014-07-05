@@ -276,6 +276,10 @@ textarea.inputbox {
 	width: auto !important;
 }
 
+input[type="number"] {
+	padding-right: 0;
+}
+
 input[type="search"] {
 	-webkit-appearance: textfield;
 	-webkit-box-sizing: content-box;
