@@ -100,8 +100,8 @@ class type_date extends type_base
 			'field_minlen'		=> 10,
 			'field_maxlen'		=> 10,
 			'field_validation'	=> '',
-			'field_novalue'		=> ' 0- 0-   0',
-			'field_default_value'	=> ' 0- 0-   0',
+			'field_novalue'		=> '1900-12-31',
+			'field_default_value'	=> '1900-12-31',
 		);
 	}
 
@@ -112,8 +112,7 @@ class type_date extends type_base
 	{
 		if ($field_data['field_default_value'] == 'now')
 		{
-			$now = getdate();
-			$field_data['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+			$field_data['field_default_value'] = date('Y-m-d');
 		}
 
 		return $field_data['field_default_value'];
@@ -130,10 +129,9 @@ class type_date extends type_base
 		{
 			if ($profile_row['field_default_value'] == 'now')
 			{
-				$now = getdate();
-				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+				$field_data['field_default_value'] = date('Y-m-d');
 			}
-			list($day, $month, $year) = explode('-', $profile_row['field_default_value']);
+			list($year, $month, $day) = explode('-', $profile_row['field_default_value']);
 		}
 		else
 		{
@@ -152,9 +150,9 @@ class type_date extends type_base
 	{
 		$field_validate = explode('-', $field_value);
 
-		$day = (isset($field_validate[0])) ? (int) $field_validate[0] : 0;
+		$day = (isset($field_validate[2])) ? (int) $field_validate[2] : 0;
 		$month = (isset($field_validate[1])) ? (int) $field_validate[1] : 0;
-		$year = (isset($field_validate[2])) ? (int) $field_validate[2] : 0;
+		$year = (isset($field_validate[0])) ? (int) $field_validate[0] : 0;
 
 		if ((!$day || !$month || !$year) && !$field_data['field_required'])
 		{
@@ -185,9 +183,9 @@ class type_date extends type_base
 	public function get_profile_value($field_value, $field_data)
 	{
 		$date = explode('-', $field_value);
-		$day = (isset($date[0])) ? (int) $date[0] : 0;
+		$day = (isset($date[2])) ? (int) $date[2] : 0;
 		$month = (isset($date[1])) ? (int) $date[1] : 0;
-		$year = (isset($date[2])) ? (int) $date[2] : 0;
+		$year = (isset($date[0])) ? (int) $date[0] : 0;
 
 		if (!$day && !$month && !$year && !$field_data['field_show_novalue'])
 		{
@@ -232,16 +230,16 @@ class type_date extends type_base
 		{
 			if ($profile_row['field_default_value'] == 'now')
 			{
-				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
+				$profile_row['field_default_value'] = date('Y-m-d');;
 			}
-			list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$field_ident]));
+			list($year, $month, $day) = explode('-', ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$field_ident]));
 		}
 		else
 		{
 			if ($preview_options !== false && $profile_row['field_default_value'] == 'now')
 			{
-				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
-				list($day, $month, $year) = explode('-', ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$field_ident]));
+				$profile_row['field_default_value'] = date('Y-m-d');
+				list($year, $month, $day) = explode('-', ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$field_ident]));
 			}
 			else
 			{
@@ -251,7 +249,17 @@ class type_date extends type_base
 			}
 		}
 
-		$profile_row['s_day_options'] = '<option value="0"' . ((!$day) ? ' selected="selected"' : '') . '>--</option>';
+		/**
+		* As the field_novalue is set out of bounds for the valid date we have to check the year
+		* If the year is 1900 (as valid yer is bigger then 1901) we set date and month to 0
+		*/
+		if ($year == 1900)
+		{
+			$day = 0;
+			$month = 0;
+		}
+
+		$profile_row['s_day_options'] = '<option value="0"' . (($day == 0) ? ' selected="selected"' : '') . '>--</option>';
 		for ($i = 1; $i < 32; $i++)
 		{
 			$profile_row['s_day_options'] .= '<option value="' . $i . '"' . (($i == $day) ? ' selected="selected"' : '') . ">$i</option>";
@@ -286,7 +294,7 @@ class type_date extends type_base
 	*/
 	public function get_database_column_type()
 	{
-		return 'VCHAR:10';
+		return 'DATE';
 	}
 
 	/**
@@ -337,7 +345,7 @@ class type_date extends type_base
 				}
 				else
 				{
-					list($field_data['field_default_value_day'], $field_data['field_default_value_month'], $field_data['field_default_value_year']) = explode('-', $current_value);
+					list($field_data['field_default_value_year'], $field_data['field_default_value_month'], $field_data['field_default_value_day']) = explode('-', $current_value);
 				}
 			}
 
