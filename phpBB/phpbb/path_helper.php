@@ -104,7 +104,13 @@ class path_helper
 		{
 			$path = substr($path, strlen($this->phpbb_root_path));
 
-			return $this->filesystem->clean_path($this->get_web_root_path() . $path);
+			$web_root_path = $this->get_web_root_path();
+			if (substr($web_root_path, -8) === 'app.php/' && substr($path, 0, 7) === 'app.php')
+			{
+				$path = substr($path, 8);
+			}
+
+			return $this->filesystem->clean_path($web_root_path . $path);
 		}
 
 		return $path;
