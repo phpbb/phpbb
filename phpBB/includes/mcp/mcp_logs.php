@@ -115,7 +115,7 @@ class mcp_logs
 				if ($deletemark && sizeof($marked))
 				{
 					$conditions = array(
-						'forum_id'	=> $forum_list,
+						'forum_id'	=> array('IN' => $forum_list),
 						'log_id'	=> array('IN' => $marked),
 					);
 
@@ -126,7 +126,7 @@ class mcp_logs
 					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
 
 					$conditions = array(
-						'forum_id'	=> $forum_list,
+						'forum_id'	=> array('IN' => $forum_list),
 						'keywords'	=> $keywords,
 					);
 
