@@ -1022,10 +1022,10 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 	/* Forums and topics lists
 	----------------------------------------*/
-	.rtl ul.topiclist.forums dt, .rtl ul.topiclist.topics dt {
+	.rtl ul.topiclist.forums dt {
 		margin-left: -250px;
 	}
-	.rtl ul.topiclist.forums dt .list-inner, .rtl ul.topiclist.topics dt .list-inner {
+	.rtl ul.topiclist.forums dt .list-inner {
 		margin-left: 250px;
 	}
 
@@ -1037,11 +1037,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 	@media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
 	{
-		.rtl ul.topiclist.forums dt, .rtl ul.topiclist.topics dt {
+		.rtl ul.topiclist.forums dt {
 			margin-left: 0;
 		}
 
-		.rtl ul.topiclist.forums dt .list-inner, .rtl ul.topiclist.topics dt .list-inner {
+		.rtl ul.topiclist.forums dt .list-inner {
 			margin-left: 0;
 		}
 	}
