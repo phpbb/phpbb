@@ -292,8 +292,8 @@
 
 .rtl .header-avatar span:after {
 	float: left;
-	margin-left: 0;
-	margin-right: 2px;
+	padding-left: 0;
+	padding-right: 2px;
 }
 
 .rtl .member-search {
