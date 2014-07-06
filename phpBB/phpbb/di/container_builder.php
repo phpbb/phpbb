@@ -183,7 +183,10 @@ class container_builder
 
 		$this->container->set('config.php', $this->config_php_file);
 
-		$this->inject_dbal();
+		if ($this->compile_container)
+		{
+			$this->inject_dbal();
+		}
 
 		return $this->container;
 	}
