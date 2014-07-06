@@ -458,7 +458,7 @@ blockquote {
 blockquote blockquote {
 	/* Nested quotes */
 	font-size: 1em;
-	margin: 0.5em 1px 0 15px;	
+	margin: 0.5em 1px 0 15px;
 }
 
 blockquote cite {
@@ -515,7 +515,7 @@ blockquote .codebox {
 ----------------------------------------*/
 .attachbox {
 	float: left;
-	width: auto; 
+	width: auto;
 	max-width: 100%;
 	margin: 5px 5px 5px 0;
 	padding: 6px;
@@ -592,7 +592,7 @@ dl.file dt {
 
 dl.file dd {
 	margin: 0;
-	padding: 0;	
+	padding: 0;
 }
 
 dl.thumbnail img {

@@ -118,11 +118,11 @@ ul.topiclist li.header dt .list-inner {
 	min-height: 0;
 }
 
-ul.topiclist dd { 
-	display: none; 
+ul.topiclist dd {
+	display: none;
 }
-ul.topiclist dd.mark { 
-	display: block; 
+ul.topiclist dd.mark {
+	display: block;
 }
 
 /* Forums and topics lists
@@ -366,7 +366,7 @@ fieldset.quick-login label[for="autologin"] {
 	dl.details dt, dl.details dd {
 		width: auto;
 		float: none;
-		text-align: left;	
+		text-align: left;
 	}
 
 	dl.details dd {

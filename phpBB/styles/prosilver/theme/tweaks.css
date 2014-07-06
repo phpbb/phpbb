@@ -1,6 +1,6 @@
 /* Style Sheet Tweaks
 
-These style definitions are IE 7 and 8 specific 
+These style definitions are IE 7 and 8 specific
 tweaks required due to its poor CSS support.
 -------------------------------------------------*/
 
@@ -14,9 +14,9 @@ ul.linklist {
 }
 
 /* Align checkboxes/radio buttons nicely */
-dd label input { 
-	vertical-align: text-bottom; 
-	*vertical-align: middle; 
+dd label input {
+	vertical-align: text-bottom;
+	*vertical-align: middle;
 }
 
 /* Simple fix so forum and topic lists always have a height set */
