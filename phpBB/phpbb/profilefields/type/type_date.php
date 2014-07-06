@@ -140,7 +140,20 @@ class type_date extends type_base
 			$year = $this->request->variable($var_name . '_year', 0);
 		}
 
-		return sprintf('%2d-%2d-%4d', $day, $month, $year);
+		/**
+		* As the field_novalue is set out of bounds for the valid date we have to check the year
+		* If the year is 1900 (as valid yer is bigger then 1901) we set date and month to 0
+		*/
+		if (!$year)
+		{
+			return null;
+		}
+		else
+		{
+			$timestamp = strtotime($year .'-'. $month .'-'. $day);
+			$date = date('Y-m-d', $timestamp);
+			return $date;
+		}
 	}
 
 	/**
@@ -164,7 +177,7 @@ class type_date extends type_base
 			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
 		}
 
-		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()) + 50)
+		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0 ) || $year > gmdate('Y', time()) + 50)
 		{
 			return $this->user->lang('FIELD_INVALID_DATE', $this->get_field_name($field_data['lang_name']));
 		}
@@ -182,6 +195,7 @@ class type_date extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
+		$field_value = ($field_value ? $field_value : $field_data['field_novalue']);
 		$date = explode('-', $field_value);
 		$day = (isset($date[2])) ? (int) $date[2] : 0;
 		$month = (isset($date[1])) ? (int) $date[1] : 0;
@@ -247,16 +261,6 @@ class type_date extends type_base
 				$month = $this->request->variable($profile_row['field_ident'] . '_month', 0);
 				$year = $this->request->variable($profile_row['field_ident'] . '_year', 0);
 			}
-		}
-
-		/**
-		* As the field_novalue is set out of bounds for the valid date we have to check the year
-		* If the year is 1900 (as valid yer is bigger then 1901) we set date and month to 0
-		*/
-		if ($year == 1900)
-		{
-			$day = 0;
-			$month = 0;
 		}
 
 		$profile_row['s_day_options'] = '<option value="0"' . (($day == 0) ? ' selected="selected"' : '') . '>--</option>';
