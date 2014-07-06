@@ -22,6 +22,13 @@
 		"phpunit/phpunit": "4.1.*",
 		"phing/phing": "2.4.*",
 		"sami/sami": "1.*",
-		"squizlabs/php_codesniffer": "1.*"
+		"squizlabs/php_codesniffer": "1.*",
+		"symfony/browser-kit": "2.3.*",
+		"symfony/debug": "2.3.*",
+		"symfony/dom-crawler": "2.3.*",
+		"symfony/filesystem": "2.3.*",
+		"symfony/finder": "2.3.*",
+		"symfony/http-foundation": "2.3.*",
+		"symfony/process": "2.3.*"
 	}
 }
