@@ -58,7 +58,7 @@ class phpbb_dbal_migrator_tool_config_text_test extends phpbb_database_test_case
 		$this->config_text->set('foo', 'bar');
 
 		$this->tool->remove('foo');
-		$this->assertTrue(is_null($this->config_text->get('foo')));
+		$this->assertNull($this->config_text->get('foo'));
 	}
 
 	public function test_reverse_add()
@@ -66,7 +66,7 @@ class phpbb_dbal_migrator_tool_config_text_test extends phpbb_database_test_case
 		$this->config_text->set('foo', 'bar');
 
 		$this->tool->reverse('add', 'foo');
-		$this->assertTrue(is_null($this->config_text->get('foo')));
+		$this->assertNull($this->config_text->get('foo'));
 	}
 
 	public function test_reverse_remove()
