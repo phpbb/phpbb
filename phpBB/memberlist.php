@@ -740,7 +740,7 @@ switch ($mode)
 		}
 
 		// Now generate page title
-		$page_title = printf($user->lang['VIEWING_PROFILE'], $member['username']);
+		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $member['username']);
 		$template_html = 'memberlist_view.html';
 
 	break;

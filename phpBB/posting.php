@@ -280,7 +280,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 	{
 		$json = new phpbb\json_response();
 		$json->send(array(
-				'title'		=> $user->lang['INFORMATION'],
+			'title'		=> $user->lang['INFORMATION'],
 			'message'	=> $message,
 		));
 	}
