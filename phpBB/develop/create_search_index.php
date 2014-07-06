@@ -134,7 +134,7 @@ $search->tidy();
 
 add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $search_name);
 
-echo $user->lang('SEARCH_INDEX_CREATED') . "\n";
+echo $user->lang['SEARCH_INDEX_CREATED'] . "\n";
 echo 'Peak Memory Usage: ' . get_formatted_filesize(memory_get_peak_usage()) . "\n";
 
 exit(0);

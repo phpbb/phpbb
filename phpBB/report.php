@@ -110,9 +110,9 @@ if ($post_id)
 
 	if ($report_data['post_reported'])
 	{
-		$message = $user->lang('ALREADY_REPORTED');
-		$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $redirect_url . '">', '</a>');
-		$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . $return_forum_url . '">', '</a>');
+		$message = $user->lang['ALREADY_REPORTED'];
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $return_forum_url . '">', '</a>');
 		trigger_error($message);
 	}
 }
@@ -136,8 +136,8 @@ else
 
 	if ($report_data['message_reported'])
 	{
-		$message = $user->lang('ALREADY_REPORTED_PM');
-		$message .= '<br /><br />' . $user->lang('RETURN_PM', '<a href="' . $redirect_url . '">', '</a>');
+		$message = $user->lang['ALREADY_REPORTED_PM'];
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PM'], '<a href="' . $redirect_url . '">', '</a>');
 		trigger_error($message);
 	}
 
@@ -229,8 +229,8 @@ if ($submit && $reason_id)
 				$db->sql_query($sql);
 			}
 
-			$lang_return = $user->lang('RETURN_TOPIC');
-			$lang_success = $user->lang('POST_REPORTED_SUCCESS');
+			$lang_return = $user->lang['RETURN_TOPIC'];
+			$lang_success = $user->lang['POST_REPORTED_SUCCESS'];
 
 			$phpbb_notifications->add_notifications('report_post', array_merge($report_data, $row, $forum_data, array(
 				'report_text'	=> $report_text,
@@ -259,8 +259,8 @@ if ($submit && $reason_id)
 			$sql = 'INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 			$db->sql_query($sql);
 
-			$lang_return = $user->lang('RETURN_PM');
-			$lang_success = $user->lang('PM_REPORTED_SUCCESS');
+			$lang_return = $user->lang['RETURN_PM'];
+			$lang_success = $user->lang['PM_REPORTED_SUCCESS'];
 
 			$phpbb_notifications->add_notifications('report_pm', array_merge($report_data, $row, array(
 				'report_text'	=> $report_text,
@@ -274,7 +274,7 @@ if ($submit && $reason_id)
 		$message = $lang_success . '<br /><br />' . sprintf($lang_return, '<a href="' . $redirect_url . '">', '</a>');
 		if ($return_forum_url)
 		{
-			$message .= '<br /><br />' . $user->lang('RETURN_FORUM', '<a href="' . $return_forum_url . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $return_forum_url . '">', '</a>');
 		}
 		trigger_error($message);
 	}
@@ -287,7 +287,7 @@ if ($submit && $reason_id)
 // Generate the reasons
 display_reasons($reason_id);
 
-$page_title = ($pm_id) ? $user->lang('REPORT_MESSAGE') : $user->lang('REPORT_POST');
+$page_title = ($pm_id) ? $user->lang['REPORT_MESSAGE'] : $user->lang['REPORT_POST'];
 
 if (isset($captcha) && $captcha->is_solved() === false)
 {
