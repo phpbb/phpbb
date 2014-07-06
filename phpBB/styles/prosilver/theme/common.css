@@ -432,7 +432,7 @@ ul.linklist.bulletin > li:before {
 	padding-right: 4px;
 }
 
-ul.linklist.bulletin > li:first-child:before, 
+ul.linklist.bulletin > li:first-child:before,
 ul.linklist.bulletin > li.rightside:last-child:before {
 	content: none;
 }

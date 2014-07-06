@@ -68,7 +68,7 @@ fieldset dl {
 }
 
 fieldset dt {
-	float: left;	
+	float: left;
 	width: 40%;
 	text-align: left;
 	display: block;
@@ -313,8 +313,8 @@ input.button3 {
 	font-variant: small-caps;
 }
 
-input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"] { 
-	cursor: pointer; 
+input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"] {
+	cursor: pointer;
 }
 
 /* Alternative button */
