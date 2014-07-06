@@ -30,12 +30,12 @@
 				</ul>
 			</div>
 		</li>
-		<!-- IF U_ACP --><li class="small-icon icon-acp" data-skip-responsive="true"><a href="{U_ACP}" title="{L_ACP}" role="menuitem">{L_ACP_SHORT}</a></li><!-- ENDIF -->
-		<!-- IF U_MCP --><li class="small-icon icon-mcp" data-skip-responsive="true"><a href="{U_MCP}" title="{L_MCP}" role="menuitem">{L_MCP_SHORT}</a></li><!-- ENDIF -->
 
 		<!-- EVENT overall_header_navigation_prepend -->
 		<li class="small-icon icon-faq" <!-- IF not S_USER_LOGGED_IN -->data-skip-responsive="true"<!-- ELSE -->data-last-responsive="true"<!-- ENDIF -->><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" role="menuitem">{L_FAQ}</a></li>
 		<!-- EVENT overall_header_navigation_append -->
+		<!-- IF U_ACP --><li class="small-icon icon-acp" data-skip-responsive="true"><a href="{U_ACP}" title="{L_ACP}" role="menuitem">{L_ACP_SHORT}</a></li><!-- ENDIF -->
+		<!-- IF U_MCP --><li class="small-icon icon-mcp" data-skip-responsive="true"><a href="{U_MCP}" title="{L_MCP}" role="menuitem">{L_MCP_SHORT}</a></li><!-- ENDIF -->
 
 	<!-- IF S_REGISTERED_USER -->
 		<li id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
