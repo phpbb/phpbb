@@ -34,7 +34,7 @@
 	<php>
 		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\oracle" />
 		<server name="PHPBB_TEST_DBHOST" value="localhost" />
-		<server name="PHPBB_TEST_DBPORT" value="3306" />
+		<server name="PHPBB_TEST_DBPORT" value="" />
 		<server name="PHPBB_TEST_DBNAME" value="XE" />
 		<server name="PHPBB_TEST_DBUSER" value="phpbb" />
 		<server name="PHPBB_TEST_DBPASSWD" value="phpbboracle" />
