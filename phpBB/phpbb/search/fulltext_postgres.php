@@ -31,18 +31,6 @@ class fulltext_postgres extends \phpbb\search\base
 	protected $split_words = array();
 
 	/**
-	 * True if PostgreSQL version supports tsearch
-	 * @var boolean
-	 */
-	protected $tsearch_usable = false;
-
-	/**
-	 * Stores the PostgreSQL version
-	 * @var string
-	 */
-	protected $version;
-
-	/**
 	 * Stores the tsearch query
 	 * @var string
 	 */
@@ -106,16 +94,6 @@ class fulltext_postgres extends \phpbb\search\base
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
-
-		if ($this->db->get_sql_layer() == 'postgres')
-		{
-			$pgsql_version = explode(',', substr($this->db->sql_server_info(), 10));
-			$this->version = trim($pgsql_version[0]);
-			if (version_compare($this->version, '8.3', '>='))
-			{
-				$this->tsearch_usable = true;
-			}
-		}
 
 		/**
 		 * Load the UTF tools
@@ -188,11 +166,6 @@ class fulltext_postgres extends \phpbb\search\base
 		if ($this->db->get_sql_layer() != 'postgres')
 		{
 			return $this->user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_DATABASE'];
-		}
-
-		if (!$this->tsearch_usable)
-		{
-			return $this->user->lang['FULLTEXT_POSTGRES_TS_NOT_USABLE'];
 		}
 
 		return false;
@@ -913,13 +886,13 @@ class fulltext_postgres extends \phpbb\search\base
 		$tpl = '
 		<dl>
 			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_VERSION_CHECK_EXPLAIN'] . '</span></dt>
-			<dd>' . (($this->tsearch_usable) ? $this->user->lang['YES'] : $this->user->lang['NO']) . ' (PostgreSQL ' . $this->version . ')</dd>
+			<dd>' . (($this->db->get_sql_layer() == 'postgres') ? $this->user->lang['YES'] : $this->user->lang['NO']) . '</dd>
 		</dl>
 		<dl>
 			<dt><label>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_POSTGRES_TS_NAME_EXPLAIN'] . '</span></dt>
 			<dd><select name="config[fulltext_postgres_ts_name]">';
 
-		if ($this->db->get_sql_layer() == 'postgres' && $this->tsearch_usable)
+		if ($this->db->get_sql_layer() == 'postgres')
 		{
 			$sql = 'SELECT cfgname AS ts_name
 				  FROM pg_ts_config';
