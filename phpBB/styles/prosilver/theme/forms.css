@@ -277,7 +277,7 @@ textarea.inputbox {
 }
 
 input[type="number"] {
-	padding-right: 0;
+	-moz-padding-end: inherit;
 }
 
 input[type="search"] {

@@ -200,10 +200,6 @@ ul.topiclist li.row dt a.subforum {
 	margin: 5px 0 0;
 }
 
-.row .pagination > ul {
-	margin-top: 0;
-}
-
 .row .pagination .ellipsis + li {
 	display: none !important;
 }
