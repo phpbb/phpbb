@@ -102,6 +102,7 @@
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-extensions.xml
 				--ignore=${project.basedir}/phpBB/ext/*/tests/*
+				--ignore=${project.basedir}/phpBB/ext/*/vendor/*
 				phpBB/ext"
 			dir="." returnProperty="retval-php-ext" passthru="true" />
 		<if>
