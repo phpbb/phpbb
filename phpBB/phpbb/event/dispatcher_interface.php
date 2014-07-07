@@ -13,8 +13,6 @@
 
 namespace phpbb\event;
 
-use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
-
 /**
 * Extension of the Symfony2 EventDispatcher
 *
@@ -25,19 +23,18 @@ use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 *
 * Example:
 *
-*     $vars = array('page_title');
-*     extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
+* $vars = array('page_title');
+* extract($phpbb_dispatcher->trigger_event('core.index', compact($vars)));
 *
 */
-class dispatcher extends ContainerAwareEventDispatcher implements dispatcher_interface
+interface dispatcher_interface extends \Symfony\Component\EventDispatcher\EventDispatcherInterface
 {
 	/**
-	* {@inheritdoc}
+	* Construct and dispatch an event
+	*
+	* @param string $eventName	The event name
+	* @param array $data		An array containing the variables sending with the event
+	* @return mixed
 	*/
-	public function trigger_event($eventName, $data = array())
-	{
-		$event = new \phpbb\event\data($data);
-		$this->dispatch($eventName, $event);
-		return $event->get_data_filtered(array_keys($data));
-	}
+	public function trigger_event($eventName, $data = array());
 }
