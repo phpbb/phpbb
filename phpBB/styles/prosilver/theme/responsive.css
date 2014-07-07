@@ -351,6 +351,13 @@ fieldset.quick-login label[for="autologin"] {
 	}
 }
 
+@media only screen and (max-width: 430px), only screen and (max-device-width: 430px)
+{
+	.section-viewtopic .search-box .inputbox {
+		width: 110px;
+	}
+}
+
 @media only screen and (max-width: 320px), only screen and (max-device-width: 320px)
 {
 	select, .inputbox {
@@ -511,8 +518,12 @@ fieldset.display-actions {
 	p.responsive-center {
 		float: none;
 		text-align: center;
-		margin: 0;
+		margin-bottom: 5px;
 	}
+
+	action-bar > div {
+		margin-bottom: 5px;
+ 	}
 
 	.action-bar > .pagination {
 		float: none;
@@ -525,7 +536,7 @@ fieldset.display-actions {
 		margin: 0 2px;
 	}
 
-	.action-bar > div.search-box, p.jumpbox-return {
+	p.jumpbox-return {
 		display: none;
 	}
 
