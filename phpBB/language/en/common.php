@@ -299,7 +299,7 @@ $lang = array_merge($lang, array(
 		1	=> 'There is %d guest user online',
 		2	=> 'There are %d guest users online',
 	),
-	'GUEST_USERS_TOTAL'			=>  array(
+	'GUEST_USERS_TOTAL'			=> array(
 		1	=> '%d guest',
 		2	=> '%d guests',
 	),
