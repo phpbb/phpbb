@@ -64,4 +64,20 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang('POSTS_MERGED_SUCCESS'), $crawler->text());
 	}
+
+	public function test_delete_logs()
+	{
+		$this->login();
+		$crawler = self::request('GET', "mcp.php?i=149&sid={$this->sid}");
+		$this->assertCount(1, $crawler->filter('input[type=checkbox]'));
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton($this->lang('DELETE_ALL'))->form();
+		$crawler = self::submit($form);
+
+		$form = $crawler->selectButton('Yes')->form();
+		$crawler = self::submit($form);
+
+		$this->assertCount(0, $crawler->filter('input[type=checkbox]'));
+	}
 }
