@@ -16,6 +16,9 @@ namespace phpbb\controller;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Routing\Generator\Dumper\PhpGeneratorDumper;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\RequestContext;
 
 /**
 * Controller interface
@@ -35,13 +38,37 @@ class provider
 	protected $routes;
 
 	/**
+	* Extension manager
+	* @var \phpbb\extension\manager
+	*/
+	protected $extension_manager;
+
+	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* PHP extension
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
 	* Construct method
 	*
+	* @param \phpbb\extension\manager $extension_manager The extension manager
+	* @param string $phpbb_root_path phpBB root path
+	* @param string $php_ext PHP extension
 	* @param array $routing_files Array of strings containing paths
 	*							to YAML files holding route information
 	*/
-	public function __construct($routing_files = array())
+	public function __construct(\phpbb\extension\manager $extension_manager, $phpbb_root_path, $php_ext, $routing_files = array())
 	{
+		$this->extension_manager = $extension_manager;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 		$this->routing_files = $routing_files;
 	}
 
@@ -87,6 +114,85 @@ class provider
 	*/
 	public function get_routes()
 	{
+		if ($this->routes == null || empty($this->routing_files))
+		{
+			$this->find_routing_files($this->extension_manager->get_finder());
+			$this->find($this->phpbb_root_path);
+		}
+
 		return $this->routes;
+	}
+
+	/**
+	* Create and return a new UrlGenerator object
+	*
+	* @param \Symfony\Component\Routing\RequestContext	$context	Symfony RequestContext object
+	* @return \Symfony\Component\Routing\Generator\UrlGenerator
+	*/
+	public function get_url_generator(RequestContext $context)
+	{
+		if (!defined('DEBUG'))
+		{
+			if (!$this->is_url_generator_dumped())
+			{
+				$this->create_dumped_url_generator();
+			}
+
+			return $this->load_dumped_url_generator($context);
+		}
+		else
+		{
+			return $this->create_url_generator($context);
+		}
+	}
+
+	/**
+	* Create a non-cached UrlGenerator
+	*
+	* @param RequestContext $context Symfony RequestContext object
+	* @return UrlGenerator
+	*/
+	protected function create_url_generator(RequestContext $context)
+	{
+		return new UrlGenerator($this->get_routes(), $context);
+	}
+
+	/**
+	* Create a new UrlGenerator class and dump it into the cache file
+	*/
+	protected function create_dumped_url_generator()
+	{
+		$dumper = new PhpGeneratorDumper($this->get_routes());
+		$cached_url_generator_dumped = $dumper->dump(array('class'  => 'phpbb_url_generator'));
+
+		file_put_contents($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext, $cached_url_generator_dumped);
+	}
+
+	/**
+	* Determine whether we have our dumped URL Generator
+	*
+	* The class is automatically dumped to the cache directory
+	*
+	* @return bool
+	*/
+	protected function is_url_generator_dumped()
+	{
+		return file_exists($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext);
+	}
+
+	/**
+	* Load the cached phpbb_url_generator class
+	*
+	* @param RequestContext $context Symfony RequestContext object
+	* @return \phpbb_url_generator
+	*/
+	protected function load_dumped_url_generator(RequestContext $context)
+	{
+		if (!class_exists('phpbb_url_generator'))
+		{
+			require($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext);
+		}
+
+		return new \phpbb_url_generator($context);
 	}
 }

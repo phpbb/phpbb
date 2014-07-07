@@ -226,6 +226,7 @@ class file extends \phpbb\cache\driver\base
 			}
 			else if (strpos($filename, 'container_') === 0 ||
 				strpos($filename, 'url_matcher') === 0 ||
+				strpos($filename, 'url_generator') == 0 ||
 				strpos($filename, 'sql_') === 0 ||
 				strpos($filename, 'data_') === 0)
 			{

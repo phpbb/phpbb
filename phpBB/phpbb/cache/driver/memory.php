@@ -161,6 +161,7 @@ abstract class memory extends \phpbb\cache\driver\base
 		{
 			if (strpos($entry, 'container_') !== 0 &&
 				strpos($entry, 'url_matcher') !== 0 &&
+				strpos($entry, 'url_generator') !== 0 &&
 				strpos($entry, 'sql_') !== 0 &&
 				strpos($entry, 'data_') !== 0 &&
 				strpos($entry, 'ctpl_') !== 0 &&

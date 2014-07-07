@@ -109,6 +109,10 @@ services:
 
     controller.provider:
         class: phpbb\controller\provider
+        arguments:
+            - @ext.manager
+            - %core.root_path%
+            - %core.php_ext%
         calls:
             - [find, [%core.root_path%]]
 

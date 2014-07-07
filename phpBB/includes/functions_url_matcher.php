@@ -36,7 +36,7 @@ function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext
 {
 	if (defined('DEBUG'))
 	{
-		return phpbb_create_url_matcher($manager, $context, $root_path);
+		return phpbb_create_url_matcher($manager, $context, $root_path, $php_ext);
 	}
 
 	if (!phpbb_url_matcher_dumped($root_path, $php_ext))
@@ -57,9 +57,8 @@ function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext
 */
 function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $root_path, $php_ext)
 {
-	$provider = new \phpbb\controller\provider();
-	$provider->find_routing_files($manager->get_finder());
-	$routes = $provider->find($root_path)->get_routes();
+	$provider = new \phpbb\controller\provider($manager, $root_path, $php_ext);
+	$routes = $provider->get_routes();
 	$dumper = new PhpMatcherDumper($routes);
 	$cached_url_matcher_dump = $dumper->dump(array(
 		'class'			=> 'phpbb_url_matcher',
@@ -75,11 +74,10 @@ function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $roo
 * @param RequestContext $context Symfony RequestContext object
 * @return UrlMatcher
 */
-function phpbb_create_url_matcher(\phpbb\extension\manager $manager, RequestContext $context, $root_path)
+function phpbb_create_url_matcher(\phpbb\extension\manager $manager, RequestContext $context, $root_path, $php_ext)
 {
-	$provider = new \phpbb\controller\provider();
-	$provider->find_routing_files($manager->get_finder());
-	$routes = $provider->find($root_path)->get_routes();
+	$provider = new \phpbb\controller\provider($manager, $root_path, $php_ext);
+	$routes = $provider->get_routes();
 	return new UrlMatcher($routes, $context);
 }
 
