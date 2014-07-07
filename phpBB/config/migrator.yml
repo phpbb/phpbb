@@ -29,6 +29,13 @@ services:
         tags:
             - { name: migrator.tool }
 
+    migrator.tool.config_text:
+        class: phpbb\db\migration\tool\config_text
+        arguments:
+            - @config_text
+        tags:
+            - { name: migrator.tool }
+
     migrator.tool.module:
         class: phpbb\db\migration\tool\module
         arguments:
