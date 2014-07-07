@@ -1286,7 +1286,7 @@ switch ($mode)
 
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
-				'S_JABBER_ENABLED'		=> ($config['jab_enable']) ? true : false,
+				'S_JABBER_ENABLED'		=> $config['jab_enable'],
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
 				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,

@@ -394,7 +394,7 @@ class ucp_profile
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
+					'S_JABBER_ENABLED'	=> $config['jab_enable'],
 					'JABBER'			=> $data['jabber'],
 				));
 
