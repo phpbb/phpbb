@@ -20,11 +20,9 @@ class phpbb_dbal_migrator_tool_config_text_test extends phpbb_database_test_case
 
 	public function setup()
 	{
-		global $db;
-
 		parent::setup();
 
-		$db = $this->db = $this->new_dbal();
+		$this->db = $this->new_dbal();
 		$this->config_text = new \phpbb\config\db_text($this->db, 'phpbb_config_text');
 
 		$this->tool = new \phpbb\db\migration\tool\config_text($this->config_text);
