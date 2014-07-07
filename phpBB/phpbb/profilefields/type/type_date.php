@@ -100,7 +100,7 @@ class type_date extends type_base
 			'field_minlen'		=> 10,
 			'field_maxlen'		=> 10,
 			'field_validation'	=> '',
-			'field_novalue'		=> '1900-12-31',
+			'field_novalue'		=> '',
 			'field_default_value'	=> '1900-12-31',
 		);
 	}
@@ -195,7 +195,7 @@ class type_date extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
-		$field_value = ($field_value ? $field_value : $field_data['field_novalue']);
+		$field_value = ($field_value ? $field_value : ($field_data['field_default_value'] == 'now' ?  date('Y-m-d') : $field_data['field_novalue']));
 		$date = explode('-', $field_value);
 		$day = (isset($date[2])) ? (int) $date[2] : 0;
 		$month = (isset($date[1])) ? (int) $date[1] : 0;
@@ -262,7 +262,15 @@ class type_date extends type_base
 				$year = $this->request->variable($profile_row['field_ident'] . '_year', 0);
 			}
 		}
-
+		/**
+		* If year is 1900 this means we have a novalue
+		*/
+		if ($year == 1900)
+		{
+			$day = 0;
+			$month = 0;
+			$year = 0;
+		}
 		$profile_row['s_day_options'] = '<option value="0"' . (($day == 0) ? ' selected="selected"' : '') . '>--</option>';
 		for ($i = 1; $i < 32; $i++)
 		{
