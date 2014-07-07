@@ -18,11 +18,11 @@ a:hover	{ text-decoration: underline; }
 }
 
 /* Links on gradient backgrounds */
-.navbg a, .forumbg .header a, .forabg .header a, th a {
+.forumbg .header a, .forabg .header a, th a {
 	text-decoration: none;
 }
 
-.navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	text-decoration: underline;
 }
 
