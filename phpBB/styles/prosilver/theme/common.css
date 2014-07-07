@@ -625,7 +625,7 @@ ul.linklist.bulletin > li.no-bulletin:before {
 
 .dropdown li li {
 	border-top: 1px dotted transparent;
-	padding-left: 10px;
+	padding-left: 18px;
 }
 
 .wrap .dropdown li, .dropdown.wrap li, .dropdown-extended li {

@@ -114,7 +114,7 @@
 
 .rtl .dropdown li li {
 	padding-left: 0;
-	padding-right: 10px;
+	padding-right: 18px;
 }
 
 .rtl .dropdown-extended .header {
@@ -315,7 +315,7 @@
 	unicode-bidi: embed;
 }
 
-ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
+li.breadcrumbs span:first-child > a {
 	padding-left: 0;
 	padding-right: 19px;
 }
@@ -628,12 +628,11 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 .rtl .small-icon {
 	background-position: 100% 50%;
-	padding-left: 0;
-	padding-right: 19px;
 }
 
-.rtl ul.linklist li.small-icon {
-	padding-right: 0;
+.rtl .small-icon > a {
+	padding-left: 0;
+	padding-right: 19px;
 }
 
 /* Post control buttons
