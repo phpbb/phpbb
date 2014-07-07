@@ -255,11 +255,11 @@ a { color: #105289; }
 a:hover	{ color: #D31141; }
 
 /* Links on gradient backgrounds */
-.navbg a, .forumbg .header a, .forabg .header a, th a {
+.forumbg .header a, .forabg .header a, th a {
 	color: #FFFFFF;
 }
 
-.navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	color: #A8D8FF;
 }
 
