@@ -273,10 +273,6 @@ a:hover	{ color: #D31141; }
 	border-bottom-color: #5D8FBD;
 }
 
-.postlink {
-	color: #368AD2;
-}
-
 .postlink:hover {
 	background-color: #D0E4F6;
 	color: #0D4473;
