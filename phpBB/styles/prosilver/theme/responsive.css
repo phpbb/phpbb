@@ -127,14 +127,14 @@ ul.topiclist dd.mark {
 
 /* Forums and topics lists
 ----------------------------------------*/
-ul.topiclist.forums dt, ul.topiclist.topics dt {
+ul.topiclist.forums dt {
 	margin-right: -250px;
 }
-ul.topiclist.forums dt .list-inner, ul.topiclist.topics dt .list-inner {
+ul.topiclist.forums dt .list-inner {
 	margin-right: 250px;
 }
 
-ul.topiclist.forums dd.lastpost, ul.topiclist.topics dd.lastpost {
+ul.topiclist.forums dd.lastpost {
 	display: block;
 }
 
@@ -159,15 +159,15 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 
 @media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
 {
-	ul.topiclist.forums dt, ul.topiclist.topics dt {
+	ul.topiclist.forums dt {
 		margin-right: 0;
 	}
 
-	ul.topiclist.forums dt .list-inner, ul.topiclist.topics dt .list-inner {
+	ul.topiclist.forums dt .list-inner {
 		margin-right: 0;
 	}
 
-	ul.topiclist.forums dd.lastpost, ul.topiclist.topics dd.lastpost {
+	ul.topiclist.forums dd.lastpost {
 		display: none;
 	}
 }
@@ -200,8 +200,8 @@ ul.topiclist li.row dt a.subforum {
 	margin: 5px 0 0;
 }
 
-.row .pagination > ul {
-	margin-top: 0;
+.row .pagination .ellipsis + li {
+	display: none !important;
 }
 
 /* Responsive tables
