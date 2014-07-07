@@ -68,7 +68,7 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	public function test_delete_logs()
 	{
 		$this->login();
-		$crawler = self::request('GET', "mcp.php?i=149&sid={$this->sid}");
+		$crawler = self::request('GET', "mcp.php?i=mcp_logs&mode=front&sid={$this->sid}");
 		$this->assertCount(1, $crawler->filter('input[type=checkbox]'));
 
 		$this->add_lang('mcp');
