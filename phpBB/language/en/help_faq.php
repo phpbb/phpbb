@@ -121,7 +121,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I add a signature to my post?',
-		1 => 'To add a signature to a post you must first create one via your User Control Panel. Once created, you can check the <em>Attach a signature</em> box on the posting form to add your signature. You can also add a signature by default to all your posts by checking the appropriate radio button in your profile. If you do so, you can still prevent a signature being added to individual posts by un-checking the add signature box within the posting form.'
+		1 => 'To add a signature to a post you must first create one via your User Control Panel. Once created, you can check the <em>Attach a signature</em> box on the posting form to add your signature. You can also add a signature by default to all your posts by checking the appropriate radio button in the User Control Panel. If you do so, you can still prevent a signature being added to individual posts by un-checking the add signature box within the posting form.'
 	),
 	array(
 		0 => 'How do I create a poll?',
@@ -153,7 +153,7 @@ $help = array(
 	),
 	array(
 		0 => 'What is the “Save” button for in topic posting?',
-		1 => 'This allows you to save passages to be completed and submitted at a later date. To reload a saved passage, visit the User Control Panel.'
+		1 => 'This allows you to save drafts to be completed and submitted at a later date. To reload a saved draft, visit the User Control Panel.'
 	),
 	array(
 		0 => 'Why does my post need to be approved?',
@@ -254,7 +254,7 @@ $help = array(
 	),
 	array(
 		0 => 'I keep getting unwanted private messages!',
-		1 => 'You can block a user from sending you private messages by using message rules within your User Control Panel. If you are receiving abusive private messages from a particular user, inform a board administrator; they have the power to prevent a user from sending private messages.'
+		1 => 'You can automatically delete private messages from a user by using message rules within your User Control Panel. If you are receiving abusive private messages from a particular user, report the messages to the moderators; they have the power to prevent a user from sending private messages.'
 	),
 	array(
 		0 => 'I have received a spamming or abusive email from someone on this board!',
