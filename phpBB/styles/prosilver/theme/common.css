@@ -212,49 +212,24 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	text-decoration: none;
 }
 
-/* Search box
---------------------------------------------- */
-#search-box {
-	position: relative;
-	margin-top: 30px;
-	margin-right: 5px;
-	display: block;
-	float: right;
-	text-align: right;
-	white-space: nowrap; /* For Opera */
-}
-
-#search-box #keywords {
-	width: 95px;
-}
-
-#search-box input {
-	border: 1px solid transparent;
-}
-
-/* .button1 style defined later, just a few tweaks for the search button version */
-#search-box input.button1 {
-	padding: 1px 5px;
-}
-
-#search-box li {
-	text-align: right;
-	margin-top: 4px;
-}
-
-#search-box img {
-	vertical-align: middle;
-	margin-right: 3px;
-}
-
 /* Site description and logo */
 #site-description {
 	float: left;
-	width: 70%;
+	width: 65%;
 }
 
 #site-description h1 {
 	margin-right: 0;
+}
+
+/* Search box
+--------------------------------------------- */
+#search-box {
+	border-radius: 4px;
+	display: block;
+	float: right;
+	margin-right: 5px;
+	margin-top: 30px;
 }
 
 /* Round cornered boxes and backgrounds
