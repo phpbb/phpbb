@@ -112,6 +112,15 @@
 	text-align: right;
 }
 
+.rtl .dropdown-contents > li {
+	padding-left: 15px;
+	padding-right: 0;
+}
+
+.rtl .dropdown-nonscroll > li {
+	padding-left: 0;
+}
+
 .rtl .dropdown li li {
 	padding-left: 0;
 	padding-right: 18px;
@@ -601,8 +610,8 @@ li.breadcrumbs span:first-child > a {
 /* Rollover buttons
    Based on: http://wellstyled.com/css-nopreload-rollovers.html
 ----------------------------------------*/
-.rtl .icon-button.dropdown-select {
-	padding-left: 26px;
+.rtl .dropdown-select {
+	padding-left: 24px;
 	padding-right: 8px;
 }
 
@@ -612,7 +621,12 @@ li.breadcrumbs span:first-child > a {
 	margin-right: 2px;
 }
 
-.dropdown-select:after {
+.rtl .dropdown-select.icon-button:before {
+	margin-left: 4px;
+	margin-right: 0;
+}
+
+.rtl .dropdown-select:after {
 	border-left: 0;
 	border-right-style: solid;
 	border-right-width: 1px;
@@ -913,16 +927,6 @@ li.breadcrumbs span:first-child > a {
 
 .rtl fieldset.forum-selection2 {
 	float: left;
-}
-
-/* Jumpbox */
-.rtl fieldset.jumpbox {
-	text-align: left;
-}
-
-.rtl fieldset.quickmod {
-	float: left;
-	text-align: left;
 }
 
 /* Posting page styles
