@@ -23,17 +23,21 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 	public function session_pages_data()
 	{
 		return array(
-			array('index.php', 'index.php'),
-			array('foobar/test.php', 'foobar/test.php'),
+			array('index.php', 'index'),
+			array('foobar/test.php', 'foobar/test'),
 			array('', ''),
-			array('../index.php', '../index.php'),
+			array('./../../index.php', '../../index'),
+			array('../subdir/index.php', '../subdir/index'),
+			array('../index.php', '../index'),
+			array('././index.php', 'index'),
+			array('./index.php', 'index'),
 		);
 	}
 
 	/**
 	* @dataProvider session_pages_data
 	*/
-	public function test_get_user_page($expected, $session_page)
+	public function test_get_user_page($session_page, $expected)
 	{
 		$on_page = $this->viewonline_helper->get_user_page($session_page);
 		$this->assertArrayHasKey(1, $on_page);
