@@ -501,6 +501,7 @@ fieldset.display-actions {
 		float: none;
 		clear: both;
 		padding-bottom: 1px;
+		text-align: center;
 	}
 
 	.action-bar > .pagination li.page-jump {
