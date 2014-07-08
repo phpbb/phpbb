@@ -55,7 +55,7 @@ class phpbb_template_alldir_test extends phpbb_template_template_test_case
 		);
 
 		$this->template_path = $this->test_path . '/templates';
-		$this->ext_template_path = 'tests/extension/ext';
+		$this->ext_template_path = 'tests/extension/ext/vendor4/bar/styles';
 		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context(), $this->extension_manager);
 		$this->template->set_custom_style('all', array($this->template_path, $this->ext_template_path));
 	}
