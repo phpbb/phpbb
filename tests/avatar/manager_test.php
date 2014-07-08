@@ -38,6 +38,7 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
+			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);

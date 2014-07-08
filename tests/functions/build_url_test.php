@@ -30,10 +30,11 @@ class phpbb_build_url_test extends phpbb_test_case
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem(),
+			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			'php'
 		);
-		$phpbb_container->set('path_helper', $path_helper);
+		$phpbb_container->set('path_helper', $phpbb_path_helper);
 	}
 	public function build_url_test_data()
 	{
