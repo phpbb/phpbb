@@ -104,8 +104,12 @@
 <tr>
 	<td class="row1"><b class="genmed">{L_GROUP}{L_COLON}</b></td>
 	<td class="row2" nowrap="nowrap"><select name="search_group_id">{S_GROUP_SELECT}</select></td>
-	<td class="row1"><b class="genmed">{L_JABBER}{L_COLON}</b></td>
-	<td class="row2"><input class="post" type="text" name="jabber" value="{JABBER}" /></td>
+	<!-- IF S_JABBER_ENABLED -->
+		<td class="row1"><b class="genmed">{L_JABBER}{L_COLON}</b></td>
+		<td class="row2"><input class="post" type="text" name="jabber" value="{JABBER}" /></td>
+	<!-- ELSE -->
+		<td colspan="2" class="row1">&nbsp;</td>
+	<!-- ENDIF -->
 </tr>
 <tr>
 	<td class="row1"><b class="genmed">{L_SORT_BY}{L_COLON}</b></td>

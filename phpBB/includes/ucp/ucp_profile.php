@@ -392,8 +392,9 @@ class ucp_profile
 				}
 
 				$template->assign_vars(array(
-					'ERROR'		=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'JABBER'	=> $data['jabber'],
+					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'S_JABBER_ENABLED'	=> $config['jab_enable'],
+					'JABBER'			=> $data['jabber'],
 				));
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'
