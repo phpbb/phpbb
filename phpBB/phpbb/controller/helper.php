@@ -40,6 +40,9 @@ class helper
 	*/
 	protected $config;
 
+	/* @var \phpbb\symfony_request */
+	protected $symfony_request;
+
 	/**
 	* phpBB root path
 	* @var string
@@ -60,14 +63,16 @@ class helper
 	* @param \phpbb\config\config $config Config object
 	* @param \phpbb\controller\provider $provider Path provider
 	* @param \phpbb\extension\manager $manager Extension manager object
+	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
+		$this->symfony_request = $symfony_request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$provider->find_routing_files($manager->get_finder());
@@ -150,5 +155,15 @@ class helper
 		));
 
 		return $this->render('message_body.html', $this->user->lang('INFORMATION'), $code);
+	}
+
+	/**
+	* Return the current url
+	*
+	* @return string
+	*/
+	public function get_current_url()
+	{
+		return generate_board_url(true) . $this->symfony_request->getRequestUri();
 	}
 }

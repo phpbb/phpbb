@@ -23,4 +23,9 @@ class phpbb_mock_controller_helper extends \phpbb\controller\helper
 		$provider->find_routing_files($manager->get_finder());
 		$this->route_collection = $provider->find($phpbb_root_path_ext)->get_routes();
 	}
+
+	public function get_current_url()
+	{
+		return '';
+	}
 }
