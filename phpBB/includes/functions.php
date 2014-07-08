@@ -2210,18 +2210,13 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx;
+	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx, $phpbb_dispatcher;
 
 	$failover_flag = false;
 
 	if (empty($user->lang))
 	{
 		$user->add_lang('common');
-	}
-
-	if (!$return)
-	{
-		garbage_collection();
 	}
 
 	// Make sure no &amp;'s are in, this will break the redirect
@@ -2298,9 +2293,25 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
+	/**
+	* Execute code and/or overwrite redirect()
+	*
+	* @event core.functions.redirect
+	* @var	string	url					The url
+	* @var	bool	return				If true, do not redirect but return the sanitized URL.
+	* @var	bool	disable_cd_check	If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain.
+	* @since 3.1.0-RC3
+	*/
+	$vars = array('url', 'return', 'disable_cd_check');
+	extract($phpbb_dispatcher->trigger_event('core.functions.redirect', compact($vars)));
+
 	if ($return)
 	{
 		return $url;
+	}
+	else
+	{
+		garbage_collection();
 	}
 
 	// Redirect via an HTML form for PITA webservers
