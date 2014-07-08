@@ -24,17 +24,17 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	/**
 	* Language data should be in array -> each language_data in separate key
 	* array(
-	*		array(
-	*			'option_id'	=> value,
-	*			'field_type'	=> value,
-	*			'lang_value'	=> value,
-	*		),
-	*		array(
-	*			'option_id'	=> value,
-	*			'field_type'	=> value,
-	*			'lang_value'	=> value,
-	*		),
-	*	)
+	*	array(
+	*		'option_id'	=> value,
+	*		'field_type'	=> value,
+	*		'lang_value'	=> value,
+	*	),
+	*	array(
+	*		'option_id'	=> value,
+	*		'field_type'	=> value,
+	*		'lang_value'	=> value,
+	*	),
+	* )
 	*/
 	protected $profilefield_language_data;
 
@@ -138,7 +138,7 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 				$insert_buffer->insert(array_merge(array(
 					'field_id'	=> $field_id,
 					'lang_id'	=> $lang_id,
-					), $language_data));
+				), $language_data));
 			}
 		}
 		$this->db->sql_freeresult($result);
@@ -153,16 +153,16 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	{
 		$field_id = $this->get_custom_profile_field_id();
 
-		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . ' 
-				WHERE field_id = ' . $field_id;
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . '
+			WHERE field_id = ' . $field_id;
 		$this->db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' 
-				WHERE field_id = ' . $field_id;
+		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . '
+			WHERE field_id = ' . $field_id;
 		$this->db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
-				WHERE field_id = ' . $field_id;
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . '
+			WHERE field_id = ' . $field_id;
 		$this->db->sql_query($sql);
 	}
 
@@ -172,9 +172,9 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	*/
 	public function get_custom_profile_field_id()
 	{
-		$sql = 'SELECT field_id 
-				FROM ' . PROFILE_FIELDS_TABLE . " 
-				WHERE field_name = '" . $this->profilefield_name . "'";
+		$sql = 'SELECT field_id
+			FROM ' . PROFILE_FIELDS_TABLE . "
+			WHERE field_name = '" . $this->profilefield_name . "'";
 		$result = $this->db->sql_query($sql);
 		$field_id = (int) $this->db->sql_fetchfield('field_id');
 		$this->db->sql_freeresult($result);
