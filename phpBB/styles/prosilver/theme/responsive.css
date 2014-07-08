@@ -460,12 +460,6 @@ p.rightside {
 	margin-bottom: 0;
 }
 
-fieldset.quickmod {
-	width: auto;
-	float: none;
-	text-align: center;
-}
-
 fieldset.display-options label {
 	display: block;
 	clear: both;
@@ -501,10 +495,6 @@ fieldset.display-actions {
 		float: none;
 		text-align: center;
 		margin: 0;
-	}
-
-	.action-bar > .pagination, fieldset.jumpbox {
-		text-align: center;
 	}
 
 	.action-bar > .pagination {
