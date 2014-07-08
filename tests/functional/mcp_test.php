@@ -69,7 +69,7 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	{
 		$this->login();
 		$crawler = self::request('GET', "mcp.php?i=mcp_logs&mode=front&sid={$this->sid}");
-		$this->assertCount(1, $crawler->filter('input[type=checkbox]'));
+		$this->assertGreaterThanOrEqual(1, $crawler->filter('input[type=checkbox]')->count());
 
 		$this->add_lang('mcp');
 		$form = $crawler->selectButton($this->lang('DELETE_ALL'))->form();
