@@ -20,9 +20,6 @@ class phpbb_template_alldir_test extends phpbb_template_template_test_case
 		$this->setup_engine_for_alldir();
 
 		$this->run_template('foobar_body.html', array(), array(), array(), "All dir");
-
-		$this->template->set_filenames(array('test' => 'foobar_body.html'));
-		$this->assertEquals("All dir", $this->display('test'), "Testing all dir");
 	}
 
 	protected function setup_engine_for_alldir(array $new_config = array())
@@ -55,7 +52,7 @@ class phpbb_template_alldir_test extends phpbb_template_template_test_case
 		);
 
 		$this->template_path = $this->test_path . '/templates';
-		$this->ext_template_path = 'tests/extension/ext/vendor4/bar/styles';
+		$this->ext_template_path = 'tests/extension/ext/vendor4/bar/styles/all';
 		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context(), $this->extension_manager);
 		$this->template->set_custom_style('all', array($this->template_path, $this->ext_template_path));
 	}
