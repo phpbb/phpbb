@@ -21,6 +21,23 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 
 	protected $profilefield_data;
 
+	/**
+	* Language data should be in array -> each language_data in separate key
+	* array(
+	*	array(
+	*		'option_id'	=> value,
+	*		'field_type'	=> value,
+	*		'lang_value'	=> value,
+	*	),
+	*	array(
+	*		'option_id'	=> value,
+	*		'field_type'	=> value,
+	*		'lang_value'	=> value,
+	*	),
+	* )
+	*/
+	protected $profilefield_language_data;
+
 	protected $user_column_name;
 
 	public function effectively_installed()
@@ -55,6 +72,13 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		return array(
 			array('custom', array(array($this, 'create_custom_field'))),
 			array('custom', array(array($this, 'convert_user_field_to_custom_field'))),
+		);
+	}
+
+	public function revert_data()
+	{
+		return array(
+			array('custom', array(array($this, 'delete_custom_profile_field_data'))),
 		);
 	}
 
@@ -93,6 +117,69 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		$this->db->sql_freeresult($result);
 
 		$insert_buffer->flush();
+	}
+
+	/**
+	* Create Custom profile fields languguage entries
+	*/
+	public function create_language_entries()
+	{
+		$field_id = $this->get_custom_profile_field_id();
+
+		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, PROFILE_FIELDS_LANG_TABLE);
+
+		$sql = 'SELECT lang_id
+			FROM ' . LANG_TABLE;
+		$result = $this->db->sql_query($sql);
+		while ($lang_id = (int) $this->db->sql_fetchfield('lang_id'))
+		{
+			foreach ($this->profilefield_language_data as $language_data)
+			{
+				$insert_buffer->insert(array_merge(array(
+					'field_id'	=> $field_id,
+					'lang_id'	=> $lang_id,
+				), $language_data));
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		$insert_buffer->flush();
+	}
+
+	/**
+	* Clean database when reverting the migration
+	*/
+	public function delete_custom_profile_field_data()
+	{
+		$field_id = $this->get_custom_profile_field_id();
+
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . '
+			WHERE field_id = ' . $field_id;
+		$this->db->sql_query($sql);
+
+		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . '
+			WHERE field_id = ' . $field_id;
+		$this->db->sql_query($sql);
+
+		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . '
+			WHERE field_id = ' . $field_id;
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Get custom profile field id
+	* @return	int	custom profile filed id
+	*/
+	public function get_custom_profile_field_id()
+	{
+		$sql = 'SELECT field_id
+			FROM ' . PROFILE_FIELDS_TABLE . "
+			WHERE field_name = '" . $this->profilefield_name . "'";
+		$result = $this->db->sql_query($sql);
+		$field_id = (int) $this->db->sql_fetchfield('field_id');
+		$this->db->sql_freeresult($result);
+
+		return $field_id;
 	}
 
 	/**
