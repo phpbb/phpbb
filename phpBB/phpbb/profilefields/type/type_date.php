@@ -244,7 +244,7 @@ class type_date extends type_base
 		{
 			if ($profile_row['field_default_value'] == 'now')
 			{
-				$profile_row['field_default_value'] = date('Y-m-d');;
+				$profile_row['field_default_value'] = date('Y-m-d');
 			}
 			list($year, $month, $day) = explode('-', ((!isset($this->user->profile_fields[$field_ident]) || $preview_options !== false) ? $profile_row['field_default_value'] : $this->user->profile_fields[$field_ident]));
 		}

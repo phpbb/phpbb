@@ -63,7 +63,7 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 	{
 		return array(
 			array(
-				'01-01-2009',
+				'2009-01-01',
 				array('field_show_novalue' => true),
 				'01/01/2009',
 				'Field should output the correctly formatted date',
@@ -111,19 +111,19 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 				'Field should reject value for being invalid',
 			),
 			array(
-				'01-01-2012',
+				'2012-01-01',
 				array(),
 				false,
 				'Field should accept a valid value',
 			),
 			array(
-				'40-05-2009',
+				'2009-05-40',
 				array(),
 				'FIELD_INVALID_DATE-field',
 				'Field should reject value for being invalid',
 			),
 			array(
-				'12-30-2012',
+				'2012-30-12',
 				array(),
 				'FIELD_INVALID_DATE-field',
 				'Field should reject value for being invalid',
