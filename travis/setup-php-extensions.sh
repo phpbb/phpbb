@@ -51,7 +51,7 @@ then
 fi
 
 echo 'Enabling Oracle Client Instant PHP extension'
-register_php_extension 'pdo_oci' "$php_ini_file"
+register_php_extension 'oci8' "$php_ini_file"
 
 # redis
 # Disabled redis for now as it causes travis to fail
