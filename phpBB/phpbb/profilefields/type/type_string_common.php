@@ -98,7 +98,7 @@ abstract class type_string_common extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
-		if (!$field_value && !$field_data['field_show_novalue'])
+		if (($field_value === null || $field_value === '') && !$field_data['field_show_novalue'])
 		{
 			return null;
 		}
@@ -114,7 +114,7 @@ abstract class type_string_common extends type_base
 	*/
 	public function get_profile_value_raw($field_value, $field_data)
 	{
-		if (!$field_value && !$field_data['field_show_novalue'])
+		if (($field_value === null || $field_value === '') && !$field_data['field_show_novalue'])
 		{
 			return null;
 		}
@@ -127,7 +127,7 @@ abstract class type_string_common extends type_base
 	*/
 	public function get_profile_contact_value($field_value, $field_data)
 	{
-		if (!$field_value && !$field_data['field_show_novalue'])
+		if (($field_value === null || $field_value === '') && !$field_data['field_show_novalue'])
 		{
 			return null;
 		}
