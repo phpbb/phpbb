@@ -41,7 +41,7 @@
 		<dd><label><input onclick="phpbb.toggleDisplay('posts', -1)" type="radio" class="radio" name="special_rank" value="1" id="special_rank"<!-- IF S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input onclick="phpbb.toggleDisplay('posts', 1)" type="radio" class="radio" name="special_rank" value="0"<!-- IF not S_SPECIAL_RANK --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
-	<!-- IF S_SPECIAL_RANK --><div id="posts" style="display: none;"><!-- ELSE --><div id="posts"><!-- ENDIF -->
+	<div id="posts"<!-- IF S_SPECIAL_RANK --> style="display: none;"<!-- ENDIF -->>
 	<dl>
 		<dt><label for="min_posts">{L_RANK_MINIMUM}{L_COLON}</label></dt>
 		<dd><input name="min_posts" type="number" id="min_posts" maxlength="10" value="{MIN_POSTS}" /></dd>
