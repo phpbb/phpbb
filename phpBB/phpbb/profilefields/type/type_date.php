@@ -81,10 +81,20 @@ class type_date extends type_base
 		{
 			$s_checked = ($always_now) ? true : false;
 		}
+		$always_year = request_var('always_year', -1);
+		if ($always_year == -1)
+		{
+			$s_year = ($field_data['field_minlen'] == 10) ? true : false;
+		}
+		else
+		{
+			$s_year = ($always_year) ? true : false;
+		}
 
 		$options = array(
 			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
 			1 => array('TITLE' => $this->user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['NO'] . '</label>'),
+			2 => array('TITLE' => $this->user->lang['ALWAYS_YEAR'],	'FIELD'	=> '<label><input type="radio" class="radio" name="always_year" value="1"' . (($s_year) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_year" value="0"' . ((!$s_year) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['NO'] . '</label>'),
 		);
 
 		return $options;
@@ -140,19 +150,22 @@ class type_date extends type_base
 			$year = $this->request->variable($var_name . '_year', 0);
 		}
 
-		/**
-		* As the field_novalue is set out of bounds for the valid date we have to check the year
-		* If the year is 1900 (as valid yer is bigger then 1901) we set date and month to 0
-		*/
-		if (!$year)
+		if ($day && $month && (!$year && $profile_row['field_minlen']))
 		{
-			return null;
+			$year = 1901;
+			$timestamp = strtotime($year .'-'. $month .'-'. $day);
+			$date = date('Y-m-d', $timestamp);
+			return $date;
 		}
-		else
+		else if ($day && $month && $year)
 		{
 			$timestamp = strtotime($year .'-'. $month .'-'. $day);
 			$date = date('Y-m-d', $timestamp);
 			return $date;
+		}
+		else
+		{
+			return null;
 		}
 	}
 
@@ -177,7 +190,7 @@ class type_date extends type_base
 			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
 		}
 
-		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0 ) || $year > gmdate('Y', time()) + 50)
+		if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0 && $field_data['field_minlen'] == 10) || $year > gmdate('Y', time()) + 50)
 		{
 			return $this->user->lang('FIELD_INVALID_DATE', $this->get_field_name($field_data['lang_name']));
 		}
@@ -196,6 +209,7 @@ class type_date extends type_base
 	public function get_profile_value($field_value, $field_data)
 	{
 		$field_value = ($field_value ? $field_value : ($field_data['field_default_value'] == 'now' ?  date('Y-m-d') : $field_data['field_novalue']));
+
 		$date = explode('-', $field_value);
 		$day = (isset($date[2])) ? (int) $date[2] : 0;
 		$month = (isset($date[1])) ? (int) $date[1] : 0;
@@ -204,6 +218,16 @@ class type_date extends type_base
 		if (!$day && !$month && !$year && !$field_data['field_show_novalue'])
 		{
 			return null;
+		}
+		else if ($day && $month && ($year == 1901 && $field_data['field_minlen'] == 6))
+		{
+			// Date should display as the same date for every user regardless of timezone
+			// As we use no year, we need to remove the year from the user DATE_FORMAT
+			$date_format_no_year = str_replace('Y', '', $this->user->lang['DATE_FORMAT']);
+			return $this->user->create_datetime()
+				->setDate(null , $month, $day)
+				->setTime(0, 0, 0)
+				->format($date_format_no_year, true);
 		}
 		else if ($day && $month && $year)
 		{
@@ -261,15 +285,6 @@ class type_date extends type_base
 				$month = $this->request->variable($profile_row['field_ident'] . '_month', 0);
 				$year = $this->request->variable($profile_row['field_ident'] . '_year', 0);
 			}
-		}
-		/**
-		* If year is 1900 this means we have a novalue
-		*/
-		if ($year == 1900)
-		{
-			$day = 0;
-			$month = 0;
-			$year = 0;
 		}
 		$profile_row['s_day_options'] = '<option value="0"' . (($day == 0) ? ' selected="selected"' : '') . '>--</option>';
 		for ($i = 1; $i < 32; $i++)
@@ -352,7 +367,7 @@ class type_date extends type_base
 					$field_data['field_default_value_day'] = $this->request->variable('field_default_value_day', 0);
 					$field_data['field_default_value_month'] = $this->request->variable('field_default_value_month', 0);
 					$field_data['field_default_value_year'] = $this->request->variable('field_default_value_year', 0);
-					$current_value = sprintf('%2d-%2d-%4d', $field_data['field_default_value_day'], $field_data['field_default_value_month'], $field_data['field_default_value_year']);
+					$current_value = sprintf('%4d-%2d-%2d', $field_data['field_default_value_year'], $field_data['field_default_value_month'], $field_data['field_default_value_day']);
 					$this->request->overwrite('field_default_value', $current_value, \phpbb\request\request_interface::POST);
 				}
 				else
@@ -361,6 +376,21 @@ class type_date extends type_base
 				}
 			}
 
+			return $current_value;
+		}
+		if ($step == 2 && $key == 'field_minlen')
+		{
+			$always_year = request_var('always_year', -1);
+			if ($always_year == 1 || $always_year === -1 && $current_value == 10)
+			{
+				$current_value = 10;
+				$field_data['field_minlen'] = $current_value;
+			}
+			else
+			{
+				$current_value = 6;
+				$field_data['field_minlen'] = $current_value;
+			}
 			return $current_value;
 		}
 
@@ -385,7 +415,7 @@ class type_date extends type_base
 				$field_data['field_default_value_day'] = $this->request->variable('field_default_value_day', 0);
 				$field_data['field_default_value_month'] = $this->request->variable('field_default_value_month', 0);
 				$field_data['field_default_value_year'] = $this->request->variable('field_default_value_year', 0);
-				return sprintf('%2d-%2d-%4d', $field_data['field_default_value_day'], $field_data['field_default_value_month'], $field_data['field_default_value_year']);
+				return sprintf('%4d-%2d-%2d', $field_data['field_default_value_year'], $field_data['field_default_value_month'], $field_data['field_default_value_day']);
 			}
 		}
 

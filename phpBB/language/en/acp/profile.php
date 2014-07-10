@@ -45,6 +45,7 @@ $lang = array_merge($lang, array(
 	'ALPHA_UNDERSCORE'		=> 'Alphanumeric and underscores',
 	'ALPHA_PUNCTUATION'		=> 'Alphanumeric with comma, dots, underscore and dashes beginning with a letter',
 	'ALWAYS_TODAY'			=> 'Always the current date',
+	'ALWAYS_YEAR'			=> 'Always require year',
 
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
 	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons. A checkbox will only be displayed if it is checked for a given user. In that case the <strong>second</strong> language option will be used. Radio buttons will display regardless of their value.',
