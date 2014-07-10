@@ -45,6 +45,8 @@
 	</dl>
 	</div>
 
+	<!-- EVENT acp_ranks_edit_after -->
+
 	<p class="submit-buttons">
 		<input type="hidden" name="action" value="save" />
 
@@ -71,6 +73,7 @@
 		<th>{L_RANK_IMAGE}</th>
 		<th>{L_RANK_TITLE}</th>
 		<th>{L_RANK_MINIMUM}</th>
+		<!-- EVENT acp_ranks_list_header_after -->
 		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
@@ -80,6 +83,7 @@
 		<td style="text-align: center;"><!-- IF ranks.S_RANK_IMAGE --><img src="{ranks.RANK_IMAGE}" alt="{ranks.RANK_TITLE}" title="{ranks.RANK_TITLE}" /><!-- ELSE -->&nbsp; - &nbsp;<!-- ENDIF --></td>
 		<td style="text-align: center;">{ranks.RANK_TITLE}</td>
 		<td style="text-align: center;"><!-- IF ranks.S_SPECIAL_RANK -->&nbsp; - &nbsp;<!-- ELSE -->{ranks.MIN_POSTS}<!-- ENDIF --></td>
+		<!-- EVENT acp_ranks_list_column_after -->
 		<td style="text-align: center;"><a href="{ranks.U_EDIT}">{ICON_EDIT}</a> <a href="{ranks.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a></td>
 	</tr>
 	<!-- END ranks -->
