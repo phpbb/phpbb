@@ -230,11 +230,11 @@ class acp_ranks
 				* Modify the template output array for editing/adding ranks
 				*
 				* @event core.acp_ranks_edit_modify_tpl_ary
-				* @var	int		rank_id		The ID of the rank (if available)
+				* @var	array	ranks		Array with the rank's data
 				* @var	array	tpl_ary		Array with the rank's template data
 				* @since 3.1.0-RC2
 				*/
-				$vars = array('rank_id', 'tpl_ary');
+				$vars = array('ranks', 'tpl_ary');
 				extract($phpbb_dispatcher->trigger_event('core.acp_ranks_edit_modify_tpl_ary', compact($vars)));
 
 				$template->assign_vars($tpl_ary);
@@ -270,10 +270,11 @@ class acp_ranks
 			* Modify the template output array for each listed rank
 			*
 			* @event core.acp_ranks_list_modify_rank_row
+			* @var	array	row			Array with the rank's data
 			* @var	array	rank_row	Array with the rank's template data
 			* @since 3.1.0-RC2
 			*/
-			$vars = array('rank_row');
+			$vars = array('row', 'rank_row');
 			extract($phpbb_dispatcher->trigger_event('core.acp_ranks_list_modify_rank_row', compact($vars)));
 
 			$template->assign_block_vars('ranks', $rank_row);
