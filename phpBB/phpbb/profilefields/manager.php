@@ -390,7 +390,6 @@ class manager
 			$profile_field = $this->type_collection[$ident_ary['data']['field_type']];
 			$value = $profile_field->get_profile_value($ident_ary['value'], $ident_ary['data']);
 			$value_raw = $profile_field->get_profile_value_raw($ident_ary['value'], $ident_ary['data']);
-			$is_contact = $ident_ary['data']['field_is_contact'];
 
 			if ($value === null)
 			{
@@ -398,7 +397,7 @@ class manager
 			}
 
 			$field_desc = $contact_url = '';
-			if ($use_contact_fields && $is_contact)
+			if ($use_contact_fields && $ident_ary['data']['field_is_contact'])
 			{
 				$value = $profile_field->get_profile_contact_value($ident_ary['value'], $ident_ary['data']);
 				$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
