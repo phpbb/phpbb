@@ -157,6 +157,7 @@ function mcp_post_details($id, $mode, $action)
 
 		if (sizeof($attachments))
 		{
+			$user->add_lang('viewtopic');
 			$update_count = array();
 			parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
 		}
