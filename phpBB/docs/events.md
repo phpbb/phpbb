@@ -82,28 +82,28 @@ acp_ranks_edit_after
 ===
 * Locations:
     + adm/style/acp_ranks.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content after the rank details when editing a rank in the ACP
 
 acp_ranks_edit_before
 ===
 * Locations:
     + adm/style/acp_ranks.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content before the rank details when editing a rank in the ACP
 
 acp_ranks_list_column_after
 ===
 * Locations:
     + adm/style/acp_ranks.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content before the first column in the ranks list in the ACP
 
 acp_ranks_list_column_before
 ===
 * Locations:
     + adm/style/acp_ranks.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content after the last column (but before the action column) 
 in the ranks list in the ACP
 
@@ -111,14 +111,14 @@ acp_ranks_list_header_after
 ===
 * Locations:
     + adm/style/acp_ranks.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content before the first header-column in the ranks list in the ACP
 
 acp_ranks_list_header_before
 ===
 * Locations:
     + adm/style/acp_ranks.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content after the last header-column (but before the action column) 
 in the ranks list in the ACP
 
