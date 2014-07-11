@@ -25,10 +25,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include($phpbb_root_path . 'config.' . $phpEx);
+$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
+extract($phpbb_config_php_file->get_all());
 unset($dbpasswd);
 
-$dbms = phpbb_convert_30_dbms_to_31($dbms);
+$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 /**
 * $convertor_data provides some basic information about this convertor which is

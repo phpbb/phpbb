@@ -21,11 +21,13 @@ if (!defined('IN_PHPBB'))
 }
 
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
+require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
-if (file_exists($phpbb_root_path . 'config.' . $phpEx))
-{
-	require($phpbb_root_path . 'config.' . $phpEx);
-}
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+$phpbb_class_loader->register();
+
+$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
+extract($phpbb_config_php_file->get_all());
 
 if (!defined('PHPBB_INSTALLED'))
 {
@@ -76,11 +78,8 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
-require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
-
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -89,16 +88,14 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-// Setup class loader first
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-$phpbb_class_loader->register();
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
 phpbb_load_extensions_autoloaders($phpbb_root_path);
 
 // Set up container
-$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+$phpbb_container = $phpbb_container_builder->get_container();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

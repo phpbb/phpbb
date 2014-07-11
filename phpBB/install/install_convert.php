@@ -107,7 +107,7 @@ class install_convert extends module
 	function main($mode, $sub)
 	{
 		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language, $table_prefix;
-		global $convert, $request, $phpbb_container;
+		global $convert, $request, $phpbb_container, $phpbb_config_php_file;
 
 		$this->tpl_name = 'install_convert';
 		$this->mode = $mode;
@@ -127,7 +127,8 @@ class install_convert extends module
 		// Enable super globals to prevent issues with the new \phpbb\request\request object
 		$request->enable_super_globals();
 		// Create a normal container now
-		$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+		$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Create cache
 		$cache = $phpbb_container->get('cache');
@@ -135,11 +136,12 @@ class install_convert extends module
 		switch ($sub)
 		{
 			case 'intro':
-				require($phpbb_root_path . 'config.' . $phpEx);
+				extract($phpbb_config_php_file->get_all());
+
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+				$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -224,11 +226,12 @@ class install_convert extends module
 				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 				$cache->purge();
 
-				require($phpbb_root_path . 'config.' . $phpEx);
+				extract($phpbb_config_php_file->get_all());
+
 				require($phpbb_root_path . 'includes/constants.' . $phpEx);
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-				$dbms = phpbb_convert_30_dbms_to_31($dbms);
+				$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 				$db = new $dbms();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -370,13 +373,14 @@ class install_convert extends module
 	*/
 	function get_convert_settings($sub)
 	{
-		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache, $phpbb_config_php_file;
 
-		require($phpbb_root_path . 'config.' . $phpEx);
+		extract($phpbb_config_php_file->get_all());
+
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -458,7 +462,8 @@ class install_convert extends module
 			{
 				$error[] = sprintf($lang['TABLE_PREFIX_SAME'], $src_table_prefix);
 			}
-			$src_dbms  = phpbb_convert_30_dbms_to_31($src_dbms);
+
+			$src_dbms = $phpbb_config_php_file->convert_30_dbms_to_31($src_dbms);
 
 			// Check table prefix
 			if (!sizeof($error))
@@ -614,13 +619,14 @@ class install_convert extends module
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
-		global $request;
+		global $request, $phpbb_config_php_file;
 
-		require($phpbb_root_path . 'config.' . $phpEx);
+		extract($phpbb_config_php_file->get_all());
+
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$dbms = phpbb_convert_30_dbms_to_31($dbms);
+		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 		$db = new $dbms();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
