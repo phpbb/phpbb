@@ -1,0 +1,11 @@
+services:
+    api.controller.auth:
+        class: phpbb\controller\api\auth
+        arguments:
+            - @model.repository.auth
+            - @user
+            - @controller.helper
+            - @template
+            - @request
+            - @config
+            - @auth

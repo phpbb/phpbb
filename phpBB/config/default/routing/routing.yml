@@ -7,3 +7,26 @@
 # The above will be accessed via app.php?controller=foo and it will
 # instantiate the "foo_service" service and call the "method" method.
 #
+api_auth_generate_controller:
+    pattern: /api/auth/generatekeys
+    defaults: { _controller: api.controller.auth:generate_keys }
+    requirements:
+        _method: GET
+
+api_auth_controller:
+    pattern: /api/auth/{auth_key}/{sign_key}
+    defaults: { _controller: api.controller.auth:auth }
+    requirements:
+        _method: GET
+
+api_auth_allow_controller:
+    pattern: /api/auth/allow
+    defaults: { _controller: api.controller.auth:allow }
+    requirements:
+        _method: POST
+
+api_auth_verify_controller:
+    pattern: /api/auth/verify
+    defaults: { _controller: api.controller.auth:verify }
+    requirements:
+        _method: GET

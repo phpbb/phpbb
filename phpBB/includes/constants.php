@@ -227,6 +227,7 @@ define('ACL_OPTIONS_TABLE',			$table_prefix . 'acl_options');
 define('ACL_ROLES_DATA_TABLE',		$table_prefix . 'acl_roles_data');
 define('ACL_ROLES_TABLE',			$table_prefix . 'acl_roles');
 define('ACL_USERS_TABLE',			$table_prefix . 'acl_users');
+define('API_KEYS_TABLE',			$table_prefix . 'api_keys');
 define('ATTACHMENTS_TABLE',			$table_prefix . 'attachments');
 define('BANLIST_TABLE',				$table_prefix . 'banlist');
 define('BBCODES_TABLE',				$table_prefix . 'bbcodes');

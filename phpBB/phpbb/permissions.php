@@ -199,6 +199,7 @@ class permissions
 
 	protected $permissions = array(
 		// User Permissions
+		'u_api'			=> array('lang' => 'ACL_U_API', 'cat' => 'profile'),
 		'u_viewprofile'	=> array('lang' => 'ACL_U_VIEWPROFILE', 'cat' => 'profile'),
 		'u_chgname'		=> array('lang' => 'ACL_U_CHGNAME', 'cat' => 'profile'),
 		'u_chgpasswd'	=> array('lang' => 'ACL_U_CHGPASSWD', 'cat' => 'profile'),
@@ -283,6 +284,7 @@ class permissions
 		'm_split'	=> array('lang' => 'ACL_M_SPLIT', 'cat' => 'topic_actions'),
 		'm_merge'	=> array('lang' => 'ACL_M_MERGE', 'cat' => 'topic_actions'),
 
+		'm_api'		=> array('lang' => 'ACL_M_API', 'cat' => 'misc'),
 		'm_info'	=> array('lang' => 'ACL_M_INFO', 'cat' => 'misc'),
 		'm_warn'	=> array('lang' => 'ACL_M_WARN', 'cat' => 'misc'),
 		'm_ban'		=> array('lang' => 'ACL_M_BAN', 'cat' => 'misc'),

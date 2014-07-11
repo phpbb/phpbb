@@ -6,6 +6,7 @@
 
 # -- Config
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('active_sessions', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_api', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_attachments', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar', '1');
@@ -354,6 +355,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_spli
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_softdelete', 1, 1);
 
 # -- Global moderator auth option (not a local option)
+INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_api', 0, 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_ban', 0, 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local, is_global) VALUES ('m_warn', 0, 1);
 
@@ -403,6 +405,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_words', 1);
 
 # -- User related auth options
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_api', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_attach', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgavatar', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_chgcensors', 1);

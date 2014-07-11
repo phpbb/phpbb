@@ -14,7 +14,7 @@ imports:
     - { resource: services_profilefield.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
-
+    - { resource: api.yml }
     - { resource: tables.yml }
     - { resource: parameters.yml }
 
@@ -125,6 +125,14 @@ services:
             - %core.adm_relative_path%
             - %core.php_ext%
             - %tables.log%
+
+    model.repository.auth:
+        class: phpbb\model\repository\auth
+        arguments:
+            - @config
+            - @dbal.conn
+            - @auth
+            - @request
 
     path_helper:
         class: phpbb\path_helper

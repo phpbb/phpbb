@@ -1,0 +1,53 @@
+<!-- INCLUDE overall_header.html -->
+
+<form action="{S_AUTH_ACTION}" method="post" name="api_auth">
+
+	<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<th>{L_AUTH_TITLE}</th>
+		</tr>
+		<tr>
+			<td class="row3" colspan="2" align="center"><span class="gensmall">{L_AUTH_INFORMATION}</span></td>
+		</tr>
+		<tr>
+			<td class="row2">
+
+			<table align="center" cellspacing="1" cellpadding="4" style="width: 100%;">
+				<!-- IF ERROR -->
+				<tr>
+					<td class="gensmall" colspan="2" align="center"><span class="error">{ERROR}</span></td>
+				</tr>
+				<!-- ENDIF -->
+
+				<tr>
+					<td valign="top"><b class="gensmall">{L_AUTH_APPNAME}{L_COLON}</b></td>
+					<td><input class="post" type="text" name="appname" size="25" value="{APPNAME}" tabindex="1" />
+
+					</td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+
+
+		<tr>
+			<td class="cat" align="center">
+				<input type="hidden" name="auth_key" value="{T_AUTH_KEY}" />
+				<input type="hidden" name="sign_key" value="{T_SIGN_KEY}" />
+				<input type="submit" name="confirm" value="{L_AUTH_ALLOW}" class="button2"/>&nbsp;
+				<input type="submit" name="cancel" value="{L_AUTH_DENY}" class="button2"/>
+			</td>
+		</tr>
+	</table>
+	{S_FORM_TOKEN}
+</form>
+
+<br clear="all" />
+
+<!-- INCLUDE breadcrumbs.html -->
+
+<br clear="all" />
+
+<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>
+
+<!-- INCLUDE overall_footer.html -->
