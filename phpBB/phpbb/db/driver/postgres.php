@@ -15,10 +15,11 @@ namespace phpbb\db\driver;
 
 /**
 * PostgreSQL Database Abstraction Layer
-* Minimum Requirement is Version 7.3+
+* Minimum Requirement is Version 8.3+
 */
 class postgres extends \phpbb\db\driver\driver
 {
+	var $multi_insert = true;
 	var $last_query_text = '';
 	var $connect_error = '';
 
@@ -101,11 +102,6 @@ class postgres extends \phpbb\db\driver\driver
 
 		if ($this->db_connect_id)
 		{
-			if (version_compare($this->sql_server_info(true), '8.2', '>='))
-			{
-				$this->multi_insert = true;
-			}
-
 			if ($schema !== '')
 			{
 				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
