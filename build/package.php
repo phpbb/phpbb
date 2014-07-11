@@ -195,12 +195,6 @@ if (sizeof($package->old_packages))
 		* referenced files from the same or subsequent directories.
 		*/
 		$copy_relative_directories = array(
-			'adm/style/admin.css'	=> array(
-				'copied'	=> false,
-				'copy'		=> array(
-					'adm/images/*' => 'adm/images',
-				),
-			),
 			'config/'	=> array(
 				'copied'	=> false,
 				'copy'		=> array(
@@ -267,6 +261,42 @@ if (sizeof($package->old_packages))
 					$copy_relative_directories[$reference]['copied'] = true;
 				}
 			}
+		}
+
+		/**
+		* We need to always copy the template and asset files that we need in
+		* the update, to ensure that the page is displayed correctly.
+		*/
+		$copy_update_files = array(
+			'adm/images/*'			=> 'adm/images',
+			'adm/style/admin.css'	=> 'adm/style',
+			'adm/style/admin.js'	=> 'adm/style',
+			'adm/style/ajax.js'		=> 'adm/style',
+			'adm/style/install_*'	=> 'adm/style',
+			'assets/javascript/*'	=> 'assets/javascript',
+		);
+
+		foreach ($copy_update_files as $source_files => $destination_dir)
+		{
+			// Create directories along the way?
+			$directories = explode('/', $destination_dir);
+
+			chdir($dest_filename_dir . '/install/update/new');
+			foreach ($directories as $dir)
+			{
+				$dir = trim($dir);
+				if ($dir)
+				{
+					if (!file_exists('./' . $dir))
+					{
+						$package->run_command('mkdir ' . $dir);
+					}
+					chdir('./' . $dir);
+				}
+			}
+			$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_files;
+			$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
+			$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
 		}
 
 		// Build index.php file for holding the file structure
