@@ -38,31 +38,31 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 if (isset($_GET['avatar']))
 {
 	require($phpbb_root_path . 'includes/startup.' . $phpEx);
-	require($phpbb_root_path . 'config.' . $phpEx);
+
+	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
+	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
+	$phpbb_class_loader->register();
+
+	$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
+	extract($phpbb_config_php_file->get_all());
 
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	{
 		exit;
 	}
 
-	require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
-
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions.' . $phpEx);
-	require($phpbb_root_path . 'includes/functions_container.' . $phpEx);
 	require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 	// Setup class loader first
-	$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-	$phpbb_class_loader->register();
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
 
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
-
 	// Set up container
-	$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->get_container();
 
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

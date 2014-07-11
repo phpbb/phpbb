@@ -142,17 +142,16 @@ class phpbb_test_case_helpers
 			$test_config = dirname(__FILE__) . '/../test_config.php';
 		}
 
+		$config_php_file = new \phpbb\config_php_file('', '');
+
 		if (file_exists($test_config))
 		{
-			include($test_config);
-
-			if (!function_exists('phpbb_convert_30_dbms_to_31'))
-			{
-				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-			}
+			$config_php_file->set_config_file($test_config);
+			extract($config_php_file->get_all());
+			unset($dbpasswd);
 
 			$config = array_merge($config, array(
-				'dbms'		=> phpbb_convert_30_dbms_to_31($dbms),
+				'dbms'		=> $config_php_file->convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -183,13 +182,8 @@ class phpbb_test_case_helpers
 
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
-			if (!function_exists('phpbb_convert_30_dbms_to_31'))
-			{
-				require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-			}
-
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? phpbb_convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $config_php_file->convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',

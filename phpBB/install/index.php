@@ -102,7 +102,6 @@ $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_ro
 phpbb_require_updated('phpbb/class_loader.' . $phpEx);
 
 phpbb_require_updated('includes/functions.' . $phpEx);
-phpbb_require_updated('includes/functions_container.' . $phpEx);
 
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
@@ -120,7 +119,29 @@ $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/"
 $phpbb_class_loader_ext->register();
 
 // Set up container
-$phpbb_container = phpbb_create_install_container($phpbb_root_path, $phpEx);
+$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+$phpbb_container_builder->set_use_extensions(false);
+$phpbb_container_builder->set_dump_container(false);
+$phpbb_container_builder->set_use_custom_pass(false);
+$phpbb_container_builder->set_inject_config(false);
+$phpbb_container_builder->set_compile_container(false);
+
+$other_config_path = $phpbb_root_path . 'install/update/new/config/';
+$config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path . 'config/';
+$phpbb_container_builder->set_config_path($config_path);
+
+$phpbb_container_builder->set_custom_parameters(array(
+	'core.root_path'			=> $phpbb_root_path,
+	'core.adm_relative_path'	=> $phpbb_adm_relative_path,
+	'core.php_ext'				=> $phpEx,
+	'core.table_prefix'			=> '',
+	'cache.driver.class'		=> 'phpbb\cache\driver\file',
+));
+
+$phpbb_container = $phpbb_container_builder->get_container();
+$phpbb_container->register('dbal.conn.driver')->setSynthetic(true);
+$phpbb_container->compile();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
