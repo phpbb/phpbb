@@ -299,7 +299,7 @@ $lang = array_merge($lang, array(
 		1	=> 'There is %d guest user online',
 		2	=> 'There are %d guest users online',
 	),
-	'GUEST_USERS_TOTAL'			=>  array(
+	'GUEST_USERS_TOTAL'			=> array(
 		1	=> '%d guest',
 		2	=> '%d guests',
 	),
@@ -462,7 +462,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_REASON'				=> '<em>Reason:</em> %1$s.',
 	'NOTIFICATION_REPORT_PM'			=> '<strong>Private Message reported</strong> by %1$s:',
 	'NOTIFICATION_REPORT_POST'			=> '<strong>Post reported</strong> by %1$s:',
-	'NOTIFICATION_REPORT_CLOSED'   		=> '<strong>Report closed</strong> by %1$s for:',
+	'NOTIFICATION_REPORT_CLOSED'		=> '<strong>Report closed</strong> by %1$s for:',
 	'NOTIFICATION_TOPIC'				=> '<strong>New topic</strong> by %1$s:',
 	'NOTIFICATION_TOPIC_APPROVED'		=> '<strong>Topic approved</strong>:',
 	'NOTIFICATION_TOPIC_DISAPPROVED'	=> '<strong>Topic disapproved</strong>:',

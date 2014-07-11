@@ -247,7 +247,7 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_AS'				=> 'Download as',
 	'DOWNLOAD_STORE'			=> 'Download or store file',
 	'DOWNLOAD_STORE_EXPLAIN'	=> 'You may directly download the file or save it in your <samp>store/</samp> folder.',
-	'DOWNLOADS'          		=> 'Downloads',
+	'DOWNLOADS'					=> 'Downloads',
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
@@ -310,7 +310,7 @@ $lang = array_merge($lang, array(
 
 	'TASKS_NOT_READY'			=> 'Not ready tasks:',
 	'TASKS_READY'			=> 'Ready tasks:',
-	'TOTAL_SIZE'      		=> 'Total size',
+	'TOTAL_SIZE'			=> 'Total size',
 
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
