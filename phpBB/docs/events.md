@@ -883,14 +883,14 @@ ucp_pm_viewmessage_avatar_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content right after the avatar when viewing a private message
 
 ucp_pm_viewmessage_avatar_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_pm_viewmessage.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content right before the avatar when viewing a private message
 
 ucp_pm_viewmessage_contact_fields_after
@@ -1104,7 +1104,7 @@ viewtopic_body_avatar_after
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content right after the avatar when viewing topics
 
 viewtopic_body_avatar_before
@@ -1112,7 +1112,7 @@ viewtopic_body_avatar_before
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Since: 3.1.0-RC2
+* Since: 3.1.0-RC3
 * Purpose: Add content right before the avatar when viewing topics
 
 viewtopic_body_contact_fields_after
