@@ -148,7 +148,6 @@ class phpbb_test_case_helpers
 		{
 			$config_php_file->set_config_file($test_config);
 			extract($config_php_file->get_all());
-			unset($dbpasswd);
 
 			$config = array_merge($config, array(
 				'dbms'		=> $config_php_file->convert_30_dbms_to_31($dbms),
