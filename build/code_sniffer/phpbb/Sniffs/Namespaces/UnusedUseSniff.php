@@ -153,19 +153,24 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 				$start_argument = $phpcsFile->findPrevious(array(T_OPEN_PARENTHESIS, T_COMMA), $argument);
 				$argument_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($start_argument + 1), $argument);
-				$argument_class_name_end = $phpcsFile->findNext($find, ($argument_class_name_start + 1), null, true);
 
-				$argument_class_name = $phpcsFile->getTokensAsString($argument_class_name_start, ($argument_class_name_end - $argument_class_name_start - 1));
-
-				if ($argument_class_name === $class_name_full)
+				// Skip the parameter if no type is defined.
+				if ($argument_class_name_start !== false)
 				{
-					$error = 'Either use statement or full name must be used.';
-					$phpcsFile->addError($error, $function_declaration, 'FullName');
-				}
+					$argument_class_name_end = $phpcsFile->findNext($find, ($argument_class_name_start + 1), null, true);
 
-				if ($argument_class_name === $class_name_short)
-				{
-					$ok = true;
+					$argument_class_name = $phpcsFile->getTokensAsString($argument_class_name_start, ($argument_class_name_end - $argument_class_name_start - 1));
+
+					if ($argument_class_name === $class_name_full)
+					{
+						$error = 'Either use statement or full name must be used.';
+						$phpcsFile->addError($error, $function_declaration, 'FullName');
+					}
+
+					if ($argument_class_name === $class_name_short)
+					{
+						$ok = true;
+					}
 				}
 			}
 		}
