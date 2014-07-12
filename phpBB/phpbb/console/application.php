@@ -17,7 +17,7 @@ use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\TaggedContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class application extends \Symfony\Component\Console\Application
 {
@@ -73,14 +73,13 @@ class application extends \Symfony\Component\Console\Application
 	/**
 	* Register a set of commands from the container
 	*
-	* @param TaggedContainerInterface	$container	The container
-	* @param string						$tag		The tag used to register the commands
+	* @param ContainerInterface	$container	The container
 	*/
-	public function register_container_commands(TaggedContainerInterface $container, $tag = 'console.command')
+	public function register_container_commands(ContainerInterface $container)
 	{
-		foreach($container->findTaggedServiceIds($tag) as $id => $void)
+		foreach($container->get('console.command_collection') as $service_command)
 		{
-			$this->add($container->get($id));
+			$this->add($service_command);
 		}
 	}
 
