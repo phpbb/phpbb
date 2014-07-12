@@ -8,7 +8,7 @@
 * @param int Delay in ms until darkenwrapper's click event is triggered
 */
 phpbb.closeDarkenWrapper = function(delay) {
-	phpbbAlertTimer = setTimeout(function() {
+	var phpbbAlertTimer = setTimeout(function() {
 		$('#darkenwrapper').trigger('click');
 	}, delay);
 };
