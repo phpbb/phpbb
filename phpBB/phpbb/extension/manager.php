@@ -177,6 +177,12 @@ class manager
 		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
 
 		$extension = $this->get_extension($name);
+
+		if (!$extension->is_enableable())
+		{
+			return false;
+		}
+
 		$state = $extension->enable_step($old_state);
 
 		$active = ($state === false);

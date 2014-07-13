@@ -20,6 +20,13 @@ namespace phpbb\extension;
 interface extension_interface
 {
 	/**
+	* Indicate whether or not the extension can be enabled.
+	*
+	* @return bool
+	*/
+	public function is_enableable();
+
+	/**
 	* enable_step is executed on enabling an extension until it returns false.
 	*
 	* Calls to this function can be made in subsequent requests, when the

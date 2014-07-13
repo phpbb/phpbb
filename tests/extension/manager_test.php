@@ -13,6 +13,7 @@
 
 require_once dirname(__FILE__) . '/ext/vendor2/bar/ext.php';
 require_once dirname(__FILE__) . '/ext/vendor2/foo/ext.php';
+require_once dirname(__FILE__) . '/ext/vendor3/foo/ext.php';
 require_once dirname(__FILE__) . '/ext/vendor/moo/ext.php';
 
 class phpbb_extension_manager_test extends phpbb_database_test_case
@@ -35,7 +36,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	public function test_all_available()
 	{
 		// barfoo and vendor3/bar should not listed due to missing composer.json. barfoo also has incorrect dir structure.
-		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_available()));
+		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo', 'vendor3/foo'), array_keys($this->extension_manager->all_available()));
 	}
 
 	public function test_all_enabled()
@@ -98,6 +99,18 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
 		$this->assertEquals(4, vendor2\bar\ext::$state);
+	}
+
+	public function test_enable_not_enableable()
+	{
+		vendor3\foo\ext::$enabled = false;
+
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->extension_manager->enable('vendor3/foo');
+		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+		$this->assertEquals(array('vendor/moo', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
+
+		$this->assertSame(false, vendor3\foo\ext::$enabled);
 	}
 
 	public function test_disable()
