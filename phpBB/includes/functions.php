@@ -5030,6 +5030,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
 
+	// A listener can set this variable to `false` when it wants to prevent setting of headers
+	$page_header_set_headers = true;
+
 	/**
 	* Execute code and/or overwrite _common_ template variables after they have been assigned.
 	*
@@ -5040,23 +5043,29 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	*									session item, e.g. forum for
 	*									session_forum_id
 	* @var	int		item_id				Restrict online users to item id
+	* @var	bool	page_header_set_headers	Set to false if phpBB should not
+	*										set HTTP headers (since you have
+	*							 		 	set them elsewhere).
 	*
 	* @since 3.1.0-b3
 	*/
-	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
+	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'page_header_set_headers');
 	extract($phpbb_dispatcher->trigger_event('core.page_header_after', compact($vars)));
 
-	// application/xhtml+xml not used because of IE
-	header('Content-type: text/html; charset=UTF-8');
-
-	header('Cache-Control: private, no-cache="set-cookie"');
-	header('Expires: 0');
-	header('Pragma: no-cache');
-
-	if (!empty($user->data['is_bot']))
+	if ($page_header_set_headers)
 	{
-		// Let reverse proxies know we detected a bot.
-		header('X-PHPBB-IS-BOT: yes');
+		// application/xhtml+xml not used because of IE
+		header('Content-type: text/html; charset=UTF-8');
+
+		header('Cache-Control: private, no-cache="set-cookie"');
+		header('Expires: 0');
+		header('Pragma: no-cache');
+
+		if (!empty($user->data['is_bot']))
+		{
+			// Let reverse proxies know we detected a bot.
+			header('X-PHPBB-IS-BOT: yes');
+		}
 	}
 
 	return;
