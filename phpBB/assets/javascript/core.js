@@ -272,7 +272,7 @@ phpbb.ajaxify = function(options) {
 		 * Handler for AJAX errors
 		 */
 		function errorHandler(jqXHR, textStatus, errorThrown) {
-			if (console && console.log) {
+			if (typeof console !== 'undefined' && console.log) {
 				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
 			}
 			phpbb.clearLoadingTimeout();
