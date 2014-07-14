@@ -107,8 +107,8 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		while ($lang_id = (int) $this->db->sql_fetchfield('lang_id'))
 		{
 			$insert_buffer->insert(array(
-				'field_id'				=> $field_id,
-				'lang_id'				=> $lang_id,
+				'field_id'				=> (int) $field_id,
+				'lang_id'				=> (int) $lang_id,
 				'lang_name'				=> $lang_name,
 				'lang_explain'			=> '',
 				'lang_default_value'	=> '',
@@ -136,8 +136,8 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 			foreach ($this->profilefield_language_data as $language_data)
 			{
 				$insert_buffer->insert(array_merge(array(
-					'field_id'	=> $field_id,
-					'lang_id'	=> $lang_id,
+					'field_id'	=> (int) $field_id,
+					'lang_id'	=> (int) $lang_id,
 				), $language_data));
 			}
 		}
@@ -154,15 +154,15 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		$field_id = $this->get_custom_profile_field_id();
 
 		$sql = 'DELETE FROM ' . PROFILE_FIELDS_TABLE . '
-			WHERE field_id = ' . $field_id;
+			WHERE field_id = ' . (int) $field_id;
 		$this->db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . '
-			WHERE field_id = ' . $field_id;
+			WHERE field_id = ' . (int) $field_id;
 		$this->db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . '
-			WHERE field_id = ' . $field_id;
+			WHERE field_id = ' . (int) $field_id;
 		$this->db->sql_query($sql);
 	}
 
