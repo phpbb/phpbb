@@ -67,6 +67,13 @@ class application extends \Symfony\Component\Console\Application
 			$this->user->lang('CLI_DESCRIPTION_OPTION_SHELL')
 		));
 
+		$this->getDefinition()->addOption(new InputOption(
+			'--safe-mode',
+			null,
+			InputOption::VALUE_NONE,
+			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
+        ));
+
 		return parent::getHelp();
 	}
 
