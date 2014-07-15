@@ -5,6 +5,7 @@ services:
             - @service_container
         tags:
             - { name: service_collection, tag: console.command }
+
     console.command.cache.purge:
         class: phpbb\console\command\cache\purge
         arguments:
