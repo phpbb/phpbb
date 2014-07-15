@@ -616,7 +616,7 @@ class ucp_profile
 								'L_EXPLAIN' => $user->lang($driver_upper . '_EXPLAIN'),
 
 								'DRIVER' => $driver_name,
-								'SELECTED' => $current_driver == $selected_driver,
+								'SELECTED' => (($current_driver == $selected_driver) || (sizeof($avatar_drivers) == 1)) ? true : false,
 								'OUTPUT' => $template->assign_display('avatar'),
 							));
 						}
