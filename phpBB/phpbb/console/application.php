@@ -80,11 +80,11 @@ class application extends \Symfony\Component\Console\Application
 	/**
 	* Register a set of commands from the container
 	*
-	* @param ContainerInterface	$container	The container
+	* @param \phpbb\di\service_collection	$command_collection	The console service collection
 	*/
-	public function register_container_commands(ContainerInterface $container)
+	public function register_container_commands(\phpbb\di\service_collection $command_collection)
 	{
-		foreach ($container->get('console.command_collection') as $service_command)
+		foreach ($command_collection as $service_command)
 		{
 			$this->add($service_command);
 		}

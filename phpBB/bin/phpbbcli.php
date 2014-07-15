@@ -58,5 +58,5 @@ $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
 
 $application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $user);
-$application->register_container_commands($phpbb_container);
+$application->register_container_commands($phpbb_container->get('console.command_collection'));
 $application->run($input);
