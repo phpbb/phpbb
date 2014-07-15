@@ -72,7 +72,7 @@ class application extends \Symfony\Component\Console\Application
 			null,
 			InputOption::VALUE_NONE,
 			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
-        ));
+		));
 
 		return parent::getHelp();
 	}
