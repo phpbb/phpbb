@@ -45,7 +45,7 @@ $phpbb_container_builder->set_dump_container(false);
 
 $input = new ArgvInput();
 
-if ($input->getParameterOption(array('--safe-mode')))
+if ($input->hasParameterOption(array('--safe-mode')))
 {
 	$phpbb_container_builder->set_use_extensions(false);
 	$phpbb_container_builder->set_dump_container(false);
