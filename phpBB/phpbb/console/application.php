@@ -37,9 +37,26 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function __construct($name, $version, \phpbb\user $user)
 	{
-		parent::__construct($name, $version);
-
 		$this->user = $user;
+
+		parent::__construct($name, $version);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	protected function getDefaultInputDefinition()
+	{
+		$input_definition = parent::getDefaultInputDefinition();
+
+		$input_definition->addOption(new InputOption(
+			'safe-mode',
+			null,
+			InputOption::VALUE_NONE,
+			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
+		));
+
+		return $input_definition;
 	}
 
 	/**
@@ -64,13 +81,6 @@ class application extends \Symfony\Component\Console\Application
 			'-s',
 			InputOption::VALUE_NONE,
 			$this->user->lang('CLI_DESCRIPTION_OPTION_SHELL')
-		));
-
-		$this->getDefinition()->addOption(new InputOption(
-			'--safe-mode',
-			null,
-			InputOption::VALUE_NONE,
-			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
 		));
 
 		return parent::getHelp();
