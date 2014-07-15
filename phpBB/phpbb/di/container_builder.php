@@ -175,7 +175,7 @@ class container_builder
 				$this->container->compile();
 			}
 
-			if ($this->dump_container && !defined('DEBUG'))
+			if ($this->dump_container && !defined('DEBUG_CONTAINER'))
 			{
 				$this->dump_container($container_filename);
 			}
