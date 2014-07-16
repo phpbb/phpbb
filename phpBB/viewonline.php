@@ -301,7 +301,7 @@ while ($row = $db->sql_fetchrow($result))
 			{
 				$location = $user->lang['VIEWING_MEMBER_PROFILE'];
 			}
-			elseif (strpos($row['session_page'], 'mode=contactadmin') !== false)
+			else if (strpos($row['session_page'], 'mode=contactadmin') !== false)
 			{
 				$location = $user->lang['VIEWING_CONTACT_ADMIN'];
 				$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
