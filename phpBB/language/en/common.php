@@ -821,6 +821,7 @@ $lang = array_merge($lang, array(
 		1	=> 'Viewed %d time',
 		2	=> 'Viewed %d times',
 	),
+	'VIEWING_CONTACT_ADMIN'		=> 'Viewing contact page',
 	'VIEWING_FAQ'				=> 'Viewing FAQ',
 	'VIEWING_MEMBERS'			=> 'Viewing member details',
 	'VIEWING_ONLINE'			=> 'Viewing who is online',
