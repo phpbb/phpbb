@@ -661,7 +661,7 @@ function phpbb_convert_authentication($mode)
 		'auth_delete'		=> 'f_delete',
 		'auth_pollcreate'	=> 'f_poll',
 		'auth_vote'			=> 'f_vote',
-		'auth_announce'		=> 'f_announce',
+		'auth_announce'		=> array('f_announce', 'f_announce_global'),
 		'auth_sticky'		=> 'f_sticky',
 		'auth_attachments'	=> array('f_attach', 'f_download'),
 		'auth_download'		=> 'f_download',
@@ -990,7 +990,7 @@ function phpbb_convert_authentication($mode)
 		// We make sure that they have at least standard access to the forums they moderate in addition to the moderating permissions
 
 		$mod_post_map = array(
-			'auth_announce'		=> 'f_announce',
+			'auth_announce'		=> array('f_announce', 'f_announce_global'),
 			'auth_sticky'		=> 'f_sticky'
 		);
 
