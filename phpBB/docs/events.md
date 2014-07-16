@@ -278,6 +278,22 @@ index_body_stat_blocks_before
 * Since: 3.1.0-a1
 * Purpose: Add new statistic blocks above the Who Is Online and Board Statistics blocks
 
+mcp_ban_fields_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_ban.html
+    + styles/subsilver2/template/mcp_ban.html
+* Since: 3.1.0-RC3
+* Purpose: Add additional fields to the ban form in MCP
+
+mcp_ban_fields_before
+===
+* Locations:
+    + styles/prosivler/template/mcp_ban.html
+    + styles/subsilver2/template/mcp_ban.html
+* Since: 3.1.0-RC3
+* Purpose: Add additional fields to the ban form in MCP
+
 memberlist_body_username_append
 ===
 * Locations:
