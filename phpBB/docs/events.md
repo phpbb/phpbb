@@ -770,6 +770,24 @@ ucp_pm_viewmessage_custom_fields_before
 * Purpose: Add data before the custom fields on the user profile when viewing
 a private message
 
+ucp_pm_viewmessage_post_buttons_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+    + styles/subsilver2/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-RC3
+* Purpose: Add post button to private messages (next to edit, quote etc), at 
+the end of the list.
+
+ucp_pm_viewmessage_post_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+    + styles/subsilver2/template/ucp_pm_viewmessage.html
+* Since: 3.1.0-RC3
+* Purpose: Add post button to private messages (next to edit, quote etc), at 
+the start of the list.
+
 ucp_pm_viewmessage_print_head_append
 ===
 * Locations:
