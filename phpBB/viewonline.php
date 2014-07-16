@@ -295,8 +295,21 @@ while ($row = $db->sql_fetchrow($result))
 		break;
 
 		case 'memberlist':
-			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
 			$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx");
+
+			if (strpos($row['session_page'], 'mode=viewprofile') !== false)
+			{
+				$location = $user->lang['VIEWING_MEMBER_PROFILE'];
+			}
+			elseif (strpos($row['session_page'], 'mode=contactadmin') !== false)
+			{
+				$location = $user->lang['VIEWING_CONTACT_ADMIN'];
+				$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin');
+			}
+			else
+			{
+				$location = $user->lang['VIEWING_MEMBERS'];
+			}
 		break;
 
 		case 'mcp':
