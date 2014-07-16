@@ -83,6 +83,7 @@
 
 	<ul id="nav-breadcrumbs" class="linklist navlinks" role="menubar">
 		<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
+		<!-- EVENT overall_header_breadcrumbs_before -->
 		<li class="small-icon icon-home breadcrumbs">
 			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA} data-navbar-reference="home">{L_SITE_HOME}</a></span><!-- ENDIF -->
 			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA} data-navbar-reference="index">{L_INDEX}</a></span>
@@ -93,6 +94,7 @@
 			<!-- END navlinks -->
 			<!-- EVENT overall_header_breadcrumb_append -->
 		</li>
+		<!-- EVENT overall_header_breadcrumbs_after -->
 
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
 			<li class="rightside responsive-search" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}" role="menuitem">{L_SEARCH}</a></li>
