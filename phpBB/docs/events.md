@@ -289,7 +289,7 @@ mcp_ban_fields_after
 mcp_ban_fields_before
 ===
 * Locations:
-    + styles/prosivler/template/mcp_ban.html
+    + styles/prosilver/template/mcp_ban.html
     + styles/subsilver2/template/mcp_ban.html
 * Since: 3.1.0-RC3
 * Purpose: Add additional fields to the ban form in MCP
@@ -305,7 +305,7 @@ mcp_ban_unban_after
 mcp_ban_unban_before
 ===
 * Locations:
-    + styles/prosivler/template/mcp_ban.html
+    + styles/prosilver/template/mcp_ban.html
     + styles/subsilver2/template/mcp_ban.html
 * Since: 3.1.0-RC3
 * Purpose: Add additional fields to the unban form in MCP
