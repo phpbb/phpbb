@@ -115,7 +115,7 @@ class ucp_prefs
 						*
 						* @event core.ucp_prefs_personal_update_data
 						* @var	array	data		Submitted display options data
-						* @var	array	sql_ary		Display options data we udpate
+						* @var	array	sql_ary		Display options data we update
 						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
@@ -294,7 +294,7 @@ class ucp_prefs
 						*
 						* @event core.ucp_prefs_view_update_data
 						* @var	array	data		Submitted display options data
-						* @var	array	sql_ary		Display options data we udpate
+						* @var	array	sql_ary		Display options data we update
 						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
@@ -420,7 +420,7 @@ class ucp_prefs
 						*
 						* @event core.ucp_prefs_post_update_data
 						* @var	array	data		Submitted display options data
-						* @var	array	sql_ary		Display options data we udpate
+						* @var	array	sql_ary		Display options data we update
 						* @since 3.1.0-a1
 						*/
 						$vars = array('data', 'sql_ary');
@@ -450,6 +450,24 @@ class ucp_prefs
 				);
 			break;
 		}
+
+		/**
+		* Modify UCP preferences data before the page load
+		*
+		* @event core.ucp_prefs_modify_common
+		* @var	array	data		Array with current/submitted UCP options data
+		* @var	array	error		Errors data
+		* @var	string	mode		UCP prefs operation mode
+		* @var	string	s_hidden_fields		Hidden fields data
+		* @since 3.1.0-RC3
+		*/
+		$vars = array(
+			'data',
+			'error',
+			'mode',
+			's_hidden_fields',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_modify_common', compact($vars)));
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_PREFS_' . strtoupper($mode)],
