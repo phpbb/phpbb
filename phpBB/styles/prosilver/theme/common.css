@@ -303,6 +303,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	background-repeat: no-repeat;
 	background-position: 100% 0;
 	border-radius: 7px;
+	position: relative;
 }
 
 .inner:after {

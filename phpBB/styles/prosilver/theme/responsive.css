@@ -398,6 +398,10 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 
 /* Post
 ----------------------------------------*/
+.postbody {
+	position: inherit;
+}
+
 .postprofile, .postbody, .search .postbody {
 	display: block;
 	width: auto;
@@ -435,6 +439,16 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	height: auto !important;
 	display: block;
 	max-height: 32px;
+}
+
+.has-profile .postbody h3 {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+.has-profile .post-buttons {
+	right: 10px;
+	top: 15px;
 }
 
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 1.5dppx)
