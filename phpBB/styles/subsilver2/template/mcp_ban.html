@@ -80,6 +80,7 @@
 	<td class="row3" colspan="2">{L_UNBAN_EXPLAIN}</td>
 </tr>
 <!-- IF S_BANNED_OPTIONS -->
+	<!-- EVENT mcp_ban_unban_before -->
 	<tr>
 		<td class="row1" valign="top" width="45%"><b>{L_BAN_CELL}{L_COLON}</b></td>
 		<td class="row2"><select name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{BANNED_OPTIONS}</select></td>
@@ -96,6 +97,7 @@
 		<td class="row1" valign="top"><b>{L_BAN_GIVE_REASON}{L_COLON}</b></td>
 		<td class="row2"><textarea style="border: 0; width: 100%" name="unbangivereason" readonly="readonly" rows="5" cols="80">&nbsp;</textarea></td>
 	</tr>
+	<!-- EVENT mcp_ban_unban_after -->
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="{L_SUBMIT}" class="btnmain" />&nbsp; <input type="reset" value="{L_RESET}" class="btnlite" />&nbsp;</td>
 	</tr>
