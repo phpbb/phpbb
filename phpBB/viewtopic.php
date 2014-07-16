@@ -1423,6 +1423,46 @@ $template->assign_vars(array(
 	'S_NUM_POSTS' => sizeof($post_list))
 );
 
+/**
+* Event to modify the post, poster and attachment data before assigning the posts
+*
+* @event core.viewtopic_modify_post_data
+* @var	int		forum_id	Forum ID
+* @var	int		topic_id	Topic ID
+* @var	array	topic_data	Array with topic data
+* @var	array	post_list	Array with post_ids we are going to display
+* @var	array	rowset		Array with post_id => post data
+* @var	array	user_cache	Array with prepared user data
+* @var	int		start		Pagination information
+* @var	int		sort_days	Display posts of previous x days
+* @var	string	sort_key	Key the posts are sorted by
+* @var	string	sort_dir	Direction the posts are sorted by
+* @var	bool	display_notice				Shall we display a notice instead of attachments
+* @var	bool	has_approved_attachments	Does the topic have approved attachments
+* @var	array	attachments					List of attachments post_id => array of attachments
+* @var	array	permanently_banned_users	List of permanently banned users
+* @var	array	can_receive_pm_list			Array with posters that can receive pms
+* @since 3.1.0-RC3
+*/
+$vars = array(
+	'forum_id',
+	'topic_id',
+	'topic_data',
+	'post_list',
+	'rowset',
+	'user_cache',
+	'sort_days',
+	'sort_key',
+	'sort_dir',
+	'start',
+	'permanently_banned_users',
+	'can_receive_pm_list',
+	'display_notice',
+	'has_approved_attachments',
+	'attachments',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_data', compact($vars)));
+
 // Output the posts
 $first_unread = $post_unread = false;
 for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
