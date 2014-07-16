@@ -337,18 +337,15 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	$toggle = false;
 
 	$topic_types = array(
-		'sticky'	=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
-		'announce'	=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
-		'global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
+		'sticky'			=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
+		'announce'			=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
+		'announce_global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
 	);
 
 	$topic_type_array = array();
 
 	foreach ($topic_types as $auth_key => $topic_value)
 	{
-		// We do not have a special post global announcement permission
-		$auth_key = ($auth_key == 'global') ? 'announce' : $auth_key;
-
 		if ($auth->acl_get('f_' . $auth_key, $forum_id))
 		{
 			$toggle = true;
@@ -378,8 +375,8 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 
 		$template->assign_vars(array(
 			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)),
-			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)))
-		);
+			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_gets('f_announce', 'f_announce_global', $forum_id)),
+		));
 	}
 
 	return $toggle;

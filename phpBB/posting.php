@@ -1202,6 +1202,9 @@ if ($submit || $preview || $refresh)
 		switch ($post_data['topic_type'])
 		{
 			case POST_GLOBAL:
+				$auth_option = 'f_announce_global';
+			break;
+
 			case POST_ANNOUNCE:
 				$auth_option = 'f_announce';
 			break;
