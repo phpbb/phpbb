@@ -48,6 +48,7 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
+$user->add_lang('acp/cli');
 
 $application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $user);
 $application->register_container_commands($phpbb_container);
