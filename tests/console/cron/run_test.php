@@ -148,7 +148,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new run($this->cron_manager, $this->lock, $this->user));
+		$application->add(new run($this->user, $this->cron_manager, $this->lock));
 
 		$command = $application->find('cron:run');
 		$this->command_name = $command->getName();

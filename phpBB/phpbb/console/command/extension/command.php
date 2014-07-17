@@ -20,11 +20,11 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	public function __construct(\phpbb\extension\manager $manager, \phpbb\log\log $log)
+	public function __construct(\phpbb\user $user, \phpbb\extension\manager $manager, \phpbb\log\log $log)
 	{
 		$this->manager = $manager;
 		$this->log = $log;
 
-		parent::__construct();
+		parent::__construct($user);
 	}
 }

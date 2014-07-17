@@ -32,19 +32,15 @@ class migrate extends \phpbb\console\command\command
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\user */
-	protected $user;
-
-	function __construct(\phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\user $user)
+	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log)
 	{
 		$this->migrator = $migrator;
 		$this->extension_manager = $extension_manager;
 		$this->config = $config;
 		$this->cache = $cache;
 		$this->log = $log;
-		$this->user = $user;
+		parent::__construct($user);
 		$this->user->add_lang(array('common', 'install', 'migrator'));
-		parent::__construct();
 	}
 
 	protected function configure()
