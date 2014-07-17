@@ -1,4 +1,11 @@
 services:
+    console.command_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: console.command }
+
     console.command.cache.purge:
         class: phpbb\console\command\cache\purge
         arguments:
