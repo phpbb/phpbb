@@ -17,7 +17,6 @@ use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\TaggedContainerInterface;
 
 class application extends \Symfony\Component\Console\Application
 {
@@ -38,9 +37,26 @@ class application extends \Symfony\Component\Console\Application
 	*/
 	public function __construct($name, $version, \phpbb\user $user)
 	{
-		parent::__construct($name, $version);
-
 		$this->user = $user;
+
+		parent::__construct($name, $version);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	protected function getDefaultInputDefinition()
+	{
+		$input_definition = parent::getDefaultInputDefinition();
+
+		$input_definition->addOption(new InputOption(
+			'safe-mode',
+			null,
+			InputOption::VALUE_NONE,
+			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
+		));
+
+		return $input_definition;
 	}
 
 	/**
@@ -73,14 +89,13 @@ class application extends \Symfony\Component\Console\Application
 	/**
 	* Register a set of commands from the container
 	*
-	* @param TaggedContainerInterface	$container	The container
-	* @param string						$tag		The tag used to register the commands
+	* @param \phpbb\di\service_collection	$command_collection	The console service collection
 	*/
-	public function register_container_commands(TaggedContainerInterface $container, $tag = 'console.command')
+	public function register_container_commands(\phpbb\di\service_collection $command_collection)
 	{
-		foreach($container->findTaggedServiceIds($tag) as $id => $void)
+		foreach ($command_collection as $service_command)
 		{
-			$this->add($container->get($id));
+			$this->add($service_command);
 		}
 	}
 

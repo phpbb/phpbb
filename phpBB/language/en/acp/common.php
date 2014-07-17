@@ -230,6 +230,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'	=> 'Name of the task to be run',
 
 	'CLI_DESCRIPTION_OPTION_SHELL'			=> 'Launch the shell.',
+	'CLI_DESCRIPTION_OPTION_SAFE_MODE'		=> 'Run in Safe Mode (without extensions).',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
