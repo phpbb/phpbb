@@ -502,6 +502,12 @@ function user_delete($mode, $user_id, $post_username = false)
 		WHERE post_edit_user = ' . $user_id;
 	$db->sql_query($sql);
 
+	// Change user_id to anonymous for pms edited by this user
+	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+		SET message_edit_user = ' . ANONYMOUS . '
+		WHERE message_edit_user = ' . $user_id;
+	$db->sql_query($sql);
+
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
 		WHERE reportee_id = ' . $user_id;
