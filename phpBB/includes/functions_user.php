@@ -596,6 +596,18 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		WHERE ' . $db->sql_in_set('message_edit_user', $user_ids);
 	$db->sql_query($sql);
 
+	// Change user_id to anonymous for posts deleted by this user
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_delete_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('post_delete_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for topics deleted by this user
+	$sql = 'UPDATE ' . TOPICS_TABLE . '
+		SET topic_delete_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('topic_delete_user', $user_ids);
+	$db->sql_query($sql);
+
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
 		WHERE ' . $db->sql_in_set('reportee_id', $user_ids);
