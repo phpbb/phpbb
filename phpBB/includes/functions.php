@@ -5000,6 +5000,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
+		'T_STYLES_PATH'			=> "{$web_path}styles",
 		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
@@ -5019,6 +5020,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
 		'T_TEMPLATE_NAME'		=> $user->style['style_path'],
 		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
+		'T_LANG_NAME'			=> $user->lang_name,
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
 		'T_AVATAR'				=> $config['avatar_path'],
