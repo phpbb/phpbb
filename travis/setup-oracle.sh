@@ -118,17 +118,28 @@ END
 free_restore
 
 # build php module
-git clone https://github.com/DeepDiver1975/oracle_instant_client_for_ubuntu_64bit.git instantclient
-cd instantclient
-sudo bash -c 'printf "\n" | python system_setup.py'
+#git clone https://github.com/DeepDiver1975/oracle_instant_client_for_ubuntu_64bit.git instantclient
+#cd instantclient
+#sudo bash -c 'printf "\n" | python system_setup.py'
 
-sudo mkdir -p /usr/lib/oracle/11.2/client64/rdbms/
-sudo ln -s /usr/include/oracle/11.2/client64/ /usr/lib/oracle/11.2/client64/rdbms/public
+#sudo mkdir -p /usr/lib/oracle/11.2/client64/rdbms/
+#sudo ln -s /usr/include/oracle/11.2/client64/ /usr/lib/oracle/11.2/client64/rdbms/public
 
-sudo apt-get install -qq --force-yes libaio1
-printf "/usr/lib/oracle/11.2/client64\n" | pecl install oci8
+#sudo apt-get install -qq --force-yes libaio1
+#printf "/usr/lib/oracle/11.2/client64\n" | pecl install oci8
 
-cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+#cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+git clone https://github.com/php/php-src.git
+cd php-src
+git checkout PHP-5.4
+cd ext
+cd oci8
+phpize && ./configure && make && make install
+cd ..
+cd pdo_oci
+phpize && ./configure && make && make install
+cd ..
 
 # add travis user to oracle user group - necessary for execution of sqlplus
 sudo adduser travis dba
