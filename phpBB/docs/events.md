@@ -64,6 +64,12 @@ acp_overall_header_head_append
 * Since: 3.1.0-a1
 * Purpose: Add assets within the `<head>` tags in the ACP
 
+acp_overall_header_stylesheets_after
+===
+* Location: adm/style/overall_header.html
+* Since: 3.1.0-RC3
+* Purpose: Add assets after stylesheets within the `<head>` tags in the ACP
+
 acp_posting_buttons_after
 ===
 * Locations:
@@ -95,6 +101,13 @@ acp_simple_header_head_append
 * Location: adm/style/simple_header.html
 * Since: 3.1.0-a1
 * Purpose: Add assets within the `<head>` tags in the simple header of the ACP
+
+acp_simple_header_stylesheets_after
+===
+* Location: adm/style/simple_header.html
+* Since: 3.1.0-RC3
+* Purpose: Add assets after stylesheets within the `<head>` tags in the simple header
+of the ACP
 
 acp_users_overview_options_append
 ===
@@ -576,6 +589,14 @@ overall_header_page_body_before
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-header, but before the page-body
 
+overall_header_stylesheets_after
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.0-RC3
+* Purpose: Add asset calls after stylesheets within the `</head>` tag
+
 posting_editor_buttons_after
 ===
 * Locations:
@@ -733,6 +754,14 @@ simple_header_head_append
     + styles/subsilver2/template/simple_header.html
 * Since: 3.1.0-b4
 * Purpose: Add asset calls directly before the `</head>` tag
+
+simple_header_stylesheets_after
+===
+* Locations:
+    + styles/prosilver/template/simple_header.html
+    + styles/subsilver2/template/simple_header.html
+* Since: 3.1.0-RC3
+* Purpose: Add asset calls after stylesheets within the `</head>` tag
 
 topiclist_row_prepend
 ===
