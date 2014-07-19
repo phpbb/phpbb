@@ -75,20 +75,20 @@ class type_date extends type_base
 		$always_now = request_var('always_now', -1);
 		if ($always_now == -1)
 		{
-			$s_checked = ($field_data['field_default_value'] == 'now') ? true : false;
+			$s_checked = $field_data['field_default_value'] == 'now';
 		}
 		else
 		{
-			$s_checked = ($always_now) ? true : false;
+			$s_checked = $always_now;
 		}
 		$always_year = request_var('always_year', -1);
 		if ($always_year == -1)
 		{
-			$s_year = ($field_data['field_minlen'] == 10) ? true : false;
+			$s_year = $field_data['field_minlen'] == 10;
 		}
 		else
 		{
-			$s_year = ($always_year) ? true : false;
+			$s_year = $always_year;
 		}
 
 		$options = array(
@@ -208,7 +208,17 @@ class type_date extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
-		$field_value = ($field_value ? $field_value : ($field_data['field_default_value'] == 'now' ?  date('Y-m-d') : $field_data['field_novalue']));
+		if (!$field_value)
+		{
+			if ($field_data['field_default_value'] == 'now')
+			{
+				$field_value = date('Y-m-d');
+			}
+			else
+			{
+				$field_value = $field_data['field_novalue'];
+			}
+		}
 
 		$date = explode('-', $field_value);
 		$day = (isset($date[2])) ? (int) $date[2] : 0;
