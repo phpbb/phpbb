@@ -731,7 +731,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 						'title_match'	=> array('BOOL', 0),
 					),
 					'KEYS'	=> array(
-						'unq_mtch'	=> array('UNIQUE', array('word_id', 'post_id', 'title_match')),
+						'un_mtch'	=> array('UNIQUE', array('word_id', 'post_id', 'title_match')),
 						'word_id'	=> array('INDEX', 'word_id'),
 						'post_id'	=> array('INDEX', 'post_id'),
 					),

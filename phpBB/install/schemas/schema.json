@@ -2397,7 +2397,7 @@
             ]
         },
         "KEYS": {
-            "unq_mtch": [
+            "un_mtch": [
                 "UNIQUE",
                 [
                     "word_id",
