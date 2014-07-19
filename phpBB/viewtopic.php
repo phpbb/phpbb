@@ -1799,7 +1799,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @since 3.1.0-a1
 	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	* @change 3.1.0-b3 Added topic_data array, total_posts
-	* @change 3.1.0-rc3 Added poster_id
+	* @change 3.1.0-RC3 Added poster_id
 	*/
 	$vars = array(
 		'start',
