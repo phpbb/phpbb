@@ -1789,6 +1789,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	int		current_row_number	Number of the post on this page
 	* @var	int		end					Number of posts on this page
 	* @var	int		total_posts			Total posts count
+	* @var	int		poster_id			Post author id
 	* @var	array	row					Array with original post and user data
 	* @var	array	cp_row				Custom profile field data of the poster
 	* @var	array	attachments			List of attachments
@@ -1798,12 +1799,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @since 3.1.0-a1
 	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	* @change 3.1.0-b3 Added topic_data array, total_posts
+	* @change 3.1.0-rc3 Added poster_id
 	*/
 	$vars = array(
 		'start',
 		'current_row_number',
 		'end',
 		'total_posts',
+		'poster_id',
 		'row',
 		'cp_row',
 		'attachments',
