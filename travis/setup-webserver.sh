@@ -57,6 +57,12 @@ else
 		pm = static
 		pm.max_children = 2
 
+		env[HOSTNAME] = \$HOSTNAME
+		env[ORACLE_HOME] = \$ORACLE_HOME
+		env[LD_LIBRARY_PATH] = \$LD_LIBRARY_PATH
+		env[NLS_LANG] = \$NLS_LANG
+		env[TNS_ADMIN] = \$TNS_ADMIN
+
 		php_admin_value[memory_limit] = 128M
 	" > $PHP_FPM_CONF
 
