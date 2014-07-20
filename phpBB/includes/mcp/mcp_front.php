@@ -178,6 +178,18 @@ function mcp_front_view($id, $mode, $action)
 
 					'ORDER_BY'	=> 'p.post_time DESC',
 				);
+
+				/**
+				* Alter sql query to get latest reported posts
+				*
+				* @event core.mcp_front_reports_listing_query_before
+				* @var	int		sql_ary						Associative array with the query to be executed
+				* @var	array	forum_list					List of forums that contain the posts
+				* @since 3.1.0-RC3
+				*/
+				$vars = array('sql_ary', 'forum_list');
+				extract($phpbb_dispatcher->trigger_event('core.mcp_front_reports_listing_query_before', compact($vars)));
+
 				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query_limit($sql, 5);
 
