@@ -1134,7 +1134,7 @@ function display_user_activity(&$userdata)
 			$db->sql_freeresult($result);
 		}
 	}
-	
+
 	/**
 	* Alter list of forums and topics to display as active
 	*
