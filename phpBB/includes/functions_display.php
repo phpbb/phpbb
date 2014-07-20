@@ -1063,7 +1063,8 @@ function display_reasons($reason_id = 0)
 function display_user_activity(&$userdata)
 {
 	global $auth, $template, $db, $user;
-	global $phpbb_root_path, $phpEx, $phpbb_container;
+	global $phpbb_root_path, $phpEx;
+	global $phpbb_container, $phpbb_dispatcher;
 
 	// Do not display user activity for users having more than 5000 posts...
 	if ($userdata['user_posts'] > 5000)
