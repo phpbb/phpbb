@@ -623,9 +623,7 @@ class content_visibility
 	/**
 	* Remove topic from forum statistics
 	*
-	* @param $topic_id		int		The topic to act on
-	* @param $forum_id		int		Forum where the topic is found
-	* @param $topic_row		array	Contains information from the topic, may be empty at call time
+	* @param $data			array	Post and topic data
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return null
 	*/
