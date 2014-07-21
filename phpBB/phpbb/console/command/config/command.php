@@ -17,10 +17,10 @@ abstract class command extends \phpbb\console\command\command
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	function __construct(\phpbb\config\config $config)
+	function __construct(\phpbb\user $user, \phpbb\config\config $config)
 	{
 		$this->config = $config;
 
-		parent::__construct();
+		parent::__construct($user);
 	}
 }

@@ -15,4 +15,17 @@ namespace phpbb\console\command;
 
 abstract class command extends \Symfony\Component\Console\Command\Command
 {
+	/** @var \phpbb\user */
+	protected $user;
+
+	/**
+	* Constructor
+	*
+	* @param \phpbb\user $user User instance (mostly for translation)
+	*/
+	public function __construct(\phpbb\user $user)
+	{
+		$this->user = $user;
+		parent::__construct();
+	}
 }
