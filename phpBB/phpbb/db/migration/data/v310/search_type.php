@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v310;
 
-class namespaces extends \phpbb\db\migration\migration
+class search_type extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -26,8 +26,8 @@ class namespaces extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('if', array(
-				(preg_match('#^phpbb_search_#', $this->config['search_type'])),
-				array('config.update', array('search_type', str_replace('phpbb_search_', '\\phpbb\\search\\', $this->config['search_type']))),
+				(is_file($this->phpbb_root_path . 'phpbb/search/' . $this->config['search_type'] . $this->php_ext)),
+				array('config.update', array('search_type', '\\phpbb\\search\\' . $this->config['search_type'])),
 			)),
 		);
 	}
