@@ -20,11 +20,11 @@ class recalculate_email_hash extends \phpbb\console\command\command
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	function __construct(\phpbb\db\driver\driver_interface $db)
+	function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->db = $db;
 
-		parent::__construct();
+		parent::__construct($user);
 	}
 
 	protected function configure()
