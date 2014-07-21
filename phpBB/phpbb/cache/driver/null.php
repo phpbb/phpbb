@@ -28,6 +28,14 @@ class null extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
+	function caching_enabled()
+	{
+		return false;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	function load()
 	{
 		return true;
