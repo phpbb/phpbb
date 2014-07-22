@@ -163,9 +163,9 @@ class user extends \phpbb\session
 		* 					that are absolutely needed globally using this
 		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
-		* @since 3.1.0-a1
 		* @var	array	config				Array with config data
-		* @since 3.1.0-RC3
+		* @since 3.1.0-a1
+		* @change 3.1.0-RC3 Added config
 		*/
 		$vars = array(
 			'user_data',
