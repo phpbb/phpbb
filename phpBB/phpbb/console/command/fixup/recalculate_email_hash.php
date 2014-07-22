@@ -31,7 +31,7 @@ class recalculate_email_hash extends \phpbb\console\command\command
 	{
 		$this
 			->setName('fixup:recalculate-email-hash')
-			->setDescription('Recalculates the user_email_hash column of the users table.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_RECALCULATE_EMAIL_HASH'))
 		;
 	}
 

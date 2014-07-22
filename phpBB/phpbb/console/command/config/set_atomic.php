@@ -26,7 +26,7 @@ class set_atomic extends command
 	{
 		$this
 			->setName('config:set-atomic')
-			->setDescription("Sets a configuration option's value only if the old matches the current value.")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_SET_ATOMIC_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

@@ -22,7 +22,7 @@ class disable extends command
 	{
 		$this
 			->setName('extension:disable')
-			->setDescription('Disables the specified extension.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_DISABLE_EXTENSION'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,

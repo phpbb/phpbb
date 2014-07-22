@@ -21,7 +21,7 @@ class show extends command
 	{
 		$this
 			->setName('extension:show')
-			->setDescription('Lists all extensions in the database and on the filesystem.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_LIST_EXTENSIONS'))
 		;
 	}
 

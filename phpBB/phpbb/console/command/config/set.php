@@ -26,7 +26,7 @@ class set extends command
 	{
 		$this
 			->setName('config:set')
-			->setDescription("Sets a configuration option's value")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_SET_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

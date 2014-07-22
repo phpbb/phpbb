@@ -26,7 +26,7 @@ class get extends command
 	{
 		$this
 			->setName('config:get')
-			->setDescription("Gets a configuration option's value")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_GET_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

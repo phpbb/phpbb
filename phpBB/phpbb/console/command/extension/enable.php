@@ -22,7 +22,7 @@ class enable extends command
 	{
 		$this
 			->setName('extension:enable')
-			->setDescription('Enables the specified extension.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_ENABLE_EXTENSION'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,

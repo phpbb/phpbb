@@ -26,7 +26,7 @@ class increment extends command
 	{
 		$this
 			->setName('config:increment')
-			->setDescription("Increments a configuration option's value")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_INCREMENT_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

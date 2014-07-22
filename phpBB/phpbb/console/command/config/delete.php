@@ -25,7 +25,7 @@ class delete extends command
 	{
 		$this
 			->setName('config:delete')
-			->setDescription('Deletes a configuration option')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_DELETE_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

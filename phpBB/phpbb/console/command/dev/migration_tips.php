@@ -30,7 +30,7 @@ class migration_tips extends \phpbb\console\command\command
 	{
 		$this
 			->setName('dev:migration-tips')
-			->setDescription('Finds migrations that are not depended on.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_FIND_MIGRATIONS'))
 		;
 	}
 
