@@ -18,20 +18,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class recreate extends \phpbb\console\command\command
 {
-	/** @var \phpbb\user */
-	protected $user;
-
-	/**
-	* Constructor
-	*
-	* @param \phpbb\user $user The user object (used to get language information)
-	*/
-	public function __construct(\phpbb\user $user)
-	{
-		$this->user = $user;
-		parent::__construct();
-	}
-
 	/**
 	* Sets the command name and description
 	*

@@ -72,6 +72,10 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_SET_ATOMIC_CONFIG'			=> 'Sets a configuration option’s value only if the old matches the current value',
 	'CLI_DESCRIPTION_SET_CONFIG'				=> 'Sets a configuration option’s value',
 
+	'CLI_DESCRIPTION_THUMBNAIL_DELETE'		=> 'Delete all existing thumbnails.',
+	'CLI_DESCRIPTION_THUMBNAIL_GENERATE'	=> 'Generate all missing thumbnails.',
+	'CLI_DESCRIPTION_THUMBNAIL_RECREATE'	=> 'Recreate all thumbnails.',
+
 	'CLI_EXTENSION_DISABLE_FAILURE'		=> 'Could not disable extension %s',
 	'CLI_EXTENSION_DISABLE_SUCCESS'		=> 'Successfully disabled extension %s',
 	'CLI_EXTENSION_ENABLE_FAILURE'		=> 'Could not enable extension %s',
@@ -80,13 +84,16 @@ $lang = array_merge($lang, array(
 	'CLI_EXTENSION_PURGE_FAILURE'		=> 'Could not purge extension %s',
 	'CLI_EXTENSION_PURGE_SUCCESS'		=> 'Successfully purged extension %s',
 	'CLI_EXTENSION_NOT_FOUND'			=> 'No extensions were found.',
-	'CLI_EXTENSIONS_AVAILABLE'			=> 'Available',
-	'CLI_EXTENSIONS_DISABLED'			=> 'Disabled',
-	'CLI_EXTENSIONS_ENABLED'			=> 'Enabled',
 
 	'CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'	=> 'Successfully recalculated all email hashes.',
 
 	'CLI_REPARSER_REPARSE_REPARSING'		=> 'Reparsing %1$s (range %2$d..%3$d)',
 	'CLI_REPARSER_REPARSE_REPARSING_START'	=> 'Reparsing %s...',
 	'CLI_REPARSER_REPARSE_SUCCESS'			=> 'Reparsing ended with success',
+	
+	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
+	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.
+	'THUMBNAIL_DELETED'		=> '%1$s (%2$s) deleted.',
+	'THUMBNAIL_SKIPPED'		=> '%1$s (%2$s) skipped.',
+	'THUMBNAIL_GENERATED'	=> '%1$s (%2$s) generated.',
 ));
