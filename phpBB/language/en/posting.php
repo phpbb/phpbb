@@ -60,7 +60,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_O_HELP'				=> 'Ordered list: e.g. [list=1][*]First point[/list] or [list=a][*]Point a[/list]',
 	'BBCODE_P_HELP'				=> 'Insert image: [img]http://image_url[/img]',
 	'BBCODE_Q_HELP'				=> 'Quote text: [quote]text[/quote]',
-	'BBCODE_S_HELP'				=> 'Font colour: [color=red]text[/color]  Tip: you can also use color=#FF0000',
+	'BBCODE_S_HELP'				=> 'Font colour: [color=red]text[/color] or [color=#FF0000]text[/color]',
 	'BBCODE_U_HELP'				=> 'Underline text: [u]text[/u]',
 	'BBCODE_W_HELP'				=> 'Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]',
 	'BBCODE_Y_HELP'				=> 'List: Add list element',
