@@ -54,7 +54,6 @@ class tidy_search extends \phpbb\cron\task\base
 	*/
 	public function run()
 	{
-		// Select the search method
 		$search_type = $this->config['search_type'];
 
 		// We do some additional checks in the module to ensure it can actually be utilised
@@ -78,10 +77,7 @@ class tidy_search extends \phpbb\cron\task\base
 	*/
 	public function is_runnable()
 	{
-		// Select the search method
-		$search_type = $this->config['search_type'];
-
-		return class_exists($search_type);
+		return class_exists($this->config['search_type']);
 	}
 
 	/**
