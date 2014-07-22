@@ -447,16 +447,12 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 }
 
 .has-profile .post-buttons {
-	right: 10px;
+	right: 20px;
 	top: 15px;
 }
 
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 1.5dppx)
-{
-	/* Scale online image for HD displays */
-	.online {
-		background-size: 40px;
-	}
+.online {
+	background-size: 40px;
 }
 
 /* Misc stuff

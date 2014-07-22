@@ -1095,6 +1095,6 @@ li.breadcrumbs span:first-child > a {
 	}
 
 	.rtl .has-profile .post-buttons {
-		left: 10px;
+		left: 20px;
 	}
 }
