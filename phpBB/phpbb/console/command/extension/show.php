@@ -32,7 +32,7 @@ class show extends command
 
 		if (empty($all))
 		{
-			$output->writeln('<comment>No extensions were found.</comment>');
+			$output->writeln('<comment>' . $this->user->lang('CLI_EXTENSION_NOT_FOUND') . '</comment>');
 			return 3;
 		}
 

@@ -70,6 +70,6 @@ class recalculate_email_hash extends \phpbb\console\command\command
 		}
 		$this->db->sql_freeresult($result);
 
-		$output->writeln('<info>Successfully recalculated all email hashes.</info>');
+		$output->writeln('<info>' . $this->user->lang('CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS') . '</info>');
 	}
 }
