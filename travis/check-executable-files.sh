@@ -26,7 +26,7 @@ then
 	files_skipped="-name composer.phar"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/phpbbcli.php"
+	executable_files="-path ${path}bin/*"
 
 	incorect_files=$( 								\
 		find ${path}								\
