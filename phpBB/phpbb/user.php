@@ -164,8 +164,6 @@ class user extends \phpbb\session
 		* 					event. Use local events otherwise.
 		* @var	mixed	style_id			Style we are going to display
 		* @since 3.1.0-a1
-		* @var	array	config				Array with config data
-		* @since 3.1.0-RC3
 		*/
 		$vars = array(
 			'user_data',
@@ -175,7 +173,6 @@ class user extends \phpbb\session
 			'lang_set',
 			'lang_set_ext',
 			'style_id',
-			'config',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.user_setup', compact($vars)));
 
