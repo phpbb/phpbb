@@ -56,8 +56,8 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		)));
 
 		$this->application = new Application();
-		$this->application->add(new generate($this->db, $this->user, $this->cache, $this->phpbb_root_path, $this->phpEx));
-		$this->application->add(new delete($this->db, $this->user, $this->phpbb_root_path));
+		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->phpbb_root_path, $this->phpEx));
+		$this->application->add(new delete($this->user, $this->db, $this->phpbb_root_path));
 		$this->application->add(new recreate($this->user));
 	}
 

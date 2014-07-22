@@ -17,13 +17,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class generate extends \phpbb\console\command\command
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/**
+	* @var \phpbb\db\driver\driver_interface
+	*/
 	protected $db;
 
-	/** @var \phpbb\user */
-	protected $user;
-
-	/** @var \phpbb\cache\service */
+	/**
+	* @var \phpbb\cache\service
+	*/
 	protected $cache;
 
 	/**
@@ -42,20 +43,20 @@ class generate extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\user $user The user object (used to get language information)
+	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\cache\service $cache The cache service
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
-		$this->user = $user;
 		$this->cache = $cache;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		parent::__construct();
+
+		parent::__construct($user);
 	}
 
 	/**

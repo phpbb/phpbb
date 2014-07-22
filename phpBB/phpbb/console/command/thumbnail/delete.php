@@ -13,16 +13,14 @@
 namespace phpbb\console\command\thumbnail;
 
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class delete extends \phpbb\console\command\command
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/**
+	* @var \phpbb\db\driver\driver_interface
+	*/
 	protected $db;
-
-	/** @var \phpbb\user */
-	protected $user;
 
 	/**
 	* phpBB root path
@@ -33,16 +31,16 @@ class delete extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
-	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\user $user The user object (used to get language information)
+	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param string $phpbb_root_path Root path
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path)
 	{
 		$this->db = $db;
-		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
-		parent::__construct();
+
+		parent::__construct($user);
 	}
 
 	/**
