@@ -33,18 +33,11 @@ hr {
 	box-shadow: 0 0 10px #0075B0;
 }
 
-#search-box .inputbox:hover,
-#search-box .inputbox:focus,
-#search-box .button:hover {
+.search-box .inputbox,
+.search-box .inputbox:hover,
+.search-box .inputbox:focus,
+.search-box .button:hover {
 	border-color: #C7C3BF;
-}
-
-.search-box .inputbox {
-	border-color: #C7C3BF;
-}
-
-.search-box button.search-icon:before {
-	background-image: url("./images/icon_textbox_search.gif");
 }
 
 /* Round cornered boxes and backgrounds

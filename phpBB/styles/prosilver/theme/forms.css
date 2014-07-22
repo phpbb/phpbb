@@ -380,14 +380,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	font-size: 0;
 	height: 24px;
 	margin: 0;
-	padding: 3px;
-	position: relative;
-}
-
-.search-box button.search-icon:before {
-	margin: 0 3px;
-	height: 14px;
-	width: 16px;
+	padding: 3px 5px;
 }
 
 .search-box a.button {
