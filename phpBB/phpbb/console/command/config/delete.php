@@ -57,7 +57,7 @@ class delete extends command
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CLI_CONFIG_NOT_EXISTS', $key) . '</error>'');
+			$output->writeln('<error>' . $this->user->lang('CLI_CONFIG_NOT_EXISTS', $key) . '</error>');
 		}
 	}
 }
