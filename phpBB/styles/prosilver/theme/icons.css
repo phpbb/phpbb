@@ -1,11 +1,8 @@
 /* Icons Styles
 ---------------------------------------- */
-.icons:before,
-.icons:after {
-    background-image: url("./images/icons.png");
-}
+.icons:before, .icons:after { background-image: url("./images/icons.png"); }
 
-.icons:before {
+.icons:before, .icons-right:after {
     line-height: 1;
     vertical-align: text-bottom;
     background-repeat: no-repeat;
@@ -96,8 +93,10 @@
 .icons-tools:hover:before        { background-position: -216px -48px; }
 .icons-lock:hover:before         { background-position: -234px -48px; }
 .icons-close:hover:before        { background-position: -252px -48px; }
-.icons-right:before              { background-position: -270px -48px; }
+.icons-right:after               { background-position: -270px -48px; }
 .icons-jumpto:hover:before       { background-position: -288px -48px; }
 .icons-jump:hover:before         { background-position: -306px -48px; }
 .icons-prev:hover:before         { background-position: -324px -48px; }
 .icons-carret:hover:after        { background-position: -344px -47px; }
+
+.icons-right:before              { background-image: none; }

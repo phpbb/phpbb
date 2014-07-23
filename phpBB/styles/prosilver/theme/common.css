@@ -779,6 +779,10 @@ table.info tbody th {
 	text-align: right;
 }
 
+.right-box:hover:after {
+	right: -3px;
+}
+
 dl.details {
 	/*font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;*/
 	font-size: 1.1em;

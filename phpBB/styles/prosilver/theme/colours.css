@@ -261,15 +261,8 @@ a:hover	{ color: #D31141; }
 	background-color: transparent;
 }
 
-a.arrow-up:hover {
-	background-color: transparent;
-}
-
-.left-box:hover {
-	color: #368AD2;
-}
-
-a.arrow-right:hover {
+.left-box:hover, .right-box:hover {
+	text-decoration: none;
 	color: #368AD2;
 }
 
