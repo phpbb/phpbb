@@ -1,0 +1,106 @@
+/* Icons Styles
+---------------------------------------- */
+.icons:before,
+.icons:after {
+    background-image: url("./images/icons.png");
+}
+
+.icons:before {
+    line-height: 1;
+    vertical-align: text-bottom;
+    background-repeat: no-repeat;
+    content: '';
+    display: inline-block;
+    height: 16px;
+    padding: 0 3px;
+    position: relative;
+    top: 1px;
+    width: 14px;
+}
+
+.icons-admin:before              { background-position: 0 0; }
+.icons-home:before               { background-position: -18px 0; }
+.icons-notifications:before      { background-position: -36px 0; }
+.icons-login:before              { background-position: -54px 0; }
+.icons-ucp:before                { background-position: -72px 0; }
+.icons-faqs:before               { background-position: -90px 0; }
+.icons-subscribe:before          { background-position: -108px 0; }
+.icons-bookmark:before           { background-position: -126px 0; }
+.icons-send:before               { background-position: -144px 0; }
+.icons-members:before            { background-position: -162px 0; }
+.icons-recycle:before            { background-position: -180px 0; }
+.icons-poll:before               { background-position: -198px 0; }
+.icons-attach:before             { background-position: -216px 0; }
+.icons-subforum:before           { background-position: -234px 0; }
+.icons-unapproved:before         { background-position: -252px 0; }
+.icons-up:before                 { background-position: -270px 0; }
+.icons-search:before             { background-position: -288px 0; }
+.icons-gear:before               { background-position: -306px 0; }
+.icons-next:before               { background-position: -324px 0; }
+.icons-mod:before                { background-position: -342px 0; }
+
+.icons-mcp:before                { background-position: 0 -16px; }
+.icons-download:before           { background-position: -18px -16px; }
+.icons-message:before            { background-position: -36px -16px; }
+.icons-login:hover:before        { background-position: -54px -16px; }
+.icons-user:before               { background-position: -72px -16px; }
+.icons-register:before           { background-position: -90px -16px; }
+.icons-unsubscribe:before        { background-position: -108px -16px; }
+.icons-bump:before               { background-position: -126px -16px; }
+.icons-print:before              { background-position: -144px -16px; }
+.icons-team:before               { background-position: -162px -16px; }
+.icons-trashcan:before           { background-position: -180px -16px; }
+.icons-pages:before              { background-position: -198px -16px; }
+.icons-top:before                { background-position: -216px -16px; }
+.icons-subforum-new:before       { background-position: -234px -16px; }
+.icons-reported:before           { background-position: -252px -16px; }
+.icons-down:before               { background-position: -270px -16px; }
+.icons-search:hover:before       { background-position: -288px -16px; }
+.icons-gear:hover:before         { background-position: -306px -16px; }
+.icons-next:hover:before         { background-position: -324px -16px; }
+.icons-mod:hover:before          { background-position: -342px -16px; }
+
+.icons-post-target:before        { background-position: 0 -32px; }
+.icons-topic-latest:before       { background-position: -18px -32px; }
+.icons-info:before               { background-position: -36px -32px; }
+.icons-report:before             { background-position: -54px -32px; }
+.icons-quote:before              { background-position: -72px -32px; }
+.icons-edit:before               { background-position: -90px -32px; }
+.icons-delete:before             { background-position: -108px -32px; }
+.icons-postmenu:before           { background-position: -126px -32px; }
+.icons-warn:before               { background-position: -144px -32px; }
+.icons-new-post:before           { background-position: -162px -32px; }
+.icons-reply:before              { background-position: -180px -32px; }
+.icons-forward:before            { background-position: -198px -32px; }
+.icons-tools:before              { background-position: -216px -32px; }
+.icons-lock:before               { background-position: -234px -32px; }
+.icons-close:before              { background-position: -252px -32px; }
+.icons-left:before               { background-position: -270px -32px; }
+.icons-jumpto:before             { background-position: -288px -32px; }
+.icons-jump:before               { background-position: -306px -32px; }
+.icons-prev:before               { background-position: -324px -32px; }
+.icons-carret:after              { background-position: -344px -31px; }
+
+.icons-post-target-new:before    { background-position: 0 -48px; }
+.icons-topic-newest:before       { background-position: -18px -48px; }
+.icons-info:hover:before         { background-position: -36px -48px; }
+.icons-report:hover:before       { background-position: -54px -48px; }
+.icons-quote:hover:before        { background-position: -72px -48px; }
+.icons-edit:hover:before         { background-position: -90px -48px; }
+.icons-delete:hover:before       { background-position: -108px -48px; }
+.icons-postmenu:hover:before     { background-position: -126px -48px; }
+.icons-warn:hover:before         { background-position: -144px -48px; }
+.icons-new-post:hover:before     { background-position: -162px -48px; }
+.icons-reply:hover:before        { background-position: -180px -48px; }
+.icons-forward:hover:before      { background-position: -198px -48px; }
+.icons-tools:hover:before        { background-position: -216px -48px; }
+.icons-lock:hover:before         { background-position: -234px -48px; }
+.icons-close:hover:before        { background-position: -252px -48px; }
+.icons-right:before              { background-position: -270px -48px; }
+.icons-jumpto:hover:before       { background-position: -288px -48px; }
+.icons-jump:hover:before         { background-position: -306px -48px; }
+.icons-prev:hover:before         { background-position: -324px -48px; }
+.icons-carret:hover:after        { background-position: -344px -47px; }
+
+
+
