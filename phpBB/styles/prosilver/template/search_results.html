@@ -65,11 +65,11 @@
 						<div class="list-inner">
 
 							<!-- EVENT topiclist_row_prepend -->
-							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->
+							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT --><a class="icons icons-topic-newest" href="{searchresults.U_NEWEST_POST}">{VIEW_NEWEST_POST}</a> <!-- ENDIF -->
 							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a> {searchresults.ATTACH_ICON_IMG}
-							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-							<!-- IF searchresults.S_TOPIC_DELETED --><a href="{searchresults.U_MCP_QUEUE}">{DELETED_IMG}</a> <!-- ENDIF -->
-							<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a class="icons icons-unapproved" href="{searchresults.U_MCP_QUEUE}">{TOPIC_UNAPPROVED}</a> <!-- ENDIF -->
+							<!-- IF searchresults.S_TOPIC_DELETED --><a class="icons icons-recycle" href="{searchresults.U_MCP_QUEUE}">{POST_DELETED_RESTORE}</a> <!-- ENDIF -->
+							<!-- IF searchresults.S_TOPIC_REPORTED --><a class="icons icons-reported" href="{searchresults.U_MCP_REPORT}">{POST_REPORTED}</a><!-- ENDIF --><br />
 							<!-- IF .searchresults.pagination -->
 							<div class="pagination">
 								<ul>
@@ -94,7 +94,7 @@
 					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
 					<dd class="lastpost"><span>
 						{L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL}
-						<!-- IF not S_IS_BOT --><a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{searchresults.LAST_POST_TIME}<br /> </span>
+						<!-- IF not S_IS_BOT --><a class="icons icons-topic-latest" href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{VIEW_LATEST_POST}</a> <!-- ENDIF --><br />{searchresults.LAST_POST_TIME}<br /> </span>
 					</dd>
 				</dl>
 			</li>
@@ -179,9 +179,9 @@
 <div class="action-bar bottom">
 	<div class="pagination">
 		{SEARCH_MATCHES}
-		<!-- IF .pagination --> 
+		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
-		<!-- ELSE --> 
+		<!-- ELSE -->
 			 &bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>

@@ -29,7 +29,7 @@
 
 	<div class="buttons">
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
-		<a href="{U_POST_REPLY_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
+		<a href="{U_POST_REPLY_TOPIC}" class="button icon-button icons icons-<!-- IF S_IS_LOCKED -->lock<!-- ELSE -->reply<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
@@ -51,7 +51,7 @@
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}" class="mark">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS} 
+			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a class="icons icon-mark mark" href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
 			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->
@@ -165,7 +165,7 @@
 								<!-- IF REMAINDER eq 0 -->
 									<div>
 								<!-- ENDIF -->
-									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 550, 320); return false;"<!-- ENDIF -->>
+									<a <!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --> href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 550, 320); return false;"<!-- ENDIF -->>
 										<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>
 									</a>
 								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
@@ -205,32 +205,32 @@
 					<!-- EVENT viewtopic_body_post_buttons_before -->
 					<!-- IF postrow.U_EDIT -->
 						<li>
-							<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button icon-button edit-icon"><span>{L_BUTTON_EDIT}</span></a>
+							<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button icon-button icons icons-edit" id="js-edit"><span>{L_BUTTON_EDIT}</span></a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_DELETE -->
 						<li>
-							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button icon-button delete-icon"><span>{L_DELETE_POST}</span></a>
+							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button icon-button icons icons-delete"><span>{L_DELETE_POST}</span></a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_REPORT -->
 						<li>
-							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button icon-button report-icon"><span>{L_REPORT_POST}</span></a>
+							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button icon-button icons icons-report"><span>{L_REPORT_POST}</span></a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_WARN -->
 						<li>
-							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button icon-button warn-icon"><span>{L_WARN_USER}</span></a>
+							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button icon-button icons icons-warn"><span>{L_WARN_USER}</span></a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_INFO -->
 						<li>
-							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button icon-button info-icon"><span>{L_INFORMATION}</span></a>
+							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button icon-button icons icons-info"><span>{L_INFORMATION}</span></a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_QUOTE -->
 						<li>
-							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button icon-button quote-icon"><span>{L_QUOTE}</span></a>
+							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button icon-button icons icons-quote" id="js-quote"><span>{L_QUOTE}</span></a>
 						</li>
 					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_post_buttons_after -->
@@ -238,7 +238,7 @@
 			<!-- ENDIF -->
 		<!-- ENDIF -->
 
-			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE} </p>
+			<p class="author"><!-- IF S_IS_BOT --><span class="icons icons-post-target"></span><!-- ELSE --><a class="icons icons-post-target" href="{postrow.U_MINI_POST}" title="POST"></a><!-- ENDIF --><span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE} </p>
 
 			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
@@ -263,8 +263,8 @@
 			<!-- ENDIF -->
 
 			<!-- IF postrow.S_POST_REPORTED -->
-			<p class="post-notice reported">
-				<a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+			<p class="post-notice">
+				<a class="icons icons-reported" href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
 			</p>
 			<!-- ENDIF -->
 
@@ -312,7 +312,7 @@
 
 		</div>
 
-		<div class="back2top"><a href="#wrap" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
+		<div class="back2top"><a href="#wrap" class="icons icons-top" title="{L_BACK_TO_TOP}"></a></div>
 
 		</div>
 	</div>
@@ -342,7 +342,7 @@
 <div class="action-bar bottom">
 	<div class="buttons">
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
-		<a href="{U_POST_REPLY_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
+		<a href="{U_POST_REPLY_TOPIC}" class="button icon-button icons icons-<!-- IF S_IS_LOCKED -->lock<!-- ELSE -->reply<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
@@ -352,7 +352,7 @@
 
 	<!-- IF .quickmod -->
 		<div class="dropdown-container dropdown-container-{S_CONTENT_FLOW_BEGIN} dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
-			<span title="{L_QUICK_MOD}" class="dropdown-trigger button icon-button modtools-icon dropdown-select">{L_QUICK_MOD}</span>
+			<span title="{L_QUICK_MOD}" class="dropdown-trigger button icon-button icons icons-mod icons-carret dropdown-select"></span>
 			<div class="dropdown hidden">
 				<div class="pointer"><div class="pointer-inner"></div></div>
 				<ul class="dropdown-contents">
@@ -367,7 +367,7 @@
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			{TOTAL_POSTS} 
+			{TOTAL_POSTS}
 			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->

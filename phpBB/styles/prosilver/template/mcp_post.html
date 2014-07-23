@@ -58,7 +58,7 @@
 			</li>
 			<!-- IF U_EDIT -->
 				<li>
-					<a href="{U_EDIT}" title="{L_EDIT_POST}" class="button icon-button edit-icon">
+					<a href="{U_EDIT}" title="{L_EDIT_POST}" class="button icon-button icons icons-edit">
 						<span>{L_EDIT_POST}</span>
 					</a>
 				</li>
@@ -79,7 +79,8 @@
 		<!-- IF S_POST_UNAPPROVED -->
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
-			<p class="post-notice unapproved">
+			<p class="post-notice">
+				<span class="icons icons-unapproved"></span>
 				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
 				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->

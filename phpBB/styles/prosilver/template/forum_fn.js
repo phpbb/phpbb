@@ -378,14 +378,6 @@ function parse_document(container)
 	});
 
 	/**
-	* Adjust HTML code for IE8 and older versions
-	*/
-	if (oldBrowser) {
-		// Fix .linklist.bulletin lists
-		container.find('ul.linklist.bulletin > li:first-child, ul.linklist.bulletin > li.rightside:last-child').addClass('no-bulletin');
-	}
-
-	/**
 	* Resize navigation block to keep all links on same line
 	*/
 	container.find('.navlinks').each(function() {
@@ -486,7 +478,7 @@ function parse_document(container)
 		var $this = $(this),
 			$body = $('body'),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
+			filterLast = '#js-edit, #js-quote, [data-last-responsive]',
 			persist = $this.attr('id') == 'nav-main',
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
