@@ -405,18 +405,17 @@ overall_footer_breadcrumb_append
 ===
 * Locations:
     + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-a1
-* Purpose: Add links to the list of breadcrumbs in the footer. Note that utilizing this event requires
-a different solution for subsilver2, since it only supports the overall_header_breadcrumb versions.
+* Purpose: Add links to the list of breadcrumbs in the footer
 
 overall_footer_breadcrumb_prepend
 ===
 * Locations:
     + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-RC3
-* Purpose: Add links to the list of breadcrumbs in the footer (after site-home, but before board-index).
-Note that utilizing this event requires a different solution for subsilver2, since it only supports the 
-overall_header_breadcrumb versions.
+* Purpose: Add links to the list of breadcrumbs in the footer (after site-home, but before board-index)
 
 overall_footer_content_after
 ===
