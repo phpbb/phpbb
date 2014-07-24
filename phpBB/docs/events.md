@@ -437,8 +437,17 @@ overall_footer_breadcrumb_append
 ===
 * Locations:
     + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the footer
+
+overall_footer_breadcrumb_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_footer.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-RC3
+* Purpose: Add links to the list of breadcrumbs in the footer (after site-home, but before board-index)
 
 overall_footer_content_after
 ===
@@ -519,6 +528,30 @@ overall_header_breadcrumb_append
     + styles/subsilver2/template/breadcrumbs.html
 * Since: 3.1.0-a1
 * Purpose: Add links to the list of breadcrumbs in the header
+
+overall_header_breadcrumb_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-RC3
+* Purpose: Add links to the list of breadcrumbs in the header (after site-home, but before board-index)
+
+overall_header_breadcrumbs_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-RC3
+* Purpose: Add content after the breadcrumbs (outside of the breadcrumbs container)
+
+overall_header_breadcrumbs_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/breadcrumbs.html
+* Since: 3.1.0-RC3
+* Purpose: Add content before the breadcrumbs (outside of the breadcrumbs container)
 
 overall_header_content_before
 ===
