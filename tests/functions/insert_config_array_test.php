@@ -135,7 +135,7 @@ class phpbb_functions_insert_config_array_test extends phpbb_test_case
 	public function test_insert_config_array($new_config, $position, $expected)
 	{
 		$config_array = $this->config_display_vars();
-		$new_config_array = insert_config_array($config_array, $new_config, $position);
+		$new_config_array = phpbb_insert_config_array($config_array, $new_config, $position);
 
 		$this->assertSame($expected, $new_config_array);
 	}

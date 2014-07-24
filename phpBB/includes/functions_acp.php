@@ -668,7 +668,7 @@ function validate_range($value_ary, &$error)
 *              of the form: array('after' => 'config_name')
 * @return array The array of config display vars
 */
-function insert_config_array($display_vars, $add_config_vars, $where)
+function phpbb_insert_config_array($display_vars, $add_config_vars, $where)
 {
 	if (is_array($where) && array_key_exists(current($where), $display_vars))
 	{
