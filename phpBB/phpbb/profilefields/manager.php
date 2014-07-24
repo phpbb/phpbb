@@ -99,6 +99,7 @@ class manager
 
 	/**
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
+	* or memberlist (for searching)
 	* Called by ucp_profile and ucp_register
 	*/
 	public function generate_profile_fields($mode, $lang_id)
@@ -119,6 +120,10 @@ class manager
 				}
 			break;
 
+			case 'memberlist':
+				$sql_where .= ' AND f.field_show_on_ml = 1';
+			break;
+
 			default:
 				trigger_error('Wrong profile mode specified', E_USER_ERROR);
 			break;
@@ -137,7 +142,7 @@ class manager
 		{
 			// Return templated field
 			$profile_field = $this->type_collection[$row['field_type']];
-			$tpl_snippet = $profile_field->process_field_row('change', $row);
+			$tpl_snippet = $profile_field->process_field_row($mode == 'memberlist' ? 'search' : 'change', $row);
 
 			$this->template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $this->user->lang($row['lang_name']),
@@ -482,5 +487,33 @@ class manager
 		$this->db->sql_freeresult($result);
 
 		return $cp_data;
+	}
+
+	/**
+	* Process fields while searching and generate SQL search clause
+	*/
+	public function build_search_sql_clause($filter = '')
+	{
+		if (!sizeof($this->profile_cache))
+		{
+			$this->build_cache();
+		}
+
+		$clauses = array();
+		foreach ($this->profile_cache as $ident => $field)
+		{
+			if (!empty($filter) && empty($field[$filter]))
+			{
+				continue;
+			}
+
+			$clause = $this->type_collection[$field['data']['field_type']]->get_search_clause($field);
+			if ($clause !== false)
+			{
+				$clauses[] = $clause;
+			}
+		}
+
+		return !empty($clauses) ? implode(' AND ', $clauses) : false;
 	}
 }

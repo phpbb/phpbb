@@ -878,8 +878,27 @@ switch ($mode)
 		$field			= request_var('field', '');
 		$select_single 	= request_var('select_single', false);
 
+		// Load custom profile fields
+		$cp_row = array();
+		if ($config['load_cpf_memberlist'])
+		{
+			$cp = $phpbb_container->get('profilefields.manager');
+
+			$cp->generate_profile_fields('memberlist', $user->get_iso_lang_id());
+
+			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
+			foreach ($cp_row as $profile_field)
+			{
+				$template->assign_block_vars('custom_fields', $profile_field);
+			}
+		}
+
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		foreach ($cp_row as $profile_field)
+		{
+			$search_params[] = $profile_field['PROFILE_FIELD_NAME'];
+		}
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -1012,6 +1031,16 @@ switch ($mode)
 					unset($ip_forums);
 
 					$db->sql_freeresult($result);
+				}
+			}
+
+			// Searching by CPF?
+			if ($config['load_cpf_memberlist'])
+			{
+				$clause = $cp->build_search_sql_clause('field_show_on_ml');
+				if ($clause !== false)
+				{
+					$sql_where .= ' AND ' . $clause;
 				}
 			}
 		}
@@ -1324,18 +1353,6 @@ switch ($mode)
 			$user_list[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
-
-		// Load custom profile fields
-		if ($config['load_cpf_memberlist'])
-		{
-			$cp = $phpbb_container->get('profilefields.manager');
-
-			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
-			foreach ($cp_row as $profile_field)
-			{
-				$template->assign_block_vars('custom_fields', $profile_field);
-			}
-		}
 
 		$leaders_set = false;
 		// So, did we get any users?
