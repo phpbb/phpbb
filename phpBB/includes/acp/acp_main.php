@@ -451,8 +451,7 @@ class acp_main
 		* @event core.acp_main_notice
 		* @since 3.1.0-RC3
 		*/
-		$vars = array();
-		extract($phpbb_dispatcher->trigger_event('core.acp_main_notice', compact($vars)));
+		$phpbb_dispatcher->trigger_event('core.acp_main_notice');
 
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
