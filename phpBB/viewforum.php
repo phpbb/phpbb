@@ -469,11 +469,11 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 $forum_tracking_info = array();
 
-if ($user->data['is_registered'])
+if ($user->data['is_registered'] && $config['load_db_lastread'])
 {
 	$forum_tracking_info[$forum_id] = $forum_data['mark_time'];
 
-	if (!empty($global_announce_forums) && $config['load_db_lastread'])
+	if (!empty($global_announce_forums))
 	{
 		$sql = 'SELECT forum_id, mark_time
 			FROM ' . FORUMS_TRACK_TABLE . '
