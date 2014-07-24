@@ -98,7 +98,7 @@
 			<div class="postbody" id="pr{postrow.POST_ID}">
 				<ul class="post-buttons">
 					<li>
-						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button icon-button info-icon">
+						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button icon-button icons icons-info">
 							<span>{L_POST_DETAILS}</span>
 						</a>
 					</li>
@@ -113,20 +113,20 @@
 				<p class="author"><a href="#pr{postrow.POST_ID}">{postrow.MINI_POST_IMG}</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></p>
 
 				<!-- IF postrow.S_POST_UNAPPROVED -->
-				<p class="post-notice unapproved">
-					<a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a>
+				<p class="post-notice">
+					<a class="icons icons-unapproved" href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 
 				<!-- IF postrow.S_POST_DELETED -->
-				<p class="post-notice deleted">
-					<a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_DELETED}</strong></a>
+				<p class="post-notice">
+					<a class="icons icons-recycled" href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_DELETED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 
 				<!-- IF postrow.S_POST_REPORTED -->
-				<p class="post-notice reported">
-					<a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+				<p class="post-notice">
+					<a class="icons icons-reported" href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 
@@ -153,9 +153,9 @@
 	<div class="action-bar bottom">
 		<div class="pagination">
 			{TOTAL_POSTS}
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>

@@ -19,9 +19,9 @@
 		<div class="action-bar top">
 			<div class="pagination">
 				{TOTAL}
-				<!-- IF .pagination --> 
+				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
-				<!-- ELSE --> 
+				<!-- ELSE -->
 					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
 			</div>
@@ -48,7 +48,7 @@
 			<dl>
 				<dt>
 					<div class="list-inner">
-						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> <span class="icons icons-attach" title="{L_TOTAL_ATTACHMENTS}"></span><br />
 						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 					</div>
 				</dt>
@@ -85,9 +85,9 @@
 		<div class="action-bar bottom">
 			<div class="pagination">
 				{TOTAL}
-				<!-- IF .pagination --> 
+				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
-				<!-- ELSE --> 
+				<!-- ELSE -->
 					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
 			</div>
