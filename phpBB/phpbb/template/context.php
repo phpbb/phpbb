@@ -34,6 +34,11 @@ class context
 	*/
 	private $rootref;
 
+	/**
+	* @var bool
+	*/
+	private $num_rows_is_set;
+
 	public function __construct()
 	{
 		$this->clear();
@@ -46,6 +51,7 @@ class context
 	{
 		$this->tpldata = array('.' => array(0 => array()));
 		$this->rootref = &$this->tpldata['.'][0];
+		$this->num_rows_is_set = false;
 	}
 
 	/**
@@ -95,7 +101,56 @@ class context
 		// returning a reference directly is not
 		// something php is capable of doing
 		$ref = &$this->tpldata;
+
+		if (!$this->num_rows_is_set)
+		{
+			/*
+			* We do not set S_NUM_ROWS while adding a row, to reduce the complexity
+			* If we would set it on adding, each subsequent adding would cause
+			* n modifications, resulting in a O(n!) complexity, rather then O(n)
+			*/
+			foreach ($ref as $loop_name => &$loop_data)
+			{
+				if ($loop_name === '.')
+				{
+					continue;
+				}
+
+				$this->set_num_rows($loop_data);
+			}
+			$this->num_rows_is_set = true;
+		}
+
 		return $ref;
+	}
+
+	/**
+	* Set S_NUM_ROWS for each row in this template block
+	*
+	* @param array $loop_data
+	*/
+	protected function set_num_rows(&$loop_data)
+	{
+		$s_num_rows = sizeof($loop_data);
+		foreach ($loop_data as &$mod_block)
+		{
+			foreach ($mod_block as $sub_block_name => &$sub_block)
+			{
+				// If the key name is lowercase and the data is an array,
+				// it could be a template loop. So we set the S_NUM_ROWS there
+				// aswell.
+				if ($sub_block_name === strtolower($sub_block_name) && is_array($sub_block))
+				{
+					$this->set_num_rows($sub_block);
+				}
+			}
+
+			// Check whether we are inside a block before setting the variable
+			if (isset($mod_block['S_BLOCK_NAME']))
+			{
+				$mod_block['S_NUM_ROWS'] = $s_num_rows;
+			}
+		}
 	}
 
 	/**
@@ -123,6 +178,7 @@ class context
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
+		$this->num_rows_is_set = false;
 		if (strpos($blockname, '.') !== false)
 		{
 			// Nested block.
@@ -160,13 +216,6 @@ class context
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
 			$str[$blocks[$blockcount]][] = $vararray;
-			$s_num_rows = sizeof($str[$blocks[$blockcount]]);
-
-			// Set S_NUM_ROWS
-			foreach ($str[$blocks[$blockcount]] as &$mod_block)
-			{
-				$mod_block['S_NUM_ROWS'] = $s_num_rows;
-			}
 		}
 		else
 		{
@@ -192,13 +241,6 @@ class context
 
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->tpldata[$blockname][] = $vararray;
-			$s_num_rows = sizeof($this->tpldata[$blockname]);
-
-			// Set S_NUM_ROWS
-			foreach ($this->tpldata[$blockname] as &$mod_block)
-			{
-				$mod_block['S_NUM_ROWS'] = $s_num_rows;
-			}
 		}
 
 		return true;
@@ -250,6 +292,7 @@ class context
 	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
+		$this->num_rows_is_set = false;
 		if (strpos($blockname, '.') !== false)
 		{
 			// Nested block.
@@ -349,12 +392,6 @@ class context
 			$block[$key] = $vararray;
 			$block[$key]['S_ROW_COUNT'] = $block[$key]['S_ROW_NUM'] = $key;
 
-			// Set S_NUM_ROWS
-			foreach ($this->tpldata[$blockname] as &$mod_block)
-			{
-				$mod_block['S_NUM_ROWS'] = sizeof($this->tpldata[$blockname]);
-			}
-
 			return true;
 		}
 
@@ -382,6 +419,7 @@ class context
 	*/
 	public function destroy_block_vars($blockname)
 	{
+		$this->num_rows_is_set = false;
 		if (strpos($blockname, '.') !== false)
 		{
 			// Nested block.
