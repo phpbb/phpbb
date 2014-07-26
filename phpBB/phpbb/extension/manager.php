@@ -77,11 +77,9 @@ class manager
 	{
 		$this->extensions = array();
 
-		// Do not try to load any extensions when installing or updating
-		// Note: database updater invokes this code, and in 3.0
-		// there is no extension table therefore the rest of this function
-		// fails
-		if (defined('IN_INSTALL'))
+		// Do not try to load any extensions if the extension table
+		// does not exist. (The table is crated by the firsts migrations).
+		if (version_compare($this->config['version'], '3.1.0-dev', '<'))
 		{
 			return;
 		}

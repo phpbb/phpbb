@@ -84,6 +84,8 @@ services:
             - @config
             - @cache
             - @log
+            - @dbal.tools
+            - %core.table_prefix%
         tags:
             - { name: console.command }
 
