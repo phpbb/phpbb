@@ -405,7 +405,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\plupload\plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	$filedata = array(
 		'error'	=> array()
@@ -505,6 +505,20 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$filedata['physical_filename'] = $file->get('realname');
 	$filedata['real_filename'] = $file->get('uploadname');
 	$filedata['filetime'] = time();
+
+	/**
+	* Event to modify uploaded file before submit to the post
+	*
+	* @event core.modify_uploaded_file
+	* @var	array	filedata	Array containing uploaded file data
+	* @var	bool	is_image	Flag indicating if the file is an image
+	* @since 3.1.0-RC3
+	*/
+	$vars = array(
+		'filedata',
+		'is_image',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.modify_uploaded_file', compact($vars)));
 
 	// Check our complete quota
 	if ($config['attachment_quota'])
