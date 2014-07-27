@@ -249,8 +249,14 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 			array(
 				0,
 				array('field_show_novalue' => false),
-				null,
-				'Field should return null for empty integer without show_novalue',
+				0,
+				'Field should return value of integer 0 without show_novalue',
+			),
+			array(
+				'0',
+				array('field_show_novalue' => false),
+				'0',
+				'Field should return string 0',
 			),
 			array(
 				0,
