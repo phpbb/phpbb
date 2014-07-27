@@ -20,9 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class check extends \phpbb\console\command\command
 {
-	/** @var \phpbb\user */
-	protected $user;
-
 	/** @var \phpbb\config\config */
 	protected $config;
 
@@ -34,11 +31,10 @@ class check extends \phpbb\console\command\command
 	*/
 	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container)
 	{
-		$this->user = $user;
 		$this->config = $config;
 		$this->phpbb_container = $phpbb_container;
-		$this->user->add_lang(array('acp/common', 'acp/extensions'));
-		parent::__construct();
+		$user->add_lang(array('acp/common', 'acp/extensions'));
+		parent::__construct($user);
 	}
 
 	/**
