@@ -53,6 +53,8 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$this->disable_extensions();
+
 		$this->load_migrations();
 		$orig_version = $this->config['version'];
 		while (!$this->migrator->finished())
@@ -124,5 +126,14 @@ class migrate extends \phpbb\console\command\command
 	{
 		$this->cache->purge();
 		$this->config->increment('assets_version', 1);
+	}
+
+	protected function disable_extensions()
+	{
+		$enabled_extensions = $this->extension_manager->all_enabled();
+		foreach ($enabled_extensions as $name => $path)
+		{
+			$this->extension_manager->disable($name);
+		}
 	}
 }

@@ -136,6 +136,14 @@ else
 	$phpbb_hook = false;
 }
 
+// Disable all the extensions
+$phpbb_extension_manager = $phpbb_container->get('ext.manager');
+$enabled_extensions = $phpbb_extension_manager->all_enabled();
+foreach ($enabled_extensions as $name => $path)
+{
+	$phpbb_extension_manager->disable($name);
+}
+
 header('Content-type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html>
