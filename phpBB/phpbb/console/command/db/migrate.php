@@ -32,21 +32,13 @@ class migrate extends \phpbb\console\command\command
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\db\tools */
-	protected $db_tools;
-
-	/** @var string */
-	protected $table_prefix;
-
-	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\db\tools $db_tools, $table_prefix)
+	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log)
 	{
 		$this->migrator = $migrator;
 		$this->extension_manager = $extension_manager;
 		$this->config = $config;
 		$this->cache = $cache;
 		$this->log = $log;
-		$this->db_tools = $db_tools;
-		$this->table_prefix = $table_prefix;
 		parent::__construct($user);
 		$this->user->add_lang(array('common', 'install', 'migrator'));
 	}
@@ -61,22 +53,7 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// Make sure migrations have been installed.
-		if (!$this->db_tools->sql_table_exists($this->table_prefix . 'migrations'))
-		{
-			$this->db_tools->sql_create_table($this->table_prefix . 'migrations', array(
-				'COLUMNS'		=> array(
-					'migration_name'			=> array('VCHAR', ''),
-					'migration_depends_on'		=> array('TEXT', ''),
-					'migration_schema_done'		=> array('BOOL', 0),
-					'migration_data_done'		=> array('BOOL', 0),
-					'migration_data_state'		=> array('TEXT', ''),
-					'migration_start_time'		=> array('TIMESTAMP', 0),
-					'migration_end_time'		=> array('TIMESTAMP', 0),
-				),
-				'PRIMARY_KEY'	=> 'migration_name',
-			));
-		}
+		$this->migrator->create_migrations_table();
 
 		$this->load_migrations();
 		$orig_version = $this->config['version'];
