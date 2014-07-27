@@ -397,7 +397,7 @@ class manager
 			}
 
 			$field_desc = $contact_url = '';
-			if ($use_contact_fields)
+			if ($use_contact_fields && $ident_ary['data']['field_is_contact'])
 			{
 				$value = $profile_field->get_profile_contact_value($ident_ary['value'], $ident_ary['data']);
 				$field_desc = $this->user->lang($ident_ary['data']['field_contact_desc']);
