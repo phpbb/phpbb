@@ -26,7 +26,7 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $cache, $user, $auth, $template, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -444,6 +444,14 @@ class acp_main
 				'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
 			));
 		}
+
+		/**
+		* Notice admin
+		*
+		* @event core.acp_main_notice
+		* @since 3.1.0-RC3
+		*/
+		$phpbb_dispatcher->dispatch('core.acp_main_notice');
 
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
