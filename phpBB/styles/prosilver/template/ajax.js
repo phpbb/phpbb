@@ -2,17 +2,6 @@
 
 "use strict";
 
-/**
-* Close popup alert after a specified delay
-*
-* @param int Delay in ms until darkenwrapper's click event is triggered
-*/
-phpbb.closeDarkenWrapper = function(delay) {
-	phpbbAlertTimer = setTimeout(function() {
-		$('#darkenwrapper').trigger('click');
-	}, delay);
-};
-
 // This callback will mark all forum icons read
 phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
