@@ -71,7 +71,7 @@ $lang = array_merge($lang, array(
 	'CLI_EXTENSION_ENABLE_SUCCESS'		=> 'Successfully enabled extension %s',
 	'CLI_EXTENSION_NAME'				=> 'Name of the extension',
 	'CLI_EXTENSION_PURGE_FAILURE'		=> 'Could not purge extension %s',
-	'CLI_EXTENSION_PURGE_SUCCESS'		=> 'Successfully purge extension %s',
+	'CLI_EXTENSION_PURGE_SUCCESS'		=> 'Successfully purged extension %s',
 	'CLI_EXTENSION_NOT_FOUND'			=> 'No extensions were found.',
 
 	'CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'	=> 'Successfully recalculated all email hashes.',
