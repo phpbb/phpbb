@@ -767,4 +767,28 @@ class migrator
 
 		return $this->migrations;
 	}
+
+	/**
+	* Creates the migrations table if it does not exist.
+	* @return null
+	*/
+	public function create_migrations_table()
+	{
+		// Make sure migrations have been installed.
+		if (!$this->db_tools->sql_table_exists($this->table_prefix . 'migrations'))
+		{
+			$this->db_tools->sql_create_table($this->table_prefix . 'migrations', array(
+				'COLUMNS'		=> array(
+					'migration_name'			=> array('VCHAR', ''),
+					'migration_depends_on'		=> array('TEXT', ''),
+					'migration_schema_done'		=> array('BOOL', 0),
+					'migration_data_done'		=> array('BOOL', 0),
+					'migration_data_state'		=> array('TEXT', ''),
+					'migration_start_time'		=> array('TIMESTAMP', 0),
+					'migration_end_time'		=> array('TIMESTAMP', 0),
+				),
+				'PRIMARY_KEY'	=> 'migration_name',
+			));
+		}
+	}
 }
