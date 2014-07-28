@@ -68,7 +68,8 @@ acp_overall_header_stylesheets_after
 ===
 * Location: adm/style/overall_header.html
 * Since: 3.1.0-RC3
-* Purpose: Add assets after stylesheets within the `<head>` tags in the ACP
+* Purpose: Add assets after stylesheets within the `<head>` tags in the ACP.
+Note that INCLUDECSS will not work with this event.
 
 acp_posting_buttons_after
 ===
@@ -107,7 +108,7 @@ acp_simple_header_stylesheets_after
 * Location: adm/style/simple_header.html
 * Since: 3.1.0-RC3
 * Purpose: Add assets after stylesheets within the `<head>` tags in the simple header
-of the ACP
+of the ACP. Note that INCLUDECSS will not work with this event.
 
 acp_users_overview_options_append
 ===
@@ -595,7 +596,8 @@ overall_header_stylesheets_after
     + styles/prosilver/template/overall_header.html
     + styles/subsilver2/template/overall_header.html
 * Since: 3.1.0-RC3
-* Purpose: Add asset calls after stylesheets within the `</head>` tag
+* Purpose: Add asset calls after stylesheets within the `</head>` tag.
+Note that INCLUDECSS will not work with this event.
 
 posting_editor_buttons_after
 ===
@@ -761,7 +763,8 @@ simple_header_stylesheets_after
     + styles/prosilver/template/simple_header.html
     + styles/subsilver2/template/simple_header.html
 * Since: 3.1.0-RC3
-* Purpose: Add asset calls after stylesheets within the `</head>` tag
+* Purpose: Add asset calls after stylesheets within the `</head>` tag.
+Note that INCLUDECSS will not work with this event.
 
 topiclist_row_prepend
 ===
