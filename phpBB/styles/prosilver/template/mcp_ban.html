@@ -5,27 +5,34 @@
 
 	var ban_length = new Array();
 		ban_length[-1] = '';
-	<!-- BEGIN ban_length -->
-		ban_length['{ban_length.BAN_ID}'] = '{ban_length.A_LENGTH}';
-	<!-- END ban_length -->
-
 	var ban_reason = new Array();
 		ban_reason[-1] = '';
-	<!-- BEGIN ban_reason -->
-		ban_reason['{ban_reason.BAN_ID}'] = '{ban_reason.A_REASON}';
-	<!-- END ban_reason -->
-
 	var ban_give_reason = new Array();
 		ban_give_reason[-1] = '';
-	<!-- BEGIN ban_give_reason -->
-		ban_give_reason['{ban_give_reason.BAN_ID}'] = '{ban_give_reason.A_REASON}';
-	<!-- END ban_give_reason -->
+
+	<!-- BEGIN bans -->
+		ban_length['{bans.BAN_ID}'] = '{bans.A_LENGTH}';
+		<!-- IF bans.A_REASON -->
+			ban_reason['{bans.BAN_ID}'] = '{bans.A_REASON}';
+		<!-- ENDIF -->
+		<!-- IF bans.A_GIVE_REASON -->
+			ban_give_reason['{bans.BAN_ID}'] = '{bans.A_GIVE_REASON}';
+		<!-- ENDIF -->
+	<!-- END bans -->
 
 	function display_details(option)
 	{
-		document.getElementById('unbangivereason').innerHTML = ban_give_reason[option];
-		document.getElementById('unbanreason').innerHTML = ban_reason[option];
 		document.getElementById('unbanlength').innerHTML = ban_length[option];
+		if (option in ban_reason) {
+			document.getElementById('unbanreason').innerHTML = ban_reason[option];
+		} else {
+			document.getElementById('unbanreason').innerHTML = '';
+		}
+		if (option in ban_give_reason) {
+			document.getElementById('unbangivereason').innerHTML = ban_give_reason[option];
+		} else {
+			document.getElementById('unbangivereason').innerHTML = '';
+		}
 	}
 
 // ]]>

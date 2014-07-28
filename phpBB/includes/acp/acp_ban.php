@@ -176,8 +176,6 @@ class acp_ban
 		$result = $db->sql_query($sql);
 
 		$banned_options = $excluded_options = array();
-		$ban_length = $ban_reasons = $ban_give_reasons = array();
-
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$option = '<option value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
@@ -196,59 +194,30 @@ class acp_ban
 			if ($time_length == 0)
 			{
 				// Banned permanently
-				$ban_length[$row['ban_id']] = $user->lang['PERMANENT'];
+				$ban_length = $user->lang['PERMANENT'];
 			}
 			else if (isset($ban_end_text[$time_length]))
 			{
 				// Banned for a given duration
-				$ban_length[$row['ban_id']] = sprintf($user->lang['BANNED_UNTIL_DURATION'], $ban_end_text[$time_length], $user->format_date($row['ban_end'], false, true));
+				$ban_length = $user->lang('BANNED_UNTIL_DURATION', $ban_end_text[$time_length], $user->format_date($row['ban_end'], false, true));
 			}
 			else
 			{
 				// Banned until given date
-				$ban_length[$row['ban_id']] = sprintf($user->lang['BANNED_UNTIL_DATE'], $user->format_date($row['ban_end'], false, true));
+				$ban_length = $user->lang('BANNED_UNTIL_DATE', $user->format_date($row['ban_end'], false, true));
 			}
 
-			$ban_reasons[$row['ban_id']] = $row['ban_reason'];
-			$ban_give_reasons[$row['ban_id']] = $row['ban_give_reason'];
+			$template->assign_block_vars('bans', array(
+				'BAN_ID'		=> (int) $row['ban_id'],
+				'LENGTH'		=> $ban_length,
+				'A_LENGTH'		=> addslashes($ban_length),
+				'REASON'		=> $row['ban_reason'],
+				'A_REASON'		=> addslashes($row['ban_reason']),
+				'GIVE_REASON'	=> $row['ban_give_reason'],
+				'A_GIVE_REASON'	=> addslashes($row['ban_give_reason']),
+			));
 		}
 		$db->sql_freeresult($result);
-
-		if (sizeof($ban_length))
-		{
-			foreach ($ban_length as $ban_id => $length)
-			{
-				$template->assign_block_vars('ban_length', array(
-					'BAN_ID'	=> (int) $ban_id,
-					'LENGTH'	=> $length,
-					'A_LENGTH'	=> addslashes($length),
-				));
-			}
-		}
-
-		if (sizeof($ban_reasons))
-		{
-			foreach ($ban_reasons as $ban_id => $reason)
-			{
-				$template->assign_block_vars('ban_reason', array(
-					'BAN_ID'	=> $ban_id,
-					'REASON'	=> $reason,
-					'A_REASON'	=> addslashes($reason),
-				));
-			}
-		}
-
-		if (sizeof($ban_give_reasons))
-		{
-			foreach ($ban_give_reasons as $ban_id => $reason)
-			{
-				$template->assign_block_vars('ban_give_reason', array(
-					'BAN_ID'	=> $ban_id,
-					'REASON'	=> $reason,
-					'A_REASON'	=> addslashes($reason),
-				));
-			}
-		}
 
 		$options = '';
 		if ($excluded_options)
