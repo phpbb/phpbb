@@ -92,7 +92,7 @@ class phpbb_functions_insert_config_array_test extends phpbb_test_case
 					'acp_config_5'	=> array(),
 				),
 			),
-			array( // When before|after is not used correctly (defaults to before)
+			array( // When after|before is not used correctly (defaults to before)
 				array('new_config_1' => array()),
 				array('foobar' => 'acp_config_1'),
 				array(
