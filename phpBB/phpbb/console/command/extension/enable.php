@@ -22,11 +22,11 @@ class enable extends command
 	{
 		$this
 			->setName('extension:enable')
-			->setDescription('Enables the specified extension.')
+			->setDescription($this->user->lang('CLI_DESCRIPTION_ENABLE_EXTENSION'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,
-				'Name of the extension'
+				$this->user->lang('CLI_EXTENSION_NAME')
 			)
 		;
 	}
@@ -40,12 +40,12 @@ class enable extends command
 		if ($this->manager->is_enabled($name))
 		{
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($name));
-			$output->writeln("<info>Successfully enabled extension $name</info>");
+			$output->writeln('<error>' . $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name) . '</error>');
 			return 0;
 		}
 		else
 		{
-			$output->writeln("<error>Could not enable extension $name</error>");
+			$output->writeln('<info>' . $this->user->lang('CLI_EXTENSION_ENABLE_SUCCESS', $name) . '</info>');
 			return 1;
 		}
 	}
