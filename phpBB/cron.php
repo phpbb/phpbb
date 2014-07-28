@@ -62,8 +62,9 @@ if ($cron_lock->acquire())
 		if ($task->is_ready())
 		{
 			$task->run();
-			garbage_collection();
 		}
 	}
 	$cron_lock->release();
 }
+
+garbage_collection();
