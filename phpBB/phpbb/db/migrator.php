@@ -768,6 +768,10 @@ class migrator
 		return $this->migrations;
 	}
 
+	/**
+	* Creates the migrations table if it does not exist.
+	* @return null
+	*/
 	public function create_migrations_table()
 	{
 		// Make sure migrations have been installed.
