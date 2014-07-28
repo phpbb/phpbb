@@ -51,7 +51,7 @@
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">
-			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a class="icons icon-mark mark" href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
+			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a class="mark" href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
 			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
 			<!-- ELSE -->
@@ -118,7 +118,7 @@
 <!-- BEGIN postrow -->
 	<!-- EVENT viewtopic_body_postrow_post_before -->
 	<!-- IF postrow.S_FIRST_UNREAD -->
-		<a id="unread" class="anchor icons icons-post-target-new"<!-- IF S_UNREAD_VIEW --> data-url="{postrow.U_MINI_POST}"<!-- ENDIF -->></a>
+		<a id="unread" class="anchor"<!-- IF S_UNREAD_VIEW --> data-url="{postrow.U_MINI_POST}"<!-- ENDIF -->></a>
 	<!-- ENDIF -->
 	<div id="p{postrow.POST_ID}" class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> online<!-- ENDIF --><!-- IF postrow.POSTER_WARNINGS --> warned<!-- ENDIF -->">
 		<div class="inner">
