@@ -53,6 +53,8 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$this->migrator->create_migrations_table();
+
 		$this->load_migrations();
 		$orig_version = $this->config['version'];
 		while (!$this->migrator->finished())

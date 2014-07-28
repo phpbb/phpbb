@@ -135,7 +135,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	protected function create_extension_manager($with_cache = true)
 	{
 
-		$config = new \phpbb\config\config(array());
+		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
 		$db_tools = new \phpbb\db\tools($db);
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
