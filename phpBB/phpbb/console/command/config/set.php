@@ -26,22 +26,22 @@ class set extends command
 	{
 		$this
 			->setName('config:set')
-			->setDescription("Sets a configuration option's value")
+			->setDescription($this->user->lang('CLI_DESCRIPTION_SET_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,
-				"The configuration option's name"
+				$this->user->lang('CLI_CONFIG_OPTION_NAME')
 			)
 			->addArgument(
 				'value',
 				InputArgument::REQUIRED,
-				'New configuration value, use 0 and 1 to specify boolean values'
+				$this->user->lang('CLI_CONFIG_NEW')
 			)
 			->addOption(
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				'Set this option if the configuration option changes too frequently to be efficiently cached.'
+				$this->user->lang('CLI_CONFIG_CANNOT_CACHED')
 			)
 		;
 	}
@@ -65,6 +65,6 @@ class set extends command
 
 		$this->config->set($key, $value, $use_cache);
 
-		$output->writeln("<info>Successfully set config $key</info>");
+		$output->writeln('<info>' . $this->user->lang('CLI_CONFIG_SET_SUCCESS', $key) . '</info>');
 	}
 }

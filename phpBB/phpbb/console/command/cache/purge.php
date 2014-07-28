@@ -59,7 +59,7 @@ class purge extends \phpbb\console\command\command
 	{
 		$this
 			->setName('cache:purge')
-			->setDescription('Purge the cache.')
+			->setDescription($this->user->lang('PURGE_CACHE'))
 		;
 	}
 
