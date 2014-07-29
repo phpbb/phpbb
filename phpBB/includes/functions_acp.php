@@ -665,14 +665,15 @@ function validate_range($value_ary, &$error)
 * @param array $add_config_vars An array of new config display vars
 * @param array $where Where to place the new config vars,
 *              before or after an exisiting config, as an array
-*              of the form: array('after' => 'config_name')
+*              of the form: array('after' => 'config_name') or
+*              array('before' => 'config_name').
 * @return array The array of config display vars
 */
 function phpbb_insert_config_array($display_vars, $add_config_vars, $where)
 {
 	if (is_array($where) && array_key_exists(current($where), $display_vars))
 	{
-		$position = array_search(current($where), array_keys($display_vars)) + ((key($where) == 'after') ? 1 : 0);
+		$position = array_search(current($where), array_keys($display_vars)) + ((key($where) == 'before') ? 0 : 1);
 		$display_vars = array_merge(
 			array_slice($display_vars, 0, $position),
 			$add_config_vars,
