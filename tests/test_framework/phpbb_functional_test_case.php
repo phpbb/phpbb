@@ -899,8 +899,6 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 		$crawler = $this->submit_message($posting_url, $posting_contains, $form_data);
 
-		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
-
 		if ($expected !== '')
 		{
 			if (isset($this->lang[$expected]))
