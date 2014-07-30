@@ -23,12 +23,12 @@ then
 	directories_skipped="-path ${path}develop -o -path ${path}vendor"
 
 	# Files to skip
-	files_skipped="-name composer.phar"
+	files_skipped=""
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/*"
+	executable_files="-path ${path}bin/* -o -path ${path}composer.phar"
 
-	incorect_files=$( 								\
+	incorrect_files=$( 								\
 		find ${path}								\
 			'('										\
 				'('									\
@@ -58,9 +58,9 @@ then
 			')'										\
 		)
 
-	if [ "${incorect_files}" != '' ]
+	if [ "${incorrect_files}" != '' ]
 	then
-		ls -la ${incorect_files}
+		ls -la ${incorrect_files}
 		echo "does not have the proper permissions.";
 		exit 1;
 	fi
