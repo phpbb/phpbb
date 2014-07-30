@@ -23,7 +23,7 @@ then
 	directories_skipped="-path ${path}develop -o -path ${path}vendor"
 
 	# Files to skip
-	files_skipped=""
+	files_skipped="-false"
 
 	# Files which have to be executable
 	executable_files="-path ${path}bin/* -o -path ${path}composer.phar"
