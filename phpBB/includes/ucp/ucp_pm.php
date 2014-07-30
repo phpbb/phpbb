@@ -272,12 +272,6 @@ class ucp_pm
 					$folder_id = (int) $row['folder_id'];
 				}
 
-				// Do not allow hold messages to be seen
-				if ($folder_id == PRIVMSGS_HOLD_BOX)
-				{
-					trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
-				}
-
 				$message_row = array();
 				if ($action == 'view_message' && $msg_id)
 				{
