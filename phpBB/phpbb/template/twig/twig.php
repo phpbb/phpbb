@@ -177,6 +177,7 @@ class twig extends \phpbb\template\base
 		}
 
 		$names = $this->get_user_style();
+		$names[] = 'all';
 
 		$paths = array();
 		foreach ($style_directories as $directory)
