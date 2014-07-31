@@ -225,7 +225,6 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
-
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
