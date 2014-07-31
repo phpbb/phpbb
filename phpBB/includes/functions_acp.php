@@ -240,7 +240,6 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		case 'range':
 		case 'search':
 		case 'tel':
-		case 'url':
 		case 'week':
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
