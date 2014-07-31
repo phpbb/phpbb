@@ -25,8 +25,8 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $config, $db, $user, $template;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';

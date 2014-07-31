@@ -25,8 +25,8 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template;
+		global $config, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/board');
 
