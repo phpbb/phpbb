@@ -21,8 +21,6 @@ class captcha
 
 	function execute($code, $seed)
 	{
-		global $starttime;
-
 		// seed the random generator
 		mt_srand($seed);
 
