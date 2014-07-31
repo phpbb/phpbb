@@ -330,27 +330,6 @@ class metadata_manager
 	}
 
 	/**
-	* Version validation helper
-	*
-	* @param string $string The string for comparing to a version
-	* @param string $current_version The version to compare to
-	* @return bool True/False if meets version requirements
-	*/
-	private function _validate_version($string, $current_version)
-	{
-		// Allow them to specify their own comparison operator (ex: <3.1.2, >=3.1.0)
-		$comparison_matches = false;
-		preg_match('#[=<>]+#', $string, $comparison_matches);
-
-		if (!empty($comparison_matches))
-		{
-			return version_compare($current_version, str_replace(array($comparison_matches[0], ' '), '', $string), $comparison_matches[0]);
-		}
-
-		return version_compare($current_version, $string, '>=');
-	}
-
-	/**
 	* Outputs the metadata into the template
 	*
 	* @return null
