@@ -1138,14 +1138,14 @@ function display_user_activity(&$userdata)
 	/**
 	* Alter list of forums and topics to display as active
 	*
-	* @event core.functions_display.display_user_activity.actives_after
+	* @event core.display_user_activity_modify_actives
 	* @var	array	userdata						User's data
 	* @var	array	active_f_row					List of active forums
 	* @var	array	active_t_row					List of active posts
-	* @since 3.1.0-RC2
+	* @since 3.1.0-RC3
 	*/
 	$vars = array('userdata', 'active_f_row', 'active_t_row');
-	extract($phpbb_dispatcher->trigger_event('core.functions_display.display_user_activity.actives_after', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_actives', compact($vars)));
 
 	$userdata['active_t_row'] = $active_t_row;
 	$userdata['active_f_row'] = $active_f_row;
