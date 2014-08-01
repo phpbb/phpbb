@@ -1063,7 +1063,8 @@ function display_reasons($reason_id = 0)
 function display_user_activity(&$userdata)
 {
 	global $auth, $template, $db, $user;
-	global $phpbb_root_path, $phpEx, $phpbb_container;
+	global $phpbb_root_path, $phpEx;
+	global $phpbb_container, $phpbb_dispatcher;
 
 	// Do not display user activity for users having more than 5000 posts...
 	if ($userdata['user_posts'] > 5000)
@@ -1133,6 +1134,18 @@ function display_user_activity(&$userdata)
 			$db->sql_freeresult($result);
 		}
 	}
+
+	/**
+	* Alter list of forums and topics to display as active
+	*
+	* @event core.display_user_activity_modify_actives
+	* @var	array	userdata						User's data
+	* @var	array	active_f_row					List of active forums
+	* @var	array	active_t_row					List of active posts
+	* @since 3.1.0-RC3
+	*/
+	$vars = array('userdata', 'active_f_row', 'active_t_row');
+	extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_actives', compact($vars)));
 
 	$userdata['active_t_row'] = $active_t_row;
 	$userdata['active_f_row'] = $active_f_row;
