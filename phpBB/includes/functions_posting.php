@@ -952,14 +952,14 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	* Drafts found and their topics
 	* Edit $draft_rows in order to add or remove drafts loaded
 	*
-	* @event core.functions_posting.load_drafts_draft_list_results
+	* @event core.load_drafts_draft_list_result
 	* @var	array	draft_rows			The drafts query result. Includes its forum id and everything about the draft
 	* @var	array	topic_ids			The list of topics got from the topics table
 	* @var	array	topic_rows			The topics that draft_rows references
-	* @since 3.1.0-RC2
+	* @since 3.1.0-RC3
 	*/
 	$vars = array('draft_rows', 'topic_ids', 'topic_rows');
-	extract($phpbb_dispatcher->trigger_event('core.functions_posting.load_drafts_draft_list_results', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.load_drafts_draft_list_result', compact($vars)));
 
 	unset($topic_ids);
 
