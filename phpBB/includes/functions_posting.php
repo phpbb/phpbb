@@ -907,7 +907,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $msg_id = 0)
 {
 	global $user, $db, $template, $auth;
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpbb_dispatcher, $phpEx;
 
 	$topic_ids = $forum_ids = $draft_rows = array();
 
@@ -950,7 +950,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	$topic_rows = array();
 	if (sizeof($topic_ids))
 	{
-		$sql = 'SELECT topic_id, forum_id, topic_title
+		$sql = 'SELECT topic_id, forum_id, topic_title, topic_poster
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 		$result = $db->sql_query($sql);
@@ -961,6 +961,20 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 		}
 		$db->sql_freeresult($result);
 	}
+
+	/**
+	* Drafts found and their topics
+	* Edit $draft_rows in order to add or remove drafts loaded
+	*
+	* @event core.load_drafts_draft_list_result
+	* @var	array	draft_rows			The drafts query result. Includes its forum id and everything about the draft
+	* @var	array	topic_ids			The list of topics got from the topics table
+	* @var	array	topic_rows			The topics that draft_rows references
+	* @since 3.1.0-RC3
+	*/
+	$vars = array('draft_rows', 'topic_ids', 'topic_rows');
+	extract($phpbb_dispatcher->trigger_event('core.load_drafts_draft_list_result', compact($vars)));
+
 	unset($topic_ids);
 
 	$template->assign_var('S_SHOW_DRAFTS', true);
