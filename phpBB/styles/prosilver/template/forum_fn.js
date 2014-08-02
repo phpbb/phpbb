@@ -338,7 +338,7 @@ function insert_single_user(formId, user)
 /**
 * Parse document block
 */
-function parse_document(container) 
+function parse_document(container)
 {
 	var test = document.createElement('div'),
 		oldBrowser = (typeof test.style.borderRadius == 'undefined');
@@ -370,20 +370,12 @@ function parse_document(container)
 	container.find('.pagination .dropdown-trigger').click(function() {
 		$dropdown_container = $(this).parent();
 		// Wait a little bit to make sure the dropdown has activated
-		setTimeout(function() { 
+		setTimeout(function() {
 			if ($dropdown_container.hasClass('dropdown-visible')) {
 				$dropdown_container.find('input.inputbox').focus();
 			}
 		},100);
 	});
-
-	/**
-	* Adjust HTML code for IE8 and older versions		
-	*/
-	if (oldBrowser) {
-		// Fix .linklist.bulletin lists
-		container.find('ul.linklist.bulletin > li:first-child, ul.linklist.bulletin > li.rightside:last-child').addClass('no-bulletin');
-	}
 
 	/**
 	* Resize navigation block to keep all links on same line
@@ -486,13 +478,13 @@ function parse_document(container)
 		var $this = $(this),
 			$body = $('body'),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
+			filterLast = '#js-edit, #js-quote, [data-last-responsive]',
 			persist = $this.attr('id') == 'nav-main',
 			allLinks = $this.children(),
 			links = allLinks.not(filterSkip),
-			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link icons icons-postmenu">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
 			filterLastList = links.filter(filterLast),
-			slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured. 
+			slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
 		if (!persist) {
 			if (links.is('.rightside'))
@@ -581,7 +573,7 @@ function parse_document(container)
 					if (persist) $(this).addClass('clone');
 					menu.prepend(this);
 				});
-				
+
 				if (persist) {
 					menu.prepend(clone.not('.rightside').addClass('clone'));
 				} else {
@@ -634,7 +626,7 @@ function parse_document(container)
 	});
 
 	/**
-	* Do not run functions below for old browsers	
+	* Do not run functions below for old browsers
 	*/
 	if (oldBrowser) {
 		return;
@@ -770,7 +762,7 @@ function parse_document(container)
 				$this.addClass('show-header');
 			}
 		});
-		
+
 		headersLength = headers.length;
 
 		// Add header text to each cell as <dfn>

@@ -315,7 +315,7 @@
 	unicode-bidi: embed;
 }
 
-ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
+ul.linklist li.breadcrumbs span:first-child > a {
 	padding-left: 0;
 	padding-right: 19px;
 }
@@ -325,7 +325,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 }
 
 .rtl a.top2 {
-	background-position: 100% 50%;
 	padding-left: 0;
 	padding-right: 15px;
 }
@@ -622,18 +621,6 @@ ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
 
 .rtl .buttons, .rtl .buttons .button {
 	float: right;
-}
-
-/* Icon images
----------------------------------------- */
-.rtl .small-icon {
-	background-position: 100% 50%;
-	padding-left: 0;
-	padding-right: 19px;
-}
-
-.rtl ul.linklist li.small-icon {
-	padding-right: 0;
 }
 
 /* Post control buttons

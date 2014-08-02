@@ -43,7 +43,7 @@
 							<!-- EVENT forumlist_body_subforums_before -->
 							<br /><strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
 							<!-- BEGIN subforum -->
-								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF -->
+								<a class="icons icons-subforum<!-- IF forumrow.subforum.S_UNREAD -->-new<!-- ENDIF -->" href="{forumrow.subforum.U_SUBFORUM}"  title="<!-- IF forumrow.subforum.UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF -->
 							<!-- END subforum -->
 							<!-- EVENT forumlist_body_subforums_after -->
 						<!-- ENDIF -->
@@ -74,9 +74,9 @@
 						<!-- IF forumrow.S_DISPLAY_SUBJECT -->
 							<!-- EVENT forumlist_body_last_post_title_prepend -->
 							<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
-						<!-- ENDIF --> 
+						<!-- ENDIF -->
 						{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
-						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{forumrow.LAST_POST_TIME}<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF --></span>
+						<!-- IF not S_IS_BOT --><a class="icons icons-topic-latest" href="{forumrow.U_LAST_POST}">{VIEW_LATEST_POST}</a> <!-- ENDIF --><br />{forumrow.LAST_POST_TIME}<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF --></span>
 					</dd>
 				<!-- ENDIF -->
 			</dl>

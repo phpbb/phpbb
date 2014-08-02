@@ -27,7 +27,7 @@ a:hover	{ text-decoration: underline; }
 }
 
 /* Navigation bar links */
-ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
+.quick-links > a {
 	display: inline-block;
 	padding-left: 17px;
 }
@@ -129,42 +129,7 @@ a.lastsubject:hover {
 /* Back to top of page */
 .back2top {
 	clear: both;
-	height: 11px;
 	text-align: right;
-}
-
-a.top {
-	background: none no-repeat top left;
-	text-decoration: none;
-	width: 11px;
-	height: 11px;
-	display: block;
-	float: right;
-	overflow: hidden;
-	letter-spacing: 1000px;
-	text-indent: 11px;
-}
-
-a.top2 {
-	background: none no-repeat 0 50%;
-	text-decoration: none;
-	padding-left: 15px;
-}
-
-/* Arrow links  */
-a.arrow-up		{ background: none no-repeat left center; }
-a.arrow-down		{ background: none no-repeat right center; }
-a.arrow-left		{ background: none no-repeat 3px 60%; }
-a.arrow-right		{ background: none no-repeat 95% 60%; }
-
-a.arrow-up {
-	padding-left: 10px;
-	text-decoration: none;
-	border-bottom-width: 0;
-}
-
-a.arrow-up:hover {
-	background-position: left top;
 }
 
 a.arrow-down {
@@ -174,24 +139,6 @@ a.arrow-down {
 a.arrow-down:hover {
 	background-position: right bottom;
 	text-decoration: none;
-}
-
-a.arrow-left {
-	padding-left: 12px;
-}
-
-a.arrow-left:hover {
-	text-decoration: none;
-	background-position: 0 60%;
-}
-
-a.arrow-right {
-	padding-right: 12px;
-}
-
-a.arrow-right:hover {
-	text-decoration: none;
-	background-position: 100% 60%;
 }
 
 /* invisible skip link, used for accessibility  */
