@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "dcd46c1373cfc4dacd2e1f8a79da0b91",
+    "hash": "5f0d7e899eb1feec2d25aa88f13e9594",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -217,13 +217,13 @@
             "target-dir": "Symfony/Component/Debug",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/Debug.git",
-                "reference": "ca764f8af9cc4ba5d81b598c1b18b30db5508e18"
+                "url": "git@github.com:symfony/Debug.git",
+                "reference": "d630a5681f584b0ad45dabf1758a45723286a6b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Debug/zipball/ca764f8af9cc4ba5d81b598c1b18b30db5508e18",
-                "reference": "ca764f8af9cc4ba5d81b598c1b18b30db5508e18",
+                "url": "https://api.github.com/repos/symfony/Debug/zipball/d630a5681f584b0ad45dabf1758a45723286a6b9",
+                "reference": "d630a5681f584b0ad45dabf1758a45723286a6b9",
                 "shasum": ""
             },
             "require": {
@@ -255,14 +255,12 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Debug Component",
@@ -940,6 +938,58 @@
             "time": "2013-08-16 06:03:22"
         },
         {
+            "name": "gitonomy/gitlib",
+            "version": "v0.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gitonomy/gitlib.git",
+                "reference": "158879a951ca47913a6a3ff2e916aaac0e372cc8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gitonomy/gitlib/zipball/158879a951ca47913a6a3ff2e916aaac0e372cc8",
+                "reference": "158879a951ca47913a6a3ff2e916aaac0e372cc8",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/process": "<3"
+            },
+            "require-dev": {
+                "psr/log": "~1"
+            },
+            "suggest": {
+                "psr/log": "Add some log"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Gitonomy\\Git": [
+                        "src/",
+                        "tests/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexandre Salomé",
+                    "email": "alexandre.salome@gmail.com",
+                    "homepage": "http://alexandre-salome.fr"
+                },
+                {
+                    "name": "Julien DIDIER",
+                    "email": "genzo.wm@gmail.com",
+                    "homepage": "http://www.jdidier.net"
+                }
+            ],
+            "description": "Library for accessing git",
+            "homepage": "http://gitonomy.com",
+            "time": "2014-02-16 23:28:00"
+        },
+        {
             "name": "guzzle/common",
             "version": "v3.7.3",
             "target-dir": "Guzzle/Common",
@@ -1283,6 +1333,53 @@
                 "tool"
             ],
             "time": "2012-11-29 21:23:47"
+        },
+        {
+            "name": "phpbb/epv",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpbb/epv.git",
+                "reference": "1cc3933decee3667d88c0a4f19e835b6c12a4f07"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpbb/epv/zipball/1cc3933decee3667d88c0a4f19e835b6c12a4f07",
+                "reference": "1cc3933decee3667d88c0a4f19e835b6c12a4f07",
+                "shasum": ""
+            },
+            "require": {
+                "gitonomy/gitlib": "0.1.*@dev",
+                "nikic/php-parser": "0.9.*@dev",
+                "php": ">=5.3.3",
+                "symfony/console": ">=2.3.0",
+                "symfony/finder": ">=2.3.0",
+                "symfony/yaml": ">=2.3.0|>=2.4.0|>=2.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.0.*"
+            },
+            "bin": [
+                "src/epv/EPV.php"
+            ],
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Sohier",
+                    "email": "paul@phpbb.com"
+                }
+            ],
+            "description": "A extension validator for phpBB extensions. Extensions are required to pass the validator when submitted to the extension database.",
+            "time": "2014-08-02 19:37:06"
         },
         {
             "name": "phpunit/dbunit",
@@ -2434,9 +2531,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "phpbb/epv": 20
+    },
     "platform": [
 
     ],

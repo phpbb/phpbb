@@ -29,6 +29,7 @@
 		"symfony/filesystem": "2.3.*",
 		"symfony/finder": "2.3.*",
 		"symfony/http-foundation": "2.3.*",
-		"symfony/process": "2.3.*"
+		"symfony/process": "2.3.*",
+		"phpbb/epv": "dev-master"
 	}
 }
