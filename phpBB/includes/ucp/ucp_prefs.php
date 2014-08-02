@@ -43,7 +43,7 @@ class ucp_prefs
 					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
 					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
 					'lang'			=> basename(request_var('lang', $user->data['user_lang'])),
-					'style'			=> request_var('style', (int) $user->data['user_style']),
+					'user_style'		=> request_var('user_style', (int) $user->data['user_style']),
 					'tz'			=> request_var('tz', $user->data['user_timezone']),
 
 					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
@@ -76,11 +76,11 @@ class ucp_prefs
 				{
 					if ($config['override_user_style'])
 					{
-						$data['style'] = (int) $config['default_style'];
+						$data['user_style'] = (int) $config['default_style'];
 					}
-					else if (!phpbb_style_is_active($data['style']))
+					else if (!phpbb_style_is_active($data['user_style']))
 					{
-						$data['style'] = (int) $user->data['user_style'];
+						$data['user_style'] = (int) $user->data['user_style'];
 					}
 
 					$error = validate_data($data, array(
@@ -107,7 +107,7 @@ class ucp_prefs
 							'user_dateformat'		=> $data['dateformat'],
 							'user_lang'				=> $data['lang'],
 							'user_timezone'			=> $data['tz'],
-							'user_style'			=> $data['style'],
+							'user_style'			=> $data['user_style'],
 						);
 
 						/**
@@ -207,7 +207,7 @@ class ucp_prefs
 					'S_MORE_STYLES'			=> $s_more_styles,
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['style']),
+					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style']),
 					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
 					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
