@@ -10,6 +10,7 @@ imports:
     - { resource: mimetype_guessers.yml }
     - { resource: passwords.yml }
     - { resource: profilefields.yml }
+    - { resource: twig.yml }
 
 services:
     acl.permissions:
@@ -339,6 +340,9 @@ services:
             - @config
             - @user
             - @template_context
+            - @template.twig.environment
+            - %core.template.cache_path%
+            - @template.twig.extensions.collection
             - @ext.manager
 
     template_context:

@@ -13,6 +13,9 @@
 
 namespace phpbb\template\twig;
 
+use Twig_Lexer;
+use Twig_LexerInterface;
+
 class environment extends \Twig_Environment
 {
 	/** @var \phpbb\config\config */
@@ -20,6 +23,9 @@ class environment extends \Twig_Environment
 
 	/** @var \phpbb\path_helper */
 	protected $phpbb_path_helper;
+
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
+	protected $container;
 
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
@@ -38,22 +44,44 @@ class environment extends \Twig_Environment
 	*
 	* @param \phpbb\config\config $phpbb_config The phpBB configuration
 	* @param \phpbb\path_helper $path_helper phpBB path helper
+	* @param \Symfony\Component\DependencyInjection\ContainerInterface $container
 	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
 	* @param \Twig_LoaderInterface $loader Twig loader interface
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \Symfony\Component\DependencyInjection\ContainerInterface $container, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
 		$this->phpbb_path_helper = $path_helper;
 		$this->extension_manager = $extension_manager;
+		$this->container = $container;
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 
+		$options = array_merge(array(
+				'cache'			=> (defined('IN_INSTALL')) ? false : $cache_path,
+				'debug'			=> defined('DEBUG'),
+				'auto_reload'	=> (bool) $this->phpbb_config['load_tplcompile'],
+				'autoescape'	=> false,
+			), $options);
+
 		return parent::__construct($loader, $options);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function getLexer()
+	{
+		if (null === $this->lexer) {
+			$this->lexer = $this->container->get('template.twig.lexer');
+		}
+
+		return $this->lexer;
+	}
+
 
 	/**
 	* Get the list of enabled phpBB extensions
