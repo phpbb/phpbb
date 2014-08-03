@@ -207,7 +207,7 @@ abstract class type_base implements type_interface
 	{
 		global $request, $db;
 
-		$value = $request->variable($this->get_field_ident($field_data));
+		$value = $request->variable($this->get_field_ident($field_data), false);
 
 		if (!empty($value))
 		{
