@@ -40,12 +40,12 @@ class enable extends command
 		if ($this->manager->is_enabled($name))
 		{
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($name));
-			$output->writeln('<error>' . $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name) . '</error>');
+			$output->writeln('<info>' . $this->user->lang('CLI_EXTENSION_ENABLE_SUCCESS', $name) . '</info>');
 			return 0;
 		}
 		else
 		{
-			$output->writeln('<info>' . $this->user->lang('CLI_EXTENSION_ENABLE_SUCCESS', $name) . '</info>');
+			$output->writeln('<error>' . $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name) . '</error>');
 			return 1;
 		}
 	}
