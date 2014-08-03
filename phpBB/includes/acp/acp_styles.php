@@ -888,7 +888,7 @@ class acp_styles
 	* Show item in styles list
 	*
 	* @param array $style style row
-	* @param array $level style inheritance level
+	* @param int $level style inheritance level
 	*/
 	protected function list_style(&$style, $level)
 	{
