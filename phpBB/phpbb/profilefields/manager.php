@@ -503,7 +503,7 @@ class manager
 				continue;
 			}
 
-			$clause = $this->type_collection[$field['data']['field_type']]->get_search_clause($field);
+			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field);
 			if ($clause !== false)
 			{
 				$clauses[] = $clause;
