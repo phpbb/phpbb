@@ -133,6 +133,17 @@
   }
 }
 
+
+.topic-icon {
+	background-repeat: no-repeat;
+	height: 16px;
+	width: 16px;
+	float: left;
+	position: absolute;
+	left: 4px;
+	top: 16px;
+}
+
 /* Former imageset */
 span.imageset {
 	display: inline-block !important;
