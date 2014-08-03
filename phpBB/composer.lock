@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "5f0d7e899eb1feec2d25aa88f13e9594",
+    "hash": "c402a2f66294a5829855ecaf45aaebb1",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -1340,12 +1340,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpbb/epv.git",
-                "reference": "1cc3933decee3667d88c0a4f19e835b6c12a4f07"
+                "reference": "c1736a40f6b9bae357bd443489ae6370e0cf2f11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpbb/epv/zipball/1cc3933decee3667d88c0a4f19e835b6c12a4f07",
-                "reference": "1cc3933decee3667d88c0a4f19e835b6c12a4f07",
+                "url": "https://api.github.com/repos/phpbb/epv/zipball/c1736a40f6b9bae357bd443489ae6370e0cf2f11",
+                "reference": "c1736a40f6b9bae357bd443489ae6370e0cf2f11",
                 "shasum": ""
             },
             "require": {
@@ -1379,7 +1379,7 @@
                 }
             ],
             "description": "A extension validator for phpBB extensions. Extensions are required to pass the validator when submitted to the extension database.",
-            "time": "2014-08-02 19:37:06"
+            "time": "2014-08-03 09:17:06"
         },
         {
             "name": "phpunit/dbunit",
