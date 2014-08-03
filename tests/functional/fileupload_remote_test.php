@@ -63,7 +63,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 
 	public function test_successful_upload()
 	{
-		$upload = new fileupload('', array('gif'), 1000);
+		$upload = new fileupload('', array('gif'), 4000);
 		$file = $upload->remote_upload(self::$root_url . 'docs/site_logo.gif');
 		$this->assertEquals(0, sizeof($file->error));
 		$this->assertTrue(file_exists($file->filename));
