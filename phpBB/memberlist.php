@@ -855,20 +855,27 @@ switch ($mode)
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
-        // Load custom profile fields
-        $cp_row = array();
-        if ($config['load_cpf_memberlist'])
-        {
-            $cp = $phpbb_container->get('profilefields.manager');
+		// Load custom profile fields
+		$cp_row = array();
+		$cpf_sort = false;
+		if ($config['load_cpf_memberlist'])
+		{
+			$cp = $phpbb_container->get('profilefields.manager');
 
-            $cp->generate_profile_fields('memberlist', $user->get_iso_lang_id());
+			$cp->generate_profile_fields('memberlist', $user->get_iso_lang_id());
 
-            $cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
-            foreach ($cp_row as $profile_field)
-            {
-                $template->assign_block_vars('custom_fields', $profile_field);
-            }
-        }
+			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
+			foreach ($cp_row as $profile_field)
+			{
+				if ($sort_key == $profile_field['PROFILE_FIELD_IDENT'])
+				{
+					$cpf_sort = true;
+				}
+
+				$sort_key_text[$profile_field['PROFILE_FIELD_IDENT']] = $profile_field['PROFILE_FIELD_NAME'];
+				$sort_key_sql[$profile_field['PROFILE_FIELD_IDENT']] = 'f.pf_' . $profile_field['PROFILE_FIELD_IDENT'];
+			}
+		}
 
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
@@ -898,6 +905,12 @@ switch ($mode)
 		foreach ($cp_row as $profile_field)
 		{
 			$search_params[] = $profile_field['PROFILE_FIELD_NAME'];
+		}
+
+		if ($cpf_sort)
+		{
+			$sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
+			$sql_where .= 'AND u.user_id = f.user_id';
 		}
 
 		// We validate form and field here, only id/class allowed
@@ -1037,11 +1050,15 @@ switch ($mode)
 			// Searching by CPF?
 			if ($config['load_cpf_memberlist'])
 			{
-				$clause = $cp->build_search_sql_clause('field_show_on_ml', 'f');
-				if ($clause !== false)
+				$cpf_clause = $cp->build_search_sql_clause('field_show_on_ml', 'f');
+				if ($cpf_clause !== false)
 				{
-                    $sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
-					$sql_where .= ' AND u.user_id = f.user_id AND ' . $clause;
+					if (!$cpf_sort)
+					{
+						$sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
+						$sql_where .= 'AND u.user_id = f.user_id';
+					}
+					$sql_where .= ' AND ' . $cpf_clause;
 				}
 			}
 		}
@@ -1253,6 +1270,15 @@ switch ($mode)
 				'S_SELECTED'	=> ($first_char == $char) ? true : false,
 				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . $char) . '#memberlist',
 			));
+		}
+
+		// Assign the custom profile fields to the template
+		foreach ($cp_row as $profile_field)
+		{
+			$profile_field['PROFILE_FIELD_SORT_URL'] = $sort_url . '&amp;sk=' . $profile_field['PROFILE_FIELD_IDENT'] .
+				'&amp;sd=' . (($sort_key == $profile_field['PROFILE_FIELD_IDENT'] && $sort_dir == 'a') ? 'd' : 'a');
+
+			$template->assign_block_vars('custom_fields', $profile_field);
 		}
 
 		// Some search user specific data
