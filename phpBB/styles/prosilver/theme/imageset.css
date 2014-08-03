@@ -133,7 +133,6 @@
   }
 }
 
-
 .topic-icon {
 	background-repeat: no-repeat;
 	height: 16px;
@@ -178,72 +177,6 @@ span.imageset {
 	background-image: url("./images/icon_back_top.gif");
 	padding-left: 11px;
 	padding-top: 11px;
-}
-
-.imageset.phpbb_aol-icon, .imageset.icon_contact_aim {
-	background-image: url("./images/icon_contact_aim.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_contact_email {
-	background-image: url("./images/icon_contact_email.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_contact_icq, .imageset.phpbb_icq-icon {
-	background-image: url("./images/icon_contact_icq.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_contact_jabber {
-	background-image: url("./images/icon_contact_jabber.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.phpbb_wlm-icon, .imageset.icon_contact_msnm {
-	background-image: url("./images/icon_contact_msnm.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_contact_www, .imageset.phpbb_website-icon {
-	background-image: url("./images/icon_contact_www.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_contact_yahoo, .imageset.phpbb_yahoo-icon {
-	background-image: url("./images/icon_contact_yahoo.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_post_delete {
-	background-image: url("./images/icon_post_delete.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_post_info {
-	background-image: url("./images/icon_post_info.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_post_report {
-	background-image: url("./images/icon_post_report.gif");
-	padding-left: 20px;
-	padding-top: 20px;
-}
-
-.imageset.icon_post_target {
-	background-image: url("./images/icon_post_target.gif");
-	padding-left: 11px;
-	padding-top: 9px;
 }
 
 .imageset.icon_post_target_unread {
@@ -305,7 +238,6 @@ span.imageset {
 	padding-left: 16px;
 	padding-top: 12px;
 }
-
 
 /* English images for fallback */
 .imageset.icon_user_online {
