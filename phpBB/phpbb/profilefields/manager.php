@@ -281,6 +281,7 @@ class manager
 			$profile_field = $this->type_collection[$field_data['field_type']];
 
 			$tpl_fields[] = array(
+				'PROFILE_FIELD_IDENT'   => $field_ident,
 				'PROFILE_FIELD_TYPE'	=> $field_data['field_type'],
 				'PROFILE_FIELD_NAME'	=> $profile_field->get_field_name($field_data['lang_name']),
 				'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($field_data['lang_explain']),
@@ -487,10 +488,10 @@ class manager
 
 	/**
 	* Process fields while searching and generate SQL search clause
-    *
-    * @param string $filter
-    * @param string $table_alias
-    * @return string
+	*
+	* @param string $filter
+	* @param string $table_alias
+	* @return string
 	*/
 	public function build_search_sql_clause($filter = '', $table_alias = 'f')
 	{
@@ -510,7 +511,7 @@ class manager
 			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field, $table_alias);
 			if ($clause !== false)
 			{
-                $clauses[] = $clause;
+				$clauses[] = $clause;
 			}
 		}
 
