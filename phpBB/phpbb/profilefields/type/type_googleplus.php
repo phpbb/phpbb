@@ -18,6 +18,14 @@ class type_googleplus extends type_string
 	/**
 	* {@inheritDoc}
 	*/
+	public function get_name()
+	{
+		return $this->user->lang('FIELD_GOOGLEPLUS');
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_service_name()
 	{
 		return 'profilefields.type.googleplus';
