@@ -487,8 +487,12 @@ class manager
 
 	/**
 	* Process fields while searching and generate SQL search clause
+    *
+    * @param string $filter
+    * @param string $table_alias
+    * @return string
 	*/
-	public function build_search_sql_clause($filter = '')
+	public function build_search_sql_clause($filter = '', $table_alias = 'f')
 	{
 		if (!sizeof($this->profile_cache))
 		{
@@ -503,10 +507,10 @@ class manager
 				continue;
 			}
 
-			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field);
+			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field, $table_alias);
 			if ($clause !== false)
 			{
-				$clauses[] = $clause;
+                $clauses[] = $clause;
 			}
 		}
 

@@ -228,7 +228,8 @@ interface type_interface
 	* Returns the SQL clause while searching for the field
 	*
 	* @param array $field_data
+    * @param string $table_alias
 	* @return string
 	*/
-	public function get_search_clause($field_data);
+	public function get_search_clause($field_data, $table_alias);
 }

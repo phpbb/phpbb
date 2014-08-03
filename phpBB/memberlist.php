@@ -1037,9 +1037,10 @@ switch ($mode)
 			// Searching by CPF?
 			if ($config['load_cpf_memberlist'])
 			{
-				$clause = $cp->build_search_sql_clause('field_show_on_ml');
+				$clause = $cp->build_search_sql_clause('field_show_on_ml', 'f');
 				if ($clause !== false)
 				{
+                    $sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
 					$sql_where .= ' AND ' . $clause;
 				}
 			}
