@@ -804,7 +804,7 @@ class acp_styles
 	*
 	* @param array $styles Styles list, passed as reference
 	* @param string $name Name of parent style
-	* @param string $level Styles tree level
+	* @param int $level Styles tree level
 	*/
 	protected function show_available_child_styles(&$styles, $name, $level)
 	{
