@@ -203,15 +203,15 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_search_clause($field_data)
+	public function get_search_clause($field_data, $table_alias)
 	{
 		global $request, $db;
 
-		$value = $request->variable($this->get_field_ident($field_data), false);
+		$value = $request->variable($this->get_field_ident($field_data), '');
 
 		if (!empty($value))
 		{
-			return $this->get_field_ident($field_data) . ' = ' . $db->sql_escape($value);
+			return $table_alias . '.' . $this->get_field_ident($field_data) . ' ' . $db->sql_like_expression($this->get_profile_value_raw($value, $field_data));
 		}
 
 		return false;
