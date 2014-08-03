@@ -41,7 +41,7 @@ class increment extends command
 				'dynamic',
 				'd',
 				InputOption::VALUE_NONE,
-				$this->user-lang('CLI_CONFIG_CANNOT_CACHED')
+				$this->user->lang('CLI_CONFIG_CANNOT_CACHED')
 			)
 		;
 	}
