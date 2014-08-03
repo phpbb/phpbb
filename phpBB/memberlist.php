@@ -1041,7 +1041,7 @@ switch ($mode)
 				if ($clause !== false)
 				{
                     $sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
-					$sql_where .= ' AND ' . $clause;
+					$sql_where .= ' AND u.user_id = f.user_id AND ' . $clause;
 				}
 			}
 		}
