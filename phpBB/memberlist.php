@@ -855,6 +855,21 @@ switch ($mode)
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
+        // Load custom profile fields
+        $cp_row = array();
+        if ($config['load_cpf_memberlist'])
+        {
+            $cp = $phpbb_container->get('profilefields.manager');
+
+            $cp->generate_profile_fields('memberlist', $user->get_iso_lang_id());
+
+            $cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
+            foreach ($cp_row as $profile_field)
+            {
+                $template->assign_block_vars('custom_fields', $profile_field);
+            }
+        }
+
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
 		{
@@ -877,21 +892,6 @@ switch ($mode)
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
 		$select_single 	= request_var('select_single', false);
-
-		// Load custom profile fields
-		$cp_row = array();
-		if ($config['load_cpf_memberlist'])
-		{
-			$cp = $phpbb_container->get('profilefields.manager');
-
-			$cp->generate_profile_fields('memberlist', $user->get_iso_lang_id());
-
-			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
-			foreach ($cp_row as $profile_field)
-			{
-				$template->assign_block_vars('custom_fields', $profile_field);
-			}
-		}
 
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
