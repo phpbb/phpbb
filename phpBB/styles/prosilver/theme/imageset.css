@@ -1,3 +1,18 @@
+.row-icon:before {
+	margin: 2px 8px;
+	line-height: 1;
+    vertical-align: text-bottom;
+    background-repeat: no-repeat;
+    background-image: url("./images/imageset.png");
+    content: '';
+    float: left;
+    display: inline-block;
+    height: 30px;
+    padding: 0;
+    position: relative;
+    top: 1px;
+    width: 30px;
+}
 /* Former imageset */
 span.imageset {
 	display: inline-block !important;
