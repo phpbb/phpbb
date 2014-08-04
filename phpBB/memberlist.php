@@ -284,7 +284,7 @@ switch ($mode)
 						}
 
 						$rank_title = $rank_img = $rank_img_src = '';
-						get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
+						get_user_rank($row, (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
 
 						$template->assign_block_vars('group.user', array(
 							'USER_ID'		=> $row['user_id'],
@@ -1083,7 +1083,7 @@ switch ($mode)
 			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'])
 			{
-				get_user_rank($group_row['group_rank'], false, $rank_title, $rank_img, $rank_img_src);
+				get_user_rank($group_roup, false, $rank_title, $rank_img, $rank_img_src);
 
 				if ($rank_img)
 				{
