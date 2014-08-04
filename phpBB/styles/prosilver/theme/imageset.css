@@ -134,6 +134,7 @@
     position: absolute;
     left: 4px;
     top: 16px;
+    z-index: 3;
 }
 
 /* Former imageset */
