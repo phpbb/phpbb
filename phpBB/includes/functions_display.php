@@ -1396,7 +1396,7 @@ function get_user_rank($user_data, $user_posts, &$rank_title, &$rank_img, &$rank
 	* @event core.modify_user_rank
 	* @var	array	user_data		Array with user's data
 	* @var	int		user_posts		User_posts to change
-	* @since 3.1.0-rc3
+	* @since 3.1.0-RC3
 	*/
 
 	$vars = array('user_data', 'user_posts');
