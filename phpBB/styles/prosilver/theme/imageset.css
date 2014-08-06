@@ -12,6 +12,9 @@
     position: relative;
     width: 30px;
     z-index: 2;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
 }
 
 .topic_read:before, .pm_read:before                                         { background-position: 0 0; }
@@ -64,104 +67,68 @@
     position: absolute;
     z-index: 1;
     left: 10px;
-    border-radius: 50%;
+    border-radius: 100%;
     background-color: transparent;
+    border-width: 1px;
+    border-style: solid;
     line-height: 1;
     vertical-align: text-bottom;
     float: left;
     height: 27px;
     padding: 0;
     width: 27px;
-    -webkit-transition: all 2s cubic-bezier(0.250, 0.100, 0.250, 1.000);
-            transition: all 2s cubic-bezier(0.250, 0.100, 0.250, 1.000); /* ease (default) */
+    -webkit-transition: 0.15s all ease-in-out;
+            transition: 0.15s all ease-in-out; /* ease (default) */
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
 }
 
 .topic_read_hot:after,
 .topic_read_hot_mine:after{
+    border-color: #196db5;
     top: 6px;
-    -webkit-animation: cd-pulse-read 2s infinite;
-    animation: cd-pulse-read 2s infinite;
+    -webkit-animation: radiate 2s ease-in-out infinite;
+    animation: radiate 2s ease-in-out infinite;
 }
 
 
 .topic_unread_hot:after,
 .topic_unread_hot_mine:after {
+    border-color: #bc2a4d;
     top: 4px;
-    -webkit-animation: cd-pulse-unread 2s infinite;
-    animation: cd-pulse-unread 2s infinite;
+    -webkit-animation: radiate 2s ease-in-out infinite;
+    animation: radiate 2s ease-in-out infinite;
 }
 
-
-@-webkit-keyframes cd-pulse-unread {
+@-webkit-keyframes radiate {
     0% {
-        -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 1);
-                box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 1);
+       -webkit-transform: scale(1);
+               transform: scale(1);
+        opacity: 1;
     }
 
     100% {
-        -webkit-transform: scale(1.3);
-        -ms-transform: scale(1.3);
-        transform: scale(1.3);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 0);
-                box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 0);
+       -webkit-transform: scale(1.3);
+               transform: scale(1.3);
+        opacity: 0;
     }
+
 }
 
-@keyframes cd-pulse-unread {
+@keyframes radiate {
     0% {
-        -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 1);
-                box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 1);
+       -webkit-transform: scale(1);
+               transform: scale(1);
+        opacity: 1;
     }
 
     100% {
-        -webkit-transform: scale(1.3);
-        -ms-transform: scale(1.3);
-        transform: scale(1.3);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 0);
-                box-shadow: inset 0 0 1px 1px rgba(188, 42, 77, 0);
-    }
-}
-
-@-webkit-keyframes cd-pulse-read {
-    0% {
-        -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 1);
-                box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 1);
+       -webkit-transform: scale(1.3);
+               transform: scale(1.3);
+        opacity: 0;
     }
 
-    100% {
-        -webkit-transform: scale(1.3);
-        -ms-transform: scale(1.3);
-        transform: scale(1.3);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 0);
-                box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 0);
-    }
-}
-
-@keyframes cd-pulse-read {
-    0% {
-        -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-        transform: scale(1);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 1);
-                box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 1);
-    }
-
-    100% {
-        -webkit-transform: scale(1.3);
-        -ms-transform: scale(1.3);
-        transform: scale(1.3);
-        -webkit-box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 0);
-                box-shadow: inset 0 0 1px 1px rgba(25, 109, 181, 0);
-    }
 }
 
 .topic-icon {
