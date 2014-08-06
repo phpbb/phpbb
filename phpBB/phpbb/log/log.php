@@ -245,9 +245,9 @@ class log implements \phpbb\log\log_interface
 			break;
 
 			case 'mod':
-				$forum_id = (int) $additional_data['forum_id'];
+				$forum_id = isset($additional_data['forum_id']) ? (int) $additional_data['forum_id'] : 0;
 				unset($additional_data['forum_id']);
-				$topic_id = (int) $additional_data['topic_id'];
+				$topic_id = isset($additional_data['topic_id']) ? (int) $additional_data['topic_id'] : 0;
 				unset($additional_data['topic_id']);
 				$sql_ary += array(
 					'log_type'		=> LOG_MOD,
