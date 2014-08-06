@@ -1040,19 +1040,45 @@ class p_master
 	*/
 	function add_mod_info($module_class)
 	{
-		global $user, $phpEx;
-
-		global $phpbb_extension_manager;
+		global $config, $user, $phpEx, $phpbb_extension_manager;
 
 		$finder = $phpbb_extension_manager->get_finder();
 
-		$lang_files = $finder
+		// We grab the language files from the default, English and user's language.
+		// So we can fall back to the other files like we do when using add_lang()
+		$default_lang_files = $english_lang_files = $user_lang_files = array();
+
+		// Search for board default language if it's not the user language
+		if ($config['default_lang'] != $user->lang_name)
+		{
+			$default_lang_files = $finder
+				->prefix('info_' . strtolower($module_class) . '_')
+				->suffix(".$phpEx")
+				->extension_directory('/language/' . basename($config['default_lang']))
+				->core_path('language/' . basename($config['default_lang']) . '/mods/')
+				->find();
+		}
+
+		// Search for english, if its not the default or user language
+		if ($config['default_lang'] != 'en' && $user->lang_name != 'en')
+		{
+			$english_lang_files = $finder
+				->prefix('info_' . strtolower($module_class) . '_')
+				->suffix(".$phpEx")
+				->extension_directory('/language/en')
+				->core_path('language/en/mods/')
+				->find();
+		}
+
+		// Find files in the user's language
+		$user_lang_files = $finder
 			->prefix('info_' . strtolower($module_class) . '_')
 			->suffix(".$phpEx")
 			->extension_directory('/language/' . $user->lang_name)
 			->core_path('language/' . $user->lang_name . '/mods/')
 			->find();
 
+		$lang_files = array_unique(array_merge($user_lang_files, $english_lang_files, $default_lang_files));
 		foreach ($lang_files as $lang_file => $ext_name)
 		{
 			$user->add_lang_ext($ext_name, $lang_file);
