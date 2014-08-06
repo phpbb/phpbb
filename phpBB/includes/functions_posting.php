@@ -2401,12 +2401,31 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* event is to modify the return URL ($url).
 	*
 	* @event core.submit_post_end
-	* @var	string		url						The "Return to topic" URL
-	* @var	array		data					Array of post data about the
-	*											submitted post
+	* @var	string	mode				Variable containing posting mode value
+	* @var	string	subject				Variable containing post subject value
+	* @var	string	username			Variable containing post author name
+	* @var	int		topic_type			Variable containing topic type value
+	* @var	array	poll				Array with the poll data for the post
+	* @var	array	data				Array with the data for the post
+	* @var	bool	update_message		Flag indicating if the post will be updated
+	* @var	bool	update_search_index	Flag indicating if the search index will be updated
+	* @var	string	url					The "Return to topic" URL
+	*
 	* @since 3.1.0-a3
+	* @change 3.1.0-RC3 Added vars mode, subject, username, topic_type,
+	*		poll, update_message, update_search_index
 	*/
-	$vars = array('url', 'data');
+	$vars = array(
+		'mode',
+		'subject',
+		'username',
+		'topic_type',
+		'poll',
+		'data',
+		'update_message',
+		'update_search_index',
+		'url',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_end', compact($vars)));
 
 	return $url;
