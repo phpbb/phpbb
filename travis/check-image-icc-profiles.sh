@@ -13,7 +13,7 @@ set -e
 DB=$1
 TRAVIS_PHP_VERSION=$2
 
-if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
+if [ "$TRAVIS_PHP_VERSION" == "5.3.3" -a "$DB" == "mysqli" ]
 then
 	find . -type f -not -path './phpBB/vendor/*' -iregex '.*\.\(gif\|jpg\|jpeg\|png\)$' | \
 		parallel --gnu --keep-order 'phpBB/develop/strip_icc_profiles.sh {}'
