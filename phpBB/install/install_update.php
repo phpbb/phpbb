@@ -1068,7 +1068,7 @@ class install_update extends module
 
 								if ($update_mode != 'download')
 								{
-									$transfer->delete_file($file_struct['filename']);
+									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
 								}
 							break;
 						}
