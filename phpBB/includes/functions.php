@@ -1031,7 +1031,7 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 			$validate_timezone = new DateTimeZone($selected_timezone);
 			$timezones[] = $selected_timezone;
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 		}
 	}
