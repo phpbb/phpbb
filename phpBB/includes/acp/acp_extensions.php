@@ -137,6 +137,12 @@ class acp_extensions
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
+				$extension = $phpbb_extension_manager->get_extension($ext_name);
+				if (!$extension->is_enableable())
+				{
+					trigger_error($user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if ($phpbb_extension_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
@@ -160,6 +166,12 @@ class acp_extensions
 				if (!$md_manager->validate_enable())
 				{
 					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				$extension = $phpbb_extension_manager->get_extension($ext_name);
+				if (!$extension->is_enableable())
+				{
+					trigger_error($user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($phpbb_extension_manager->is_enabled($ext_name))
