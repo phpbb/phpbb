@@ -2104,7 +2104,7 @@ class tools
 		$statements = array();
 
 		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
-		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		if (strlen($table_name . '_' . $index_name) - strlen($table_prefix) > 24)
 		{
 			$max_length = strlen($table_prefix) + 24;
 			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
