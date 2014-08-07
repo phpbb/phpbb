@@ -135,7 +135,8 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap($permissions));
 		$user = $this->getMock('\phpbb\user');
-		$content_visibility = new \phpbb\content_visibility($auth, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
+		$config = new phpbb\config\config(array());
+		$content_visibility = new \phpbb\content_visibility($auth, $config, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
 		$result = $db->sql_query('SELECT ' . $mode . '_id
 			FROM ' . $table . '

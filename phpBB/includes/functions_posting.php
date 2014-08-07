@@ -1431,20 +1431,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	{
 		if (!$is_soft)
 		{
-			if ($data['post_visibility'] == ITEM_APPROVED)
-			{
-				$phpbb_content_visibility->remove_post_from_statistic($data, $sql_data);
-			}
-			else if ($data['post_visibility'] == ITEM_UNAPPROVED || $data['post_visibility'] == ITEM_REAPPROVE)
-			{
-				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_unapproved = forum_posts_unapproved - 1';
-				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_unapproved = topic_posts_unapproved - 1';
-			}
-			else if ($data['post_visibility'] == ITEM_DELETED)
-			{
-				$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_softdeleted = forum_posts_softdeleted - 1';
-				$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_softdeleted = topic_posts_softdeleted - 1';
-			}
+			$phpbb_content_visibility->remove_post_from_statistic($data, $sql_data);
 		}
 
 		$sql = 'SELECT 1 AS has_attachments

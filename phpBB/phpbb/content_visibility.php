@@ -38,6 +38,12 @@ class content_visibility
 	protected $auth;
 
 	/**
+	* config object
+	* @var \phpbb\config\config
+	*/
+	protected $config;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -53,6 +59,7 @@ class content_visibility
 	* Constructor
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
+	* @param	\phpbb\config\config	$config	Config object
 	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user			User object
 	* @param	string		$phpbb_root_path	Root path
@@ -62,9 +69,10 @@ class content_visibility
 	* @param	string		$topics_table		Topics table name
 	* @param	string		$users_table		Users table name
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
+		$this->config = $config;
 		$this->db = $db;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -576,7 +584,7 @@ class content_visibility
 			$sql_data[$this->users_table] = (($sql_data[$this->users_table]) ? $sql_data[$this->users_table] . ', ' : '') . 'user_posts = user_posts + 1';
 		}
 
-		set_config_count('num_posts', 1, true);
+		$this->config->increment('num_posts', 1, false);
 	}
 
 	/**
@@ -588,15 +596,28 @@ class content_visibility
 	*/
 	public function remove_post_from_statistic($data, &$sql_data)
 	{
-		$sql_data[$this->topics_table] = ((!empty($sql_data[$this->topics_table])) ? $sql_data[$this->topics_table] . ', ' : '') . 'topic_posts_approved = topic_posts_approved - 1';
-		$sql_data[$this->forums_table] = ((!empty($sql_data[$this->forums_table])) ? $sql_data[$this->forums_table] . ', ' : '') . 'forum_posts_approved = forum_posts_approved - 1';
-
-		if ($data['post_postcount'])
+		if ($data['post_visibility'] == ITEM_APPROVED)
 		{
-			$sql_data[$this->users_table] = ((!empty($sql_data[$this->users_table])) ? $sql_data[$this->users_table] . ', ' : '') . 'user_posts = user_posts - 1';
-		}
+			$sql_data[$this->topics_table] = ((!empty($sql_data[$this->topics_table])) ? $sql_data[$this->topics_table] . ', ' : '') . 'topic_posts_approved = topic_posts_approved - 1';
+			$sql_data[$this->forums_table] = ((!empty($sql_data[$this->forums_table])) ? $sql_data[$this->forums_table] . ', ' : '') . 'forum_posts_approved = forum_posts_approved - 1';
 
-		set_config_count('num_posts', -1, true);
+			if ($data['post_postcount'])
+			{
+				$sql_data[$this->users_table] = ((!empty($sql_data[$this->users_table])) ? $sql_data[$this->users_table] . ', ' : '') . 'user_posts = user_posts - 1';
+			}
+
+			$this->config->increment('num_posts', -1, false);
+		}
+		else if ($data['post_visibility'] == ITEM_UNAPPROVED || $data['post_visibility'] == ITEM_REAPPROVE)
+		{
+			$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_unapproved = forum_posts_unapproved - 1';
+			$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_unapproved = topic_posts_unapproved - 1';
+		}
+		else if ($data['post_visibility'] == ITEM_DELETED)
+		{
+			$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . 'forum_posts_softdeleted = forum_posts_softdeleted - 1';
+			$sql_data[TOPICS_TABLE] = (($sql_data[TOPICS_TABLE]) ? $sql_data[TOPICS_TABLE] . ', ' : '') . 'topic_posts_softdeleted = topic_posts_softdeleted - 1';
+		}
 	}
 
 	/**
@@ -627,8 +648,8 @@ class content_visibility
 		$sql_data[$this->forums_table] .= ', forum_posts_unapproved = forum_posts_unapproved - ' . $topic_row['topic_posts_unapproved'];
 		$sql_data[$this->forums_table] .= ', forum_posts_softdeleted = forum_posts_softdeleted - ' . $topic_row['topic_posts_softdeleted'];
 
-		set_config_count('num_topics', -1, true);
-		set_config_count('num_posts', $topic_row['topic_posts_approved'] * (-1), true);
+		$this->config->increment('num_topics', -1, false);
+		$this->config->increment('num_posts', $topic_row['topic_posts_approved'] * (-1), false);
 
 		// Get user post count information
 		$sql = 'SELECT poster_id, COUNT(post_id) AS num_posts
