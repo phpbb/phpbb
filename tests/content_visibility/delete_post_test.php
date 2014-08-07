@@ -338,9 +338,10 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$this->assertEquals($expected_forum, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
 
-		$result = $db->sql_query('SELECT user_posts
-			FROM phpbb_users
-			WHERE user_id = ' . (int) $data['poster_id']);
+		$sql = 'SELECT user_posts
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . (int) $data['poster_id'];
+		$result = $db->sql_query($sql);
 
 		$this->assertEquals($expected_user, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
