@@ -166,21 +166,14 @@ class service
 			$ranks = array();
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				foreach ($row as $field => $data)
+				if ($row['rank_special'])
 				{
-					if ($field == 'rank_special' || ($row['rank_special'] && $field == 'rank_min'))
-					{
-						continue;
-					}
-
-					if ($row['rank_special'])
-					{
-						$ranks['special'][$row['rank_id']][$field] = $data;
-					}
-					else
-					{
-						$ranks['normal'][$row['rank_id']][$field] = $data;
-					}
+					unset($row['rank_min']);
+					$ranks['special'][$row['rank_id']] = $row;
+				}
+				else
+				{
+					$ranks['normal'][$row['rank_id']] = $row;
 				}
 			}
 			$this->db->sql_freeresult($result);
