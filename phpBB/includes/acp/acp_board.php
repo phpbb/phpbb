@@ -925,7 +925,7 @@ class acp_board
 		{
 			$user->timezone = new DateTimeZone($config['board_timezone']);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			// If the board timezone is invalid, we just use the users timezone.
 		}

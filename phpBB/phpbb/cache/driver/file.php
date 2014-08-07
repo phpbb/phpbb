@@ -208,7 +208,7 @@ class file extends \phpbb\cache\driver\base
 		{
 			$iterator = new \DirectoryIterator($this->cache_dir);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return;
 		}
@@ -259,7 +259,7 @@ class file extends \phpbb\cache\driver\base
 		{
 			$iterator = new \DirectoryIterator($dir);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			return;
 		}
