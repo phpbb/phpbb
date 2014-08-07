@@ -19,7 +19,7 @@
 		"irc": "irc://irc.freenode.org/phpbb"
 	},
 	"scripts": {
-		"post-update-cmd": "echo 'You MUST manually modify the clean-vendor-dir target in build/build.xml when adding or upgrading dependencies."
+		"post-update-cmd": "echo 'You MUST manually modify the clean-vendor-dir target in build/build.xml when adding or upgrading dependencies.'"
 	},
 	"replace": {
 		"phpbb/phpbb-core": "self.version"
