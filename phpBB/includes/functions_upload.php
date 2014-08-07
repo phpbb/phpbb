@@ -53,10 +53,16 @@ class filespec
 	protected $plupload;
 
 	/**
+	 * phpBB Mimetype guesser
+	 * @var \phpbb\mimetype\guesser
+	 */
+	protected $mimetype_guesser;
+
+	/**
 	* File Class
 	* @access private
 	*/
-	function filespec($upload_ary, $upload_namespace, \phpbb\plupload\plupload $plupload = null)
+	function filespec($upload_ary, $upload_namespace, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		if (!isset($upload_ary))
 		{
@@ -76,7 +82,7 @@ class filespec
 
 		if (!$this->mimetype)
 		{
-			$this->mimetype = 'application/octetstream';
+			$this->mimetype = 'application/octet-stream';
 		}
 
 		$this->extension = strtolower(self::get_extension($this->realname));
@@ -90,6 +96,7 @@ class filespec
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
 		$this->upload = $upload_namespace;
 		$this->plupload = $plupload;
+		$this->mimetype_guesser = $mimetype_guesser;
 	}
 
 	/**
@@ -215,25 +222,19 @@ class filespec
 	}
 
 	/**
-	* Get mimetype. Utilize mime_content_type if the function exist.
-	* Not used at the moment...
+	* Get mimetype
+	*
+	* @param string $filename Filename that needs to be checked
+	* @return string Mimetype of supplied filename
 	*/
 	function get_mimetype($filename)
 	{
-		$mimetype = '';
-
-		if (function_exists('mime_content_type'))
+		if ($this->mimetype_guesser !== null)
 		{
-			$mimetype = mime_content_type($filename);
+			$this->mimetype = $this->mimetype_guesser->guess($filename);
 		}
 
-		// Some browsers choke on a mimetype of application/octet-stream
-		if (!$mimetype || $mimetype == 'application/octet-stream')
-		{
-			$mimetype = 'application/octetstream';
-		}
-
-		return $mimetype;
+		return $this->mimetype;
 	}
 
 	/**
@@ -371,6 +372,9 @@ class filespec
 
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
+
+		// Get mimetype of supplied file
+		$this->mimetype = $this->get_mimetype($this->destination_file);
 
 		if ($this->is_image() && !$skip_image_check)
 		{
@@ -583,7 +587,7 @@ class fileupload
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
+	function form_upload($form_name, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		global $user, $request;
 
@@ -599,7 +603,7 @@ class fileupload
 			}
 		}
 
-		$file = new filespec($upload, $this, $plupload);
+		$file = new filespec($upload, $this, $mimetype_guesser, $plupload);
 
 		if ($file->init_error)
 		{
@@ -659,7 +663,7 @@ class fileupload
 	/**
 	* Move file from another location to phpBB
 	*/
-	function local_upload($source_file, $filedata = false)
+	function local_upload($source_file, $filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null)
 	{
 		global $user, $request;
 
@@ -672,20 +676,6 @@ class fileupload
 		{
 			$upload['name'] = utf8_basename($source_file);
 			$upload['size'] = 0;
-			$mimetype = '';
-
-			if (function_exists('mime_content_type'))
-			{
-				$mimetype = mime_content_type($source_file);
-			}
-
-			// Some browsers choke on a mimetype of application/octet-stream
-			if (!$mimetype || $mimetype == 'application/octet-stream')
-			{
-				$mimetype = 'application/octetstream';
-			}
-
-			$upload['type'] = $mimetype;
 		}
 		else
 		{
@@ -694,7 +684,7 @@ class fileupload
 			$upload['type'] = $filedata['type'];
 		}
 
-		$file = new filespec($upload, $this);
+		$file = new filespec($upload, $this, $mimetype_guesser);
 
 		if ($file->init_error)
 		{
@@ -752,7 +742,7 @@ class fileupload
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function remote_upload($upload_url)
+	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null)
 	{
 		global $user, $phpbb_root_path;
 
@@ -931,7 +921,7 @@ class fileupload
 
 		$upload_ary['tmp_name'] = $filename;
 
-		$file = new filespec($upload_ary, $this);
+		$file = new filespec($upload_ary, $this, $mimetype_guesser);
 		$this->common_checks($file);
 
 		return $file;

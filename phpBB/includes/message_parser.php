@@ -1083,6 +1083,12 @@ class parse_message extends bbcode_firstpass
 	protected $plupload;
 
 	/**
+	* The mimetype guesser object used for attachment mimetypes
+	* @var \phpbb\mimetype\guesser
+	*/
+	protected $mimetype_guesser;
+
+	/**
 	* Init - give message here or manually
 	*/
 	function parse_message($message = '')
@@ -1560,7 +1566,7 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->plupload);
+					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->mimetype_guesser, $this->plupload);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
@@ -1791,5 +1797,17 @@ class parse_message extends bbcode_firstpass
 	public function set_plupload(\phpbb\plupload\plupload $plupload)
 	{
 		$this->plupload = $plupload;
+	}
+
+	/**
+	* Setter function for passing the mimetype_guesser object
+	*
+	* @param \phpbb\mimetype\guesser $mimetype_guesser The mimetype_guesser object
+	*
+	* @return null
+	*/
+	public function set_mimetype_guesser(\phpbb\mimetype\guesser $mimetype_guesser)
+	{
+		$this->mimetype_guesser = $mimetype_guesser;
 	}
 }

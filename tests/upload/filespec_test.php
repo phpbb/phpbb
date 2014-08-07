@@ -65,6 +65,16 @@ class phpbb_filespec_test extends phpbb_test_case
 				copy($fileinfo->getPathname(), $this->path . 'copies/' . $fileinfo->getFilename() . '_copy_2');
 			}
 		}
+
+		$guessers = array(
+			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
+			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
+			new \phpbb\mimetype\content_guesser(),
+			new \phpbb\mimetype\extension_guesser(),
+		);
+		$guessers[2]->set_priority(-2);
+		$guessers[3]->set_priority(-2);
+		$this->mimetype_guesser = new \phpbb\mimetype\guesser($guessers);
 	}
 
 	private function get_filespec($override = array())
@@ -78,7 +88,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		return new filespec(array_merge($upload_ary, $override), null);
+		return new filespec(array_merge($upload_ary, $override), null, $this->mimetype_guesser);
 	}
 
 	protected function tearDown()
@@ -222,6 +232,9 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('png', 'image/png', true),
 			array('tif', 'image/tif', true),
 			array('txt', 'text/plain', false),
+			array('jpg', 'application/octet-stream', false),
+			array('gif', 'application/octetstream', false),
+			array('png', 'application/mime', false),
 		);
 	}
 
@@ -231,6 +244,30 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_is_image($filename, $mimetype, $expected)
 	{
 		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
+		$this->assertEquals($expected, $filespec->is_image());
+	}
+
+	public function is_image_get_mimetype()
+	{
+		return array(
+			array('gif', 'image/gif', true),
+			array('jpg', 'image/jpg', true),
+			array('png', 'image/png', true),
+			array('tif', 'image/tif', true),
+			array('txt', 'text/plain', false),
+			array('jpg', 'application/octet-stream', true),
+			array('gif', 'application/octetstream', true),
+			array('png', 'application/mime', true),
+		);
+	}
+
+	/**
+	 * @dataProvider is_image_get_mimetype
+	 */
+	public function test_is_image_get_mimetype($filename, $mimetype, $expected)
+	{
+		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
+		$filespec->get_mimetype($this->path . $filename);
 		$this->assertEquals($expected, $filespec->is_image());
 	}
 
