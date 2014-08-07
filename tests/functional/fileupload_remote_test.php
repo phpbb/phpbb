@@ -11,6 +11,8 @@
 *
 */
 
+require_once __DIR__ . '/../../phpBB/includes/functions_upload.php';
+
 /**
  * @group functional
  */
