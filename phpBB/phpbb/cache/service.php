@@ -168,18 +168,12 @@ class service
 			{
 				if ($row['rank_special'])
 				{
-					$ranks['special'][$row['rank_id']] = array(
-						'rank_title'	=>	$row['rank_title'],
-						'rank_image'	=>	$row['rank_image']
-					);
+					unset($row['rank_min']);
+					$ranks['special'][$row['rank_id']] = $row;
 				}
 				else
 				{
-					$ranks['normal'][] = array(
-						'rank_title'	=>	$row['rank_title'],
-						'rank_min'		=>	$row['rank_min'],
-						'rank_image'	=>	$row['rank_image']
-					);
+					$ranks['normal'][$row['rank_id']] = $row;
 				}
 			}
 			$this->db->sql_freeresult($result);
