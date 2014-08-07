@@ -267,6 +267,22 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				trigger_error('NOT_AUTHORISED');
 			}
 
+			/**
+			* Get the result of querying for the post to be quoted in the pm message
+			*
+			* @event core.ucp_pm_compose_quotepost_query_after
+			* @var	array	sql				The original SQL used in the query
+			* @var	array	post			Associative array with the result of the quotepost related SQL query
+			* @var	array	msg_id			The post_id that was searched to get the message for quoting
+			* @since 3.1.0-RC3
+			*/
+			$vars = array(
+				'sql',
+				'post',
+				'msg_id',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_quotepost_query_after', compact($vars)));
+
 			// Passworded forum?
 			if ($post['forum_id'])
 			{
