@@ -416,6 +416,7 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	padding-bottom: 5px;
 	margin: 0;
 	margin-bottom: 5px;
+	min-height: 40px;
 	overflow: hidden;
 }
 
