@@ -478,6 +478,29 @@ class mcp_queue
 							AND topic_delete_user <> 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
+
+					/**
+					* Alter sql query to get information on all topics in the list of forums provided.
+					*
+					* @event core.mcp_queue_get_posts_for_topics_query_before
+					* @var	string	sql						String with the query to be executed
+					* @var	array	forum_list				List of forums that contain the posts
+					* @var	int		visibility_const		Integer with one of the possible ITEM_* constant values
+					* @var	int		topic_id				topic_id in the page request
+					* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+					* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+					* @since 3.1.0-RC3
+					*/
+					$vars = array(
+						'sql',
+						'forum_list',
+						'visibility_const',
+						'topic_id',
+						'limit_time_sql',
+						'sort_order_sql',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.mcp_queue_get_posts_for_topics_query_before', compact($vars)));
+
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 					$rowset = array();
