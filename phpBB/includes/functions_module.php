@@ -541,7 +541,7 @@ class p_master
 	*
 	* This method loads a given module, passing it the relevant id and mode.
 	*
-	* @param string $mode mode, as passed through to the module
+	* @param string|false $mode mode, as passed through to the module
 	* @param string|false $module_url If supplied, we use this module url
 	* @param bool $execute_module If true, at the end we execute the main method for the new instance
 	*/
