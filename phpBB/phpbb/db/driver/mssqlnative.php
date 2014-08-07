@@ -154,12 +154,17 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
+				if (!$this->query_result)
+				{
+					return false;
+				}
+
 				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
@@ -242,12 +247,12 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		if ($query_id === false)
+		if (!$query_id)
 		{
 			return false;
 		}
 
-		$row = @sqlsrv_fetch_array($query_id, SQLSRV_FETCH_ASSOC);
+		$row = sqlsrv_fetch_array($query_id, SQLSRV_FETCH_ASSOC);
 
 		if ($row)
 		{
@@ -272,11 +277,11 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	{
 		$result_id = @sqlsrv_query($this->db_connect_id, 'SELECT @@IDENTITY');
 
-		if ($result_id !== false)
+		if ($result_id)
 		{
-			$row = @sqlsrv_fetch_array($result_id);
+			$row = sqlsrv_fetch_array($result_id);
 			$id = $row[0];
-			@sqlsrv_free_stmt($result_id);
+			sqlsrv_free_stmt($result_id);
 			return $id;
 		}
 		else
@@ -305,7 +310,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return @sqlsrv_free_stmt($query_id);
+			return sqlsrv_free_stmt($query_id);
 		}
 
 		return false;
@@ -378,14 +383,14 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 				@sqlsrv_query($this->db_connect_id, 'SET SHOWPLAN_TEXT ON;');
 				if ($result = @sqlsrv_query($this->db_connect_id, $query))
 				{
-					@sqlsrv_next_result($result);
-					while ($row = @sqlsrv_fetch_array($result))
+					sqlsrv_next_result($result);
+					while ($row = sqlsrv_fetch_array($result))
 					{
 						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 					}
+					sqlsrv_free_stmt($result);
 				}
 				@sqlsrv_query($this->db_connect_id, 'SET SHOWPLAN_TEXT OFF;');
-				@sqlsrv_free_stmt($result);
 
 				if ($html_table)
 				{
@@ -398,11 +403,14 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @sqlsrv_query($this->db_connect_id, $query);
-				while ($void = @sqlsrv_fetch_array($result))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+					while ($void = sqlsrv_fetch_array($result))
+					{
+						// Take the time spent on parsing rows into account
+					}
+					sqlsrv_free_stmt($result);
 				}
-				@sqlsrv_free_stmt($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];
