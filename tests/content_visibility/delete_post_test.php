@@ -276,7 +276,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					),
 				),
 				array(
-					array('forum_posts_approved'=> 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 1, 'forum_last_post_id' => 0),
+					array('forum_posts_approved' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 1, 'forum_last_post_id' => 0),
 				),
 				array(
 					array('user_posts' => 3),
@@ -340,7 +340,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 
 		$result = $db->sql_query('SELECT user_posts
 			FROM phpbb_users
-			WHERE user_id = ' . $data['poster_id']);
+			WHERE user_id = ' . (int) $data['poster_id']);
 
 		$this->assertEquals($expected_user, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
