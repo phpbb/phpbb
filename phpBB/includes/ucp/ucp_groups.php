@@ -471,6 +471,29 @@ class ucp_groups
 							$avatar_data = \phpbb\avatar\manager::clean_row($group_row, 'group');
 						}
 
+						// Handle deletion of avatars
+						if ($request->is_set_post('avatar_delete'))
+						{
+							if (confirm_box(true))
+							{
+								$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
+								$cache->destroy('sql', GROUPS_TABLE);
+
+								$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+								trigger_error($user->lang[$message] . $return_page);
+							}
+							else
+							{
+								confirm_box(false, $user->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
+										'avatar_delete'     => true,
+										'i'                 => $id,
+										'mode'              => $mode,
+										'g'			        => $group_id,
+										'action'            => $action))
+								);
+							}
+						}
+
 						// Did we submit?
 						if ($update)
 						{
@@ -509,19 +532,6 @@ class ucp_groups
 
 										$submit_ary = array_merge($submit_ary, $result);
 									}
-								}
-								else
-								{
-									if ($driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']))
-									{
-										$driver->delete($avatar_data);
-									}
-
-									// Removing the avatar
-									$submit_ary['avatar_type'] = '';
-									$submit_ary['avatar'] = '';
-									$submit_ary['avatar_width'] = 0;
-									$submit_ary['avatar_height'] = 0;
 								}
 
 								// Merge any avatars errors into the primary error array

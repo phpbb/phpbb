@@ -36,8 +36,9 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 					'avatar_gravatar_height'	=> 80,
 				),
 			),
+
 			array(
-				'PROFILE_UPDATED',
+				array('CONFIRM_AVATAR_DELETE', 'PROFILE_UPDATED'),
 				'avatar_driver_gravatar',
 				array(
 					'avatar_delete'	=> array('tick', ''),

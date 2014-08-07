@@ -465,25 +465,9 @@ class acp_users
 								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							$sql_ary = array(
-								'user_avatar'			=> '',
-								'user_avatar_type'		=> '',
-								'user_avatar_width'		=> 0,
-								'user_avatar_height'	=> 0,
-							);
-
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-								WHERE user_id = $user_id";
-							$db->sql_query($sql);
-
 							// Delete old avatar if present
 							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
-							$driver = $phpbb_avatar_manager->get_driver($user_row['user_avatar_type']);
-							if ($driver)
-							{
-								$driver->delete($user_row);
-							}
+							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $phpbb_avatar_manager->clean_row($user_row, 'user'), USERS_TABLE, 'user_');
 
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_AVATAR_USER');
@@ -1779,33 +1763,27 @@ class acp_users
 									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 								}
 							}
-							else
-							{
-								$driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']);
-								if ($driver)
-								{
-									$driver->delete($avatar_data);
-								}
-
-								// Removing the avatar
-								$result = array(
-									'user_avatar' => '',
-									'user_avatar_type' => '',
-									'user_avatar_width' => 0,
-									'user_avatar_height' => 0,
-								);
-
-								$sql = 'UPDATE ' . USERS_TABLE . '
-									SET ' . $db->sql_build_array('UPDATE', $result) . '
-									WHERE user_id = ' . (int) $user_id;
-
-								$db->sql_query($sql);
-								trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
-							}
 						}
 						else
 						{
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
+					}
+
+					// Handle deletion of avatars
+					if ($request->is_set_post('avatar_delete'))
+					{
+						if (!confirm_box(true))
+						{
+							confirm_box(false, $user->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
+									'avatar_delete'     => true))
+							);
+						}
+						else
+						{
+							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, USERS_TABLE, 'user_');
+
+							trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						}
 					}
 

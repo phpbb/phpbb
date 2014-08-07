@@ -167,6 +167,7 @@ $lang = array_merge($lang, array(
 	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as it appears. All letters are case insensitive.',
 	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.',
 	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
+	'CONFIRM_AVATAR_DELETE' => 'Are you sure you wish to delete this avatar?',
 	'CONGRATULATIONS'		=> 'Congratulations to',
 	'CONNECTION_FAILED'		=> 'Connection failed.',
 	'CONNECTION_SUCCESS'	=> 'Connection was successful!',
