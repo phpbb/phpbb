@@ -55,6 +55,14 @@ class base implements \phpbb\extension\extension_interface
 	}
 
 	/**
+	* {@inheritdoc}
+	*/
+	public function is_enableable()
+	{
+		return true;
+	}
+
+	/**
 	* Single enable step that installs any included migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
