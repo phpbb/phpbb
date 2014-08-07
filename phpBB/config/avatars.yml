@@ -45,6 +45,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
             - @path_helper
+            - @mimetype.guesser
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.upload]]
