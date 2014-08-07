@@ -27,7 +27,7 @@ a:hover	{ text-decoration: underline; }
 }
 
 /* Navigation bar links */
-ul.linklist li.small-icon > a, ul.linklist li.breadcrumbs span:first-child > a {
+li.breadcrumbs span:first-child > a {
 	display: inline-block;
 	padding-left: 17px;
 }
