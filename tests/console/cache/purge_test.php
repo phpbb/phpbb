@@ -17,7 +17,7 @@ use phpbb\console\command\cache\purge;
 
 require_once dirname(__FILE__) . '/../../../phpBB/includes/functions_admin.php';
 
-class phpbb_console_command_cache_purge_test extends phpbb_database_test_case
+class phpbb_console_command_cache_purge_test extends phpbb_test_case
 {
 	protected $cache_dir;
 	protected $cache;
@@ -30,15 +30,8 @@ class phpbb_console_command_cache_purge_test extends phpbb_database_test_case
 		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
 	}
 
-	public function getDataSet()
-	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
-	}
-
 	protected function setUp()
 	{
-		parent::setUp();
-
 		if (file_exists($this->cache_dir))
 		{
 			// cache directory possibly left after aborted
@@ -49,7 +42,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_database_test_case
 
 		$this->cache = new \phpbb\cache\driver\file($this->cache_dir);
 
-		$this->db = $this->new_dbal();
+		$this->db = $this->getMock('\phpbb\db\driver\driver_interface');
 
 		$this->config = new \phpbb\config\config(array('assets_version' => 1));
 	}
