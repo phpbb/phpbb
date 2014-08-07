@@ -489,6 +489,12 @@ class p_master
 			$id = request_var('icat', '');
 		}
 
+		// Restore the backslashes in class names
+		if (strpos($id, '-') !== false)
+		{
+			$id = str_replace('-', '\\', $id);
+		}
+
 		if ($id && !is_numeric($id) && !$this->is_full_class($id))
 		{
 			$id = $this->p_class . '_' . $id;
@@ -616,7 +622,7 @@ class p_master
 			}
 
 			// Not being able to overwrite ;)
-			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=' . $this->get_module_identifier($this->p_name, $this->p_id)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 		}
 		else
 		{
@@ -648,7 +654,7 @@ class p_master
 				$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 			}
 
-			$this->module->u_action = append_sid($this->module->u_action, 'i=' . $this->get_module_identifier($this->p_name, $this->p_id)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			$this->module->u_action = append_sid($this->module->u_action, 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 		}
 
 		// Add url_extra parameter to u_action url
@@ -901,7 +907,7 @@ class p_master
 			else
 			{
 				// if the category has a name, then use it.
-				$u_title .= $this->get_module_identifier($item_ary['name'], $item_ary['id']);
+				$u_title .= $this->get_module_identifier($item_ary['name']);
 			}
 			// If the item is not a category append the mode
 			if (!$item_ary['cat'])
@@ -1106,26 +1112,24 @@ class p_master
 	}
 
 	/**
-	* If the basename contains a \ we dont use that for the URL.
+	* If the basename contains a \ we don't use that for the URL.
 	*
 	* Firefox is currently unable to correctly copy a urlencoded \
 	* so users will be unable to post links to modules.
-	* However we can still fallback to the id instead of the name,
-	* so we do that in this case.
+	* However we can replace them with dashes and re-replace them later
 	*
 	* @param	string	$basename	Basename of the module
-	* @param	int		$id			Id of the module
-	* @return		mixed	Identifier that should be used for
+	* @return		string	Identifier that should be used for
 	*						module link creation
 	*/
-	protected function get_module_identifier($basename, $id)
+	protected function get_module_identifier($basename)
 	{
 		if (strpos($basename, '\\') === false)
 		{
 			return $basename;
 		}
 
-		return $id;
+		return str_replace('\\', '-', $basename);
 	}
 
 	/**
