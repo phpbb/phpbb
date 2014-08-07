@@ -2397,14 +2397,6 @@
             ]
         },
         "KEYS": {
-            "unq_mtch": [
-                "UNIQUE",
-                [
-                    "word_id",
-                    "post_id",
-                    "title_match"
-                ]
-            ],
             "word_id": [
                 "INDEX",
                 "word_id"
@@ -2412,6 +2404,14 @@
             "post_id": [
                 "INDEX",
                 "post_id"
+            ],
+            "un_mtch": [
+                "UNIQUE",
+                [
+                    "word_id",
+                    "post_id",
+                    "title_match"
+                ]
             ]
         }
     },
