@@ -570,7 +570,7 @@ class content_visibility
 	* Add post to topic and forum statistics
 	*
 	* @param $data			array	Contains information from the topics table about given topic
-	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
+	* @param &$sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return null
 	*/
 	public function add_post_to_statistic($data, &$sql_data)
@@ -591,7 +591,7 @@ class content_visibility
 	* Remove post from topic and forum statistics
 	*
 	* @param $data			array	Contains information from the topics table about given topic
-	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
+	* @param &$sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return null
 	*/
 	public function remove_post_from_statistic($data, &$sql_data)
@@ -624,7 +624,7 @@ class content_visibility
 	* Remove topic from forum statistics
 	*
 	* @param $data			array	Post and topic data
-	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time
+	* @param &$sql_data		array	Populated with the SQL changes, may be empty at call time
 	* @return null
 	*/
 	public function remove_topic_from_statistic($data, &$sql_data)
