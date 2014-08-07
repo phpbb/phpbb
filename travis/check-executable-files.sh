@@ -9,12 +9,13 @@
 # the docs/CREDITS.txt file.
 #
 set -e
-set -x
+
 DB=$1
 TRAVIS_PHP_VERSION=$2
-path="$3"
+root="$3"
+path="${root}phpBB/"
 
-if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
+if [ "$TRAVIS_PHP_VERSION" == "5.3.3" -a "$DB" == "mysqli" ]
 then
 	# Check the permissions of the files
 
@@ -26,7 +27,7 @@ then
 	files_skipped="-false"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/* -o -path ${path}composer.phar"
+	executable_files="-path ${path}bin/* -o -path ${root}composer.phar"
 
 	incorrect_files=$( 								\
 		find ${path}								\
@@ -60,8 +61,8 @@ then
 
 	if [ "${incorrect_files}" != '' ]
 	then
+		echo "The following files do not have proper permissions:";
 		ls -la ${incorrect_files}
-		echo "does not have the proper permissions.";
 		exit 1;
 	fi
 fi
