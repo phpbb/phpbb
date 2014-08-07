@@ -50,7 +50,7 @@ class helper
 	protected $phpbb_root_path;
 
 	/**
-	* PHP extension
+	* PHP file extension
 	* @var string
 	*/
 	protected $php_ext;
@@ -65,7 +65,7 @@ class helper
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param string $phpbb_root_path phpBB root path
-	* @param string $php_ext PHP extension
+	* @param string $php_ext PHP file extension
 	*/
 	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, $phpbb_root_path, $php_ext)
 	{

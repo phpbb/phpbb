@@ -30,7 +30,7 @@ class wrapper
 	*
 	* @param \phpbb\cron\task\task $task The cron task to wrap.
 	* @param string $phpbb_root_path Relative path to phpBB root
-	* @param string $php_ext PHP extension (php)
+	* @param string $php_ext PHP file extension
 	*/
 	public function __construct(\phpbb\cron\task\task $task, $phpbb_root_path, $php_ext)
 	{

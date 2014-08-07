@@ -34,7 +34,7 @@ class apache extends \phpbb\auth\provider\base
 	 * @param	\phpbb\request\request 		$request		Request object
 	 * @param	\phpbb\user 			$user		User object
 	 * @param	string 				$phpbb_root_path		Relative path to phpBB root
-	 * @param	string 				$php_ext		PHP extension (php)
+	 * @param	string 				$php_ext		PHP file extension
 	 */
 	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{

@@ -29,7 +29,7 @@ if (!defined('IN_PHPBB'))
 * @param \phpbb\extension\manager $manager Extension manager
 * @param RequestContext $context Symfony RequestContext object
 * @param string $root_path Root path
-* @param string $php_ext PHP extension
+* @param string $php_ext PHP file extension
 * @return null
 */
 function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext $context, $root_path, $php_ext)
@@ -52,7 +52,7 @@ function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext
 *
 * @param \phpbb\extension\manager $manager Extension manager
 * @param string $root_path Root path
-* @param string $php_ext PHP extension
+* @param string $php_ext PHP file extension
 * @return null
 */
 function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $root_path, $php_ext)
@@ -88,7 +88,7 @@ function phpbb_create_url_matcher(\phpbb\extension\manager $manager, RequestCont
 *
 * @param RequestContext $context Symfony RequestContext object
 * @param string $root_path Root path
-* @param string $php_ext PHP extension
+* @param string $php_ext PHP file extension
 * @return phpbb_url_matcher
 */
 function phpbb_load_url_matcher(RequestContext $context, $root_path, $php_ext)
@@ -103,7 +103,7 @@ function phpbb_load_url_matcher(RequestContext $context, $root_path, $php_ext)
 * The class is automatically dumped to the cache directory
 *
 * @param string $root_path Root path
-* @param string $php_ext PHP extension
+* @param string $php_ext PHP file extension
 * @return bool True if it exists, false if not
 */
 function phpbb_url_matcher_dumped($root_path, $php_ext)

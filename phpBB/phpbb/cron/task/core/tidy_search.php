@@ -31,7 +31,7 @@ class tidy_search extends \phpbb\cron\task\base
 	* Constructor.
 	*
 	* @param string $phpbb_root_path The root path
-	* @param string $php_ext The PHP extension
+	* @param string $php_ext The PHP file extension
 	* @param \phpbb\auth\auth $auth The auth
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver_interface $db The db connection
