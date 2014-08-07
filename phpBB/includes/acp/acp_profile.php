@@ -881,10 +881,8 @@ class acp_profile
 		{
 			$field_ident = 'pf_' . $field_ident;
 
-			$db_tools = new \phpbb\db\tools($db, true);
-			$field_intent_sql = $db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));
-
-			$profile_sql[] = $field_intent_sql[0];
+			$db_tools = $phpbb_container->get('dbal.tools');
+			$db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));
 		}
 
 		$sql_ary = array(
