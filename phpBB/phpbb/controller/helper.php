@@ -50,7 +50,7 @@ class helper
 	protected $phpbb_root_path;
 
 	/**
-	* PHP extension
+	* PHP file extension
 	* @var string
 	*/
 	protected $php_ext;
@@ -65,7 +65,7 @@ class helper
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param string $phpbb_root_path phpBB root path
-	* @param string $php_ext PHP extension
+	* @param string $php_ext PHP file extension
 	*/
 	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, $phpbb_root_path, $php_ext)
 	{
@@ -82,9 +82,11 @@ class helper
 	/**
 	* Automate setting up the page and creating the response object.
 	*
-	* @param string $handle The template handle to render
+	* @param string $template_file The template handle to render
 	* @param string $page_title The title of the page to output
 	* @param int $status_code The status code to be sent to the page header
+	* @param bool $display_online_list Do we display online users list
+	*
 	* @return Response object containing rendered page
 	*/
 	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false)

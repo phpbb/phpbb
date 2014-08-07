@@ -24,6 +24,7 @@ class asset
 	* Constructor
 	*
 	* @param string $url URL
+	* @param \phpbb\path_helper $path_helper Path helper object
 	*/
 	public function __construct($url, \phpbb\path_helper $path_helper)
 	{

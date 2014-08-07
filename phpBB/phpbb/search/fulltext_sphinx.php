@@ -119,6 +119,12 @@ class fulltext_sphinx
 	 * Creates a new \phpbb\search\fulltext_postgres, which is used as a search backend
 	 *
 	 * @param string|bool $error Any error that occurs is passed on through this reference variable otherwise false
+	 * @param string $phpbb_root_path Relative path to phpBB root
+	 * @param string $phpEx PHP file extension
+	 * @param \phpbb\auth\auth $auth Auth object
+	 * @param \phpbb\config\config $config Config object
+	 * @param \phpbb\db\driver\driver_interface Database object
+	 * @param \phpbb\user $user User object
 	 */
 	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
 	{

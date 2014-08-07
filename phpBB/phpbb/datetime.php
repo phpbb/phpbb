@@ -38,9 +38,9 @@ class datetime extends \DateTime
 	* Constructs a new instance of \phpbb\datetime, expanded to include an argument to inject
 	* the user context and modify the timezone to the users selected timezone if one is not set.
 	*
+	* @param user $user object for context.
 	* @param string $time String in a format accepted by strtotime().
 	* @param \DateTimeZone $timezone Time zone of the time.
-	* @param user $user object for context.
 	*/
 	public function __construct($user, $time = 'now', \DateTimeZone $timezone = null)
 	{

@@ -18,7 +18,7 @@ interface tree_interface
 	/**
 	* Inserts an item into the database table and into the tree.
 	*
-	* @param array	$item	The item to be added
+	* @param array	$additional_data	The item to be added
 	* @return array Array with item data as set in the database
 	*/
 	public function insert(array $additional_data);

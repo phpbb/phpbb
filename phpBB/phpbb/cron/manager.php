@@ -35,6 +35,8 @@ class manager
 	* Constructor. Loads all available tasks.
 	*
 	* @param array|\Traversable $tasks Provides an iterable set of task names
+	* @param string $phpbb_root_path Relative path to phpBB root
+	* @param string $php_ext PHP file extension
 	*/
 	public function __construct($tasks, $phpbb_root_path, $php_ext)
 	{

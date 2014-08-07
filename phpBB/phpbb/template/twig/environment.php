@@ -36,11 +36,10 @@ class environment extends \Twig_Environment
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $phpbb_config
-	* @param \phpbb\path_helper
-	* @param \phpbb\extension\manager
-	* @param string $phpbb_root_path
-	* @param \Twig_LoaderInterface $loader
+	* @param \phpbb\config\config $phpbb_config The phpBB configuration
+	* @param \phpbb\path_helper $path_helper phpBB path helper
+	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
+	* @param \Twig_LoaderInterface $loader Twig loader interface
 	* @param array $options Array of options to pass to Twig
 	*/
 	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())

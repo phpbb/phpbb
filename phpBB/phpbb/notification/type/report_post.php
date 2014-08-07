@@ -76,6 +76,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	* Find the users who want to receive notifications
 	*
 	* @param array $post Data from the post
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/

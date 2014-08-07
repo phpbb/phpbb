@@ -67,7 +67,8 @@ class approve_post extends \phpbb\notification\type\post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from
+	* @param array $post Data from submit_post
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/

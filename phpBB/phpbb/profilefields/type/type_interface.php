@@ -189,8 +189,8 @@ interface type_interface
 	/**
 	* Allows manipulating the intended variables if needed
 	*
-	* @param string	$key			Name of the option
 	* @param int	$step			Step on which the option is hidden
+	* @param string	$key			Name of the option
 	* @param string	$action			Currently performed action (create|edit)
 	* @param array	$field_data		Array with data for this field
 	* @return mixed		Final value of the option

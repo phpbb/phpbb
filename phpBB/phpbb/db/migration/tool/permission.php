@@ -105,6 +105,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string $auth_option The name of the permission (auth) option
 	* @param bool $global True for checking a global permission setting,
 	* 	False for a local permission setting
+	* @param int|false $copy_from If set, contains the id of the permission from which to copy the new one.
 	* @return null
 	*/
 	public function add($auth_option, $global = true, $copy_from = false)
@@ -243,7 +244,9 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* Add a new permission role
 	*
 	* @param string $role_name The new role name
-	* @param sting $role_type The type (u_, m_, a_)
+	* @param string $role_type The type (u_, m_, a_)
+	* @param string $role_description Description of the new role
+	*
 	* @return null
 	*/
 	public function role_add($role_name, $role_type, $role_description = '')

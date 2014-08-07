@@ -1426,7 +1426,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 * @param string $param_key Either topic_id or post_id
 * @param string $param_val The value of the topic or post id
 * @param string $phpbb_root_path The root path of the phpBB installation
-* @param string $phpEx The PHP extension
+* @param string $phpEx The PHP file extension
 *
 * @return array Array containing the link and the type of compression
 */

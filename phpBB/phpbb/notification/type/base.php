@@ -161,6 +161,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* Magic method to set data on this notification
 	*
 	* @param mixed $name
+	* @param mixed $value
+	*
 	* @return null
 	*/
 	public function __set($name, $value)
@@ -174,7 +176,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*
 	* Primarily for testing
 	*
-	* @param string $name
 	* @return mixed
 	*/
 	public function __toString()

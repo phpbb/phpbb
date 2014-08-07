@@ -72,7 +72,8 @@ class pm extends \phpbb\notification\type\base
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $pm Data from
+	* @param array $pm Data from submit_pm
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
@@ -178,7 +179,7 @@ class pm extends \phpbb\notification\type\base
 	* Function for preparing the data for insertion in an SQL query
 	* (The service handles insertion)
 	*
-	* @param array $post Data from submit_post
+	* @param array $pm Data from submit_post
 	* @param array $pre_create_data Data from pre_create_insert_array()
 	*
 	* @return array Array of data ready to be inserted into the database

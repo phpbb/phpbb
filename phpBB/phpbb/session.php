@@ -1062,11 +1062,13 @@ class session
 	* Check for banned user
 	*
 	* Checks whether the supplied user is banned by id, ip or email. If no parameters
-	* are passed to the method pre-existing session data is used. If $return is false
-	* this routine does not return on finding a banned user, it outputs a relevant
-	* message and stops execution.
+	* are passed to the method pre-existing session data is used.
 	*
-	* @param string|array	$user_ips	Can contain a string with one IP or an array of multiple IPs
+	* @param int|false		$user_id		The user id
+	* @param mixed			$user_ips		Can contain a string with one IP or an array of multiple IPs
+	* @param string|false	$user_email		The user email
+	* @param bool			$return			If $return is false this routine does not return on finding a banned user,
+	*	it outputs a relevant message and stops execution.
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
@@ -1254,12 +1256,14 @@ class session
 
 	/**
 	* Check if ip is blacklisted
-	* This should be called only where absolutly necessary
+	* This should be called only where absolutely necessary
 	*
 	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
 	*
 	* @author satmd (from the php manual)
-	* @param string $mode register/post - spamcop for example is ommitted for posting
+	* @param string 		$mode	register/post - spamcop for example is ommitted for posting
+	* @param string|false	$ip		the IPv4 address to check
+	*
 	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
 	*/
 	function check_dnsbl($mode, $ip = false)
