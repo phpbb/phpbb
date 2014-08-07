@@ -2289,12 +2289,14 @@ class tools
 				$old_return_statements = $this->return_statements;
 				$this->return_statements = true;
 
-				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+				$indexes = $this->get_existing_indexes($table_name, $column_name);
+				$unique_indexes = $this->get_existing_indexes($table_name, $column_name, true);
 
 				// Drop any indexes
-				if (!empty($indexes))
+				if (!empty($indexes) || !empty($unique_indexes))
 				{
-					foreach ($indexes as $index_name => $index_data)
+					$drop_indexes = array_merge(array_keys($indexes), array_keys($unique_indexes));
+					foreach ($drop_indexes as $index_name)
 					{
 						$result = $this->sql_index_drop($table_name, $index_name);
 						$statements = array_merge($statements, $result);
@@ -2320,6 +2322,16 @@ class tools
 					foreach ($indexes as $index_name => $index_data)
 					{
 						$result = $this->sql_create_index($table_name, $index_name, $index_data);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				if (!empty($unique_indexes))
+				{
+					// Recreate unique indexes after we changed the column
+					foreach ($unique_indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_create_unique_index($table_name, $index_name, $index_data);
 						$statements = array_merge($statements, $result);
 					}
 				}
@@ -2517,87 +2529,114 @@ class tools
 	*
 	* @param string $table_name
 	* @param string $column_name
+	* @param bool $unique Should we get unique indexes or normal ones
 	* @return array		Array with Index name => columns
 	*/
-	protected function mssql_get_existing_indexes($table_name, $column_name)
+	public function get_existing_indexes($table_name, $column_name, $unique = false)
 	{
 		$existing_indexes = array();
-		if ($this->mssql_is_sql_server_2000())
-		{
-			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-			// Deprecated in SQL Server 2005
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
-				FROM sysindexes ix
-				INNER JOIN sysindexkeys ixc
-					ON ixc.id = ix.id
-						AND ixc.indid = ix.indid
-				INNER JOIN syscolumns cols
-					ON cols.colid = ixc.colid
-						AND cols.id = ix.id
-				WHERE ix.id = object_id('{$table_name}')
-					AND cols.name = '{$column_name}'";
-		}
-		else
-		{
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
-				FROM sys.indexes ix
-				INNER JOIN sys.index_columns ixc
-					ON ixc.object_id = ix.object_id
-						AND ixc.index_id = ix.index_id
-				INNER JOIN sys.columns cols
-					ON cols.column_id = ixc.column_id
-						AND cols.object_id = ix.object_id
-				WHERE ix.object_id = object_id('{$table_name}')
-					AND cols.name = '{$column_name}'";
-		}
 
-		$result = $this->db->sql_query($sql);
-		$existing_indexes = array();
-		while ($row = $this->db->sql_fetchrow($result))
+		switch ($this->sql_layer)
 		{
-			$existing_indexes[$row['phpbb_index_name']] = array();
-		}
-		$this->db->sql_freeresult($result);
+			case 'mssql':
+			case 'mssqlnative':
+				if ($unique)
+				{
+					// TODO fix me
+					throw new \Exception('FIX ME mssql treats unique and normal indexes the same');
+				}
 
-		if (empty($existing_indexes))
-		{
-			return array();
-		}
+				if ($this->mssql_is_sql_server_2000())
+				{
+					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+					// Deprecated in SQL Server 2005
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+					FROM sysindexes ix
+					INNER JOIN sysindexkeys ixc
+						ON ixc.id = ix.id
+							AND ixc.indid = ix.indid
+					INNER JOIN syscolumns cols
+						ON cols.colid = ixc.colid
+							AND cols.id = ix.id
+					WHERE ix.id = object_id('{$table_name}')
+						AND cols.name = '{$column_name}'";
+				}
+				else
+				{
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+					FROM sys.indexes ix
+					INNER JOIN sys.index_columns ixc
+						ON ixc.object_id = ix.object_id
+							AND ixc.index_id = ix.index_id
+					INNER JOIN sys.columns cols
+						ON cols.column_id = ixc.column_id
+							AND cols.object_id = ix.object_id
+					WHERE ix.object_id = object_id('{$table_name}')
+						AND cols.name = '{$column_name}'";
+				}
 
-		if ($this->mssql_is_sql_server_2000())
-		{
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-				FROM sysindexes ix
-				INNER JOIN sysindexkeys ixc
-					ON ixc.id = ix.id
-						AND ixc.indid = ix.indid
-				INNER JOIN syscolumns cols
-					ON cols.colid = ixc.colid
-						AND cols.id = ix.id
-				WHERE ix.id = object_id('{$table_name}')
-					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-		}
-		else
-		{
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-				FROM sys.indexes ix
-				INNER JOIN sys.index_columns ixc
-					ON ixc.object_id = ix.object_id
-						AND ixc.index_id = ix.index_id
-				INNER JOIN sys.columns cols
-					ON cols.column_id = ixc.column_id
-						AND cols.object_id = ix.object_id
-				WHERE ix.object_id = object_id('{$table_name}')
-					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-		}
+				$result = $this->db->sql_query($sql);
+				$existing_indexes = array();
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$existing_indexes[$row['phpbb_index_name']] = array();
+				}
+				$this->db->sql_freeresult($result);
 
-		$result = $this->db->sql_query($sql);
+				if (empty($existing_indexes))
+				{
+					return array();
+				}
 
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
+				if ($this->mssql_is_sql_server_2000())
+				{
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+					FROM sysindexes ix
+					INNER JOIN sysindexkeys ixc
+						ON ixc.id = ix.id
+							AND ixc.indid = ix.indid
+					INNER JOIN syscolumns cols
+						ON cols.colid = ixc.colid
+							AND cols.id = ix.id
+					WHERE ix.id = object_id('{$table_name}')
+						AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+				}
+				else
+				{
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+					FROM sys.indexes ix
+					INNER JOIN sys.index_columns ixc
+						ON ixc.object_id = ix.object_id
+							AND ixc.index_id = ix.index_id
+					INNER JOIN sys.columns cols
+						ON cols.column_id = ixc.column_id
+							AND cols.object_id = ix.object_id
+					WHERE ix.object_id = object_id('{$table_name}')
+						AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+				}
+
+				$result = $this->db->sql_query($sql);
+
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
+				}
+				$this->db->sql_freeresult($result);
+			break;
+
+			case 'oracle':
+				throw new \Exception('Needs implementing');
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+			case 'postgres':
+			case 'sqlite':
+			case 'sqlite3':
+				// Not supported
+				throw new \Exception('DBMS is not supported');
+			break;
 		}
-		$this->db->sql_freeresult($result);
 
 		return $existing_indexes;
 	}
