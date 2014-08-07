@@ -1816,7 +1816,8 @@ class tools
 				$old_return_statements = $this->return_statements;
 				$this->return_statements = true;
 
-				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+				$indexes = $this->get_existing_indexes($table_name, $column_name);
+				$indexes = array_merge($indexes, $this->get_existing_indexes($table_name, $column_name, true));
 
 				// Drop any indexes
 				$recreate_indexes = array();
@@ -2615,12 +2616,6 @@ class tools
 		{
 			case 'mssql':
 			case 'mssqlnative':
-				if ($unique)
-				{
-					// TODO fix me
-					throw new \Exception('FIX ME mssql treats unique and normal indexes the same');
-				}
-
 				if ($this->mssql_is_sql_server_2000())
 				{
 					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
@@ -2634,7 +2629,8 @@ class tools
 						ON cols.colid = ixc.colid
 							AND cols.id = ix.id
 					WHERE ix.id = object_id('{$table_name}')
-						AND cols.name = '{$column_name}'";
+						AND cols.name = '{$column_name}'
+						AND INDEXPROPERTY(ix.id, ix.name, 'IsUnique') = " . ($unique) ? '1' : '0';
 				}
 				else
 				{
@@ -2647,7 +2643,8 @@ class tools
 						ON cols.column_id = ixc.column_id
 							AND cols.object_id = ix.object_id
 					WHERE ix.object_id = object_id('{$table_name}')
-						AND cols.name = '{$column_name}'";
+						AND cols.name = '{$column_name}'
+						AND ix.is_unique = " . ($unique) ? '1' : '0';
 				}
 			break;
 
