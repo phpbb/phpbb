@@ -364,6 +364,27 @@ class mcp_reports
 						AND r.pm_id = 0
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
+
+				/**
+				* Alter sql query to get report id of all reports for requested forum and topic or just forum
+				*
+				* @event core.mcp_reports_get_reports_query_before
+				* @var	string	sql						String with the query to be executed
+				* @var	array	forum_list				List of forums that contain the posts
+				* @var	int		topic_id				topic_id in the page request
+				* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
+				* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
+				* @since 3.1.0-RC3
+				*/
+				$vars = array(
+					'sql',
+					'forum_list',
+					'topic_id',
+					'limit_time_sql',
+					'sort_order_sql',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_reports_get_reports_query_before', compact($vars)));
+
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$i = 0;
