@@ -105,15 +105,19 @@
 	background-position: 0 50%;
 	background-repeat: no-repeat;
 	background-image: none;
-	padding: 0 0 0 17px;
 }
 
-ul.linklist li.small-icon {
-	padding-left: 0;
+.small-icon > a {
+	display: inline-block;
+	padding: 0 0 0 18px;
 }
 
 ul.linklist.bulletin > li.small-icon:before {
 	display: none;
+}
+
+.dropdown .small-icon > a {
+	display: block;
 }
 
 /* Poster contact icons
