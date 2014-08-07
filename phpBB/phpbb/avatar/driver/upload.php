@@ -130,7 +130,6 @@ class upload extends \phpbb\avatar\driver\driver
 		}
 		else
 		{
-			$error[] = 'NO_AVATAR_SELECTED';
 			return false;
 		}
 

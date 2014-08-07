@@ -36,16 +36,6 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 					'avatar_gravatar_height'	=> 80,
 				),
 			),
-			// Wrong driver selected
-			array(
-				'NO_AVATAR_SELECTED',
-				'avatar_driver_upload',
-				array(
-					'avatar_remote_url'	=> 'https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
-					'avatar_remote_width'	=> 80,
-					'avatar_remote_height'	=> 80,
-				),
-			),
 			array(
 				'PROFILE_UPDATED',
 				'avatar_driver_gravatar',

@@ -69,6 +69,11 @@ class gravatar extends \phpbb\avatar\driver\driver
 		$row['avatar_width'] = $request->variable('avatar_gravatar_width', 0);
 		$row['avatar_height'] = $request->variable('avatar_gravatar_height', 0);
 
+		if (empty($row['avatar']))
+		{
+			return false;
+		}
+
 		if (!function_exists('validate_data'))
 		{
 			require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
