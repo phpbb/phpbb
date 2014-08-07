@@ -36,7 +36,7 @@ class helper
 	* @param	\phpbb\config\config	$config		Config object
 	* @param	\phpbb\user		$user		User object
 	* @param	string	$phpbb_root_path	Root path
-	* @param	string	$phpEx				PHP extension
+	* @param	string	$phpEx				PHP file extension
 	*/
 	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{

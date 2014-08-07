@@ -40,6 +40,7 @@ class base implements \phpbb\extension\extension_interface
 	*
 	* @param ContainerInterface $container Container object
 	* @param \phpbb\finder $extension_finder
+	* @param \phpbb\db\migrator $migrator
 	* @param string $extension_name Name of this extension (from ext.manager)
 	* @param string $extension_path Relative path to this extension
 	*/

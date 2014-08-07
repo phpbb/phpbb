@@ -766,7 +766,8 @@ class acp_modules
 	/**
 	* Update/Add module
 	*
-	* @param bool $run_inline if set to true errors will be returned and no logs being written
+	* @param array	&$module_data	The module data
+	* @param bool	$run_inline 	if set to true errors will be returned and no logs being written
 	*/
 	function update_module_data(&$module_data, $run_inline = false)
 	{

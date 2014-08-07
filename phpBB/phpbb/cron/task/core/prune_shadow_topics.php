@@ -43,7 +43,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	* Constructor.
 	*
 	* @param string $phpbb_root_path The root path
-	* @param string $php_ext The PHP extension
+	* @param string $php_ext PHP file extension
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver_interface $db The db connection
 	* @param \phpbb\log\log $log The phpBB log system

@@ -28,13 +28,13 @@ class apache extends \phpbb\auth\provider\base
 	/**
 	 * Apache Authentication Constructor
 	 *
-	 * @param 	\phpbb\db\driver\driver_interface 	$db
-	 * @param 	\phpbb\config\config 		$config
-	 * @param	\phpbb\passwords\manager	$passwords_manager
-	 * @param 	\phpbb\request\request 		$request
-	 * @param 	\phpbb\user 			$user
-	 * @param 	string 				$phpbb_root_path
-	 * @param 	string 				$php_ext
+	 * @param	\phpbb\db\driver\driver_interface 	$db		Database object
+	 * @param	\phpbb\config\config 		$config		Config object
+	 * @param	\phpbb\passwords\manager	$passwords_manager		Passwords Manager object
+	 * @param	\phpbb\request\request 		$request		Request object
+	 * @param	\phpbb\user 			$user		User object
+	 * @param	string 				$phpbb_root_path		Relative path to phpBB root
+	 * @param	string 				$php_ext		PHP file extension
 	 */
 	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
 	{

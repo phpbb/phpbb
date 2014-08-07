@@ -26,7 +26,7 @@ class queue extends \phpbb\cron\task\base
 	* Constructor.
 	*
 	* @param string $phpbb_root_path The root path
-	* @param string $php_ext The PHP extension
+	* @param string $php_ext PHP file extension
 	* @param \phpbb\config\config $config The config
 	*/
 	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config)

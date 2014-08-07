@@ -52,7 +52,8 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $pm Data from
+	* @param array $pm Data from submit_pm
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/

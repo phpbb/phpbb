@@ -29,6 +29,8 @@ class wrapper
 	* Wraps a task $task, which must implement cron_task interface.
 	*
 	* @param \phpbb\cron\task\task $task The cron task to wrap.
+	* @param string $phpbb_root_path Relative path to phpBB root
+	* @param string $php_ext PHP file extension
 	*/
 	public function __construct(\phpbb\cron\task\task $task, $phpbb_root_path, $php_ext)
 	{

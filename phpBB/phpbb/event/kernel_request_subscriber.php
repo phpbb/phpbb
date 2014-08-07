@@ -28,7 +28,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	protected $manager;
 
 	/**
-	* PHP extension
+	* PHP file extension
 	* @var string
 	*/
 	protected $php_ext;
@@ -44,7 +44,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 	*
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param string $root_path Root path
-	* @param string $php_ext PHP extension
+	* @param string $php_ext PHP file extension
 	*/
 	public function __construct(\phpbb\extension\manager $manager, $root_path, $php_ext)
 	{

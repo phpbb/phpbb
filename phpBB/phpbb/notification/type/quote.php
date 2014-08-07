@@ -66,7 +66,8 @@ class quote extends \phpbb\notification\type\post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from
+	* @param array $post Data from submit_post
+	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
@@ -122,7 +123,7 @@ class quote extends \phpbb\notification\type\post
 	/**
 	* Update a notification
 	*
-	* @param array $data Data specific for this type that will be updated
+	* @param array $post Data specific for this type that will be updated
 	*/
 	public function update_notifications($post)
 	{
