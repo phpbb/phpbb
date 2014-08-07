@@ -716,12 +716,6 @@ fieldset.polls dd div {
 	overflow: hidden;
 }
 
-.postprofile .avatar-container:after {
-	clear: both;
-	content: '';
-	display: block;
-}
-
 .postprofile .avatar {
 	display: block;
 	float: left;

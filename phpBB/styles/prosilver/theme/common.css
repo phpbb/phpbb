@@ -305,12 +305,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	border-radius: 7px;
 }
 
-.inner:after {
-	content: '';
-	clear: both;
-	display: block;
-}
-
 .rowbg {
 	margin: 5px 5px 2px 5px;
 }
@@ -324,12 +318,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 ul.linklist {
 	display: block;
 	margin: 0;
-}
-
-ul.linklist:after {
-	content: '';
-	display: block;
-	clear: both;
 }
 
 #cp-main .panel {
@@ -856,12 +844,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin-top: 2em;
 }
 
-.action-bar:after {
-	clear: both;
-	content: '';
-	display: block;
-}
-
 /* Pagination
 ---------------------------------------- */
 .pagination {
@@ -1130,6 +1112,20 @@ form > p.post-notice strong {
 	background: transparent;
 }
 
+/* Inner box-model clearing */
+.inner:after,
+ul.linklist:after,
+.action-bar:after,
+.notification_text:after,
+.tabs-container:after,
+#tabs > ul:after, 
+#minitabs > ul:after,
+.postprofile .avatar-container:after {
+	clear: both;
+	content: '';
+	display: block;
+}
+
 .hidden {
 	display: none;
 }
@@ -1283,12 +1279,6 @@ form > p.post-notice strong {
 
 .notification_text {
 	margin-left: 58px;
-}
-
-.notification_text:after {
-	content: '';
-	clear: both;
-	display: block;
 }
 
 /* Navbar specific list items
