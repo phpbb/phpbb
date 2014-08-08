@@ -710,15 +710,22 @@ fieldset.polls dd div {
 	margin-bottom: 10px;
 }
 
+/* Post-profile avatars */
+.postprofile .has-avatar .avatar-container {
+	margin-bottom: 3px;
+	overflow: hidden;
+}
+
 .postprofile .avatar {
 	display: block;
-	border: none;
-	margin-bottom: 3px;
+	float: left;
+	max-width: 100%;
 }
 
 .postprofile .avatar img {
-	max-width: 90%;
+	display: block;
 	height: auto !important;
+	max-width: 100%;
 }
 
 dd.profile-warnings {

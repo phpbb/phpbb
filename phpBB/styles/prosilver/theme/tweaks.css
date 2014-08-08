@@ -71,3 +71,8 @@ dd.option {
 .header-avatar img {
 	height: 20px;
 }
+
+/* IE8 often can't handle max-width in %, so we use px instead */
+.postprofile .avatar img {
+	max-width: 150px; 
+}

@@ -96,12 +96,6 @@ ul.cplist {
 	margin-bottom: 0px;
 }
 
-.tabs-container:after {
-	clear: both;
-	content: '';
-	display: block;
-}
-
 /* CP tabs shared
 ----------------------------------------*/
 #tabs, #minitabs {
@@ -113,12 +107,6 @@ ul.cplist {
 	margin: 0;
 	padding: 0;
 	position: relative;
-}
-
-#tabs > ul:after, #minitabs > ul:after {
-	clear: both;
-	content: '';
-	display: block;
 }
 
 #tabs .tab, #minitabs .tab {
