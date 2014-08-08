@@ -249,7 +249,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		);
 		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
-		$user = new \phpbb\user();
+		$user = new \phpbb\user(new \phpbb\config\config(array()));
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
