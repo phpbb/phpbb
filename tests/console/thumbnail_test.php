@@ -11,6 +11,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\thumbnail\generate;
@@ -63,10 +65,10 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 	public function test_thumbnails()
 	{
-		copy(dirname(__FILE__) . '/fixtures/png', $this->phpbb_root_path . 'files/test_png_1');
-		copy(dirname(__FILE__) . '/fixtures/png', $this->phpbb_root_path . 'files/test_png_2');
-		copy(dirname(__FILE__) . '/fixtures/png', $this->phpbb_root_path . 'files/thumb_test_png_2');
-		copy(dirname(__FILE__) . '/fixtures/txt', $this->phpbb_root_path . 'files/test_txt');
+		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
+		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');
+		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/thumb_test_png_2');
+		copy(dirname(__FILE__) . '/fixtures/txt.txt', $this->phpbb_root_path . 'files/test_txt');
 
 		$command_tester = $this->get_command_tester('thumbnail:generate');
 		$exit_status = $command_tester->execute(array('command' => 'thumbnail:generate'));
