@@ -192,11 +192,15 @@
 					<td>{postrow.RANK_IMG}</td>
 				</tr>
 			<!-- ENDIF -->
+
+			<!-- EVENT viewtopic_body_avatar_before -->
 			<!-- IF postrow.POSTER_AVATAR -->
 				<tr>
 					<td>{postrow.POSTER_AVATAR}</td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- EVENT viewtopic_body_avatar_after -->
+
 			<!-- IF not (postrow.ONLINE_IMG or postrow.RANK_TITLE or postrow.RANK_IMG or postrow.POSTER_AVATAR) -->
 				<tr>
 					<td></td>
