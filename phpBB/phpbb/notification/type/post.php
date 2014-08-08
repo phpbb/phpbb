@@ -123,22 +123,12 @@ class post extends \phpbb\notification\type\base
 		}
 		$this->db->sql_freeresult($result);
 
-		if (empty($users))
+		$notify_users = $this->get_authenticated_recipients($users, $post['forum_id'], $options);
+
+		if (empty($notify_users))
 		{
 			return array();
 		}
-
-		$users = array_unique($users);
-		sort($users);
-
-		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
-
-		if (empty($auth_read))
-		{
-			return array();
-		}
-
-		$notify_users = $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], $options);
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$update_notifications = array();

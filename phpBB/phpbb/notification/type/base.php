@@ -544,6 +544,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 */
 	protected function get_authenticated_recipients($users, $forum_id, $options)
 	{
+		if (empty($users))
+		{
+			return array();
+		}
+
 		$users = array_unique($users);
 		sort($users);
 

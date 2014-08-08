@@ -81,14 +81,7 @@ class approve_post extends \phpbb\notification\type\post
 		$users = array();
 		$users[$post['poster_id']] = array('');
 
-		$auth_read = $this->auth->acl_get_list(array_keys($users), 'f_read', $post['forum_id']);
-
-		if (empty($auth_read))
-		{
-			return array();
-		}
-
-		return $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], array_merge($options, array(
+		return $this->get_authenticated_recipients(array_keys($users), $post['forum_id'], array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],
 		)));
 	}

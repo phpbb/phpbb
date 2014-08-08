@@ -102,22 +102,7 @@ class quote extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		if (empty($users))
-		{
-			return array();
-		}
-		sort($users);
-
-		$auth_read = $this->auth->acl_get_list($users, 'f_read', $post['forum_id']);
-
-		if (empty($auth_read))
-		{
-			return array();
-		}
-
-		$notify_users = $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], $options);
-
-		return $notify_users;
+		return $this->get_authenticated_recipients($users, $post['forum_id'], $options);
 	}
 
 	/**
