@@ -1114,6 +1114,7 @@ function mcp_fork_topic($topic_ids)
 	$forum_id = request_var('f', 0);
 	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$additional_msg = $success_msg = '';
+	$counter = array();
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'topic_id_list'	=> $topic_ids,
@@ -1306,9 +1307,22 @@ function mcp_fork_topic($topic_ids)
 					'post_edit_time'	=> (int) $row['post_edit_time'],
 					'post_edit_count'	=> (int) $row['post_edit_count'],
 					'post_edit_locked'	=> (int) $row['post_edit_locked'],
-					'post_postcount'	=> 0,
+					'post_postcount'	=> $row['post_postcount'],
 				);
-
+				// Adjust post counts... only if the post can be incremented to the user counter (else, it was not added the users post count anyway)
+				//Fixed an error of phpBB: http://tracker.phpbb.com/browse/PHPBB3-11520
+				//Do not do the query here but later, we just increment the count of posts until the loop is finished, then do new posts counters.
+				if ($row['post_postcount'])
+				{
+					if (isset($counter[$row['poster_id']]))
+					{
+						 $counter[$row['poster_id']]++;
+					}
+					else
+					{
+						$counter[$row['poster_id']] = 1;
+					}
+				}
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
 
@@ -1427,6 +1441,18 @@ function mcp_fork_topic($topic_ids)
 				forum_topics_softdeleted = forum_topics_softdeleted + ' . $total_topics_softdeleted . '
 			WHERE forum_id = ' . $to_forum_id;
 		$db->sql_query($sql);
+
+		if (sizeof($counter))
+		{
+			//Do only one query per user and not a query PER post!!
+			foreach ($counter AS $uid => $count)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_posts = user_posts + ' . (int) $count . '
+					WHERE user_id = ' . (int) $uid;
+				$db->sql_query($sql);
+			}
+		}
 
 		sync('topic', 'topic_id', $new_topic_id_list);
 		sync('forum', 'forum_id', $to_forum_id);
