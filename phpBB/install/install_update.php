@@ -984,6 +984,8 @@ class install_update extends module
 						request_var('timeout', '')
 					);
 					$transfer->open_session();
+
+					$backup_folder_path = $phpbb_root_path . 'store/backup_' . time() . '_' . unique_id();
 				}
 
 				// Ok, go through the update list and do the operations based on their status
@@ -1018,7 +1020,7 @@ class install_update extends module
 								{
 									if ($status != 'new')
 									{
-										$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+										$transfer->copy_file($file_struct['filename'], $backup_folder_path . '/' . $file_struct['filename']);
 									}
 
 									// New directory too?
@@ -1044,7 +1046,7 @@ class install_update extends module
 								else
 								{
 									// @todo add option to specify if a backup file should be created?
-									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+									$transfer->copy_file($file_struct['filename'], $backup_folder_path . '/' . $file_struct['filename']);
 									$transfer->write_file($file_struct['filename'], $contents);
 								}
 							break;
@@ -1059,7 +1061,7 @@ class install_update extends module
 								}
 								else
 								{
-									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+									$transfer->copy_file($file_struct['filename'], $backup_folder_path . '/' . $file_struct['filename']);
 									$transfer->write_file($file_struct['filename'], $contents);
 								}
 							break;
@@ -1068,7 +1070,7 @@ class install_update extends module
 
 								if ($update_mode != 'download')
 								{
-									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+									$transfer->copy_file($file_struct['filename'], $backup_folder_path . '/' . $file_struct['filename']);
 								}
 							break;
 						}
