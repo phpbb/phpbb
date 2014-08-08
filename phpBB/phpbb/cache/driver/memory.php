@@ -20,13 +20,6 @@ abstract class memory extends \phpbb\cache\driver\base
 {
 	var $key_prefix;
 
-	var $vars = array();
-	var $is_modified = false;
-
-	var $sql_rowset = array();
-	var $sql_row_pointer = array();
-	var $cache_dir = '';
-
 	/**
 	* Set cache path
 	*/
@@ -66,21 +59,6 @@ abstract class memory extends \phpbb\cache\driver\base
 		}
 
 		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function unload()
-	{
-		$this->save();
-		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
-
-		$this->vars = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 	}
 
 	/**
@@ -143,47 +121,6 @@ abstract class memory extends \phpbb\cache\driver\base
 			$this->is_modified = true;
 		}
 	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function purge()
-	{
-		// Purge all phpbb cache files
-		$dir = @opendir($this->cache_dir);
-
-		if (!$dir)
-		{
-			return;
-		}
-
-		while (($entry = readdir($dir)) !== false)
-		{
-			if (strpos($entry, 'container_') !== 0 &&
-				strpos($entry, 'url_matcher') !== 0 &&
-				strpos($entry, 'sql_') !== 0 &&
-				strpos($entry, 'data_') !== 0 &&
-				strpos($entry, 'ctpl_') !== 0 &&
-				strpos($entry, 'tpl_') !== 0)
-			{
-				continue;
-			}
-
-			$this->remove_file($this->cache_dir . $entry);
-		}
-		closedir($dir);
-
-		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
-
-		$this->vars = array();
-		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
-
-		$this->is_modified = false;
-	}
-
 
 	/**
 	* {@inheritDoc}
@@ -262,26 +199,6 @@ abstract class memory extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_load($query)
-	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$query_id = sizeof($this->sql_rowset);
-
-		if (($result = $this->_read('sql_' . md5($query))) === false)
-		{
-			return false;
-		}
-
-		$this->sql_rowset[$query_id] = $result;
-		$this->sql_row_pointer[$query_id] = 0;
-
-		return $query_id;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
 	function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
 	{
 		// Remove extra spaces and tabs
@@ -335,94 +252,6 @@ abstract class memory extends \phpbb\cache\driver\base
 		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 
 		return $query_id;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_exists($query_id)
-	{
-		return isset($this->sql_rowset[$query_id]);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchrow($query_id)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
-		}
-
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_fetchfield($query_id, $field)
-	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_rowseek($rownum, $query_id)
-	{
-		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		$this->sql_row_pointer[$query_id] = $rownum;
-		return true;
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	function sql_freeresult($query_id)
-	{
-		if (!isset($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
-
-		return true;
-	}
-
-	/**
-	* Removes/unlinks file
-	*
-	* @param string $filename Filename to remove
-	* @param bool $check Check file permissions
-	* @return bool True if the file was successfully removed, otherwise false
-	*/
-	function remove_file($filename, $check = false)
-	{
-		if (!function_exists('phpbb_is_writable'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
-
-		if ($check && !phpbb_is_writable($this->cache_dir))
-		{
-			// E_USER_ERROR - not using language entry - intended.
-			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);
-		}
-
-		return @unlink($filename);
 	}
 
 	/**
