@@ -66,12 +66,14 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 	static protected function visit($path)
 	{
 		self::$session->visit(self::$root_url . $path);
+		self::assertEquals(self::$session->getStatusCode(), '200');
 		return self::$session->getPage();
 	}
 
 	static protected function click_submit($submit_button_id = 'submit')
 	{
 		self::$session->getPage()->findById($submit_button_id)->click();
+		self::assertEquals(self::$session->getStatusCode(), '200');
 		return self::$session->getPage();
 	}
 
