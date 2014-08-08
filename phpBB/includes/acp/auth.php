@@ -183,7 +183,10 @@ class auth_admin extends \phpbb\auth\auth
 		}
 
 		// Defining the user-function here to save some memory
-		$return_acl_fill = create_function('$value', 'return ' . $acl_fill . ';');
+		$return_acl_fill = function () use ($acl_fill)
+		{
+			return $acl_fill;
+		};
 
 		// Actually fill the gaps
 		if (sizeof($hold_ary))
