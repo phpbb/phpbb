@@ -533,4 +533,27 @@ abstract class base implements \phpbb\notification\type\type_interface
 			WHERE ' . $where;
 		$this->db->sql_query($sql);
 	}
+
+	/**
+	 * Get a list of users that are authenticated to receive notifications
+	 *
+	 * @param array $users Array of users that have subscribed to a notification
+	 * @param int $forum_id Forum ID of the forum
+	 * @param array $options Array of notification options
+	 * @return array Array of users that are authenticated recipients
+	 */
+	protected function get_authenticated_recipients($users, $forum_id, $options)
+	{
+		$users = array_unique($users);
+		sort($users);
+
+		$auth_read = $this->auth->acl_get_list($users, 'f_read', $forum_id);
+
+		if (empty($auth_read))
+		{
+			return array();
+		}
+
+		return $this->check_user_notification_options($auth_read[$forum_id]['f_read'], $options);
+	}
 }
