@@ -31,11 +31,11 @@ class captcha_plugins extends \phpbb\db\migration\migration
 
 		return array(
 			array('if', array(
-				(is_file($this->phpbb_root_path . 'phpbb/captcha/plugins/' . $captcha_plugin . $this->php_ext)),
+				(is_file($this->phpbb_root_path . 'phpbb/captcha/plugins/' . $captcha_plugin . '.' . $this->php_ext)),
 				array('config.update', array('captcha_plugin', 'core.captcha.plugins.' . $captcha_plugin)),
 			)),
 			array('if', array(
-				(!is_file($this->phpbb_root_path . 'phpbb/captcha/plugins/' . $captcha_plugin . $this->php_ext)),
+				(!is_file($this->phpbb_root_path . 'phpbb/captcha/plugins/' . $captcha_plugin . '.' . $this->php_ext)),
 				array('config.update', array('captcha_plugin', 'core.captcha.plugins.nogd')),
 			)),
 		);
