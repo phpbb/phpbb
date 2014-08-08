@@ -72,11 +72,11 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		{
 			if ($driver !== 'upload')
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
@@ -323,7 +323,14 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 		$sql = 'SELECT * FROM ' . $table . '
 				WHERE ' . $prefix . 'id = ' . $id;
-		$result = $this->db->sql_query($sql);
-		$this->assertSame($expected, $this->manager->clean_row($this->db->sql_fetchrow($result), substr($prefix, -1)));
+		$result = $this->db->sql_query_limit($sql, 1);
+
+		$row = $this->manager->clean_row($this->db->sql_fetchrow($result), substr($prefix, 0, -1));
+		$this->db->sql_freeresult($result);
+
+		foreach ($expected as $key => $value)
+		{
+			$this->assertEquals($value, $row[$key]);
+		}
 	}
 }
