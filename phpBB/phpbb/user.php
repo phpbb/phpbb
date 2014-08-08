@@ -31,6 +31,9 @@ class user extends \phpbb\session
 	*/
 	public $timezone;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	var $lang_name = false;
 	var $lang_id = false;
 	var $lang_path;
@@ -42,12 +45,15 @@ class user extends \phpbb\session
 
 	/**
 	* Constructor to set the lang path
+	*
+	* @param \phpbb\config\config $config
 	*/
-	function __construct()
+	function __construct(\phpbb\config\config $config)
 	{
 		global $phpbb_root_path;
 
 		$this->lang_path = $phpbb_root_path . 'language/';
+		$this->config = $config;
 	}
 
 	/**
@@ -710,7 +716,10 @@ class user extends \phpbb\session
 			$utc = new \DateTimeZone('UTC');
 		}
 
-		$time = new \phpbb\datetime($this, "@$gmepoch", $utc);
+		$datetime_class = phpbb_get_datetime_class($this->config);
+
+		/** @var \phpbb\datetime $time */
+		$time = new $datetime_class($this, "@$gmepoch", $utc);
 		$time->setTimezone($this->timezone);
 
 		return $time->format($format, $forcedate);
@@ -727,7 +736,8 @@ class user extends \phpbb\session
 	public function create_datetime($time = 'now', \DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->timezone;
-		return new \phpbb\datetime($this, $time, $timezone);
+		$datetime_class = phpbb_get_datetime_class($this->config);
+		return new $datetime_class($this, $time, $timezone);
 	}
 
 	/**
@@ -741,7 +751,10 @@ class user extends \phpbb\session
 	public function get_timestamp_from_format($format, $time, \DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->timezone;
-		$date = \DateTime::createFromFormat($format, $time, $timezone);
+		$datetime_class = phpbb_get_datetime_class($this->config);
+
+		/** @var \phpbb\datetime $datetime_class */
+		$date = $datetime_class::createFromFormat($format, $time, $timezone);
 		return ($date !== false) ? $date->format('U') : false;
 	}
 
