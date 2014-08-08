@@ -41,6 +41,12 @@ class resolver implements ControllerResolverInterface
 	protected $template;
 
 	/**
+	* Request type cast helper object
+	* @var \phpbb\request\type_cast_helper
+	*/
+	protected $type_cast_helper;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -59,6 +65,7 @@ class resolver implements ControllerResolverInterface
 		$this->user = $user;
 		$this->container = $container;
 		$this->template = $template;
+		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -138,7 +145,16 @@ class resolver implements ControllerResolverInterface
 		{
 			if (array_key_exists($param->name, $attributes))
 			{
-				$arguments[] = $attributes[$param->name];
+				if (is_string($attributes[$param->name]))
+				{
+					$value = $attributes[$param->name];
+					$this->type_cast_helper->set_var($value, $attributes[$param->name], 'string', true, false);
+					$arguments[] = $value;
+				}
+				else
+				{
+					$arguments[] = $attributes[$param->name];
+				}
 			}
 			else if ($param->getClass() && $param->getClass()->isInstance($request))
 			{
