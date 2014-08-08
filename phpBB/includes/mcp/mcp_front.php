@@ -26,6 +26,7 @@ function mcp_front_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth, $module;
+	global $phpbb_dispatcher;
 
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
@@ -79,6 +80,19 @@ function mcp_front_view($id, $mode, $action)
 					$total = 0;
 				}
 			}
+
+			/**
+			* Alter list of posts and total as required
+			*
+			* @event core.mcp_front_view_queue_postid_list_after
+			* @var	int		total						Number of unapproved posts
+			* @var	array	post_list					List of unapproved posts
+			* @var	array	forum_list					List of forums that contain the posts
+			* @var	array	forum_names					Associative array with forum_id as key and it's corresponding forum_name as value
+			* @since 3.1.0-RC3
+			*/
+			$vars = array('total', 'post_list', 'forum_list', 'forum_names');
+			extract($phpbb_dispatcher->trigger_event('core.mcp_front_view_queue_postid_list_after', compact($vars)));
 
 			if ($total)
 			{
