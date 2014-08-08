@@ -119,6 +119,7 @@ class soft_delete_mod_convert extends \phpbb\db\migration\migration
 	{
 		return new \phpbb\content_visibility(
 			new \phpbb\auth\auth(),
+			$this->config,
 			$this->db,
 			new \phpbb\user(),
 			$this->phpbb_root_path,
