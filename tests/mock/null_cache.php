@@ -17,6 +17,11 @@ class phpbb_mock_null_cache
 	{
 	}
 
+	public function caching_enabled()
+	{
+		return false;
+	}
+
 	public function get($var_name)
 	{
 		return false;

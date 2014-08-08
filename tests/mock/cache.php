@@ -20,6 +20,11 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 		$this->data = $data;
 	}
 
+	public function caching_enabled()
+	{
+		return true;
+	}
+
 	public function get($var_name)
 	{
 		if (isset($this->data[$var_name]))

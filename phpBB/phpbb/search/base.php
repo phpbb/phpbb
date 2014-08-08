@@ -179,6 +179,12 @@ class base
 	{
 		global $cache, $config, $db, $user;
 
+		// Cache does not really exist so exit
+		if (!$cache->caching_enabled())
+		{
+			return;
+		}
+
 		$length = min(sizeof($id_ary), $config['search_block_size']);
 
 		// nothing to cache so exit

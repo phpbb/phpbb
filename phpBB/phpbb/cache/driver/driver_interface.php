@@ -19,6 +19,13 @@ namespace phpbb\cache\driver;
 interface driver_interface
 {
 	/**
+	* Check if the caching is actually enabled
+	*
+	* @return bool
+	*/
+	public function caching_enabled();
+
+	/**
 	* Load global cache
 	*
 	* @return mixed False if an error was encountered, otherwise the data type of the cached data

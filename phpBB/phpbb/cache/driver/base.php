@@ -15,4 +15,11 @@ namespace phpbb\cache\driver;
 
 abstract class base implements \phpbb\cache\driver\driver_interface
 {
+	/**
+	* {@inheritDoc}
+	*/
+	function caching_enabled()
+	{
+		return true;
+	}
 }
