@@ -420,6 +420,14 @@ class factory implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function sql_not_like_expression($expression)
+	{
+		return $this->get_driver()->sql_not_like_expression($expression);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function sql_report($mode, $query = '')
 	{
 		return $this->get_driver()->sql_report($mode, $query);
