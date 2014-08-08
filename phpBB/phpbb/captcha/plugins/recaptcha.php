@@ -11,21 +11,9 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha\plugins;
 
-if (!class_exists('phpbb_default_captcha', false))
-{
-	// we need the classic captcha code for tracking solutions and attempts
-	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
-}
-
-class phpbb_recaptcha extends phpbb_default_captcha
+class recaptcha extends \phpbb\captcha\plugins\captcha_abstract
 {
 	var $recaptcha_server = 'http://www.google.com/recaptcha/api';
 	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api'; // class constants :(
@@ -55,13 +43,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$this->response = request_var('recaptcha_response_field', '');
 	}
 
-	static public function get_instance()
-	{
-		$instance = new phpbb_recaptcha();
-		return $instance;
-	}
-
-	static public function is_available()
+	public function is_available()
 	{
 		global $config, $user;
 		$user->add_lang('captcha_recaptcha');
@@ -81,9 +63,20 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		return 'CAPTCHA_RECAPTCHA';
 	}
 
-	function get_class_name()
+	/**
+	* @return string the name of the service corresponding to the plugin
+	*/
+	function get_service_name()
 	{
-		return 'phpbb_recaptcha';
+		return 'core.captcha.plugins.recaptcha';
+	}
+
+	/**
+	* @return string the name of the class used to generate the captcha
+	*/
+	function get_generator_class()
+	{
+		throw new \Exception('Go out devil!');
 	}
 
 	function acp_page($id, &$module)
@@ -131,7 +124,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
-				'CAPTCHA_NAME'		=> $this->get_class_name(),
+				'CAPTCHA_NAME'		=> $this->get_service_name(),
 				'U_ACTION'			=> $module->u_action,
 			));
 

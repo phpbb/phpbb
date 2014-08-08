@@ -11,18 +11,12 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha\plugins;
 
 /**
 * This class holds the code shared by the two default 3.0.x CAPTCHAs.
 */
-class phpbb_captcha_plugins_captcha_abstract
+abstract class captcha_abstract
 {
 	var $confirm_id;
 	var $confirm_code;
@@ -65,7 +59,8 @@ class phpbb_captcha_plugins_captcha_abstract
 		// compute $seed % 0x7fffffff
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 
-		$captcha = new captcha();
+		$generator = $this->get_generator_class();
+		$captcha = new $generator();
 		define('IMAGE_OUTPUT', 1);
 		$captcha->execute($this->code, $this->seed);
 	}
@@ -80,7 +75,8 @@ class phpbb_captcha_plugins_captcha_abstract
 				return false;
 			}
 		}
-		$captcha = new captcha();
+		$generator = $this->get_generator_class();
+		$captcha = new $generator();
 		define('IMAGE_OUTPUT', 1);
 		$captcha->execute($this->code, $this->seed);
 	}
@@ -130,7 +126,7 @@ class phpbb_captcha_plugins_captcha_abstract
 
 		// acp_captcha has a delivery function; let's use it
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_class_name()) . $variables,
+			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_service_name()) . $variables,
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 
@@ -364,11 +360,13 @@ class phpbb_captcha_plugins_captcha_abstract
 		return false;
 	}
 
-}
+	/**
+	* @return string the name of the service corresponding to the plugin
+	*/
+	abstract function get_service_name();
 
-/**
-* Old class name for legacy use. The new class name is auto loadable.
-*/
-class phpbb_default_captcha extends phpbb_captcha_plugins_captcha_abstract
-{
+	/**
+	* @return string the name of the class used to generate the captcha
+	*/
+	abstract function get_generator_class();
 }

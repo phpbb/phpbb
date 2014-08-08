@@ -11,10 +11,12 @@
 *
 */
 
+namespace phpbb\captcha;
+
 /**
 * Wave3D CAPTCHA
 */
-class captcha
+class gd_wave
 {
 	var $width		= 360;
 	var $height		= 96;

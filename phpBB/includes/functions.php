@@ -2730,11 +2730,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 	global $request, $phpbb_container;
 
-	if (!class_exists('phpbb_captcha_factory', false))
-	{
-		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	}
-
 	$err = '';
 
 	// Make sure user->setup() has been called
@@ -2844,7 +2839,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			case LOGIN_ERROR_ATTEMPTS:
 
-				$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+				$captcha = $phpbb_container->get('captchas.factory')->get_instance($config['captcha_plugin']);
 				$captcha->init(CONFIRM_LOGIN);
 				// $captcha->reset();
 

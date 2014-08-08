@@ -11,15 +11,9 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha;
 
-class captcha
+class gd
 {
 	var $width = 360;
 	var $height = 96;

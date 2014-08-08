@@ -146,13 +146,7 @@ class db extends \phpbb\auth\provider\base
 		// Every auth module is able to define what to do by itself...
 		if ($show_captcha)
 		{
-			// Visual Confirmation handling
-			if (!class_exists('phpbb_captcha_factory', false))
-			{
-				include ($this->phpbb_root_path . 'includes/captcha/captcha_factory.' . $this->php_ext);
-			}
-
-			$captcha = \phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
+			$captcha = $this->captchas_manager->get_instance($this->config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);
 			$vc_response = $captcha->validate($row);
 			if ($vc_response)

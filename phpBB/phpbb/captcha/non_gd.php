@@ -11,19 +11,13 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha;
 
 /**
 * Main non-gd captcha class
 * @ignore
 */
-class captcha
+class non_gd
 {
 	var $filtered_pngs;
 	var $width = 320;

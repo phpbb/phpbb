@@ -11,13 +11,7 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha\plugins;
 
 global $table_prefix;
 
@@ -29,7 +23,7 @@ define('CAPTCHA_QA_CONFIRM_TABLE',	$table_prefix . 'qa_confirm');
 * And now to something completely different. Let's make a captcha without extending the abstract class.
 * QA CAPTCHA sample implementation
 */
-class phpbb_captcha_qa
+class qa
 {
 	var $confirm_id;
 	var $answer;
@@ -98,19 +92,9 @@ class phpbb_captcha_qa
 	}
 
 	/**
-	*  API function
-	*/
-	static public function get_instance()
-	{
-		$instance = new phpbb_captcha_qa();
-
-		return $instance;
-	}
-
-	/**
 	* See if the captcha has created its tables.
 	*/
-	static public function is_installed()
+	public function is_installed()
 	{
 		global $db;
 
@@ -122,14 +106,14 @@ class phpbb_captcha_qa
 	/**
 	*  API function - for the captcha to be available, it must have installed itself and there has to be at least one question in the board's default lang
 	*/
-	static public function is_available()
+	public function is_available()
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
 
-		if (!self::is_installed())
+		if (!$this->is_installed())
 		{
 			return false;
 		}
@@ -163,9 +147,9 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function get_class_name()
+	function get_service_name()
 	{
-		return 'phpbb_captcha_qa';
+		return 'core.captcha.plugins.qa';
 	}
 
 	/**
@@ -621,12 +605,12 @@ class phpbb_captcha_qa
 		$action = request_var('action', '');
 
 		// we have two pages, so users might want to navigate from one to the other
-		$list_url = $module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_class_name();
+		$list_url = $module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_service_name();
 
 		$template->assign_vars(array(
 			'U_ACTION'		=> $module->u_action,
 			'QUESTION_ID'	=> $question_id ,
-			'CLASS'			=> $this->get_class_name(),
+			'CLASS'			=> $this->get_service_name(),
 		));
 
 		// show the list?
@@ -636,7 +620,7 @@ class phpbb_captcha_qa
 		}
 		else if ($question_id && $action == 'delete')
 		{
-			if ($this->get_class_name() !== $config['captcha_plugin'] || !$this->acp_is_last($question_id))
+			if ($this->get_service_name() !== $config['captcha_plugin'] || !$this->acp_is_last($question_id))
 			{
 				if (confirm_box(true))
 				{
@@ -650,7 +634,7 @@ class phpbb_captcha_qa
 						'question_id'		=> $question_id,
 						'action'			=> $action,
 						'configure'			=> 1,
-						'select_captcha'	=> $this->get_class_name(),
+						'select_captcha'	=> $this->get_service_name(),
 						))
 					);
 				}
@@ -759,7 +743,7 @@ class phpbb_captcha_qa
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$url = $module->u_action . "&amp;question_id={$row['question_id']}&amp;configure=1&amp;select_captcha=" . $this->get_class_name() . '&amp;';
+			$url = $module->u_action . "&amp;question_id={$row['question_id']}&amp;configure=1&amp;select_captcha=" . $this->get_service_name() . '&amp;';
 
 			$template->assign_block_vars('questions', array(
 				'QUESTION_TEXT'		=> $row['question_text'],
