@@ -1309,8 +1309,7 @@ function mcp_fork_topic($topic_ids)
 					'post_edit_locked'	=> (int) $row['post_edit_locked'],
 					'post_postcount'	=> $row['post_postcount'],
 				);
-				// Adjust post count only if the post can be incremented to the user counter else, it was not added the users post count anyway
-				// Do not do the query here but later, we just increment the count of posts until the loop is finished, then do new posts counters.
+				// Adjust post count only if the post can be incremented to the user counter
 				if ($row['post_postcount'])
 				{
 					if (isset($counter[$row['poster_id']]))
