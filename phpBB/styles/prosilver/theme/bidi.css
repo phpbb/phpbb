@@ -332,12 +332,8 @@ li.breadcrumbs span:first-child > a {
 
 .rtl .skiplink {
 	/* invisible skip link, used for accessibility  */
-	position: relative;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	display: block;
 	left: 0;
+	right: -999px;
 }
 
 .rtl a.feed-icon-forum {
