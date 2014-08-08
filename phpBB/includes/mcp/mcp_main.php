@@ -1309,14 +1309,13 @@ function mcp_fork_topic($topic_ids)
 					'post_edit_locked'	=> (int) $row['post_edit_locked'],
 					'post_postcount'	=> $row['post_postcount'],
 				);
-				// Adjust post counts... only if the post can be incremented to the user counter (else, it was not added the users post count anyway)
-				//Fixed an error of phpBB: http://tracker.phpbb.com/browse/PHPBB3-11520
-				//Do not do the query here but later, we just increment the count of posts until the loop is finished, then do new posts counters.
+				// Adjust post count only if the post can be incremented to the user counter else, it was not added the users post count anyway
+				// Do not do the query here but later, we just increment the count of posts until the loop is finished, then do new posts counters.
 				if ($row['post_postcount'])
 				{
 					if (isset($counter[$row['poster_id']]))
 					{
-						 $counter[$row['poster_id']]++;
+						++$counter[$row['poster_id']];
 					}
 					else
 					{
@@ -1442,14 +1441,14 @@ function mcp_fork_topic($topic_ids)
 			WHERE forum_id = ' . $to_forum_id;
 		$db->sql_query($sql);
 
-		if (sizeof($counter))
+		if (!empty($counter))
 		{
-			//Do only one query per user and not a query PER post!!
-			foreach ($counter AS $uid => $count)
+			// Do only one query per user and not a query per post.
+			foreach ($counter as $user_id => $count)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts + ' . (int) $count . '
-					WHERE user_id = ' . (int) $uid;
+					WHERE user_id = ' . (int) $user_id;
 				$db->sql_query($sql);
 			}
 		}
