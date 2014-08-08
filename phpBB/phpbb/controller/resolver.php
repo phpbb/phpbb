@@ -41,7 +41,7 @@ class resolver implements ControllerResolverInterface
 	protected $template;
 
 	/**
-	* Requst type cast helper object
+	* Request type cast helper object
 	* @var \phpbb\request\type_cast_helper
 	*/
 	protected $type_cast_helper;
