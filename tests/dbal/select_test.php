@@ -237,20 +237,32 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	{
 		// * = any_char; # = one_char
 		return array(
-			array('barfoo', array(array('username_clean' => 'bertie'),
-				array('username_clean' => 'foobar'))),
-			array('bar', array(array('username_clean' => 'bertie'),)),
-			array('bar*', array(array('username_clean' => 'bertie'),
-				array('username_clean' => 'foobar'))),
+			array('barfoo', array(
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie'))
+			),
+			array('bar', array(array('username_clean' => 'bertie'))),
+			array('bar*', array(
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie'))
+			),
 			array('*bar*', array(array('username_clean' => 'bertie'))),
-			array('b*r', array(array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))),
-			array('b*e', array(array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))),
-			array('#b*e', array(array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))),
-			array('b####e', array(array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))),
+			array('b*r', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'))
+			),
+			array('b*e', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'))
+			),
+			array('#b*e', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'))
+			),
+			array('b####e', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'))
+			),
 		);
 	}
 
