@@ -698,27 +698,6 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 	}
 
 	/*
-	* Perform some basic assertions for the page
-	*
-	* Checks for debug/error output before the actual page content and the status code
-	*
-	* @param mixed $status_code		Expected status code, false to disable check
-	* @return null
-	*/
-	static public function assert_response_html($status_code = 200)
-	{
-		if ($status_code !== false)
-		{
-			self::assert_response_status_code($status_code);
-		}
-
-		// Any output before the doc type means there was an error
-		$content = self::$client->getResponse()->getContent();
-		self::assertNotContains('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
-	}
-
-	/*
 	* Perform some basic assertions for an xml page
 	*
 	* Checks for debug/error output before the actual page content and the status code
@@ -737,20 +716,6 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		$content = self::$client->getResponse()->getContent();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
-	}
-
-	/**
-	* Heuristic function to check that the response is success.
-	*
-	* When php decides to die with a fatal error, it still sends 200 OK
-	* status code. This assertion tries to catch that.
-	*
-	* @param int $status_code	Expected status code
-	* @return null
-	*/
-	static public function assert_response_status_code($status_code = 200)
-	{
-		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)
