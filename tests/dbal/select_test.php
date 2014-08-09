@@ -239,9 +239,13 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		return array(
 			array('barfoo', array(
 				array('username_clean' => 'foobar'),
-				array('username_clean' => 'bertie'))
-			),
-			array('bar', array(array('username_clean' => 'bertie'))),
+				array('username_clean' => 'bertie')
+			)),
+			array('bar', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie'),
+			)),
 			array('bar*', array(
 				array('username_clean' => 'foobar'),
 				array('username_clean' => 'bertie'))
@@ -249,20 +253,22 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 			array('*bar*', array(array('username_clean' => 'bertie'))),
 			array('b*r', array(
 				array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))
-			),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
 			array('b*e', array(
 				array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))
-			),
+				array('username_clean' => 'foobar')
+			)),
 			array('#b*e', array(
 				array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))
-			),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
 			array('b####e', array(
 				array('username_clean' => 'barfoo'),
-				array('username_clean' => 'foobar'))
-			),
+				array('username_clean' => 'foobar')
+			)),
 		);
 	}
 
