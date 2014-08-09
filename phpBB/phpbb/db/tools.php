@@ -2661,19 +2661,21 @@ class tools
 			break;
 
 			case 'oracle':
-				$sql = "SELECT ix.index_name  AS phpbb_index_name
+				$sql = "SELECT ix.index_name  AS phpbb_index_name, ix.uniqueness AS is_unique
 					FROM all_ind_columns ixc, all_indexes ix
 					WHERE ix.index_name = ixc.index_name
 						AND ixc.table_name = '" . strtoupper($table_name) . "'
-						AND ixc.column_name = '" . strtoupper($column_name) . "'
-						AND ix.uniqueness = " . ($unique) ? "'UNIQUE'" : "'NONUNIQUE'";
+						AND ixc.column_name = '" . strtoupper($column_name) . "'";
 			break;
 		}
 
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$existing_indexes[$row['phpbb_index_name']] = array();
+			if (!isset($row['is_unique']) || ($unique && $row['is_unique'] == 'UNIQUE') || (!$unique && $row['is_unique'] == 'NONUNIQUE'))
+			{
+				$existing_indexes[$row['phpbb_index_name']] = array();
+			}
 		}
 		$this->db->sql_freeresult($result);
 
