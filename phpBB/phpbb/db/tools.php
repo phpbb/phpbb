@@ -2378,7 +2378,7 @@ class tools
 					}
 				}
 
-				$temp_column_name = substr(md5($column_name), 0, 30);
+				$temp_column_name = 'temp_' . substr(md5($column_name), 0, 25);
 				// Add a temporary table with the new type
 				$result = $this->sql_column_add($table_name, $temp_column_name, $original_column_data);
 				$statements = array_merge($statements, $result);
