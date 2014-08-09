@@ -2283,7 +2283,7 @@ class tools
 	 */
 	protected function strip_table_name_from_index_name($table_name, $index_name)
 	{
-		return (strpos($index_name, $table_name) === 0) ? substr($index_name, strlen($table_name) + 1) : $index_name;
+		return (strpos(strtoupper($index_name), strtoupper($table_name) === 0) ? substr($index_name, strlen($table_name) + 1) : $index_name;
 	}
 
 	/**
