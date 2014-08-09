@@ -277,7 +277,7 @@ class sqlite extends \phpbb\db\driver\driver
 	*/
 	function sql_like_expression($expression)
 	{
-		// Unlike LIKE, GLOB is case sensitive (unfortunatly). SQLite users need to live with it!
+		// Unlike LIKE, GLOB is unfortunately case sensitive.
 		// We only catch * and ? here, not the character map possible on file globbing.
 		$expression = str_replace(array(chr(0) . '_', chr(0) . '%'), array(chr(0) . '?', chr(0) . '*'), $expression);
 
@@ -290,11 +290,11 @@ class sqlite extends \phpbb\db\driver\driver
 	/**
 	* {@inheritDoc}
 	*
-	* For SQLite an underscore is a not-known character... this may change with SQLite3
+	* For SQLite an underscore is a not-known character...
 	*/
 	function sql_not_like_expression($expression)
 	{
-		// Unlike NOT LIKE, NOT GLOB is case sensitive (unfortunatly). SQLite users need to live with it!
+		// Unlike NOT LIKE, NOT GLOB is unfortunately case sensitive.
 		// We only catch * and ? here, not the character map possible on file globbing.
 		$expression = str_replace(array(chr(0) . '_', chr(0) . '%'), array(chr(0) . '?', chr(0) . '*'), $expression);
 
