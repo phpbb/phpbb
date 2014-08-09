@@ -63,15 +63,27 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 		parent::tearDown();
 	}
 
-	static protected function visit($path)
+	static protected function visit($path, $assert_response_html = true)
 	{
 		self::$session->visit(self::$root_url . $path);
+
+		if ($assert_response_html)
+		{
+			self::assert_response_html();
+		}
+
 		return self::$session->getPage();
 	}
 
-	static protected function click_submit($submit_button_id = 'submit')
+	static protected function click_submit($assert_response_html = true, $submit_button_id = 'submit')
 	{
 		self::$session->getPage()->findById($submit_button_id)->click();
+
+		if ($assert_response_html)
+		{
+			self::assert_response_html();
+		}
+
 		return self::$session->getPage();
 	}
 
@@ -179,5 +191,40 @@ abstract class phpbb_mink_test_case extends phpbb_test_case
 		copy($config_file, $config_file_test);
 
 		self::$session->stop();
+	}
+
+	/*
+	* Perform some basic assertions for the page
+	*
+	* Checks for debug/error output before the actual page content and the status code
+	*
+	* @param mixed $status_code		Expected status code, false to disable check
+	* @return null
+	*/
+	static public function assert_response_html($status_code = 200)
+	{
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
+
+		// Any output before the doc type means there was an error
+		$content = self::$session->getPage()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
+		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+	}
+
+	/**
+	* Heuristic function to check that the response is success.
+	*
+	* When php decides to die with a fatal error, it still sends 200 OK
+	* status code. This assertion tries to catch that.
+	*
+	* @param int $status_code	Expected status code
+	* @return null
+	*/
+	static public function assert_response_status_code($status_code = 200)
+	{
+		self::assertEquals($status_code, self::$session->getStatusCode());
 	}
 }
