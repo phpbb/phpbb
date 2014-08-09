@@ -2291,6 +2291,7 @@ class tools
 	*/
 	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
 	{
+		$original_column_data = $column_data;
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
 
@@ -2379,7 +2380,7 @@ class tools
 
 				$temp_column_name = substr(md5($column_name), 0, 30);
 				// Add a temporary table with the new type
-				$result = $this->sql_column_add($table_name, $temp_column_name, $column_data);
+				$result = $this->sql_column_add($table_name, $temp_column_name, $original_column_data);
 				$statements = array_merge($statements, $result);
 
 				// Copy the data to the new column
@@ -2390,7 +2391,7 @@ class tools
 				$statements = array_merge($statements, $result);
 
 				// Recreate the original column with the new type
-				$result = $this->sql_column_add($table_name, $column_name, $column_data);
+				$result = $this->sql_column_add($table_name, $column_name, $original_column_data);
 				$statements = array_merge($statements, $result);
 
 				if (!empty($indexes))
