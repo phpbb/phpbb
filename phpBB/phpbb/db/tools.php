@@ -2039,7 +2039,7 @@ class tools
 			break;
 
 			case 'oracle':
-				$statements[] = 'ALTER TABLE ' . $table_name . 'add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
 
 			case 'sqlite':
