@@ -432,4 +432,12 @@ class factory implements driver_interface
 	{
 		return $this->get_driver()->sql_in_set($field, $array, $negate, $allow_empty_set);
 	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function sql_not_in_set($field, $array, $allow_empty_set = false)
+	{
+		return $this->get_driver()->sql_not_in_set($field, $array, $allow_empty_set);
+	}
 }

@@ -280,6 +280,62 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		);
 	}
 
+	public function not_in_set_data()
+	{
+		return array(
+			array('user_id', 3, false, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('user_id', 3, true, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('username_clean', 'bertie', false, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('username_clean', 'bertie', true, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('user_id', array(3), false, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('user_id', array(3), true, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('user_id', array(1, 3), false, array(
+				array('username_clean' => 'foobar'),
+			)),
+			array('user_id', array(1, 3), true, array(
+				array('username_clean' => 'foobar')
+			)),
+			array('username_clean', '', false, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
+			array('username_clean', '', true, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
+			array('user_id', array(), true, array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
+
+			// These here would throw errors and therefor $result should be false.
+			// Removing for now because SQLite accepts empty IN() syntax
+			/*array('user_id', array(), false, false, false, true),
+			array('user_id', array(), true, false, false, true),*/
+		);
+	}
+
 	/**
 	* @dataProvider in_set_data
 	*/
@@ -295,6 +351,33 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$result = $db->sql_query('SELECT username_clean
 			FROM phpbb_users
 			WHERE ' . $db->sql_in_set($field, $array, $negate, $allow_empty_set) . '
+			ORDER BY user_id ASC');
+
+		if ($catch_error)
+		{
+			$db->sql_return_on_error(false);
+		}
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
+
+	/**
+	* @dataProvider in_set_data
+	*/
+	public function test_not_in_set($field, $array, $allow_empty_set, $expected, $catch_error = false)
+	{
+		$db = $this->new_dbal();
+
+		if ($catch_error)
+		{
+			$db->sql_return_on_error(true);
+		}
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			WHERE ' . $db->sql_in_set($field, $array, $allow_empty_set) . '
 			ORDER BY user_id ASC');
 
 		if ($catch_error)
