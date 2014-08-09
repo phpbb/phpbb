@@ -1421,44 +1421,6 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 }
 
 /**
-* Generate a list of archive types available for compressing attachments
-*
-* @param string $param_key Either topic_id or post_id
-* @param string $param_val The value of the topic or post id
-* @param string $phpbb_root_path The root path of the phpBB installation
-* @param string $phpEx The PHP file extension
-*
-* @return array Array containing the link and the type of compression
-*/
-function phpbb_gen_download_links($param_key, $param_val, $phpbb_root_path, $phpEx)
-{
-	if (!class_exists('compress'))
-	{
-		require $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
-	}
-
-	$methods = compress::methods();
-	// Sort by preferred type.
-	$methods = array_intersect(array('.zip', '.tar.bz2', '.tar.gz', '.tar'), $methods);
-	$links = array();
-
-	foreach ($methods as $method)
-	{
-		$exploded = explode('.', $method);
-		$type = array_pop($exploded);
-		$params = array('archive' => $method);
-		$params[$param_key] = $param_val;
-
-		$links[] = array(
-			'LINK' => append_sid("{$phpbb_root_path}download/file.$phpEx", $params),
-			'TYPE' => $type,
-		);
-	}
-
-	return $links;
-}
-
-/**
 * Prepare profile data
 */
 function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)

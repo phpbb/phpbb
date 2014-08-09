@@ -250,7 +250,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_PM_ACTION'		=> $url . '&amp;mode=compose&amp;f=' . $folder_id . '&amp;p=' . $message_row['msg_id'],
 
 		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
-		'S_HAS_MULTIPLE_ATTACHMENTS' => (sizeof($attachments) > 1),
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
@@ -339,12 +338,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
 	{
-		$methods = phpbb_gen_download_links('msg_id', $msg_id, $phpbb_root_path, $phpEx);
-		foreach ($methods as $method)
-		{
-			$template->assign_block_vars('dl_method', $method);
-		}
-
 		foreach ($attachments as $attachment)
 		{
 			$template->assign_block_vars('attachment', array(
