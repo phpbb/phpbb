@@ -3,9 +3,9 @@ services:
         class: phpbb\captcha\factory
         arguments:
             - @service_container
-            - @captchas.plugins.service_collection
+            - @captcha.plugins.service_collection
 
-    captchas.plugins.service_collection:
+    captcha.plugins.service_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
