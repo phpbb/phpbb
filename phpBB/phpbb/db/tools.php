@@ -2652,8 +2652,8 @@ class tools
 				$sql = "SELECT ix.index_name  AS phpbb_index_name
 					FROM all_ind_columns ixc, all_indexes ix
 					WHERE ix.index_name = ixc.index_name
-						AND ixc.table_name = UPPER('{$table_name}')
-						AND ixc.column_name = UPPER('{$column_name}')
+						AND ixc.table_name = '" . strtoupper($table_name) . "'
+						AND ixc.column_name = '" . strtoupper($column_name) . "'
 						AND ix.uniqueness = " . ($unique) ? "'UNIQUE'" : "'NONUNIQUE'";
 			break;
 		}
@@ -2705,7 +2705,7 @@ class tools
 			case 'oracle':
 				$sql = "SELECT index_name AS phpbb_index_name, column_name AS phpbb_column_name
 					FROM all_ind_columns
-					WHERE table_name = UPPER('{$table_name}')
+					WHERE table_name = '" . strtoupper($table_name) . "'
 						AND " . $this->db->sql_in_set('index_name', array_keys($existing_indexes));
 			break;
 		}
