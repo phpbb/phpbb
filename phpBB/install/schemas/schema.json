@@ -2711,8 +2711,9 @@
                 0
             ],
             "topic_first_poster_name": [
-                "VCHAR_UNI",
-                ""
+                "VCHAR_UNI:255",
+                "",
+                "true_sort"
             ],
             "topic_first_poster_colour": [
                 "VCHAR:6",
