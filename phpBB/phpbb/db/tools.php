@@ -2275,6 +2275,18 @@ class tools
 	}
 
 	/**
+	 * Removes table_name from the index_name if it is at the beginning
+	 *
+	 * @param $table_name
+	 * @param $index_name
+	 * @return string
+	 */
+	protected function strip_table_name_from_index_name($table_name, $index_name)
+	{
+		return (strpos($index_name, $table_name) === 0) ? substr($index_name, strlen($table_name) + 1) : $index_name;
+	}
+
+	/**
 	* Change column type (not name!)
 	*/
 	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
@@ -2360,7 +2372,7 @@ class tools
 					$drop_indexes = array_merge(array_keys($indexes), array_keys($unique_indexes));
 					foreach ($drop_indexes as $index_name => $index_data)
 					{
-						$result = $this->sql_index_drop($table_name, $index_name);
+						$result = $this->sql_index_drop($table_name, $this->strip_table_name_from_index_name($table_name, $index_name));
 						$statements = array_merge($statements, $result);
 					}
 				}
@@ -2386,7 +2398,7 @@ class tools
 					// Recreate indexes after we changed the column
 					foreach ($indexes as $index_name => $index_data)
 					{
-						$result = $this->sql_create_index($table_name, $index_name, $index_data);
+						$result = $this->sql_create_index($table_name, $this->strip_table_name_from_index_name($table_name, $index_name), $index_data);
 						$statements = array_merge($statements, $result);
 					}
 				}
@@ -2396,7 +2408,7 @@ class tools
 					// Recreate unique indexes after we changed the column
 					foreach ($unique_indexes as $index_name => $index_data)
 					{
-						$result = $this->sql_create_unique_index($table_name, $index_name, $index_data);
+						$result = $this->sql_create_unique_index($table_name, $this->strip_table_name_from_index_name($table_name, $index_name), $index_data);
 						$statements = array_merge($statements, $result);
 					}
 				}
