@@ -2540,7 +2540,7 @@ function check_link_hash($token, $link_name)
 */
 function add_form_key($form_name)
 {
-	global $config, $template, $user;
+	global $config, $template, $user, $phpbb_dispatcher;
 
 	$now = time();
 	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
@@ -2550,6 +2550,27 @@ function add_form_key($form_name)
 		'creation_time' => $now,
 		'form_token'	=> $token,
 	));
+
+	/**
+	* Perform additional actions on creation of the form token
+	*
+	* @event core.add_form_key
+	* @var	string	form_name			The form name
+	* @var	int		now					Current time timestamp
+	* @var	string	s_fields			Generated hidden fields
+	* @var	string	token				Form token
+	* @var	string	token_sid			User session ID
+	*
+	* @since 3.1.0-RC3
+	*/
+	$vars = array(
+		'form_name',
+		'now',
+		's_fields',
+		'token',
+		'token_sid',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.add_form_key', compact($vars)));
 
 	$template->assign_vars(array(
 		'S_FORM_TOKEN'	=> $s_fields,
