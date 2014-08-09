@@ -14,30 +14,30 @@ services:
 
     core.captcha.plugins.gd:
         class: phpbb\captcha\plugins\gd
-        scope: prototype # scope MUST be prototype for this to work! # scope MUST be prototype for this to work!
+        scope: prototype # scope MUST be prototype for this to work!
         tags:
             - { name: captchas.plugins }
 
     core.captcha.plugins.gd_wave:
         class: phpbb\captcha\plugins\gd_wave
-        scope: prototype # scope MUST be prototype for this to work! # scope MUST be prototype for this to work!
+        scope: prototype # scope MUST be prototype for this to work!
         tags:
             - { name: captchas.plugins }
 
     core.captcha.plugins.nogd:
         class: phpbb\captcha\plugins\nogd
-        scope: prototype # scope MUST be prototype for this to work! # scope MUST be prototype for this to work!
+        scope: prototype # scope MUST be prototype for this to work!
         tags:
             - { name: captchas.plugins }
 
     core.captcha.plugins.qa:
         class: phpbb\captcha\plugins\qa
-        scope: prototype # scope MUST be prototype for this to work! # scope MUST be prototype for this to work!
+        scope: prototype # scope MUST be prototype for this to work!
         tags:
             - { name: captchas.plugins }
 
     core.captcha.plugins.recaptcha:
         class: phpbb\captcha\plugins\recaptcha
-        scope: prototype # scope MUST be prototype for this to work! # scope MUST be prototype for this to work!
+        scope: prototype # scope MUST be prototype for this to work!
         tags:
             - { name: captchas.plugins }
