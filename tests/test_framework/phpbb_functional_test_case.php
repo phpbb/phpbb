@@ -11,12 +11,14 @@
 *
 */
 use Symfony\Component\BrowserKit\CookieJar;
-use Behat\Mink\Driver\Goutte\Client;
-use Behat\Mink\Driver\GoutteDriver;
 
-class phpbb_functional_test_case extends phpbb_mink_test_case
+require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
+
+class phpbb_functional_test_case extends phpbb_test_case
 {
+	static protected $client;
 	static protected $cookieJar;
+	static protected $root_url;
 
 	protected $cache = null;
 	protected $db = null;
@@ -34,6 +36,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 	*/
 	protected $lang = array();
 
+	static protected $config = array();
 	static protected $already_installed = false;
 
 	static public function setUpBeforeClass()
@@ -42,24 +45,6 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
 		self::$root_url = self::$config['phpbb_functional_url'];
-
-		self::$cookieJar = new CookieJar;
-		self::$client = new Client(array(), null, self::$cookieJar);
-
-		$client_options = array(
-			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
-			'curl.options'	=> array(
-				CURLOPT_TIMEOUT	=> 120,
-			),
-		);
-
-		self::$client->setClient(new Guzzle\Http\Client('', $client_options));
-
-		// Reset the curl handle because it is 0 at this point and not a valid
-		// resource
-		self::$client->getClient()->getCurlMulti()->reset(true);
-
-		self::$driver = new GoutteDriver(self::$client);
 
 		// Important: this is used both for installation and by
 		// test cases for querying the tables.
@@ -93,6 +78,12 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 		$this->bootstrap();
 
+		self::$cookieJar = new CookieJar;
+		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		self::$client->getClient()->getCurlMulti()->reset(true);
+
 		// Clear the language array so that things
 		// that were added in other tests are gone
 		$this->lang = array();
@@ -119,14 +110,13 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 	protected function tearDown()
 	{
+		parent::tearDown();
+
 		if ($this->db instanceof \phpbb\db\driver\driver_interface)
 		{
 			// Close the database connections again this test
 			$this->db->sql_close();
 		}
-
-		self::$cookieJar->clear();
-		parent::tearDown();
 	}
 
 	/**
@@ -266,6 +256,144 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		return $extension_manager;
 	}
 
+	static protected function install_board()
+	{
+		global $phpbb_root_path, $phpEx;
+
+		self::recreate_database(self::$config);
+
+		$config_file = $phpbb_root_path . "config.$phpEx";
+		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
+		$config_file_test = $phpbb_root_path . "config_test.$phpEx";
+
+		if (file_exists($config_file))
+		{
+			if (!file_exists($config_file_dev))
+			{
+				rename($config_file, $config_file_dev);
+			}
+			else
+			{
+				unlink($config_file);
+			}
+		}
+
+		self::$cookieJar = new CookieJar;
+		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
+		// Set client manually so we can increase the cURL timeout
+		self::$client->setClient(new Guzzle\Http\Client('', array(
+			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
+			'curl.options'	=> array(
+				CURLOPT_TIMEOUT	=> 120,
+			),
+		)));
+
+		// Reset the curl handle because it is 0 at this point and not a valid
+		// resource
+		self::$client->getClient()->getCurlMulti()->reset(true);
+
+		$parseURL = parse_url(self::$config['phpbb_functional_url']);
+
+		$crawler = self::request('GET', 'install/index.php?mode=install');
+		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		// install/index.php?mode=install&sub=requirements
+		$crawler = self::submit($form);
+		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		// install/index.php?mode=install&sub=database
+		$crawler = self::submit($form);
+		self::assertContains('Database configuration', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form(array(
+			// Installer uses 3.0-style dbms name
+			'dbms'			=> str_replace('phpbb\db\driver\\', '',  self::$config['dbms']),
+			'dbhost'		=> self::$config['dbhost'],
+			'dbport'		=> self::$config['dbport'],
+			'dbname'		=> self::$config['dbname'],
+			'dbuser'		=> self::$config['dbuser'],
+			'dbpasswd'		=> self::$config['dbpasswd'],
+			'table_prefix'	=> self::$config['table_prefix'],
+		));
+
+		// install/index.php?mode=install&sub=database
+		$crawler = self::submit($form);
+		self::assertContains('Successful connection', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		// install/index.php?mode=install&sub=administrator
+		$crawler = self::submit($form);
+		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form(array(
+			'default_lang'	=> 'en',
+			'admin_name'	=> 'admin',
+			'admin_pass1'	=> 'adminadmin',
+			'admin_pass2'	=> 'adminadmin',
+			'board_email'	=> 'nobody@example.com',
+		));
+
+		// install/index.php?mode=install&sub=administrator
+		$crawler = self::submit($form);
+		self::assertContains('Tests passed', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		// We have to skip install/index.php?mode=install&sub=config_file
+		// because that step will create a config.php file if phpBB has the
+		// permission to do so. We have to create the config file on our own
+		// in order to get the DEBUG constants defined.
+		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, false, true);
+		$config_created = file_put_contents($config_file, $config_php_data) !== false;
+		if (!$config_created)
+		{
+			self::markTestSkipped("Could not write $config_file file.");
+		}
+
+		// We also have to create a install lock that is normally created by
+		// the installer. The file will be removed by the final step of the
+		// installer.
+		$install_lock_file = $phpbb_root_path . 'cache/install_lock';
+		$lock_created = file_put_contents($install_lock_file, '') !== false;
+		if (!$lock_created)
+		{
+			self::markTestSkipped("Could not create $lock_created file.");
+		}
+		@chmod($install_lock_file, 0666);
+
+		// install/index.php?mode=install&sub=advanced
+		$form_data = $form->getValues();
+		unset($form_data['submit']);
+
+		$crawler = self::request('POST', 'install/index.php?mode=install&sub=advanced', $form_data);
+		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form(array(
+			'email_enable'		=> true,
+			'smtp_delivery'		=> true,
+			'smtp_host'			=> 'nxdomain.phpbb.com',
+			'smtp_auth'			=> 'PLAIN',
+			'smtp_user'			=> 'nxuser',
+			'smtp_pass'			=> 'nxpass',
+			'cookie_secure'		=> false,
+			'force_server_vars'	=> false,
+			'server_protocol'	=> $parseURL['scheme'] . '://',
+			'server_name'		=> 'localhost',
+			'server_port'		=> isset($parseURL['port']) ? (int) $parseURL['port'] : 80,
+			'script_path'		=> $parseURL['path'],
+		));
+
+		// install/index.php?mode=install&sub=create_table
+		$crawler = self::submit($form);
+		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
+		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
+		$form = $crawler->selectButton('submit')->form();
+
+		// install/index.php?mode=install&sub=final
+		$crawler = self::submit($form);
+		self::assertContains('You have successfully installed', $crawler->text());
+
+		copy($config_file, $config_file_test);
+	}
+
 	public function install_ext($extension)
 	{
 		$this->login();
@@ -282,6 +410,12 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
 		$this->logout();
+	}
+
+	static private function recreate_database($config)
+	{
+		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
+		$db_conn_mgr->recreate_db();
 	}
 
 	/**
