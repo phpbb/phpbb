@@ -374,7 +374,7 @@ class mcp_reports
 				* @var	int		topic_id				topic_id in the page request
 				* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
 				* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
-				* @since 3.1.0-RC3
+				* @since 3.1.0-RC4
 				*/
 				$vars = array(
 					'sql',
