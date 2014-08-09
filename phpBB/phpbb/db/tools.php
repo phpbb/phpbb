@@ -2370,7 +2370,7 @@ class tools
 				if (!empty($indexes) || !empty($unique_indexes))
 				{
 					$drop_indexes = array_merge(array_keys($indexes), array_keys($unique_indexes));
-					foreach ($drop_indexes as $index_name => $index_data)
+					foreach ($drop_indexes as $index_name)
 					{
 						$result = $this->sql_index_drop($table_name, $this->strip_table_name_from_index_name($table_name, $index_name));
 						$statements = array_merge($statements, $result);
