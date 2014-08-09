@@ -1816,7 +1816,8 @@ class tools
 				$old_return_statements = $this->return_statements;
 				$this->return_statements = true;
 
-				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+				$indexes = $this->get_existing_indexes($table_name, $column_name);
+				$indexes = array_merge($indexes, $this->get_existing_indexes($table_name, $column_name, true));
 
 				// Drop any indexes
 				$recreate_indexes = array();
@@ -2038,7 +2039,7 @@ class tools
 			break;
 
 			case 'oracle':
-				$statements[] = 'ALTER TABLE ' . $table_name . 'add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
 
 			case 'sqlite':
@@ -2274,10 +2275,23 @@ class tools
 	}
 
 	/**
+	 * Removes table_name from the index_name if it is at the beginning
+	 *
+	 * @param $table_name
+	 * @param $index_name
+	 * @return string
+	 */
+	protected function strip_table_name_from_index_name($table_name, $index_name)
+	{
+		return (strpos(strtoupper($index_name), strtoupper($table_name)) === 0) ? substr($index_name, strlen($table_name) + 1) : $index_name;
+	}
+
+	/**
 	* Change column type (not name!)
 	*/
 	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
 	{
+		$original_column_data = $column_data;
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
 
@@ -2289,12 +2303,14 @@ class tools
 				$old_return_statements = $this->return_statements;
 				$this->return_statements = true;
 
-				$indexes = $this->mssql_get_existing_indexes($table_name, $column_name);
+				$indexes = $this->get_existing_indexes($table_name, $column_name);
+				$unique_indexes = $this->get_existing_indexes($table_name, $column_name, true);
 
 				// Drop any indexes
-				if (!empty($indexes))
+				if (!empty($indexes) || !empty($unique_indexes))
 				{
-					foreach ($indexes as $index_name => $index_data)
+					$drop_indexes = array_merge(array_keys($indexes), array_keys($unique_indexes));
+					foreach ($drop_indexes as $index_name)
 					{
 						$result = $this->sql_index_drop($table_name, $index_name);
 						$statements = array_merge($statements, $result);
@@ -2324,6 +2340,16 @@ class tools
 					}
 				}
 
+				if (!empty($unique_indexes))
+				{
+					// Recreate unique indexes after we changed the column
+					foreach ($unique_indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_create_unique_index($table_name, $index_name, $index_data);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
 				$this->return_statements = $old_return_statements;
 			break;
 
@@ -2333,7 +2359,69 @@ class tools
 			break;
 
 			case 'oracle':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' MODIFY ' . $column_name . ' ' . $column_data['column_type_sql'];
+				// We need the data here
+				$old_return_statements = $this->return_statements;
+				$this->return_statements = true;
+
+				// Get list of existing indexes
+				$indexes = $this->get_existing_indexes($table_name, $column_name);
+				$unique_indexes = $this->get_existing_indexes($table_name, $column_name, true);
+
+				// Drop any indexes
+				if (!empty($indexes) || !empty($unique_indexes))
+				{
+					$drop_indexes = array_merge(array_keys($indexes), array_keys($unique_indexes));
+					foreach ($drop_indexes as $index_name)
+					{
+						$result = $this->sql_index_drop($table_name, $this->strip_table_name_from_index_name($table_name, $index_name));
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				$temp_column_name = 'temp_' . substr(md5($column_name), 0, 25);
+				// Add a temporary table with the new type
+				$result = $this->sql_column_add($table_name, $temp_column_name, $original_column_data);
+				$statements = array_merge($statements, $result);
+
+				// Copy the data to the new column
+				$statements[] = 'UPDATE ' . $table_name . ' SET ' . $temp_column_name . ' = ' . $column_name;
+
+				// Drop the original column
+				$result = $this->sql_column_remove($table_name, $column_name);
+				$statements = array_merge($statements, $result);
+
+				// Recreate the original column with the new type
+				$result = $this->sql_column_add($table_name, $column_name, $original_column_data);
+				$statements = array_merge($statements, $result);
+
+				if (!empty($indexes))
+				{
+					// Recreate indexes after we changed the column
+					foreach ($indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_create_index($table_name, $this->strip_table_name_from_index_name($table_name, $index_name), $index_data);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				if (!empty($unique_indexes))
+				{
+					// Recreate unique indexes after we changed the column
+					foreach ($unique_indexes as $index_name => $index_data)
+					{
+						$result = $this->sql_create_unique_index($table_name, $this->strip_table_name_from_index_name($table_name, $index_name), $index_data);
+						$statements = array_merge($statements, $result);
+					}
+				}
+
+				// Copy the data to the original column
+				$statements[] = 'UPDATE ' . $table_name . ' SET ' . $column_name . ' = ' . $temp_column_name;
+
+				// Drop the temporary column again
+				$result = $this->sql_column_remove($table_name, $temp_column_name);
+				$statements = array_merge($statements, $result);
+
+				$this->return_statements = $old_return_statements;
 			break;
 
 			case 'postgres':
@@ -2517,45 +2605,78 @@ class tools
 	*
 	* @param string $table_name
 	* @param string $column_name
+	* @param bool $unique Should we get unique indexes or normal ones
 	* @return array		Array with Index name => columns
 	*/
-	protected function mssql_get_existing_indexes($table_name, $column_name)
+	public function get_existing_indexes($table_name, $column_name, $unique = false)
 	{
-		$existing_indexes = array();
-		if ($this->mssql_is_sql_server_2000())
+		switch ($this->sql_layer)
 		{
-			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-			// Deprecated in SQL Server 2005
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
-				FROM sysindexes ix
-				INNER JOIN sysindexkeys ixc
-					ON ixc.id = ix.id
-						AND ixc.indid = ix.indid
-				INNER JOIN syscolumns cols
-					ON cols.colid = ixc.colid
-						AND cols.id = ix.id
-				WHERE ix.id = object_id('{$table_name}')
-					AND cols.name = '{$column_name}'";
+			case 'mysql_40':
+			case 'mysql_41':
+			case 'postgres':
+			case 'sqlite':
+			case 'sqlite3':
+				// Not supported
+				throw new \Exception('DBMS is not supported');
+			break;
 		}
-		else
+
+		$sql = '';
+		$existing_indexes = array();
+
+		switch ($this->sql_layer)
 		{
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
-				FROM sys.indexes ix
-				INNER JOIN sys.index_columns ixc
-					ON ixc.object_id = ix.object_id
-						AND ixc.index_id = ix.index_id
-				INNER JOIN sys.columns cols
-					ON cols.column_id = ixc.column_id
-						AND cols.object_id = ix.object_id
-				WHERE ix.object_id = object_id('{$table_name}')
-					AND cols.name = '{$column_name}'";
+			case 'mssql':
+			case 'mssqlnative':
+				if ($this->mssql_is_sql_server_2000())
+				{
+					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+					// Deprecated in SQL Server 2005
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+					FROM sysindexes ix
+					INNER JOIN sysindexkeys ixc
+						ON ixc.id = ix.id
+							AND ixc.indid = ix.indid
+					INNER JOIN syscolumns cols
+						ON cols.colid = ixc.colid
+							AND cols.id = ix.id
+					WHERE ix.id = object_id('{$table_name}')
+						AND cols.name = '{$column_name}'
+						AND INDEXPROPERTY(ix.id, ix.name, 'IsUnique') = " . ($unique) ? '1' : '0';
+				}
+				else
+				{
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
+					FROM sys.indexes ix
+					INNER JOIN sys.index_columns ixc
+						ON ixc.object_id = ix.object_id
+							AND ixc.index_id = ix.index_id
+					INNER JOIN sys.columns cols
+						ON cols.column_id = ixc.column_id
+							AND cols.object_id = ix.object_id
+					WHERE ix.object_id = object_id('{$table_name}')
+						AND cols.name = '{$column_name}'
+						AND ix.is_unique = " . ($unique) ? '1' : '0';
+				}
+			break;
+
+			case 'oracle':
+				$sql = "SELECT ix.index_name  AS phpbb_index_name, ix.uniqueness AS is_unique
+					FROM all_ind_columns ixc, all_indexes ix
+					WHERE ix.index_name = ixc.index_name
+						AND ixc.table_name = '" . strtoupper($table_name) . "'
+						AND ixc.column_name = '" . strtoupper($column_name) . "'";
+			break;
 		}
 
 		$result = $this->db->sql_query($sql);
-		$existing_indexes = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$existing_indexes[$row['phpbb_index_name']] = array();
+			if (!isset($row['is_unique']) || ($unique && $row['is_unique'] == 'UNIQUE') || (!$unique && $row['is_unique'] == 'NONUNIQUE'))
+			{
+				$existing_indexes[$row['phpbb_index_name']] = array();
+			}
 		}
 		$this->db->sql_freeresult($result);
 
@@ -2564,35 +2685,47 @@ class tools
 			return array();
 		}
 
-		if ($this->mssql_is_sql_server_2000())
+		switch ($this->sql_layer)
 		{
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-				FROM sysindexes ix
-				INNER JOIN sysindexkeys ixc
-					ON ixc.id = ix.id
-						AND ixc.indid = ix.indid
-				INNER JOIN syscolumns cols
-					ON cols.colid = ixc.colid
-						AND cols.id = ix.id
-				WHERE ix.id = object_id('{$table_name}')
-					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-		}
-		else
-		{
-			$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-				FROM sys.indexes ix
-				INNER JOIN sys.index_columns ixc
-					ON ixc.object_id = ix.object_id
-						AND ixc.index_id = ix.index_id
-				INNER JOIN sys.columns cols
-					ON cols.column_id = ixc.column_id
-						AND cols.object_id = ix.object_id
-				WHERE ix.object_id = object_id('{$table_name}')
-					AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+			case 'mssql':
+			case 'mssqlnative':
+				if ($this->mssql_is_sql_server_2000())
+				{
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+						FROM sysindexes ix
+						INNER JOIN sysindexkeys ixc
+							ON ixc.id = ix.id
+								AND ixc.indid = ix.indid
+						INNER JOIN syscolumns cols
+							ON cols.colid = ixc.colid
+								AND cols.id = ix.id
+						WHERE ix.id = object_id('{$table_name}')
+							AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+				}
+				else
+				{
+					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
+						FROM sys.indexes ix
+						INNER JOIN sys.index_columns ixc
+							ON ixc.object_id = ix.object_id
+								AND ixc.index_id = ix.index_id
+						INNER JOIN sys.columns cols
+							ON cols.column_id = ixc.column_id
+								AND cols.object_id = ix.object_id
+						WHERE ix.object_id = object_id('{$table_name}')
+							AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
+				}
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name AS phpbb_index_name, column_name AS phpbb_column_name
+					FROM all_ind_columns
+					WHERE table_name = '" . strtoupper($table_name) . "'
+						AND " . $this->db->sql_in_set('index_name', array_keys($existing_indexes));
+			break;
 		}
 
 		$result = $this->db->sql_query($sql);
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$existing_indexes[$row['phpbb_index_name']][] = $row['phpbb_column_name'];
