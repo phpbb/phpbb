@@ -550,7 +550,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 		}
 
 		$users = array_unique($users);
-		sort($users);
 
 		$auth_read = $this->auth->acl_get_list($users, 'f_read', $forum_id);
 
