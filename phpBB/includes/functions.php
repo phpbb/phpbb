@@ -1065,14 +1065,14 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 			$offset = $dt->getOffset();
 			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
 			$offset_string = phpbb_format_timezone_offset($offset);
-			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
+			$timezones[$user->lang['timezones']['UTC'] . $offset_string . ' - ' . $timezone] = array(
 				'tz'		=> $timezone,
-				'offset'	=> 'GMT' . $offset_string,
+				'offset'	=> $user->lang['timezones']['UTC'] . $offset_string,
 				'current'	=> $current_time,
 			);
 			if ($timezone === $default)
 			{
-				$default_offset = 'GMT' . $offset_string;
+				$default_offset = $user->lang['timezones']['UTC'] . $offset_string;
 			}
 		}
 		unset($unsorted_timezones);
@@ -4882,7 +4882,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	$dt = new \phpbb\datetime($user, 'now', $user->timezone);
-	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
+	$timezone_offset = $user->lang['timezones']['UTC'] . phpbb_format_timezone_offset($dt->getOffset());
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
 	{
