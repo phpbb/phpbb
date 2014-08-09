@@ -36,7 +36,7 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 	*/
 	public function test_get_profile_contact_value($value, $field_options, $expected, $description)
 	{
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user(new \phpbb\config\config(array()));
 		$request = $this->getMock('\phpbb\request\request');
 		$template = $this->getMock('\phpbb\template\template');
 

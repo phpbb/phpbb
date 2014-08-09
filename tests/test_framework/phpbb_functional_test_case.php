@@ -464,7 +464,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user($config);
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
@@ -503,7 +503,7 @@ class phpbb_functional_test_case extends phpbb_mink_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user($config);
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);

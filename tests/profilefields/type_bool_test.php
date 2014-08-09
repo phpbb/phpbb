@@ -25,7 +25,9 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 	*/
 	public function setUp()
 	{
-		$user = $this->getMock('\phpbb\user');
+		$user = $this->getMockBuilder('\phpbb\user')
+			->disableOriginalConstructor()
+			->getMock();
 		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
