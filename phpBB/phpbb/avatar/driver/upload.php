@@ -27,7 +27,6 @@ class upload extends \phpbb\avatar\driver\driver
 	* Construct a driver object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
-	* @param \phpbb\request\request $request Request object
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
 	* @param \phpbb_path_helper $path_helper phpBB path helper
