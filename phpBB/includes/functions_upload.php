@@ -586,6 +586,7 @@ class fileupload
 	* Upload file from users harddisk
 	*
 	* @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
+	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	* @param \phpbb\plupload\plupload $plupload The plupload object
 	*
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
@@ -743,6 +744,7 @@ class fileupload
 	* Uploads file from given url
 	*
 	* @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
+	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
