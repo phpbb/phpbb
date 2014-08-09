@@ -67,6 +67,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
 				),
+				array(
+					array('user_posts' => 3),
+				),
 			),
 			array(
 				1, 1, 1,
@@ -92,6 +95,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				),
 				array(
 					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
+				),
+				array(
+					array('user_posts' => 3),
 				),
 			),
 			array(
@@ -119,6 +125,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 2),
 				),
+				array(
+					array('user_posts' => 3),
+				),
 			),
 			array(
 				1, 1, 2,
@@ -144,6 +153,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				),
 				array(
 					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
+				),
+				array(
+					array('user_posts' => 3),
 				),
 			),
 			array(
@@ -171,6 +183,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 3),
 				),
+				array(
+					array('user_posts' => 3),
+				),
 			),
 			array(
 				1, 1, 3,
@@ -197,6 +212,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					array('forum_posts_approved' => 2, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 2),
 				),
+				array(
+					array('user_posts' => 3),
+				),
 			),
 
 			array(
@@ -221,6 +239,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				),
 				array(
 					array('forum_posts_approved' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 0),
+				),
+				array(
+					array('user_posts' => 3),
 				),
 			),
 
@@ -257,6 +278,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 				array(
 					array('forum_posts_approved' => 0, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 1, 'forum_topics_approved' => 0, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 1, 'forum_last_post_id' => 0),
 				),
+				array(
+					array('user_posts' => 3),
+				),
 			),
 		);
 	}
@@ -264,7 +288,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 	/**
 	* @dataProvider delete_post_data
 	*/
-	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_posts, $expected_topic, $expected_forum)
+	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_posts, $expected_topic, $expected_forum, $expected_user)
 	{
 		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
@@ -312,6 +336,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 			WHERE forum_id = ' . $forum_id);
 
 		$this->assertEquals($expected_forum, $db->sql_fetchrowset($result));
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT user_posts
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . (int) $data['poster_id'];
+		$result = $db->sql_query($sql);
+
+		$this->assertEquals($expected_user, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
 	}
 }
