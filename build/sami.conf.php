@@ -45,7 +45,7 @@ $versions = Sami\Version\GitVersionCollection::create(__DIR__ . '/../')
 	->add('develop-ascraeus')
 ;
 
-return new Sami\Sami($iterator, array(
+$config = array(
 	'theme'                => 'enhanced',
 	'versions'             => $versions,
 	'title'                => 'phpBB API Documentation',
@@ -54,4 +54,6 @@ return new Sami\Sami($iterator, array(
 	'default_opened_level' => 2,
 	// Do not use JsonStore. See https://github.com/fabpot/Sami/issues/79
 	'store'                => new PhpbbArrayStore,
-));
+);
+
+return new Sami\Sami($iterator, $config);
