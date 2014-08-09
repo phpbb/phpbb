@@ -151,7 +151,7 @@ else
 
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 {
-	$captcha = $phpbb_container->get('captchas.factory')->get_instance($config['captcha_plugin']);
+	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 	$captcha->init(CONFIRM_REPORT);
 }
 

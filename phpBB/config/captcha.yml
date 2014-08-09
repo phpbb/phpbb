@@ -1,5 +1,5 @@
 services:
-    captchas.factory:
+    captcha.factory:
         class: phpbb\captcha\factory
         arguments:
             - @service_container

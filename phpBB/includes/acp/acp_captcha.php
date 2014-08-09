@@ -30,7 +30,7 @@ class acp_captcha
 
 		$user->add_lang('acp/board');
 
-		$factory = $phpbb_container->get('captchas.factory');
+		$factory = $phpbb_container->get('captcha.factory');
 		$captchas = $factory->get_captcha_types();
 
 		$selected = request_var('select_captcha', $config['captcha_plugin']);
@@ -138,7 +138,7 @@ class acp_captcha
 	{
 		global $db, $user, $config, $phpbb_container;
 
-		$captcha = $phpbb_container->get('captchas.factory')->get_instance($selected);
+		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();
 

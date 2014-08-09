@@ -1022,7 +1022,7 @@ class session
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
-			$captcha_factory = $phpbb_container->get('captchas.factory');
+			$captcha_factory = $phpbb_container->get('captcha.factory');
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '

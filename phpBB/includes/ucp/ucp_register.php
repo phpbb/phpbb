@@ -182,7 +182,7 @@ class ucp_register
 		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change.
 		if ($config['enable_confirm'])
 		{
-			$captcha = $phpbb_container->get('captchas.factory')->get_instance($config['captcha_plugin']);
+			$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
 		}
 

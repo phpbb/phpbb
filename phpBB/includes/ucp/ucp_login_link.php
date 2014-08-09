@@ -197,7 +197,7 @@ class ucp_login_link
 			{
 				case LOGIN_ERROR_ATTEMPTS:
 
-					$captcha = $phpbb_container->get('captchas.factory')->get_instance($config['captcha_plugin']);
+					$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 
 					$template->assign_vars(array(
