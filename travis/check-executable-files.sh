@@ -27,7 +27,7 @@ then
 	files_skipped="-false"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/* -o -path ${root}composer.phar"
+	executable_files="-path ${path}bin/*"
 
 	incorrect_files=$( 								\
 		find ${path}								\
