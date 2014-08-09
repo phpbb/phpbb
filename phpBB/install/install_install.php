@@ -1382,7 +1382,7 @@ class install_install extends module
 		if (@extension_loaded('gd'))
 		{
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = 'phpbb_captcha_gd'
+				SET config_value = 'core.captcha.plugins.gd'
 				WHERE config_name = 'captcha_plugin'";
 
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
