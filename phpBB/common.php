@@ -107,7 +107,6 @@ if (ENVIRONMENT == 'debug' && !class_exists('Goutte\Client', true))
 phpbb_load_extensions_autoloaders($phpbb_root_path);
 
 // Set up container
-$phpbb_container = phpbb_create_default_container($phpbb_root_path, $phpEx);
 try
 {
 	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
