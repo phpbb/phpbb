@@ -274,7 +274,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			* @var	array	sql				The original SQL used in the query
 			* @var	array	post			Associative array with the result of the quotepost related SQL query
 			* @var	array	msg_id			The post_id that was searched to get the message for quoting
-			* @since 3.1.0-RC3
+			* @since 3.1.0-RC4
 			*/
 			$vars = array(
 				'sql',
