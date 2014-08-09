@@ -57,7 +57,5 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 			'config[allow_password_reset]'	=> 1,
 		));
 		$crawler = self::submit($form);
-
-		parent::tearDown();
 	}
 }
