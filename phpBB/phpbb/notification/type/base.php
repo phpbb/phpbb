@@ -540,9 +540,10 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 * @param array $users Array of users that have subscribed to a notification
 	 * @param int $forum_id Forum ID of the forum
 	 * @param array $options Array of notification options
+	 * @param bool $sort Whether the users array should be sorted. Default: false
 	 * @return array Array of users that are authorised recipients
 	 */
-	protected function get_authorised_recipients($users, $forum_id, $options)
+	protected function get_authorised_recipients($users, $forum_id, $options, $sort = false)
 	{
 		if (empty($users))
 		{
@@ -550,6 +551,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 		}
 
 		$users = array_unique($users);
+
+		if ($sort)
+		{
+			sort($users);
+		}
 
 		$auth_read = $this->auth->acl_get_list($users, 'f_read', $forum_id);
 

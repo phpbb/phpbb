@@ -102,7 +102,7 @@ class quote extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		return $this->get_authorised_recipients($users, $post['forum_id'], $options);
+		return $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
 	}
 
 	/**
