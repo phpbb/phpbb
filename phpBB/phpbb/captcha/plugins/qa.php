@@ -13,12 +13,6 @@
 
 namespace phpbb\captcha\plugins;
 
-global $table_prefix;
-
-define('CAPTCHA_QUESTIONS_TABLE',	$table_prefix . 'captcha_questions');
-define('CAPTCHA_ANSWERS_TABLE',		$table_prefix . 'captcha_answers');
-define('CAPTCHA_QA_CONFIRM_TABLE',	$table_prefix . 'qa_confirm');
-
 /**
 * And now to something completely different. Let's make a captcha without extending the abstract class.
 * QA CAPTCHA sample implementation
@@ -41,7 +35,7 @@ class qa
 	*/
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $table_prefix;
 
 		// load our language file
 		$user->add_lang('captcha_qa');
@@ -56,7 +50,7 @@ class qa
 		// we need all defined questions - shouldn't be too many, so we can just grab them
 		// try the user's lang first
 		$sql = 'SELECT question_id
-			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+			FROM ' . $table_prefix . 'captcha_questions' . "
 			WHERE lang_iso = '" . $db->sql_escape($user->lang_name) . "'";
 		$result = $db->sql_query($sql, 3600);
 
@@ -72,7 +66,7 @@ class qa
 			$this->question_lang = $config['default_lang'];
 
 			$sql = 'SELECT question_id
-				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+				FROM ' . $table_prefix . 'captcha_questions' . "
 				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 			$result = $db->sql_query($sql, 7200);
 
@@ -96,11 +90,11 @@ class qa
 	*/
 	public function is_installed()
 	{
-		global $db;
+		global $db, $table_prefix;
 
 		$db_tool = new \phpbb\db\tools($db);
 
-		return $db_tool->sql_table_exists(CAPTCHA_QUESTIONS_TABLE);
+		return $db_tool->sql_table_exists($table_prefix . 'captcha_questions');
 	}
 
 	/**
@@ -108,7 +102,7 @@ class qa
 	*/
 	public function is_available()
 	{
-		global $config, $db, $phpbb_root_path, $phpEx, $user;
+		global $config, $db, $phpbb_root_path, $phpEx, $user, $table_prefix;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
@@ -119,7 +113,7 @@ class qa
 		}
 
 		$sql = 'SELECT COUNT(question_id) AS question_count
-			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+			FROM ' . $table_prefix . 'captcha_questions' . "
 			WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
@@ -195,12 +189,12 @@ class qa
 	*/
 	function get_demo_template()
 	{
-		global $config, $db, $template;
+		global $config, $db, $template, $table_prefix;
 
 		if ($this->is_available())
 		{
 			$sql = 'SELECT question_text
-				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+				FROM ' . $table_prefix . 'captcha_questions' . "
 				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 			$result = $db->sql_query_limit($sql, 1);
 			if ($row = $db->sql_fetchrow($result))
@@ -279,16 +273,16 @@ class qa
 	*/
 	function install()
 	{
-		global $db;
+		global $db, $table_prefix;
 
 		$db_tool = new \phpbb\db\tools($db);
 
-		$tables = array(CAPTCHA_QUESTIONS_TABLE, CAPTCHA_ANSWERS_TABLE, CAPTCHA_QA_CONFIRM_TABLE);
+		$tables = array($table_prefix . 'captcha_questions', CAPTCHA_ANSWERS_TABLE, CAPTCHA_QA_CONFIRM_TABLE);
 
 		$schemas = array(
-				CAPTCHA_QUESTIONS_TABLE		=> array (
+				$table_prefix . 'captcha_questions'		=> array (
 					'COLUMNS' => array(
-						'question_id'	=> array('UINT', Null, 'auto_increment'),
+						'question_id'	=> array('UINT', null, 'auto_increment'),
 						'strict'		=> array('BOOL', 0),
 						'lang_id'		=> array('UINT', 0),
 						'lang_iso'		=> array('VCHAR:30', ''),
@@ -480,7 +474,7 @@ class qa
 	*/
 	function load_answer()
 	{
-		global $db, $user;
+		global $db, $user, $table_prefix;
 
 		if (!strlen($this->confirm_id) || !sizeof($this->question_ids))
 		{
@@ -488,7 +482,7 @@ class qa
 		}
 
 		$sql = 'SELECT con.question_id, attempts, question_text, strict
-			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' con, ' . CAPTCHA_QUESTIONS_TABLE . " qes
+			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' con, ' . $table_prefix . 'captcha_questions' . " qes
 			WHERE con.question_id = qes.question_id
 				AND confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $db->sql_escape($user->session_id) . "'
@@ -731,10 +725,10 @@ class qa
 	*/
 	function acp_question_list(&$module)
 	{
-		global $db, $template;
+		global $db, $template, $table_prefix;
 
 		$sql = 'SELECT *
-			FROM ' . CAPTCHA_QUESTIONS_TABLE;
+			FROM ' . $table_prefix . 'captcha_questions';
 		$result = $db->sql_query($sql);
 
 		$template->assign_vars(array(
@@ -761,12 +755,12 @@ class qa
 	*/
 	function acp_get_question_data($question_id)
 	{
-		global $db;
+		global $db, $table_prefix;
 
 		if ($question_id)
 		{
 			$sql = 'SELECT *
-				FROM ' . CAPTCHA_QUESTIONS_TABLE . '
+				FROM ' . $table_prefix . 'captcha_questions' . '
 				WHERE question_id = ' . $question_id;
 			$result = $db->sql_query($sql);
 			$question = $db->sql_fetchrow($result);
@@ -816,7 +810,7 @@ class qa
 	*/
 	function acp_update_question($data, $question_id)
 	{
-		global $db, $cache;
+		global $db, $cache, $table_prefix;
 
 		// easier to delete all answers than to figure out which to update
 		$sql = 'DELETE FROM ' . CAPTCHA_ANSWERS_TABLE . " WHERE question_id = $question_id";
@@ -827,14 +821,14 @@ class qa
 		$question_ary['lang_id'] = $langs[$question_ary['lang_iso']]['id'];
 		unset($question_ary['answers']);
 
-		$sql = 'UPDATE ' . CAPTCHA_QUESTIONS_TABLE . '
+		$sql = 'UPDATE ' . $table_prefix . 'captcha_questions' . '
 			SET ' . $db->sql_build_array('UPDATE', $question_ary) . "
 			WHERE question_id = $question_id";
 		$db->sql_query($sql);
 
 		$this->acp_insert_answers($data, $question_id);
 
-		$cache->destroy('sql', CAPTCHA_QUESTIONS_TABLE);
+		$cache->destroy('sql', $table_prefix . 'captcha_questions');
 	}
 
 	/**
@@ -843,7 +837,7 @@ class qa
 	*/
 	function acp_add_question($data)
 	{
-		global $db, $cache;
+		global $db, $cache, $table_prefix;
 
 		$langs = $this->get_languages();
 		$question_ary = $data;
@@ -851,14 +845,14 @@ class qa
 		$question_ary['lang_id'] = $langs[$data['lang_iso']]['id'];
 		unset($question_ary['answers']);
 
-		$sql = 'INSERT INTO ' . CAPTCHA_QUESTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $question_ary);
+		$sql = 'INSERT INTO ' . $table_prefix . 'captcha_questions' . ' ' . $db->sql_build_array('INSERT', $question_ary);
 		$db->sql_query($sql);
 
 		$question_id = $db->sql_nextid();
 
 		$this->acp_insert_answers($data, $question_id);
 
-		$cache->destroy('sql', CAPTCHA_QUESTIONS_TABLE);
+		$cache->destroy('sql', $table_prefix . 'captcha_questions');
 	}
 
 	/**
@@ -888,9 +882,9 @@ class qa
 	*/
 	function acp_delete_question($question_id)
 	{
-		global $db, $cache;
+		global $db, $cache, $table_prefix;
 
-		$tables = array(CAPTCHA_QUESTIONS_TABLE, CAPTCHA_ANSWERS_TABLE);
+		$tables = array($table_prefix . 'captcha_questions', CAPTCHA_ANSWERS_TABLE);
 
 		foreach ($tables as $table)
 		{
@@ -960,12 +954,12 @@ class qa
 	*/
 	function acp_is_last($question_id)
 	{
-		global $config, $db;
+		global $config, $db, $table_prefix;
 
 		if ($question_id)
 		{
 			$sql = 'SELECT question_id
-				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+				FROM ' . $table_prefix . 'captcha_questions' . "
 				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'
 					AND  question_id <> " .  (int) $question_id;
 			$result = $db->sql_query_limit($sql, 1);

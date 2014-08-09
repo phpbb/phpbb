@@ -34,7 +34,7 @@ class factory
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface $container
 	* @param \phpbb\di\service_collection                              $plugins
 	*/
-	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container,\phpbb\di\service_collection $plugins)
+	public function __construct(\Symfony\Component\DependencyInjection\ContainerInterface $container, \phpbb\di\service_collection $plugins)
 	{
 		$this->container = $container;
 		$this->plugins = $plugins;
