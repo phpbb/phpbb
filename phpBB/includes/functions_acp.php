@@ -121,19 +121,16 @@ function adm_page_header($page_title)
 	*
 	* @event core.adm_page_header_after
 	* @var	string	page_title			Page title
-	* @var	array	http_headers		HTTP headers that should be set by phpbb
+	* @var	array	http_headers			HTTP headers that should be set by phpbb
 	*
 	* @since 3.1.0-RC3
 	*/
 	$vars = array('page_title', 'http_headers');
 	extract($phpbb_dispatcher->trigger_event('core.adm_page_header_after', compact($vars)));
 
-	if (is_array($http_headers))
+	foreach ($http_headers as $hname => $hval)
 	{
-		foreach ($http_headers as $hname => $hval)
-		{
-			header((string) $hname.': '.(string) $hval);
-		}
+		header((string) $hname.': '.(string) $hval);
 	}
 
 	return;
