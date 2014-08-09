@@ -601,8 +601,8 @@ li.breadcrumbs span:first-child > a {
 /* Rollover buttons
    Based on: http://wellstyled.com/css-nopreload-rollovers.html
 ----------------------------------------*/
-.rtl .icon-button.dropdown-select {
-	padding-left: 26px;
+.rtl .dropdown-select {
+	padding-left: 24px;
 	padding-right: 8px;
 }
 
