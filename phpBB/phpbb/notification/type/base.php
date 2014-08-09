@@ -535,14 +535,14 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	 * Get a list of users that are authenticated to receive notifications
+	 * Get a list of users that are authorised to receive notifications
 	 *
 	 * @param array $users Array of users that have subscribed to a notification
 	 * @param int $forum_id Forum ID of the forum
 	 * @param array $options Array of notification options
-	 * @return array Array of users that are authenticated recipients
+	 * @return array Array of users that are authorised recipients
 	 */
-	protected function get_authenticated_recipients($users, $forum_id, $options)
+	protected function get_authorised_recipients($users, $forum_id, $options)
 	{
 		if (empty($users))
 		{

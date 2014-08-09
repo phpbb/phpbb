@@ -81,7 +81,7 @@ class approve_post extends \phpbb\notification\type\post
 		$users = array();
 		$users[$post['poster_id']] = array('');
 
-		return $this->get_authenticated_recipients(array_keys($users), $post['forum_id'], array_merge($options, array(
+		return $this->get_authorised_recipients(array_keys($users), $post['forum_id'], array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],
 		)));
 	}

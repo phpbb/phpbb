@@ -111,7 +111,7 @@ class topic extends \phpbb\notification\type\base
 		}
 		$this->db->sql_freeresult($result);
 
-		return $this->get_authenticated_recipients($users, $topic['forum_id'], $options);
+		return $this->get_authorised_recipients($users, $topic['forum_id'], $options);
 	}
 
 	/**
