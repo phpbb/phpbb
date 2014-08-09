@@ -281,14 +281,14 @@ class sqlite3 extends \phpbb\db\driver\driver
 	*/
 	public function sql_not_like_expression($expression)
 	{
-		// Unlike LIKE, GLOB is case sensitive (unfortunatly). SQLite users need to live with it!
+		// Unlike NOT LIKE,NOT GLOB is case sensitive (unfortunatly). SQLite users need to live with it!
 		// We only catch * and ? here, not the character map possible on file globbing.
 		$expression = str_replace(array(chr(0) . '_', chr(0) . '%'), array(chr(0) . '?', chr(0) . '*'), $expression);
 
 		$expression = str_replace(array('?', '*'), array("\?", "\*"), $expression);
 		$expression = str_replace(array(chr(0) . "\?", chr(0) . "\*"), array('?', '*'), $expression);
 
-		return 'GLOB \'' . $this->sql_escape($expression) . '\'';
+		return 'NOT GLOB \'' . $this->sql_escape($expression) . '\'';
 	}
 
 	/**
