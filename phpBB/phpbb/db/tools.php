@@ -2649,11 +2649,11 @@ class tools
 			break;
 
 			case 'oracle':
-				$sql = "SELECT ixc.column_name  AS phpbb_index_name
+				$sql = "SELECT ix.index_name  AS phpbb_index_name
 					FROM all_ind_columns ixc, all_indexes ix
 					WHERE ix.index_name = ixc.index_name
 						AND ixc.table_name = UPPER('{$table_name}')
-						AND ixc.index_name = UPPER('{$column_name}')
+						AND ixc.column_name = UPPER('{$column_name}')
 						AND ix.uniqueness = " . ($unique) ? "'UNIQUE'" : "'NONUNIQUE'";
 			break;
 		}
