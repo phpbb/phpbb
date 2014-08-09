@@ -39,7 +39,7 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			'max_login_attempts' 			=> 0,
 			));
 		$request = $this->getMock('\phpbb\request\request');
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user($config);
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),
