@@ -111,19 +111,7 @@ class topic extends \phpbb\notification\type\base
 		}
 		$this->db->sql_freeresult($result);
 
-		if (empty($users))
-		{
-			return array();
-		}
-
-		$auth_read = $this->auth->acl_get_list($users, 'f_read', $topic['forum_id']);
-
-		if (empty($auth_read))
-		{
-			return array();
-		}
-
-		return $this->check_user_notification_options($auth_read[$topic['forum_id']]['f_read'], $options);
+		return $this->get_authorised_recipients($users, $topic['forum_id'], $options);
 	}
 
 	/**
