@@ -40,8 +40,12 @@ class factory
 		$this->plugins = $plugins;
 	}
 
-	//static public function get_instance($name)
-
+	/**
+	* Return a new instance of a given plugin
+	*
+	* @param $name
+	* @return object
+	*/
 	public function get_instance($name)
 	{
 		return $this->container->get($name);

@@ -72,7 +72,7 @@ class recaptcha extends \phpbb\captcha\plugins\captcha_abstract
 	}
 
 	/**
-	* @return string the name of the class used to generate the captcha
+	* This function is implemented because required by the upper class, but is never used for reCaptcha.
 	*/
 	function get_generator_class()
 	{
