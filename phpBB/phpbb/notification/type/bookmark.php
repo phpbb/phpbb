@@ -83,7 +83,7 @@ class bookmark extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		$notify_users = $this->get_authorised_recipients($users, $post['forum_id'], $options);
+		$notify_users = $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
 
 		if (empty($notify_users))
 		{
