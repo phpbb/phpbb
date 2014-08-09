@@ -1324,18 +1324,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				delete_topics('topic_id', array($topic_id), false);
 
-				if ($data['topic_visibility'] == ITEM_APPROVED)
-				{
-					$sql_data[FORUMS_TABLE] .= 'forum_posts_approved = forum_posts_approved - 1, forum_topics_approved = forum_topics_approved - 1';
-				}
-				else if ($data['topic_visibility'] == ITEM_UNAPPROVED || $data['post_visibility'] == ITEM_REAPPROVE)
-				{
-					$sql_data[FORUMS_TABLE] .= 'forum_posts_unapproved = forum_posts_unapproved - 1, forum_topics_unapproved = forum_topics_unapproved - 1';
-				}
-				else if ($data['topic_visibility'] == ITEM_DELETED)
-				{
-					$sql_data[FORUMS_TABLE] .= 'forum_posts_softdeleted = forum_posts_softdeleted - 1, forum_topics_softdeleted = forum_topics_softdeleted - 1';
-				}
+				$phpbb_content_visibility->remove_topic_from_statistic($data, $sql_data);
 
 				$update_sql = update_post_information('forum', $forum_id, true);
 				if (sizeof($update_sql))
