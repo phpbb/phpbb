@@ -20,7 +20,7 @@ class content_guesser extends guesser_base
 	*/
 	public function is_supported()
 	{
-		return function_exists('mime_content_type');
+		return function_exists('mime_content_type') && is_callable('mime_content_type');
 	}
 
 	/**
