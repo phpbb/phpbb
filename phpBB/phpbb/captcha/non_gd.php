@@ -26,7 +26,7 @@ class non_gd
 	/**
 	* Define filtered pngs on init
 	*/
-	function captcha()
+	function __construct()
 	{
 		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
 		$this->define_filtered_pngs();

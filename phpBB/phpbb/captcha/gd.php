@@ -1862,7 +1862,7 @@ class char_cube3d
 
 	/**
 	*/
-	function char_cube3d(&$bitmaps, $letter)
+	function __construct(&$bitmaps, $letter)
 	{
 		$this->bitmap			= $bitmaps['data'][$letter];
 		$this->bitmap_width		= $bitmaps['width'];
@@ -2119,7 +2119,7 @@ class colour_manager
 	/**
 	* Create the colour manager, link it to the image resource
 	*/
-	function colour_manager($img, $background = false, $mode = 'ahsv')
+	function __construct($img, $background = false, $mode = 'ahsv')
 	{
 		$this->img = $img;
 		$this->mode = $mode;
