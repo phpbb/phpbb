@@ -134,6 +134,11 @@ phpbb.markNotifications = function(el, unreadCount) {
 	if (!unreadCount) {
 		$('#mark_all_notifications').remove();
 	}
+
+	// Update page title
+	$('title').text(
+		(unreadCount ? '(' + unreadCount + ')' : '') + $('title').text().replace(/(\(([0-9])\))/, '')
+	);
 };
 
 // This callback finds the post from the delete link, and removes it.
