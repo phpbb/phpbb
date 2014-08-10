@@ -34,7 +34,7 @@ install:
 
 before_script:
   - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION
-  - phantomjs --webdriver=8910 &
+  - phantomjs --webdriver=8910 > /dev/null &
 
 script:
   - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION
