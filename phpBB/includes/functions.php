@@ -5095,9 +5095,10 @@ function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $re
 * @param \phpbb\config\config				$config		Config object
 * @param \phpbb\auth\auth					$auth		Auth object
 * @param \phpbb\user						$user		User object
+* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher
 * @return string
 */
-function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user)
+function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 {
 	$debug_info = array();
 
@@ -5135,6 +5136,17 @@ function phpbb_generate_debug_output(phpbb\db\driver\driver_interface $db, \phpb
 			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">SQL Explain</a>';
 		}
 	}
+
+	/**
+	* Modify debug output information
+	*
+	* @event core.phpbb_generate_debug_output
+	* @var	array	debug_info		Array of strings with debug information
+	*
+	* @since 3.1.0-RC3
+	*/
+	$vars = array('debug_info');
+	extract($phpbb_dispatcher->trigger_event('core.phpbb_generate_debug_output', compact($vars)));
 
 	return implode(' | ', $debug_info);
 }
@@ -5174,7 +5186,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user),
+		'DEBUG_OUTPUT'			=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'CREDIT_LINE'			=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
