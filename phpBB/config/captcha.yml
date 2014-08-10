@@ -1,3 +1,8 @@
+parameters:
+    tables.captcha_qa_questions: %core.table_prefix%captcha_questions
+    tables.captcha_qa_answers: %core.table_prefix%captcha_answers
+    tables.captcha_qa_confirm: %core.table_prefix%qa_confirm
+
 services:
     captcha.factory:
         class: phpbb\captcha\factory
@@ -10,34 +15,38 @@ services:
         arguments:
             - @service_container
         tags:
-            - { name: service_collection, tag: captchas.plugins }
+            - { name: service_collection, tag: captcha.plugins }
 
     core.captcha.plugins.gd:
         class: phpbb\captcha\plugins\gd
         scope: prototype # scope MUST be prototype for this to work!
         tags:
-            - { name: captchas.plugins }
+            - { name: captcha.plugins }
 
     core.captcha.plugins.gd_wave:
         class: phpbb\captcha\plugins\gd_wave
         scope: prototype # scope MUST be prototype for this to work!
         tags:
-            - { name: captchas.plugins }
+            - { name: captcha.plugins }
 
     core.captcha.plugins.nogd:
         class: phpbb\captcha\plugins\nogd
         scope: prototype # scope MUST be prototype for this to work!
         tags:
-            - { name: captchas.plugins }
+            - { name: captcha.plugins }
 
     core.captcha.plugins.qa:
         class: phpbb\captcha\plugins\qa
         scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - %tables.captcha_qa_questions%
+            - %tables.captcha_qa_answers%
+            - %tables.captcha_qa_confirm%
         tags:
-            - { name: captchas.plugins }
+            - { name: captcha.plugins }
 
     core.captcha.plugins.recaptcha:
         class: phpbb\captcha\plugins\recaptcha
         scope: prototype # scope MUST be prototype for this to work!
         tags:
-            - { name: captchas.plugins }
+            - { name: captcha.plugins }
