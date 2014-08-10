@@ -294,7 +294,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		$crawler = self::request('GET', 'install/index.php?mode=install');
+		$crawler = self::request('GET', 'install/index.php?mode=install&language=en');
 		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
 		$form = $crawler->selectButton('submit')->form();
 
