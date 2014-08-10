@@ -44,12 +44,14 @@
 		<dd><select name="sk" id="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select></dd>
 	</dl>
 <!-- BEGIN profile_fields -->
+    <!-- IF profile_fields.ALT -->
     <dl>
         <dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
             <!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
         <!-- IF profile_fields.ERROR --><dd class="error">{profile_fields.ERROR}</dd><!-- ENDIF -->
         <dd>{profile_fields.FIELD}</dd>
     </dl>
+    <!-- ENDIF -->
 <!-- END profile_fields -->
 	</fieldset>
 
@@ -74,6 +76,16 @@
 		<dd><input class="inputbox medium" type="text" name="ip" id="ip" value="{IP}" /></dd>
 	</dl>
 <!-- ENDIF -->
+<!-- BEGIN profile_fields -->
+    <!-- IF !profile_fields.ALT -->
+    <dl>
+        <dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
+        <!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
+        <!-- IF profile_fields.ERROR --><dd class="error">{profile_fields.ERROR}</dd><!-- ENDIF -->
+        <dd>{profile_fields.FIELD}</dd>
+    </dl>
+   <!-- ENDIF -->
+<!-- END profile_fields -->
 	</fieldset>
 
 	<div class="clear"></div>
