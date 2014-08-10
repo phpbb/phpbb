@@ -5041,6 +5041,20 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
 
+	// An array of http headers that phpbb will set. The following event may override these.
+	$http_headers = array(
+		// application/xhtml+xml not used because of IE
+		'Content-type' => 'text/html; charset=UTF-8',
+		'Cache-Control' => 'private, no-cache="set-cookie"',
+		'Expires' => '0',
+		'Pragma' => 'no-cache',
+	);
+	if (!empty($user->data['is_bot']))
+	{
+		// Let reverse proxies know we detected a bot.
+		$http_headers['X-PHPBB-IS-BOT'] = 'yes';
+	}
+
 	/**
 	* Execute code and/or overwrite _common_ template variables after they have been assigned.
 	*
@@ -5051,23 +5065,16 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	*									session item, e.g. forum for
 	*									session_forum_id
 	* @var	int		item_id				Restrict online users to item id
+	* @var	array		http_headers			HTTP headers that should be set by phpbb
 	*
 	* @since 3.1.0-b3
 	*/
-	$vars = array('page_title', 'display_online_list', 'item_id', 'item');
+	$vars = array('page_title', 'display_online_list', 'item_id', 'item', 'http_headers');
 	extract($phpbb_dispatcher->trigger_event('core.page_header_after', compact($vars)));
 
-	// application/xhtml+xml not used because of IE
-	header('Content-type: text/html; charset=UTF-8');
-
-	header('Cache-Control: private, no-cache="set-cookie"');
-	header('Expires: 0');
-	header('Pragma: no-cache');
-
-	if (!empty($user->data['is_bot']))
+	foreach ($http_headers as $hname => $hval)
 	{
-		// Let reverse proxies know we detected a bot.
-		header('X-PHPBB-IS-BOT: yes');
+		header((string) $hname . ': ' . (string) $hval);
 	}
 
 	return;
