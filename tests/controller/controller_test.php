@@ -72,7 +72,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			include(__DIR__.'/phpbb/controller/foo.php');
 		}
 
-		$resolver = new \phpbb\controller\resolver(new \phpbb\user, $container, dirname(__FILE__) . '/');
+		$resolver = new \phpbb\controller\resolver(new \phpbb\user('\phpbb\datetime'), $container, dirname(__FILE__) . '/');
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 

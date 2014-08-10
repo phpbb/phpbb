@@ -27,7 +27,7 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user('\phpbb\datetime');
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
@@ -56,7 +56,7 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user('\phpbb\datetime');
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);

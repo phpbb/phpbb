@@ -1061,7 +1061,7 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 		foreach ($unsorted_timezones as $timezone)
 		{
 			$tz = new DateTimeZone($timezone);
-			$dt = $user->create_datetime($user, 'now', $tz);
+			$dt = $user->create_datetime('now', $tz);
 			$offset = $dt->getOffset();
 			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
 			$offset_string = phpbb_format_timezone_offset($offset);
@@ -4881,7 +4881,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$dt = $user->create_datetime($user, 'now', $user->timezone);
+	$dt = $user->create_datetime();
 	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))

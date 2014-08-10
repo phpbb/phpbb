@@ -29,7 +29,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		global $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));

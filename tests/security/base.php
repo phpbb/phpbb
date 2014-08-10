@@ -59,7 +59,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$phpbb_filesystem = new \phpbb\filesystem($symfony_request, $phpbb_root_path, $phpEx);
 
 		// Set no user and trick a bit to circumvent errors
-		$user = new \phpbb\user();
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = true;
 		$user->browser				= $server['HTTP_USER_AGENT'];
 		$user->referer				= '';

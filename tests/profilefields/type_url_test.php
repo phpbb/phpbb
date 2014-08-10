@@ -26,7 +26,7 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	*/
 	public function setUp()
 	{
-		$user = $this->getMock('\phpbb\user');
+		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));

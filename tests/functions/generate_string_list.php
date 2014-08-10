@@ -22,7 +22,7 @@ class phpbb_generate_string_list_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->user = new \phpbb\user();
+		$this->user = new \phpbb\user('\phpbb\datetime');
 		$this->user->data = array('user_lang' => 'en');
 		$this->user->add_lang('common');
 	}
