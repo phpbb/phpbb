@@ -29,7 +29,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$config = new \phpbb\config\config(array());
 		$this->request = $this->getMock('\phpbb\request\request');
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = new \phpbb\user('\phpbb\datetime');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),

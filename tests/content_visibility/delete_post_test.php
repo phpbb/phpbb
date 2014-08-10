@@ -306,7 +306,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 			->will($this->returnValueMap(array(
 				array('m_approve', 1, true),
 			)));
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user('\phpbb\datetime');
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 

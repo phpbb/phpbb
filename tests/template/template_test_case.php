@@ -65,7 +65,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
-		$this->user = new \phpbb\user;
+		$this->user = new \phpbb\user('\phpbb\datetime');
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(

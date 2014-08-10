@@ -20,7 +20,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = new \phpbb\user('\phpbb\datetime');
 		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()

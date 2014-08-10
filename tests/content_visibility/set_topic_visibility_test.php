@@ -88,7 +88,7 @@ class phpbb_content_visibility_set_topic_visibility_test extends phpbb_database_
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$auth = $this->getMock('\phpbb\auth\auth');
-		$user = $this->getMock('\phpbb\user');
+		$user = new \phpbb\user('\phpbb\datetime');
 		$config = new phpbb\config\config(array());
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 

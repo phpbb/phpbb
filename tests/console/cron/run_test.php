@@ -41,7 +41,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		set_config(null, null, null, $this->config);
 		$this->lock = new \phpbb\lock\db('cron_lock', $this->config, $this->db);
 
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$this->user->method('lang')->will($this->returnArgument(0));
 
 		$this->task = new phpbb_cron_task_simple();
