@@ -419,6 +419,16 @@ interface driver_interface
 	public function sql_like_expression($expression);
 
 	/**
+	* Correctly adjust NOT LIKE expression for special characters
+	* Some DBMS are handling them in a different way
+	*
+	* @param	string	$expression	The expression to use. Every wildcard is
+	*						escaped, except $this->any_char and $this->one_char
+	* @return string	A SQL statement like: "NOT LIKE 'bertie_%'"
+	*/
+	public function sql_not_like_expression($expression);
+
+	/**
 	* Explain queries
 	*
 	* @param	string	$mode		Available modes: display, start, stop,

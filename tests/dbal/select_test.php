@@ -233,6 +233,66 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
+	public function not_like_expression_data()
+	{
+		// * = any_char; # = one_char
+		return array(
+			array('barfoo', array(
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
+			array('bar', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie'),
+			)),
+			array('bar*', array(
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie'))
+			),
+			array('*bar*', array(array('username_clean' => 'bertie'))),
+			array('b*r', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
+			array('b*e', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+			array('#b*e', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar'),
+				array('username_clean' => 'bertie')
+			)),
+			array('b####e', array(
+				array('username_clean' => 'barfoo'),
+				array('username_clean' => 'foobar')
+			)),
+		);
+	}
+
+	/**
+	* @dataProvider not_like_expression_data
+	*/
+	public function test_not_like_expression($like_expression, $expected)
+	{
+		$db = $this->new_dbal();
+
+		$like_expression = str_replace('*', $db->get_any_char(), $like_expression);
+		$like_expression = str_replace('#', $db->get_one_char(), $like_expression);
+		$where = ($like_expression) ? 'username_clean ' . $db->sql_not_like_expression($like_expression) : '';
+
+		$result = $db->sql_query('SELECT username_clean
+			FROM phpbb_users
+			' . (($where) ? ' WHERE ' . $where : '') . '
+			ORDER BY user_id ASC');
+
+		$this->assertEquals($expected, $db->sql_fetchrowset($result));
+
+		$db->sql_freeresult($result);
+	}
+
 	public function in_set_data()
 	{
 		return array(

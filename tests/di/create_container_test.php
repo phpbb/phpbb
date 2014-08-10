@@ -191,6 +191,10 @@ namespace phpbb\db\driver
 		{
 		}
 
+		function sql_not_like_expression($expression)
+		{
+		}
+
 		function sql_fetchrowset($query_id = false)
 		{
 			return array(
