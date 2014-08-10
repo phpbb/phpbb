@@ -138,6 +138,8 @@ class manager
 			ORDER BY f.field_order';
 		$result = $this->db->sql_query($sql);
 
+		$alt = false;
+
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Return templated field
@@ -150,7 +152,10 @@ class manager
 				'FIELD'			=> $tpl_snippet,
 				'FIELD_ID'		=> $profile_field->get_field_ident($row),
 				'S_REQUIRED'	=> ($row['field_required']) ? true : false,
+				'ALT'			=> $alt,
 			));
+
+			$alt = !$alt;
 		}
 		$this->db->sql_freeresult($result);
 	}
