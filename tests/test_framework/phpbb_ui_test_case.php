@@ -18,17 +18,17 @@ class phpbb_ui_test_case extends phpbb_test_case
 	static protected $host = '127.0.0.1';
 	static protected $port = 8910;
 
-    /**
-     * @var \RemoteWebDriver
-     */
-    static protected $webDriver;
+	/**
+	* @var \RemoteWebDriver
+	*/
+	static protected $webDriver;
 
-    static protected $config;
-    static protected $root_url;
-    static protected $already_installed = false;
+	static protected $config;
+	static protected $root_url;
+	static protected $already_installed = false;
 
 	static public function setUpBeforeClass()
-    {
+	{
 		parent::setUpBeforeClass();
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
@@ -60,14 +60,14 @@ class phpbb_ui_test_case extends phpbb_test_case
 			self::install_board();
 			self::$already_installed = true;
 		}
-    }
+	}
 
-    static public function visit($path)
-    {
+	static public function visit($path)
+	{
 		self::$webDriver->get(self::$root_url . $path);
-    }
+	}
 
-    static protected function recreate_database($config)
+	static protected function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
@@ -84,8 +84,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$element->click();
 	}
 
-    static public function install_board()
-    {
+	static public function install_board()
+	{
 		global $phpbb_root_path, $phpEx;
 
 		self::recreate_database(self::$config);
@@ -188,5 +188,5 @@ class phpbb_ui_test_case extends phpbb_test_case
 		self::assertContains('You have successfully installed', self::find_element('id', 'main')->getText());
 
 		copy($config_file, $config_file_test);
-    }
+	}
 }
