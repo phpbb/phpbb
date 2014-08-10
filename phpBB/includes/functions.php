@@ -945,6 +945,11 @@ function phpbb_format_timezone_offset($tz_offset)
 	$sign = ($tz_offset < 0) ? '-' : '+';
 	$time_offset = abs($tz_offset);
 
+	if ($time_offset == 0)
+	{
+		return '';
+	}
+
 	$offset_seconds	= $time_offset % 3600;
 	$offset_minutes	= $offset_seconds / 60;
 	$offset_hours	= ($time_offset - $offset_seconds) / 3600;
@@ -4913,7 +4918,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	$dt = $user->create_datetime();
-	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
+	$timezone_offset = $user->lang('UTC') . phpbb_format_timezone_offset($dt->getOffset());
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
 	{
