@@ -224,12 +224,12 @@ else
 		else
 		{
 			// Attachment is in a private message.
-			$row['forum_id'] = false;
+			$post_row = array('forum_id' => false);
 			phpbb_download_handle_pm_auth($db, $auth, $user->data['user_id'], $attachment['post_msg_id']);
 		}
 
 		$extensions = array();
-		if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
+		if (!extension_allowed($post_row['forum_id'], $attachment['extension'], $extensions))
 		{
 			send_status_line(403, 'Forbidden');
 			trigger_error(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
