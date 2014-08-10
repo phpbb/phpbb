@@ -13,9 +13,6 @@
 
 namespace phpbb\captcha;
 
-/**
-* A small class for 3.0.x (no autoloader in 3.0.x)
-*/
 class factory
 {
 	/**
@@ -53,6 +50,8 @@ class factory
 
 	/**
 	* Call the garbage collector
+	*
+	* @param string $name The name to the captcha service.
 	*/
 	function garbage_collect($name)
 	{
@@ -61,7 +60,9 @@ class factory
 	}
 
 	/**
-	* return a list of all registered CAPTCHA plugins
+	* Return a list of all registered CAPTCHA plugins
+	*
+	* @returns array
 	*/
 	function get_captcha_types()
 	{
