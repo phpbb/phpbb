@@ -80,20 +80,6 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 			'attachments' => true,
 		));
 
-		// Download topic archive as guest
-		$crawler = self::request('GET', "download/file.php?archive=.zip&topic_id={$this->data['topics']['Download Topic #1']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
-
-		// Download post archive as guest
-		$crawler = self::request('GET', "download/file.php?archive=.zip&post_id={$this->data['posts']['Re: Download Topic #1-#2']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
-
 		// Download attachment as guest
 		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
 		self::assert_response_status_code(200);
@@ -147,18 +133,6 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		));
 		$this->add_lang('viewtopic');
 
-		// Download topic archive as guest: still works
-		$crawler = self::request('GET', "download/file.php?archive=.zip&topic_id={$this->data['topics']['Download Topic #1']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
-
-		// No download post archive as guest
-		$crawler = self::request('GET', "download/file.php?archive=.zip&post_id={$this->data['posts']['Re: Download Topic #1-#2']}", array(), false);
-		self::assert_response_html(404);
-		$this->assertContainsLang('ERROR_NO_ATTACHMENT', $crawler->filter('#message')->text());
-
 		// No download attachment as guest
 		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
 		self::assert_response_html(404);
@@ -166,20 +140,6 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 
 		// Login as admin and try again, should work now.
 		$this->login();
-
-		// Download topic archive as admin
-		$crawler = self::request('GET', "download/file.php?archive=.zip&topic_id={$this->data['topics']['Download Topic #1']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
-
-		// Download post archive as admin
-		$crawler = self::request('GET', "download/file.php?archive=.zip&post_id={$this->data['posts']['Re: Download Topic #1-#2']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
 
 		// Download attachment as admin
 		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
@@ -235,16 +195,6 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		));
 		$this->add_lang('viewtopic');
 
-		// Download topic archive as guest: still works
-		$crawler = self::request('GET', "download/file.php?archive=.zip&topic_id={$this->data['topics']['Download Topic #1']}", array(), false);
-		self::assert_response_html(404);
-		$this->assertContainsLang('ERROR_NO_ATTACHMENT', $crawler->filter('#message')->text());
-
-		// No download post archive as guest
-		$crawler = self::request('GET', "download/file.php?archive=.zip&post_id={$this->data['posts']['Re: Download Topic #1-#2']}", array(), false);
-		self::assert_response_html(404);
-		$this->assertContainsLang('ERROR_NO_ATTACHMENT', $crawler->filter('#message')->text());
-
 		// No download attachment as guest
 		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
 		self::assert_response_html(404);
@@ -252,20 +202,6 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 
 		// Login as admin and try again, should work now.
 		$this->login();
-
-		// Download topic archive as admin
-		$crawler = self::request('GET', "download/file.php?archive=.zip&topic_id={$this->data['topics']['Download Topic #1']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
-
-		// Download post archive as admin
-		$crawler = self::request('GET', "download/file.php?archive=.zip&post_id={$this->data['posts']['Re: Download Topic #1-#2']}", array(), false);
-		self::assert_response_status_code(200);
-		$content = self::$client->getResponse()->getContent();
-		$finfo = new finfo(FILEINFO_MIME_TYPE);
-		self::assertEquals('application/zip', $finfo->buffer($content));
 
 		// Download attachment as admin
 		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
