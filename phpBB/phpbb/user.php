@@ -31,6 +31,11 @@ class user extends \phpbb\session
 	*/
 	public $timezone;
 
+	/**
+	* @var string Class name of datetime object
+	*/
+	protected $datetime;
+
 	var $lang_name = false;
 	var $lang_id = false;
 	var $lang_path;
@@ -42,12 +47,14 @@ class user extends \phpbb\session
 
 	/**
 	* Constructor to set the lang path
+	* @param string $datetime_class Class name of datetime class
 	*/
-	function __construct()
+	function __construct($datetime_class)
 	{
 		global $phpbb_root_path;
 
 		$this->lang_path = $phpbb_root_path . 'language/';
+		$this->datetime = $datetime_class;
 	}
 
 	/**
@@ -727,7 +734,7 @@ class user extends \phpbb\session
 	public function create_datetime($time = 'now', \DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->timezone;
-		return new \phpbb\datetime($this, $time, $timezone);
+		return new $this->datetime($this, $time, $timezone);
 	}
 
 	/**
@@ -918,4 +925,17 @@ class user extends \phpbb\session
 
 		return $forum_ids;
 	}
+
+	/**
+	* Set class name of datetime class
+	*
+	* @param string $datetime Class name to set
+	* @return null
+	*/
+	public function set_datetime_class($datetime)
+	{
+		$this->datetime = $datetime;
+	}
+
+
 }
