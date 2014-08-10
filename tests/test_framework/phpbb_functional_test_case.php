@@ -474,7 +474,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			));
 			$db->sql_query($sql);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
 				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
@@ -513,7 +513,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
 			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
 				@rmdir($phpbb_root_path . 'styles/' . $style_path);

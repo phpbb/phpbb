@@ -175,9 +175,6 @@
 		<exec dir="build" escape="false"
 			command="diff -crNEBwd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
 				save/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
-		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
-				save/phpbb-${prevversion}_to_${newversion}_subsilver2.patch" />
 
 		<exec dir="build" escape="false"
 			command="git shortlog --summary --numbered release-${prevversion}...HEAD >
