@@ -211,7 +211,8 @@ abstract class type_base implements type_interface
 
 		if (!empty($value))
 		{
-			return $table_alias . '.' . $this->get_field_ident($field_data) . ' ' . $db->sql_like_expression($this->get_profile_value_raw($value, $field_data));
+			return $table_alias . '.' . $this->get_field_ident($field_data) . ' ' .
+				$db->sql_like_expression($db->get_any_char() . $this->get_profile_value_raw($value, $field_data) . $db->get_any_char());
 		}
 
 		return false;
