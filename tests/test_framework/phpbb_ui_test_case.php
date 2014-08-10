@@ -108,7 +108,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		self::visit('install/index.php?mode=install');
+		self::visit('install/index.php?mode=install&language=en');
 		self::assertContains('Welcome to Installation', self::find_element('id', 'main')->getText());
 
 		// install/index.php?mode=install&sub=requirements
