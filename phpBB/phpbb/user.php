@@ -925,17 +925,4 @@ class user extends \phpbb\session
 
 		return $forum_ids;
 	}
-
-	/**
-	* Set class name of datetime class
-	*
-	* @param string $datetime Class name to set
-	* @return null
-	*/
-	public function set_datetime_class($datetime)
-	{
-		$this->datetime = $datetime;
-	}
-
-
 }
