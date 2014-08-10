@@ -14,6 +14,7 @@ services:
             - @passwords.manager
             - @request
             - @user
+            - @service_container
             - %core.root_path%
             - %core.php_ext%
         tags:
