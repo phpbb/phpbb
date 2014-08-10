@@ -139,11 +139,7 @@ if (isset($_GET['avatar']))
 include($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 
-$download_id = request_var('id', 0);
-$topic_id = $request->variable('topic_id', 0);
-$post_id = $request->variable('post_id', 0);
-$msg_id = $request->variable('msg_id', 0);
-$archive = $request->variable('archive', '.tar');
+$attach_id = request_var('id', 0);
 $mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
 
@@ -158,27 +154,7 @@ if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
 
-if ($download_id)
-{
-	// Attachment id (only 1 attachment)
-	$sql_where = 'attach_id = ' . $download_id;
-}
-else if ($msg_id)
-{
-	// Private message id (multiple attachments)
-	$sql_where = 'is_orphan = 0 AND in_message = 1 AND post_msg_id = ' . $msg_id;
-}
-else if ($post_id)
-{
-	// Post id (multiple attachments)
-	$sql_where = 'is_orphan = 0 AND in_message = 0 AND post_msg_id = ' . $post_id;
-}
-else if ($topic_id)
-{
-	// Topic id (multiple attachments)
-	$sql_where = 'is_orphan = 0 AND topic_id = ' . $topic_id;
-}
-else
+if (!$attach_id)
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('NO_ATTACHMENT_SELECTED');
@@ -186,25 +162,12 @@ else
 
 $sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id, is_orphan, physical_filename, real_filename, extension, mimetype, filesize, filetime
 	FROM ' . ATTACHMENTS_TABLE . "
-	WHERE $sql_where";
+	WHERE attach_id = $attach_id";
 $result = $db->sql_query($sql);
-
-$attachments = $attachment_ids = array();
-while ($row = $db->sql_fetchrow($result))
-{
-	$attachment_id = (int) $row['attach_id'];
-
-	$row['physical_filename'] = utf8_basename($row['physical_filename']);
-
-	$attachment_ids[$attachment_id] = $attachment_id;
-	$attachments[$attachment_id] = $row;
-}
+$attachment = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
-// Make $attachment the first of the attachments we fetched.
-$attachment = current($attachments);
-
-if (empty($attachments))
+if (!$attachment)
 {
 	send_status_line(404, 'Not Found');
 	trigger_error('ERROR_NO_ATTACHMENT');
@@ -214,9 +177,9 @@ else if (!download_allowed())
 	send_status_line(403, 'Forbidden');
 	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
-else if ($download_id)
+else
 {
-	// sizeof($attachments) == 1
+	$attachment['physical_filename'] = utf8_basename($attachment['physical_filename']);
 
 	if (!$attachment['in_message'] && !$config['allow_attachments'] || $attachment['in_message'] && !$config['allow_pm_attach'])
 	{
@@ -322,143 +285,4 @@ else if ($download_id)
 			file_gc();
 		}
 	}
-}
-else
-{
-	// sizeof($attachments) >= 1
-	if ($attachment['in_message'])
-	{
-		phpbb_download_handle_pm_auth($db, $auth, $user->data['user_id'], $attachment['post_msg_id']);
-	}
-	else
-	{
-		phpbb_download_handle_forum_auth($db, $auth, $attachment['topic_id']);
-	}
-
-	if (!class_exists('compress'))
-	{
-		require $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
-	}
-
-	if (!in_array($archive, compress::methods()))
-	{
-		$archive = '.tar';
-	}
-
-	$post_visibility = array();
-	if ($msg_id)
-	{
-		$sql = 'SELECT message_subject AS attach_subject
-			FROM ' . PRIVMSGS_TABLE . "
-			WHERE msg_id = $msg_id";
-	}
-	else if ($post_id)
-	{
-		$sql = 'SELECT post_subject AS attach_subject, forum_id, post_visibility
-			FROM ' . POSTS_TABLE . "
-			WHERE post_id = $post_id";
-	}
-	else
-	{
-		$sql = 'SELECT post_id, post_visibility
-			FROM ' . POSTS_TABLE . "
-			WHERE topic_id = $topic_id
-				AND post_attachment = 1";
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$post_visibility[(int) $row['post_id']] = (int) $row['post_visibility'];
-		}
-		$db->sql_freeresult($result);
-
-		$sql = 'SELECT topic_title AS attach_subject, forum_id
-			FROM ' . TOPICS_TABLE . "
-			WHERE topic_id = $topic_id";
-	}
-
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (empty($row))
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error('ERROR_NO_ATTACHMENT');
-	}
-
-	$clean_name = phpbb_download_clean_filename($row['attach_subject']);
-	$suffix = '_' . (($msg_id) ? 'm' . $msg_id : (($post_id) ? 'p' . $post_id : 't' . $topic_id)) . '_' . $clean_name;
-	$archive_name = 'attachments' . $suffix;
-
-	$store_name = 'att_' . time() . '_' . unique_id();
-	$archive_path = "{$phpbb_root_path}store/{$store_name}{$archive}";
-
-	if ($archive === '.zip')
-	{
-		$compress = new compress_zip('w', $archive_path);
-	}
-	else
-	{
-		$compress = new compress_tar('w', $archive_path, $archive);
-	}
-
-	$extensions = array();
-	$files_added = 0;
-	$forum_id = ($attachment['in_message']) ? false : (int) $row['forum_id'];
-	$disallowed_extension = array();
-
-	foreach ($attachments as $attach)
-	{
-		if (!extension_allowed($forum_id, $attach['extension'], $extensions))
-		{
-			$disallowed_extension[$attach['extension']] = $attach['extension'];
-			continue;
-		}
-
-		if ($post_id && $row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $forum_id))
-		{
-			// Attachment of a soft deleted post and the user is not allowed to see the post
-			continue;
-		}
-
-		if ($topic_id && (!isset($post_visibility[$attach['post_msg_id']]) || $post_visibility[$attach['post_msg_id']] != ITEM_APPROVED) && !$auth->acl_get('m_approve', $forum_id))
-		{
-			// Attachment of a soft deleted post and the user is not allowed to see the post
-			continue;
-		}
-
-		$prefix = '';
-		if ($topic_id)
-		{
-			$prefix = $attach['post_msg_id'] . '_';
-		}
-
-		$compress->add_custom_file("{$phpbb_root_path}files/{$attach['physical_filename']}", "{$prefix}{$attach['real_filename']}");
-		$files_added++;
-	}
-
-	$compress->close();
-
-	if ($files_added)
-	{
-		phpbb_increment_downloads($db, $attachment_ids);
-		$compress->download($store_name, $archive_name);
-	}
-
-	unlink($archive_path);
-
-	if (!$files_added && !empty($disallowed_extension))
-	{
-		// None of the attachments had a valid extension
-		$disallowed_extension = implode($user->lang['COMMA_SEPARATOR'], $disallowed_extension);
-		send_status_line(403, 'Forbidden');
-		trigger_error($user->lang('EXTENSION_DISABLED_AFTER_POSTING', $disallowed_extension));
-	}
-	else if (!$files_added)
-	{
-		send_status_line(404, 'Not Found');
-		trigger_error('ERROR_NO_ATTACHMENT');
-	}
-
-	file_gc();
 }

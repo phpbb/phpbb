@@ -1392,17 +1392,6 @@ if (sizeof($attach_list))
 	}
 }
 
-$methods = phpbb_gen_download_links('topic_id', $topic_id, $phpbb_root_path, $phpEx);
-foreach ($methods as $method)
-{
-	$template->assign_block_vars('dl_method', $method);
-}
-
-$template->assign_vars(array(
-	'S_HAS_ATTACHMENTS'				=> $topic_data['topic_attachment'],
-	'U_DOWNLOAD_ALL_ATTACHMENTS'	=> $methods[0]['LINK'],
-));
-
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
 {
@@ -1420,6 +1409,7 @@ $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
 
 $template->assign_vars(array(
+	'S_HAS_ATTACHMENTS' => $topic_data['topic_attachment'],
 	'S_NUM_POSTS' => sizeof($post_list))
 );
 
@@ -1917,12 +1907,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$template->assign_block_vars('postrow.attachment', array(
 				'DISPLAY_ATTACHMENT'	=> $attachment)
 			);
-		}
-
-		$methods = phpbb_gen_download_links('post_id', $row['post_id'], $phpbb_root_path, $phpEx);
-		foreach ($methods as $method)
-		{
-			$template->assign_block_vars('postrow.dl_method', $method);
 		}
 	}
 

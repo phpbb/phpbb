@@ -18,18 +18,6 @@
 				<!-- IF U_BUMP_TOPIC --><li class="small-icon icon-bump"><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">{L_BUMP_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_EMAIL_TOPIC --><li class="small-icon icon-sendemail"><a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">{L_EMAIL_TOPIC}</a></li><!-- ENDIF -->
 				<!-- IF U_PRINT_TOPIC --><li class="small-icon icon-print"><a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p">{L_PRINT_TOPIC}</a></li><!-- ENDIF -->
-				<!-- IF S_HAS_ATTACHMENTS -->
-					<li class="small-icon icon-download">
-						<a class="dropdown-toggle-submenu" href="{U_DOWNLOAD_ALL_ATTACHMENTS}" title="{L_DOWNLOAD_ALL_ATTACHMENTS}">{L_DOWNLOAD_ALL_ATTACHMENTS}</a>
-						<ul class="dropdown-submenu hidden">
-							<li>
-							<!-- BEGIN dl_method -->
-								<a href="{dl_method.LINK}">{dl_method.TYPE}</a><!-- IF not dl_method.S_LAST_ROW --> &bull; <!-- ENDIF --> 
-							<!-- END dl_method -->
-							</li>
-						</ul>
-					</li>
-				<!-- ENDIF -->
 				<!-- EVENT viewtopic_topic_tools_after -->
 			</ul>
 		</div>
