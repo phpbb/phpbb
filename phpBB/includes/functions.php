@@ -2956,7 +2956,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $phpbb_container, $request, $template, $user;
+	global $db, $phpbb_container, $request, $template, $user, $phpbb_dispatcher;
 
 	$password = $request->variable('password', '', true);
 
@@ -3016,6 +3016,17 @@ function login_forum_box($forum_data)
 
 		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
 	}
+
+	/**
+	* Performing additional actions, load additional data on forum login
+	*
+	* @event core.login_forum_box
+	* @var	array	forum_data		Array with forum data
+	* @var	string	password		Password entered
+	* @since 3.1.0-RC3
+	*/
+	$vars = array('forum_data', 'password');
+	extract($phpbb_dispatcher->trigger_event('core.login_forum_box', compact($vars)));
 
 	page_header($user->lang['LOGIN']);
 
