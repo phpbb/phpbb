@@ -637,14 +637,30 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager;
+		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager, $phpbb_container;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
 			return;
 		}
 
-		$this->template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context(), $phpbb_extension_manager);
+		$this->template = new \phpbb\template\twig\twig(
+			$phpbb_container->get('path_helper'),
+			$phpbb_container->get('config'),
+			$phpbb_container->get('user'),
+			new \phpbb\template\context(),
+			new \phpbb\template\twig\environment(
+				$phpbb_container->get('config'),
+				$phpbb_container->get('path_helper'),
+				$phpbb_container,
+				$phpbb_container->getParameter('core.root_path') . 'cache/',
+				$phpbb_container->get('ext.manager'),
+				new \phpbb\template\twig\loader()
+			),
+			$phpbb_container->getParameter('core.root_path') . 'cache/',
+			$phpbb_container->get('template.twig.extensions.collection'),
+			$phpbb_extension_manager
+		);
 	}
 
 	/**
