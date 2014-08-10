@@ -32,7 +32,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$this->user->method('lang')->will($this->returnArgument(0));
 	}
 

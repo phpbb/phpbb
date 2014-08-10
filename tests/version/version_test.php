@@ -30,7 +30,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 			new \phpbb\config\config(array(
 				'version'	=> '3.1.0',
 			)),
-			new \phpbb\user()
+			new \phpbb\user('\phpbb\datetime')
 		);
 	}
 
@@ -208,7 +208,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 				new \phpbb\config\config(array(
 					'version'	=> $current_version,
 				)),
-				new \phpbb\user(),
+				new \phpbb\user('\phpbb\datetime'),
 			))
 			->getMock()
 		;
@@ -318,7 +318,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 				new \phpbb\config\config(array(
 					'version'	=> $current_version,
 				)),
-				new \phpbb\user(),
+				new \phpbb\user('\phpbb\datetime'),
 			))
 			->getMock()
 		;

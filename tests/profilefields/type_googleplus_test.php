@@ -21,7 +21,7 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$user = new \phpbb\user();
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->add_lang('ucp');
 		$request = $this->getMock('\phpbb\request\request');
 		$template = $this->getMock('\phpbb\template\template');

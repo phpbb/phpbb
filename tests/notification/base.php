@@ -56,7 +56,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 		));
-		$user = $this->user = new \phpbb\user();
+		$user = $this->user = new \phpbb\user('\phpbb\datetime');
 		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$cache = $this->cache = new \phpbb\cache\service(

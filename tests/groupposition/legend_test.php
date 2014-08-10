@@ -37,7 +37,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		if ($throws_exception)
@@ -55,7 +55,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -95,7 +95,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -183,7 +183,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -238,7 +238,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -293,7 +293,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -391,7 +391,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);

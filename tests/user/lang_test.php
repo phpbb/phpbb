@@ -17,7 +17,7 @@ class phpbb_user_lang_test extends phpbb_test_case
 {
 	public function test_user_lang_sprintf()
 	{
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array(
 			'FOO'		=> 'BAR',
 			'BARZ'		=> 'PENG',
@@ -99,7 +99,7 @@ class phpbb_user_lang_test extends phpbb_test_case
 		$this->assertEquals($user->lang('ARRY', 1, 's', 2), '1 post');
 
 		// ticket PHPBB3-10345 - different plural rules, not just 0/1/2+
-		$user = new \phpbb\user;
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->lang = array(
 			'PLURAL_RULE'		=> 13,
 			'ARRY'		=> array(

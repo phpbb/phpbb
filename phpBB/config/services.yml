@@ -10,6 +10,7 @@ imports:
     - { resource: mimetype_guessers.yml }
     - { resource: passwords.yml }
     - { resource: profilefields.yml }
+    - { resource: parameters.yml }
 
 services:
     acl.permissions:
@@ -346,6 +347,8 @@ services:
 
     user:
         class: phpbb\user
+        arguments:
+            - %datetime.class%
 
     user_loader:
         class: phpbb\user_loader

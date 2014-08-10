@@ -53,7 +53,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 				array('u_viewprofile', 1, false),
 			)));
 
-		$user = new \phpbb\user();
+		$user = new \phpbb\user('\phpbb\datetime');
 		$user->data = array('user_lang' => 'en');
 		$user->add_lang('common');
 

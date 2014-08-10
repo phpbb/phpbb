@@ -266,7 +266,7 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 
 	public function test_localize_errors()
 	{
-		$user = $this->getMock('\phpbb\user');
+		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),

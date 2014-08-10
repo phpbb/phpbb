@@ -85,7 +85,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// User
-		$user = $this->getMock('\phpbb\user');
+		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$user->ip = '';
 		$user->data = array(
 			'user_id'		=> 2,

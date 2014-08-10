@@ -44,7 +44,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->db_tools = new \phpbb\db\tools($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = 'php';
-		$this->user = new \phpbb\user();
+		$this->user = new \phpbb\user('\phpbb\datetime');
 		$this->table_prefix = 'phpbb_';
 
 		$this->template = new \phpbb\template\twig\twig(
