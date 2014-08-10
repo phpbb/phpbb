@@ -550,7 +550,7 @@ abstract class driver implements driver_interface
 		}
 		else
 		{
-			return $field . 'IN (' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
+			return $field . ' IN (' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
 		}
 	}
 
