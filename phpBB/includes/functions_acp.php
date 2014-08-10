@@ -130,7 +130,7 @@ function adm_page_header($page_title)
 
 	foreach ($http_headers as $hname => $hval)
 	{
-		header((string) $hname.': '.(string) $hval);
+		header((string) $hname . ': ' . (string) $hval);
 	}
 
 	return;

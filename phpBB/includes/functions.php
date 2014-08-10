@@ -5054,7 +5054,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	*									session item, e.g. forum for
 	*									session_forum_id
 	* @var	int		item_id				Restrict online users to item id
-	* @var	array	http_headers			HTTP headers that should be set by phpbb
+	* @var	array		http_headers			HTTP headers that should be set by phpbb
 	*
 	* @since 3.1.0-b3
 	*/
@@ -5063,7 +5063,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	foreach ($http_headers as $hname => $hval)
 	{
-		header((string) $hname.': '.(string) $hval);
+		header((string) $hname . ': ' . (string) $hval);
 	}
 
 	return;
