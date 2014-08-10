@@ -53,7 +53,7 @@ class qa
 	*/
 	function init($type)
 	{
-		global $config, $db, $user, $table_prefix;
+		global $config, $db, $user;
 
 		// load our language file
 		$user->add_lang('captcha_qa');
@@ -108,7 +108,7 @@ class qa
 	*/
 	public function is_installed()
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		$db_tool = new \phpbb\db\tools($db);
 
@@ -120,7 +120,7 @@ class qa
 	*/
 	public function is_available()
 	{
-		global $config, $db, $phpbb_root_path, $phpEx, $user, $table_prefix;
+		global $config, $db, $phpbb_root_path, $phpEx, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
@@ -207,7 +207,7 @@ class qa
 	*/
 	function get_demo_template()
 	{
-		global $config, $db, $template, $table_prefix;
+		global $config, $db, $template;
 
 		if ($this->is_available())
 		{
@@ -291,7 +291,7 @@ class qa
 	*/
 	function install()
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		$db_tool = new \phpbb\db\tools($db);
 
@@ -492,7 +492,7 @@ class qa
 	*/
 	function load_answer()
 	{
-		global $db, $user, $table_prefix;
+		global $db, $user;
 
 		if (!strlen($this->confirm_id) || !sizeof($this->question_ids))
 		{
@@ -743,7 +743,7 @@ class qa
 	*/
 	function acp_question_list(&$module)
 	{
-		global $db, $template, $table_prefix;
+		global $db, $template;
 
 		$sql = 'SELECT *
 			FROM ' . $this->table_captcha_questions;
@@ -773,7 +773,7 @@ class qa
 	*/
 	function acp_get_question_data($question_id)
 	{
-		global $db, $table_prefix;
+		global $db;
 
 		if ($question_id)
 		{
@@ -828,7 +828,7 @@ class qa
 	*/
 	function acp_update_question($data, $question_id)
 	{
-		global $db, $cache, $table_prefix;
+		global $db, $cache;
 
 		// easier to delete all answers than to figure out which to update
 		$sql = 'DELETE FROM ' . $this->table_captcha_answers . " WHERE question_id = $question_id";
@@ -855,7 +855,7 @@ class qa
 	*/
 	function acp_add_question($data)
 	{
-		global $db, $cache, $table_prefix;
+		global $db, $cache;
 
 		$langs = $this->get_languages();
 		$question_ary = $data;
@@ -900,7 +900,7 @@ class qa
 	*/
 	function acp_delete_question($question_id)
 	{
-		global $db, $cache, $table_prefix;
+		global $db, $cache;
 
 		$tables = array($this->table_captcha_questions, $this->table_captcha_answers);
 
@@ -972,7 +972,7 @@ class qa
 	*/
 	function acp_is_last($question_id)
 	{
-		global $config, $db, $table_prefix;
+		global $config, $db;
 
 		if ($question_id)
 		{
