@@ -645,6 +645,15 @@ class oracle extends \phpbb\db\driver\driver
 		return $expression . " ESCAPE '\\'";
 	}
 
+	/**
+	* Build NOT LIKE expression
+	* @access private
+	*/
+	function _sql_not_like_expression($expression)
+	{
+		return $expression . " ESCAPE '\\'";
+	}
+
 	function _sql_custom_build($stage, $data)
 	{
 		return $data;
