@@ -20,7 +20,6 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = $this->getMock('\phpbb\user');
 		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
@@ -31,6 +30,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 			$phpEx
 		);
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
+		$this->user = new \phpbb\user($this->config);
 		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, new \phpbb\template\context());
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',

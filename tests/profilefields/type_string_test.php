@@ -30,7 +30,9 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	{
 		global $request, $user, $cache;
 
-		$user = $this->getMock('\phpbb\user');
+		$user = $this->getMockBuilder('\phpbb\user')
+			->disableOriginalConstructor()
+			->getMock();
 		$cache = new phpbb_mock_cache;
 		$user->expects($this->any())
 			->method('lang')

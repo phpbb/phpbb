@@ -346,6 +346,8 @@ services:
 
     user:
         class: phpbb\user
+        arguments:
+            - @config
 
     user_loader:
         class: phpbb\user_loader

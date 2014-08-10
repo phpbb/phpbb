@@ -25,7 +25,9 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 	*/
 	public function setUp()
 	{
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = $this->getMockBuilder('\phpbb\user')
+			->disableOriginalConstructor()
+			->getMock();
 		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));

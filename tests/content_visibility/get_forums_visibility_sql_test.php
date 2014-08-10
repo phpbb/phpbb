@@ -134,8 +134,8 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			->method('acl_getf')
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap($permissions));
-		$user = $this->getMock('\phpbb\user');
 		$config = new phpbb\config\config(array());
+		$user = new \phpbb\user($config);
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
 		$result = $db->sql_query('SELECT ' . $mode . '_id
