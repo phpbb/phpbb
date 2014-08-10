@@ -1,4 +1,5 @@
-# EditorConfig is awesome: http://EditorConfig.org
+# This file is for standardising the coding style between different editors
+# http://editorconfig.org/
 
 root = true
 
