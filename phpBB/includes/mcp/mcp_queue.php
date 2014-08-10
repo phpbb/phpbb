@@ -37,6 +37,7 @@ class mcp_queue
 	{
 		global $auth, $db, $user, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
+		global $phpbb_dispatcher;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
