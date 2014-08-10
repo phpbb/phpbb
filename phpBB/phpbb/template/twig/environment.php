@@ -13,9 +13,6 @@
 
 namespace phpbb\template\twig;
 
-use Twig_Lexer;
-use Twig_LexerInterface;
-
 class environment extends \Twig_Environment
 {
 	/** @var \phpbb\config\config */
