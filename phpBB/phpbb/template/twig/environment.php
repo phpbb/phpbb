@@ -79,6 +79,7 @@ class environment extends \Twig_Environment
 		if (null === $this->lexer)
 		{
 			$this->lexer = $this->container->get('template.twig.lexer');
+			$this->lexer->set_environment($this);
 		}
 
 		return $this->lexer;
