@@ -76,7 +76,7 @@ class recaptcha extends \phpbb\captcha\plugins\captcha_abstract
 	*/
 	function get_generator_class()
 	{
-		throw new \Exception('Go out devil!');
+		throw new \Exception('No generator class given.');
 	}
 
 	function acp_page($id, &$module)
