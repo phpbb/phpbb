@@ -402,17 +402,9 @@ class messenger
 	*/
 	function generate_message_id()
 	{
-		global $config;
+		global $config, $request;
 
-		$domain = 'phpbb.generated';
-		if ($config['server_name'])
-		{
-			$domain = $config['server_name'];
-		}
-		else if (!empty($_SERVER['SERVER_NAME']))
-		{
-			$domain = $_SERVER['SERVER_NAME'];
-		}
+		$domain = ($config['server_name']) ?: $request->server('SERVER_NAME', 'phpbb.generated');
 
 		return md5(unique_id(time())) . '@' . $domain;
 	}
