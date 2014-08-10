@@ -35,6 +35,11 @@ class qa
 	protected $table_qa_confirm;
 
 	/**
+	* @var string name of the service.
+	*/
+	protected $service_name;
+
+	/**
 	* Constructor
 	*
 	* @param string $table_captcha_questions
@@ -157,11 +162,21 @@ class qa
 	}
 
 	/**
-	*  API function
+	* @return string the name of the service corresponding to the plugin
 	*/
 	function get_service_name()
 	{
-		return 'core.captcha.plugins.qa';
+		return $this->service_name;
+	}
+
+	/**
+	* Set the name of the plugin
+	*
+	* @param string $name
+	*/
+	public function set_name($name)
+	{
+		$this->service_name = $name;
 	}
 
 	/**

@@ -31,14 +31,6 @@ class gd extends captcha_abstract
 	}
 
 	/**
-	* @return string the name of the service corresponding to the plugin
-	*/
-	function get_service_name()
-	{
-		return 'core.captcha.plugins.gd';
-	}
-
-	/**
 	* @return string the name of the class used to generate the captcha
 	*/
 	function get_generator_class()

@@ -64,14 +64,6 @@ class recaptcha extends \phpbb\captcha\plugins\captcha_abstract
 	}
 
 	/**
-	* @return string the name of the service corresponding to the plugin
-	*/
-	function get_service_name()
-	{
-		return 'core.captcha.plugins.recaptcha';
-	}
-
-	/**
 	* This function is implemented because required by the upper class, but is never used for reCaptcha.
 	*/
 	function get_generator_class()
