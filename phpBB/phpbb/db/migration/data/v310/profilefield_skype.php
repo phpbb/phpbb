@@ -18,8 +18,9 @@ class profilefield_skype extends \phpbb\db\migration\profilefield_base_migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v310\profilefield_types',
+			'\phpbb\db\migration\data\v310\profilefield_contact_field',
 			'\phpbb\db\migration\data\v310\profilefield_show_novalue',
+			'\phpbb\db\migration\data\v310\profilefield_types',
 		);
 	}
 
