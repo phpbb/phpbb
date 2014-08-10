@@ -18,7 +18,7 @@ class captcha_plugins extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v310\dev',
+			'\phpbb\db\migration\data\v310\rc2',
 		);
 	}
 
