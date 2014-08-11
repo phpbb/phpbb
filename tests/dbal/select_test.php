@@ -364,7 +364,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 	}
 
 	/**
-	* @dataProvider in_set_data
+	* @dataProvider not_in_set_data
 	*/
 	public function test_not_in_set($field, $array, $allow_empty_set, $expected, $catch_error = false)
 	{
@@ -377,7 +377,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 
 		$result = $db->sql_query('SELECT username_clean
 			FROM phpbb_users
-			WHERE ' . $db->sql_in_set($field, $array, $allow_empty_set) . '
+			WHERE ' . $db->sql_not_in_set($field, $array, $allow_empty_set) . '
 			ORDER BY user_id ASC');
 
 		if ($catch_error)
