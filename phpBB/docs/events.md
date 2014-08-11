@@ -732,6 +732,22 @@ posting_editor_subject_before
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
+posting_pm_header_find_username_after
+===
+* Locations:
+    + styles/prosilver/template/posting_pm_header.html
+    + styles/subsilver2/template/ucp_header.html
+* Since: 3.1.0-RC4
+* Purpose: Add content after the find username link on composing pm
+
+posting_pm_header_find_username_before
+===
+* Locations:
+    + styles/prosilver/template/posting_pm_header.html
+    + styles/subsilver2/template/ucp_header.html
+* Since: 3.1.0-RC4
+* Purpose: Add content before the find username link on composing pm
+
 quickreply_editor_panel_after
 ===
 * Locations:
