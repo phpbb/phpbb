@@ -53,6 +53,11 @@ class remote extends \phpbb\avatar\driver\driver
 		$width = $request->variable('avatar_remote_width', 0);
 		$height = $request->variable('avatar_remote_height', 0);
 
+		if (empty($url))
+		{
+			return false;
+		}
+
 		if (!preg_match('#^(http|https|ftp)://#i', $url))
 		{
 			$url = 'http://' . $url;

@@ -46,7 +46,7 @@ class phpbb_functional_avatar_acp_users_test extends phpbb_functional_common_ava
 			),
 			// Reset avatar settings
 			array(
-				'USER_AVATAR_UPDATED',
+				array('CONFIRM_AVATAR_DELETE', 'USER_AVATAR_UPDATED'),
 				'avatar_driver_gravatar',
 				array(
 					'avatar_delete'	=> array('tick', ''),

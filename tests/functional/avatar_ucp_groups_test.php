@@ -55,7 +55,7 @@ class phpbb_functional_avatar_ucp_groups_test extends phpbb_functional_common_av
 				),
 			),
 			array(
-				'GROUP_UPDATED',
+				array('CONFIRM_AVATAR_DELETE', 'GROUP_UPDATED'),
 				'avatar_driver_gravatar',
 				array(
 					'avatar_delete'	=> array('tick', ''),

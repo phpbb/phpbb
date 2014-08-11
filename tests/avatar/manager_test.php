@@ -13,12 +13,17 @@
 
 require_once dirname(__FILE__) . '/driver/foobar.php';
 
-class phpbb_avatar_manager_test extends \phpbb_test_case
+class phpbb_avatar_manager_test extends \phpbb_database_test_case
 {
 	/** @var \phpbb\avatar\manager */
 	protected $manager;
 	protected $avatar_foobar;
 	protected $avatar_barfoo;
+
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/users.xml');
+	}
 
 	public function setUp()
 	{
@@ -31,7 +36,7 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 			->will($this->returnArgument(0));
 
 		// Prepare dependencies for avatar manager and driver
-		$config = new \phpbb\config\config(array());
+		$this->config = new \phpbb\config\config(array());
 		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
 		$path_helper =  new \phpbb\path_helper(
 			new \phpbb\symfony_request(
@@ -52,7 +57,7 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 
 		// $this->avatar_foobar will be needed later on
-		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
@@ -67,24 +72,26 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 		{
 			if ($driver !== 'upload')
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
 				->will($this->returnValue('avatar.driver.' . $driver));
-			$config['allow_avatar_' . get_class($cur_avatar)] = false;
+			$this->config['allow_avatar_' . get_class($cur_avatar)] = $driver == 'gravatar';
 			$avatar_drivers[] = $cur_avatar;
 		}
 
-		$config['allow_avatar_' . get_class($this->avatar_foobar)] = true;
-		$config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
+		$this->config['allow_avatar_' . get_class($this->avatar_foobar)] = true;
+		$this->config['allow_avatar_' . get_class($this->avatar_barfoo)] = false;
 
 		// Set up avatar manager
-		$this->manager = new \phpbb\avatar\manager($config, $avatar_drivers, $phpbb_container);
+		$this->manager = new \phpbb\avatar\manager($this->config, $avatar_drivers, $phpbb_container);
+		$this->db = $this->new_dbal();
+		$this->user = new \phpbb\user();
 	}
 
 	protected function avatar_drivers()
@@ -122,6 +129,7 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 	{
 		return array(
 			array('avatar.driver.foobar', 'avatar.driver.foobar'),
+			array('avatar.driver.gravatar', 'avatar.driver.gravatar'),
 			array('avatar.driver.foo_wrong', null),
 			array('avatar.driver.local', null),
 			array(AVATAR_GALLERY, null),
@@ -196,8 +204,8 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 				array(
 					'avatar'			=> '',
 					'avatar_type'		=> '',
-					'avatar_width'		=> '',
-					'avatar_height'		=> '',
+					'avatar_width'		=> 0,
+					'avatar_height'		=> 0,
 				),
 			),
 			array(
@@ -286,5 +294,43 @@ class phpbb_avatar_manager_test extends \phpbb_test_case
 			'FOOBAR_OFF',
 			array('FOOBAR_EXPLAIN', 'foo'),
 		)));
+	}
+
+	public function data_handle_avatar_delete()
+	{
+		return array(
+			array(array(
+				'avatar'		=> '',
+				'avatar_type'	=> '',
+				'avatar_width'	=> 0,
+				'avatar_height'	=> 0,
+			), 1, array(
+				'avatar'		=> 'foobar@example.com',
+				'avatar_type'	=> 'avatar.driver.gravatar',
+				'avatar_width'	=> '16',
+				'avatar_height'	=> '16',
+			), USERS_TABLE, 'user_'),
+		);
+	}
+
+	/**
+	* @dataProvider data_handle_avatar_delete
+	*/
+	public function test_handle_avatar_delete($expected, $id, $avatar_data, $table, $prefix)
+	{
+		$this->config['allow_avatar_gravatar'] = true;
+		$this->assertNull($this->manager->handle_avatar_delete($this->db, $this->user, $avatar_data, $table, $prefix));
+
+		$sql = 'SELECT * FROM ' . $table . '
+				WHERE ' . $prefix . 'id = ' . $id;
+		$result = $this->db->sql_query_limit($sql, 1);
+
+		$row = $this->manager->clean_row($this->db->sql_fetchrow($result), substr($prefix, 0, -1));
+		$this->db->sql_freeresult($result);
+
+		foreach ($expected as $key => $value)
+		{
+			$this->assertEquals($value, $row[$key]);
+		}
 	}
 }

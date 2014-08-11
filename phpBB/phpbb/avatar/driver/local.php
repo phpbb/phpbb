@@ -120,7 +120,6 @@ class local extends \phpbb\avatar\driver\driver
 
 		if (empty($category) || empty($file))
 		{
-			$error[] = 'NO_AVATAR_SELECTED';
 			return false;
 		}
 
