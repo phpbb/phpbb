@@ -11,25 +11,10 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha\plugins;
 
-/**
-* Placeholder for autoload
-*/
-if (!class_exists('phpbb_default_captcha', false))
+class gd extends captcha_abstract
 {
-	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
-}
-
-class phpbb_captcha_gd extends phpbb_default_captcha
-{
-
 	var $captcha_vars = array(
 		'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
 		'captcha_gd_y_grid'				=> 'CAPTCHA_GD_Y_GRID',
@@ -40,25 +25,17 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		'captcha_gd_fonts'				=> 'CAPTCHA_GD_FONTS',
 	);
 
-	function phpbb_captcha_gd()
-	{
-		global $phpbb_root_path, $phpEx;
-
-		if (!class_exists('captcha'))
-		{
-			include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
-		}
-	}
-
-	static public function get_instance()
-	{
-		$instance = new phpbb_captcha_gd();
-		return $instance;
-	}
-
-	static public function is_available()
+	public function is_available()
 	{
 		return @extension_loaded('gd');
+	}
+
+	/**
+	* @return string the name of the class used to generate the captcha
+	*/
+	function get_generator_class()
+	{
+		return '\\phpbb\\captcha\\gd';
 	}
 
 	/**
@@ -69,14 +46,9 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return true;
 	}
 
-	static public function get_name()
+	public function get_name()
 	{
 		return 'CAPTCHA_GD';
-	}
-
-	function get_class_name()
-	{
-		return 'phpbb_captcha_gd';
 	}
 
 	function acp_page($id, &$module)
@@ -129,7 +101,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
-				'CAPTCHA_NAME'		=> $this->get_class_name(),
+				'CAPTCHA_NAME'		=> $this->get_service_name(),
 				'U_ACTION'			=> $module->u_action,
 			));
 		}

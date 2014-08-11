@@ -11,6 +11,7 @@ imports:
     - { resource: passwords.yml }
     - { resource: profilefields.yml }
     - { resource: twig.yml }
+    - { resource: captcha.yml }
     - { resource: parameters.yml }
 
 services:

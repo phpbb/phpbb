@@ -181,7 +181,7 @@ class ucp_login_link
 	*/
 	protected function process_login_result($result)
 	{
-		global $config, $request, $template, $user;
+		global $config, $request, $template, $user, $phpbb_container;
 
 		$login_error = null;
 
@@ -197,7 +197,7 @@ class ucp_login_link
 			{
 				case LOGIN_ERROR_ATTEMPTS:
 
-					$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+					$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 					$captcha->init(CONFIRM_LOGIN);
 
 					$template->assign_vars(array(

@@ -11,19 +11,13 @@
 *
 */
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\captcha;
 
 /**
 * Main non-gd captcha class
 * @ignore
 */
-class captcha
+class non_gd
 {
 	var $filtered_pngs;
 	var $width = 320;
@@ -32,7 +26,7 @@ class captcha
 	/**
 	* Define filtered pngs on init
 	*/
-	function captcha()
+	function __construct()
 	{
 		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
 		$this->define_filtered_pngs();

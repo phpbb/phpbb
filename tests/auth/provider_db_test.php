@@ -52,7 +52,9 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 		// Set up passwords manager
 		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
 
-		$provider = new \phpbb\auth\provider\db($db, $config, $passwords_manager, $request, $user, $phpbb_root_path, $phpEx);
+		$phpbb_container = new phpbb_mock_container_builder();
+
+		$provider = new \phpbb\auth\provider\db($db, $config, $passwords_manager, $request, $user, $phpbb_container, $phpbb_root_path, $phpEx);
 		if (version_compare(PHP_VERSION, '5.3.7', '<'))
 		{
 			$password_hash = '$2a$10$e01Syh9PbJjUkio66eFuUu4FhCE2nRgG7QPc1JACalsPXcIuG2bbi';

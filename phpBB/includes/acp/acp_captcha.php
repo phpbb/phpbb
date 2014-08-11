@@ -26,12 +26,11 @@ class acp_captcha
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$user->add_lang('acp/board');
 
-		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-		$factory = new phpbb_captcha_factory();
+		$factory = $phpbb_container->get('captcha.factory');
 		$captchas = $factory->get_captcha_types();
 
 		$selected = request_var('select_captcha', $config['captcha_plugin']);
@@ -47,7 +46,7 @@ class acp_captcha
 		// Delegate
 		if ($configure)
 		{
-			$config_captcha = phpbb_captcha_factory::get_instance($selected);
+			$config_captcha = $factory->get_instance($selected);
 			$config_captcha->acp_page($id, $this);
 		}
 		else
@@ -79,11 +78,11 @@ class acp_captcha
 					// sanity check
 					if (isset($captchas['available'][$selected]))
 					{
-						$old_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+						$old_captcha = $factory->get_instance($config['captcha_plugin']);
 						$old_captcha->uninstall();
 
 						set_config('captcha_plugin', $selected);
-						$new_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+						$new_captcha = $factory->get_instance($config['captcha_plugin']);
 						$new_captcha->install();
 
 						add_log('admin', 'LOG_CONFIG_VISUAL');
@@ -114,7 +113,7 @@ class acp_captcha
 					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang($title) . '</option>';
 				}
 
-				$demo_captcha = phpbb_captcha_factory::get_instance($selected);
+				$demo_captcha = $factory->get_instance($selected);
 
 				foreach ($config_vars as $config_var => $options)
 				{
@@ -137,9 +136,9 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $db, $user, $config;
+		global $db, $user, $config, $phpbb_container;
 
-		$captcha = phpbb_captcha_factory::get_instance($selected);
+		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();
 
