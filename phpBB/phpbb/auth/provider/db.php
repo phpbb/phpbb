@@ -27,6 +27,13 @@ class db extends \phpbb\auth\provider\base
 	protected $passwords_manager;
 
 	/**
+	* DI container
+	*
+	* @var \Symfony\Component\DependencyInjection\ContainerInterface
+	*/
+	protected $phpbb_container;
+
+	/**
 	 * Database Authentication Constructor
 	 *
 	 * @param	\phpbb\db\driver\driver_interface		$db
@@ -34,10 +41,11 @@ class db extends \phpbb\auth\provider\base
 	 * @param	\phpbb\passwords\manager	$passwords_manager
 	 * @param	\phpbb\request\request		$request
 	 * @param	\phpbb\user			$user
+	 * @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
 	 * @param	string				$phpbb_root_path
 	 * @param	string				$php_ext
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request $request, \phpbb\user $user, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -46,6 +54,7 @@ class db extends \phpbb\auth\provider\base
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->phpbb_container = $phpbb_container;
 	}
 
 	/**
@@ -146,13 +155,8 @@ class db extends \phpbb\auth\provider\base
 		// Every auth module is able to define what to do by itself...
 		if ($show_captcha)
 		{
-			// Visual Confirmation handling
-			if (!class_exists('phpbb_captcha_factory', false))
-			{
-				include ($this->phpbb_root_path . 'includes/captcha/captcha_factory.' . $this->php_ext);
-			}
-
-			$captcha = \phpbb_captcha_factory::get_instance($this->config['captcha_plugin']);
+			$captcha_factory = $this->phpbb_container->get('captcha.factory');
+			$captcha = $captcha_factory->get_instance($this->config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);
 			$vc_response = $captcha->validate($row);
 			if ($vc_response)

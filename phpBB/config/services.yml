@@ -10,6 +10,7 @@ imports:
     - { resource: mimetype_guessers.yml }
     - { resource: passwords.yml }
     - { resource: profilefields.yml }
+    - { resource: captcha.yml }
     - { resource: parameters.yml }
 
 services:

@@ -962,7 +962,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config, $phpbb_root_path, $phpEx;
+		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		$batch_size = 10;
 
@@ -1022,11 +1022,7 @@ class session
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
-			if (!class_exists('phpbb_captcha_factory', false))
-			{
-				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
-			}
-			$captcha_factory = new \phpbb_captcha_factory();
+			$captcha_factory = $phpbb_container->get('captcha.factory');
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 
 			$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
