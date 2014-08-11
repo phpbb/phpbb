@@ -91,7 +91,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		// Set up avatar manager
 		$this->manager = new \phpbb\avatar\manager($this->config, $avatar_drivers, $phpbb_container);
 		$this->db = $this->new_dbal();
-		$this->user = new \phpbb\user();
+		$this->user = new \phpbb\user('\phpbb\datetime');
 	}
 
 	protected function avatar_drivers()
