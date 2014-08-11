@@ -50,7 +50,7 @@ abstract class phpbb_functional_common_avatar_test extends phpbb_functional_test
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
 	}
 
-	public function assert_avatar_submit($expected, $type, $data, $button_text = 'SUBMIT')
+	public function assert_avatar_submit($expected, $type, $data, $delete = false, $button_text = 'SUBMIT')
 	{
 		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
 
@@ -72,6 +72,12 @@ abstract class phpbb_functional_common_avatar_test extends phpbb_functional_test
 
 		$crawler = self::submit($form);
 
+		if (is_array($expected))
+		{
+			$delete_expected = $expected[1];
+			$expected = $expected[0];
+		}
+
 		try
 		{
 			$this->assertContainsLang($expected, $crawler->text());
@@ -79,6 +85,13 @@ abstract class phpbb_functional_common_avatar_test extends phpbb_functional_test
 		catch (Exception $e)
 		{
 			$this->assertContains($expected, $crawler->text());
+		}
+
+		if ($delete)
+		{
+			$form = $crawler->selectButton('confirm')->form();
+			$crawler = self::submit($form);
+			$this->assertContainsLang($delete_expected, $crawler->text());
 		}
 	}
 }

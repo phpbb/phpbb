@@ -331,6 +331,28 @@ class acp_groups
 					}
 				}
 
+				if ($request->is_set_post('avatar_delete'))
+				{
+					if (confirm_box(true))
+					{
+						$avatar_data['id'] = substr($avatar_data['id'], 1);
+						$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, GROUPS_TABLE, 'group_');
+
+						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+						trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+					}
+					else
+					{
+						confirm_box(false, $user->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
+								'avatar_delete'     => true,
+								'i'                 => $id,
+								'mode'              => $mode,
+								'g'			        => $group_id,
+								'action'            => $action))
+						);
+					}
+				}
+
 				// Did we submit?
 				if ($update)
 				{

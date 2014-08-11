@@ -564,34 +564,31 @@ class ucp_profile
 									trigger_error($message);
 								}
 							}
-							else
-							{
-								if ($driver = $phpbb_avatar_manager->get_driver($avatar_data['avatar_type']))
-								{
-									$driver->delete($avatar_data);
-								}
-
-								$result = array(
-									'user_avatar' => '',
-									'user_avatar_type' => '',
-									'user_avatar_width' => 0,
-									'user_avatar_height' => 0,
-								);
-
-								$sql = 'UPDATE ' . USERS_TABLE . '
-									SET ' . $db->sql_build_array('UPDATE', $result) . '
-									WHERE user_id = ' . (int) $user->data['user_id'];
-
-								$db->sql_query($sql);
-
-								meta_refresh(3, $this->u_action);
-								$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-								trigger_error($message);
-							}
 						}
 						else
 						{
 							$error[] = 'FORM_INVALID';
+						}
+					}
+
+					// Handle deletion of avatars
+					if ($request->is_set_post('avatar_delete'))
+					{
+						if (!confirm_box(true))
+						{
+							confirm_box(false, $user->lang('CONFIRM_AVATAR_DELETE'), build_hidden_fields(array(
+									'avatar_delete'     => true,
+									'i'                 => $id,
+									'mode'              => $mode))
+							);
+						}
+						else
+						{
+							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $avatar_data, USERS_TABLE, 'user_');
+
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
 						}
 					}
 
