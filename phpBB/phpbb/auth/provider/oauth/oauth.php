@@ -91,6 +91,13 @@ class oauth extends \phpbb\auth\provider\base
 	protected $current_uri;
 
 	/**
+	* DI container
+	*
+	* @var \Symfony\Component\DependencyInjection\ContainerInterface
+	*/
+	protected $phpbb_container;
+
+	/**
 	* phpBB root path
 	*
 	* @var string
@@ -116,10 +123,11 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	string			$auth_provider_oauth_token_account_assoc
 	* @param	\phpbb\di\service_collection	$service_providers Contains \phpbb\auth\provider\oauth\service_interface
 	* @param	string			$users_table
+	* @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
 	* @param	string			$phpbb_root_path
 	* @param	string			$php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -130,6 +138,7 @@ class oauth extends \phpbb\auth\provider\base
 		$this->auth_provider_oauth_token_account_assoc = $auth_provider_oauth_token_account_assoc;
 		$this->service_providers = $service_providers;
 		$this->users_table = $users_table;
+		$this->phpbb_container = $phpbb_container;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -160,7 +169,7 @@ class oauth extends \phpbb\auth\provider\base
 		// Temporary workaround for only having one authentication provider available
 		if (!$this->request->is_set('oauth_service'))
 		{
-			$provider = new \phpbb\auth\provider\db($this->db, $this->config, $this->passwords_manager, $this->request, $this->user, $this->phpbb_root_path, $this->php_ext);
+			$provider = new \phpbb\auth\provider\db($this->db, $this->config, $this->passwords_manager, $this->request, $this->user, $this->phpbb_container, $this->phpbb_root_path, $this->php_ext);
 			return $provider->login($username, $password);
 		}
 
