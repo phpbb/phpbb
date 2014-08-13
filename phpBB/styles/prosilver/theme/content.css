@@ -759,6 +759,11 @@ dd.profile-contact {
 	width: 30%;
 }
 
+/* Profile used on view-profile */
+.profile-avatar img {
+	max-width: 100%;
+}
+
 /* pm list in compose message if mass pm is enabled */
 dl.pmlist dt {
 	width: 60% !important;
