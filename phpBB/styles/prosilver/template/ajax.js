@@ -235,7 +235,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var $this = $(this);
 			var optionId = $this.attr('data-poll-option-id');
 			var voted = (typeof res.user_votes[optionId] !== 'undefined');
-			var mostVoted = (res.vote_counts[optionId] == mostVotes);
+			var mostVoted = (res.vote_counts[optionId] === mostVotes);
 			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[optionId] / res.total_votes) * 100);
 			var percentRel = (mostVotes === 0) ? 0 : Math.round((res.vote_counts[optionId] / mostVotes) * 100);
 
@@ -245,7 +245,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			// Update the bars
 			var bar = $this.find('.resultbar div');
 			var barTimeLapse = (res.can_vote) ? 500 : 1500;
-			var newBarClass = (percent == 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
+			var newBarClass = (percent === 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
 
 			setTimeout(function () {
 				bar.animate({width: percentRel + '%'}, 500)

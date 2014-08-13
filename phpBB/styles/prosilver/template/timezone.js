@@ -15,6 +15,6 @@ $('#tz_select_date_suggest').click(function(){
 $(function () {
 	phpbb.timezoneEnableDateSelection();
 	phpbb.timezonePreselectSelect($('#tz_select_date_suggest').attr('timezone-preselect') === 'true');
-})
+});
 
 })(jQuery); // Avoid conflicts with other libraries

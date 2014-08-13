@@ -513,9 +513,9 @@ phpbb.search.cleanKeyword = function(keyword) {
  *
  * @return string Clean string.
  */
-phpbb.search.getKeyword = function(el, keyword, multiline) {
+phpbb.search.getKeyword = function($el, keyword, multiline) {
 	if (multiline) {
-		var line = phpbb.search.getKeywordLine(el);
+		var line = phpbb.search.getKeywordLine($el);
 		keyword = keyword.split('\n').splice(line, 1);
 	}
 	return phpbb.search.cleanKeyword(keyword);
@@ -525,46 +525,47 @@ phpbb.search.getKeyword = function(el, keyword, multiline) {
  * Get the textarea line number on which the keyword resides - for textareas
  * that support multiple keywords (one per line). 
  *
- * @param jQuery el	Search textarea.
+ * @param jQuery $el	Search textarea.
  * @return int
  */
-phpbb.search.getKeywordLine = function (el) {
-	return el.val().substr(0, el.get(0).selectionStart).split('\n').length - 1;
+phpbb.search.getKeywordLine = function ($el) {
+	return $el.val().substr(0, $el.get(0).selectionStart).split('\n').length - 1;
 };
 
 /**
  * Set the value on the input|textarea. If textarea supports multiple
  * keywords, only the active keyword is replaced.
  *
- * @param jQuery el			Search input|textarea.
+ * @param jQuery $el			Search input|textarea.
  * @param string value		Value to set.
  * @param bool multiline	Whether textarea supports multiple search keywords.	
  *
  * @return undefined
  */
-phpbb.search.setValue = function(el, value, multiline) {
+phpbb.search.setValue = function($el, value, multiline) {
 	if (multiline) {
-		var line = phpbb.search.getKeywordLine(el),
-			lines = el.val().split('\n');
+		var line = phpbb.search.getKeywordLine($el),
+			lines = $el.val().split('\n');
 		lines[line] = value;
 		value = lines.join('\n');
 	}
-	el.val(value);
+	$el.val(value);
 };
 
 /**
  * Sets the onclick event to set the value on the input|textarea to the selected search result. 
  *
- * @param jQuery el		Search input|textarea.
+ * @param jQuery $el		Search input|textarea.
  * @param object value		Result object.
- * @param object container	jQuery object for the search container.
+ * @param jQuery $row		Result element.
+ * @param jQuery $container	jQuery object for the search container.
  *
  * @return undefined
  */
-phpbb.search.setValueOnClick = function(el, value, row, container) {
-	row.click(function() {
-		phpbb.search.setValue(el, value.result, el.attr('data-multiline'));
-		container.hide();
+phpbb.search.setValueOnClick = function($el, value, $row, $container) {
+	$row.click(function() {
+		phpbb.search.setValue($el, value.result, $el.attr('data-multiline'));
+		$container.hide();
 	});
 };
 
@@ -581,11 +582,11 @@ phpbb.search.setValueOnClick = function(el, value, row, container) {
  * @return bool Returns false.
  */
 phpbb.search.filter = function(data, event, sendRequest) {
-	var el = $(this),
-		dataName = (el.attr('data-name') !== undefined) ? el.attr('data-name') : el.attr('name'),
-		minLength = parseInt(el.attr('data-min-length')),
-		searchID = el.attr('data-results'),
-		keyword = phpbb.search.getKeyword(el, data[dataName], el.attr('data-multiline')),
+	var $this = $(this),
+		dataName = ($this.attr('data-name') !== undefined) ? $this.attr('data-name') : $this.attr('name'),
+		minLength = parseInt($this.attr('data-min-length')),
+		searchID = $this.attr('data-results'),
+		keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline')),
 		cache = phpbb.search.cache.get(searchID),
 		proceed = true;
 	data[dataName] = keyword;
@@ -598,22 +599,22 @@ phpbb.search.filter = function(data, event, sendRequest) {
 		// Check min length and existence of cache.
 		if (minLength > keyword.length) {
 			proceed = false;
-		} else if (cache.last_search) {
+		} else if (cache.lastSearch) {
 			// Has the keyword actually changed?
-			if (cache.last_search === keyword) {
+			if (cache.lastSearch === keyword) {
 				proceed = false;
 			} else {
 				// Do we already have results for this?
 				if (cache.results[keyword]) {
 					var response = {keyword: keyword, results: cache.results[keyword]};
-					phpbb.search.handleResponse(response, el, true);
+					phpbb.search.handleResponse(response, $this, true);
 					proceed = false;
 				}
 
 				// If the previous search didn't yield results and the string only had characters added to it,
 				// then we won't bother sending a request.
-				if (keyword.indexOf(cache.last_search) === 0 && cache.results[cache.last_search].length === 0) {
-					phpbb.search.cache.set(searchID, 'last_search', keyword);
+				if (keyword.indexOf(cache.lastSearch) === 0 && cache.results[cache.lastSearch].length === 0) {
+					phpbb.search.cache.set(searchID, 'lastSearch', keyword);
 					phpbb.search.cache.setResults(searchID, keyword, []);
 					proceed = false;
 				}		
@@ -645,7 +646,7 @@ phpbb.search.handleResponse = function(res, el, fromCache, callback) {
 	}
 
 	var searchID = el.attr('data-results'),
-		container = $(searchID);
+		$container = $(searchID);
 
 	if (this.cache.get(searchID).callback) {
 		callback = this.cache.get(searchID).callback;
@@ -657,8 +658,8 @@ phpbb.search.handleResponse = function(res, el, fromCache, callback) {
 		this.cache.setResults(searchID, res.keyword, res.results);
 	}
 
-	this.cache.set(searchID, 'last_search', res.keyword);
-	this.showResults(res.results, el, container, callback);
+	this.cache.set(searchID, 'lastSearch', res.keyword);
+	this.showResults(res.results, el, $container, callback);
 };
 
 /**
@@ -666,26 +667,26 @@ phpbb.search.handleResponse = function(res, el, fromCache, callback) {
  *
  * @param array results		Search results.
  * @param jQuery el			Search input|textarea.
- * @param jQuery container	Search results container element.
+ * @param jQuery $container	Search results container element.
  * @param function callback	Optional callback to run when assigning each search result.
  *
  * @return undefined
  */
-phpbb.search.showResults = function(results, el, container, callback) {
-	var resultContainer = $('.search-results', container);
-	this.clearResults(resultContainer);
+phpbb.search.showResults = function(results, el, $container, callback) {
+	var $resultContainer = $('.search-results', $container);
+	this.clearResults($resultContainer);
 
 	if (!results.length) {
-		container.hide();
+		$container.hide();
 		return;
 	}
 
-	var searchID = container.attr('id'),
+	var searchID = $container.attr('id'),
 		tpl,
 		row;
 
 	if (!this.tpl[searchID]) {
-		tpl = $('.search-result-tpl', container);
+		tpl = $('.search-result-tpl', $container);
 		this.tpl[searchID] = tpl.clone().removeClass('search-result-tpl');
 		tpl.remove();
 	}
@@ -696,27 +697,27 @@ phpbb.search.showResults = function(results, el, container, callback) {
 		row.find('.search-result').html(item.display);
 
 		if (typeof callback === 'function') {
-			callback.call(this, el, item, row, container);
+			callback.call(this, el, item, row, $container);
 		}
-		row.appendTo(resultContainer).show();
+		row.appendTo($resultContainer).show();
 	});
-	container.show();
+	$container.show();
 };
 
 /**
  * Clear search results.
  *
- * @param jQuery container	Search results container.
+ * @param jQuery $container	Search results container.
  * @return undefined
  */
-phpbb.search.clearResults = function(container) {
-	container.children(':not(.search-result-tpl)').remove();
+phpbb.search.clearResults = function($container) {
+	$container.children(':not(.search-result-tpl)').remove();
 };
 
-$('#phpbb').click(function(e) {
-	var target = $(e.target);
+$('#phpbb').click(function() {
+	var $this = $(this);
 
-	if (!target.is('.live-search') && !target.parents().is('.live-search')) {
+	if (!$this.is('.live-search') && !$this.parents().is('.live-search')) {
 		$('.live-search').hide();
 	}
 });
@@ -731,7 +732,6 @@ phpbb.history = {};
 */
 phpbb.history.isSupported = function(fn) {
 	return !(typeof history === 'undefined' || typeof history[fn] === 'undefined');
-	
 };
 
 /**
@@ -802,10 +802,19 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 		// We make a backup of the original dropdown, so we can remove optgroups
 		// instead of setting display to none, because IE and chrome will not
 		// hide options inside of optgroups and selects via css
-		$timezone.clone().attr('id', 'timezone_copy').css('display', 'none').attr('name', 'tz_copy').insertAfter('#timezone');
+		$timezone.clone()
+			.attr('id', 'timezone_copy')
+			.css('display', 'none')
+			.attr('name', 'tz_copy')
+			.insertAfter('#timezone');
 	} else {
 		// Copy the content of our backup, so we can remove all unneeded options
-		$timezone.replaceWith($timezoneCopy.clone().attr('id', 'timezone').css('display', 'block').attr('name', 'tz'));
+		var $replacement = $timezoneCopy.clone();
+		$replacement.attr('id', 'timezone')
+			.css('display', 'block')
+			.attr('name', 'tz');
+
+		$timezone.replaceWith($replacement);
 	}
 
 	if ($tzDate.val() !== '') {
@@ -818,7 +827,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 		$tzSelectDateSuggest.css('display', 'inline');
 	}
 	
-	var $tzOptions = $timezone.children('optgroup[label="' + $tzDate.val() + '"]').children('option')
+	var $tzOptions = $timezone.children('optgroup[label="' + $tzDate.val() + '"]').children('option');
 
 	if ($tzOptions.length === 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
@@ -1061,7 +1070,10 @@ phpbb.resizeTextArea = function($items, options) {
 			return;
 		}
 
-		var maxHeight = Math.min(Math.max(windowHeight - configuration.heightDiff, configuration.minHeight), configuration.maxHeight),
+		var maxHeight = Math.min(
+				Math.max(windowHeight - configuration.heightDiff, configuration.minHeight),
+				configuration.maxHeight
+			),
 			$item = $(item),
 			height = parseInt($item.height()),
 			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
@@ -1123,7 +1135,7 @@ phpbb.inBBCodeTag = function(textarea, startTags, endTags) {
 			lastStart = Math.max(lastStart, index);
 		}
 	}
-	if (lastStart == -1) {
+	if (lastStart === -1) {
 		return false;
 	}
 
@@ -1222,7 +1234,7 @@ phpbb.applyCodeEditor = function(textarea) {
 		var key = event.keyCode || event.which;
 
 		// intercept tabs
-		if (key == keymap.TAB	&&
+		if (key === keymap.TAB	&&
 			!event.ctrlKey		&&
 			!event.shiftKey		&&
 			!event.altKey		&&
@@ -1235,7 +1247,7 @@ phpbb.applyCodeEditor = function(textarea) {
 		}
 
 		// intercept new line characters
-		if (key == keymap.ENTER) {
+		if (key === keymap.ENTER) {
 			if (inTag()) {
 				var lastLine = getLastLine(true),
 					code = '' + /^\s*/g.exec(lastLine);
@@ -1279,26 +1291,29 @@ phpbb.toggleDropdown = function() {
 		var verticalDirection = options.verticalDirection,
 			offset = $this.offset();
 
-		if (direction == 'auto') {
+		if (direction === 'auto') {
 			if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
 				direction = 'right';
 			} else {
 				direction = 'left';
 			}
 		}
-		parent.toggleClass(options.leftClass, direction == 'left').toggleClass(options.rightClass, direction == 'right');
+		parent.toggleClass(options.leftClass, direction === 'left')
+			.toggleClass(options.rightClass, direction === 'right');
 
-		if (verticalDirection == 'auto') {
+		if (verticalDirection === 'auto') {
 			var height = $(window).height(),
 				top = offset.top - $(window).scrollTop();
 
 			verticalDirection = (top < height * 0.7) ? 'down' : 'up';
 		}
-		parent.toggleClass(options.upClass, verticalDirection == 'up').toggleClass(options.downClass, verticalDirection == 'down');
+		parent.toggleClass(options.upClass, verticalDirection === 'up')
+			.toggleClass(options.downClass, verticalDirection === 'down');
 	}
 
 	options.dropdown.toggle();
-	parent.toggleClass(options.visibleClass, !visible).toggleClass('dropdown-visible', !visible);
+	parent.toggleClass(options.visibleClass, !visible)
+		.toggleClass('dropdown-visible', !visible);
 
 	// Check dimensions when showing dropdown
 	// !visible because variable shows state of dropdown before it was toggled
@@ -1329,7 +1344,7 @@ phpbb.toggleDropdown = function() {
 		});
 		var freeSpace = parent.offset().left - 4;
 
-		if (direction == 'left') {
+		if (direction === 'left') {
 			options.dropdown.css('margin-left', '-' + freeSpace + 'px');
 
 			// Try to position the notification dropdown correctly in RTL-responsive mode
