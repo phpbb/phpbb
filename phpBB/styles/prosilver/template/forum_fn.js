@@ -279,11 +279,13 @@ jQuery(function($) {
 /**
 * Functions for user search popup
 */
-function insert_user(formId, value)
+function insertUser(formId, value)
 {
-	var form = jQuery(formId),
-		formName = form.attr('data-form-name'),
-		fieldName = form.attr('data-field-name'),
+	'use strict';
+
+	var $form = jQuery(formId),
+		formName = $form.attr('data-form-name'),
+		fieldName = $form.attr('data-field-name'),
 		item = opener.document.forms[formName][fieldName];
 
 	if (item.value.length && item.type == 'textarea') {
@@ -293,33 +295,23 @@ function insert_user(formId, value)
 	item.value = value;
 }
 
-function insert_marked_users(formId, users)
-{
-	if (typeof(users.length) == "undefined")
-	{
-		if (users.checked)
-		{
-			insert_user(formId, users.value);
-		}
-	}
-	else if (users.length > 0)
-	{
-		for (i = 0; i < users.length; i++)
-		{
-			if (users[i].checked)
-			{
-				insert_user(formId, users[i].value);
-			}
+function insert_marked_users(formId, users) {
+	'use strict';
+
+	for (var i = 0; i < users.length; i++) {
+		if (users[i].checked) {
+			insertUser(formId, users[i].value);
 		}
 	}
 
-	self.close();
+	window.close();
 }
 
-function insert_single_user(formId, user)
-{
+function insert_single_user(formId, user) {
+	'use strict';
+
 	insertUser(formId, user);
-	self.close();
+	window.close();
 }
 
 /**
