@@ -768,6 +768,7 @@ table.info tbody th {
 	float: left;
 	width: auto;
 	text-align: left;
+	max-width: 100%;
 }
 
 .left-box.profile-details {
@@ -778,6 +779,7 @@ table.info tbody th {
 	float: right;
 	width: auto;
 	text-align: right;
+	max-width: 100%;
 }
 
 dl.details {
