@@ -61,6 +61,9 @@ class acp_captcha
 
 			$this->tpl_name = 'acp_captcha';
 			$this->page_title = 'ACP_VC_SETTINGS';
+			$template->assign_vars(array(L_ACP_VC_EXT_GET_MORE => sprintf($user->lang['ACP_VC_EXT_GET_MORE'],
+					'<a href="https://www.phpbb.com/go/anti-spam-ext" target="_blank" style="font-weight: bold;">', '</a>')
+			));
 			$form_key = 'acp_captcha';
 			add_form_key($form_key);
 

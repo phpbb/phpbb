@@ -298,8 +298,7 @@ $lang = array_merge($lang, array(
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
 	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you can select and configure plugins, which are designed to block automated form submissions by spambots. These plugins typically work by challenging the user with a <em>CAPTCHA</em>, a test which is designed to be difficult for computers to solve.',
-	'ACP_VC_EXT_GET_MORE'					=> 'For additional (and possibly better) anti-spam plugins, visit the',
-	'ACP_VC_EXT_LINK'						=> 'phpBB.com anti-spam extensions database',
+	'ACP_VC_EXT_GET_MORE'					=> 'For additional (and possibly better) anti-spam plugins, visit the %sphpBB.com anti-spam extensions database%s.',
 	'AVAILABLE_CAPTCHAS'					=> 'Available plugins',
 	'CAPTCHA_UNAVAILABLE'					=> 'The plugin cannot be selected as its requirements are not met.',
 	'CAPTCHA_GD'							=> 'GD image',
