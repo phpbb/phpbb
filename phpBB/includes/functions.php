@@ -2749,7 +2749,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request, $phpbb_container;
+	global $request, $phpbb_container, $phpbb_dispatcher;
 
 	$err = '';
 
@@ -2833,6 +2833,22 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
+				/**
+			* This event allows you to modify the conditions when a user successfully logs in
+			*
+			* @event core.login_box_redirect
+			* @var	string	redirect	Redirect string
+			* @var	string	l_success	Login success status
+			* @var	bool	admin		Is the login for an Admin?
+			* @since 3.1.0-RC4
+			*/
+			$vars = array(
+				'redirect',
+				'l_success',
+				'admin',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
+
 			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
 			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
 			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "{$phpbb_root_path}index.$phpEx" || $redirect === "index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
