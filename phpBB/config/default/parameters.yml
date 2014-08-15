@@ -1,0 +1,20 @@
+parameters:
+    # Disable the usage of the super globals (_GET, _POST, _SERVER...)
+    core.disable_super_globals: true
+
+    # Datetime class to use
+    datetime.class: \phpbb\datetime
+
+    # Mimetype guesser priorities
+    mimetype.guesser.priority.lowest: -2
+    mimetype.guesser.priority.low: -1
+    mimetype.guesser.priority.default: 0
+    mimetype.guesser.priority.high: 1
+    mimetype.guesser.priority.highest: 2
+
+    # List of default password driver types
+    passwords.algorithms:
+        - passwords.driver.bcrypt_2y
+        - passwords.driver.bcrypt
+        - passwords.driver.salted_md5
+        - passwords.driver.phpass
