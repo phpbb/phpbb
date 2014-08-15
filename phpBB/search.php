@@ -281,12 +281,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		trigger_error($error);
 	}
 
-	$common_words = $search->get_common_words();
-
 	// let the search module split up the keywords
 	if ($keywords)
 	{
 		$correct_query = $search->split_keywords($keywords, $search_terms);
+		$common_words = $search->get_common_words();
 		if (!$correct_query || (!$search->get_search_query() && !sizeof($author_id_ary) && !$search_id))
 		{
 			$ignored = (sizeof($common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $common_words)) . '<br />' : '';
@@ -599,7 +598,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> $keywords,
 		'SEARCHED_QUERY'	=> $search->get_search_query(),
-		'IGNORED_WORDS'		=> (sizeof($common_words)) ? implode(' ', $common_words) : '',
+		'IGNORED_WORDS'		=> (!empty($common_words)) ? implode(' ', $common_words) : '',
 
 		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
 
