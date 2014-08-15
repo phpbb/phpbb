@@ -50,7 +50,7 @@ class core extends Extension
 	public function load(array $config, ContainerBuilder $container)
 	{
 		$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->config_path)));
-		$loader->load('services.yml');
+		$loader->load(ENVIRONMENT . '/environment.yml');
 	}
 
 	/**

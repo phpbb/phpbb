@@ -15,6 +15,11 @@ namespace phpbb\template\twig;
 
 class lexer extends \Twig_Lexer
 {
+	public function set_environment(\Twig_Environment $env)
+	{
+		$this->env = $env;
+	}
+
 	public function tokenize($code, $filename = null)
 	{
 		// Our phpBB tags

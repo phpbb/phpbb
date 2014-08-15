@@ -453,11 +453,11 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 
 	if ($debug)
 	{
-		$config_data .= "@define('DEBUG', true);\n";
+		$config_data .= "@define('ENVIRONMENT', 'development');\n";
 	}
 	else
 	{
-		$config_data .= "// @define('DEBUG', true);\n";
+		$config_data .= "@define('ENVIRONMENT', 'production');\n";
 	}
 
 	if ($debug_container)
@@ -472,6 +472,7 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 	if ($debug_test)
 	{
 		$config_data .= "@define('DEBUG_TEST', true);\n";
+		$config_data .= "@define('DEBUG', true);\n"; // Mandatory for the functional tests, will be removed by PHPBB3-12623
 	}
 
 	return $config_data;

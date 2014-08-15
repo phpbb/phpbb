@@ -203,7 +203,7 @@ abstract class memory extends \phpbb\cache\driver\base
 	{
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$hash = md5($query);
+		$query_id = md5($query);
 
 		// determine which tables this query belongs to
 		// Some queries use backticks, namely the get_database_size() query
@@ -232,14 +232,13 @@ abstract class memory extends \phpbb\cache\driver\base
 				$temp = array();
 			}
 
-			$temp[$hash] = true;
+			$temp[$query_id] = true;
 
 			// This must never expire
 			$this->_write('sql_' . $table_name, $temp, 0);
 		}
 
 		// store them in the right place
-		$query_id = sizeof($this->sql_rowset);
 		$this->sql_rowset[$query_id] = array();
 		$this->sql_row_pointer[$query_id] = 0;
 
@@ -249,7 +248,7 @@ abstract class memory extends \phpbb\cache\driver\base
 		}
 		$db->sql_freeresult($query_result);
 
-		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
+		$this->_write('sql_' . $query_id, $this->sql_rowset[$query_id], $ttl);
 
 		return $query_id;
 	}

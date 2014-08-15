@@ -90,14 +90,14 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	{
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+		$query_id = md5($query);
 
-		if (($rowset = $this->_read('sql_' . md5($query))) === false)
+		if (($result = $this->_read('sql_' . $query_id)) === false)
 		{
 			return false;
 		}
 
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = $rowset;
+		$this->sql_rowset[$query_id] = $result;
 		$this->sql_row_pointer[$query_id] = 0;
 
 		return $query_id;
