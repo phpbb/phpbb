@@ -1,18 +1,18 @@
 imports:
     - { resource: tables.yml }
     - { resource: parameters.yml }
+    - { resource: services_auth_providers.yml }
+    - { resource: services_avatars.yml }
+    - { resource: services_captcha.yml }
+    - { resource: services_console.yml }
     - { resource: services_cron_tasks.yml }
+    - { resource: services_feed.yml }
     - { resource: services_notifications.yml }
     - { resource: services_migrator.yml }
-    - { resource: services_avatars.yml }
-    - { resource: services_feed.yml }
-    - { resource: services_auth_providers.yml }
-    - { resource: services_console.yml }
     - { resource: services_mimetype_guessers.yml }
     - { resource: services_passwords.yml }
     - { resource: services_profilefields.yml }
     - { resource: services_twig.yml }
-    - { resource: services_captcha.yml }
 
 services:
     acl.permissions:
