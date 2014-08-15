@@ -1,12 +1,18 @@
 services:
     notification.type_collection:
+        alias: internal.notification.type_collection
+
+    notification.method_collection:
+        alias: internal.notification.method_collection
+
+    internal.notification.type_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: notification.type }
 
-    notification.method_collection:
+    internal.notification.method_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container

@@ -1,4 +1,7 @@
 services:
+    avatar.driver_collection:
+        alias: internal.avatar.driver_collection
+
     avatar.driver.gravatar:
         class: phpbb\avatar\driver\gravatar
         arguments:
@@ -52,7 +55,7 @@ services:
         tags:
             - { name: avatar.driver }
 
-    avatar.driver_collection:
+    internal.avatar.driver_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container

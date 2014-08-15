@@ -181,7 +181,7 @@ class container_builder
 			}
 		}
 
-		$this->container->set('config.php', $this->config_php_file);
+		$this->container->set('internal.config.php', $this->config_php_file);
 
 		if ($this->compile_container)
 		{

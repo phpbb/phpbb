@@ -5,12 +5,18 @@ parameters:
 
 services:
     captcha.factory:
+        alias: internal.captcha.factory
+
+    captcha.plugins.service_collection:
+        alias: internal.captcha.plugins.service_collection
+
+    internal.captcha.factory:
         class: phpbb\captcha\factory
         arguments:
             - @service_container
             - @captcha.plugins.service_collection
 
-    captcha.plugins.service_collection:
+    internal.captcha.plugins.service_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container

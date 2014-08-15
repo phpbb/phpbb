@@ -15,21 +15,168 @@ imports:
 
 services:
     acl.permissions:
+        alias: internal.acl.permissions
+
+    auth:
+        alias: internal.auth
+
+    avatar.manager:
+        alias: internal.avatar.manager
+
+    cache:
+        alias: internal.cache
+
+    cache.driver:
+        alias: internal.cache.driver
+
+    class_loader:
+        alias: internal.class_loader
+
+    class_loader.ext:
+        alias: internal.class_loader.ext
+
+    config:
+        alias: internal.config
+
+    config.php:
+        alias: internal.config.php
+
+    config_text:
+        alias: internal.config_text
+
+    content.visibility:
+        alias: internal.content.visibility
+
+    controller.helper:
+        alias: internal.controller.helper
+
+    controller.resolver:
+        alias: internal.controller.resolver
+
+    controller.provider:
+        alias: internal.controller.provider
+
+    cron.task_collection:
+        alias: internal.cron.task_collection
+
+    cron.manager:
+        alias: internal.cron.manager
+
+    cron.lock_db:
+        alias: internal.cron.lock_db
+
+    dispatcher:
+        alias: internal.dispatcher
+
+    dbal.conn:
+        alias: internal.dbal.conn
+
+    dbal.conn.driver:
+        alias: internal.dbal.conn.driver
+
+    dbal.tools:
+        alias: internal.dbal.tools
+
+    event.subscriber_loader:
+        alias: internal.event.subscriber_loader
+
+    event.listener_collection:
+        alias: internal.event.listener_collection
+
+    ext.manager:
+        alias: internal.ext.manager
+
+    filesystem:
+        alias: internal.filesystem
+
+    groupposition.legend:
+        alias: internal.groupposition.legend
+
+    groupposition.teampage:
+        alias: internal.groupposition.teampage
+
+    http_kernel:
+        alias: internal.http_kernel
+
+    hook_finder:
+        alias: internal.hook_finder
+
+    kernel_request_subscriber:
+        alias: internal.kernel_request_subscriber
+
+    kernel_exception_subscriber:
+        alias: internal.kernel_exception_subscriber
+
+    kernel_terminate_subscriber:
+        alias: internal.kernel_terminate_subscriber
+
+    log:
+        alias: internal.log
+
+    message.form.admin:
+        alias: internal.message.form.admin
+
+    message.form.topic:
+        alias: internal.message.form.topic
+
+    message.form.user:
+        alias: internal.message.form.user
+
+    notification_manager:
+        alias: internal.notification_manager
+
+    pagination:
+        alias: internal.pagination
+
+    path_helper:
+        alias: internal.path_helper
+
+    php_ini:
+        alias: internal.php_ini
+
+    plupload:
+        alias: internal.plupload
+
+    request:
+        alias: internal.request
+
+    symfony_request:
+        alias: internal.symfony_request
+
+    template:
+        alias: internal.template
+
+    template_context:
+        alias: internal.template_context
+
+    user:
+        alias: internal.user
+
+    user_loader:
+        alias: internal.user_loader
+
+    version_helper:
+        alias: internal.version_helper
+
+    viewonline_helper:
+        alias: internal.viewonline_helper
+
+    internal.acl.permissions:
         class: phpbb\permissions
         arguments:
             - @dispatcher
             - @user
 
-    auth:
+    internal.auth:
         class: phpbb\auth\auth
 
-    avatar.manager:
+    internal.avatar.manager:
         class: phpbb\avatar\manager
         arguments:
             - @config
             - @avatar.driver_collection
 
-    cache:
+    internal.cache:
         class: phpbb\cache\service
         arguments:
              - @cache.driver
@@ -38,10 +185,10 @@ services:
              - %core.root_path%
              - %core.php_ext%
 
-    cache.driver:
+    internal.cache.driver:
         class: %cache.driver.class%
 
-    class_loader:
+    internal.class_loader:
         class: phpbb\class_loader
         arguments:
             - phpbb\
@@ -51,7 +198,7 @@ services:
             - [register, []]
             - [set_cache, [@cache.driver]]
 
-    class_loader.ext:
+    internal.class_loader.ext:
         class: phpbb\class_loader
         arguments:
             - \
@@ -61,23 +208,23 @@ services:
             - [register, []]
             - [set_cache, [@cache.driver]]
 
-    config:
+    internal.config:
         class: phpbb\config\db
         arguments:
             - @dbal.conn
             - @cache.driver
             - %tables.config%
 
-    config.php:
+    internal.config.php:
         synthetic: true
 
-    config_text:
+    internal.config_text:
         class: phpbb\config\db_text
         arguments:
             - @dbal.conn
             - %tables.config_text%
 
-    content.visibility:
+    internal.content.visibility:
         class: phpbb\content_visibility
         arguments:
             - @auth
@@ -91,7 +238,7 @@ services:
             - %tables.topics%
             - %tables.users%
 
-    controller.helper:
+    internal.controller.helper:
         class: phpbb\controller\helper
         arguments:
             - @template
@@ -103,7 +250,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    controller.resolver:
+    internal.controller.resolver:
         class: phpbb\controller\resolver
         arguments:
             - @user
@@ -111,53 +258,53 @@ services:
             - %core.root_path%
             - @template
 
-    controller.provider:
+    internal.controller.provider:
         class: phpbb\controller\provider
         calls:
             - [find, [%core.root_path%]]
 
-    cron.task_collection:
+    internal.cron.task_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: cron.task }
 
-    cron.manager:
+    internal.cron.manager:
         class: phpbb\cron\manager
         arguments:
             - @cron.task_collection
             - %core.root_path%
             - %core.php_ext%
 
-    cron.lock_db:
+    internal.cron.lock_db:
         class: phpbb\lock\db
         arguments:
             - cron_lock
             - @config
             - @dbal.conn
 
-    dispatcher:
+    internal.dispatcher:
         class: phpbb\event\dispatcher
         arguments:
             - @service_container
 
-    dbal.conn:
+    internal.dbal.conn:
         class: phpbb\db\driver\factory
         arguments:
             - @service_container
 
-    dbal.conn.driver:
+    internal.dbal.conn.driver:
         class: %dbal.driver.class%
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
-    dbal.tools:
+    internal.dbal.tools:
         class: phpbb\db\tools
         arguments:
             - @dbal.conn
 
-    event.subscriber_loader:
+    internal.event.subscriber_loader:
         class: phpbb\event\extension_subscriber_loader
         arguments:
             - @dispatcher
@@ -165,14 +312,14 @@ services:
         calls:
             - [load, []]
 
-    event.listener_collection:
+    internal.event.listener_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: event.listener }
 
-    ext.manager:
+    internal.ext.manager:
         class: phpbb\extension\manager
         arguments:
             - @service_container
@@ -185,36 +332,36 @@ services:
             - %core.php_ext%
             - @cache.driver
 
-    filesystem:
+    internal.filesystem:
         class: phpbb\filesystem
 
-    groupposition.legend:
+    internal.groupposition.legend:
         class: phpbb\groupposition\legend
         arguments:
             - @dbal.conn
             - @user
 
-    groupposition.teampage:
+    internal.groupposition.teampage:
         class: phpbb\groupposition\teampage
         arguments:
             - @dbal.conn
             - @user
             - @cache.driver
 
-    http_kernel:
+    internal.http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
         arguments:
             - @dispatcher
             - @controller.resolver
 
-    hook_finder:
+    internal.hook_finder:
         class: phpbb\hook\finder
         arguments:
             - %core.root_path%
             - %core.php_ext%
             - @cache.driver
 
-    kernel_request_subscriber:
+    internal.kernel_request_subscriber:
         class: phpbb\event\kernel_request_subscriber
         arguments:
             - @ext.manager
@@ -223,7 +370,7 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    kernel_exception_subscriber:
+    internal.kernel_exception_subscriber:
         class: phpbb\event\kernel_exception_subscriber
         arguments:
             - @template
@@ -231,12 +378,12 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
-    kernel_terminate_subscriber:
+    internal.kernel_terminate_subscriber:
         class: phpbb\event\kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
 
-    log:
+    internal.log:
         class: phpbb\log\log
         arguments:
             - @dbal.conn
@@ -248,7 +395,7 @@ services:
             - %core.php_ext%
             - %tables.log%
 
-    message.form.admin:
+    internal.message.form.admin:
         class: phpbb\message\admin_form
         arguments:
             - @auth
@@ -259,7 +406,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    message.form.topic:
+    internal.message.form.topic:
         class: phpbb\message\topic_form
         arguments:
             - @auth
@@ -269,7 +416,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    message.form.user:
+    internal.message.form.user:
         class: phpbb\message\user_form
         arguments:
             - @auth
@@ -279,7 +426,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    notification_manager:
+    internal.notification_manager:
         class: phpbb\notification\manager
         arguments:
             - @notification.type_collection
@@ -296,14 +443,14 @@ services:
             - %tables.notifications%
             - %tables.user_notifications%
 
-    pagination:
+    internal.pagination:
         class: phpbb\pagination
         arguments:
             - @template
             - @user
             - @controller.helper
 
-    path_helper:
+    internal.path_helper:
         class: phpbb\path_helper
         arguments:
             - @symfony_request
@@ -313,10 +460,10 @@ services:
             - %core.php_ext%
             - %core.adm_relative_path%
 
-    php_ini:
+    internal.php_ini:
         class: phpbb\php\ini
 
-    plupload:
+    internal.plupload:
         class: phpbb\plupload\plupload
         arguments:
             - %core.root_path%
@@ -326,15 +473,15 @@ services:
             - @php_ini
             - @mimetype.guesser
 
-    request:
+    internal.request:
         class: phpbb\request\request
 
-    symfony_request:
+    internal.symfony_request:
         class: phpbb\symfony_request
         arguments:
             - @request
 
-    template:
+    internal.template:
         class: phpbb\template\twig\twig
         arguments:
             - @path_helper
@@ -343,15 +490,15 @@ services:
             - @template_context
             - @ext.manager
 
-    template_context:
+    internal.template_context:
         class: phpbb\template\context
 
-    user:
+    internal.user:
         class: phpbb\user
         arguments:
             - %datetime.class%
 
-    user_loader:
+    internal.user_loader:
         class: phpbb\user_loader
         arguments:
             - @dbal.conn
@@ -359,7 +506,7 @@ services:
             - %core.php_ext%
             - %tables.users%
 
-    version_helper:
+    internal.version_helper:
         class: phpbb\version_helper
         scope: prototype
         arguments:
@@ -367,7 +514,7 @@ services:
             - @config
             - @user
 
-    viewonline_helper:
+    internal.viewonline_helper:
         class: phpbb\viewonline_helper
         arguments:
             - @filesystem

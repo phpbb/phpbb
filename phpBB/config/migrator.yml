@@ -1,5 +1,14 @@
 services:
     migrator:
+        alias: internal.migrator
+
+    migrator.helper:
+        alias: internal.migrator.helper
+
+    migrator.tool_collection:
+        alias: internal.migrator.tool_collection
+
+    internal.migrator:
         class: phpbb\db\migrator
         arguments:
             - @config
@@ -12,10 +21,10 @@ services:
             - @migrator.tool_collection
             - @migrator.helper
 
-    migrator.helper:
+    internal.migrator.helper:
         class: phpbb\db\migration\helper
 
-    migrator.tool_collection:
+    internal.migrator.tool_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
