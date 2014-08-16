@@ -27,7 +27,7 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function get_type()
 	{
-		return 'post';
+		return 'notification.type.post';
 	}
 
 	/**

@@ -27,7 +27,7 @@ class approve_post extends \phpbb\notification\type\post
 	*/
 	public function get_type()
 	{
-		return 'approve_post';
+		return 'notification.type.approve_post';
 	}
 
 	/**

@@ -570,7 +570,7 @@ class manager
 			{
 				$subscription_methods[$method_name] = array(
 					'id'		=> $method->get_type(),
-					'lang'		=> 'NOTIFICATION_METHOD_' . strtoupper($method->get_type()),
+					'lang'		=> str_replace('.', '_', strtoupper($method->get_type())),
 				);
 			}
 		}
@@ -851,8 +851,6 @@ class manager
 	*/
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
-		$notification_type_name = (strpos($notification_type_name, 'notification.type.') === 0) ? $notification_type_name : 'notification.type.' . $notification_type_name;
-
 		$item = $this->load_object($notification_type_name);
 
 		$item->set_initial_data($data);
@@ -865,8 +863,6 @@ class manager
 	*/
 	public function get_method_class($method_name)
 	{
-		$method_name = (strpos($method_name, 'notification.method.') === 0) ? $method_name : 'notification.method.' . $method_name;
-
 		return $this->load_object($method_name);
 	}
 

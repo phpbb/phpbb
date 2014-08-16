@@ -27,7 +27,7 @@ class jabber extends \phpbb\notification\method\messenger_base
 	*/
 	public function get_type()
 	{
-		return 'jabber';
+		return 'notification.method.jabber';
 	}
 
 	/**

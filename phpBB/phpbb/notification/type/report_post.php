@@ -26,7 +26,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	*/
 	public function get_type()
 	{
-		return 'report_post';
+		return 'notification.type.report_post';
 	}
 
 	/**
@@ -67,7 +67,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	* 					Array of data (including keys 'id' and 'lang')
 	*/
 	public static $notification_option = array(
-		'id'	=> 'report',
+		'id'	=> 'notification.type.report',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
 	);

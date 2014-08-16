@@ -722,9 +722,9 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications(array(
-		'topic',
-		'approve_topic',
-		'topic_in_queue',
+		'notification.type.topic',
+		'notification.type.approve_topic',
+		'notification.type.topic_in_queue',
 	), $topic_ids);
 
 	return $return;
@@ -739,9 +739,9 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	// Notifications types to delete
 	$delete_notifications_types = array(
-		'quote',
-		'approve_post',
-		'post_in_queue',
+		'notification.type.quote',
+		'notification.type.approve_post',
+		'notification.type.post_in_queue',
 	);
 
 	/**

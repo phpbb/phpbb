@@ -27,7 +27,7 @@ class quote extends \phpbb\notification\type\post
 	*/
 	public function get_type()
 	{
-		return 'quote';
+		return 'notification.type.quote';
 	}
 
 	/**

@@ -20,7 +20,7 @@ class group_request extends \phpbb\notification\type\base
 	*/
 	public function get_type()
 	{
-		return 'group_request';
+		return 'notification.type.group_request';
 	}
 
 	/**

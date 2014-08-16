@@ -389,7 +389,7 @@ class ucp_register
 				if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 				{
 					$phpbb_notifications = $phpbb_container->get('notification_manager');
-					$phpbb_notifications->add_notifications('admin_activate_user', array(
+					$phpbb_notifications->add_notifications('notification.type.admin_activate_user', array(
 						'user_id'		=> $user_id,
 						'user_actkey'	=> $user_row['user_actkey'],
 						'user_regdate'	=> $user_row['user_regdate'],

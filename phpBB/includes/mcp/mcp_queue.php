@@ -165,7 +165,7 @@ class mcp_queue
 					{
 						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
 
-						$phpbb_notifications->mark_notifications_read('topic_in_queue', $topic_id, $user->data['user_id']);
+						$phpbb_notifications->mark_notifications_read('notification.type.topic_in_queue', $topic_id, $user->data['user_id']);
 					}
 					else
 					{
@@ -173,7 +173,7 @@ class mcp_queue
 					}
 				}
 
-				$phpbb_notifications->mark_notifications_read('post_in_queue', $post_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_read('notification.type.post_in_queue', $post_id, $user->data['user_id']);
 
 				$post_info = phpbb_get_post_data(array($post_id), 'm_approve', true);
 
@@ -701,11 +701,11 @@ class mcp_queue
 					// A single topic approval may also happen here, so handle deleting the respective notification.
 					if (!$post_data['topic_posts_approved'])
 					{
-						$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+						$phpbb_notifications->delete_notifications('notification.type.topic_in_queue', $post_data['topic_id']);
 
 						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
 						{
-							$phpbb_notifications->add_notifications(array('topic'), $post_data);
+							$phpbb_notifications->add_notifications(array('notification.type.topic'), $post_data);
 						}
 						if ($post_data['post_visibility'] != ITEM_APPROVED)
 						{
@@ -721,18 +721,18 @@ class mcp_queue
 						if ($post_data['post_visibility'] == ITEM_UNAPPROVED)
 						{
 							$phpbb_notifications->add_notifications(array(
-								'bookmark',
-								'post',
+								'notification.type.bookmark',
+								'notification.type.post',
 							), $post_data);
 						}
 					}
-					$phpbb_notifications->add_notifications(array('quote'), $post_data);
-					$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
+					$phpbb_notifications->add_notifications(array('notification.type.quote'), $post_data);
+					$phpbb_notifications->delete_notifications('notification.type.post_in_queue', $post_id);
 
 					$phpbb_notifications->mark_notifications_read(array(
-						'quote',
-						'bookmark',
-						'post',
+						'notification.type.quote',
+						'notification.type.bookmark',
+						'notification.type.post',
 					), $post_data['post_id'], $user->data['user_id']);
 
 					// Notify Poster?
@@ -745,11 +745,11 @@ class mcp_queue
 
 						if (!$post_data['topic_posts_approved'])
 						{
-							$phpbb_notifications->add_notifications('approve_post', $post_data);
+							$phpbb_notifications->add_notifications('notification.type.approve_post', $post_data);
 						}
 						else
 						{
-							$phpbb_notifications->add_notifications('approve_topic', $post_data);
+							$phpbb_notifications->add_notifications('notification.type.approve_topic', $post_data);
 						}
 					}
 				}
@@ -921,7 +921,7 @@ class mcp_queue
 						'post_username'	=> $topic_data['topic_first_poster_name'],
 					));
 
-					$phpbb_notifications->delete_notifications('topic_in_queue', $topic_id);
+					$phpbb_notifications->delete_notifications('notification.type.topic_in_queue', $topic_id);
 
 					// Only add notifications, if we are not reapproving post
 					// When the topic was already approved, but was edited and
@@ -930,17 +930,17 @@ class mcp_queue
 					if ($topic_data['topic_visibility'] == ITEM_UNAPPROVED)
 					{
 						$phpbb_notifications->add_notifications(array(
-							'quote',
-							'topic',
+							'notification.type.quote',
+							'notification.type.topic',
 						), $topic_data);
 					}
 
-					$phpbb_notifications->mark_notifications_read('quote', $topic_data['post_id'], $user->data['user_id']);
-					$phpbb_notifications->mark_notifications_read('topic', $topic_id, $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('notification.type.quote', $topic_data['post_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications_read('notification.type.topic', $topic_id, $user->data['user_id']);
 
 					if ($notify_poster)
 					{
-						$phpbb_notifications->add_notifications('approve_topic', $topic_data);
+						$phpbb_notifications->add_notifications('notification.type.approve_topic', $topic_data);
 					}
 				}
 			}
@@ -1178,12 +1178,12 @@ class mcp_queue
 					$topic_information[$topic_id]['topic_posts_softdeleted'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_unapproved'] == $topic_posts_unapproved[$topic_id];
 
-				$phpbb_notifications->delete_notifications('post_in_queue', $post_id);
+				$phpbb_notifications->delete_notifications('notification.type.post_in_queue', $post_id);
 
 				// Do we disapprove the whole topic? Remove potential notifications
 				if ($disapprove_all_posts_in_topic)
 				{
-					$phpbb_notifications->delete_notifications('topic_in_queue', $post_data['topic_id']);
+					$phpbb_notifications->delete_notifications('notification.type.topic_in_queue', $post_data['topic_id']);
 				}
 
 				// Notify Poster?
@@ -1228,13 +1228,13 @@ class mcp_queue
 					{
 						// If there is only 1 post when disapproving the topic,
 						// we send the user a "disapprove topic" notification...
-						$phpbb_notifications->add_notifications('disapprove_topic', $post_data);
+						$phpbb_notifications->add_notifications('notification.type.disapprove_topic', $post_data);
 					}
 					else
 					{
 						// ... otherwise there are multiple unapproved posts and
 						// all of them are disapproved as posts.
-						$phpbb_notifications->add_notifications('disapprove_post', $post_data);
+						$phpbb_notifications->add_notifications('notification.type.disapprove_post', $post_data);
 					}
 				}
 			}

@@ -27,7 +27,7 @@ class bookmark extends \phpbb\notification\type\post
 	*/
 	public function get_type()
 	{
-		return 'bookmark';
+		return 'notification.type.bookmark';
 	}
 
 	/**

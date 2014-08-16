@@ -27,7 +27,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function get_type()
 	{
-		return 'report_pm_closed';
+		return 'notification.type.report_pm_closed';
 	}
 
 	/**
