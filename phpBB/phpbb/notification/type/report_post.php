@@ -210,13 +210,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -225,6 +219,6 @@ class report_post extends \phpbb\notification\type\post_in_queue
 		$this->set_data('reason_description', $post['reason_description']);
 		$this->set_data('report_text', $post['report_text']);
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

@@ -39,6 +39,13 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		);
 	}
 
+	protected function get_notification_methods()
+	{
+		return array(
+			'board',
+		);
+	}
+
 	protected function setUp()
 	{
 		parent::setUp();
@@ -55,6 +62,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'allow_bookmarks'		=> true,
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
+			'allow_board_notifications'	=> true,
 		));
 		$user = $this->user = new \phpbb\user('\phpbb\datetime');
 		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
@@ -81,7 +89,6 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_notification_types',
-			'phpbb_notifications',
 			'phpbb_user_notifications'
 		);
 
@@ -100,6 +107,17 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 		$this->notifications->set_var('notification_types', $types);
 
+		$methods = array();
+		foreach ($this->get_notification_methods() as $method)
+		{
+			$class = $this->build_type('phpbb\notification\method\\' . $method);
+
+			$methods[$method] = $class;
+			$this->container->set('notification.method.' . $method, $class);
+		}
+
+		$this->notifications->set_var('notification_methods', $methods);
+
 		$this->db->sql_query('DELETE FROM phpbb_notification_types');
 		$this->db->sql_query('DELETE FROM phpbb_notifications');
 		$this->db->sql_query('DELETE FROM phpbb_user_notifications');
@@ -109,12 +127,20 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
+		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_user_notifications');
+	}
+
+	protected function build_method($method)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		return new $method($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config,
+			$phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
 	}
 
 	protected function assert_notifications($expected, $options = array())
 	{
-		$notifications = $this->notifications->load_notifications(array_merge(array(
+		$notifications = $this->notifications->load_notifications('board', array_merge(array(
 			'count_unread'	=> true,
 			'order_by'		=> 'notification_time',
 			'order_dir'		=> 'ASC',

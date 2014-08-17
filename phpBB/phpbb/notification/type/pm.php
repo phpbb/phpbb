@@ -176,13 +176,7 @@ class pm extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $pm Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($pm, $pre_create_data = array())
 	{
@@ -190,6 +184,6 @@ class pm extends \phpbb\notification\type\base
 
 		$this->set_data('message_subject', $pm['message_subject']);
 
-		return parent::create_insert_array($pm, $pre_create_data);
+		parent::create_insert_array($pm, $pre_create_data);
 	}
 }

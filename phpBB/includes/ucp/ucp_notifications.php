@@ -67,15 +67,6 @@ class ucp_notifications
 									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
-
-							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->add_subscription($type);
-							}
-							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->delete_subscription($type);
-							}
 						}
 					}
 
@@ -99,7 +90,7 @@ class ucp_notifications
 				{
 					if (confirm_box(true))
 					{
-						$phpbb_notifications->mark_notifications_read(false, false, $user->data['user_id'], $form_time);
+						$phpbb_notifications->mark_notifications(false, false, $user->data['user_id'], $form_time);
 
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
@@ -138,11 +129,11 @@ class ucp_notifications
 
 					if (!empty($mark_read))
 					{
-						$phpbb_notifications->mark_notifications_read_by_id($mark_read, $form_time);
+						$phpbb_notifications->mark_notifications_by_id('board', $mark_read, $form_time);
 					}
 				}
 
-				$notifications = $phpbb_notifications->load_notifications(array(
+				$notifications = $phpbb_notifications->load_notifications('board', array(
 					'start'			=> $start,
 					'limit'			=> $config['topics_per_page'],
 					'count_total'	=> true,
@@ -203,8 +194,6 @@ class ucp_notifications
 
 					'NAME'				=> $user->lang($data['lang']),
 					'EXPLAIN'			=> (isset($user->lang[$data['lang'] . '_EXPLAIN'])) ? $user->lang($data['lang'] . '_EXPLAIN') : '',
-
-					'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
 				));
 
 				foreach($notification_methods as $method => $method_data)

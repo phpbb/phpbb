@@ -44,7 +44,7 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 	{
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-		$notification = $phpbb_notifications->load_notifications(array(
+		$notification = $phpbb_notifications->load_notifications('board', array(
 			'notification_id'	=> $mark_notification,
 		));
 

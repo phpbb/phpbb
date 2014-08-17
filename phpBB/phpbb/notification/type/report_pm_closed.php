@@ -64,7 +64,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 			return array();
 		}
 
-		return array($pm['reporter'] => array(''));
+		return array($pm['reporter'] => $this->notification_manager->get_default_methods());
 	}
 
 	/**
@@ -144,21 +144,24 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $pm PM Data
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($pm, $pre_create_data = array())
 	{
 		$this->set_data('closer_id', $pm['closer_id']);
 
-		$data = parent::create_insert_array($pm, $pre_create_data);
+		parent::create_insert_array($pm, $pre_create_data);
 
-		$this->notification_time = $data['notification_time'] = time();
+		$this->notification_time = time();
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_insert_array()
+	{
+		$data = parent::get_insert_array();
+		$data['notification_time'] = $this->notification_time;
 
 		return $data;
 	}

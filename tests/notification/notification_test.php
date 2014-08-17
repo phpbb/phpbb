@@ -72,12 +72,12 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	public function test_subscriptions()
 	{
 		$expected_subscriptions = array(
-			'post'		=> array(''),
-			'topic'		=> array(''),
-			'quote'		=> array(''),
-			'bookmark'	=> array(''),
-			'test'		=> array(''),
-			'pm'		=> array(''),
+			'post'		=> array('board'),
+			'topic'		=> array('board'),
+			'quote'		=> array('board'),
+			'bookmark'	=> array('board'),
+			'test'		=> array('board'),
+			'pm'		=> array('board'),
 		);
 
 		$subscriptions = $this->notifications->get_global_subscriptions(2);
@@ -92,11 +92,11 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			$this->assert_array_content_equals($methods, $expected_subscriptions[$item_type]);	
 		}
 
-		$this->notifications->delete_subscription('post', 0, '', 2);
+		$this->notifications->delete_subscription('post', 0, 'board', 2);
 
 		$this->assertArrayNotHasKey('post', $this->notifications->get_global_subscriptions(2));
 
-		$this->notifications->add_subscription('post', 0, '', 2);
+		$this->notifications->add_subscription('post', 0, 'board', 2);
 
 		$this->assertArrayHasKey('post', $this->notifications->get_global_subscriptions(2));
 	}
@@ -128,7 +128,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notifications'		=> array(),
 				'unread_count'		=> 0,
 				'total_count'		=> 0,
-		), $this->notifications->load_notifications(array(
+		), $this->notifications->load_notifications('board', array(
 			'count_unread'	=> true,
 		)));
 

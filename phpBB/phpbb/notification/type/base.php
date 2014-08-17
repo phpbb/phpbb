@@ -52,9 +52,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	protected $notification_types_table;
 
 	/** @var string */
-	protected $notifications_table;
-
-	/** @var string */
 	protected $user_notifications_table;
 
 	/**
@@ -100,11 +97,10 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
-	* @param string $notifications_table
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\type\base
 	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -117,7 +113,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 		$this->php_ext = $php_ext;
 
 		$this->notification_types_table = $notification_types_table;
-		$this->notifications_table = $notifications_table;
 		$this->user_notifications_table = $user_notifications_table;
 	}
 
@@ -207,12 +202,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $type_data Data unique to this notification type
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($type_data, $pre_create_data = array())
 	{
@@ -227,7 +217,13 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 			'notification_data'					=> array(),
 		), $this->data);
+	}
 
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_insert_array()
+	{
 		$data = $this->data;
 
 		$data['notification_data'] = serialize($data['notification_data']);
@@ -244,7 +240,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function create_update_array($type_data)
 	{
-		$data = $this->create_insert_array($type_data);
+		$this->create_insert_array($type_data);
+		$data = $this->get_insert_array();
 
 		// Unset data unique to each row
 		unset(
@@ -497,8 +494,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 		{
 			if (!in_array($user_id, $resulting_user_ids) && !isset($options['ignore_users'][$user_id]))
 			{
-				// No rows at all for this user, default to ''
-				$rowset[$user_id] = array('');
+				// No rows at all for this user, use the default methods
+				$rowset[$user_id] = $this->notification_manager->get_default_methods();
 			}
 		}
 
@@ -516,22 +513,21 @@ abstract class base implements \phpbb\notification\type\type_interface
 	{
 		$this->notification_read = (bool) !$unread;
 
-		$where = array(
-			'notification_type_id = ' . (int) $this->notification_type_id,
-			'item_id = ' . (int) $this->item_id,
-			'user_id = ' . (int) $this->user_id,
-		);
-		$where = implode(' AND ', $where);
-
 		if ($return)
 		{
+			$where = array(
+				'notification_type_id = ' . (int) $this->notification_type_id,
+				'item_id = ' . (int) $this->item_id,
+				'user_id = ' . (int) $this->user_id,
+			);
+
+			$where = implode(' AND ', $where);
 			return $where;
 		}
-
-		$sql = 'UPDATE ' . $this->notifications_table . '
-			SET notification_read = ' . (int) $this->notification_read . '
-			WHERE ' . $where;
-		$this->db->sql_query($sql);
+		else
+		{
+			$this->notification_manager->mark_notifications($this->get_type(), (int) $this->item_id, (int) $this->user_id, $this->notification_read);
+		}
 	}
 
 	/**
