@@ -44,9 +44,9 @@
 		<dd><select name="sk" id="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select></dd>
 	</dl>
 <!-- BEGIN profile_fields -->
-    <!-- IF profile_fields.ALT -->
+    <!-- IF !profile_fields.S_ROW_COUNT is odd -->
     <dl>
-        <dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
+        <dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}</label>
             <!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
         <!-- IF profile_fields.ERROR --><dd class="error">{profile_fields.ERROR}</dd><!-- ENDIF -->
         <dd>{profile_fields.FIELD}</dd>
@@ -77,9 +77,9 @@
 	</dl>
 <!-- ENDIF -->
 <!-- BEGIN profile_fields -->
-    <!-- IF !profile_fields.ALT -->
+    <!-- IF !profile_fields.S_ROW_COUNT is even -->
     <dl>
-        <dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
+        <dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}</label>
         <!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
         <!-- IF profile_fields.ERROR --><dd class="error">{profile_fields.ERROR}</dd><!-- ENDIF -->
         <dd>{profile_fields.FIELD}</dd>

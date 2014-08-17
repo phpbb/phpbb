@@ -138,8 +138,6 @@ class manager
 			ORDER BY f.field_order';
 		$result = $this->db->sql_query($sql);
 
-		$alt = false;
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			// Return templated field
@@ -152,10 +150,7 @@ class manager
 				'FIELD'			=> $tpl_snippet,
 				'FIELD_ID'		=> $profile_field->get_field_ident($row),
 				'S_REQUIRED'	=> ($row['field_required']) ? true : false,
-				'ALT'			=> $alt,
 			));
-
-			$alt = !$alt;
 		}
 		$this->db->sql_freeresult($result);
 	}
@@ -498,13 +493,13 @@ class manager
 	/**
 	* Process fields while searching and generate SQL search clause
 	*
-	* @param string $filter
-	* @param string $table_alias
-	* @return string
+	* @param string $filter Filter profile field with respect to this column
+	* @param string $table_alias SQL alias for the profile_fields_data table
+	* @return string|false
 	*/
 	public function build_search_sql_clause($filter = '', $table_alias = 'f')
 	{
-		if (!sizeof($this->profile_cache))
+		if (empty($this->profile_cache))
 		{
 			$this->build_cache();
 		}
