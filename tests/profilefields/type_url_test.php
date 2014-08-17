@@ -13,10 +13,18 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
-class phpbb_profilefield_type_url_test extends phpbb_test_case
+class phpbb_profilefield_type_url_test extends phpbb_database_test_case
 {
 	protected $cp;
 	protected $field_options;
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/profilefield.xml');
+	}
 
 	/**
 	* Sets up basic test objects
@@ -37,7 +45,8 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 		$this->cp = new \phpbb\profilefields\type\type_url(
 			$request,
 			$template,
-			$user
+			$user,
+			$this->new_dbal()
 		);
 
 		$this->field_options = array(

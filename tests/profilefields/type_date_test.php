@@ -11,11 +11,19 @@
 *
 */
 
-class phpbb_profilefield_type_date_test extends phpbb_test_case
+class phpbb_profilefield_type_date_test extends phpbb_database_test_case
 {
 	protected $cp;
 	protected $field_options;
 	protected $user;
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/profilefield.xml');
+	}
 
 	/**
 	* Sets up basic test objects
@@ -46,7 +54,8 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 		$this->cp = new \phpbb\profilefields\type\type_date(
 			$request,
 			$template,
-			$this->user
+			$this->user,
+			$this->new_dbal()
 		);
 
 		$this->field_options = array(

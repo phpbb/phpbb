@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_profile_fields">
+		<column>field_id</column>
+		<column>field_name</column>
+		<column>field_type</column>
+		<column>field_ident</column>
+		<column>field_length</column>
+		<column>field_minlen</column>
+		<column>field_maxlen</column>
+		<column>field_novalue</column>
+		<column>field_default_value</column>
+		<column>field_validation</column>
+		<column>field_required</column>
+		<column>field_show_on_reg</column>
+		<column>field_hide</column>
+		<column>field_no_view</column>
+		<column>field_active</column>
+		<column>field_order</column>
+		<column>field_show_profile</column>
+		<column>field_show_on_vt</column>
+		<column>field_show_novalue</column>
+		<column>field_show_on_pm</column>
+		<column>field_show_on_ml</column>
+		<column>field_is_contact</column>
+		<column>field_contact_desc</column>
+		<column>field_contact_url</column>
+	</table>
+</dataset>
