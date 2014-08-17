@@ -13,9 +13,17 @@
 
 require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
+class phpbb_profilefield_type_googleplus_test extends phpbb_database_test_case
 {
 	protected  $field;
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/profilefield.xml');
+	}
 
 	public function setUp()
 	{
@@ -29,7 +37,8 @@ class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 		$this->field = new \phpbb\profilefields\type\type_googleplus(
 			$request,
 			$template,
-			$user
+			$user,
+			$this->new_dbal()
 		);
 	}
 	public function get_profile_contact_value_data()

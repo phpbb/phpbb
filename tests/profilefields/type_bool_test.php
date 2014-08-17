@@ -11,11 +11,19 @@
 *
 */
 
-class phpbb_profilefield_type_bool_test extends phpbb_test_case
+class phpbb_profilefield_type_bool_test extends phpbb_database_test_case
 {
 	protected $cp;
 	protected $field_options = array();
 	protected $options = array();
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function getDataSet()
+	{
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/profilefield.xml');
+	}
 
 	/**
 	* Sets up basic test objects
@@ -50,7 +58,8 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 			$lang,
 			$request,
 			$template,
-			$user
+			$user,
+			$this->new_dbal()
 		);
 
 		$this->field_options = array(
