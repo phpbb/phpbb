@@ -26,6 +26,11 @@ class service_collection extends \ArrayObject
 	protected $container;
 
 	/**
+	* @var array Contains the association between the alias and the real class.
+	*/
+	protected $alias = array();
+
+	/**
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
@@ -43,20 +48,13 @@ class service_collection extends \ArrayObject
 		return new service_collection_iterator($this);
 	}
 
-	// Because of a PHP issue we have to redefine offsetExists
-	// (even with a call to the parent):
-	// 		https://bugs.php.net/bug.php?id=66834
-	// 		https://bugs.php.net/bug.php?id=67067
-	// But it triggers a sniffer issue that we have to skip
-	// @codingStandardsIgnoreStart
 	/**
 	* {@inheritdoc}
 	*/
 	public function offsetExists($index)
 	{
-		return parent::offsetExists($index);
+		return parent::offsetExists($index) || isset($this->alias[$index]);
 	}
-	// @codingStandardsIgnoreEnd
 
 	/**
 	* {@inheritdoc}
@@ -75,5 +73,17 @@ class service_collection extends \ArrayObject
 	public function add($name)
 	{
 		$this->offsetSet($name, null);
+	}
+
+	/**
+	* Add an alias to the collection
+	*
+	* @param string $alias_id The alias id
+	* @param string $service_id The aliased service id
+	* @return null
+	*/
+	public function add_alias($alias_id, $service_id)
+	{
+		$this->alias[$alias_id] = $service_id;
 	}
 }
