@@ -434,6 +434,38 @@ memberlist_view_user_statistics_before
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
 
+mcp_warn_post_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+    + styles/subsilver2/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a post - after add warning fields.
+
+mcp_warn_post_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+    + styles/subsilver2/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a post - before add warning fields.
+
+mcp_warn_user_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+    + styles/subsilver2/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning an user - after add warning fields.
+
+mcp_warn_user_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+    + styles/subsilver2/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning an user - before add warning fields.
+
 navbar_header_logged_out_content
 ===
 * Locations:
