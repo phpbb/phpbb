@@ -33,6 +33,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -42,6 +43,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -52,6 +54,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -61,6 +64,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -70,6 +74,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -79,6 +84,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -88,6 +94,7 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -97,5 +104,6 @@ services:
             - @request
             - @template
             - @user
+            - @dbal.conn
         tags:
             - { name: profilefield.type }
