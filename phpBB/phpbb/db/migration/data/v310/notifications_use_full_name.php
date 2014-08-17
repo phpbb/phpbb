@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v310;
 
 class notifications_use_full_name extends \phpbb\db\migration\migration
 {
-	private $notification_types = array(
+	protected $notification_types = array(
 		'admin_activate_user',
 		'approve_post',
 		'approve_topic',
@@ -35,7 +35,7 @@ class notifications_use_full_name extends \phpbb\db\migration\migration
 		'topic',
 		'topic_in_queue');
 
-	private $notification_methods = array(
+	protected $notification_methods = array(
 		'email',
 		'jabber',
 	);
