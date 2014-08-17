@@ -9,7 +9,7 @@
 		<column>notification_data</column>
 		<row>
 			<value>1</value>
-			<value>5</value>
+			<value>6</value>
 			<value>1</value>
 			<value>1</value>
 			<value>0</value>
@@ -22,7 +22,7 @@
 		<column>notification_type_enabled</column>
 		<row>
 			<value>1</value>
-			<value>quote</value>
+			<value>notification.type.post_in_queue</value>
 			<value>1</value>
 		</row>
 	</table>
@@ -65,25 +65,37 @@
 		</row>
 		<row>
 			<value>4</value>
-			<value>unauthorized</value>
+			<value>unauthorized-mod</value>
 			<value></value>
 			<value></value>
 		</row>
 		<row>
 			<value>5</value>
-			<value>notified</value>
+			<value>unauthorized-read</value>
 			<value></value>
 			<value></value>
 		</row>
 		<row>
 			<value>6</value>
-			<value>disabled</value>
+			<value>notified</value>
 			<value></value>
 			<value></value>
 		</row>
 		<row>
 			<value>7</value>
+			<value>disabled</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>8</value>
 			<value>default</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>9</value>
+			<value>test glboal-permissions</value>
 			<value></value>
 			<value></value>
 		</row>
@@ -95,39 +107,53 @@
 		<column>method</column>
 		<column>notify</column>
 		<row>
-			<value>quote</value>
+			<value>notification.type.needs_approval</value>
 			<value>0</value>
 			<value>2</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>quote</value>
+			<value>notification.type.needs_approval</value>
 			<value>0</value>
 			<value>3</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>quote</value>
+			<value>notification.type.needs_approval</value>
 			<value>0</value>
 			<value>4</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>quote</value>
+			<value>notification.type.needs_approval</value>
 			<value>0</value>
 			<value>5</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>quote</value>
+			<value>notification.type.needs_approval</value>
 			<value>0</value>
 			<value>6</value>
 			<value></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>notification.type.needs_approval</value>
 			<value>0</value>
+			<value>7</value>
+			<value></value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>notification.type.needs_approval</value>
+			<value>0</value>
+			<value>9</value>
+			<value></value>
+			<value>1</value>
 		</row>
 	</table>
 </dataset>

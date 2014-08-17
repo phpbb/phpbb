@@ -50,7 +50,7 @@
 		<column>notification_type_enabled</column>
 		<row>
 			<value>1</value>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>1</value>
 		</row>
 	</table>
@@ -153,49 +153,49 @@
 		<column>method</column>
 		<column>notify</column>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>2</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>3</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>4</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>5</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>6</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>7</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>post</value>
+			<value>notification.type.post</value>
 			<value>0</value>
 			<value>8</value>
 			<value></value>

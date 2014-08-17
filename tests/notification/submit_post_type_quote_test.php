@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/submit_post_base.php';
 
 class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_submit_post_base
 {
-	protected $item_type = 'quote';
+	protected $item_type = 'notification.type.quote';
 
 	public function setUp()
 	{
