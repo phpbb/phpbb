@@ -604,9 +604,9 @@ switch ($mode)
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
-			$cp = $phpbb_container->get('profilefields.manager');
-			$profile_fields = $cp->grab_profile_fields_data($user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
+			$profilefields_manager = $phpbb_container->get('profilefields.manager');
+			$profile_fields = $profilefields_manager->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields[$user_id])) ? $profilefields_manager->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
 		}
 
 		/**
@@ -856,16 +856,16 @@ switch ($mode)
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
 		// Load custom profile fields
-		$cp_row = array();
+		$profilefields_rows = array();
 		$cpf_sort = false;
 		if ($config['load_cpf_memberlist'])
 		{
-			$cp = $phpbb_container->get('profilefields.manager');
+			$profilefields_manager = $phpbb_container->get('profilefields.manager');
 
-			$cp->generate_profile_fields('memberlist', $user->get_iso_lang_id());
+			$profilefields_manager->generate_profile_fields('memberlist', $user->get_iso_lang_id());
 
-			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
-			foreach ($cp_row as $profile_field)
+			$profilefields_rows = $profilefields_manager->generate_profile_fields_template_headlines('field_show_on_ml');
+			foreach ($profilefields_rows as $profile_field)
 			{
 				if ($sort_key == $profile_field['PROFILE_FIELD_IDENT'])
 				{
@@ -902,7 +902,7 @@ switch ($mode)
 
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
-		foreach ($cp_row as $profile_field)
+		foreach ($profilefields_rows as $profile_field)
 		{
 			$search_params[] = $profile_field['PROFILE_FIELD_NAME'];
 		}
@@ -1047,10 +1047,10 @@ switch ($mode)
 				}
 			}
 
-			// Searching by CPF?
+			// Add SQL constraints if searching by custom profile fields displayed at the memberlist
 			if ($config['load_cpf_memberlist'])
 			{
-				$cpf_clause = $cp->build_search_sql_clause('field_show_on_ml', 'f');
+				$cpf_clause = $profilefields_manager->build_search_sql_clause('field_show_on_ml', 'f');
 				if ($cpf_clause !== false)
 				{
 					if (!$cpf_sort)
@@ -1277,7 +1277,7 @@ switch ($mode)
 		}
 
 		// Assign the custom profile fields to the template
-		foreach ($cp_row as $profile_field)
+		foreach ($profilefields_rows as $profile_field)
 		{
 			$profile_field['PROFILE_FIELD_SORT_URL'] = $sort_url . '&amp;sk=' . $profile_field['PROFILE_FIELD_IDENT'] .
 				'&amp;sd=' . (($sort_key == $profile_field['PROFILE_FIELD_IDENT'] && $sort_dir == 'a') ? 'd' : 'a');
@@ -1436,7 +1436,7 @@ switch ($mode)
 			if ($config['load_cpf_memberlist'])
 			{
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
-				$profile_fields_cache = $cp->grab_profile_fields_data($user_list);
+				$profile_fields_cache = $profilefields_manager->grab_profile_fields_data($user_list);
 
 				// Filter the fields we don't want to show
 				foreach ($profile_fields_cache as $user_id => $user_profile_fields)
@@ -1468,7 +1468,7 @@ switch ($mode)
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $profilefields_manager->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
 				$memberrow = array_merge(phpbb_show_profile($row, false, false, false), array(
