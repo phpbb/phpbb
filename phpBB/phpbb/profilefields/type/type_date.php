@@ -39,12 +39,14 @@ class type_date extends type_base
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
+	* @param	\phpbb\db\driver\driver_interface	$db	Database object
 	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->db = $db;
 	}
 
 	/**

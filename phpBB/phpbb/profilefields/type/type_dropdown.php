@@ -46,13 +46,15 @@ class type_dropdown extends type_base
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
+	* @param	\phpbb\db\driver\driver_interface	$db	Database object
 	*/
-	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->lang_helper = $lang_helper;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
+		$this->db = $db;
 	}
 
 	/**
