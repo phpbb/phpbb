@@ -1083,7 +1083,7 @@ switch ($mode)
 			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'])
 			{
-				get_user_rank($group_roup, false, $rank_title, $rank_img, $rank_img_src);
+				get_user_rank($group_row, false, $rank_title, $rank_img, $rank_img_src);
 
 				if ($rank_img)
 				{
