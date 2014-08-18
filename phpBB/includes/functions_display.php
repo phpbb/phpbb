@@ -1386,7 +1386,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 *
 * Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
 */
-function get_user_rank($user_data, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
+function phpbb_get_user_rank($user_data, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
 	global $ranks, $config, $phpbb_root_path, $phpbb_path_helper, $phpbb_dispatcher;
 
@@ -1396,7 +1396,7 @@ function get_user_rank($user_data, $user_posts, &$rank_title, &$rank_img, &$rank
 	* @event core.modify_user_rank
 	* @var	array	user_data		Array with user's data
 	* @var	int		user_posts		User_posts to change
-	* @since 3.1.0-RC3
+	* @since 3.1.0-RC4
 	*/
 
 	$vars = array('user_data', 'user_posts');
@@ -1435,7 +1435,6 @@ function get_user_rank($user_data, $user_posts, &$rank_title, &$rank_img, &$rank
 	}
 }
 
-
 /**
 * Prepare profile data
 */
@@ -1447,7 +1446,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	$user_id = $data['user_id'];
 
 	$rank_title = $rank_img = $rank_img_src = '';
-	get_user_rank($data, (($user_id == ANONYMOUS) ? false : $data['user_posts']), $rank_title, $rank_img, $rank_img_src);
+	phpbb_get_user_rank($data, (($user_id == ANONYMOUS) ? false : $data['user_posts']), $rank_title, $rank_img, $rank_img_src);
 
 	if ((!empty($data['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_user'))
 	{

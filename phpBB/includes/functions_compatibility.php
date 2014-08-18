@@ -166,3 +166,21 @@ function update_foes($group_id = false, $user_id = false)
 	global $db, $auth;
 	return phpbb_update_foes($db, $auth, $group_id, $user_id);
 }
+
+/**
+* Get user rank title and image
+*
+* @param int $user_rank the current stored users rank id
+* @param int $user_posts the users number of posts
+* @param string &$rank_title the rank title will be stored here after execution
+* @param string &$rank_img the rank image as full img tag is stored here after execution
+* @param string &$rank_img_src the rank image source is stored here after execution
+*
+* @deprecated 3.1
+*
+* Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
+*/
+function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
+{
+	phpbb_get_user_rank(array('user_rank' => $user_rank), $user_posts, $rank_title, $rank_img, $rank_img_src);
+}
