@@ -101,6 +101,10 @@ class manager
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
 	* or memberlist (for searching)
 	* Called by ucp_profile and ucp_register
+	*
+	* @param string	$mode	Can be register|profile|memberlist
+	* @param int	$lang_id	Language ID of the profile field's data to load
+	* @return void
 	*/
 	public function generate_profile_fields($mode, $lang_id)
 	{
