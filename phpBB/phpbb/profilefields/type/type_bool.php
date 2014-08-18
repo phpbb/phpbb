@@ -22,24 +22,6 @@ class type_bool extends type_base
 	protected $lang_helper;
 
 	/**
-	* Request object
-	* @var \phpbb\request\request
-	*/
-	protected $request;
-
-	/**
-	* Template object
-	* @var \phpbb\template\template
-	*/
-	protected $template;
-
-	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
 	* Construct
 	*
 	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
@@ -51,10 +33,7 @@ class type_bool extends type_base
 	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->lang_helper = $lang_helper;
-		$this->request = $request;
-		$this->template = $template;
-		$this->user = $user;
-		$this->db = $db;
+		parent::__construct($request, $template, $user, $db);
 	}
 
 	/**
