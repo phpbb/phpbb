@@ -606,8 +606,8 @@ switch ($mode)
 		if ($config['load_cpf_viewprofile'])
 		{
 			$profilefields_manager = $phpbb_container->get('profilefields.manager');
-			$profile_fields = $profilefields_manager->grab_profile_fields_data($user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $profilefields_manager->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
+			$profile_fields_data = $profilefields_manager->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields_data[$user_id])) ? $profilefields_manager->generate_profile_fields_template_data($profile_fields_data[$user_id]) : array();
 		}
 
 		/**
