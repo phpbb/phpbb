@@ -68,10 +68,30 @@ class delete extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$sql = 'SELECT COUNT(*) AS nb_missing_thumbnails
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE thumbnail = 1';
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		$nb_missing_thumbnails = (int) $row['nb_missing_thumbnails'];
+		if ($nb_missing_thumbnails === 0)
+		{
+			$output->writeln('<info>' . $this->user->lang('NO_THUMBNAIL_TO_DELETE') . '</info>');
+			return 0;
+		}
+
 		$sql = 'SELECT attach_id, physical_filename, extension, real_filename, mimetype
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE thumbnail = 1';
 		$result = $this->db->sql_query($sql);
+
+		if (!$input->getOption('verbose'))
+		{
+			$progress = $this->getHelper('progress');
+			$progress->start($output, $nb_missing_thumbnails);
+		}
 
 		$thumbnail_deleted = array();
 		$return = 0;
@@ -102,12 +122,22 @@ class delete extends \phpbb\console\command\command
 					$output->writeln('<error>' . $this->user->lang('THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
 				}
 			}
+
+			if (!$input->getOption('verbose'))
+			{
+				$progress->advance();
+			}
 		}
 		$this->db->sql_freeresult($result);
 
 		if (!empty($thumbnail_deleted))
 		{
 			$this->commit_changes($thumbnail_deleted);
+		}
+
+		if (!$input->getOption('verbose'))
+		{
+			$progress->finish();
 		}
 
 		return $return;

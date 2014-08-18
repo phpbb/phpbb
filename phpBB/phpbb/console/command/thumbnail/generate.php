@@ -84,6 +84,20 @@ class generate extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$sql = 'SELECT COUNT(*) AS nb_missing_thumbnails
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE thumbnail = 0';
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		$nb_missing_thumbnails = (int) $row['nb_missing_thumbnails'];
+		if ($nb_missing_thumbnails === 0)
+		{
+			$output->writeln('<info>' . $this->user->lang('NO_THUMBNAIL_TO_GENERATE') . '</info>');
+			return 0;
+		}
+
 		$extensions = $this->cache->obtain_attach_extensions(true);
 
 		$sql = 'SELECT attach_id, physical_filename, extension, real_filename, mimetype
@@ -94,6 +108,12 @@ class generate extends \phpbb\console\command\command
 		if (!function_exists('create_thumbnail'))
 		{
 			require($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
+		}
+
+		if (!$input->getOption('verbose'))
+		{
+			$progress = $this->getHelper('progress');
+			$progress->start($output, $nb_missing_thumbnails);
 		}
 
 		$thumbnail_created = array();
@@ -127,12 +147,22 @@ class generate extends \phpbb\console\command\command
 					}
 				}
 			}
+
+			if (!$input->getOption('verbose'))
+			{
+				$progress->advance();
+			}
 		}
 		$this->db->sql_freeresult($result);
 
 		if (!empty($thumbnail_created))
 		{
 			$this->commit_changes($thumbnail_created);
+		}
+
+		if (!$input->getOption('verbose'))
+		{
+			$progress->finish();
 		}
 
 		return 0;
