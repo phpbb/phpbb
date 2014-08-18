@@ -72,10 +72,9 @@ class delete extends \phpbb\console\command\command
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE thumbnail = 1';
 		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
+		$nb_missing_thumbnails = (int) $this->db->sql_fetchfield('nb_missing_thumbnails');
 		$this->db->sql_freeresult($result);
 
-		$nb_missing_thumbnails = (int) $row['nb_missing_thumbnails'];
 		if ($nb_missing_thumbnails === 0)
 		{
 			$output->writeln('<info>' . $this->user->lang('NO_THUMBNAIL_TO_DELETE') . '</info>');
