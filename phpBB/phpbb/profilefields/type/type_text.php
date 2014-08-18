@@ -16,40 +16,6 @@ namespace phpbb\profilefields\type;
 class type_text extends type_string_common
 {
 	/**
-	* Request object
-	* @var \phpbb\request\request
-	*/
-	protected $request;
-
-	/**
-	* Template object
-	* @var \phpbb\template\template
-	*/
-	protected $template;
-
-	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
-	* Construct
-	*
-	* @param	\phpbb\request\request		$request	Request object
-	* @param	\phpbb\template\template	$template	Template object
-	* @param	\phpbb\user					$user		User object
-	* @param	\phpbb\db\driver\driver_interface	$db	Database object
-	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
-	{
-		$this->request = $request;
-		$this->template = $template;
-		$this->user = $user;
-		$this->db = $db;
-	}
-
-	/**
 	* {@inheritDoc}
 	*/
 	public function get_name_short()

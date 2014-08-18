@@ -20,7 +20,7 @@ class phpbb_profilefield_type_string_test extends phpbb_database_test_case
 	protected $cp;
 	protected $field_options;
 
-		/**
+	/**
 	* {@inheritDoc}
 	*/
 	public function getDataSet()
