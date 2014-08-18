@@ -212,7 +212,7 @@ class user_loader
 			return '';
 		}
 
-		if (!function_exists('get_user_rank'))
+		if (!function_exists('phpbb_get_user_rank'))
 		{
 			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
 		}

@@ -182,5 +182,11 @@ function update_foes($group_id = false, $user_id = false)
 */
 function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
+	global $phpbb_root_path, $phpEx;
+	if (!function_exists('phpbb_get_user_rank'))
+	{
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+	}
+
 	phpbb_get_user_rank(array('user_rank' => $user_rank), $user_posts, $rank_title, $rank_img, $rank_img_src);
 }

@@ -403,7 +403,7 @@ function get_user_information($user_id, $user_row)
 
 	$user_row['avatar'] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
 
-	if (!function_exists('get_user_rank'))
+	if (!function_exists('phpbb_get_user_rank'))
 	{
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
