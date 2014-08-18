@@ -24,13 +24,13 @@ class type_bool extends type_base
 	/**
 	* Construct
 	*
-	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
 	* @param	\phpbb\db\driver\driver_interface	$db	Database object
+	* @param	\phpbb\profilefields\lang_helper		$lang_helper	Profile fields language helper
 	*/
-	public function __construct(\phpbb\profilefields\lang_helper $lang_helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\profilefields\lang_helper $lang_helper)
 	{
 		$this->lang_helper = $lang_helper;
 		parent::__construct($request, $template, $user, $db);

@@ -55,11 +55,11 @@ class phpbb_profilefield_type_bool_test extends phpbb_database_test_case
 		$template = $this->getMock('\phpbb\template\template');
 
 		$this->cp = new \phpbb\profilefields\type\type_bool(
-			$lang,
 			$request,
 			$template,
 			$user,
-			$this->new_dbal()
+			$this->new_dbal(),
+			$lang
 		);
 
 		$this->field_options = array(
