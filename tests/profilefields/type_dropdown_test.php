@@ -55,11 +55,11 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_database_test_case
 			 ->will($this->returnCallback(array($this, 'get')));
 
 		$this->cp = new \phpbb\profilefields\type\type_dropdown(
-			$lang,
 			$request,
 			$template,
 			$user,
-			$this->new_dbal()
+			$this->new_dbal(),
+			$lang
 		);
 
 		$this->field_options = array(

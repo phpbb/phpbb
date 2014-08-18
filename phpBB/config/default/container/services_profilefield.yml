@@ -30,11 +30,11 @@ services:
     profilefields.type.bool:
         class: phpbb\profilefields\type\type_bool
         arguments:
-            - @profilefields.lang_helper
             - @request
             - @template
             - @user
             - @dbal.conn
+            - @profilefields.lang_helper
         tags:
             - { name: profilefield.type }
 
@@ -51,11 +51,11 @@ services:
     profilefields.type.dropdown:
         class: phpbb\profilefields\type\type_dropdown
         arguments:
-            - @profilefields.lang_helper
             - @request
             - @template
             - @user
             - @dbal.conn
+            - @profilefields.lang_helper
         tags:
             - { name: profilefield.type }
 
