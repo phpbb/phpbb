@@ -289,7 +289,6 @@ function phpbb_gmgetdate($time = false)
 * @param array	$allowed_units	only allow these units (data array indexes)
 *
 * @return mixed					data array if $string_only is false
-* @author bantu
 */
 function get_formatted_filesize($value, $string_only = true, $allowed_units = false)
 {
@@ -463,7 +462,6 @@ function phpbb_version_compare($version1, $version2, $operator = null)
 * @param int	$perms		Permissions to set
 *
 * @return bool	true on success, otherwise false
-* @author faw, phpBB Limited
 */
 function phpbb_chmod($filename, $perms = CHMOD_READ)
 {
@@ -3404,8 +3402,6 @@ function short_ipv6($ip, $length)
 *
 * @return mixed		false if specified address is not valid,
 *					string otherwise
-*
-* @author bantu
 */
 function phpbb_ip_normalise($address)
 {
@@ -3434,8 +3430,6 @@ function phpbb_ip_normalise($address)
 *
 * @return mixed		false on failure,
 *					string otherwise
-*
-* @author APTX
 */
 function phpbb_inet_ntop($in_addr)
 {
@@ -3505,8 +3499,6 @@ function phpbb_inet_ntop($in_addr)
 *
 * @return mixed		false if address is invalid,
 *					in_addr representation of the given address otherwise (string)
-*
-* @author APTX
 */
 function phpbb_inet_pton($address)
 {
@@ -3586,8 +3578,6 @@ function phpbb_inet_pton($address)
 *
 * Since null can also be returned, you probably want to compare the result
 * with === true or === false,
-*
-* @author bantu
 */
 function phpbb_checkdnsrr($host, $type = 'MX')
 {
