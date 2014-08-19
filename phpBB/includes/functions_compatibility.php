@@ -188,5 +188,8 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
-	phpbb_get_user_rank(array('user_rank' => $user_rank), $user_posts, $rank_title, $rank_img, $rank_img_src);
+	$rank_data = phpbb_get_user_rank(array('user_rank' => $user_rank), $user_posts);
+	$rank_title = $rank_data['title'];
+	$rank_img = $rank_data['img'];
+	$rank_img_src = $rank_data['img_src'];
 }

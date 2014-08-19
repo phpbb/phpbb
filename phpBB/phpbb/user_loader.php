@@ -223,7 +223,10 @@ class user_loader
 			'rank_img_src',
 		);
 
-		phpbb_get_user_rank($user, (($user['user_id'] == ANONYMOUS) ? false : $user['user_posts']), $rank['rank_title'], $rank['rank_img'], $rank['rank_img_src']);
+		$user_rank_data = phpbb_get_user_rank($user, (($user['user_id'] == ANONYMOUS) ? false : $user['user_posts']));
+		$rank['rank_title'] = $user_rank_data['title'];
+		$rank['rank_img'] = $user_rank_data['img'];
+		$rank['rank_img_src'] = $user_rank_data['img_src'];
 
 		return $rank;
 	}
