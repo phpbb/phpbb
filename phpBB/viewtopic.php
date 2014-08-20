@@ -602,6 +602,35 @@ if (!empty($_EXTRA_URL))
 
 // If we've got a hightlight set pass it on to pagination.
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
+
+/**
+* Event to modify data before template variables are being assigned
+*
+* @event core.viewtopic_assign_template_vars_before
+* @var	string	base_url			URL to be passed to generate pagination
+* @var	int		forum_id			Forum ID
+* @var	int		post_id				Post ID
+* @var	array	quickmod_array		Array with quick moderation options data
+* @var	int		start				Pagination information
+* @var	array	topic_data			Array with topic data
+* @var	int		topic_id			Topic ID
+* @var	array	topic_tracking_info	Array with topic tracking data
+* @var	int		total_posts			Topic total posts count
+* @since 3.1.0-RC4
+*/
+$vars = array(
+	'base_url',
+	'forum_id',
+	'post_id',
+	'quickmod_array',
+	'start',
+	'topic_data',
+	'topic_id',
+	'topic_tracking_info',
+	'total_posts',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_before', compact($vars)));
+
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
 // Send vars to template
