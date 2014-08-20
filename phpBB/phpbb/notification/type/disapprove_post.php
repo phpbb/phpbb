@@ -27,7 +27,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	*/
 	public function get_type()
 	{
-		return 'disapprove_post';
+		return 'notification.type.disapprove_post';
 	}
 
 	/**

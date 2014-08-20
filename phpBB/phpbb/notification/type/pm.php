@@ -27,7 +27,7 @@ class pm extends \phpbb\notification\type\base
 	*/
 	public function get_type()
 	{
-		return 'pm';
+		return 'notification.type.pm';
 	}
 
 	/**

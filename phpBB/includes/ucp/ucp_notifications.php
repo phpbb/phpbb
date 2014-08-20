@@ -58,21 +58,21 @@ class ucp_notifications
 						{
 							foreach($notification_methods as $method => $method_data)
 							{
-								if ($request->is_set_post($type . '_' . $method_data['id']) && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
+								if ($request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
 									$phpbb_notifications->add_subscription($type, 0, $method_data['id']);
 								}
-								else if (!$request->is_set_post($type . '_' . $method_data['id']) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
+								else if (!$request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type]))
 								{
 									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
 
-							if ($request->is_set_post($type . '_notification') && !isset($subscriptions[$type]))
+							if ($request->is_set_post(str_replace('.', '_', $type) . '_notification') && !isset($subscriptions[$type]))
 							{
 								$phpbb_notifications->add_subscription($type);
 							}
-							else if (!$request->is_set_post($type . '_notification') && isset($subscriptions[$type]))
+							else if (!$request->is_set_post(str_replace('.', '_', $type) . '_notification') && isset($subscriptions[$type]))
 							{
 								$phpbb_notifications->delete_subscription($type);
 							}

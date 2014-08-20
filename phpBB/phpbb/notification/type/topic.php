@@ -27,7 +27,7 @@ class topic extends \phpbb\notification\type\base
 	*/
 	public function get_type()
 	{
-		return 'topic';
+		return 'notification.type.topic';
 	}
 
 	/**

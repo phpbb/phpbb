@@ -2675,7 +2675,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 		foreach ($add_id_ary as $user_id)
 		{
-			$phpbb_notifications->add_notifications('group_request', array(
+			$phpbb_notifications->add_notifications('notification.type.group_request', array(
 				'group_id'		=> $group_id,
 				'user_id'		=> $user_id,
 				'group_name'	=> $group_name,
@@ -2832,7 +2832,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-	$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
+	$phpbb_notifications->delete_notifications('notification.type.group_request', $user_id_ary, $group_id);
 
 	// Return false - no error
 	return false;
@@ -2996,12 +2996,12 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-			$phpbb_notifications->add_notifications('group_request_approved', array(
+			$phpbb_notifications->add_notifications('notification.type.group_request_approved', array(
 				'user_ids'		=> $user_id_ary,
 				'group_id'		=> $group_id,
 				'group_name'	=> $group_name,
 			));
-			$phpbb_notifications->delete_notifications('group_request', $user_id_ary, $group_id);
+			$phpbb_notifications->delete_notifications('notification.type.group_request', $user_id_ary, $group_id);
 
 			$log = 'LOG_USERS_APPROVED';
 		break;

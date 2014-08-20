@@ -27,7 +27,7 @@ class post_in_queue extends \phpbb\notification\type\post
 	*/
 	public function get_type()
 	{
-		return 'post_in_queue';
+		return 'notification.type.post_in_queue';
 	}
 
 	/**
@@ -44,7 +44,7 @@ class post_in_queue extends \phpbb\notification\type\post
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
 	public static $notification_option = array(
-		'id'	=> 'needs_approval',
+		'id'	=> 'notification.type.needs_approval',
 		'lang'	=> 'NOTIFICATION_TYPE_IN_MODERATION_QUEUE',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
 	);

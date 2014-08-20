@@ -25,7 +25,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	*/
 	public function get_type()
 	{
-		return 'admin_activate_user';
+		return 'notification.type.admin_activate_user';
 	}
 
 	/**

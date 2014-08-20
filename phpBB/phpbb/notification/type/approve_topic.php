@@ -27,7 +27,7 @@ class approve_topic extends \phpbb\notification\type\topic
 	*/
 	public function get_type()
 	{
-		return 'approve_topic';
+		return 'notification.type.approve_topic';
 	}
 
 	/**
