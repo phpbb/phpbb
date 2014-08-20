@@ -857,7 +857,7 @@ switch ($mode)
 
 		// Load custom profile fields
 		$profilefields_rows = array();
-		$cpf_sort = false;
+		$cpf_sql = false;
 		if ($config['load_cpf_memberlist'])
 		{
 			$profilefields_manager = $phpbb_container->get('profilefields.manager');
@@ -869,7 +869,7 @@ switch ($mode)
 			{
 				if ($sort_key == $profile_field['PROFILE_FIELD_IDENT'])
 				{
-					$cpf_sort = true;
+					$cpf_sql = true;
 				}
 
 				$sort_key_text[$profile_field['PROFILE_FIELD_IDENT']] = $profile_field['PROFILE_FIELD_NAME'];
@@ -905,12 +905,6 @@ switch ($mode)
 		foreach ($profilefields_rows as $profile_field)
 		{
 			$search_params[] = $profile_field['PROFILE_FIELD_NAME'];
-		}
-
-		if ($cpf_sort)
-		{
-			$sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
-			$sql_where .= 'AND u.user_id = f.user_id';
 		}
 
 		// We validate form and field here, only id/class allowed
@@ -1053,11 +1047,7 @@ switch ($mode)
 				$cpf_clause = $profilefields_manager->build_search_sql_clause('field_show_on_ml', 'f');
 				if ($cpf_clause !== false)
 				{
-					if (!$cpf_sort)
-					{
-						$sql_from .= ', ' . PROFILE_FIELDS_DATA_TABLE . ' f ';
-						$sql_where .= 'AND u.user_id = f.user_id';
-					}
+					$cpf_sql = true;
 					$sql_where .= ' AND ' . $cpf_clause;
 				}
 			}
@@ -1172,6 +1162,12 @@ switch ($mode)
 		if ($sort_key == 'm')
 		{
 			$order_by .= ', u.user_posts DESC';
+		}
+
+		// We add CPF search/sort SQL at end because we need LEFT JOIN
+		if ($cpf_sql)
+		{
+			$sql_from .= ' LEFT JOIN ' . PROFILE_FIELDS_DATA_TABLE . ' f ON (u.user_id = f.user_id)';
 		}
 
 		// Count the users ...
