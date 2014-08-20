@@ -977,11 +977,11 @@ switch ($mode)
 				}
 			}
 
-			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
+			$sql_where .= ($search_group_id) ? " AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
 
 			if ($search_group_id)
 			{
-				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+				$sql_from = ' INNER JOIN ' . USER_GROUP_TABLE . ' ug ON (u.user_id = ug.user_id)';
 			}
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
@@ -1147,11 +1147,11 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+			$sql_from = ' INNER JOIN ' . USER_GROUP_TABLE . ' ug ON (u.user_id = ug.user_id)';
 			$order_by = 'ug.group_leader DESC, ';
 
-			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
-			$sql_where_data = " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
+			$sql_where .= " AND ug.user_pending = 0 AND ug.group_id = $group_id";
+			$sql_where_data = " AND ug.group_id = $group_id";
 		}
 
 		// Sorting and order
@@ -1168,7 +1168,6 @@ switch ($mode)
 			$order_by .= ', u.user_posts DESC';
 		}
 
-		// We add CPF search/sort SQL at end because we need LEFT JOIN
 		if ($cpf_sql)
 		{
 			$sql_from .= ' LEFT JOIN ' . PROFILE_FIELDS_DATA_TABLE . ' f ON (u.user_id = f.user_id)';
