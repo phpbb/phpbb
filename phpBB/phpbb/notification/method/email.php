@@ -27,7 +27,7 @@ class email extends \phpbb\notification\method\messenger_base
 	*/
 	public function get_type()
 	{
-		return 'email';
+		return 'notification.method.email';
 	}
 
 	/**

@@ -43,7 +43,8 @@ class phpbb_notification_manager_helper extends \phpbb\notification\manager
 	*/
 	public function get_item_type_class($item_type, $data = array())
 	{
-		$item_type = 'phpbb\notification\type\\' . $item_type;
+		$item_parts = explode('.', $item_type);
+		$item_type = 'phpbb\notification\type\\' . array_pop($item_parts);
 
 		$item = new $item_type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
 

@@ -27,7 +27,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_type()
 	{
-		return 'report_post_closed';
+		return 'notification.type.report_post_closed';
 	}
 
 	/**

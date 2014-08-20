@@ -50,7 +50,7 @@
 		<column>notification_type_enabled</column>
 		<row>
 			<value>1</value>
-			<value>bookmark</value>
+			<value>notification.type.bookmark</value>
 			<value>1</value>
 		</row>
 	</table>
@@ -123,35 +123,35 @@
 		<column>method</column>
 		<column>notify</column>
 		<row>
-			<value>bookmark</value>
+			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>2</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>bookmark</value>
+			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>3</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>bookmark</value>
+			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>4</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>bookmark</value>
+			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>5</value>
 			<value></value>
 			<value>1</value>
 		</row>
 		<row>
-			<value>bookmark</value>
+			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>6</value>
 			<value></value>

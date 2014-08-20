@@ -92,7 +92,7 @@ class mcp_reports
 
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				$phpbb_notifications->mark_notifications_read('report_post', $post_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_read('notification.type.report_post', $post_id, $user->data['user_id']);
 
 				if (!$report_id && $report['report_closed'])
 				{
@@ -631,12 +631,12 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 			if ($pm)
 			{
 				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
-				$phpbb_notifications->delete_notifications('report_pm', $report['pm_id']);
+				$phpbb_notifications->delete_notifications('notification.type.report_pm', $report['pm_id']);
 			}
 			else
 			{
 				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
-				$phpbb_notifications->delete_notifications('report_post', $report['post_id']);
+				$phpbb_notifications->delete_notifications('notification.type.report_post', $report['post_id']);
 			}
 		}
 
@@ -654,7 +654,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 
 				if ($pm)
 				{
-					$phpbb_notifications->add_notifications('report_pm_closed', array_merge($post_info[$post_id], array(
+					$phpbb_notifications->add_notifications('notification.type.report_pm_closed', array_merge($post_info[$post_id], array(
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 						'from_user_id'		=> $post_info[$post_id]['author_id'],
@@ -662,7 +662,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 				}
 				else
 				{
-					$phpbb_notifications->add_notifications('report_post_closed', array_merge($post_info[$post_id], array(
+					$phpbb_notifications->add_notifications('notification.type.report_post_closed', array_merge($post_info[$post_id], array(
 						'reporter'			=> $reporter['user_id'],
 						'closer_id'			=> $user->data['user_id'],
 					)));

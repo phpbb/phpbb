@@ -20,7 +20,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	*/
 	public function get_type()
 	{
-		return 'group_request_approved';
+		return 'notification.type.group_request_approved';
 	}
 
 	/**

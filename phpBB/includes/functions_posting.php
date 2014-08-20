@@ -2256,17 +2256,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			case 'post':
 				$phpbb_notifications->add_notifications(array(
-					'quote',
-					'topic',
+					'notification.type.quote',
+					'notification.type.topic',
 				), $notification_data);
 			break;
 
 			case 'reply':
 			case 'quote':
 				$phpbb_notifications->add_notifications(array(
-					'quote',
-					'bookmark',
-					'post',
+					'notification.type.quote',
+					'notification.type.bookmark',
+					'notification.type.post',
 				), $notification_data);
 			break;
 
@@ -2275,10 +2275,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'edit':
 			case 'edit_last_post':
 				$phpbb_notifications->update_notifications(array(
-					'quote',
-					'bookmark',
-					'topic',
-					'post',
+					'notification.type.quote',
+					'notification.type.bookmark',
+					'notification.type.topic',
+					'notification.type.post',
 				), $notification_data);
 			break;
 		}
@@ -2288,12 +2288,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		switch ($mode)
 		{
 			case 'post':
-				$phpbb_notifications->add_notifications('topic_in_queue', $notification_data);
+				$phpbb_notifications->add_notifications('notification.type.topic_in_queue', $notification_data);
 			break;
 
 			case 'reply':
 			case 'quote':
-				$phpbb_notifications->add_notifications('post_in_queue', $notification_data);
+				$phpbb_notifications->add_notifications('notification.type.post_in_queue', $notification_data);
 			break;
 
 			case 'edit_topic':
@@ -2310,20 +2310,20 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			case 'edit_topic':
 			case 'edit_first_post':
-				$phpbb_notifications->add_notifications('topic_in_queue', $notification_data);
+				$phpbb_notifications->add_notifications('notification.type.topic_in_queue', $notification_data);
 
 				// Delete the approve_post notification so we can notify the user again,
 				// when his post got reapproved
-				$phpbb_notifications->delete_notifications('approve_post', $notification_data['post_id']);
+				$phpbb_notifications->delete_notifications('notification.type.approve_post', $notification_data['post_id']);
 			break;
 
 			case 'edit':
 			case 'edit_last_post':
-				$phpbb_notifications->add_notifications('post_in_queue', $notification_data);
+				$phpbb_notifications->add_notifications('notification.type.post_in_queue', $notification_data);
 
 				// Delete the approve_post notification so we can notify the user again,
 				// when his post got reapproved
-				$phpbb_notifications->delete_notifications('approve_post', $notification_data['post_id']);
+				$phpbb_notifications->delete_notifications('notification.type.approve_post', $notification_data['post_id']);
 			break;
 
 			case 'post':
