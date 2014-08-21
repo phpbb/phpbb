@@ -873,7 +873,7 @@ switch ($mode)
 				}
 
 				$sort_key_text[$profile_field['PROFILE_FIELD_IDENT']] = $profile_field['PROFILE_FIELD_NAME'];
-				$sort_key_sql[$profile_field['PROFILE_FIELD_IDENT']] = 'f.pf_' . $profile_field['PROFILE_FIELD_IDENT'];
+				$sort_key_sql[$profile_field['PROFILE_FIELD_IDENT']] = 'pfd.pf_' . $profile_field['PROFILE_FIELD_IDENT'];
 			}
 		}
 
@@ -1044,7 +1044,7 @@ switch ($mode)
 			// Add SQL constraints if searching by custom profile fields displayed at the memberlist
 			if ($config['load_cpf_memberlist'])
 			{
-				$cpf_clause = $profilefields_manager->build_search_sql_clause('field_show_on_ml', 'f');
+				$cpf_clause = $profilefields_manager->build_search_sql_clause('field_show_on_ml', 'pfd');
 				if ($cpf_clause !== false)
 				{
 					$cpf_sql = true;
@@ -1166,7 +1166,7 @@ switch ($mode)
 
 		if ($cpf_sql)
 		{
-			$sql_from .= ' LEFT JOIN ' . PROFILE_FIELDS_DATA_TABLE . ' f ON (u.user_id = f.user_id)';
+			$sql_from .= ' LEFT JOIN ' . PROFILE_FIELDS_DATA_TABLE . ' pfd ON (u.user_id = pfd.user_id)';
 		}
 
 		// Count the users ...
