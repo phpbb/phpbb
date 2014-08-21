@@ -589,6 +589,42 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return user_add($user_row);
 	}
 
+	/**
+	* Adds custom profile fields data to a user
+	*
+	* @param int $user_id
+	* @param array $cp_data SQL INSERT array for cpf data (see sql_build_array)
+	* @return void
+	*/
+	protected function add_cp_data($user_id, array $cp_data)
+	{
+		$sql_not_in = array();
+		foreach ($cp_data as $field => $data)
+		{
+			$sql_not_in[] = substr($field, 3);
+		}
+
+		$db = $this->get_db();
+
+		$sql = 'SELECT field_type, field_ident, field_default_value
+			FROM ' . PROFILE_FIELDS_TABLE . '
+			' . ((!empty($sql_not_in)) ? ' WHERE ' . $db->sql_in_set('field_ident', $sql_not_in, true) : '');
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$cp_data['pf_' . $row['field_ident']] = $row['field_default_value'];
+		}
+		$db->sql_freeresult($result);
+
+		$this->get_db()->sql_query('DELETE FROM ' . PROFILE_FIELDS_DATA_TABLE . ' WHERE user_id = ' . (int) $user_id);
+
+		$cp_data['user_id'] = $user_id;
+		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
+			$this->get_db()->sql_build_array('INSERT', $cp_data);
+		$this->get_db()->sql_query($sql);
+	}
+
 	protected function remove_user_group($group_name, $usernames)
 	{
 		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $phpbb_root_path, $phpEx;
