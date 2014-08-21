@@ -1323,7 +1323,6 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 * @param string $custom_profile_url optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
 *
 * @return string A string consisting of what is wanted based on $mode.
-* @author BartVB, Acyd Burn
 */
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {

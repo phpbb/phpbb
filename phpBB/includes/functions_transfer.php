@@ -507,8 +507,6 @@ class ftp extends transfer
 
 /**
 * FTP fsock transfer class
-*
-* @author wGEric
 */
 class ftp_fsock extends transfer
 {
