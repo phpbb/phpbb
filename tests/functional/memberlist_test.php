@@ -22,11 +22,11 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->add_cp_data($user, array(
 			'pf_phpbb_facebook' => 'Test',
 		));
-		$user = $this->create_user('memberlist-test-user-2');
+		$user = $this->create_user('memberlist-test-2');
 		$this->add_cp_data($user, array(
 			'pf_phpbb_facebook' => 'Second',
 		));
-		$this->create_user('memberlist-test-user-3');
+		$this->create_user('memberlist-test-3');
 
 		// logs in as admin
 		$this->login();
@@ -44,27 +44,23 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		// search by facebook field
 		$crawler = self::request('GET', 'memberlist.php?pf_phpbb_facebook=Test&sid=' . $this->sid);
 		$this->assertContains('memberlist-test-user', $crawler->text());
-		$this->assertNotContains('memberlist-test-user-2', $crawler->text());
-		$this->assertNotContains('memberlist-test-user-3', $crawler->text());
+		$this->assertNotContains('memberlist-test-2', $crawler->text());
+		$this->assertNotContains('memberlist-test-3', $crawler->text());
 
 		// search by facebook field, this time make sure it doesn't list the member
 		$crawler = self::request('GET', 'memberlist.php?pf_phpbb_facebook=SomethingElse&sid=' . $this->sid);
 		$this->assertNotContains('memberlist-test-user', $crawler->text());
-		$this->assertNotContains('memberlist-test-user-2', $crawler->text());
+		$this->assertNotContains('memberlist-test-2', $crawler->text());
 
 		// sort by facebook (ascending)
 		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=a&sid=' . $this->sid);
 		$text = $crawler->text();
-		$this->assertTrue(strrpos($text, 'memberlist-test-user-3') < strrpos($text, 'memberlist-test-user-2') &&
-			strrpos($text, 'memberlist-test-user-2') < strrpos($text, 'memberlist-test-user'));
+		$this->assertTrue(strrpos($text, 'memberlist-test-2') < strrpos($text, 'memberlist-test-user'));
 
 		// sort by facebook (descending)
 		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=d&sid=' . $this->sid);
 		$text = $crawler->text();
-		$this->assertTrue(strrpos($text, 'memberlist-test-user-3') > strrpos($text, 'memberlist-test-user-2') &&
-			strrpos($text, 'memberlist-test-user-2') <>strrpos($text, 'memberlist-test-user'));
-
-
+		$this->assertTrue(strrpos($text, 'memberlist-test-2') > strrpos($text, 'memberlist-test-user'));
 	}
 
 	public function test_viewprofile()
