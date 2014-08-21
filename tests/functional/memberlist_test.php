@@ -56,11 +56,13 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=a&sid=' . $this->sid);
 		$text = $crawler->text();
 		$this->assertTrue(strrpos($text, 'memberlist-test-2') < strrpos($text, 'memberlist-test-user'));
+		$this->assertContains('memberlist-test-3', $text);
 
 		// sort by facebook (descending)
 		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=d&sid=' . $this->sid);
 		$text = $crawler->text();
 		$this->assertTrue(strrpos($text, 'memberlist-test-2') > strrpos($text, 'memberlist-test-user'));
+		$this->assertContains('memberlist-test-3', $text);
 	}
 
 	public function test_viewprofile()
