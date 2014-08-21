@@ -18,7 +18,16 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 {
 	public function test_memberlist()
 	{
-		$this->create_user('memberlist-test-user');
+		$user = $this->create_user('memberlist-test-user');
+		$this->add_cp_data($user, array(
+			'pf_phpbb_facebook' => 'Test',
+		));
+		$user = $this->create_user('memberlist-test-user-2');
+		$this->add_cp_data($user, array(
+			'pf_phpbb_facebook' => 'Second',
+		));
+		$this->create_user('memberlist-test-user-3');
+
 		// logs in as admin
 		$this->login();
 		$crawler = self::request('GET', 'memberlist.php?sid=' . $this->sid);
@@ -31,6 +40,31 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		// make sure results for wrong character are not returned
 		$crawler = self::request('GET', 'memberlist.php?first_char=a&sid=' . $this->sid);
 		$this->assertNotContains('memberlist-test-user', $crawler->text());
+
+		// search by facebook field
+		$crawler = self::request('GET', 'memberlist.php?pf_phpbb_facebook=Test&sid=' . $this->sid);
+		$this->assertContains('memberlist-test-user', $crawler->text());
+		$this->assertNotContains('memberlist-test-user-2', $crawler->text());
+		$this->assertNotContains('memberlist-test-user-3', $crawler->text());
+
+		// search by facebook field, this time make sure it doesn't list the member
+		$crawler = self::request('GET', 'memberlist.php?pf_phpbb_facebook=SomethingElse&sid=' . $this->sid);
+		$this->assertNotContains('memberlist-test-user', $crawler->text());
+		$this->assertNotContains('memberlist-test-user-2', $crawler->text());
+
+		// sort by facebook (ascending)
+		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=a&sid=' . $this->sid);
+		$text = $crawler->text();
+		$this->assertTrue(strrpos($text, 'memberlist-test-user-3') < strrpos($text, 'memberlist-test-user-2') &&
+			strrpos($text, 'memberlist-test-user-2') < strrpos($text, 'memberlist-test-user'));
+
+		// sort by facebook (descending)
+		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=d&sid=' . $this->sid);
+		$text = $crawler->text();
+		$this->assertTrue(strrpos($text, 'memberlist-test-user-3') > strrpos($text, 'memberlist-test-user-2') &&
+			strrpos($text, 'memberlist-test-user-2') <>strrpos($text, 'memberlist-test-user'));
+
+
 	}
 
 	public function test_viewprofile()
