@@ -66,8 +66,8 @@ class notifications_use_full_name extends \phpbb\db\migration\migration
 		foreach ($this->notification_methods as $notification_method)
 		{
 			$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-				SET method = 'notification.method.${notification_method}'
-				WHERE method = '${notification_method}'";
+				SET method = 'notification.method.{$notification_method}'
+				WHERE method = '{$notification_method}'";
 			$this->db->sql_query($sql);
 		}
 	}
@@ -77,8 +77,8 @@ class notifications_use_full_name extends \phpbb\db\migration\migration
 		foreach ($this->notification_methods as $notification_method)
 		{
 			$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-				SET method = '${notification_method}'
-				WHERE method = 'notification.method.${notification_method}'";
+				SET method = '{$notification_method}'
+				WHERE method = 'notification.method.{$notification_method}'";
 			$this->db->sql_query($sql);
 		}
 	}
@@ -88,13 +88,13 @@ class notifications_use_full_name extends \phpbb\db\migration\migration
 		foreach ($this->notification_types as $notification_type)
 		{
 			$sql = 'UPDATE ' . NOTIFICATION_TYPES_TABLE . "
-				SET notification_type_name = 'notification.type.${notification_type}'
-				WHERE notification_type_name = '${notification_type}'";
+				SET notification_type_name = 'notification.type.{$notification_type}'
+				WHERE notification_type_name = '{$notification_type}'";
 			$this->db->sql_query($sql);
 
 			$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-				SET item_type = 'notification.type.${notification_type}'
-				WHERE item_type = '${notification_type}'";
+				SET item_type = 'notification.type.{$notification_type}'
+				WHERE item_type = '{$notification_type}'";
 			$this->db->sql_query($sql);
 		}
 	}
@@ -104,13 +104,13 @@ class notifications_use_full_name extends \phpbb\db\migration\migration
 		foreach ($this->notification_types as $notification_type)
 		{
 			$sql = 'UPDATE ' . NOTIFICATION_TYPES_TABLE . "
-				SET notification_type_name = '${notification_type}'
-				WHERE notification_type_name = 'notification.type.${notification_type}'";
+				SET notification_type_name = '{$notification_type}'
+				WHERE notification_type_name = 'notification.type.{$notification_type}'";
 			$this->db->sql_query($sql);
 
 			$sql = 'UPDATE ' . USER_NOTIFICATIONS_TABLE . "
-				SET item_type = '${notification_type}'
-				WHERE item_type = 'notification.type.${notification_type}'";
+				SET item_type = '{$notification_type}'
+				WHERE item_type = 'notification.type.{$notification_type}'";
 			$this->db->sql_query($sql);
 		}
 	}
