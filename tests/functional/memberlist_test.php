@@ -18,18 +18,13 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 {
 	public function test_memberlist()
 	{
-		$user = $this->create_user('memberlist-test-user');
-		$this->add_cp_data($user, array(
-			'pf_phpbb_facebook' => 'Test',
-		));
-		$user = $this->create_user('memberlist-test-2');
-		$this->add_cp_data($user, array(
-			'pf_phpbb_facebook' => 'Second',
-		));
-		$this->create_user('memberlist-test-3');
+		$this->create_memberlist_user('memberlist-test-user', 'First');
+		$this->create_memberlist_user('memberlist-test-2', 'Second');
+		$this->create_memberlist_user('memberlist-test-3', '');
 
 		// logs in as admin
 		$this->login();
+
 		$crawler = self::request('GET', 'memberlist.php?sid=' . $this->sid);
 		$this->assertContains('memberlist-test-user', $crawler->text());
 
@@ -42,7 +37,7 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->assertNotContains('memberlist-test-user', $crawler->text());
 
 		// search by facebook field
-		$crawler = self::request('GET', 'memberlist.php?pf_phpbb_facebook=Test&sid=' . $this->sid);
+		$crawler = self::request('GET', 'memberlist.php?pf_phpbb_facebook=First&sid=' . $this->sid);
 		$this->assertContains('memberlist-test-user', $crawler->text());
 		$this->assertNotContains('memberlist-test-2', $crawler->text());
 		$this->assertNotContains('memberlist-test-3', $crawler->text());
@@ -55,14 +50,39 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		// sort by facebook (ascending)
 		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=a&sid=' . $this->sid);
 		$text = $crawler->text();
-		$this->assertTrue(strrpos($text, 'memberlist-test-2') < strrpos($text, 'memberlist-test-user'));
+		$this->assertTrue(strrpos($text, 'memberlist-test-2') > strrpos($text, 'memberlist-test-user'));
 		$this->assertContains('memberlist-test-3', $text);
 
 		// sort by facebook (descending)
 		$crawler = self::request('GET', 'memberlist.php?sk=phpbb_facebook&sd=d&sid=' . $this->sid);
 		$text = $crawler->text();
-		$this->assertTrue(strrpos($text, 'memberlist-test-2') > strrpos($text, 'memberlist-test-user'));
+		$this->assertTrue(strrpos($text, 'memberlist-test-2') < strrpos($text, 'memberlist-test-user'));
 		$this->assertContains('memberlist-test-3', $text);
+	}
+
+	/**
+	* Creates an user and assigns phpbb_facebook custom profile field the given value
+	*
+	* @param string $username
+	* @param string $facebook
+	* @return void
+	*/
+	protected function create_memberlist_user($username, $facebook)
+	{
+		$this->login();
+		$this->create_user($username);
+		$this->logout();
+
+		if (!empty($facebook))
+		{
+			$this->login($username);
+			$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=profile_info');
+			$form = $crawler->selectButton('Submit')->form(array(
+				'pf_phpbb_facebook'	=> $facebook,
+			));
+			self::submit($form);
+			$this->logout();
+		}
 	}
 
 	public function test_viewprofile()
