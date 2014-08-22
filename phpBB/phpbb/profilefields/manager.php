@@ -512,7 +512,7 @@ class manager
 				continue;
 			}
 
-			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field, $table_alias);
+			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field, $table_alias, $this->db);
 			if ($clause !== false)
 			{
 				$clauses[] = $clause;

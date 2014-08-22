@@ -229,7 +229,8 @@ interface type_interface
 	*
 	* @param array $field_data
 	* @param string $table_alias
+	* @param \phpbb\db\driver\driver_interface $db
 	* @return string
 	*/
-	public function get_search_clause($field_data, $table_alias);
+	public function get_search_clause($field_data, $table_alias, \phpbb\db\driver\driver_interface $db);
 }

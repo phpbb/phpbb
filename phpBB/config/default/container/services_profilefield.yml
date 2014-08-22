@@ -33,7 +33,6 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
             - @profilefields.lang_helper
         tags:
             - { name: profilefield.type }
@@ -44,7 +43,6 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -54,7 +52,6 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
             - @profilefields.lang_helper
         tags:
             - { name: profilefield.type }
@@ -65,7 +62,6 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -75,7 +71,6 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -95,7 +90,6 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
         tags:
             - { name: profilefield.type }
 
@@ -105,6 +99,5 @@ services:
             - @request
             - @template
             - @user
-            - @dbal.conn
         tags:
             - { name: profilefield.type }
