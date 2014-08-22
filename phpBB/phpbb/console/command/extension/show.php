@@ -37,22 +37,22 @@ class show extends command
 		}
 
 		$enabled = array_keys($this->manager->all_enabled());
-		$this->print_extension_list($output, 'Enabled', $enabled);
+		$this->print_extension_list($output, $this->user->lang('CLI_EXTENSIONS_ENABLED') . $this->user->lang('COLON'), $enabled);
 
 		$output->writeln('');
 
 		$disabled = array_keys($this->manager->all_disabled());
-		$this->print_extension_list($output, 'Disabled', $disabled);
+		$this->print_extension_list($output, $this->user->lang('CLI_EXTENSIONS_DISABLED') . $this->user->lang('COLON'), $disabled);
 
 		$output->writeln('');
 
 		$purged = array_diff($all, $enabled, $disabled);
-		$this->print_extension_list($output, 'Available', $purged);
+		$this->print_extension_list($output, $this->user->lang('CLI_EXTENSIONS_AVAILABLE') . $this->user->lang('COLON'), $purged);
 	}
 
 	protected function print_extension_list(OutputInterface $output, $type, array $extensions)
 	{
-		$output->writeln("<info>$type:</info>");
+		$output->writeln("<info>$type</info>");
 
 		foreach ($extensions as $extension)
 		{
