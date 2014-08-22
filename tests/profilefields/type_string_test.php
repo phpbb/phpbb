@@ -15,18 +15,10 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_profilefield_type_string_test extends phpbb_database_test_case
+class phpbb_profilefield_type_string_test extends phpbb_test_case
 {
 	protected $cp;
 	protected $field_options;
-
-	/**
-	* {@inheritDoc}
-	*/
-	public function getDataSet()
-	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/profilefield.xml');
-	}
 
 	/**
 	* Sets up basic test objects
@@ -50,8 +42,7 @@ class phpbb_profilefield_type_string_test extends phpbb_database_test_case
 		$this->cp = new \phpbb\profilefields\type\type_string(
 			$request,
 			$template,
-			$user,
-			$this->new_dbal()
+			$user
 		);
 
 		$this->field_options = array(
