@@ -34,25 +34,17 @@ abstract class type_base implements type_interface
 	protected $user;
 
 	/**
-	* Database object
-	* @var \phpbb\db\driver\driver_interface
-	*/
-	protected $db;
-
-	/**
 	* Construct
 	*
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\user					$user		User object
-	* @param	\phpbb\db\driver\driver_interface	$db	Database object
 	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
 	{
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
-		$this->db = $db;
 	}
 
 	/**
@@ -212,14 +204,14 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_search_clause($field_data, $table_alias)
+	public function get_search_clause($field_data, $table_alias, \phpbb\db\driver\driver_interface $db)
 	{
 		$value = $this->request->variable($this->get_field_ident($field_data), '');
 
 		if (!empty($value))
 		{
 			return $table_alias . '.' . $this->get_field_ident($field_data) . ' ' .
-				$this->db->sql_like_expression($this->db->get_any_char() . $this->get_profile_value_raw($value, $field_data) . $this->db->get_any_char());
+				$db->sql_like_expression($db->get_any_char() . $this->get_profile_value_raw($value, $field_data) . $db->get_any_char());
 		}
 
 		return false;
