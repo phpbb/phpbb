@@ -85,6 +85,11 @@ class notifications_use_full_name extends \phpbb\db\migration\migration
 
 	public function update_notifications_name()
 	{
+		$sql = 'UPDATE ' . NOTIFICATION_TYPES_TABLE . '
+			SET notification_type_enabled = 0
+			WHERE ' . $this->db->sql_in_set('notification_type_name', $this->notification_types, true);
+		$this->db->sql_query($sql);
+
 		foreach ($this->notification_types as $notification_type)
 		{
 			$sql = 'UPDATE ' . NOTIFICATION_TYPES_TABLE . "
