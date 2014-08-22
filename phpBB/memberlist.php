@@ -893,8 +893,8 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
-
+		$sql_select = $sql_where_data = $sql_where = $order_by = '';
+		$sql_joins = array();
 
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
@@ -981,7 +981,11 @@ switch ($mode)
 
 			if ($search_group_id)
 			{
-				$sql_from = ' INNER JOIN ' . USER_GROUP_TABLE . ' ug ON (u.user_id = ug.user_id)';
+				$sql_joins[] = array(
+					'FROM' => array(USER_GROUP_TABLE => 'ug'),
+					'ON' => 'u.user_id = ug.user_id',
+				);
+				$sql_where .= ' AND u.user_id = ug.user_id';
 			}
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
@@ -1143,11 +1147,14 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_from = ' INNER JOIN ' . USER_GROUP_TABLE . ' ug ON (u.user_id = ug.user_id)';
+			$sql_joins[] = array(
+				'FROM' => array(USER_GROUP_TABLE => 'ug'),
+				'ON' => 'u.user_id = ug.user_id',
+			);
 			$order_by = 'ug.group_leader DESC, ';
 
-			$sql_where .= " AND ug.user_pending = 0 AND ug.group_id = $group_id";
-			$sql_where_data = " AND ug.group_id = $group_id";
+			$sql_where .= " AND u.user_id = ug.user_id AND ug.user_pending = 0 AND ug.group_id = $group_id";
+			$sql_where_data = " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
 		}
 
 		// Sorting and order
@@ -1166,16 +1173,28 @@ switch ($mode)
 
 		if ($cpf_sql)
 		{
-			$sql_from .= ' LEFT JOIN ' . PROFILE_FIELDS_DATA_TABLE . ' pfd ON (u.user_id = pfd.user_id)';
+			$sql_joins[] = array(
+				'FROM' => array(PROFILE_FIELDS_DATA_TABLE => 'pfd'),
+				'ON' => 'u.user_id = pfd.user_id',
+			);
 		}
 
 		// Count the users ...
 		if ($sql_where)
 		{
-			$sql = 'SELECT COUNT(u.user_id) AS total_users
-				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where";
+			$sql_ary = array(
+				'SELECT' => 'COUNT(u.user_id) AS total_users',
+
+				'FROM' => array(
+					USERS_TABLE => 'u',
+				),
+
+				'LEFT_JOIN' => $sql_joins,
+
+				'WHERE' => "u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+					$sql_where",
+			);
+			$sql = $db->sql_build_query('SELECT', $sql_ary);
 			$result = $db->sql_query($sql);
 			$total_users = (int) $db->sql_fetchfield('total_users');
 			$db->sql_freeresult($result);
@@ -1361,12 +1380,21 @@ switch ($mode)
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
 
 		// Get us some users :D
-		$sql = "SELECT u.user_id
-			FROM " . USERS_TABLE . " u
-				$sql_from
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where
-			ORDER BY $order_by";
+		$sql_ary = array(
+			'SELECT' => 'u.user_id',
+
+			'FROM' => array(
+				USERS_TABLE => 'u',
+			),
+
+			'LEFT_JOIN' => $sql_joins,
+
+			'WHERE' => "u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+					$sql_where",
+
+			'ORDER_BY' => $order_by,
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		$user_list = array();
@@ -1398,12 +1426,19 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
-				$sql = "SELECT u.*
-						$sql_select
-					FROM " . USERS_TABLE . " u
-						$sql_from
-					WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-						$sql_where_data";
+				$sql_ary = array(
+					'SELECT' => 'u.*',
+
+					'FROM' => array(
+						USERS_TABLE => 'u',
+					),
+
+					'LEFT_JOIN' => $sql_joins,
+
+					'WHERE' => $db->sql_in_set('u.user_id', $user_list) . "
+						$sql_where_data",
+				);
+				$sql = $db->sql_build_query('SELECT', $sql_ary);
 			}
 			else
 			{
