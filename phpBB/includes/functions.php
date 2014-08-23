@@ -4664,7 +4664,7 @@ function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config
 /**
 * Get avatar
 *
-* @param array $row Row cleaned by \phpbb\avatar\driver\driver::clean_row
+* @param array $row Row cleaned by \phpbb\avatar\manager::clean_row
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *
