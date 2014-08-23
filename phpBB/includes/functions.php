@@ -1638,7 +1638,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 
 	if (empty($sql_sort))
 	{
-		$sql_sort = 'ORDER BY t.topic_last_post_time DESC';
+		$sql_sort = 'ORDER BY t.topic_last_post_time DESC, t.topic_last_post_id DESC';
 	}
 
 	if ($config['load_db_lastread'] && $user->data['is_registered'])

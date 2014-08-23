@@ -56,7 +56,7 @@ class topics_active extends \phpbb\feed\topic_base
 			WHERE topic_moved_id = 0
 				AND ' . $this->content_visibility->get_forums_visibility_sql('topic', $in_fid_ary) . '
 				' . $last_post_time_sql . '
-			ORDER BY topic_last_post_time DESC';
+			ORDER BY topic_last_post_time DESC, topic_last_post_id DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$post_ids = array();
@@ -88,7 +88,7 @@ class topics_active extends \phpbb\feed\topic_base
 			),
 			'WHERE'		=> 'p.topic_id = t.topic_id
 							AND ' . $this->db->sql_in_set('p.post_id', $post_ids),
-			'ORDER_BY'	=> 'p.post_time DESC',
+			'ORDER_BY'	=> 'p.post_time DESC, p.post_id DESC',
 		);
 
 		return true;

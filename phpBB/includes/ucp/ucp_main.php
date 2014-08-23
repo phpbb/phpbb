@@ -81,7 +81,7 @@ class ucp_main
 						FROM $sql_from
 						WHERE t.topic_type = " . POST_GLOBAL . '
 							AND ' . $db->sql_in_set('t.forum_id', $forum_ary) . '
-						ORDER BY t.topic_last_post_time DESC';
+						ORDER BY t.topic_last_post_time DESC, t.topic_last_post_id DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
@@ -693,7 +693,7 @@ class ucp_main
 					AND t.topic_id = tw.topic_id
 					AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
 
-				'ORDER_BY'	=> 't.topic_last_post_time DESC'
+				'ORDER_BY'	=> 't.topic_last_post_time DESC, t.topic_last_post_id DESC'
 			);
 
 			$sql_array['LEFT_JOIN'] = array();
@@ -710,7 +710,7 @@ class ucp_main
 				'WHERE'		=> 'b.user_id = ' . $user->data['user_id'] . '
 					AND ' . $db->sql_in_set('f.forum_id', $forbidden_forum_ary, true, true),
 
-				'ORDER_BY'	=> 't.topic_last_post_time DESC'
+				'ORDER_BY'	=> 't.topic_last_post_time DESC, t.topic_last_post_id DESC'
 			);
 
 			$sql_array['LEFT_JOIN'] = array();

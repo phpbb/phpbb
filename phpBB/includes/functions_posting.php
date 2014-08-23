@@ -1040,6 +1040,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	$sql_sort = ($mode == 'post_review') ? 'ASC' : 'DESC';
 
 	// Go ahead and pull all data for this topic
 	$sql = 'SELECT p.post_id
@@ -1048,8 +1049,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id, 'p.') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
-		ORDER BY p.post_time ';
-	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
+		ORDER BY p.post_time ' . $sql_sort . ', p.post_id ' . $sql_sort;
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
 	$post_list = array();
@@ -1342,7 +1342,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
 					AND p.post_visibility = " . ITEM_APPROVED . '
-				ORDER BY p.post_time ASC';
+				ORDER BY p.post_time ASC, p.post_id ASC';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -1354,7 +1354,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 					WHERE p.topic_id = $topic_id
 						AND p.poster_id = u.user_id
-					ORDER BY p.post_time ASC";
+					ORDER BY p.post_time ASC, p.post_id ASC";
 				$result = $db->sql_query_limit($sql, 1);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1409,7 +1409,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				WHERE topic_id = $topic_id
 					AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id) . '
 					AND post_time > ' . $data['post_time'] . '
-				ORDER BY post_time ASC';
+				ORDER BY post_time ASC, post_id ASC';
 			$result = $db->sql_query_limit($sql, 1);
 			$next_post_id = (int) $db->sql_fetchfield('post_id');
 			$db->sql_freeresult($result);

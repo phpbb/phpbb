@@ -94,7 +94,7 @@ if ($view && !$post_id)
 				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id) . "
 				AND post_time > $topic_last_read
 				AND forum_id = $forum_id
-			ORDER BY post_time ASC";
+			ORDER BY post_time ASC, post_id ASC";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -146,7 +146,7 @@ if ($view && !$post_id)
 					AND topic_moved_id = 0
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
 					AND " . $phpbb_content_visibility->get_visibility_sql('topic', $row['forum_id']) . "
-				ORDER BY topic_last_post_time $sql_ordering";
+				ORDER BY topic_last_post_time $sql_ordering, topic_last_post_id $sql_ordering";
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);

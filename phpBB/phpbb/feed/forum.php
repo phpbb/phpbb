@@ -94,7 +94,7 @@ class forum extends \phpbb\feed\post_base
 			WHERE forum_id = ' . $this->forum_id . '
 				AND topic_moved_id = 0
 				AND ' . $this->content_visibility->get_visibility_sql('topic', $this->forum_id) . '
-			ORDER BY topic_last_post_time DESC';
+			ORDER BY topic_last_post_time DESC, topic_last_post_id DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$topic_ids = array();
@@ -123,7 +123,7 @@ class forum extends \phpbb\feed\post_base
 							AND ' . $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND p.poster_id = u.user_id',
-			'ORDER_BY'	=> 'p.post_time DESC',
+			'ORDER_BY'	=> 'p.post_time DESC, p.post_id DESC',
 		);
 
 		return true;
