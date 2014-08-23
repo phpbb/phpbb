@@ -26,6 +26,8 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		'foo/bar/event/',
 		'foo/bar/language/en/',
 		'foo/bar/styles/prosilver/template/',
+		'foo/foo/config/',
+		'foo/foo/controller/',
 	);
 
 	static public function setUpBeforeClass()
@@ -62,6 +64,18 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		self::assert_response_status_code();
 		$this->assertContains("foo/bar controller handle() method", $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
+	}
+
+	/**
+	* Check a controller for extension foo/bar.
+	*/
+	public function test_routing_resources()
+	{
+		$this->phpbb_extension_manager->enable('foo/foo');
+		$crawler = self::request('GET', 'app.php/foo/foo', array(), false);
+		self::assert_response_status_code();
+		$this->assertContains("foo/foo controller handle() method", $crawler->filter('body')->text());
+		$this->phpbb_extension_manager->purge('foo/foo');
 	}
 
 	/**
