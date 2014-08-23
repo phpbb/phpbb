@@ -18,10 +18,14 @@ class phpbb_console_command_config_test extends phpbb_test_case
 {
 	protected $config;
 	protected $command_name;
+	protected $user;
 
 	public function setUp()
 	{
 		$this->config = new \phpbb\config\config(array());
+
+		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user->method('lang')->will($this->returnArgument(0));
 	}
 
 	public function test_set_dynamic()
@@ -153,7 +157,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--no-newline'	=> false,
 		));
 
-		$this->assertContains('Could not get config', $command_tester->getDisplay());
+		$this->assertContains('CLI_CONFIG_NOT_EXISTS', $command_tester->getDisplay());
 	}
 
 	public function test_increment_dynamic()
@@ -169,7 +173,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'		=> true,
 		));
 
-		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
+		$this->assertContains('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
 
@@ -186,7 +190,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'		=> false,
 		));
 
-		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
+		$this->assertContains('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
 
@@ -202,7 +206,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'--dynamic'		=> true,
 		));
 
-		$this->assertContains('Successfully incremented config test_key', $command_tester->getDisplay());
+		$this->assertContains('CLI_CONFIG_INCREMENT_SUCCESS', $command_tester->getDisplay());
 		$this->assertSame(2, $this->config['test_key']);
 	}
 
@@ -217,7 +221,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'key'			=> 'test_key',
 		));
 
-		$this->assertContains('Successfully deleted config test_key', $command_tester->getDisplay());
+		$this->assertContains('CLI_CONFIG_DELETE_SUCCESS', $command_tester->getDisplay());
 		$this->assertEmpty($this->config);
 	}
 
@@ -231,7 +235,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 			'key'			=> 'wrong_key',
 		));
 
-		$this->assertContains('Config wrong_key does not exist', $command_tester->getDisplay());
+		$this->assertContains('CLI_CONFIG_NOT_EXISTS', $command_tester->getDisplay());
 		$this->assertEmpty($this->config);
 	}
 
@@ -239,7 +243,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	{
 		$command_complete_name = '\phpbb\console\command\config' . '\\' . $class_name;
 		$application = new Application();
-		$application->add(new $command_complete_name($this->config));
+		$application->add(new $command_complete_name($this->user, $this->config));
 		$command = $application->find('config:' . $this->command_name);
 		$this->command_name = $command->getName();
 		return new CommandTester($command);
