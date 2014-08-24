@@ -73,7 +73,7 @@ class provider
 		$this->routes = new RouteCollection;
 		foreach ($this->routing_files as $file_path)
 		{
-			$loader = new YamlFileLoader(new FileLocator($base_path));
+			$loader = new YamlFileLoader(new FileLocator(phpbb_realpath($base_path)));
 			$this->routes->addCollection($loader->load($file_path));
 		}
 
