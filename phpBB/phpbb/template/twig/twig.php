@@ -179,7 +179,7 @@ class twig extends \phpbb\template\base
 		$names = $this->get_user_style();
 		// Add 'all' folder to $names array
 		//	It allows extensions to load a template file from 'all' folder,
-		//	if a style doesn't include it. 
+		//	if a style doesn't include it.
 		$names[] = 'all';
 
 		$paths = array();
