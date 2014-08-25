@@ -398,6 +398,10 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 
 /* Post
 ----------------------------------------*/
+.postbody {
+	position: inherit;
+}
+
 .postprofile, .postbody, .search .postbody {
 	display: block;
 	width: auto;
@@ -412,6 +416,7 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	padding-bottom: 5px;
 	margin: 0;
 	margin-bottom: 5px;
+	min-height: 40px;
 	overflow: hidden;
 }
 
@@ -443,12 +448,18 @@ fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
 	max-height: 32px;
 }
 
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi), (min-resolution: 1.5dppx)
-{
-	/* Scale online image for HD displays */
-	.online {
-		background-size: 40px;
-	}
+.has-profile .postbody h3 {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+.has-profile .post-buttons {
+	right: 20px;
+	top: 15px;
+}
+
+.online {
+	background-size: 40px;
 }
 
 /* Misc stuff

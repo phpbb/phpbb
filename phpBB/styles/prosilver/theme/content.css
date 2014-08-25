@@ -233,6 +233,7 @@ dd.option {
 	line-height: 1.48em;
 	width: 76%;
 	float: left;
+	position: relative;
 }
 
 .postbody .ignore {
@@ -249,7 +250,8 @@ dd.option {
 	float: left;
 	font-size: 1.5em;
 	padding: 2px 0 0 0;
-	margin: 0 0 0.3em 0 !important;
+	margin-top: 0 !important;
+	margin-bottom: 0.3em !important;
 	text-transform: none;
 	border: none;
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
@@ -259,6 +261,12 @@ dd.option {
 .postbody h3 img {
 	/* Also see tweaks.css */
 	vertical-align: bottom;
+}
+
+.has-profile .postbody h3 {
+	/* If there is a post-profile, we position the post-buttons differently */
+	float: none !important;
+	margin-right: 180px;
 }
 
 .postbody .content {

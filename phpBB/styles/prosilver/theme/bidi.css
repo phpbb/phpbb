@@ -464,6 +464,11 @@ li.breadcrumbs span:first-child > a {
 	float: right;
 }
 
+.rtl .has-profile .postbody h3 {
+	margin-right: 0;
+	margin-left: 180px;
+}
+
 .rtl p.post-notice {
 	padding-left: 5px;
 	padding-right: 26px;
@@ -653,6 +658,11 @@ li.breadcrumbs span:first-child > a {
 --------------------------------------------- */
 .rtl .post-buttons {
 	float: left;
+}
+
+.rtl .has-profile .post-buttons {
+	left: 0;
+	right: auto;
 }
 
 .rtl .post-buttons li {
@@ -1089,5 +1099,9 @@ li.breadcrumbs span:first-child > a {
 	.rtl .postprofile .avatar {
 		margin-left: 5px;
 		margin-right: 0;
+	}
+
+	.rtl .has-profile .post-buttons {
+		left: 20px;
 	}
 }
