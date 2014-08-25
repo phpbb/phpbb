@@ -177,6 +177,14 @@ ul.linklist.bulletin > li.small-icon:before {
 	margin-top: 2px;
 }
 
+.has-profile .post-buttons {
+	float: none;
+	position: absolute;
+	margin: 0;
+	right: 0;
+	top: 5px;
+}
+
 .post-buttons > li {
 	float: left;
 	margin-right: 3px;
