@@ -71,6 +71,7 @@ class group_request extends \phpbb\notification\type\base
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_id'			=> $this->get_item_id($group),
 		), $options);
 
 		$sql = 'SELECT user_id
@@ -87,6 +88,7 @@ class group_request extends \phpbb\notification\type\base
 		$this->db->sql_freeresult($result);
 
 		$this->user_loader->load_users($user_ids);
+		$user_ids = $this->filter_item_notified_users($user_ids, $options);
 
 		return $this->check_user_notification_options($user_ids, $options);
 	}

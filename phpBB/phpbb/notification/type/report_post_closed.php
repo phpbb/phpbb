@@ -66,12 +66,19 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function find_users_for_notification($post, $options = array())
 	{
+		$options = array_merge(array(
+			'item_id'			=> $this->get_item_id($post),
+		), $options);
+
 		if ($post['reporter'] == $this->user->data['user_id'])
 		{
 			return array();
 		}
 
-		return array($post['reporter'] => array(''));
+		$users = array($post['reporter'] => array(''));
+		$users = $this->filter_item_notified_users($users, $options);
+
+		return $users;
 	}
 
 	/**

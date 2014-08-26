@@ -75,6 +75,7 @@ class quote extends \phpbb\notification\type\post
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_id'			=> $this->get_item_id($post),
 		), $options);
 
 		$usernames = false;
@@ -101,6 +102,8 @@ class quote extends \phpbb\notification\type\post
 			$users[] = (int) $row['user_id'];
 		}
 		$this->db->sql_freeresult($result);
+
+		$users = $this->filter_item_notified_users($users, $options);
 
 		return $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
 	}

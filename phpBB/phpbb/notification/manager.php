@@ -381,21 +381,6 @@ class manager
 		// Never send notifications to the anonymous user!
 		unset($notify_users[ANONYMOUS]);
 
-		// Make sure not to send new notifications to users who've already been notified about this item
-		// This may happen when an item was added, but now new users are able to see the item
-		$sql = 'SELECT n.user_id
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $notification_type_id . '
-				AND n.item_id = ' . (int) $item_id . '
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			unset($notify_users[$row['user_id']]);
-		}
-		$this->db->sql_freeresult($result);
-
 		if (!sizeof($notify_users))
 		{
 			return;

@@ -102,6 +102,7 @@ class report_pm extends \phpbb\notification\type\pm
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_id'			=> $this->get_item_id($post),
 		), $options);
 
 		// Global
@@ -118,6 +119,8 @@ class report_pm extends \phpbb\notification\type\pm
 		{
 			unset($auth_approve[$post['forum_id']][$this->permission][$key]);
 		}
+
+		$auth_approve[$post['forum_id']][$this->permission] = $this->filter_item_notified_users($auth_approve[$post['forum_id']][$this->permission], $options);
 
 		return $this->check_user_notification_options($auth_approve[$post['forum_id']][$this->permission], array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],
