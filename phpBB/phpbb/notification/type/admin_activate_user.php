@@ -72,6 +72,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	{
 		$options = array_merge(array(
 			'ignore_users'	=> array(),
+			'item_id'			=> $this->get_item_id($user),
 		), $options);
 
 		// Grab admins that have permission to administer users.
@@ -95,6 +96,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 			return array();
 		}
 		$users = array_unique($users);
+		$users = $this->filter_item_notified_users($users, $options);
 
 		return $this->check_user_notification_options($users, $options);
 	}

@@ -81,6 +81,7 @@ class pm extends \phpbb\notification\type\base
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_id'			=> $this->get_item_id($pm),
 		), $options);
 
 		if (!sizeof($pm['recipients']))
@@ -89,6 +90,7 @@ class pm extends \phpbb\notification\type\base
 		}
 
 		unset($pm['recipients'][$pm['from_user_id']]);
+		$pm['recipients'] = $this->filter_item_notified_users($pm['recipients'], $options);
 
 		$this->user_loader->load_users(array_keys($pm['recipients']));
 

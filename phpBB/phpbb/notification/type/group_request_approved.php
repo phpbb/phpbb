@@ -52,6 +52,10 @@ class group_request_approved extends \phpbb\notification\type\base
 	*/
 	public function find_users_for_notification($group, $options = array())
 	{
+		$options = array_merge(array(
+			'item_id'			=> $this->get_item_id($group),
+		), $options);
+
 		$users = array();
 
 		$group['user_ids'] = (!is_array($group['user_ids'])) ? array($group['user_ids']) : $group['user_ids'];
@@ -60,6 +64,7 @@ class group_request_approved extends \phpbb\notification\type\base
 		{
 			$users[$user_id] = array('');
 		}
+		$users = $this->filter_item_notified_users($users, $options);
 
 		return $users;
 	}

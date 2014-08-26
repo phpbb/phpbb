@@ -78,6 +78,7 @@ class topic_in_queue extends \phpbb\notification\type\topic
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_id'			=> $this->get_item_id($topic),
 		), $options);
 
 		// 0 is for global moderator permissions
@@ -106,6 +107,8 @@ class topic_in_queue extends \phpbb\notification\type\topic
 		{
 			return array();
 		}
+
+		$auth_read[$topic['forum_id']]['f_read'] = $this->filter_item_notified_users($auth_read[$topic['forum_id']]['f_read'], $options);
 
 		return $this->check_user_notification_options($auth_read[$topic['forum_id']]['f_read'], array_merge($options, array(
 			'item_type'		=> self::$notification_option['id'],

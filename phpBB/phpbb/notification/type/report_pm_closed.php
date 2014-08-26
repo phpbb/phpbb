@@ -59,12 +59,19 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	*/
 	public function find_users_for_notification($pm, $options = array())
 	{
+		$options = array_merge(array(
+			'item_id'			=> $this->get_item_id($pm),
+		), $options);
+
 		if ($pm['reporter'] == $this->user->data['user_id'])
 		{
 			return array();
 		}
 
-		return array($pm['reporter'] => array(''));
+		$users = array($pm['reporter'] => array(''));
+		$users = $this->filter_item_notified_users($users, $options);
+
+		return $users;
 	}
 
 	/**

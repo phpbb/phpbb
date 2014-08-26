@@ -95,6 +95,7 @@ class post extends \phpbb\notification\type\base
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
+			'item_id'			=> $this->get_item_id($post),
 		), $options);
 
 		$users = array();
@@ -156,6 +157,8 @@ class post extends \phpbb\notification\type\base
 			}
 		}
 		$this->db->sql_freeresult($result);
+
+		$notify_users = $this->filter_item_notified_users($notify_users, $options);
 
 		return $notify_users;
 	}

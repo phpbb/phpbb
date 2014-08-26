@@ -566,4 +566,35 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		return $this->check_user_notification_options($auth_read[$forum_id]['f_read'], $options);
 	}
+
+	/**
+	 * Make sure not to send new notifications to users who've already been notified about the item
+	 * This may happen if an item was added, but now new users are able to see the item
+	 *
+	 * @param array $users		Array of users that have subscribed to a notification
+	 * @param array $options	Array of notification options
+	 * @return array 			Array of users with the exception of ones who've already been notified about the item
+	 */
+	protected function filter_item_notified_users($users, $options)
+	{
+		if (empty($users))
+		{
+			return array();
+		}
+
+		$sql = 'SELECT n.user_id
+			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
+			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
+				AND n.item_id = ' . (int) $options['item_id'] . '
+				AND nt.notification_type_id = n.notification_type_id
+				AND nt.notification_type_enabled = 1';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			unset($users[$row['user_id']]);
+		}
+		$this->db->sql_freeresult($result);
+
+		return $users;
+	}
 }
