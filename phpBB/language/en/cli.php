@@ -97,9 +97,9 @@ $lang = array_merge($lang, array(
 	'THUMBNAIL_SKIPPED'		=> '%1$s (%2$s) skipped.',
 	'THUMBNAIL_GENERATED'	=> '%1$s (%2$s) generated.',
 
-	'THUMBNAIL_DELETING'	=> 'Deleting the thumbnails...',
-	'THUMBNAIL_GENERATING'	=> 'Generating the thumbnails...',
+	'THUMBNAIL_DELETING'	=> 'Deleting thumbnails…',
+	'THUMBNAIL_GENERATING'	=> 'Generating thumbnails…',
 
-	'NO_THUMBNAIL_TO_GENERATE'	=> 'No thumbnail to generate.',
-	'NO_THUMBNAIL_TO_DELETE'	=> 'No thumbnail to delete.',
+	'NO_THUMBNAIL_TO_GENERATE'	=> 'No thumbnails to generate.',
+	'NO_THUMBNAIL_TO_DELETE'	=> 'No thumbnails to delete.',
 ));
