@@ -157,6 +157,15 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.thumbnail.delete:
+        class: phpbb\console\command\thumbnail\delete
+        arguments:
+            - @user
+            - @dbal.conn
+            - %core.root_path%
+        tags:
+            - { name: console.command }
+
     console.command.thumbnail.generate:
         class: phpbb\console\command\thumbnail\generate
         arguments:
@@ -172,14 +181,5 @@ services:
         class: phpbb\console\command\thumbnail\recreate
         arguments:
             - @user
-        tags:
-            - { name: console.command }
-
-    console.command.thumbnail.delete:
-        class: phpbb\console\command\thumbnail\delete
-        arguments:
-            - @user
-            - @dbal.conn
-            - %core.root_path%
         tags:
             - { name: console.command }
