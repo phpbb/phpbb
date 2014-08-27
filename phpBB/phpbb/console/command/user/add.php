@@ -19,9 +19,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class add extends \phpbb\console\command\command
 {
-	/** @var \phpbb\user */
-	protected $user;
-
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -41,13 +38,12 @@ class add extends \phpbb\console\command\command
 	*/
 	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $password_manager)
 	{
-		$this->user = $user;
 		$this->db = $db;
 		$this->config = $config;
 		$this->password_manager = $password_manager;
 
-		$this->user->add_lang('ucp');
-		parent::__construct();
+		$user->add_lang('ucp');
+		parent::__construct($user);
 	}
 
 	/**
@@ -121,13 +117,13 @@ class add extends \phpbb\console\command\command
 			'user_password'			=> $this->password_manager->hash($password),
 			'user_email'			=> $email,
 			'group_id'				=> $group_id,
-			'user_timezone'			=> $config['board_timezone'],
-			'user_lang'				=> $config['default_lang'],
+			'user_timezone'			=> $this->config['board_timezone'],
+			'user_lang'				=> $this->config['default_lang'],
 			'user_type'				=> USER_NORMAL,
 			'user_regdate'			=> time(),
 		);
 
-		if (!function_exists(user_add))
+		if (!function_exists('user_add'))
 		{
 			require_once dirname(__FILE__) . '/../../../../includes/functions_user.php';
 		}
@@ -144,7 +140,7 @@ class add extends \phpbb\console\command\command
 	* This is repeted while the two are not the same
 	*
 	* @param OutputInterface $output The output stream, where messages are printed
-	* @param Symfony\Component\Console\Helper\DialogHelper $dialog The dialog helper used to get answers to questions asked to the user
+	* @param \Symfony\Component\Console\Helper\DialogHelper $dialog The dialog helper used to get answers to questions asked to the user
 	*
 	* @return null
 	*/
@@ -177,7 +173,7 @@ class add extends \phpbb\console\command\command
 	*
 	* Go and find in the database the group_id corresponding to 'REGISTERED'
 	*
-	* @throws RunTimeException if the group id does not exist in database.
+	* @throws \RunTimeException if the group id does not exist in database.
 	* @return null
 	*/
 	protected function get_group_id()
