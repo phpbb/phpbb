@@ -50,7 +50,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 
 		$db = $this->db = $this->new_dbal();
 
-		$this->user = $this->getMock('\phpbb\user');
+		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$this->user->method('lang')->will($this->returnArgument(0));
 
 		$driver_helper = new \phpbb\passwords\driver\helper($this->config);
@@ -90,7 +90,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 
 		$this->assertEquals(2, $this->get_user_id('Admin'));
 
-		$this->dialog->setInputStream($this->getInputStream("bar\npass\npass\nbar@test.com\n"));
+		$this->dialog->setInputStream($this->getInputStream("bar\npassword\npassword\nbar@test.com\n"));
 
 		$command_tester->execute(array(
 			'command'		=> $this->command_name,
