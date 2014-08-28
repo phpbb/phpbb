@@ -715,60 +715,6 @@ class migrator
 	}
 
 	/**
-	* Load migration data files from a directory
-	*
-	* @param \phpbb\finder $finder
-	* @param string $path Path to migration data files
-	* @param bool $check_fulfillable If TRUE (default), we will check
-	* 	if all of the migrations are fulfillable after loading them.
-	* 	If FALSE, we will not check. You SHOULD check at least once
-	* 	to prevent errors (if including multiple directories, check
-	* 	with the last call to prevent throwing errors unnecessarily).
-	* @return array Array of migration names
-	* @throws \phpbb\db\migration\exception
-	*/
-	public function load_migrations(\phpbb\finder $finder, $path, $check_fulfillable = true)
-	{
-		if (!is_dir($path))
-		{
-			throw new \phpbb\db\migration\exception('DIRECTORY INVALID', $path);
-		}
-
-		$migrations = array();
-
-		$files = $finder
-			->extension_directory("/")
-			->find_from_paths(array('/' => $path));
-		foreach ($files as $file)
-		{
-			$migrations[$file['path'] . $file['filename']] = '';
-		}
-		$migrations = $finder->get_classes_from_files($migrations);
-
-		foreach ($migrations as $migration)
-		{
-			if (!in_array($migration, $this->migrations))
-			{
-				$this->migrations[] = $migration;
-			}
-		}
-
-		if ($check_fulfillable)
-		{
-			foreach ($this->migrations as $name)
-			{
-				$unfulfillable = $this->unfulfillable($name);
-				if ($unfulfillable !== false)
-				{
-					throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $unfulfillable);
-				}
-			}
-		}
-
-		return $this->migrations;
-	}
-
-	/**
 	* Creates the migrations table if it does not exist.
 	* @return null
 	*/
