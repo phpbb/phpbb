@@ -34,7 +34,7 @@ class overall extends \phpbb\feed\post_base
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_moved_id = 0
 				AND ' . $this->content_visibility->get_forums_visibility_sql('topic', $forum_ids) . '
-			ORDER BY topic_last_post_time DESC';
+			ORDER BY topic_last_post_time DESC, topic_last_post_id DESC';
 		$result = $this->db->sql_query_limit($sql, $this->num_items);
 
 		$topic_ids = array();
@@ -71,7 +71,7 @@ class overall extends \phpbb\feed\post_base
 							AND ' . $this->content_visibility->get_forums_visibility_sql('post', $forum_ids, 'p.') . '
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
-			'ORDER_BY'	=> 'p.post_time DESC',
+			'ORDER_BY'	=> 'p.post_time DESC, p.post_id DESC',
 		);
 
 		return true;

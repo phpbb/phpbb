@@ -94,7 +94,7 @@ if ($view && !$post_id)
 				AND " . $phpbb_content_visibility->get_visibility_sql('post', $forum_id) . "
 				AND post_time > $topic_last_read
 				AND forum_id = $forum_id
-			ORDER BY post_time ASC";
+			ORDER BY post_time ASC, post_id ASC";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -146,7 +146,7 @@ if ($view && !$post_id)
 					AND topic_moved_id = 0
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
 					AND " . $phpbb_content_visibility->get_visibility_sql('topic', $row['forum_id']) . "
-				ORDER BY topic_last_post_time $sql_ordering";
+				ORDER BY topic_last_post_time $sql_ordering, topic_last_post_id $sql_ordering";
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -388,7 +388,7 @@ if (!isset($topic_tracking_info))
 $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by_sql = array('a' => array('u.username_clean', 'p.post_id'), 't' => 'p.post_time', 's' => array('p.post_subject', 'p.post_id'));
+$sort_by_sql = array('a' => array('u.username_clean', 'p.post_id'), 't' => array('p.post_time', 'p.post_id'), 's' => array('p.post_subject', 'p.post_id'));
 $join_user_sql = array('a' => true, 't' => false, 's' => false);
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
