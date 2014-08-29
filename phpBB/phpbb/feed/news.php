@@ -99,7 +99,7 @@ class news extends \phpbb\feed\topic_base
 			),
 			'WHERE'		=> 'p.topic_id = t.topic_id
 							AND ' . $this->db->sql_in_set('p.post_id', $post_ids),
-			'ORDER_BY'	=> 'p.post_time DESC',
+			'ORDER_BY'	=> 'p.post_time DESC, p.post_id DESC',
 		);
 
 		return true;

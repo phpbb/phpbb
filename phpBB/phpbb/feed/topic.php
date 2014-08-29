@@ -101,7 +101,7 @@ class topic extends \phpbb\feed\post_base
 			'WHERE'		=> 'p.topic_id = ' . $this->topic_id . '
 								AND ' . $this->content_visibility->get_visibility_sql('post', $this->forum_id, 'p.') . '
 								AND p.poster_id = u.user_id',
-			'ORDER_BY'	=> 'p.post_time DESC',
+			'ORDER_BY'	=> 'p.post_time DESC, p.post_id DESC',
 		);
 
 		return true;
