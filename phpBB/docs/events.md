@@ -440,7 +440,7 @@ mcp_warn_post_add_warning_field_after
     + styles/prosilver/template/mcp_warn_post.html
     + styles/subsilver2/template/mcp_warn_post.html
 * Since: 3.1.0-RC4
-* Purpose: Add content during warning a post - after add warning fields.
+* Purpose: Add content during warning for a post - after add warning field.
 
 mcp_warn_post_add_warning_field_before
 ===
@@ -448,7 +448,7 @@ mcp_warn_post_add_warning_field_before
     + styles/prosilver/template/mcp_warn_post.html
     + styles/subsilver2/template/mcp_warn_post.html
 * Since: 3.1.0-RC4
-* Purpose: Add content during warning a post - before add warning fields.
+* Purpose: Add content during warning for a post - before add warning field.
 
 mcp_warn_user_add_warning_field_after
 ===
@@ -456,7 +456,7 @@ mcp_warn_user_add_warning_field_after
     + styles/prosilver/template/mcp_warn_user.html
     + styles/subsilver2/template/mcp_warn_user.html
 * Since: 3.1.0-RC4
-* Purpose: Add content during warning an user - after add warning fields.
+* Purpose: Add content during warning a user - after add warning field.
 
 mcp_warn_user_add_warning_field_before
 ===
@@ -464,7 +464,7 @@ mcp_warn_user_add_warning_field_before
     + styles/prosilver/template/mcp_warn_user.html
     + styles/subsilver2/template/mcp_warn_user.html
 * Since: 3.1.0-RC4
-* Purpose: Add content during warning an user - before add warning fields.
+* Purpose: Add content during warning a user - before add warning field.
 
 navbar_header_logged_out_content
 ===
