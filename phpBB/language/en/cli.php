@@ -93,13 +93,12 @@ $lang = array_merge($lang, array(
 	
 	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
 	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.
-	'THUMBNAIL_DELETED'		=> '%1$s (%2$s) deleted.',
-	'THUMBNAIL_SKIPPED'		=> '%1$s (%2$s) skipped.',
-	'THUMBNAIL_GENERATED'	=> '%1$s (%2$s) generated.',
+	'CLI_THUMBNAIL_DELETED'		=> '%1$s (%2$s) deleted.',
+	'CLI_THUMBNAIL_DELETING'	=> 'Deleting thumbnails…',
+	'CLI_THUMBNAIL_SKIPPED'		=> '%1$s (%2$s) skipped.',
+	'CLI_THUMBNAIL_GENERATED'	=> '%1$s (%2$s) generated.',
+	'CLI_THUMBNAIL_GENERATING'	=> 'Generating thumbnails…',
 
-	'THUMBNAIL_DELETING'	=> 'Deleting thumbnails…',
-	'THUMBNAIL_GENERATING'	=> 'Generating thumbnails…',
-
-	'NO_THUMBNAIL_TO_GENERATE'	=> 'No thumbnails to generate.',
-	'NO_THUMBNAIL_TO_DELETE'	=> 'No thumbnails to delete.',
+	'CLI_THUMBNAIL_NOTHING_TO_GENERATE'	=> 'No thumbnails to generate.',
+	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',
 ));

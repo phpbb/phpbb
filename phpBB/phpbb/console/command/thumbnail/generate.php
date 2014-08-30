@@ -93,7 +93,7 @@ class generate extends \phpbb\console\command\command
 
 		if ($nb_missing_thumbnails === 0)
 		{
-			$output->writeln('<info>' . $this->user->lang('NO_THUMBNAIL_TO_GENERATE') . '</info>');
+			$output->writeln('<info>' . $this->user->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE') . '</info>');
 			return 0;
 		}
 
@@ -135,14 +135,14 @@ class generate extends \phpbb\console\command\command
 
 					if ($input->getOption('verbose'))
 					{
-						$output->writeln($this->user->lang('THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
+						$output->writeln($this->user->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
 					}
 				}
 				else
 				{
 					if ($input->getOption('verbose'))
 					{
-						$output->writeln('<info>' . $this->user->lang('THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
+						$output->writeln('<info>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
 					}
 				}
 			}
