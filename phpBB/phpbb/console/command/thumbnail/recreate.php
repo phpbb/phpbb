@@ -54,7 +54,7 @@ class recreate extends \phpbb\console\command\command
 
 		$this->getApplication()->setAutoExit(false);
 
-		$output->writeln('<comment>' . $this->user->lang('THUMBNAIL_DELETING') . '</comment>');
+		$output->writeln('<comment>' . $this->user->lang('CLI_THUMBNAIL_DELETING') . '</comment>');
 		$input_delete = new ArrayInput($parameters);
 		$return = $this->getApplication()->run($input_delete, $output);
 
@@ -63,7 +63,7 @@ class recreate extends \phpbb\console\command\command
 			$parameters['command'] = 'thumbnail:generate';
 
 			$output->writeln('');
-			$output->writeln('<comment>' . $this->user->lang('THUMBNAIL_GENERATING') . '</comment>');
+			$output->writeln('<comment>' . $this->user->lang('CLI_THUMBNAIL_GENERATING') . '</comment>');
 			$input_create = new ArrayInput($parameters);
 			$return = $this->getApplication()->run($input_create, $output);
 		}
