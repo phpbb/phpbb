@@ -692,6 +692,14 @@ posting_editor_buttons_before
 * Since: 3.1.0-a3
 * Purpose: Add content before the BBCode posting buttons
 
+posting_editor_buttons_custom_tags_before
+===
+* Locations:
+    + styles/prosilver/template/posting_buttons.html
+    + styles/subsilver2/template/posting_buttons.html
+* Since: 3.1.2-RC1
+* Purpose: Add content inside the BBCode posting buttons and before the customs BBCode
+
 posting_editor_message_after
 ===
 * Locations:

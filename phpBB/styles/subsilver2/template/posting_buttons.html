@@ -69,21 +69,18 @@
 			<!-- ENDIF -->
 		</select></span>
 	</div>
+	<!-- EVENT posting_editor_buttons_custom_tags_before -->
+	<!-- IF .custom_tags -->
+		<div id="custom-bbcode-buttons">
+			<!-- BEGIN custom_tags -->
+			<input type="button" class="btnbbcode bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
+			<!-- END custom_tags -->
+		</div>
+	<!-- ENDIF -->
 	<!-- EVENT posting_editor_buttons_after -->
 <!-- ENDIF -->
 	</td>
 </tr>
-<!-- IF S_BBCODE_ALLOWED and .custom_tags -->
-	<tr valign="middle" align="{S_CONTENT_FLOW_BEGIN}">
-		<td colspan="2">
-		<div id="custom-bbcode-buttons">
-		<!-- BEGIN custom_tags -->
-			<input type="button" class="btnbbcode bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
-		<!-- END custom_tags -->
-		</div>
-		</td>
-	</tr>
-<!-- ENDIF -->
 <!-- IF S_BBCODE_ALLOWED -->
 <tr>
 	<td<!-- IF $S_SIGNATURE or S_EDIT_DRAFT --> colspan="2"<!-- ENDIF -->><input type="text" readonly="readonly" name="helpbox" style="width:100%" class="helpline" value="{L_STYLES_TIP}" /></td>
