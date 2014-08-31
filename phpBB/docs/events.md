@@ -1115,6 +1115,14 @@ viewtopic_body_postrow_post_before
 * Since: 3.1.0-a4
 * Purpose: Add data before posts
 
+viewtopic_body_postrow_post_content_footer
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-RC4
+* Purpose: Add data at the end of the posts.
+
 viewtopic_body_postrow_post_notices_after
 ===
 * Locations:
