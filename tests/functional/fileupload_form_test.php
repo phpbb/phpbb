@@ -107,9 +107,9 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 		$crawler = $this->upload_file('disallowed.jpg', 'image/jpeg');
 
-		// Hitting the ATTACHED_IMAGE_NOT_IMAGE error means we passed the
+		// Hitting the UNABLE_GET_IMAGE_SIZE error means we passed the
 		// DISALLOWED_CONTENT check
-		$this->assertContains($this->lang('ATTACHED_IMAGE_NOT_IMAGE'), $crawler->text());
+		$this->assertContainsLang('UNABLE_GET_IMAGE_SIZE', $crawler->text());
 	}
 
 	public function test_too_large()
