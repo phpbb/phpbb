@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "27d5da149e0b5d76b76f43210306b666",
+    "hash": "d93446768ea0665b7c55c01890153a67",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -2042,17 +2042,17 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.3.16",
+            "version": "v2.3.19",
             "target-dir": "Symfony/Component/CssSelector",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/CssSelector.git",
-                "reference": "2ff53e8a7870b453836e879b083b971d455e174d"
+                "reference": "8953d325d3341c246abadb79be172de95ef80664"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/2ff53e8a7870b453836e879b083b971d455e174d",
-                "reference": "2ff53e8a7870b453836e879b083b971d455e174d",
+                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/8953d325d3341c246abadb79be172de95ef80664",
+                "reference": "8953d325d3341c246abadb79be172de95ef80664",
                 "shasum": ""
             },
             "require": {
@@ -2075,23 +2075,21 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
                 },
                 {
                     "name": "Jean-François Simon",
                     "email": "jeanfrancois.simon@sensiolabs.com"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "http://symfony.com",
-            "time": "2014-05-12 09:13:35"
+            "time": "2014-08-27 08:24:06"
         },
         {
             "name": "symfony/dom-crawler",
