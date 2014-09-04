@@ -232,9 +232,9 @@ class filespec
 	{
 		if ($this->mimetype_guesser !== null)
 		{
-			$mimetype = $this->mimetype_guesser->guess($filename);
+			$mimetype = $this->mimetype_guesser->guess($filename, $this->uploadname);
 
-			if (empty($this->mimetype) || $mimetype !== 'application/octet-stream')
+			if ($mimetype !== 'application/octet-stream')
 			{
 				$this->mimetype = $mimetype;
 			}
