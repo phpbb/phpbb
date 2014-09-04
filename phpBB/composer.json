@@ -44,6 +44,7 @@
 		"sami/sami": "1.*",
 		"squizlabs/php_codesniffer": "1.*",
 		"symfony/browser-kit": "2.3.*",
+		"symfony/css-selector": "2.3.*",
 		"symfony/debug": "2.3.*",
 		"symfony/dom-crawler": "2.3.*",
 		"symfony/filesystem": "2.3.*",
