@@ -325,7 +325,7 @@ class path_helper
 		foreach ($params as $key => $value)
 		{
 			// some parameters do not have value
-			if($value !== null)
+			if ($value !== null)
 			{
 				$_params[] = $key . '=' . $value;
 			}
