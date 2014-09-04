@@ -316,7 +316,7 @@ class path_helper
 	* Glue URL parameters together
 	*
 	* @param array $params URL parameters in the form of array(name => value)
-	* @return string Returns the glued string, e.g. name1=value1&amp;name2=value2
+	* @return string Returns the glued string, e.g. name1=value1&amp;name2&amp;name3=value3
 	*/
 	public function glue_url_params($params)
 	{
@@ -324,7 +324,15 @@ class path_helper
 
 		foreach ($params as $key => $value)
 		{
-			$_params[] = $key . '=' . $value;
+			// some parameters do not have value
+			if($value !== null)
+			{
+				$_params[] = $key . '=' . $value;
+			}
+			else
+			{
+				$_params[] = $key;
+			}
 		}
 		return implode('&amp;', $_params);
 	}
@@ -353,7 +361,17 @@ class path_helper
 				{
 					continue;
 				}
-				list($key, $value) = explode('=', $argument, 2);
+				
+				// some parameters don't have value
+				if (strpos($argument, '=') !== false)
+				{
+					list($key, $value) = explode('=', $argument, 2);
+				}
+				else
+				{
+					$key = $argument;
+					$value = null;
+				}
 
 				if ($key === '')
 				{
