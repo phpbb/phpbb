@@ -29,9 +29,9 @@ $phpbb_class_loader->register();
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
 
-if (!defined('ENVIRONMENT'))
+if (!defined('PHPBB_ENVIRONMENT'))
 {
-	@define('ENVIRONMENT', 'production');
+	@define('PHPBB_ENVIRONMENT', 'production');
 }
 
 if (!defined('PHPBB_INSTALLED'))
@@ -96,7 +96,7 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-if (ENVIRONMENT == 'debug' && !class_exists('Goutte\Client', true))
+if (PHPBB_ENVIRONMENT == 'debug' && !class_exists('Goutte\Client', true))
 {
 	trigger_error(
 		'Composer development dependencies have not been set up for the development environment yet, run ' .
@@ -115,7 +115,7 @@ try
 catch (InvalidArgumentException $e)
 {
 	trigger_error(
-		'The requested environment ' . ENVIRONMENT . ' is not available.',
+		'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
 		E_USER_ERROR
 	);
 }

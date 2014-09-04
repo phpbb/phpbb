@@ -16,7 +16,7 @@
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
-define('ENVIRONMENT', 'production');
+define('PHPBB_ENVIRONMENT', 'production');
 /**#@-*/
 
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';

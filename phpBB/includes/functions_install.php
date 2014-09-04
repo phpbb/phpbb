@@ -453,11 +453,11 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 
 	if ($debug)
 	{
-		$config_data .= "@define('ENVIRONMENT', 'development');\n";
+		$config_data .= "@define('PHPBB_ENVIRONMENT', 'development');\n";
 	}
 	else
 	{
-		$config_data .= "@define('ENVIRONMENT', 'production');\n";
+		$config_data .= "@define('PHPBB_ENVIRONMENT', 'production');\n";
 	}
 
 	if ($debug_container)
