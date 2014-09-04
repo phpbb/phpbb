@@ -155,6 +155,11 @@ class helper
 			$route_url = str_replace(array('&amp;', '&'), array('&', '&amp;'), $route_url);
 		}
 
+		if ($reference_type === UrlGeneratorInterface::RELATIVE_PATH && empty($this->config['enable_mod_rewrite']))
+		{
+			$route_url = 'app.' . $this->php_ext . '/' . $route_url;
+		}
+
 		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);
 	}
 
