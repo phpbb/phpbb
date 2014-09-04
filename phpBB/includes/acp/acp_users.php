@@ -96,7 +96,26 @@ class acp_users
 
 			if (!$user_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+				// A listener can set this variable to `true` when it overrides this function
+				$trigger_override = false;
+				/**
+				* Run Add user
+				*
+				* @event core.acp_user_add
+				* @var	int		id					Module id
+				* @var	string	mode				Module mode
+				* @var	string	username			username
+				* @var	int		user_id				user_id
+				* @var	bool	trigger_override	Shall we return to normal operations
+				* @since 3.1.0-RC4
+				*/
+				$vars = array('id', 'mode', 'username', 'user_id', 'trigger_override');
+				extract($phpbb_dispatcher->trigger_event('core.acp_user_add', compact($vars)));
+
+				if (!$trigger_override)
+				{
+					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 			}
 		}
 
@@ -165,7 +184,7 @@ class acp_users
 		{
 			case 'overview':
 
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$user->add_lang('acp/ban');
 
