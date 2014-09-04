@@ -119,27 +119,23 @@ class helper
 			$anchor = '#' . $params['#'];
 			unset($params['#']);
 		}
-		$url_generator = new UrlGenerator($this->route_collection, new RequestContext());
-		$route_url = $url_generator->generate($route, $params);
 
-		if (strpos($route_url, '/') === 0)
-		{
-			$route_url = substr($route_url, 1);
-		}
+		$context = new RequestContext();
+		$context->fromRequest($this->symfony_request);
+
+		$script_name = $this->symfony_request->getScriptName();
+		$page_name = substr($script_name, -1, 1) == '/' ? '' : basename($script_name);
+		$context->setBaseUrl(str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $context->getBaseUrl()));
+
+		$url_generator = new UrlGenerator($this->route_collection, $context);
+		$route_url = $url_generator->generate($route, $params);
 
 		if ($is_amp)
 		{
 			$route_url = str_replace(array('&amp;', '&'), array('&', '&amp;'), $route_url);
 		}
 
-		// If enable_mod_rewrite is false, we need to include app.php
-		$route_prefix = $this->phpbb_root_path;
-		if (empty($this->config['enable_mod_rewrite']))
-		{
-			$route_prefix .= 'app.' . $this->php_ext . '/';
-		}
-
-		return append_sid($route_prefix . $route_url . $anchor, false, $is_amp, $session_id);
+		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);
 	}
 
 	/**
