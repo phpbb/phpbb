@@ -361,7 +361,7 @@ class path_helper
 				{
 					continue;
 				}
-				
+
 				// some parameters don't have value
 				if (strpos($argument, '=') !== false)
 				{
