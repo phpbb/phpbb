@@ -46,7 +46,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$provider = new \phpbb\controller\provider();
 		$provider->find_routing_files($finder);
 		$provider->find(dirname(__FILE__) . '/');
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, '', 'php', dirname(__FILE__) . '/');
+
+		$request = new phpbb_mock_request();
+		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
+		$request->overwrite('SCRIPT_FILENAME', 'app.php', \phpbb\request\request_interface::SERVER);
+		$request->overwrite('REQUEST_URI', '/app.php', \phpbb\request\request_interface::SERVER);
+
+		$symfony_request = new \phpbb\symfony_request(
+			$request
+		);
+
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, $symfony_request, '', 'php', dirname(__FILE__) . '/');
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
 	}
 
@@ -110,17 +120,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:per_page:10
 				:current_page:2
 				:base_url:
-				:previous::test
-				:else:1:test
-				:current:2:test/page/2
-				:else:3:test/page/3
-				:else:4:test/page/4
-				:else:5:test/page/5
-				:ellipsis:9:test/page/9
-				:else:10:test/page/10
-				:next::test/page/3
-				:u_prev:test
-				:u_next:test/page/3',
+				:previous::/test
+				:else:1:/test
+				:current:2:/test/page/2
+				:else:3:/test/page/3
+				:else:4:/test/page/4
+				:else:5:/test/page/5
+				:ellipsis:9:/test/page/9
+				:else:10:/test/page/10
+				:next::/test/page/3
+				:u_prev:/test
+				:u_next:/test/page/3',
 			),
 			array(
 				array('routes' => array(
@@ -135,17 +145,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				:per_page:10
 				:current_page:3
 				:base_url:
-				:previous::test/page/2
-				:else:1:test
-				:else:2:test/page/2
-				:current:3:test/page/3
-				:else:4:test/page/4
-				:else:5:test/page/5
-				:ellipsis:9:test/page/9
-				:else:10:test/page/10
-				:next::test/page/4
-				:u_prev:test/page/2
-				:u_next:test/page/4',
+				:previous::/test/page/2
+				:else:1:/test
+				:else:2:/test/page/2
+				:current:3:/test/page/3
+				:else:4:/test/page/4
+				:else:5:/test/page/5
+				:ellipsis:9:/test/page/9
+				:else:10:/test/page/10
+				:next::/test/page/4
+				:u_prev:/test/page/2
+				:u_next:/test/page/4',
 			),
 		);
 	}
