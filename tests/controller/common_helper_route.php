@@ -113,12 +113,6 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$finder = new \phpbb\finder(
-			new \phpbb\filesystem(),
-			dirname(__FILE__) . '/',
-			new phpbb_mock_cache()
-		);
-		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
 		$this->router = new phpbb_mock_router($this->extension_manager, dirname(__FILE__) . '/', 'php');
 		$this->router->find_routing_files($finder);
 		$this->router->find(dirname(__FILE__) . '/');

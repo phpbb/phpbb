@@ -30,6 +30,11 @@ class phpbb_controller_controller_test extends phpbb_test_case
 					'ext_active' => '1',
 					'ext_path' => 'ext/vendor2/foo/',
 				),
+				'vendor2/bar' => array(
+					'ext_name' => 'vendor2/bar',
+					'ext_active' => '1',
+					'ext_path' => 'ext/vendor2/bar/',
+				),
 			));
 	}
 
@@ -48,6 +53,9 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller2'));
 		$this->assertEquals('/foo/bar', $routes->get('controller2')->getPath());
+
+		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('controller3'));
+		$this->assertEquals('/bar', $routes->get('controller3')->getPath());
 
 		$this->assertNull($routes->get('controller_noroute'));
 	}
