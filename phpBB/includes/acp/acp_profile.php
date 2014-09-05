@@ -112,58 +112,8 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
-					switch ($db->get_sql_layer())
-					{
-						case 'sqlite':
-						case 'sqlite3':
-							$sql = "SELECT sql
-								FROM sqlite_master
-								WHERE type = 'table'
-									AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
-								ORDER BY type DESC, name;";
-							$result = $db->sql_query($sql);
-							$row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
-
-							// Create a temp table and populate it, destroy the existing one
-							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
-							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
-							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
-
-							preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-							$new_table_cols = trim($matches[1]);
-							$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
-							$column_list = array();
-
-							foreach ($old_table_cols as $declaration)
-							{
-								$entities = preg_split('#\s+#', trim($declaration));
-
-								if ($entities[0] == 'PRIMARY')
-								{
-									continue;
-								}
-
-								if ($entities[0] !== 'pf_' . $field_ident)
-								{
-									$column_list[] = $entities[0];
-								}
-							}
-
-							$columns = implode(',', $column_list);
-
-							$new_table_cols = preg_replace('/' . 'pf_' . $field_ident . '[^,]+,/', '', $new_table_cols);
-
-							// create a new table and fill it up. destroy the temp one
-							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
-							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
-							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
-						break;
-
-						default:
-							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP COLUMN pf_$field_ident");
-					}
+					$db_tools = $phpbb_container->get('dbal.tools');
+					$db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_' . $field_ident);
 
 					$order = 0;
 
@@ -932,9 +882,7 @@ class acp_profile
 			$field_ident = 'pf_' . $field_ident;
 
 			$db_tools = $phpbb_container->get('dbal.tools');
-
-			list($sql_type, $null) = $db_tools->get_column_type($profile_field->get_database_column_type());
-			$profile_sql[] = $this->add_field_ident($field_ident, $sql_type);
+			$db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));
 		}
 
 		$sql_ary = array(
@@ -1187,92 +1135,5 @@ class acp_profile
 				$db->sql_query($sql);
 			}
 		}
-	}
-
-	/**
-	* Return sql statement for adding a new field ident (profile field) to the profile fields data table
-	*/
-	function add_field_ident($field_ident, $sql_type)
-	{
-		global $db;
-
-		switch ($db->get_sql_layer())
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD `$field_ident` " . $sql_type;
-
-			break;
-
-			case 'sqlite':
-			case 'sqlite3':
-				if (version_compare($db->sql_server_info(true), '3.0') == -1)
-				{
-					$sql = "SELECT sql
-						FROM sqlite_master
-						WHERE type = 'table'
-							AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
-						ORDER BY type DESC, name;";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					// Create a temp table and populate it, destroy the existing one
-					$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
-					$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
-
-					preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-					$new_table_cols = trim($matches[1]);
-					$old_table_cols = explode(',', $new_table_cols);
-					$column_list = array();
-
-					foreach ($old_table_cols as $declaration)
-					{
-						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities[0] == 'PRIMARY')
-						{
-							continue;
-						}
-						$column_list[] = $entities[0];
-					}
-
-					$columns = implode(',', $column_list);
-
-					$new_table_cols = $field_ident . ' ' . $sql_type . ',' . $new_table_cols;
-
-					// create a new table and fill it up. destroy the temp one
-					$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
-					$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
-				}
-				else
-				{
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident [$sql_type]";
-				}
-
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'mssqlnative':
-				$sql = 'ALTER TABLE [' . PROFILE_FIELDS_DATA_TABLE . "] ADD [$field_ident] " . $sql_type;
-
-			break;
-
-			case 'postgres':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD COLUMN \"$field_ident\" " . $sql_type;
-
-			break;
-
-			case 'oracle':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident " . $sql_type;
-
-			break;
-		}
-
-		return $sql;
 	}
 }
