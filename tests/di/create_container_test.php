@@ -59,6 +59,8 @@ namespace
 
 			// Checks use_extensions
 			$this->assertTrue($container->hasParameter('enabled'));
+			$this->assertTrue($container->hasParameter('enabled_2'));
+			$this->assertTrue($container->hasParameter('enabled_3'));
 			$this->assertFalse($container->hasParameter('disabled'));
 			$this->assertFalse($container->hasParameter('available'));
 
@@ -201,6 +203,8 @@ namespace phpbb\db\driver
 		{
 			return array(
 				array('ext_name' => 'vendor/enabled'),
+				array('ext_name' => 'vendor/enabled-2'),
+				array('ext_name' => 'vendor/enabled-3'),
 			);
 		}
 	}

@@ -45,10 +45,32 @@ class ext extends Extension
 	{
 		foreach ($this->paths as $path)
 		{
-			if (file_exists($path . '/config/services.yml'))
+			$services_directory = false;
+			$services_file = false;
+
+			if (file_exists($path . 'config/' . PHPBB_ENVIRONMENT . '/environment.yml'))
 			{
-				$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($path . '/config')));
-				$loader->load('services.yml');
+				$services_directory = $path . 'config/' . PHPBB_ENVIRONMENT;
+				$services_file = 'environment.yml';
+			}
+			else if (!is_dir($path . 'config/' . PHPBB_ENVIRONMENT))
+			{
+				if (file_exists($path . 'config/default/environment.yml'))
+				{
+					$services_directory = $path . 'config/default';
+					$services_file = 'environment.yml';
+				}
+				else if (!is_dir($path . 'config/default') && file_exists($path . '/config/services.yml'))
+				{
+					$services_directory = $path . 'config';
+					$services_file = 'services.yml';
+				}
+			}
+
+			if ($services_directory && $services_file)
+			{
+				$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($services_directory)));
+				$loader->load($services_file);
 			}
 		}
 	}
