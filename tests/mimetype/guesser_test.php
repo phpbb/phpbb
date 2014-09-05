@@ -206,4 +206,25 @@ class guesser_test extends \phpbb_test_case
 		$this->assertInstanceOf('\phpbb\mimetype\content_guesser', $guessers[0]);
 		$this->assertInstanceOf('\phpbb\mimetype\extension_guesser', $guessers[3]);
 	}
+
+	public function data_choose_mime_type()
+	{
+		return array(
+			array('application/octet-stream', 'application/octet-stream', null),
+			array('application/octet-stream', 'application/octet-stream', 'application/octet-stream'),
+			array('binary', 'application/octet-stream', 'binary'),
+			array('image/jpeg', 'application/octet-stream', 'image/jpeg'),
+			array('image/jpeg', 'binary', 'image/jpeg'),
+			array('image/jpeg', 'image/jpg', 'image/jpeg'),
+			array('image/jpeg', 'image/jpeg', 'binary'),
+		);
+	}
+
+	/**
+	 * @dataProvider data_choose_mime_type
+	 */
+	public function test_choose_mime_type($expected, $mime_type, $guess)
+	{
+		$this->assertSame($expected, $this->guesser->choose_mime_type($mime_type, $guess));
+	}
 }

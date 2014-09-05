@@ -131,22 +131,22 @@ class guesser
 	 * Choose the best mime type based on the current mime type and the guess
 	 * If a guesser returns nulls or application/octet-stream, we will keep
 	 * the current guess. Guesses with a slash inside them will be favored over
-	 * already existing without slashes. However, any guess that will pass the
-	 * first check will always overwrite the default application/octet-stream.
+	 * already existing ones. However, any guess that will pass the first check
+	 * will always overwrite the default application/octet-stream.
 	 *
 	 * @param	string	$mime_type	The current mime type
 	 * @param	string	$guess		The current mime type guess
 	 *
 	 * @return string The best mime type based on current mime type and guess
 	 */
-	protected function choose_mime_type($mime_type, $guess)
+	public function choose_mime_type($mime_type, $guess)
 	{
 		if ($guess === null || $guess == 'application/octet-stream')
 		{
 			return $mime_type;
 		}
 
-		if ((strpos($mime_type, '/') === false || $mime_type == 'application/octet-stream') && strpos($guess, '/') !== false)
+		if ($mime_type == 'application/octet-stream' || strpos($guess, '/') !== false)
 		{
 			$mime_type = $guess;
 		}
