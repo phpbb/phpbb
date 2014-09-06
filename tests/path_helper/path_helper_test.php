@@ -205,6 +205,18 @@ class phpbb_path_helper_test extends phpbb_test_case
 				array('test' => 'xyz', 'var' => 'value'),
 				'test=xyz&amp;var=value',
 			),
+			array(
+				array('test' => null),
+				'test',
+			),
+			array(
+				array('test' => null, 'var' => null),
+				'test&amp;var',
+			),
+			array(
+				array('test' => 'xyz', 'var' => null, 'bar' => 'value'),
+				'test=xyz&amp;var&amp;bar=value',
+			),
 		);
 	}
 
@@ -253,6 +265,21 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'mcp.php?=4&amp;f=3',
 				true,
 				array('base' => 'mcp.php', 'params' => array('f' => '3')),
+			),
+			array(
+				'index.php?ready',
+				false,
+				array('base' => 'index.php', 'params' => array('ready' => null)),
+			),
+			array(
+				'index.php?i=1&amp;ready',
+				true,
+				array('base' => 'index.php', 'params' => array('i' => '1', 'ready' => null)),
+			),
+			array(
+				'index.php?ready&i=1',
+				false,
+				array('base' => 'index.php', 'params' => array('ready' => null, 'i' => '1')),
 			),
 		);
 	}
