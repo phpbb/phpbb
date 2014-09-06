@@ -115,17 +115,42 @@ class guesser
 			return false;
 		}
 
+		$mimetype = 'application/octet-stream';
+
 		foreach ($this->guessers as $guesser)
 		{
-			$mimetype = $guesser->guess($file, $file_name);
+			$mimetype_guess = $guesser->guess($file, $file_name);
 
-			// Try to guess something that is not the fallback application/octet-stream
-			if ($mimetype !== null && $mimetype !== 'application/octet-stream')
-			{
-				return $mimetype;
-			}
+			$mimetype = $this->choose_mime_type($mimetype, $mimetype_guess);
 		}
 		// Return any mimetype if we got a result or the fallback value
-		return (!empty($mimetype)) ? $mimetype : 'application/octet-stream';
+		return $mimetype;
+	}
+
+	/**
+	 * Choose the best mime type based on the current mime type and the guess
+	 * If a guesser returns nulls or application/octet-stream, we will keep
+	 * the current guess. Guesses with a slash inside them will be favored over
+	 * already existing ones. However, any guess that will pass the first check
+	 * will always overwrite the default application/octet-stream.
+	 *
+	 * @param	string	$mime_type	The current mime type
+	 * @param	string	$guess		The current mime type guess
+	 *
+	 * @return string The best mime type based on current mime type and guess
+	 */
+	public function choose_mime_type($mime_type, $guess)
+	{
+		if ($guess === null || $guess == 'application/octet-stream')
+		{
+			return $mime_type;
+		}
+
+		if ($mime_type == 'application/octet-stream' || strpos($guess, '/') !== false)
+		{
+			$mime_type = $guess;
+		}
+
+		return $mime_type;
 	}
 }
