@@ -2117,9 +2117,11 @@ $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang
 * @var	array	topic_data		Array with topic data
 * @var	int		forum_id		Forum ID of the topic
 * @var	int		start			Start offset used to calculate the page
+* @var	array	post_list		Array with post_ids we are going to display
 * @since 3.1.0-a1
+* @change 3.1.0-RC4 Added post_list var
 */
-$vars = array('page_title', 'topic_data', 'forum_id', 'start');
+$vars = array('page_title', 'topic_data', 'forum_id', 'start', 'post_list');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_page_title', compact($vars)));
 
 // Output the page
