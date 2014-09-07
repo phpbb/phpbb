@@ -864,6 +864,10 @@ $lang = array_merge($lang, array(
 	'WRONG_DATA_COLOUR'			=> 'The colour value you entered is invalid.',
 	'WRONG_DATA_JABBER'			=> 'The name you entered is not a valid Jabber account name.',
 	'WRONG_DATA_LANG'			=> 'The language you specified is not valid.',
+	'WRONG_DATA_POST_SD'		=> 'The post sort direction you specified is not valid.',
+	'WRONG_DATA_POST_SK'		=> 'The post sort option you specified is not valid.',
+	'WRONG_DATA_TOPIC_SD'		=> 'The topic sort direction you specified is not valid.',
+	'WRONG_DATA_TOPIC_SK'		=> 'The topic sort option you specified is not valid.',
 	'WROTE'						=> 'wrote',
 
 	'YAHOO'				=> 'Yahoo Messenger',
