@@ -223,11 +223,11 @@ class ucp_prefs
 				$data = array(
 					'topic_sk'		=> request_var('topic_sk', (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'),
 					'topic_sd'		=> request_var('topic_sd', (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'),
-					'topic_st'		=> request_var('topic_st', (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0),
+					'topic_st'		=> request_var('topic_st', (!empty($user->data['user_topic_show_days'])) ? (int) $user->data['user_topic_show_days'] : 0),
 
 					'post_sk'		=> request_var('post_sk', (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'),
 					'post_sd'		=> request_var('post_sd', (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'),
-					'post_st'		=> request_var('post_st', (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0),
+					'post_st'		=> request_var('post_st', (!empty($user->data['user_post_show_days'])) ? (int) $user->data['user_post_show_days'] : 0),
 
 					'images'		=> request_var('images', (bool) $user->optionget('viewimg')),
 					'flash'			=> request_var('flash', (bool) $user->optionget('viewflash')),
@@ -254,10 +254,22 @@ class ucp_prefs
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'topic_sk'	=> array('string', false, 1, 1),
-						'topic_sd'	=> array('string', false, 1, 1),
-						'post_sk'	=> array('string', false, 1, 1),
-						'post_sd'	=> array('string', false, 1, 1),
+						'topic_sk'	=> array(
+							array('string', false, 1, 1),
+							array('match', false, '#(a|r|s|t|v)#'),
+						),
+						'topic_sd'	=> array(
+							array('string', false, 1, 1),
+							array('match', false, '#(a|d)#'),
+						),
+						'post_sk'	=> array(
+							array('string', false, 1, 1),
+							array('match', false, '#(a|s|t)#'),
+						),
+						'post_sd'	=> array(
+							array('string', false, 1, 1),
+							array('match', false, '#(a|d)#'),
+						),
 					));
 
 					if (!check_form_key('ucp_prefs_view'))
