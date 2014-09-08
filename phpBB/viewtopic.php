@@ -449,7 +449,7 @@ $s_watching_topic = array(
 	'is_watching'	=> false,
 );
 
-if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_notify'])
+if ($config['allow_topic_notify'])
 {
 	$notify_status = (isset($topic_data['notify_status'])) ? $topic_data['notify_status'] : null;
 	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $notify_status, $start, $topic_data['topic_title']);
