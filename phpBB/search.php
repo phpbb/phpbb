@@ -602,7 +602,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
 
-		'REFERER_IS_SEARCH'	=> strpos($user->referer, "search.$phpEx") !== false,
 		'TOTAL_MATCHES'		=> $total_match_count,
 		'SEARCH_IN_RESULTS'	=> ($search_id) ? false : true,
 
