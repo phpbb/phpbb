@@ -736,6 +736,10 @@ fieldset.polls dd div {
 	max-width: 100%;
 }
 
+.postprofile .profile-posts a {
+	font-weight: normal;
+}
+
 dd.profile-warnings {
 	font-weight: bold;
 }
