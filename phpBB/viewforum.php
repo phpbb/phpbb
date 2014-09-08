@@ -392,10 +392,15 @@ $sql_array = array(
 * Event to modify the SQL query before the topic data is retrieved
 *
 * @event core.viewforum_get_topic_data
-* @var	array	sql_array		The SQL array to get the data of all topics
+* @var	array	forum_data			Array with forum data
+* @var	array	sql_array			The SQL array to get the data of all topics
 * @since 3.1.0-a1
+* @change 3.1.0-RC4 Added forum_data var 
 */
-$vars = array('sql_array');
+$vars = array(
+	'forum_data',
+	'sql_array',
+);
 extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
 
 $sql_approved = ' AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.');
