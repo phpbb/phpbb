@@ -2576,26 +2576,23 @@ function add_form_key($form_name)
 }
 
 /**
-* Check the form key. Required for all altering actions not secured by confirm_box
-* @param string  $form_name The name of the form; has to match the name used in add_form_key, otherwise no restrictions apply
-* @param int $timespan The maximum acceptable age for a submitted form in seconds. Defaults to the config setting.
-* @param string $return_page The address for the return link
-* @param bool $trigger If true, the function will triger an error when encountering an invalid form
-*/
-function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false)
+ * Check the form key. Required for all altering actions not secured by confirm_box
+ *
+ * @param    string $form_name	The name of the form; has to match the name used
+ *								in add_form_key, otherwise no restrictions apply
+ * @return	bool	True, if the form key was valid, false otherwise
+ */
+function check_form_key($form_name)
 {
-	global $config, $user;
+	global $config, $request, $user;
 
-	if ($timespan === false)
-	{
-		// we enforce a minimum value of half a minute here.
-		$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
-	}
+	// we enforce a minimum value of half a minute here.
+	$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
 
-	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
+	if ($request->is_set_post('creation_time') && $request->is_set_post('form_token'))
 	{
-		$creation_time	= abs(request_var('creation_time', 0));
-		$token = request_var('form_token', '');
+		$creation_time	= abs($request->variable('creation_time', 0));
+		$token = $request->variable('form_token', '');
 
 		$diff = time() - $creation_time;
 
@@ -2610,11 +2607,6 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 				return true;
 			}
 		}
-	}
-
-	if ($trigger)
-	{
-		trigger_error($user->lang['FORM_INVALID'] . $return_page);
 	}
 
 	return false;
