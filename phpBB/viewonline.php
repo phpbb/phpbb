@@ -372,7 +372,7 @@ while ($row = $db->sql_fetchrow($result))
 	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data');
 	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
 
-	$template->assign_block_vars('user_row', array(
+	$template_row = array(
 		'USERNAME' 			=> $row['username'],
 		'USERNAME_COLOUR'	=> $row['user_colour'],
 		'USERNAME_FULL'		=> $username_full,
@@ -389,7 +389,22 @@ while ($row = $db->sql_fetchrow($result))
 		'S_USER_HIDDEN'		=> $s_user_hidden,
 		'S_GUEST'			=> ($row['user_id'] == ANONYMOUS) ? true : false,
 		'S_USER_TYPE'		=> $row['user_type'],
-	));
+	);
+
+	/**
+	* Modify viewonline template data before it is displayed in the list
+	*
+	* @event core.viewonline_modify_display
+	* @var	array	on_page			File name and query string
+	* @var	array	row				Array with the users sql row
+	* @var	array	forum_data		Array with forum data
+	* @var	array	template_row	Array with template variables for the user row
+	* @since 3.1.0-RC4
+	*/
+	$vars = array('on_page', 'row', 'forum_data', 'template_row');
+	extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_display', compact($vars)));
+
+	$template->assign_block_vars('user_row', $template_row);
 }
 $db->sql_freeresult($result);
 unset($prev_id, $prev_ip);
