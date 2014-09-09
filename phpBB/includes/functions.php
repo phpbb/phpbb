@@ -2584,15 +2584,15 @@ function add_form_key($form_name)
  */
 function check_form_key($form_name)
 {
-	global $config, $user;
+	global $config, $request, $user;
 
 	// we enforce a minimum value of half a minute here.
 	$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
 
-	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
+	if ($request->is_set_post('creation_time') && $request->is_set_post('form_token'))
 	{
-		$creation_time	= abs(request_var('creation_time', 0));
-		$token = request_var('form_token', '');
+		$creation_time	= abs($request->variable('creation_time', 0));
+		$token = $request->variable('form_token', '');
 
 		$diff = time() - $creation_time;
 
