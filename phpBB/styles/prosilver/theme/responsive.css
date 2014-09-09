@@ -350,6 +350,25 @@ fieldset.quick-login label[for="autologin"] {
 	select, .inputbox {
 		max-width: 260px;
 	}
+
+	dd.captcha {
+		margin-left: 0;
+	}
+
+	dd.captcha-image img {
+		width: 100%;
+	}
+
+	#recaptcha_challenge_image,
+	#recaptcha_response_field,
+	.recaptchatable #recaptcha_image {
+		margin: 0 !important;
+		width: 100% !important;
+		height: auto !important;
+	}
+	.recaptchatable #recaptcha_logo {
+		display: none !important;
+	}
 }
 
 @media only screen and (max-width: 430px), only screen and (max-device-width: 430px) {
