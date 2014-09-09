@@ -394,7 +394,7 @@ while ($row = $db->sql_fetchrow($result))
 	/**
 	* Modify viewonline template data before it is displayed in the list
 	*
-	* @event core.core.viewonline_modify_user_row
+	* @event core.viewonline_modify_user_row
 	* @var	array	on_page			File name and query string
 	* @var	array	row				Array with the users sql row
 	* @var	array	forum_data		Array with forum data
@@ -402,7 +402,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @since 3.1.0-RC4
 	*/
 	$vars = array('on_page', 'row', 'forum_data', 'template_row');
-	extract($phpbb_dispatcher->trigger_event('core.core.viewonline_modify_user_row', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_user_row', compact($vars)));
 
 	$template->assign_block_vars('user_row', $template_row);
 }
