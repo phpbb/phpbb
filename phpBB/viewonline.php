@@ -357,6 +357,21 @@ while ($row = $db->sql_fetchrow($result))
 		break;
 	}
 
+	/**
+	* Overwrite the location's name and URL, which are displayed in the list
+	*
+	* @event core.viewonline_overwrite_location
+	* @var	array	on_page			File name and query string
+	* @var	array	row				Array with the users sql row
+	* @var	string	location		Page name to displayed in the list
+	* @var	string	location_url	Page url to displayed in the list
+	* @var	array	forum_data		Array with forum data
+	* @since 3.1.0-a1
+	* @change 3.1.0-a2 Added var forum_data
+	*/
+	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data');
+	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
+
 	$template_row = array(
 		'USERNAME' 			=> $row['username'],
 		'USERNAME_COLOUR'	=> $row['user_colour'],
@@ -377,21 +392,17 @@ while ($row = $db->sql_fetchrow($result))
 	);
 
 	/**
-	* Overwrite the location's name and URL, which are displayed in the list
+	* Modify viewonline template data before it is displayed in the list
 	*
-	* @event core.viewonline_overwrite_location
+	* @event core.viewonline_modify_user_row
 	* @var	array	on_page			File name and query string
 	* @var	array	row				Array with the users sql row
-	* @var	string	location		Page name to be displayed in the list
-	* @var	string	location_url	Page url to be displayed in the list
 	* @var	array	forum_data		Array with forum data
 	* @var	array	template_row	Array with template variables for the user row
-	* @since 3.1.0-a1
-	* @change 3.1.0-a2 Added var forum_data
-	* @change 3.1.0-RC4 Added var template_row
+	* @since 3.1.0-RC4
 	*/
-	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data', 'template_row');
-	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
+	$vars = array('on_page', 'row', 'forum_data', 'template_row');
+	extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_user_row', compact($vars)));
 
 	$template->assign_block_vars('user_row', $template_row);
 }
