@@ -181,7 +181,17 @@ $finder = $phpbb_extension_manager->get_finder();
 
 $migrations = $finder
 	->core_path('phpbb/db/migration/data/')
+	->extension_directory('/migrations')
 	->get_classes();
+
+// @deprecated to be removed in 3.2 final
+$migrations_deprecated = $phpbb_extension_manager
+	->get_finder()
+	->extension_directory('/migrations')
+	->get_classes();
+
+$migrations = array_merge($migrations, $migrations_deprecated);
+
 $migrator->set_migrations($migrations);
 
 // What is a safe limit of execution time? Half the max execution time should be safe.
