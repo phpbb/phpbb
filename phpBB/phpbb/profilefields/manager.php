@@ -245,12 +245,8 @@ class manager
 			$cp_data = $this->build_insert_sql_array($cp_data);
 			$cp_data['user_id'] = (int) $user_id;
 
-			$this->db->sql_return_on_error(true);
-
 			$sql = 'INSERT INTO ' . $this->fields_data_table . ' ' . $this->db->sql_build_array('INSERT', $cp_data);
 			$this->db->sql_query($sql);
-
-			$this->db->sql_return_on_error(false);
 		}
 	}
 
@@ -328,7 +324,7 @@ class manager
 		* Event to modify profile fields data retrieved from the database
 		*
 		* @event core.grab_profile_fields_data
-		* @var	array	user_ids		Single user id or an array of ids 
+		* @var	array	user_ids		Single user id or an array of ids
 		* @var	array	field_data		Array with profile fields data
 		* @since 3.1.0-b3
 		*/
@@ -377,7 +373,7 @@ class manager
 		* Event to modify data of the generated profile fields, before the template assignment loop
 		*
 		* @event core.generate_profile_fields_template_data_before
-		* @var	array	profile_row		Array with users profile field data 
+		* @var	array	profile_row		Array with users profile field data
 		* @var	array	tpl_fields		Array with template data fields
 		* @var	bool	use_contact_fields	Should we display contact fields as such?
 		* @since 3.1.0-b3
@@ -445,7 +441,7 @@ class manager
 		* Event to modify template data of the generated profile fields
 		*
 		* @event core.generate_profile_fields_template_data
-		* @var	array	profile_row		Array with users profile field data 
+		* @var	array	profile_row		Array with users profile field data
 		* @var	array	tpl_fields		Array with template data fields
 		* @var	bool	use_contact_fields	Should we display contact fields as such?
 		* @since 3.1.0-b3
