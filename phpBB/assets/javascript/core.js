@@ -173,7 +173,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	$confirmDiv.find('input[type="button"]').one('click', clickHandler);
 
 	$dark.one('click', function(e) {
-		$confirmDiv.find('.alert_close').unbind('click');
+		$confirmDiv.find('.alert_close').off('click');
 		$dark.fadeOut(phpbb.alertTime, function() {
 			$confirmDiv.hide();
 		});
@@ -507,15 +507,15 @@ phpbb.search.cleanKeyword = function(keyword) {
  * Get clean version of search keyword. If textarea supports several keywords
  * (one per line), it fetches the current keyword based on the caret position.
  *
- * @param jQuery el			Search input|textarea.
+ * @param jQuery $input		Search input|textarea.
  * @param string keyword	Input|textarea value.
  * @param bool multiline	Whether textarea supports multiple search keywords.
  *
  * @return string Clean string.
  */
-phpbb.search.getKeyword = function($el, keyword, multiline) {
+phpbb.search.getKeyword = function($input, keyword, multiline) {
 	if (multiline) {
-		var line = phpbb.search.getKeywordLine($el);
+		var line = phpbb.search.getKeywordLine($input);
 		keyword = keyword.split('\n').splice(line, 1);
 	}
 	return phpbb.search.cleanKeyword(keyword);
@@ -525,46 +525,47 @@ phpbb.search.getKeyword = function($el, keyword, multiline) {
  * Get the textarea line number on which the keyword resides - for textareas
  * that support multiple keywords (one per line). 
  *
- * @param jQuery $el	Search textarea.
+ * @param jQuery $textarea	Search textarea.
  * @return int
  */
-phpbb.search.getKeywordLine = function ($el) {
-	return $el.val().substr(0, $el.get(0).selectionStart).split('\n').length - 1;
+phpbb.search.getKeywordLine = function ($textarea) {
+	var selectionStart = $textarea.get(0).selectionStart;
+	return $textarea.val().substr(0, selectionStart).split('\n').length - 1;
 };
 
 /**
  * Set the value on the input|textarea. If textarea supports multiple
  * keywords, only the active keyword is replaced.
  *
- * @param jQuery $el			Search input|textarea.
+ * @param jQuery $input		Search input|textarea.
  * @param string value		Value to set.
  * @param bool multiline	Whether textarea supports multiple search keywords.	
  *
  * @return undefined
  */
-phpbb.search.setValue = function($el, value, multiline) {
+phpbb.search.setValue = function($input, value, multiline) {
 	if (multiline) {
-		var line = phpbb.search.getKeywordLine($el),
-			lines = $el.val().split('\n');
+		var line = phpbb.search.getKeywordLine($input),
+			lines = $input.val().split('\n');
 		lines[line] = value;
 		value = lines.join('\n');
 	}
-	$el.val(value);
+	$input.val(value);
 };
 
 /**
  * Sets the onclick event to set the value on the input|textarea to the selected search result. 
  *
- * @param jQuery $el		Search input|textarea.
+ * @param jQuery $input		Search input|textarea.
  * @param object value		Result object.
  * @param jQuery $row		Result element.
  * @param jQuery $container	jQuery object for the search container.
  *
  * @return undefined
  */
-phpbb.search.setValueOnClick = function($el, value, $row, $container) {
+phpbb.search.setValueOnClick = function($input, value, $row, $container) {
 	$row.click(function() {
-		phpbb.search.setValue($el, value.result, $el.attr('data-multiline'));
+		phpbb.search.setValue($input, value.result, $input.attr('data-multiline'));
 		$container.hide();
 	});
 };
@@ -634,18 +635,18 @@ phpbb.search.filter = function(data, event, sendRequest) {
  * Handle search result response. 
  *
  * @param object res		Data received from server.
- * @param jQuery el			Search input|textarea.
+ * @param jQuery $input		Search input|textarea.
  * @param bool fromCache	Whether the results are from the cache.
  * @param function callback	Optional callback to run when assigning each search result.
  *
  * @return undefined
  */
-phpbb.search.handleResponse = function(res, el, fromCache, callback) {
+phpbb.search.handleResponse = function(res, $input, fromCache, callback) {
 	if (typeof res !== 'object') {
 		return;
 	}
 
-	var searchID = el.attr('data-results'),
+	var searchID = $input.attr('data-results'),
 		$container = $(searchID);
 
 	if (this.cache.get(searchID).callback) {
@@ -659,20 +660,20 @@ phpbb.search.handleResponse = function(res, el, fromCache, callback) {
 	}
 
 	this.cache.set(searchID, 'lastSearch', res.keyword);
-	this.showResults(res.results, el, $container, callback);
+	this.showResults(res.results, $input, $container, callback);
 };
 
 /**
  * Show search results.
  *
  * @param array results		Search results.
- * @param jQuery el			Search input|textarea.
+ * @param jQuery $input		Search input|textarea.
  * @param jQuery $container	Search results container element.
  * @param function callback	Optional callback to run when assigning each search result.
  *
  * @return undefined
  */
-phpbb.search.showResults = function(results, el, $container, callback) {
+phpbb.search.showResults = function(results, $input, $container, callback) {
 	var $resultContainer = $('.search-results', $container);
 	this.clearResults($resultContainer);
 
@@ -697,7 +698,7 @@ phpbb.search.showResults = function(results, el, $container, callback) {
 		row.find('.search-result').html(item.display);
 
 		if (typeof callback === 'function') {
-			callback.call(this, el, item, row, $container);
+			callback.call(this, $input, item, row, $container);
 		}
 		row.appendTo($resultContainer).show();
 	});
@@ -945,17 +946,17 @@ phpbb.addAjaxCallback('member_search', function(res) {
  * current text so that the process can be repeated.
  */
 phpbb.addAjaxCallback('alt_text', function() {
-	var $el,
+	var $anchor,
 		updateAll = $(this).data('update-all'),
 		altText;
 
 	if (updateAll !== undefined && updateAll.length) {
-		$el = $(updateAll);
+		$anchor = $(updateAll);
 	} else {
-		$el = $(this);
+		$anchor = $(this);
 	}
 
-	$el.each(function() {
+	$anchor.each(function() {
 		var $this = $(this);
 		altText = $this.attr('data-alt-text');
 		$this.attr('data-alt-text', $this.text());
@@ -974,19 +975,19 @@ phpbb.addAjaxCallback('alt_text', function() {
  * and changes the link itself.
  */
 phpbb.addAjaxCallback('toggle_link', function() {
-	var $el,
+	var $anchor,
 		updateAll = $(this).data('update-all') ,
 		toggleText,
 		toggleUrl,
 		toggleClass;
 
 	if (updateAll !== undefined && updateAll.length) {
-		$el = $(updateAll);
+		$anchor = $(updateAll);
 	} else {
-		$el = $(this);
+		$anchor = $(this);
 	}
 
-	$el.each(function() {
+	$anchor.each(function() {
 		var $this = $(this);
 
 		// Toggle link text
@@ -1519,13 +1520,13 @@ phpbb.toggleDisplay = function(id, action, type) {
 		type = 'block';
 	}
 
-	var $el = $('#' + id);
+	var $element = $('#' + id);
 
-	var display = $el.css('display');
+	var display = $element.css('display');
 	if (!action) {
 		action = (display === '' || display === type) ? -1 : 1;
 	}
-	$el.css('display', ((action === 1) ? type : 'none'));
+	$element.css('display', ((action === 1) ? type : 'none'));
 };
 
 /**

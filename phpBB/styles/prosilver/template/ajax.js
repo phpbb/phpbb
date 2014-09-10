@@ -116,16 +116,16 @@ phpbb.addAjaxCallback('notification.mark_read', function(res) {
 /**
  * Mark notification popup rows as read.
  *
- * @param {jQuery} $el jQuery object(s) to mark read.
+ * @param {jQuery} $popup jQuery object(s) to mark read.
  * @param {int} unreadCount The new unread notifications count.
  */
-phpbb.markNotifications = function($el, unreadCount) {
+phpbb.markNotifications = function($popup, unreadCount) {
 	// Remove the unread status.
-	$el.removeClass('bg2');
-	$el.find('a.mark_read').remove();
+	$popup.removeClass('bg2');
+	$popup.find('a.mark_read').remove();
 
 	// Update the notification link to the real URL.
-	$el.each(function() {
+	$popup.each(function() {
 		var link = $(this).find('a');
 		link.attr('href', link.attr('data-real-url'));
 	});
@@ -164,8 +164,7 @@ phpbb.addAjaxCallback('post_visibility', function(res) {
 		$(this).remove();
 	});
 
-	if (res.visible)
-	{
+	if (res.visible) {
 		// Remove the "Deleted by" message from the post on restoring.
 		remove.parents('.post').find('.post_deleted_msg').css('pointer-events', 'none').fadeOut(function() {
 			$(this).remove();
