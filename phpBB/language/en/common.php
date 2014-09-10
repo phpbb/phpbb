@@ -518,6 +518,10 @@ $lang = array_merge($lang, array(
 	'NO_USER_SPECIFIED'			=> 'No username was specified.',
 
 	// Nullar/Singular/Plural language entry. The key numbers define the number range in which a certain grammatical expression is valid.
+	'NUM_ATTACHMENTS'		=> array(
+		1	=> '%d attachment',
+		2	=> '%d attachments',
+	),
 	'NUM_POSTS_IN_QUEUE'		=> array(
 		0			=> 'No posts in queue',		// 0
 		1			=> '1 post in queue',		// 1
