@@ -2578,16 +2578,21 @@ function add_form_key($form_name)
 /**
  * Check the form key. Required for all altering actions not secured by confirm_box
  *
- * @param    string $form_name	The name of the form; has to match the name used
+ * @param	string	$form_name	The name of the form; has to match the name used
  *								in add_form_key, otherwise no restrictions apply
+ * @param	int		$timespan	The maximum acceptable age for a submitted form
+ *								in seconds. Defaults to the config setting.
  * @return	bool	True, if the form key was valid, false otherwise
  */
-function check_form_key($form_name)
+function check_form_key($form_name, $timespan = false)
 {
 	global $config, $request, $user;
 
-	// we enforce a minimum value of half a minute here.
-	$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
+	if ($timespan === false)
+	{
+		// we enforce a minimum value of half a minute here.
+		$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
+	}
 
 	if ($request->is_set_post('creation_time') && $request->is_set_post('form_token'))
 	{
