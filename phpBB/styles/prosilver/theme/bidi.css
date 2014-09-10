@@ -426,21 +426,13 @@ li.breadcrumbs span:first-child > a {
 	padding-right: 1px;
 }
 
-.rtl dl.icon {
-	background-position: 99.5% 50%;
-}
-
 .rtl li.header dl.icon dt .list-inner {
 	/* Tweak for headers alignment when folder icon used */
 	padding-right: 0;
 	padding-left: 50px;
 }
 
-.rtl dl.icon dt {
-	background-position: 99.5% 95%;			/* Position of topic icon */
-}
-
-.rtl dl.icon dt .list-inner {
+.rtl li.row dl dt .list-inner {
 	padding-left: 5px;
 	padding-right: 45px;					/* Space for folder icon */
 }

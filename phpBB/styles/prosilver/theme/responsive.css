@@ -107,7 +107,7 @@ ul.topiclist dt, ul.topiclist dt .list-inner,
 ul.topiclist.missing-column dt, ul.topiclist.missing-column dt .list-inner,
 ul.topiclist.two-long-columns dt, ul.topiclist.two-long-columns dt .list-inner,
 ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
-	margin-right: 0;
+	margin-right: -46px;
 }
 
 ul.topiclist dt .list-inner.with-mark {
@@ -115,7 +115,7 @@ ul.topiclist dt .list-inner.with-mark {
 }
 
 ul.topiclist dt .list-inner {
-	min-height: 28px;
+	min-height: 30px;
 }
 
 ul.topiclist li.header dt .list-inner {
@@ -132,10 +132,10 @@ ul.topiclist dd.mark {
 /* Forums and topics lists
 ----------------------------------------*/
 ul.topiclist.forums dt {
-	margin-right: -250px;
+	margin-right: -296px;
 }
 ul.topiclist.forums dt .list-inner {
-	margin-right: 250px;
+	margin-right: 296px;
 }
 
 ul.topiclist.forums dd.lastpost {
@@ -164,16 +164,20 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 @media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
 {
 	ul.topiclist.forums dt {
-		margin-right: 0;
+		margin-right: -46px;
 	}
 
 	ul.topiclist.forums dt .list-inner {
-		margin-right: 0;
+		margin-right: 46px;
 	}
 
 	ul.topiclist.forums dd.lastpost {
 		display: none;
 	}
+}
+
+li.row .responsive-show {
+	margin-right: 86px;
 }
 
 li.row .responsive-show strong {

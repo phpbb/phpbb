@@ -20,7 +20,7 @@ dd label input {
 }
 
 /* Simple fix so forum and topic lists always have a height set */
-dl.icon {
+.topiclist dl {
 	*height: 35px;
 }
 
@@ -36,7 +36,7 @@ dl.details dd {
 }
 
 /* Forum list column styles for IE7 */
-dl.icon dt, dl.icon dd {
+.topiclist dl dt, .topiclist dl dd {
 	*min-height: 32px;
 }
 

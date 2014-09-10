@@ -478,7 +478,7 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	position: absolute;
 	left: 0;
 	top: 1.2em;
-	z-index: 2;
+	z-index: 99;
 	border: 1px solid transparent;
 	border-radius: 5px;
 	padding: 9px 0 0;
