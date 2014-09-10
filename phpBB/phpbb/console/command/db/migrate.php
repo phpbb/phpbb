@@ -117,8 +117,17 @@ class migrate extends \phpbb\console\command\command
 		$migrations = $this->extension_manager
 			->get_finder()
 			->core_path('phpbb/db/migration/data/')
+			->extension_directory('/migration')
+			->get_classes();
+
+		// @deprecated to be removed in 3.2 final
+		$migrations_deprecated = $this->extension_manager
+			->get_finder()
 			->extension_directory('/migrations')
 			->get_classes();
+
+		$migrations = array_merge($migrations, $migrations_deprecated);
+
 		$this->migrator->set_migrations($migrations);
 	}
 
