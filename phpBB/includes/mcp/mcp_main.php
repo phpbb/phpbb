@@ -161,9 +161,13 @@ class mcp_main
 				* This event allows you to handle custom quickmod options
 				*
 				* @event core.modify_quickmod_actions
+				* @var	string	action		Topic quick moderation action name
+				* @var	bool	quickmod	Flag indicating whether MCP is in quick moderation mode
 				* @since 3.1.0-a4
+				* @change 3.1.0-RC4 Added variables: action, quickmod
 				*/
-				$phpbb_dispatcher->dispatch('core.modify_quickmod_actions');
+				$vars = array('action', 'quickmod');
+				extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_actions', compact($vars)));
 			break;
 		}
 
