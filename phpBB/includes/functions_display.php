@@ -379,10 +379,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$last_catless = true;
 	foreach ($forum_rows as $row)
 	{
-		// Empty category
+		// Category
 		if ($row['parent_id'] == $root_data['forum_id'] && $row['forum_type'] == FORUM_CAT)
 		{
-			$template->assign_block_vars('forumrow', array(
+			$cat_row = array(
 				'S_IS_CAT'				=> true,
 				'FORUM_ID'				=> $row['forum_id'],
 				'FORUM_NAME'			=> $row['forum_name'],
@@ -391,8 +391,32 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'FORUM_FOLDER_IMG_SRC'	=> '',
 				'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
 				'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
-				'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
+				'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 			);
+
+			/**
+			* Modify the template data block of the 'category'
+			*
+			* This event is triggered once per 'category'
+			*
+			* @event core.display_forums_modify_category_template_vars
+			* @var	array	cat_row			Template data of the 'category'
+			* @var	bool	catless			The flag indicating whether the 'category' has a parent category
+			* @var	bool	last_catless	The flag indicating whether the last forum had a parent category
+			* @var	array	root_data		Array with the root forum data
+			* @var	array	row				The data of the 'category'
+			* @since 3.1.0-RC4
+			*/
+			$vars = array(
+				'cat_row',
+				'catless',
+				'last_catless',
+				'root_data',
+				'row',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_category_template_vars', compact($vars)));
+
+			$template->assign_block_vars('forumrow', $cat_row);
 
 			continue;
 		}
