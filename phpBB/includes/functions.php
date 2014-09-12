@@ -2836,15 +2836,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			*
 			* @event core.login_box_redirect
 			* @var   string   redirect   Redirect string
-			* @var   string   l_success   Login success status
-			* @var   bool   admin      Is the login for an Admin?
 			* @since 3.1.0-RC4
 			*/
-			$vars = array(
-				'redirect',
-				'l_success',
-				'admin',
-			);
+			$vars = array('redirect',);
 			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
