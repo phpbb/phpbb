@@ -127,6 +127,7 @@ dd input, dd textarea {
 
 dd select {
 	width: auto;
+	max-width: 100%;
 }
 
 dd textarea {
