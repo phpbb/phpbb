@@ -83,7 +83,6 @@ if (isset($_GET['avatar']))
 
 	// load extensions
 	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
-	$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));

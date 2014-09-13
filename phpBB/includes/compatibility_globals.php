@@ -43,6 +43,5 @@ $phpbb_path_helper = $phpbb_container->get('path_helper');
 
 // load extensions
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
-$phpbb_subscriber_loader = $phpbb_container->get('event.subscriber_loader');
 
 $template = $phpbb_container->get('template');
