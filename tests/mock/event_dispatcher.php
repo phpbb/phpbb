@@ -11,9 +11,18 @@
 *
 */
 
-class phpbb_mock_event_dispatcher
+class phpbb_mock_event_dispatcher extends \phpbb\event\dispatcher
 {
-	public function trigger_event($eventName, $data)
+	/**
+	* Constructor.
+	*
+	* Overwrite the constructor to get rid of ContainerInterface param instance
+	*/
+	public function __construct()
+	{
+	}
+
+	public function trigger_event($eventName, $data = array())
 	{
 		return array();
 	}

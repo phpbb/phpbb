@@ -28,7 +28,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 
 		global $phpbb_dispatcher;
 
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$this->user->expects($this->any())
 			->method('lang')
@@ -58,7 +58,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		);
 
 		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, $symfony_request, $filesystem, '', 'php', dirname(__FILE__) . '/');
-		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper);
+		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper, $phpbb_dispatcher);
 	}
 
 	public function generate_template_pagination_data()
