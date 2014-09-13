@@ -162,6 +162,7 @@ services:
         arguments:
             - @dispatcher
             - @event.listener_collection
+            - @cache
         calls:
             - [load, []]
 
