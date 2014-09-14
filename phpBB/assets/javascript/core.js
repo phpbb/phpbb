@@ -81,22 +81,9 @@ phpbb.alert = function(title, msg, fadedark) {
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
-			closeBox(true, e, true);
+			phpbb.alert.close($alert, true, e, true);
 		}
 	});
-
-	$dark.one('click', function(e) {
-		closeBox(true, e, true);
-	});
-
-	$alert.find('.alert_close').one('click', function(e) {
-		closeBox(true, e, false);
-	});
-
-	var closeBox = function(fadedark, event, stopPropagation) {
-		phpbb.alert.close($alert, fadedark, event, stopPropagation);
-	};
-
 	phpbb.alert.open($alert);
 
 	return $alert;
@@ -128,6 +115,14 @@ phpbb.alert.open = function($alert) {
 
 	$alert.on('click', function(e) {
 		e.stopPropagation();
+	});
+
+	$dark.one('click', function(e) {
+		phpbb.alert.close($alert, true, e, true);
+	});
+
+	$alert.find('.alert_close').one('click', function(e) {
+		phpbb.alert.close($alert, true, e, false);
 	});
 };
 
@@ -188,22 +183,13 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
 		var confirmed = this.name === 'confirm',
 			fadedark = fadedark || !confirmed;
-		closeBox(fadedark, confirmed, e, true);
-	});
 
-	$dark.one('click', function(e) {
-		closeBox(true, false, e, true);
-	});
-
-	$confirmDiv.find('.alert_close').one('click', function(e) {
-		closeBox(true, false, e, false);
-	});
-
-	var closeBox = function(fadedark, confirmed, event, stopPropagation) {
+		if (confirmed) {
+			callback(true);
+		}
 		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
-		callback(confirmed);
-		phpbb.alert.close($confirmDiv, fadedark, event, stopPropagation);
-	};
+		phpbb.alert.close($confirmDiv, fadedark, e, true);
+	});
 
 	phpbb.alert.open($confirmDiv);
 
