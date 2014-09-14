@@ -1969,3 +1969,13 @@ function phpbb_add_notification_options($user_notify_pm)
 
 	$sql = $db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
 }
+
+function phpbb_convert_password_hash($hash)
+{
+	global $phpbb_container;
+
+	$manager = $phpbb_container->get('passwords.manager');
+	$hash = $manager->hash($hash, '$H$');
+
+	return '$CP$' . $hash;
+}
