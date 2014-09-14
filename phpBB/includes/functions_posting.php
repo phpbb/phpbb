@@ -2538,7 +2538,7 @@ function phpbb_upload_popup($forum_style = 0)
 /**
 * Do the various checks required for removing posts as well as removing it
 */
-function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $soft_delete_reason = '')
+function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {
 	global $user, $auth, $config, $request;
 	global $phpbb_root_path, $phpEx;
@@ -2571,19 +2571,19 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				'post_postcount'		=> $post_data['post_postcount'],
 			);
 
-			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $soft_delete_reason);
+			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $delete_reason);
 			$post_username = ($post_data['poster_id'] == ANONYMOUS && !empty($post_data['post_username'])) ? $post_data['post_username'] : $post_data['username'];
 
 			if ($next_post_id === false)
 			{
-				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), $post_data['topic_title'], $post_username, $soft_delete_reason);
+				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), $post_data['topic_title'], $post_username, $delete_reason);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 				$message = $user->lang['POST_DELETED'];
 			}
 			else
 			{
-				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), $post_data['post_subject'], $post_username, $soft_delete_reason);
+				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), $post_data['post_subject'], $post_username, $delete_reason);
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
 				$message = $user->lang['POST_DELETED'];

@@ -436,9 +436,8 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 		trigger_error('NO_POST');
 	}
 
-	$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
-	$soft_delete_reason = ($mode == 'soft_delete' && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
-	phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $soft_delete_reason);
+	$delete_reason = $request->variable('delete_reason', '', true);
+	phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $delete_reason);
 	return;
 }
 
@@ -1258,9 +1257,8 @@ if ($submit || $preview || $refresh)
 			// Handle delete mode...
 			if ($request->is_set_post('delete') || $request->is_set_post('delete_permanent'))
 			{
-				$allow_reason = $auth->acl_get('m_softdelete', $forum_id) || ($auth->acl_gets('m_delete', 'f_delete', $forum_id) && $auth->acl_gets('m_softdelete', 'f_softdelete', $forum_id));
-				$soft_delete_reason = (!$request->is_set_post('delete_permanent') && $allow_reason) ? $request->variable('delete_reason', '', true) : '';
-				phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $soft_delete_reason);
+				$delete_reason = $request->variable('delete_reason', '', true);
+				phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, !$request->is_set_post('delete_permanent'), $delete_reason);
 				return;
 			}
 
