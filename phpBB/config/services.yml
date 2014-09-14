@@ -73,7 +73,7 @@ services:
             - @template
             - @user
             - @config
-            - @controller.provider
+            - @router
             - @ext.manager
             - @symfony_request
             - @request
@@ -88,11 +88,6 @@ services:
             - @service_container
             - %core.root_path%
             - @template
-
-    controller.provider:
-        class: phpbb\controller\provider
-        calls:
-            - [find, [%core.root_path%]]
 
     ext.manager:
         class: phpbb\extension\manager
@@ -156,6 +151,20 @@ services:
         arguments:
             - null
             - %core.disable_super_globals%
+
+    router:
+        class: phpbb\routing\router
+        arguments:
+            - @ext.manager
+            - %core.root_path%
+            - %core.php_ext%
+
+    router.listener:
+        class: Symfony\Component\HttpKernel\EventListener\RouterListener
+        arguments:
+            - @router
+        tags:
+            - { name: kernel.event_subscriber }
 
     # WARNING: The Symfony request does not escape the input and should be used very carefully
     #           prefer the phpbb request (service @request) as possible
