@@ -124,7 +124,7 @@ class helper
 		$context->fromRequest($this->symfony_request);
 
 		$script_name = $this->symfony_request->getScriptName();
-		$page_name = substr($script_name, -1, 1) == '/' ? '' : basename($script_name);
+		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
 		$context->setBaseUrl(str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $context->getBaseUrl()));
 
 		$url_generator = new UrlGenerator($this->route_collection, $context);
