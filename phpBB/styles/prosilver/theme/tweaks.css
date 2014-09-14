@@ -1,78 +1,27 @@
 /* Style Sheet Tweaks
 
-These style definitions are IE 7 and 8 specific
-tweaks required due to its poor CSS support.
--------------------------------------------------*/
+These style definitions are IE 8 & 9 only.
+They are required due to the poor CSS support in IE browsers.
+------------------------------------------------------------------------------*/
 
-/* Clear float fix for IE7 */
-.inner {
-	zoom: 1;
-}
+/* IE 8 Tweaks (value)\9 equates to  IE <= 8
+------------------------------------------------------------------------------*/
 
-ul.linklist {
-	zoom: 1;
-}
+/* Clear float fix */
+.inner, ul.linklist { zoom: 1\9; }
 
 /* Align checkboxes/radio buttons nicely */
-dd label input {
-	vertical-align: text-bottom;
-	*vertical-align: middle;
-}
+dd label input { vertical-align: text-bottom\9; }
 
-/* Simple fix so forum and topic lists always have a height set */
-dl.icon {
-	*height: 35px;
-}
-
-/* Correctly clear floating for details on profile view */
-dl.details dd {
-	*margin-left: 30%;
-	*float: none;
-}
-
-/* Headerbar height fix for IE7 */
-#site-description p {
-	*margin-bottom: 1.0em;
-}
-
-/* Forum list column styles for IE7 */
-dl.icon dt, dl.icon dd {
-	*min-height: 32px;
-}
-
-dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
-	*width: 79px;
-}
-
-dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
-	*width: 249px;
-}
-
-dd.option {
-	*width: 124px;
-}
-
-/* Notifications list for IE7 */
-.dropdown-extended {
-	*left: 0;
-}
-
-.dropdown-extended .header_settings {
-	*position: absolute;
-	*right: 10px;
-	*top: 0;
-}
-
-.icon-notification {
-	*z-index: 2;
-}
-
-/* Fixes header-avatar aspect-ratio in IE8 */
-.header-avatar img {
-	height: 20px;
-}
+/* Fixes header-avatar aspect-ratio */
+.header-avatar img { height: 20px\9; }
 
 /* IE8 often can't handle max-width in %, so we use px instead */
-.postprofile .avatar img {
-	max-width: 150px; 
-}
+.postprofile .avatar img { max-width: 150px\9; }
+
+
+
+/* IE 9 Tweaks
+------------------------------------------------------------------------------*/
+
+
