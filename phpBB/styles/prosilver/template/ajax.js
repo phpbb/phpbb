@@ -353,14 +353,6 @@ $('.display_post').click(function(e) {
 	$('#post_hidden' + postId).hide();
 });
 
-$('#delete_permanent').click(function () {
-	if ($(this).prop('checked')) {
-		$('#delete_reason').hide();
-	} else {
-		$('#delete_reason').show();
-	}
-});
-
 /**
 * Toggle the member search panel in memberlist.php.
 *
