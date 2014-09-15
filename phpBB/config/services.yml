@@ -329,6 +329,9 @@ services:
 
     request:
         class: phpbb\request\request
+        arguments:
+            - null
+            - %core.disable_super_globals%
 
     symfony_request:
         class: phpbb\symfony_request
