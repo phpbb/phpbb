@@ -30,9 +30,10 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 		$this->symfony_request = new \phpbb\symfony_request(
 			$request
 		);
+		$this->filesystem = new \phpbb\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$this->symfony_request,
-			new \phpbb\filesystem(),
+			$this->filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -96,7 +97,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	*/
 	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, '', 'php', dirname(__FILE__) . '/');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->filesystem, '', 'php', dirname(__FILE__) . '/');
 		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id));
 	}
 
@@ -136,7 +137,7 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	public function test_helper_url_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, '', 'php', dirname(__FILE__) . '/');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->filesystem, '', 'php', dirname(__FILE__) . '/');
 		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id));
 	}
 }
