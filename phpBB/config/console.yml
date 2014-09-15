@@ -1,5 +1,8 @@
 services:
     console.command_collection:
+        alias: internal.console.command_collection
+
+    internal.console.command_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container

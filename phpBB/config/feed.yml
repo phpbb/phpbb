@@ -1,5 +1,32 @@
 services:
     feed.helper:
+        alias: internal.feed.helper
+
+    feed.factory:
+        alias: internal.feed.factory
+
+    feed.forum:
+        alias: internal.feed.forum
+
+    feed.forums:
+        alias: internal.feed.forums
+
+    feed.news:
+        alias: internal.feed.news
+
+    feed.overall:
+        alias: internal.feed.overall
+
+    feed.topic:
+        alias: internal.feed.topic
+
+    feed.topics:
+        alias: internal.feed.topics
+
+    feed.topics_active:
+        alias: internal.feed.topics_active
+
+    internal.feed.helper:
         class: phpbb\feed\helper
         arguments:
             - @config
@@ -7,14 +34,14 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    feed.factory:
+    internal.feed.factory:
         class: phpbb\feed\factory
         arguments:
             - @service_container
             - @config
             - @dbal.conn
 
-    feed.forum:
+    internal.feed.forum:
         class: phpbb\feed\forum
         scope: prototype
         arguments:
@@ -27,7 +54,7 @@ services:
             - @content.visibility
             - %core.php_ext%
 
-    feed.forums:
+    internal.feed.forums:
         class: phpbb\feed\forums
         scope: prototype
         arguments:
@@ -40,7 +67,7 @@ services:
             - @content.visibility
             - %core.php_ext%
 
-    feed.news:
+    internal.feed.news:
         class: phpbb\feed\news
         scope: prototype
         arguments:
@@ -53,7 +80,7 @@ services:
             - @content.visibility
             - %core.php_ext%
 
-    feed.overall:
+    internal.feed.overall:
         class: phpbb\feed\overall
         scope: prototype
         arguments:
@@ -66,7 +93,7 @@ services:
             - @content.visibility
             - %core.php_ext%
 
-    feed.topic:
+    internal.feed.topic:
         class: phpbb\feed\topic
         scope: prototype
         arguments:
@@ -79,7 +106,7 @@ services:
             - @content.visibility
             - %core.php_ext%
 
-    feed.topics:
+    internal.feed.topics:
         class: phpbb\feed\topics
         scope: prototype
         arguments:
@@ -92,7 +119,7 @@ services:
             - @content.visibility
             - %core.php_ext%
 
-    feed.topics_active:
+    internal.feed.topics_active:
         class: phpbb\feed\topics_active
         scope: prototype
         arguments:

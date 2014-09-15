@@ -6,6 +6,12 @@ parameters:
     mimetype.guesser.priority.highest: 2
 
 services:
+    mimetype.guesser_collection:
+        alias: internal.mimetype.guesser_collection
+
+    mimetype.guesser:
+        alias: internal.mimetype.guesser
+
     mimetype.fileinfo_mimetype_guesser:
         class: Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser
         tags:
@@ -30,14 +36,14 @@ services:
         tags:
             - { name: mimetype.guessers }
 
-    mimetype.guesser_collection:
+    internal.mimetype.guesser_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: mimetype.guessers }
 
-    mimetype.guesser:
+    internal.mimetype.guesser:
         class: phpbb\mimetype\guesser
         arguments:
             - @mimetype.guesser_collection

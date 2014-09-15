@@ -37,6 +37,14 @@ class collection_pass implements CompilerPassInterface
 
 			foreach ($container->findTaggedServiceIds($data[0]['tag']) as $service_id => $service_data)
 			{
+				foreach ($container->getAliases() as $alias_id => $alias)
+				{
+					if ($alias->__toString() === $service_id)
+					{
+						$definition->addMethodCall('add_alias', array($alias_id));
+					}
+				}
+
 				$definition->addMethodCall('add', array($service_id));
 			}
 		}

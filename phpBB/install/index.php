@@ -136,7 +136,7 @@ $phpbb_container_builder->set_custom_parameters(array(
 ));
 
 $phpbb_container = $phpbb_container_builder->get_container();
-$phpbb_container->register('dbal.conn.driver')->setSynthetic(true);
+$phpbb_container->register('internal.dbal.conn.driver')->setSynthetic(true);
 $phpbb_container->compile();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));

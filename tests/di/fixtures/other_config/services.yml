@@ -3,12 +3,21 @@ parameters:
 
 services:
     config.php:
-        synthetic: true
+        alias: internal.config.php
 
     dbal.conn:
+        alias: internal.dbal.conn
+
+    dispatcher:
+        alias: internal.dispatcher
+
+    internal.config.php:
+        synthetic: true
+
+    internal.dbal.conn:
         class: phpbb\db\driver\factory
         arguments:
             - @service_container
 
-    dispatcher:
+    internal.dispatcher:
         class: phpbb\db\driver\container_mock

@@ -1,5 +1,14 @@
 services:
     profilefields.manager:
+        alias: internal.profilefields.manager
+
+    profilefields.lang_helper:
+        alias: internal.profilefields.lang_helper
+
+    profilefields.type_collection:
+        alias: internal.profilefields.type_collection
+
+    internal.profilefields.manager:
         class: phpbb\profilefields\manager
         arguments:
             - @auth
@@ -13,13 +22,13 @@ services:
             - %tables.profile_fields_language%
             - %tables.profile_fields_data%
 
-    profilefields.lang_helper:
+    internal.profilefields.lang_helper:
         class: phpbb\profilefields\lang_helper
         arguments:
             - @dbal.conn
             - %tables.profile_fields_options_language%
 
-    profilefields.type_collection:
+    internal.profilefields.type_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
