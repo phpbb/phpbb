@@ -125,6 +125,8 @@ class helper
 
 		$script_name = $this->symfony_request->getScriptName();
 		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
+
+		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
 		$context->setBaseUrl(str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $context->getBaseUrl()));
 
 		$url_generator = new UrlGenerator($this->route_collection, $context);
