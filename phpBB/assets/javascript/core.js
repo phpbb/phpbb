@@ -81,7 +81,9 @@ phpbb.alert = function(title, msg, fadedark) {
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
-			phpbb.alert.close($alert, true, e, true);
+			phpbb.alert.close($alert, true);
+			e.preventDefault();
+			e.stopPropagation();
 		}
 	});
 	phpbb.alert.open($alert);
@@ -118,11 +120,14 @@ phpbb.alert.open = function($alert) {
 	});
 
 	$dark.one('click', function(e) {
-		phpbb.alert.close($alert, true, e, true);
+		phpbb.alert.close($alert, true);
+		e.preventDefault();
+		e.stopPropagation();
 	});
 
 	$alert.find('.alert_close').one('click', function(e) {
-		phpbb.alert.close($alert, true, e, false);
+		phpbb.alert.close($alert, true);
+		e.preventDefault();
 	});
 };
 
@@ -131,10 +136,8 @@ phpbb.alert.open = function($alert) {
 *
 * @param jQuery $alert			jQuery object.
 * @param bool fadedark			Whether to remove dark background.
-* @param object event			Event object.
-* @param bool stopPropagation	Whether to stop event's propagation.
 */
-phpbb.alert.close = function($alert, fadedark, event, stopPropagation) {
+phpbb.alert.close = function($alert, fadedark) {
 	var $fade = (fadedark) ? $dark : $alert;
 
 	$fade.fadeOut(phpbb.alertTime, function() {
@@ -143,13 +146,6 @@ phpbb.alert.close = function($alert, fadedark, event, stopPropagation) {
 
 	$alert.find('.alert_close').off('click');
 	$(document).off('keydown.phpbb.alert');
-
-	if (event) {
-		event.preventDefault();
-		if (stopPropagation) {
-			event.stopPropagation();
-		}
-	}
 };
 
 /**
@@ -188,7 +184,10 @@ phpbb.confirm = function(msg, callback, fadedark) {
 			callback(true);
 		}
 		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
-		phpbb.alert.close($confirmDiv, fadedark, e, true);
+		phpbb.alert.close($confirmDiv, fadedark);
+
+		e.preventDefault();
+		e.stopPropagation();
 	});
 
 	phpbb.alert.open($confirmDiv);
