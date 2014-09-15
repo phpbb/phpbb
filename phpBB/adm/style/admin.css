@@ -854,10 +854,10 @@ table.zebra-table tbody tr:nth-child(even) {
 }
 
 /* Deactivated row */
-.row-inactive { 
-	color: #999; 
+.row-inactive {
+	color: #999;
 }
-.row-inactive a, .row-inactive strong { 
+.row-inactive a, .row-inactive strong {
 	color: #888;
 }
 .row-inactive a:hover {
@@ -1124,13 +1124,9 @@ input.langvalue, textarea.langvalue {
 	width: 90%;
 }
 
-input[type="number"], dd input[type="number"] {
-	padding-right: 0;
+input[type="number"] {
 	width: 60px;
-}
-.rtl input[type="number"], .rtl dd input[type="number"] {
-	padding-left: 2px;
-	padding-right: 2px;
+	-moz-padding-end: 0;
 }
 
 optgroup, select {
@@ -1465,7 +1461,7 @@ input:focus, textarea:focus {
 {
 	select, dd select, dd input {
 		max-width: 240px;
-	}	
+	}
 }
 
 /* Submit button fieldset or paragraph
