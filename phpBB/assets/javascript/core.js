@@ -164,7 +164,7 @@ phpbb.alert.close = function($alert, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
 	$confirmDiv.find('.alert_text').html(msg);
-	fadedark = (typeof fadedark === 'undefined') ? true : fadedark;
+	fadedark = fadedark || true;
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
@@ -177,14 +177,13 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	});
 
 	$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
-		var confirmed = this.name === 'confirm',
-			fadedark = fadedark || !confirmed;
+		var confirmed = this.name === 'confirm';
 
 		if (confirmed) {
 			callback(true);
 		}
 		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
-		phpbb.alert.close($confirmDiv, fadedark);
+		phpbb.alert.close($confirmDiv, fadedark || !confirmed);
 
 		e.preventDefault();
 		e.stopPropagation();
