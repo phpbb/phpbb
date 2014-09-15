@@ -26,7 +26,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
@@ -34,11 +34,13 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
 		$finder = new \phpbb\finder(
 			new \phpbb\filesystem(),
 			dirname(__FILE__) . '/',
-			new phpbb_mock_cache()
+			new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->getMock('\phpbb\db\driver\driver_interface'), $phpbb_root_path, $phpEx)
 		);
 		$finder->set_extensions(array_keys($manager->all_enabled()));
 
