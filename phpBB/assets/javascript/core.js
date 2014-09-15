@@ -79,40 +79,27 @@ phpbb.alert = function(title, msg, fadedark) {
 	$alert.find('.alert_title').html(title);
 	$alert.find('.alert_text').html(msg);
 
-	if (!$dark.is(':visible')) {
-		$dark.fadeIn(phpbb.alertTime);
-	}
-
-	$alert.on('click', function(e) {
-		e.stopPropagation();
-	});
-	$dark.one('click', function(e) {
-		var fade;
-
-		$alert.find('.alert_close').off('click');
-		fade = (typeof fadedark !== 'undefined' && !fadedark) ? $alert : $dark;
-		fade.fadeOut(phpbb.alertTime, function() {
-			$alert.hide();
-		});
-
-		e.preventDefault();
-		e.stopPropagation();
-	});
-
-	$(document).keydown(function(e) {
-		if ((e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) && $dark.is(':visible')) {
-			$dark.trigger('click');
-
+	$(document).on('keydown.phpbb.alert', function(e) {
+		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
+			phpbb.alert.close($alert, true);
 			e.preventDefault();
 			e.stopPropagation();
 		}
 	});
+	phpbb.alert.open($alert);
 
-	$alert.find('.alert_close').one('click', function(e) {
-		$dark.trigger('click');
+	return $alert;
+};
 
-		e.preventDefault();
-	});
+/**
+* Handler for opening an alert box.
+*
+* @param jQuery $alert			jQuery object.
+*/
+phpbb.alert.open = function($alert) {
+	if (!$dark.is(':visible')) {
+		$dark.fadeIn(phpbb.alertTime);
+	}
 
 	if ($loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeOut(phpbb.alertTime, function() {
@@ -128,7 +115,37 @@ phpbb.alert = function(title, msg, fadedark) {
 		$dark.fadeIn(phpbb.alertTime);
 	}
 
-	return $alert;
+	$alert.on('click', function(e) {
+		e.stopPropagation();
+	});
+
+	$dark.one('click', function(e) {
+		phpbb.alert.close($alert, true);
+		e.preventDefault();
+		e.stopPropagation();
+	});
+
+	$alert.find('.alert_close').one('click', function(e) {
+		phpbb.alert.close($alert, true);
+		e.preventDefault();
+	});
+};
+
+/**
+* Handler for closing an alert box.
+*
+* @param jQuery $alert			jQuery object.
+* @param bool fadedark			Whether to remove dark background.
+*/
+phpbb.alert.close = function($alert, fadedark) {
+	var $fade = (fadedark) ? $dark : $alert;
+
+	$fade.fadeOut(phpbb.alertTime, function() {
+		$alert.hide();
+	});
+
+	$alert.find('.alert_close').off('click');
+	$(document).off('keydown.phpbb.alert');
 };
 
 /**
@@ -147,77 +164,32 @@ phpbb.alert = function(title, msg, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
 	$confirmDiv.find('.alert_text').html(msg);
+	fadedark = fadedark || true;
 
-	if (!$dark.is(':visible')) {
-		$dark.fadeIn(phpbb.alertTime);
-	}
+	$(document).on('keydown.phpbb.alert', function(e) {
+		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
+			var name = (e.keyCode === keymap.ENTER) ? 'confirm' : 'cancel';
 
-	$confirmDiv.on('click', function(e) {
-		e.stopPropagation();
-	});
-
-	var clickHandler = function(e) {
-		var res = this.name === 'confirm';
-		var $fade = (typeof fadedark !== 'undefined' && !fadedark && res) ? $confirmDiv : $dark;
-		$fade.fadeOut(phpbb.alertTime, function() {
-			$confirmDiv.hide();
-		});
-		$confirmDiv.find('input[type="button"]').off('click', clickHandler);
-		callback(res);
-
-		if (e) {
-			e.preventDefault();
-			e.stopPropagation();
-		}
-	};
-	$confirmDiv.find('input[type="button"]').one('click', clickHandler);
-
-	$dark.one('click', function(e) {
-		$confirmDiv.find('.alert_close').off('click');
-		$dark.fadeOut(phpbb.alertTime, function() {
-			$confirmDiv.hide();
-		});
-		callback(false);
-
-		e.preventDefault();
-		e.stopPropagation();
-	});
-
-	$(document).on('keydown', function(e) {
-		if (e.keyCode === keymap.ENTER) {
-			$('input[name="confirm"]').trigger('click');
-			e.preventDefault();
-			e.stopPropagation();
-		} else if (e.keyCode === keymap.ESC) {
-			$('input[name="cancel"]').trigger('click');
+			$('input[name="' + name + '"]').trigger('click');
 			e.preventDefault();
 			e.stopPropagation();
 		}
 	});
 
-	$confirmDiv.find('.alert_close').one('click', function(e) {
-		var $fade = (typeof fadedark !== 'undefined' && fadedark) ? $confirmDiv : $dark;
-		$fade.fadeOut(phpbb.alertTime, function() {
-			$confirmDiv.hide();
-		});
-		callback(false);
+	$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
+		var confirmed = this.name === 'confirm';
+
+		if (confirmed) {
+			callback(true);
+		}
+		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
+		phpbb.alert.close($confirmDiv, fadedark || !confirmed);
 
 		e.preventDefault();
+		e.stopPropagation();
 	});
 
-	if ($loadingIndicator.is(':visible')) {
-		$loadingIndicator.fadeOut(phpbb.alertTime, function() {
-			$dark.append($confirmDiv);
-			$confirmDiv.fadeIn(phpbb.alertTime);
-		});
-	} else if ($dark.is(':visible')) {
-		$dark.append($confirmDiv);
-		$confirmDiv.fadeIn(phpbb.alertTime);
-	} else {
-		$dark.append($confirmDiv);
-		$confirmDiv.show();
-		$dark.fadeIn(phpbb.alertTime);
-	}
+	phpbb.alert.open($confirmDiv);
 
 	return $confirmDiv;
 };
