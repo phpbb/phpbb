@@ -264,4 +264,124 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->filesystem, '', 'php', dirname(__FILE__) . '/');
 		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH));
 	}
+//TODO
+	public function helper_url_data_absolute_with_rewrite()
+	{
+		return array(
+			array('controller2', array('t' => 1, 'f' => 2), true, false, 'http://localhost/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, 'http://localhost/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, 'http://localhost/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, 'http://localhost/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+
+			// Custom sid parameter
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', 'http://localhost/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+
+			// Testing anchors
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, 'http://localhost/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+
+			// Anchors and custom sid
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', 'http://localhost/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+
+			// Empty parameters should not append the &amp; or ?
+			array('controller2', array(), true, false, 'http://localhost/foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, 'http://localhost/foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, 'http://localhost/foo/bar/p-3', 'no params using empty array'),
+		);
+	}
+
+	/**
+	 * @dataProvider helper_url_data_absolute_with_rewrite()
+	 */
+	public function test_helper_url_absolute_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
+	{
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->filesystem, '', 'php', dirname(__FILE__) . '/');
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::ABSOLUTE_URL));
+	}
+
+	public function helper_url_data_relative_path_with_rewrite()
+	{
+		return array(
+			array('controller2', array('t' => 1, 'f' => 2), true, false, 'foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, 'foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, 'foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, 'foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+
+			// Custom sid parameter
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', 'foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+
+			// Testing anchors
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, 'foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+
+			// Anchors and custom sid
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', 'foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+
+			// Empty parameters should not append the &amp; or ?
+			array('controller2', array(), true, false, 'foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, 'foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, 'foo/bar/p-3', 'no params using empty array'),
+		);
+	}
+
+	/**
+	 * @dataProvider helper_url_data_relative_path_with_rewrite()
+	 */
+	public function test_helper_url_relative_path_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
+	{
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->filesystem, '', 'php', dirname(__FILE__) . '/');
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::RELATIVE_PATH));
+	}
+
+	public function helper_url_data_network_with_rewrite()
+	{
+		return array(
+			array('controller2', array('t' => 1, 'f' => 2), true, false, '//localhost/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, '//localhost/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '//localhost/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '//localhost/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+
+			// Custom sid parameter
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '//localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '//localhost/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '//localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+
+			// Testing anchors
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '//localhost/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+
+			// Anchors and custom sid
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '//localhost/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+
+			// Empty parameters should not append the &amp; or ?
+			array('controller2', array(), true, false, '//localhost/foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, '//localhost/foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, '//localhost/foo/bar/p-3', 'no params using empty array'),
+		);
+	}
+
+	/**
+	 * @dataProvider helper_url_data_network_with_rewrite()
+	 */
+	public function test_helper_url_network_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
+	{
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->filesystem, '', 'php', dirname(__FILE__) . '/');
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH));
+	}
 }
