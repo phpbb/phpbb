@@ -101,6 +101,7 @@ services:
             - @controller.provider
             - @ext.manager
             - @symfony_request
+            - @filesystem
             - %core.root_path%
             - %core.php_ext%
 
