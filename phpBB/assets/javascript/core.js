@@ -782,12 +782,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 			.insertAfter('#timezone');
 	} else {
 		// Copy the content of our backup, so we can remove all unneeded options
-		var $replacement = $timezoneCopy.clone();
-		$replacement.attr('id', 'timezone')
-			.css('display', 'block')
-			.attr('name', 'tz');
-
-		$timezone.replaceWith($replacement);
+		$timezone.html($timezoneCopy.html());
 	}
 
 	if ($tzDate.val() !== '') {
