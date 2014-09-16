@@ -19,6 +19,7 @@ require_once $phpbb_root_path . 'includes/startup.php';
 $table_prefix = 'phpbb_';
 require_once $phpbb_root_path . 'includes/constants.php';
 require_once $phpbb_root_path . 'phpbb/class_loader.' . $phpEx;
+require_once($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 $phpbb_class_loader_mock = new \phpbb\class_loader('phpbb_mock_', $phpbb_root_path . '../tests/mock/', "php");
 $phpbb_class_loader_mock->register();

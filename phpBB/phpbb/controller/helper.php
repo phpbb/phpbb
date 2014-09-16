@@ -15,6 +15,7 @@ namespace phpbb\controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
 /**
@@ -115,10 +116,11 @@ class helper
 	* @param string	$route		Name of the route to travel
 	* @param array	$params		String or array of additional url parameters
 	* @param bool	$is_amp		Is url using &amp; (true) or & (false)
-	* @param string|bool	$session_id	Possibility to use a custom session id instead of the global one
+	* @param string|bool		$session_id	Possibility to use a custom session id instead of the global one
+	* @param bool|string		$reference_type The type of reference to be generated (one of the constants)
 	* @return string The URL already passed through append_sid()
 	*/
-	public function route($route, array $params = array(), $is_amp = true, $session_id = false)
+	public function route($route, array $params = array(), $is_amp = true, $session_id = false, $reference_type = UrlGeneratorInterface::ABSOLUTE_PATH)
 	{
 		$anchor = '';
 		if (isset($params['#']))
@@ -146,11 +148,16 @@ class helper
 		$context->setBaseUrl($base_url);
 
 		$url_generator = new UrlGenerator($this->route_collection, $context);
-		$route_url = $url_generator->generate($route, $params);
+		$route_url = $url_generator->generate($route, $params, $reference_type);
 
 		if ($is_amp)
 		{
 			$route_url = str_replace(array('&amp;', '&'), array('&', '&amp;'), $route_url);
+		}
+
+		if ($reference_type === UrlGeneratorInterface::RELATIVE_PATH && empty($this->config['enable_mod_rewrite']))
+		{
+			$route_url = 'app.' . $this->php_ext . '/' . $route_url;
 		}
 
 		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);
