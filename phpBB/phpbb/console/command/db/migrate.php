@@ -120,7 +120,7 @@ class migrate extends \phpbb\console\command\command
 			->extension_directory('/migration')
 			->get_classes();
 
-		// @deprecated to be removed in 3.2 final
+		// @deprecated 3.1.0-RC4 (To be removed: 3.2.0)
 		$migrations_deprecated = $this->extension_manager
 			->get_finder()
 			->extension_directory('/migrations')

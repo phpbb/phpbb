@@ -137,7 +137,7 @@ class base implements \phpbb\extension\extension_interface
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
 
-		// @deprecated to be removed in 3.2 final
+		// @deprecated 3.1.0-RC4 (To be removed: 3.2.0)
 		$migrations_deprecated = $this->extension_finder
 			->extension_directory('/migrations')
 			->find_from_extension($this->extension_name, $this->extension_path);
