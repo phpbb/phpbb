@@ -13,11 +13,12 @@
 
 class phpbb_mock_extension_manager extends \phpbb\extension\manager
 {
-	public function __construct($phpbb_root_path, $extensions = array())
+	public function __construct($phpbb_root_path, $extensions = array(), $container = null)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = 'php';
 		$this->extensions = $extensions;
 		$this->filesystem = new \phpbb\filesystem();
+		$this->container = $container;
 	}
 }
