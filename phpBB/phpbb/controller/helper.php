@@ -44,6 +44,11 @@ class helper
 	protected $symfony_request;
 
 	/**
+	* @var \phpbb\filesystem The filesystem object
+	*/
+	protected $filesystem;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -64,15 +69,17 @@ class helper
 	* @param \phpbb\controller\provider $provider Path provider
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
+	* @param \phpbb\filesystem $filesystem The filesystem object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
 		$this->symfony_request = $symfony_request;
+		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$provider->find_routing_files($manager->get_finder());
@@ -119,27 +126,34 @@ class helper
 			$anchor = '#' . $params['#'];
 			unset($params['#']);
 		}
-		$url_generator = new UrlGenerator($this->route_collection, new RequestContext());
-		$route_url = $url_generator->generate($route, $params);
 
-		if (strpos($route_url, '/') === 0)
-		{
-			$route_url = substr($route_url, 1);
-		}
+		$context = new RequestContext();
+		$context->fromRequest($this->symfony_request);
+
+		$script_name = $this->symfony_request->getScriptName();
+		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
+
+		$base_url = $context->getBaseUrl();
+
+		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
+		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
+
+		// We need to update the base url to move to the directory of the app.php file.
+		$base_url = str_replace('/app.' . $this->php_ext, '/' . $this->phpbb_root_path . 'app.' . $this->php_ext, $base_url);
+
+		$base_url = $this->filesystem->clean_path($base_url);
+
+		$context->setBaseUrl($base_url);
+
+		$url_generator = new UrlGenerator($this->route_collection, $context);
+		$route_url = $url_generator->generate($route, $params);
 
 		if ($is_amp)
 		{
 			$route_url = str_replace(array('&amp;', '&'), array('&', '&amp;'), $route_url);
 		}
 
-		// If enable_mod_rewrite is false, we need to include app.php
-		$route_prefix = $this->phpbb_root_path;
-		if (empty($this->config['enable_mod_rewrite']))
-		{
-			$route_prefix .= 'app.' . $this->php_ext . '/';
-		}
-
-		return append_sid($route_prefix . $route_url . $anchor, false, $is_amp, $session_id);
+		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);
 	}
 
 	/**
