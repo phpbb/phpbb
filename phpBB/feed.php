@@ -165,7 +165,6 @@ if (defined('DEBUG') && request_var('explain', 0) && $auth->acl_get('a_'))
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
-	header('Pragma: no-cache');
 
 	$mtime = explode(' ', microtime());
 	$totaltime = $mtime[0] + $mtime[1] - $starttime;

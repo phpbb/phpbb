@@ -5063,7 +5063,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'Content-type' => 'text/html; charset=UTF-8',
 		'Cache-Control' => 'private, no-cache="set-cookie"',
 		'Expires' => '0',
-		'Pragma' => 'no-cache',
 	);
 	if (!empty($user->data['is_bot']))
 	{

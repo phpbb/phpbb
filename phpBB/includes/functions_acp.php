@@ -113,7 +113,6 @@ function adm_page_header($page_title)
 		'Content-type' => 'text/html; charset=UTF-8',
 		'Cache-Control' => 'private, no-cache="set-cookie"',
 		'Expires' => '0',
-		'Pragma' => 'no-cache',
 	);
 
 	/**
