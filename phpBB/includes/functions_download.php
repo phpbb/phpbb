@@ -56,7 +56,7 @@ function send_avatar_to_browser($file, $browser)
 
 			if (strpos(strtolower($browser), 'msie 6.0') !== false)
 			{
-				header('Expires: -1');
+				header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time()));
 			}
 			else
 			{
@@ -197,7 +197,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 			header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 			if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
 			{
-				header('expires: -1');
+				header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time()));
 			}
 		}
 		else
