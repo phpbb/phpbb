@@ -56,17 +56,17 @@ function send_avatar_to_browser($file, $browser)
 
 			if (strpos(strtolower($browser), 'msie 6.0') !== false)
 			{
-				header('Expires: -1');
+				header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 			}
 			else
 			{
-				header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+				header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 			}
 		}
 		else
 		{
 			header('Content-Disposition: inline; ' . header_filename($file));
-			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 		}
 
 		$size = @filesize($file_path);
@@ -197,7 +197,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 			header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 			if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
 			{
-				header('expires: -1');
+				header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 			}
 		}
 		else
@@ -421,7 +421,7 @@ function set_modified_headers($stamp, $browser)
 			send_status_line(304, 'Not Modified');
 			// seems that we need those too ... browsers
 			header('Pragma: public');
-			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 			return true;
 		}
 		else

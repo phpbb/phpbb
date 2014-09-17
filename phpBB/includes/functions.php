@@ -5062,7 +5062,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		// application/xhtml+xml not used because of IE
 		'Content-type' => 'text/html; charset=UTF-8',
 		'Cache-Control' => 'private, no-cache="set-cookie"',
-		'Expires' => '0',
+		'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
 		'Pragma' => 'no-cache',
 	);
 	if (!empty($user->data['is_bot']))
