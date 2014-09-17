@@ -112,7 +112,7 @@ function adm_page_header($page_title)
 		// application/xhtml+xml not used because of IE
 		'Content-type' => 'text/html; charset=UTF-8',
 		'Cache-Control' => 'private, no-cache="set-cookie"',
-		'Expires' => '0',
+		'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
 		'Pragma' => 'no-cache',
 	);
 
