@@ -164,7 +164,7 @@ if (defined('DEBUG') && request_var('explain', 0) && $auth->acl_get('a_'))
 {
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
-	header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time()));
+	header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
 	header('Pragma: no-cache');
 
 	$mtime = explode(' ', microtime());
