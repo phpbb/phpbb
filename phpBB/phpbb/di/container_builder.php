@@ -15,6 +15,7 @@ namespace phpbb\di;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\HttpKernel\DependencyInjection\RegisterListenersPass;
 
 class container_builder
 {
@@ -160,11 +161,13 @@ class container_builder
 
 			if ($this->use_custom_pass)
 			{
+				// Symfony Kernel Listeners
 				$this->container->addCompilerPass(new \phpbb\di\pass\collection_pass());
+				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
 
 				if ($this->use_kernel_pass)
 				{
-					$this->container->addCompilerPass(new \phpbb\di\pass\kernel_pass());
+					$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
 				}
 			}
 
