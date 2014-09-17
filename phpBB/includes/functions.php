@@ -1095,13 +1095,13 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 			$tz_select .= ($opt_group) ? '</optgroup>' : '';
 			$tz_select .= '<optgroup label="' . $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']) . '">';
 			$opt_group = $timezone['offset'];
-			$template->assign_block_vars('tz_select', array(
+			$template->assign_block_vars('timezone_select', array(
 				'LABEL'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
 				'VALUE'		=> $key . ' - ' . $timezone['current'],
 			));
 
 			$selected = (!empty($default_offset) && strpos($key, $default_offset) !== false) ? ' selected="selected"' : '';
-			$template->assign_block_vars('tz_date', array(
+			$template->assign_block_vars('timezone_date', array(
 				'VALUE'		=> $key . ' - ' . $timezone['current'],
 				'SELECTED'	=> !empty($selected),
 				'TITLE'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
@@ -1113,17 +1113,17 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 		{
 			$label = $user->lang['timezones'][$label];
 		}
-		$title = $timezone['offset'] . ' - ' . $label;
+		$title = $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $label);
 
 		if ($truncate)
 		{
 			$label = truncate_string($label, 50, 255, false, '...');
 		}
 
-		// Also generate tz_select for backwards compatibility
+		// Also generate timezone_select for backwards compatibility
 		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
 		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
-		$template->assign_block_vars('tz_select.tz_options', array(
+		$template->assign_block_vars('timezone_select.timezone_options', array(
 			'TITLE'			=> $title,
 			'VALUE'			=> $timezone['tz'],
 			'SELECTED'		=> !empty($selected),
