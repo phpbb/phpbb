@@ -1132,9 +1132,7 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 	}
 	$tz_select .= '</optgroup>';
 
-	return array(
-		'tz_select'		=> $tz_select,
-	);
+	return $tz_select;
 }
 
 // Functions handling topic/post tracking/marking

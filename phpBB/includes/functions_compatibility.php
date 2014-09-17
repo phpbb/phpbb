@@ -135,8 +135,7 @@ function tz_select($default = '', $truncate = false)
 {
 	global $template, $user;
 
-	$timezone_select = phpbb_timezone_select($template, $user, $default, $truncate);
-	return $timezone_select['tz_select'];
+	return phpbb_timezone_select($template, $user, $default, $truncate);
 }
 
 /**

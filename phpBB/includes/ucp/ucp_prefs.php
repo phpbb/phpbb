@@ -154,7 +154,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				$timezone_selects = phpbb_timezone_select($template, $user, $data['tz'], true);
+				phpbb_timezone_select($template, $user, $data['tz'], true);
 
 				// check if there are any user-selectable languages
 				$sql = 'SELECT COUNT(lang_id) as languages_count
