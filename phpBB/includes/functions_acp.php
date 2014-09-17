@@ -113,7 +113,6 @@ function adm_page_header($page_title)
 		'Content-type' => 'text/html; charset=UTF-8',
 		'Cache-Control' => 'private, no-cache="set-cookie"',
 		'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
-		'Pragma' => 'no-cache',
 	);
 
 	/**
