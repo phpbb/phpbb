@@ -538,13 +538,46 @@ else
 }
 
 // Grab just the sorted topic ids
-$sql = 'SELECT t.topic_id
-	FROM ' . TOPICS_TABLE . " t
-	WHERE $sql_where
+$sql_ary = array(
+	'SELECT'	=> 't.topic_id',
+	'FROM'		=> array(
+		TOPICS_TABLE => 't',
+	),
+	'WHERE'		=> "$sql_where
 		AND t.topic_type IN (" . POST_NORMAL . ', ' . POST_STICKY . ")
 		$sql_approved
-		$sql_limit_time
-	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
+		$sql_limit_time",
+	'ORDER BY'	=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
+);
+
+/**
+* Event to modify the SQL query before the topic ids data is retrieved
+*
+* @event core.viewforum_get_topic_ids_data
+* @var	array	sql_ary			SQL query array to get the topic ids data
+* @var	string	sql_approved	Topic visibility SQL string
+* @var	int		sql_limit		Number of records to select
+* @var	string	sql_limit_time	SQL string to limit topic_last_post_time data
+* @var	array	sql_sort_order	SQL sorting string
+* @var	int		sql_start		Offset point to start selection from
+* @var	string	sql_where		SQL WHERE clause string
+* @var	bool	store_reverse	Flag indicating if we select from the late pages
+*
+* @since 3.1.0-RC4
+*/
+$vars = array(
+	'sql_ary',
+	'sql_approved',
+	'sql_limit',
+	'sql_limit_time',
+	'sql_sort_order',
+	'sql_start',
+	'sql_where',
+	'store_reverse',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_ids_data', compact($vars)));
+
+$sql = $db->sql_build_query('SELECT', $sql_ary);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 while ($row = $db->sql_fetchrow($result))
