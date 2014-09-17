@@ -129,28 +129,11 @@ class migrator
 	* Sets the list of available migration class names to the given array.
 	*
 	* @param array $class_names An array of migration class names
-	* @param bool $check_fulfillable If TRUE (default), we will check
-	* 	if all of the migrations are fulfillable after loading them.
-	* 	If FALSE, we will not check. You SHOULD check at least once
-	* 	to prevent errors.
 	* @return null
-	* @throws \phpbb\db\migration\exception
 	*/
-	public function set_migrations($class_names, $check_fulfillable = true)
+	public function set_migrations($class_names)
 	{
 		$this->migrations = $class_names;
-
-		if ($check_fulfillable)
-		{
-			foreach ($this->migrations as $name)
-			{
-				$unfulfillable = $this->unfulfillable($name);
-				if ($unfulfillable !== false)
-				{
-					throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $unfulfillable);
-				}
-			}
-		}
 	}
 
 	/**
