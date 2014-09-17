@@ -1700,8 +1700,6 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
-					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
-					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 				);
 
 				/**
