@@ -118,9 +118,17 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->db_tools->sql_column_remove('phpbb_config', 'extra_column');
 	}
 
-	public function test_unfulfillable()
+	/**
+	* @expectedException \phpbb\db\migration\exception
+	*/
+	public function test_unfulfillable_exception()
 	{
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_unfulfillable', 'phpbb_dbal_migration_dummy'));
+	}
+
+	public function test_unfulfillable()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_unfulfillable', 'phpbb_dbal_migration_dummy'), false);
 
 		while (!$this->migrator->finished())
 		{
