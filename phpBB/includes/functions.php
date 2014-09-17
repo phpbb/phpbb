@@ -937,15 +937,16 @@ function style_select($default = '', $all = false)
 * Format the timezone offset with hours and minutes
 *
 * @param	int		$tz_offset	Timezone offset in seconds
+* @param	bool	$show_null	Whether null offsets should be shown
 * @return	string		Normalized offset string:	-7200 => -02:00
 *													16200 => +04:30
 */
-function phpbb_format_timezone_offset($tz_offset)
+function phpbb_format_timezone_offset($tz_offset, $show_null = false)
 {
 	$sign = ($tz_offset < 0) ? '-' : '+';
 	$time_offset = abs($tz_offset);
 
-	if ($time_offset == 0)
+	if ($time_offset == 0 && $show_null == false)
 	{
 		return '';
 	}
@@ -1068,15 +1069,15 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 			$dt = $user->create_datetime('now', $tz);
 			$offset = $dt->getOffset();
 			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
-			$offset_string = phpbb_format_timezone_offset($offset);
-			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
+			$offset_string = phpbb_format_timezone_offset($offset, true);
+			$timezones['UTC' . $offset_string . ' - ' . $timezone] = array(
 				'tz'		=> $timezone,
-				'offset'	=> 'GMT' . $offset_string,
+				'offset'	=> $offset_string,
 				'current'	=> $current_time,
 			);
 			if ($timezone === $default)
 			{
-				$default_offset = 'GMT' . $offset_string;
+				$default_offset = 'UTC' . $offset_string;
 			}
 		}
 		unset($unsorted_timezones);
@@ -1086,23 +1087,24 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 
 	$tz_select = $opt_group = '';
 
-	foreach ($timezones as $timezone)
+	foreach ($timezones as $key => $timezone)
 	{
 		if ($opt_group != $timezone['offset'])
 		{
 			// Generate tz_select for backwards compatibility
 			$tz_select .= ($opt_group) ? '</optgroup>' : '';
-			$tz_select .= '<optgroup label="' . $timezone['offset'] . ' - ' . $timezone['current'] . '">';
+			$tz_select .= '<optgroup label="' . $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']) . '">';
 			$opt_group = $timezone['offset'];
 			$template->assign_block_vars('tz_select', array(
-				'LABEL'		=> $timezone['offset'] . ' - ' . $timezone['current'],
+				'LABEL'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
+				'VALUE'		=> $key . ' - ' . $timezone['current'],
 			));
 
-			$selected = ($default_offset == $timezone['offset']) ? ' selected="selected"' : '';
+			$selected = (!empty($default_offset) && strpos($key, $default_offset) !== false) ? ' selected="selected"' : '';
 			$template->assign_block_vars('tz_date', array(
-				'VALUE'		=> $timezone['offset'] . ' - ' . $timezone['current'],
-				'SELECTED'	=> $selected,
-				'TITLE'		=> $timezone['offset'] . ' - ' . $timezone['current'],
+				'VALUE'		=> $key . ' - ' . $timezone['current'],
+				'SELECTED'	=> !empty($selected),
+				'TITLE'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
 			));
 		}
 
@@ -1124,7 +1126,7 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 		$template->assign_block_vars('tz_select.tz_options', array(
 			'TITLE'			=> $title,
 			'VALUE'			=> $timezone['tz'],
-			'SELECTED'		=> $timezone['tz'] === $default,
+			'SELECTED'		=> !empty($selected),
 			'LABEL'			=> $label,
 		));
 	}
