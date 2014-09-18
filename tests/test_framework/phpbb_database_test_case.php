@@ -69,8 +69,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				global $phpbb_root_path, $phpEx, $table_prefix;
 
 				$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
-				$classes = $finder->core_path('phpbb/')
-					->core_directory('db/migration/data/')
+				$classes = $finder->core_path('phpbb/db/migration/data/')
 					->set_extensions($setup_extensions)
 					->extension_directory('/migrations')
 					->get_classes();
