@@ -25,24 +25,8 @@
 	padding: 10px 10px 0 13px;
 }
 
-/* Search box
+/* Site Description
 --------------------------------------------- */
-.rtl #search-box {
-	float: left;
-	text-align: left;
-	margin-right: 0;
-	margin-left: 5px;
-}
-
-.rtl #search-box li {
-	text-align: left;
-}
-
-.rtl #search-box img {
-	margin-right: 0;
-	margin-left: 3px;
-}
-
 .rtl #site-description {
 	float: right;
 }
@@ -643,6 +627,11 @@ li.breadcrumbs span:first-child > a {
 	float: right;
 }
 
+.rtl .buttons .button, .rtl .dropdown-select {
+	margin-left: 5px;
+	margin-right: 0;
+}
+
 /* Icon images
 ---------------------------------------- */
 .rtl .small-icon {
@@ -947,14 +936,38 @@ li.breadcrumbs span:first-child > a {
 	float: left;
 }
 
-/* Form button styles
+/* Search box
 ---------------------------------------- */
 
 /* Topic and forum Search */
 .rtl .search-box {
-	margin-right: 5px;
-	margin-left: 0;
 	float: right;
+}
+
+.rtl .search-box .inputbox {
+	border-left-width: 0;
+	border-right-width: 1px;
+	border-radius: 0 4px 4px 0;
+	float: right;
+	padding: 3px;
+}
+
+.rtl .search-box .button {
+	float: right;
+}
+
+.rtl .search-box a.button {
+	border-left-width: 1px;
+	border-right-width: 0;
+	border-radius: 4px 0 0 4px;
+	padding-left: 5px;
+	padding-right: 3px;
+}
+
+.rtl .search-header {
+	float: left;
+	margin-right: 0;
+	margin-left: 5px;
 }
 
 .rtl input.search {
@@ -966,6 +979,10 @@ li.breadcrumbs span:first-child > a {
 /**
 * tweaks.css
 */
+
+
+/* Form button styles
+---------------------------------------- */
 
 /** Reference: Bug #27155 */
 .rtl #wrap, .rtl .headerbar, .rtl #site-description, .rtl .navbar {
