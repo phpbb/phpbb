@@ -24,6 +24,6 @@ dd label input { vertical-align: text-bottom\9; }
 ------------------------------------------------------------------------------*/
 
 /* Border-radius bleed fix in IE9 */
-#search-box, #search-box .inputbox, #search-box a.button {
+.search-header, .search-header .inputbox, .search-header a.button {
 	border-radius: 0;
 }

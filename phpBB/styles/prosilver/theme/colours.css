@@ -29,15 +29,15 @@ hr {
 /* Search box
 --------------------------------------------- */
 
-#search-box {
-	box-shadow: 0 0 10px #0075B0;
-}
-
 .search-box .inputbox,
 .search-box .inputbox:hover,
 .search-box .inputbox:focus,
 .search-box .button:hover {
 	border-color: #C7C3BF;
+}
+
+.search-header {
+	box-shadow: 0 0 10px #0075B0;
 }
 
 /* Round cornered boxes and backgrounds

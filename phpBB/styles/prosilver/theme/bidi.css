@@ -27,7 +27,7 @@
 
 /* Search box
 --------------------------------------------- */
-.rtl #search-box {
+.rtl .search-header {
 	float: left;
 	margin-right: 0;
 	margin-left: 5px;
