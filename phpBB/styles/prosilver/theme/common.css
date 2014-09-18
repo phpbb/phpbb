@@ -222,16 +222,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	margin-right: 0;
 }
 
-/* Search box
---------------------------------------------- */
-#search-box {
-	border-radius: 4px;
-	display: block;
-	float: right;
-	margin-right: 5px;
-	margin-top: 30px;
-}
-
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
@@ -1092,7 +1082,7 @@ ul.linklist:after,
 .action-bar:after,
 .notification_text:after,
 .tabs-container:after,
-#tabs > ul:after, 
+#tabs > ul:after,
 #minitabs > ul:after,
 .postprofile .avatar-container:after {
 	clear: both;

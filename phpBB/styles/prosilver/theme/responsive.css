@@ -60,7 +60,7 @@ body {
 	text-overflow: ellipsis;
 }
 
-#site-description p, #search-box {
+#site-description p, .search-header {
 	display: none;
 }
 
