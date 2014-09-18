@@ -29,16 +29,15 @@ hr {
 /* Search box
 --------------------------------------------- */
 
-#search-box {
-	color: #FFFFFF;
+.search-box .inputbox,
+.search-box .inputbox:hover,
+.search-box .inputbox:focus,
+.search-box .button:hover {
+	border-color: #C7C3BF;
 }
 
-#search-box #keywords {
-	background-color: #FFF;
-}
-
-#search-box input {
-	border-color: #0075B0;
+.search-header {
+	box-shadow: 0 0 10px #0075B0;
 }
 
 /* Round cornered boxes and backgrounds
@@ -249,11 +248,11 @@ a { color: #105289; }
 a:hover	{ color: #D31141; }
 
 /* Links on gradient backgrounds */
-#search-box a, .navbg a, .forumbg .header a, .forabg .header a, th a {
+.forumbg .header a, .forabg .header a, th a {
 	color: #FFFFFF;
 }
 
-#search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	color: #A8D8FF;
 }
 
