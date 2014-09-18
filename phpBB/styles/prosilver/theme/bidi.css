@@ -25,14 +25,8 @@
 	padding: 10px 10px 0 13px;
 }
 
-/* Search box
+/* Sir Description
 --------------------------------------------- */
-.rtl .search-header {
-	float: left;
-	margin-right: 0;
-	margin-left: 5px;
-}
-
 .rtl #site-description {
 	float: right;
 }
@@ -942,7 +936,7 @@ li.breadcrumbs span:first-child > a {
 	float: left;
 }
 
-/* Form button styles
+/* Search box
 ---------------------------------------- */
 
 /* Topic and forum Search */
@@ -970,6 +964,12 @@ li.breadcrumbs span:first-child > a {
 	padding-right: 3px;
 }
 
+.rtl .search-header {
+	float: left;
+	margin-right: 0;
+	margin-left: 5px;
+}
+
 .rtl input.search {
 	background-position: right 1px;
 	padding-right: 17px;
@@ -979,6 +979,10 @@ li.breadcrumbs span:first-child > a {
 /**
 * tweaks.css
 */
+
+
+/* Form button styles
+---------------------------------------- */
 
 /** Reference: Bug #27155 */
 .rtl #wrap, .rtl .headerbar, .rtl #site-description, .rtl .navbar {
