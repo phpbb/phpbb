@@ -25,6 +25,11 @@ then
 	travis/setup-mariadb.sh
 fi
 
+if [ "$DB" == "oracle" ]
+then
+	travis/setup-oracle.sh
+fi
+
 if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]
 then
 	travis/setup-php-extensions.sh
