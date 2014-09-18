@@ -16,6 +16,9 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 {
 	protected static $reflection_method_get_migration_file_list;
 
+	/** @var phpbb_mock_extension_manager */
+	protected $extension_manager;
+
 	public static function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();
@@ -57,17 +60,8 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 	{
 		return array(
 			array(
-				'vendor3/bar',
-				array('\vendor3\bar\migration\migration'),
-			),
-			array(
-				'vendor2/foo',
-				array('\vendor2\foo\migrations\migration'),
-			),
-			array(
 				'vendor2/bar',
 				array(
-					'\vendor2\bar\migration\migration',
 					'\vendor2\bar\migrations\migration',
 				),
 			),

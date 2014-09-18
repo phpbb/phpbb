@@ -132,19 +132,10 @@ class base implements \phpbb\extension\extension_interface
 
 		// Only have the finder search in this extension path directory
 		$migrations = $this->extension_finder
-			->extension_directory('/migration')
-			->find_from_extension($this->extension_name, $this->extension_path);
-
-		$migrations = $this->extension_finder->get_classes_from_files($migrations);
-
-		// @deprecated 3.1.0-RC4 (To be removed: 3.2.0)
-		$migrations_deprecated = $this->extension_finder
 			->extension_directory('/migrations')
 			->find_from_extension($this->extension_name, $this->extension_path);
 
-		$migrations_deprecated = $this->extension_finder->get_classes_from_files($migrations_deprecated);
-
-		$migrations = array_merge($migrations, $migrations_deprecated);
+		$migrations = $this->extension_finder->get_classes_from_files($migrations);
 
 		return $migrations;
 	}
