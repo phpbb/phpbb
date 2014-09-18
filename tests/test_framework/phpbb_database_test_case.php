@@ -70,13 +70,15 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 				$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
 				$classes = $finder->core_path('phpbb/')
-					->core_directory('/db/migration/data')
+					->core_directory('db/migration/data/')
 					->set_extensions($setup_extensions)
-					->extension_directory('migration')
+					->extension_directory('/migration')
 					->get_classes();
 
 				// @deprecated 3.1.0-RC4 (To be removed: 3.2.0)
+				$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
 				$classes_deprecated = $finder
+					->set_extensions($setup_extensions)
 					->extension_directory('/migrations')
 					->get_classes();
 
