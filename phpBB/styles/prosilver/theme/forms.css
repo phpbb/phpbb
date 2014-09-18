@@ -409,8 +409,8 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 }
 
 .search-header a.button {
-	border-top: 0;
-	border-bottom: 0;
+	border: 0;
+	border-left: 1;
 	padding: 3px 5px 3px 4px;
 }
 
