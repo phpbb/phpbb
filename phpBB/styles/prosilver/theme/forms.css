@@ -391,6 +391,29 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	padding: 2px 5px 2px 3px;
 }
 
+/* Search box (header)
+--------------------------------------------- */
+.search-header {
+	border-radius: 4px;
+	display: block;
+	float: right;
+	margin-right: 5px;
+	margin-top: 30px;
+}
+
+.search-header .inputbox { border: 0; }
+
+.search-header button {
+	border-top: 0;
+	border-bottom: 0;
+}
+
+.search-header a.button {
+	border-top: 0;
+	border-bottom: 0;
+	padding: 3px 5px 3px 4px;
+}
+
 input.search {
 	background-image: none;
 	background-repeat: no-repeat;
