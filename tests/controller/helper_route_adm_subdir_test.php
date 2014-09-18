@@ -18,12 +18,12 @@ class phpbb_controller_helper_route_adm_test extends phpbb_controller_helper_rou
 {
 	protected function get_phpbb_root_path()
 	{
-		return './../';
+		return './../../';
 	}
 
 	protected function get_uri()
 	{
-		return '/adm/index.php';
+		return '/adm/subdir/index.php';
 	}
 
 	protected function get_script_name()

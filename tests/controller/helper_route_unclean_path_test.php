@@ -23,7 +23,7 @@ class phpbb_controller_helper_route_adm_test extends phpbb_controller_helper_rou
 
 	protected function get_uri()
 	{
-		return '/adm/index.php';
+		return '/adm/../bertie/index.php';
 	}
 
 	protected function get_script_name()

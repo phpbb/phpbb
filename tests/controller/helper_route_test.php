@@ -23,29 +23,6 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 	{
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = new \phpbb\user('\phpbb\datetime');
-
-		$request = new phpbb_mock_request();
-		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
-		$request->overwrite('SCRIPT_FILENAME', 'app.php', \phpbb\request\request_interface::SERVER);
-		$request->overwrite('REQUEST_URI', '/app.php', \phpbb\request\request_interface::SERVER);
-		$request->overwrite('SERVER_NAME', 'localhost', \phpbb\request\request_interface::SERVER);
-		$request->overwrite('SERVER_PORT', '80', \phpbb\request\request_interface::SERVER);
-
-		$this->symfony_request = new \phpbb\symfony_request(
-			$request
-		);
-		$this->filesystem = new \phpbb\filesystem();
-		$phpbb_path_helper = new \phpbb\path_helper(
-			$this->symfony_request,
-			$this->filesystem,
-			$this->getMock('\phpbb\request\request'),
-			$phpbb_root_path,
-			$phpEx
-		);
-		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, new \phpbb\template\context());
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
 			array(
@@ -55,6 +32,49 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 					'ext_path' => 'ext/vendor2/foo/',
 				),
 			)
+		);
+		$this->generate_route_objects();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$this->user = new \phpbb\user('\phpbb\datetime');
+
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $this->user, new \phpbb\template\context());
+	}
+
+	protected function get_phpbb_root_path()
+	{
+		return '';
+	}
+
+	protected function get_uri()
+	{
+		return '/app.php';
+	}
+
+	protected function get_script_name()
+	{
+		return 'app.php';
+	}
+
+	protected function generate_route_objects()
+	{
+		$request = new phpbb_mock_request();
+		$request->overwrite('SCRIPT_NAME', $this->get_uri(), \phpbb\request\request_interface::SERVER);
+		$request->overwrite('SCRIPT_FILENAME', $this->get_script_name(), \phpbb\request\request_interface::SERVER);
+		$request->overwrite('REQUEST_URI', $this->get_uri(), \phpbb\request\request_interface::SERVER);
+		$request->overwrite('SERVER_NAME', 'localhost', \phpbb\request\request_interface::SERVER);
+		$request->overwrite('SERVER_PORT', '80', \phpbb\request\request_interface::SERVER);
+
+		$this->symfony_request = new \phpbb\symfony_request(
+			$request
+		);
+		$this->filesystem = new \phpbb\filesystem();
+		$this->phpbb_path_helper = new \phpbb\path_helper(
+			$this->symfony_request,
+			$this->filesystem,
+			$this->getMock('\phpbb\request\request'),
+			$phpbb_root_path,
+			$phpEx
 		);
 
 		$finder = new \phpbb\finder(
@@ -66,6 +86,8 @@ class phpbb_controller_helper_route_test extends phpbb_test_case
 		$this->provider = new \phpbb\controller\provider();
 		$this->provider->find_routing_files($finder);
 		$this->provider->find(dirname(__FILE__) . '/');
+		// Set correct current phpBB root path
+		$this->root_path = $this->get_phpbb_root_path();
 	}
 
 	public function helper_url_data_no_rewrite()
