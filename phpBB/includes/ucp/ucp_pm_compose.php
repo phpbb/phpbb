@@ -272,16 +272,15 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			*
 			* @event core.ucp_pm_compose_quotepost_query_after
 			* @var	string	sql					The original SQL used in the query
-			* @var	array	post				Associative array with the result of the quotepost related SQL query
+			* @var	array	post				Associative array with the data of the quoted post
 			* @var	array	msg_id				The post_id that was searched to get the message for quoting
-			* @var	array	forum_list			List of forums that contain the posts
-			* @var	int		visibility_const	Integer with one of the possible ITEM_* constant values
-			* @var	int		topic_id			topic_id in the page request
-			* @var	int		to_user_id			The id of whom the message is to
-			* @var	int		to_group_id			The id of the group whom the message is to
+			* @var	int		visibility_const	Visibility of the quoted post (one of the possible ITEM_* constant values)
+			* @var	int		topic_id			Topic ID of the quoted post
+			* @var	int		to_user_id			Users the message is sent to
+			* @var	int		to_group_id			Groups the message is sent to
 			* @var	bool	submit				Whether the user is sending the PM or not
 			* @var	bool	preview				Whether the user is previewing the PM or not
-			* @var	bool	action				One of: post, reply, quote, forward, quotepost, edit, delete, smilies
+			* @var	string	action				One of: post, reply, quote, forward, quotepost, edit, delete, smilies
 			* @var	bool	delete				If deleting message
 			* @var	int		reply_to_all		Value of reply_to_all request variable.
 			* @since 3.1.0-RC4
@@ -290,7 +289,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				'sql',
 				'post',
 				'msg_id',
-				'forum_list',
 				'visibility_const',
 				'topic_id',
 				'to_user_id',
