@@ -351,23 +351,29 @@ fieldset.quick-login label[for="autologin"] {
 		max-width: 260px;
 	}
 
-	dd.captcha {
+	.captcha-panel dd.captcha {
 		margin-left: 0;
 	}
 
-	dd.captcha-image img {
+	.captcha-panel dd.captcha-image img {
 		width: 100%;
 	}
 
 	#recaptcha_challenge_image,
 	#recaptcha_response_field,
 	.recaptchatable #recaptcha_image {
-		margin: 0 !important;
 		width: 100% !important;
 		height: auto !important;
 	}
-	.recaptchatable #recaptcha_logo {
-		display: none !important;
+
+	.recaptchatable tr td:last-child {
+		display: none;
+	}
+
+	.captcha-panel .recaptcha-responsive {
+		display: inline-block !important;
+		margin-top: 10px;
+		vertical-align: middle;
 	}
 }
 
