@@ -15,7 +15,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class phpbb_controller_helper_route_test extends phpbb_test_case
+abstract class phpbb_controller_common_helper_route_test extends phpbb_test_case
 {
 	protected $root_path;
 

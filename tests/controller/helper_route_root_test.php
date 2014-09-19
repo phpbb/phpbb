@@ -14,20 +14,20 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/common_helper_route_test.php';
 
-class phpbb_controller_helper_route_adm_subdir_test extends phpbb_controller_common_helper_route_test
+class phpbb_controller_helper_route_test extends phpbb_controller_common_helper_route_test
 {
 	protected function get_phpbb_root_path()
 	{
-		return './../../';
+		return '';
 	}
 
 	protected function get_uri()
 	{
-		return '/adm/subdir/index.php';
+		return '/app.php';
 	}
 
 	protected function get_script_name()
 	{
-		return 'index.php';
+		return 'app.php';
 	}
 }
