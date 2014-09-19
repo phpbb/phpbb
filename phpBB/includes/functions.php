@@ -4918,7 +4918,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	$dt = $user->create_datetime();
-	$timezone_offset = $user->lang('UTC') . phpbb_format_timezone_offset($dt->getOffset());
+	$timezone_offset = $user->lang(array('timezones', 'UTC_OFFSET'), phpbb_format_timezone_offset($dt->getOffset()));
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
 	{
