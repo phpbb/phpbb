@@ -240,13 +240,13 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	string	sql						String with the query to be executed
 		* @var	array	forum_list				List of forums that contain the posts
 		* @var	int		visibility_const		Integer with one of the possible ITEM_* constant values
-		* @var	int		topic_id				topic_id in the page request
+		* @var	int		msg_id					topic_id in the page request
 		* @var	int		to_user_id				The id of whom the message is to
 		* @var	int		to_group_id				The id of the group whom the message is to
 		* @var	bool	submit					Whether the user is sending the PM or not
 		* @var	bool	preview					Whether the user is previewing the PM or not
-		* @var	bool	action					One of: post, reply, quote, forward, quotepost, edit, delete, smilies
-		* @var	bool	delete					If deleting message
+		* @var	string	action					One of: post, reply, quote, forward, quotepost, edit, delete, smilies
+		* @var	bool	delete					Whether the user is deleting the PM
 		* @var	int		reply_to_all			Value of reply_to_all request variable.
 		* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
 		* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
@@ -256,7 +256,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'sql',
 			'forum_list',
 			'visibility_const',
-			'topic_id',
+			'msg_id',
 			'to_user_id',
 			'to_group_id',
 			'submit',
