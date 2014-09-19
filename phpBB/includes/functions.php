@@ -3317,6 +3317,11 @@ function get_preg_expression($mode)
 		case 'table_prefix':
 			return '#^[a-zA-Z][a-zA-Z0-9_]*$#';
 		break;
+
+		// Matches the predecing dot
+		case 'path_remove_dot_trailing_slash':
+			return '#^(?:(\.)?)+(?:(.+)?)+(?:([\\/\\\])$)#';
+		break;
 	}
 
 	return '';
