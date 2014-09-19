@@ -140,14 +140,13 @@ class helper
 		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
 
+		// We need to update the base url to move to the directory of the app.php file.
 		if (empty($this->config['enable_mod_rewrite']))
 		{
-			// We need to update the base url to move to the directory of the app.php file.
 			$base_url = str_replace('/app.' . $this->php_ext, '/' . $this->phpbb_root_path . 'app.' . $this->php_ext, $base_url);
 		}
 		else
 		{
-			// We need to append the phpbb_root_path for proper routes
 			$base_url .= preg_replace('#[\\/\\\]$#', '', preg_replace('#^\.#', '', $this->phpbb_root_path));
 		}
 
