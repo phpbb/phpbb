@@ -147,7 +147,7 @@ class helper
 		}
 		else
 		{
-			$base_url .= preg_replace('#[\\/\\\]$#', '', preg_replace('#^\.#', '', $this->phpbb_root_path));
+			$base_url .= preg_replace('#^(?:(\.))+(?:(.+)?)+(?:([\\/\\\])$)#', '$2', $this->phpbb_root_path);
 		}
 
 		$base_url = $this->filesystem->clean_path($base_url);
