@@ -141,7 +141,14 @@ class helper
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
 
 		// We need to update the base url to move to the directory of the app.php file.
-		$base_url = str_replace('/app.' . $this->php_ext, '/' . $this->phpbb_root_path . 'app.' . $this->php_ext, $base_url);
+		if (empty($this->config['enable_mod_rewrite']))
+		{
+			$base_url = str_replace('/app.' . $this->php_ext, '/' . $this->phpbb_root_path . 'app.' . $this->php_ext, $base_url);
+		}
+		else
+		{
+			$base_url .= preg_replace('#[\\/\\\]$#', '', preg_replace('#^\.#', '', $this->phpbb_root_path));
+		}
 
 		$base_url = $this->filesystem->clean_path($base_url);
 
