@@ -109,6 +109,10 @@ hr {
 	text-align: center;
 }
 
+.text-left {
+	text-align: left;
+}
+
 .small {
 	font-size: 0.85em;
 }
