@@ -346,6 +346,10 @@ fieldset.quick-login label[for="autologin"] {
 
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
 {
+	dd label {
+		white-space: normal;
+	}
+
 	select, .inputbox {
 		max-width: 260px;
 	}
