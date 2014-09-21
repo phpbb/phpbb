@@ -6,21 +6,61 @@
 		<column>topic_id</column>
 		<column>in_message</column>
 		<column>poster_id</column>
+		<column>is_orphan</column>
 		<column>attach_comment</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
 			<value>1</value>
-			<value>1</value>
+			<value>0</value>
 			<value>2</value>
+			<value>0</value>
 			<value></value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>2</value>
 			<value>2</value>
+			<value>0</value>
 			<value>1</value>
+			<value>0</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>0</value>
+			<value>0</value>
+			<value>0</value>
+			<value>2</value>
 			<value>1</value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_banlist">
+		<column>ban_id</column>
+		<column>ban_userid</column>
+		<column>ban_email</column>
+		<column>ban_reason</column>
+		<column>ban_give_reason</column>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>3</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
 			<value></value>
 		</row>
 	</table>
@@ -65,6 +105,41 @@
 			<value>Other</value>
 			<value></value>
 			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_log">
+		<column>log_id</column>
+		<column>user_id</column>
+		<column>reportee_id</column>
+		<column>log_operation</column>
+		<column>log_data</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>2</value>
+			<value>2</value>
 			<value></value>
 			<value></value>
 		</row>
@@ -129,6 +204,55 @@
 			<value>1</value>
 		</row>
 	</table>
+	<table name="phpbb_privmsgs">
+		<column>msg_id</column>
+		<column>author_id</column>
+		<column>message_edit_user</column>
+		<column>message_text</column>
+		<column>to_address</column>
+		<column>bcc_address</column>
+		<row>
+			<value>1</value>
+			<value>3</value>
+			<value>3</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>2</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_privmsgs_to">
+		<column>msg_id</column>
+		<column>user_id</column>
+		<column>author_id</column>
+		<row>
+			<value>1</value>
+			<value>3</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>3</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>2</value>
+		</row>
+	</table>
 	<table name="phpbb_reports">
 		<column>report_id</column>
 		<column>post_id</column>
@@ -157,6 +281,21 @@
 			<value>4</value>
 			<value>2</value>
 			<value>Remove Report</value>
+		</row>
+	</table>
+	<table name="phpbb_sessions">
+		<column>session_id</column>
+		<column>session_user_id</column>
+		<column>session_page</column>
+		<row>
+			<value>12345678901234567890123456789012</value>
+			<value>2</value>
+			<value></value>
+		</row>
+		<row>
+			<value>12345678901234567890123456789013</value>
+			<value>3</value>
+			<value></value>
 		</row>
 	</table>
 	<table name="phpbb_topics">
@@ -239,6 +378,22 @@
 			<value></value>
 			<value></value>
 			<value>2</value>
+		</row>
+	</table>
+	<table name="phpbb_zebra">
+		<column>user_id</column>
+		<column>zebra_id</column>
+		<row>
+			<value>1</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
 		</row>
 	</table>
 </dataset>

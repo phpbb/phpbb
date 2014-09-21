@@ -39,10 +39,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	{
 		return array(
 			array(
-				'retain',
-				2,
-				false,
-				false,
+				'retain', 2, false,
 				array(
 					array('post_id' => 1, 'poster_id' => ANONYMOUS, 'post_username' => ''),
 					array('post_id' => 2, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
@@ -79,10 +76,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				),
 			),
 			array(
-				'remove',
-				2,
-				false,
-				false,
+				'remove', 2, false,
 				array(
 					array('post_id' => 2, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
 					array('post_id' => 4, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
@@ -107,10 +101,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				),
 			),
 			array(
-				'retain',
-				2,
-				'Bertie',
-				false,
+				'retain', 2, 'Bertie',
 				array(
 					array('post_id' => 1, 'poster_id' => ANONYMOUS, 'post_username' => 'Bertie'),
 					array('post_id' => 2, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
@@ -147,10 +138,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				),
 			),
 			array(
-				'remove',
-				2,
-				'Bertie',
-				false,
+				'remove', 2, 'Bertie',
 				array(
 					array('post_id' => 2, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
 					array('post_id' => 4, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
@@ -180,9 +168,9 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	/**
 	* @dataProvider first_last_post_data
 	*/
-	public function test_first_last_post_info($mode, $user_id, $post_username, $expected, $expected_posts, $expected_topics, $expected_forums)
+	public function test_first_last_post_info($mode, $user_id, $post_username, $expected_posts, $expected_topics, $expected_forums)
 	{
-		$this->assertEquals($expected, user_delete($mode, $user_id, $post_username));
+		$this->assertFalse(user_delete($mode, $user_id, $post_username));
 
 		$sql = 'SELECT post_id, poster_id, post_username
 			FROM ' . POSTS_TABLE . '
@@ -210,10 +198,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	{
 		return array(
 			array(
-				'retain',
-				2,
-				false,
-				false,
+				'retain', 2,
 				array(
 					array('post_id' => 1, 'post_reported' => 1, 'post_edit_user' => 1),
 					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1),
@@ -233,13 +218,11 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				array(
 					array('attach_id' => 1, 'post_msg_id' => 1, 'poster_id' => 1),
 					array('attach_id' => 2, 'post_msg_id' => 2, 'poster_id' => 1),
+					array('attach_id' => 3, 'post_msg_id' => 0, 'poster_id' => 1), // TODO should be deleted: PHPBB3-13089
 				),
 			),
 			array(
-				'remove',
-				2,
-				false,
-				false,
+				'remove', 2,
 				array(
 					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1),
 					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1),
@@ -252,55 +235,8 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 					array('topic_id' => 4, 'topic_reported' => 0),
 				),
 				array(
-					array('attach_id' => 1, 'post_msg_id' => 1, 'poster_id' => 2), // TODO should be deleted: PHPBB3-13089
 					array('attach_id' => 2, 'post_msg_id' => 2, 'poster_id' => 1),
-				),
-			),
-			array(
-				'retain',
-				2,
-				'Bertie',
-				false,
-				array(
-					array('post_id' => 1, 'post_reported' => 1, 'post_edit_user' => 1),
-					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1),
-					array('post_id' => 3, 'post_reported' => 0, 'post_edit_user' => 1),
-					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1),
-				),
-				array(
-					array('report_id' => 1, 'post_id' => 1, 'user_id' => 1),
-					array('report_id' => 3, 'post_id' => 2, 'user_id' => 1),
-				),
-				array(
-					array('topic_id' => 1, 'topic_reported' => 1),
-					array('topic_id' => 2, 'topic_reported' => 1),
-					array('topic_id' => 3, 'topic_reported' => 0),
-					array('topic_id' => 4, 'topic_reported' => 0),
-				),
-				array(
-					array('attach_id' => 1, 'post_msg_id' => 1, 'poster_id' => 1),
-					array('attach_id' => 2, 'post_msg_id' => 2, 'poster_id' => 1),
-				),
-			),
-			array(
-				'remove',
-				2,
-				'Bertie',
-				false,
-				array(
-					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1),
-					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1),
-				),
-				array(
-					array('report_id' => 3, 'post_id' => 2, 'user_id' => 1),
-				),
-				array(
-					array('topic_id' => 2, 'topic_reported' => 1),
-					array('topic_id' => 4, 'topic_reported' => 0),
-				),
-				array(
-					array('attach_id' => 1, 'post_msg_id' => 1, 'poster_id' => 2), // TODO should be deleted: PHPBB3-13089
-					array('attach_id' => 2, 'post_msg_id' => 2, 'poster_id' => 1),
+					array('attach_id' => 3, 'post_msg_id' => 0, 'poster_id' => 2), // TODO should be deleted: PHPBB3-13089
 				),
 			),
 		);
@@ -309,9 +245,9 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	/**
 	* @dataProvider report_attachment_data
 	*/
-	public function test_report_attachment_info($mode, $user_id, $post_username, $expected, $expected_posts, $expected_reports, $expected_topics, $expected_attach)
+	public function test_report_attachment_info($mode, $user_id, $expected_posts, $expected_reports, $expected_topics, $expected_attach)
 	{
-		$this->assertEquals($expected, user_delete($mode, $user_id, $post_username));
+		$this->assertFalse(user_delete($mode, $user_id));
 
 		$sql = 'SELECT post_id, post_reported, post_edit_user
 			FROM ' . POSTS_TABLE . '
@@ -346,39 +282,33 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	{
 		return array(
 			array(
-				'retain',
-				2,
-				false,
-				false,
+				'retain', 2,
+				array(array('user_id' => 1, 'user_posts' => 4)),
+				array(array('user_id' => 1, 'zebra_id' => 3)),
+				array(array('ban_id' => 2), array('ban_id' => 3)),
+				array(array('session_id' => '12345678901234567890123456789013')),
 				array(
-					array('user_id' => 1, 'user_posts' => 4),
+					array('log_id' => 2, 'user_id' => 1, 'reportee_id' => 1),
+					array('log_id' => 3, 'user_id' => 1, 'reportee_id' => 1),
+				),
+				array(
+					array('msg_id' => 1, 'author_id' => 3, 'message_edit_user' => 3),
+					array('msg_id' => 2, 'author_id' => 1, 'message_edit_user' => 1),
 				),
 			),
 			array(
-				'remove',
-				2,
-				false,
-				false,
+				'remove', 2,
+				array(array('user_id' => 1, 'user_posts' => 2)),
+				array(array('user_id' => 1, 'zebra_id' => 3)),
+				array(array('ban_id' => 2), array('ban_id' => 3)),
+				array(array('session_id' => '12345678901234567890123456789013')),
 				array(
-					array('user_id' => 1, 'user_posts' => 2),
+					array('log_id' => 2, 'user_id' => 1, 'reportee_id' => 1),
+					array('log_id' => 3, 'user_id' => 1, 'reportee_id' => 1),
 				),
-			),
-			array(
-				'retain',
-				2,
-				'Bertie',
-				false,
 				array(
-					array('user_id' => 1, 'user_posts' => 4),
-				),
-			),
-			array(
-				'remove',
-				2,
-				'Bertie',
-				false,
-				array(
-					array('user_id' => 1, 'user_posts' => 2),
+					array('msg_id' => 1, 'author_id' => 3, 'message_edit_user' => 3),
+					array('msg_id' => 2, 'author_id' => 1, 'message_edit_user' => 1),
 				),
 			),
 		);
@@ -387,15 +317,50 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	/**
 	* @dataProvider delete_data
 	*/
-	public function test_delete_data($mode, $user_id, $post_username, $expected, $expected_users)
+	public function test_delete_data($mode, $user_id, $expected_users, $expected_zebra, $expected_ban, $expected_sessions, $expected_logs, $expected_pms)
 	{
-		$this->assertEquals($expected, user_delete($mode, $user_id, $post_username));
+		$this->assertFalse(user_delete($mode, $user_id));
 
 		$sql = 'SELECT user_id, user_posts
 			FROM ' . USERS_TABLE . '
 			ORDER BY user_id ASC';
 		$result = $this->db->sql_query($sql);
 		$this->assertEquals($expected_users, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT user_id, zebra_id
+			FROM ' . ZEBRA_TABLE . '
+			ORDER BY user_id ASC, zebra_id ASC';
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_zebra, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT ban_id
+			FROM ' . BANLIST_TABLE . '
+			ORDER BY ban_id ASC';
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_ban, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT session_id
+			FROM ' . SESSIONS_TABLE . '
+			ORDER BY session_id ASC';
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_sessions, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT log_id, user_id, reportee_id
+			FROM ' . LOG_TABLE . '
+			ORDER BY log_id ASC';
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_logs, $this->db->sql_fetchrowset($result));
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT msg_id, author_id, message_edit_user
+			FROM ' . PRIVMSGS_TABLE . '
+			ORDER BY msg_id ASC';
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($expected_pms, $this->db->sql_fetchrowset($result));
 		$this->db->sql_freeresult($result);
 	}
 }
