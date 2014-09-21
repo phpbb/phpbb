@@ -105,7 +105,7 @@ class oauth extends \phpbb\auth\provider\base
 	protected $phpbb_root_path;
 
 	/**
-	* PHP extenstion
+	* PHP file extension
 	*
 	* @var string
 	*/
