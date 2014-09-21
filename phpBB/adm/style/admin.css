@@ -109,8 +109,12 @@ hr {
 	text-align: center;
 }
 
-.text-left {
-	text-align: left;
+.search-box {
+	float: left;
+}
+
+.rtl .search-box {
+	float: right;
 }
 
 .small {
@@ -1777,6 +1781,7 @@ li.pagination ul {
 	margin: 10px 0;
 	color: #FFFFFF;
 	text-align: center;
+	clear: both;
 }
 
 .success {
