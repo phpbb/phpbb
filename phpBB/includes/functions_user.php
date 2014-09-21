@@ -555,11 +555,6 @@ function user_delete($mode, $user_ids, $retain_username = true)
 			WHERE ' . $db->sql_in_set('poster_id', $user_ids);
 		$db->sql_query($sql);
 
-		$sql = 'UPDATE ' . POSTS_TABLE . '
-			SET post_edit_user = ' . ANONYMOUS . '
-			WHERE ' . $db->sql_in_set('post_edit_user', $user_ids);
-		$db->sql_query($sql);
-
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts + ' . $added_guest_posts . '
 			WHERE user_id = ' . ANONYMOUS;
@@ -588,6 +583,30 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	}
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+
+	// Change user_id to anonymous for posts edited by this user
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_edit_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('post_edit_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for pms edited by this user
+	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+		SET message_edit_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('message_edit_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for posts deleted by this user
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_delete_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('post_delete_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for topics deleted by this user
+	$sql = 'UPDATE ' . TOPICS_TABLE . '
+		SET topic_delete_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('topic_delete_user', $user_ids);
+	$db->sql_query($sql);
 
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
