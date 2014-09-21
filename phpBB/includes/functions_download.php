@@ -45,7 +45,7 @@ function send_avatar_to_browser($file, $browser)
 
 	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
 	{
-		header('Pragma: public');
+		header('Cache-Control: public');
 
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
@@ -175,7 +175,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Now the tricky part... let's dance
-	header('Pragma: public');
+	header('Cache-Control: public');
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
@@ -420,7 +420,7 @@ function set_modified_headers($stamp, $browser)
 		{
 			send_status_line(304, 'Not Modified');
 			// seems that we need those too ... browsers
-			header('Pragma: public');
+			header('Cache-Control: public');
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 			return true;
 		}

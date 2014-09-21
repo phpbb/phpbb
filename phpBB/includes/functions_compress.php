@@ -509,7 +509,7 @@ class compress_zip extends compress
 
 		$mimetype = 'application/zip';
 
-		header('Pragma: no-cache');
+		header('Cache-Control: private, no-cache');
 		header("Content-Type: $mimetype; name=\"$download_name.zip\"");
 		header("Content-disposition: attachment; filename=$download_name.zip");
 
@@ -757,7 +757,7 @@ class compress_tar extends compress
 			break;
 		}
 
-		header('Pragma: no-cache');
+		header('Cache-Control: private, no-cache');
 		header("Content-Type: $mimetype; name=\"$download_name$this->type\"");
 		header("Content-disposition: attachment; filename=$download_name$this->type");
 
