@@ -10,7 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once __DIR__ . '/../../phpBB/vendor/facebook/webdriver/lib/__init__.php';		
+require_once __DIR__ . '/../vendor/facebook/webdriver/lib/__init__.php';
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
 
 class phpbb_ui_test_case extends phpbb_test_case
