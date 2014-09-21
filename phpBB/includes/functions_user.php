@@ -329,11 +329,16 @@ function user_add($user_row, $cp_data = false)
 }
 
 /**
-* Remove User
-*/
+ * Remove User
+ *
+ * @param string	$mode		'retain' or 'remove'
+ * @param int		$user_id
+ * @param mixed		$post_username
+ * @return bool
+ */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user;
 	global $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT *
