@@ -553,16 +553,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// Grab icons
 	$icons = $cache->obtain_icons();
 
-	// Output header
-	if ($found_more_search_matches)
-	{
-		$l_search_matches = $user->lang('FOUND_MORE_SEARCH_MATCHES', (int) $total_match_count);
-	}
-	else
-	{
-		$l_search_matches = $user->lang('FOUND_SEARCH_MATCHES', (int) $total_match_count);
-	}
-
 	// define some vars for urls
 	// A single wildcard will make the search results look ugly
 	$hilit = phpbb_clean_search_string(str_replace(array('+', '-', '|', '(', ')', '&quot;'), ' ', $keywords));
@@ -583,44 +573,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
-
-	// Check if search backend supports phrase search or not
-	$phrase_search_disabled = '';
-	if (strpos(html_entity_decode($keywords), '"') !== false && method_exists($search, 'supports_phrase_search'))
-	{
-		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
-	}
-
-	$pagination->generate_template_pagination($u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
-
-	$template->assign_vars(array(
-		'SEARCH_TITLE'		=> $l_search_title,
-		'SEARCH_MATCHES'	=> $l_search_matches,
-		'SEARCH_WORDS'		=> $keywords,
-		'SEARCHED_QUERY'	=> $search->get_search_query(),
-		'IGNORED_WORDS'		=> (!empty($common_words)) ? implode(' ', $common_words) : '',
-
-		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
-
-		'TOTAL_MATCHES'		=> $total_match_count,
-		'SEARCH_IN_RESULTS'	=> ($search_id) ? false : true,
-
-		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
-		'S_SELECT_SORT_KEY'		=> $s_sort_key,
-		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-		'S_SEARCH_ACTION'		=> $u_search,
-		'S_SHOW_TOPICS'			=> ($show_results == 'posts') ? false : true,
-
-		'GOTO_PAGE_IMG'		=> $user->img('icon_post_target', 'GOTO_PAGE'),
-		'NEWEST_POST_IMG'	=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
-		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
-		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
-		'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
-		'POLL_IMG'			=> $user->img('icon_topic_poll', 'TOPIC_POLL'),
-		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
-
-		'U_SEARCH_WORDS'	=> $u_search,
-	));
 
 	if ($sql_where)
 	{
@@ -1148,6 +1100,54 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 	}
 	unset($rowset);
+
+	// Output header
+	if ($found_more_search_matches)
+	{
+		$l_search_matches = $user->lang('FOUND_MORE_SEARCH_MATCHES', (int) $total_match_count);
+	}
+	else
+	{
+		$l_search_matches = $user->lang('FOUND_SEARCH_MATCHES', (int) $total_match_count);
+	}
+
+	// Check if search backend supports phrase search or not
+	$phrase_search_disabled = '';
+	if (strpos(html_entity_decode($keywords), '"') !== false && method_exists($search, 'supports_phrase_search'))
+	{
+		$phrase_search_disabled = $search->supports_phrase_search() ? false : true;
+	}
+
+	$pagination->generate_template_pagination($u_search, 'pagination', 'start', $total_match_count, $per_page, $start);
+
+	$template->assign_vars(array(
+		'SEARCH_TITLE'		=> $l_search_title,
+		'SEARCH_MATCHES'	=> $l_search_matches,
+		'SEARCH_WORDS'		=> $keywords,
+		'SEARCHED_QUERY'	=> $search->get_search_query(),
+		'IGNORED_WORDS'		=> (!empty($common_words)) ? implode(' ', $common_words) : '',
+
+		'PHRASE_SEARCH_DISABLED'		=> $phrase_search_disabled,
+
+		'TOTAL_MATCHES'		=> $total_match_count,
+		'SEARCH_IN_RESULTS'	=> ($search_id) ? false : true,
+
+		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+		'S_SELECT_SORT_KEY'		=> $s_sort_key,
+		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+		'S_SEARCH_ACTION'		=> $u_search,
+		'S_SHOW_TOPICS'			=> ($show_results == 'posts') ? false : true,
+
+		'GOTO_PAGE_IMG'		=> $user->img('icon_post_target', 'GOTO_PAGE'),
+		'NEWEST_POST_IMG'	=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+		'DELETED_IMG'		=> $user->img('icon_topic_deleted', 'TOPIC_DELETED'),
+		'POLL_IMG'			=> $user->img('icon_topic_poll', 'TOPIC_POLL'),
+		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+
+		'U_SEARCH_WORDS'	=> $u_search,
+	));
 
 	/**
 	* Modify the title and/or load data for the search results page
