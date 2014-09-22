@@ -396,4 +396,136 @@
 			<value>1</value>
 		</row>
 	</table>
+	<table name="phpbb_user_group">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_topics_watch">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_forums_watch">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_acl_users">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_topics_track">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_forums_track">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_topics_posted">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_profile_fields_data">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_moderator_cache">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_bookmarks">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_sessions_keys">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_privmsgs_folder">
+		<column>user_id</column>
+		<row>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+		</row>
+	</table>
+	<table name="phpbb_privmsgs_rules">
+		<column>user_id</column>
+		<column>rule_string</column>
+		<row>
+			<value>2</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_drafts">
+		<column>user_id</column>
+		<column>draft_message</column>
+		<row>
+			<value>2</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value></value>
+		</row>
+	</table>
 </dataset>
