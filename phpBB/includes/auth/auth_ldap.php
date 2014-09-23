@@ -282,7 +282,7 @@ function ldap_user_filter($username)
 {
 	global $config;
 
-	$filter = '(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
+	$filter = '(' . $config['ldap_uid'] . '=' . phpbb_ldap_escape(htmlspecialchars_decode($username)) . ')';
 	if ($config['ldap_user_filter'])
 	{
 		$_filter = ($config['ldap_user_filter'][0] == '(' && substr($config['ldap_user_filter'], -1) == ')') ? $config['ldap_user_filter'] : "({$config['ldap_user_filter']})";
@@ -294,7 +294,7 @@ function ldap_user_filter($username)
 /**
 * Escapes an LDAP AttributeValue
 */
-function ldap_escape($string)
+function phpbb_ldap_escape($string)
 {
 	return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
 }
