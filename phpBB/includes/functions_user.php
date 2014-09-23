@@ -363,12 +363,16 @@ function user_add($user_row, $cp_data = false)
 }
 
 /**
-* Remove User
-* @param $mode Either 'retain' or 'remove'
-*/
+ * Remove User
+ *
+ * @param string	$mode		Either 'retain' or 'remove'
+ * @param mixed		$user_ids	Either an array of integers or an integer
+ * @param bool		$retain_username
+ * @return bool
+ */
 function user_delete($mode, $user_ids, $retain_username = true)
 {
-	global $cache, $config, $db, $user, $auth, $phpbb_dispatcher;
+	global $cache, $config, $db, $user, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
