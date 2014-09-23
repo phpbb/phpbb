@@ -360,6 +360,7 @@
 	</table>
 	<table name="phpbb_users">
 		<column>user_id</column>
+		<column>username</column>
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
@@ -367,6 +368,7 @@
 		<row>
 			<value>1</value>
 			<value>Anonymous</value>
+			<value>anonymous</value>
 			<value></value>
 			<value></value>
 			<value>2</value>
@@ -374,6 +376,7 @@
 		<row>
 			<value>2</value>
 			<value>Foobar</value>
+			<value>foobar</value>
 			<value></value>
 			<value></value>
 			<value>2</value>

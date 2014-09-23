@@ -106,18 +106,18 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 				),
 			),
 			array(
-				'retain', 'Bertie',
+				'retain', true,
 				array(
-					array('post_id' => 1, 'poster_id' => ANONYMOUS, 'post_username' => 'Bertie'),
+					array('post_id' => 1, 'poster_id' => ANONYMOUS, 'post_username' => 'Foobar'),
 					array('post_id' => 2, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
-					array('post_id' => 3, 'poster_id' => ANONYMOUS, 'post_username' => 'Bertie'),
+					array('post_id' => 3, 'poster_id' => ANONYMOUS, 'post_username' => 'Foobar'),
 					array('post_id' => 4, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
 				),
 				array(
 					array(
 						'topic_id' => 1,
-						'topic_poster' => ANONYMOUS, 'topic_first_poster_name' => 'Bertie', 'topic_first_poster_colour' => '',
-						'topic_last_poster_id' => ANONYMOUS, 'topic_last_poster_name' => 'Bertie', 'topic_last_poster_colour' => '',
+						'topic_poster' => ANONYMOUS, 'topic_first_poster_name' => 'Foobar', 'topic_first_poster_colour' => '',
+						'topic_last_poster_id' => ANONYMOUS, 'topic_last_poster_name' => 'Foobar', 'topic_last_poster_colour' => '',
 					),
 					array(
 						'topic_id' => 2,
@@ -126,8 +126,8 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 					),
 					array(
 						'topic_id' => 3,
-						'topic_poster' => ANONYMOUS, 'topic_first_poster_name' => 'Bertie', 'topic_first_poster_colour' => '',
-						'topic_last_poster_id' => ANONYMOUS, 'topic_last_poster_name' => 'Bertie', 'topic_last_poster_colour' => '',
+						'topic_poster' => ANONYMOUS, 'topic_first_poster_name' => 'Foobar', 'topic_first_poster_colour' => '',
+						'topic_last_poster_id' => ANONYMOUS, 'topic_last_poster_name' => 'Foobar', 'topic_last_poster_colour' => '',
 					),
 					array(
 						'topic_id' => 4,
@@ -136,14 +136,14 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 					),
 				),
 				array(
-					array('forum_id' => 1, 'forum_last_poster_id' => ANONYMOUS, 'forum_last_poster_name' => 'Bertie', 'forum_last_poster_colour' => ''),
+					array('forum_id' => 1, 'forum_last_poster_id' => ANONYMOUS, 'forum_last_poster_name' => 'Foobar', 'forum_last_poster_colour' => ''),
 					array('forum_id' => 2, 'forum_last_poster_id' => ANONYMOUS, 'forum_last_poster_name' => 'Other', 'forum_last_poster_colour' => ''),
-					array('forum_id' => 3, 'forum_last_poster_id' => ANONYMOUS, 'forum_last_poster_name' => 'Bertie', 'forum_last_poster_colour' => ''),
+					array('forum_id' => 3, 'forum_last_poster_id' => ANONYMOUS, 'forum_last_poster_name' => 'Foobar', 'forum_last_poster_colour' => ''),
 					array('forum_id' => 4, 'forum_last_poster_id' => ANONYMOUS, 'forum_last_poster_name' => 'Other', 'forum_last_poster_colour' => ''),
 				),
 			),
 			array(
-				'remove', 'Bertie',
+				'remove', true,
 				array(
 					array('post_id' => 2, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
 					array('post_id' => 4, 'poster_id' => ANONYMOUS, 'post_username' => 'Other'),
@@ -173,9 +173,9 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	/**
 	* @dataProvider first_last_post_data
 	*/
-	public function test_first_last_post_info($mode, $post_username, $expected_posts, $expected_topics, $expected_forums)
+	public function test_first_last_post_info($mode, $retain_username, $expected_posts, $expected_topics, $expected_forums)
 	{
-		$this->assertFalse(user_delete($mode, 2, $post_username));
+		$this->assertFalse(user_delete($mode, 2, $retain_username));
 
 		$sql = 'SELECT post_id, poster_id, post_username
 			FROM ' . POSTS_TABLE . '
