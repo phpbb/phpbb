@@ -161,8 +161,7 @@ ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
 	font-weight: normal;
 }
 
-@media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
-{
+@media only screen and (max-width: 550px), only screen and (max-device-width: 550px) {
 	ul.topiclist.forums dt {
 		margin-right: 0;
 	}
@@ -191,8 +190,7 @@ ul.topiclist li.row dt a.subforum {
 
 /* Notifications list
 ----------------------------------------*/
-@media only screen and (max-width: 350px), only screen and (max-device-width: 350px)
-{
+@media only screen and (max-width: 350px), only screen and (max-device-width: 350px) {
 	.dropdown-extended .dropdown-contents {
 		width: auto;
 	}
@@ -344,22 +342,23 @@ fieldset.quick-login label[for="autologin"] {
 	min-width: 50%;
 }
 
-@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
-{
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
+	dd label {
+		white-space: normal;
+	}
+
 	select, .inputbox {
 		max-width: 260px;
 	}
 }
 
-@media only screen and (max-width: 430px), only screen and (max-device-width: 430px)
-{
+@media only screen and (max-width: 430px), only screen and (max-device-width: 430px) {
 	.section-viewtopic .search-box .inputbox {
 		width: 110px;
 	}
 }
 
-@media only screen and (max-width: 320px), only screen and (max-device-width: 320px)
-{
+@media only screen and (max-width: 320px), only screen and (max-device-width: 320px) {
 	select, .inputbox {
 		max-width: 240px;
 	}
@@ -372,8 +371,7 @@ fieldset.quick-login label[for="autologin"] {
 	width: auto;
 }
 
-@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
-{
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
 	dl.details dt, dl.details dd {
 		width: auto;
 		float: none;
@@ -513,8 +511,7 @@ fieldset.display-actions {
 	width: 100%;
 }
 
-@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
-{
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
 	p.responsive-center {
 		float: none;
 		text-align: center;
