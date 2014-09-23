@@ -205,20 +205,20 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			array(
 				'retain',
 				array(
-					array('post_id' => 1, 'post_reported' => 1, 'post_edit_user' => 1),
-					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1),
-					array('post_id' => 3, 'post_reported' => 0, 'post_edit_user' => 1),
-					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1),
+					array('post_id' => 1, 'post_reported' => 1, 'post_edit_user' => 1, 'post_delete_user' => 1),
+					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1, 'post_delete_user' => 1),
+					array('post_id' => 3, 'post_reported' => 0, 'post_edit_user' => 1, 'post_delete_user' => 1),
+					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1, 'post_delete_user' => 1),
 				),
 				array(
 					array('report_id' => 1, 'post_id' => 1, 'user_id' => 1),
 					array('report_id' => 3, 'post_id' => 2, 'user_id' => 1),
 				),
 				array(
-					array('topic_id' => 1, 'topic_reported' => 1),
-					array('topic_id' => 2, 'topic_reported' => 1),
-					array('topic_id' => 3, 'topic_reported' => 0),
-					array('topic_id' => 4, 'topic_reported' => 0),
+					array('topic_id' => 1, 'topic_reported' => 1, 'topic_delete_user' => 1),
+					array('topic_id' => 2, 'topic_reported' => 1, 'topic_delete_user' => 1),
+					array('topic_id' => 3, 'topic_reported' => 0, 'topic_delete_user' => 1),
+					array('topic_id' => 4, 'topic_reported' => 0, 'topic_delete_user' => 1),
 				),
 				array(
 					array('attach_id' => 1, 'post_msg_id' => 1, 'poster_id' => 1),
@@ -229,15 +229,15 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			array(
 				'remove',
 				array(
-					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1),
-					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1),
+					array('post_id' => 2, 'post_reported' => 1, 'post_edit_user' => 1, 'post_delete_user' => 1),
+					array('post_id' => 4, 'post_reported' => 0, 'post_edit_user' => 1, 'post_delete_user' => 1),
 				),
 				array(
 					array('report_id' => 3, 'post_id' => 2, 'user_id' => 1),
 				),
 				array(
-					array('topic_id' => 2, 'topic_reported' => 1),
-					array('topic_id' => 4, 'topic_reported' => 0),
+					array('topic_id' => 2, 'topic_reported' => 1, 'topic_delete_user' => 1),
+					array('topic_id' => 4, 'topic_reported' => 0, 'topic_delete_user' => 1),
 				),
 				array(
 					array('attach_id' => 2, 'post_msg_id' => 2, 'poster_id' => 1),
@@ -254,7 +254,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	{
 		$this->assertFalse(user_delete($mode, 2));
 
-		$sql = 'SELECT post_id, post_reported, post_edit_user
+		$sql = 'SELECT post_id, post_reported, post_edit_user, post_delete_user
 			FROM ' . POSTS_TABLE . '
 			ORDER BY post_id ASC';
 		$result = $this->db->sql_query($sql);
@@ -268,7 +268,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		$this->assertEquals($expected_reports, $this->db->sql_fetchrowset($result), 'Report table content is mismatching after deleting a user.');
 		$this->db->sql_freeresult($result);
 
-		$sql = 'SELECT topic_id, topic_reported
+		$sql = 'SELECT topic_id, topic_reported, topic_delete_user
 			FROM ' . TOPICS_TABLE . '
 			ORDER BY topic_id ASC';
 		$result = $this->db->sql_query($sql);

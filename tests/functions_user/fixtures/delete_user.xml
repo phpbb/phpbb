@@ -148,6 +148,7 @@
 		<column>post_id</column>
 		<column>poster_id</column>
 		<column>post_edit_user</column>
+		<column>post_delete_user</column>
 		<column>post_username</column>
 		<column>topic_id</column>
 		<column>forum_id</column>
@@ -157,6 +158,7 @@
 		<column>post_reported</column>
 		<row>
 			<value>1</value>
+			<value>2</value>
 			<value>2</value>
 			<value>2</value>
 			<value></value>
@@ -169,6 +171,7 @@
 		</row>
 		<row>
 			<value>2</value>
+			<value>1</value>
 			<value>1</value>
 			<value>1</value>
 			<value>Other</value>
@@ -183,6 +186,7 @@
 			<value>3</value>
 			<value>2</value>
 			<value>2</value>
+			<value>2</value>
 			<value></value>
 			<value>3</value>
 			<value>3</value>
@@ -193,6 +197,7 @@
 		</row>
 		<row>
 			<value>4</value>
+			<value>1</value>
 			<value>1</value>
 			<value>1</value>
 			<value>Other</value>
@@ -308,6 +313,7 @@
 		<column>forum_id</column>
 		<column>topic_reported</column>
 		<column>topic_poster</column>
+		<column>topic_delete_user</column>
 		<column>topic_first_poster_name</column>
 		<column>topic_first_poster_colour</column>
 		<column>topic_last_poster_id</column>
@@ -318,6 +324,7 @@
 			<value>1</value>
 			<value>1</value>
 			<value>2</value>
+			<value>2</value>
 			<value></value>
 			<value>00AA00</value>
 			<value>2</value>
@@ -327,6 +334,7 @@
 		<row>
 			<value>2</value>
 			<value>2</value>
+			<value>1</value>
 			<value>1</value>
 			<value>1</value>
 			<value>Other</value>
@@ -340,6 +348,7 @@
 			<value>3</value>
 			<value>1</value>
 			<value>2</value>
+			<value>2</value>
 			<value></value>
 			<value>00AA00</value>
 			<value>2</value>
@@ -349,6 +358,7 @@
 		<row>
 			<value>4</value>
 			<value>4</value>
+			<value>1</value>
 			<value>1</value>
 			<value>1</value>
 			<value>Other</value>
