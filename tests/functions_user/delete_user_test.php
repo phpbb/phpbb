@@ -10,6 +10,7 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
+require_once dirname(__FILE__) . '/../mock/null_cache.php';
 
 class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 {
@@ -32,7 +33,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			'load_online_time'	=> 5,
 			'search_type'		=> 'fulltext_mysql',
 		);
-		$cache = $this->getMock('cache');
+		$cache = new phpbb_mock_null_cache();
 	}
 
 	 public function first_last_post_data()
