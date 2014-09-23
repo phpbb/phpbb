@@ -10,30 +10,34 @@
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-require_once dirname(__FILE__) . '/../mock/null_cache.php';
 
 class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 {
-	/** @var \dbal */
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/delete_user.xml');
+		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/delete_user.xml');
 	}
 
 	protected function setUp()
 	{
 		parent::setUp();
 
-		global $cache, $config, $db;
+		global $cache, $config, $db, $phpbb_dispatcher, $phpbb_container;
 
 		$db = $this->db = $this->new_dbal();
-		$config = array(
+		$config = new \phpbb\config\config(array(
 			'load_online_time'	=> 5,
-			'search_type'		=> 'fulltext_mysql',
-		);
+			'search_type'		=> '\phpbb\search\fulltext_mysql',
+		));
+		set_config(false, false, false, $config);
+		set_config_count(false, false, false, $config);
 		$cache = new phpbb_mock_null_cache();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 	}
 
 	 public function first_last_post_data()
