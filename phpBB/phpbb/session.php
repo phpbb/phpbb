@@ -441,12 +441,13 @@ class session
 
 					if (!$session_expired)
 					{
-						// Only update session DB a minute or so after last update or if page changes and is not ajax request
-						if (($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page'])) && !$request->is_ajax())
+						// Only update session DB a minute or so after last update or if page changes
+						if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 						{
 							$sql_ary = array('session_time' => $this->time_now);
 
-							if ($this->update_session_page)
+							// Do not update the session page for ajax requests, so the view online still works as intended
+							if ($this->update_session_page && !$request->is_ajax())
 							{
 								$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
 								$sql_ary['session_forum_id'] = $this->page['forum'];
