@@ -38,4 +38,11 @@
 		<column>session_ip</column>
 		<column>session_browser</column>
 	</table>
+	<table name="phpbb_banlist">
+		<column>ban_id</column>
+		<column>ban_userid</column>
+		<column>ban_email</column>
+		<column>ban_reason</column>
+		<column>ban_give_reason</column>
+	</table>
 </dataset>
