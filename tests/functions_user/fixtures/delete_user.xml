@@ -151,7 +151,7 @@
 		<column>post_username</column>
 		<column>topic_id</column>
 		<column>forum_id</column>
-		<column>post_approved</column>
+		<column>post_visibility</column>
 		<column>post_time</column>
 		<column>post_text</column>
 		<column>post_reported</column>
@@ -258,29 +258,34 @@
 		<column>post_id</column>
 		<column>user_id</column>
 		<column>report_text</column>
+		<column>reported_post_text</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
 			<value>1</value>
 			<value>Post Removed?</value>
+			<value></value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>3</value>
 			<value>2</value>
 			<value>Post Removed?</value>
+			<value></value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>2</value>
 			<value>1</value>
 			<value>Keep</value>
+			<value></value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>4</value>
 			<value>2</value>
 			<value>Remove Report</value>
+			<value></value>
 		</row>
 	</table>
 	<table name="phpbb_sessions">
@@ -358,14 +363,10 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<column>user_posts</column>
 		<row>
 			<value>1</value>
 			<value>Anonymous</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 			<value>2</value>
@@ -373,8 +374,6 @@
 		<row>
 			<value>2</value>
 			<value>Foobar</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 			<value>2</value>
@@ -461,11 +460,17 @@
 	</table>
 	<table name="phpbb_profile_fields_data">
 		<column>user_id</column>
+		<column>pf_phpbb_interests</column>
+		<column>pf_phpbb_occupation</column>
 		<row>
 			<value>2</value>
+			<value></value>
+			<value></value>
 		</row>
 		<row>
 			<value>3</value>
+			<value></value>
+			<value></value>
 		</row>
 	</table>
 	<table name="phpbb_moderator_cache">
