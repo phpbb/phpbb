@@ -129,6 +129,10 @@ dd select {
 	width: auto;
 }
 
+dd select[multiple] {
+	width: 100%;
+}
+
 dd textarea {
 	width: 85%;
 }
