@@ -786,7 +786,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 	}
 
 	if ($tzDate.val() !== '') {
-		$timezone.children('optgroup').remove(':not([label="' + $('#tz_date').val() + '"])');
+		$timezone.children('optgroup').remove(':not([data-tz-value="' + $('#tz_date').val() + '"])');
 	}
 
 	if ($tzDate.val() === $tzSelectDateSuggest.attr('data-suggested-tz')) {
@@ -795,7 +795,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 		$tzSelectDateSuggest.css('display', 'inline');
 	}
 	
-	var $tzOptions = $timezone.children('optgroup[label="' + $tzDate.val() + '"]').children('option');
+	var $tzOptions = $timezone.children('optgroup[data-tz-value="' + $tzDate.val() + '"]').children('option');
 
 	if ($tzOptions.length === 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
@@ -849,7 +849,7 @@ phpbb.timezonePreselectSelect = function(forceSelector) {
 		minutes = minutes.toString();
 	}
 
-	var prefix = 'GMT' + sign + hours + ':' + minutes;
+	var prefix = 'UTC' + sign + hours + ':' + minutes;
 	var prefixLength = prefix.length;
 	var selectorOptions = $('option', '#tz_date');
 	var i;

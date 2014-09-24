@@ -937,13 +937,19 @@ function style_select($default = '', $all = false)
 * Format the timezone offset with hours and minutes
 *
 * @param	int		$tz_offset	Timezone offset in seconds
+* @param	bool	$show_null	Whether null offsets should be shown
 * @return	string		Normalized offset string:	-7200 => -02:00
 *													16200 => +04:30
 */
-function phpbb_format_timezone_offset($tz_offset)
+function phpbb_format_timezone_offset($tz_offset, $show_null = false)
 {
 	$sign = ($tz_offset < 0) ? '-' : '+';
 	$time_offset = abs($tz_offset);
+
+	if ($time_offset == 0 && $show_null == false)
+	{
+		return '';
+	}
 
 	$offset_seconds	= $time_offset % 3600;
 	$offset_minutes	= $offset_seconds / 60;
@@ -1040,13 +1046,14 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 /**
 * Options to pick a timezone and date/time
 *
+* @param	\phpbb\template\template $template	phpBB template object
 * @param	\phpbb\user	$user				Object of the current user
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
 *
-* @return		array		Returns an array, also containing the options for the time selector.
+* @return		array		Returns an array containing the options for the time selector.
 */
-function phpbb_timezone_select($user, $default = '', $truncate = false)
+function phpbb_timezone_select($template, $user, $default = '', $truncate = false)
 {
 	static $timezones;
 
@@ -1062,15 +1069,15 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 			$dt = $user->create_datetime('now', $tz);
 			$offset = $dt->getOffset();
 			$current_time = $dt->format($user->lang['DATETIME_FORMAT'], true);
-			$offset_string = phpbb_format_timezone_offset($offset);
-			$timezones['GMT' . $offset_string . ' - ' . $timezone] = array(
+			$offset_string = phpbb_format_timezone_offset($offset, true);
+			$timezones['UTC' . $offset_string . ' - ' . $timezone] = array(
 				'tz'		=> $timezone,
-				'offset'	=> 'GMT' . $offset_string,
+				'offset'	=> $offset_string,
 				'current'	=> $current_time,
 			);
 			if ($timezone === $default)
 			{
-				$default_offset = 'GMT' . $offset_string;
+				$default_offset = 'UTC' . $offset_string;
 			}
 		}
 		unset($unsorted_timezones);
@@ -1078,18 +1085,27 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 		uksort($timezones, 'phpbb_tz_select_compare');
 	}
 
-	$tz_select = $tz_dates = $opt_group = '';
+	$tz_select = $opt_group = '';
 
-	foreach ($timezones as $timezone)
+	foreach ($timezones as $key => $timezone)
 	{
 		if ($opt_group != $timezone['offset'])
 		{
+			// Generate tz_select for backwards compatibility
 			$tz_select .= ($opt_group) ? '</optgroup>' : '';
-			$tz_select .= '<optgroup label="' . $timezone['offset'] . ' - ' . $timezone['current'] . '">';
+			$tz_select .= '<optgroup label="' . $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']) . '">';
 			$opt_group = $timezone['offset'];
+			$template->assign_block_vars('timezone_select', array(
+				'LABEL'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
+				'VALUE'		=> $key . ' - ' . $timezone['current'],
+			));
 
-			$selected = ($default_offset == $timezone['offset']) ? ' selected="selected"' : '';
-			$tz_dates .= '<option value="' . $timezone['offset'] . ' - ' . $timezone['current'] . '"' . $selected . '>' . $timezone['offset'] . ' - ' . $timezone['current'] . '</option>';
+			$selected = (!empty($default_offset) && strpos($key, $default_offset) !== false) ? ' selected="selected"' : '';
+			$template->assign_block_vars('timezone_date', array(
+				'VALUE'		=> $key . ' - ' . $timezone['current'],
+				'SELECTED'	=> !empty($selected),
+				'TITLE'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
+			));
 		}
 
 		$label = $timezone['tz'];
@@ -1097,22 +1113,26 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 		{
 			$label = $user->lang['timezones'][$label];
 		}
-		$title = $timezone['offset'] . ' - ' . $label;
+		$title = $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $label);
 
 		if ($truncate)
 		{
 			$label = truncate_string($label, 50, 255, false, '...');
 		}
 
+		// Also generate timezone_select for backwards compatibility
 		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
 		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
+		$template->assign_block_vars('timezone_select.timezone_options', array(
+			'TITLE'			=> $title,
+			'VALUE'			=> $timezone['tz'],
+			'SELECTED'		=> !empty($selected),
+			'LABEL'			=> $label,
+		));
 	}
 	$tz_select .= '</optgroup>';
 
-	return array(
-		'tz_select'		=> $tz_select,
-		'tz_dates'		=> $tz_dates,
-	);
+	return $tz_select;
 }
 
 // Functions handling topic/post tracking/marking
@@ -4903,7 +4923,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	$dt = $user->create_datetime();
-	$timezone_offset = 'GMT' . phpbb_format_timezone_offset($dt->getOffset());
+	$timezone_offset = $user->lang(array('timezones', 'UTC_OFFSET'), phpbb_format_timezone_offset($dt->getOffset()));
 	$timezone_name = $user->timezone->getName();
 	if (isset($user->lang['timezones'][$timezone_name]))
 	{
