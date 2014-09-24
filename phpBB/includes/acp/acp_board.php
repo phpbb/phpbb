@@ -904,12 +904,11 @@ class acp_board
 	*/
 	function timezone_select($value, $key)
 	{
-		global $user;
+		global $template, $user;
 
-		$timezone_select = phpbb_timezone_select($user, $value, true);
-		$timezone_select['tz_select'];
+		$timezone_select = phpbb_timezone_select($template, $user, $value, true);
 
-		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select['tz_select'] . '</select>';
+		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select . '</select>';
 	}
 
 	/**

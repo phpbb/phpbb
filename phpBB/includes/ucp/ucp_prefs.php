@@ -154,7 +154,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				$timezone_selects = phpbb_timezone_select($user, $data['tz'], true);
+				phpbb_timezone_select($template, $user, $data['tz'], true);
 
 				// check if there are any user-selectable languages
 				$sql = 'SELECT COUNT(lang_id) as languages_count
@@ -208,8 +208,6 @@ class ucp_prefs
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style']),
-					'S_TZ_OPTIONS'			=> $timezone_selects['tz_select'],
-					'S_TZ_DATE_OPTIONS'		=> $timezone_selects['tz_dates'],
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
