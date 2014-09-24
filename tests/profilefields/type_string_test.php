@@ -167,6 +167,55 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 				'FIELD_INVALID_CHARS_ALPHA_PUNCTUATION-field',
 				'Required field should reject field having invalid input for the given validation',
 			),
+			// UTF-8 string tests
+			array(
+				'ö äö äö ä',
+				array('field_validation' => '[\p{Lu}\p{Ll}0-9]+'),
+				'FIELD_INVALID_CHARS_LETTER_NUM_ONLY-field',
+				'Required field should reject spaces in UTF-8 letternumeric only field',
+			),
+			array(
+				'Имя123',
+				array('field_validation' => '[\p{Lu}\p{Ll}0-9]+'),
+				false,
+				'Required field should accept UTF-8 letternumeric only field',
+			),
+			array(
+				'Ö äö äö- ä+',
+				array('field_validation' => '[\p{Lu}\p{Ll}0-9_]+'),
+				'FIELD_INVALID_CHARS_LETTER_NUM_UNDERSCORE-field',
+				'Required field should reject spacers in UTF-8 letternumeric with underscore field',
+			),
+			array(
+				'Правильное.Имя123',
+				array('field_validation' => '[\p{Lu}\p{Ll}0-9.]+'),
+				false,
+				'Required field should accept UTF-8 letternumeric field with dots',
+			),
+			array(
+				'Неправильное.,имя123',
+				array('field_validation' => '[\p{Lu}\p{Ll}0-9.]+'),
+				'FIELD_INVALID_CHARS_LETTER_NUM_DOTS-field',
+				'Required field should reject comma in UTF-8 letternumeric field with dots',
+			),
+			array(
+				'Ö äö äö- ä+',
+				array('field_validation' => '[\p{Lu}\p{Ll}0-9\x20_+\-\[\]]+'),
+				false,
+				'Required field should accept spacers in UTF-8 letternumeric with spacers field',
+			),
+			array(
+				'skype.test.name,_this',
+				array('field_validation' => '[\p{Lu}\p{Ll}][\p{Lu}\p{Ll}0-9.,\-_]+'),
+				false,
+				'Required field should accept alphanumeric value for UTF-8 letternumeric field with punctuations',
+			),
+			array(
+				'1skype.this.should.fail',
+				array('field_validation' => '[\p{Lu}\p{Ll}][\p{Lu}\p{Ll}0-9.,\-_]+'),
+				'FIELD_INVALID_CHARS_LETTER_NUM_PUNCTUATION-field',
+				'Required field should reject field having leading numeric for UTF-8 letternumeric field with punctuations',
+			),
 		);
 	}
 
