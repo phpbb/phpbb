@@ -11,10 +11,10 @@
 	<p><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_GO_TO_SEARCH_ADV}</a></p>
 <!-- ENDIF -->
 
-<!-- IF .pagination or SEARCH_MATCHES or PAGE_NUMBER -->
+<!-- IF .pagination or SEARCH_MATCHES or TOTAL_MATCHES or PAGE_NUMBER -->
 	<div class="action-bar top">
 
-	<!-- IF SEARCH_MATCHES -->
+	<!-- IF TOTAL_MATCHES > 0 -->
 		<div class="search-box">
 			<form method="post" action="{S_SEARCH_ACTION}">
 			<fieldset>
@@ -178,9 +178,9 @@
 <div class="action-bar bottom">
 	<div class="pagination">
 		{SEARCH_MATCHES}
-		<!-- IF .pagination --> 
+		<!-- IF .pagination -->
 			<!-- INCLUDE pagination.html -->
-		<!-- ELSE --> 
+		<!-- ELSE -->
 			 &bull; {PAGE_NUMBER}
 		<!-- ENDIF -->
 	</div>
