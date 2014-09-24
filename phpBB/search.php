@@ -741,6 +741,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	sql_where		The SQL WHERE string used by search to get topic data
 			* @var	int		total_match_count	The total number of search matches
 			* @since 3.1.0-a1
+			* @changed 3.1.0-RC5 Added total_match_count
 			*/
 			$vars = array('sql_select', 'sql_from', 'sql_where', 'total_match_count');
 			extract($phpbb_dispatcher->trigger_event('core.search_get_topic_data', compact($vars)));
