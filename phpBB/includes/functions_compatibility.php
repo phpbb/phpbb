@@ -176,7 +176,7 @@ function update_foes($group_id = false, $user_id = false)
 * @param string &$rank_img the rank image as full img tag is stored here after execution
 * @param string &$rank_img_src the rank image source is stored here after execution
 *
-* @deprecated 3.1
+* @deprecated 3.1.0-RC5 (To be removed: 3.3.0)
 *
 * Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
 */
