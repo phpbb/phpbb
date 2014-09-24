@@ -73,6 +73,22 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 				),
 				POSTS_TABLE,
 			),
+			array(
+				array(
+					array(
+						'SELECT * FROM ' . POSTS_TABLE . ' p
+							LEFT JOIN ' . TOPICS_TABLE . ' t ON p.topic_id = t.topic_id',
+						3,
+					),
+					array(
+						'SELECT * FROM ' . POSTS_TABLE . ' p
+							LEFT JOIN ' . TOPICS_TABLE . ' t ON p.topic_id = t.topic_id
+							LEFT JOIN ' . USERS_TABLE . ' u ON p.poster_id = u.user_id',
+						3,
+					),
+				),
+				TOPICS_TABLE,
+			),
 		);
 	}
 
