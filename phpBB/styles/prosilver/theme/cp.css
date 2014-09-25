@@ -110,7 +110,7 @@ ul.cplist {
 }
 
 #tabs .tab, #minitabs .tab {
-	display: inline-block;
+	display: block;
 	float: left;
 	font-size: 1em;
 	font-weight: bold;
