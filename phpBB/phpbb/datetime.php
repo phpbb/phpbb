@@ -91,25 +91,28 @@ class datetime extends \DateTime
 
 				$midnight	= $midnight->getTimestamp();
 
-				$day = false;
+				if ($timestamp <= $midnight + 2 * 86400)
+				{
+					$day = false;
 
-				if ($timestamp > $midnight + 86400)
-				{
-					$day = 'TOMORROW';
-				}
-				else if ($timestamp > $midnight)
-				{
-					$day = 'TODAY';
-				}
-				else if ($timestamp > $midnight - 86400)
-				{
-					$day = 'YESTERDAY';
-				}
+					if ($timestamp > $midnight + 86400)
+					{
+						$day = 'TOMORROW';
+					}
+					else if ($timestamp > $midnight)
+					{
+						$day = 'TODAY';
+					}
+					else if ($timestamp > $midnight - 86400)
+					{
+						$day = 'YESTERDAY';
+					}
 
-				if ($day !== false)
-				{
-					// Format using the short formatting and finally swap out the relative token placeholder with the correct value
-					return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
+					if ($day !== false)
+					{
+						// Format using the short formatting and finally swap out the relative token placeholder with the correct value
+						return str_replace(self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER, $this->user->lang['datetime'][$day], strtr(parent::format($format['format_short']), $format['lang']));
+					}
 				}
 			}
 		}
