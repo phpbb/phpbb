@@ -2840,9 +2840,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			* @event core.login_box_redirect
 			* @var  string	redirect	Redirect string
 			* @var	boolean	admin		Is admin?
-			* @since 3.1.0-RC4
+			* @var	bool	return		If true, do not redirect but return the sanitized URL.
+			* @since 3.1.0-RC5
 			*/
-			$vars = array('redirect', 'admin');
+			$vars = array('redirect', 'admin', 'return');
 			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			// append/replace SID (may change during the session for AOL users)
