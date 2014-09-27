@@ -39,7 +39,9 @@
 				<td class="catdiv" colspan="3">&nbsp;</td>
 			</tr>
 		<!-- ENDIF -->
+		<!-- EVENT forumlist_body_forum_row_before -->
 		<tr>
+			<!-- EVENT forumlist_body_forum_row_prepend -->
 			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
 			<td class="row1" width="100%">
 				<!-- IF forumrow.FORUM_IMAGE -->
@@ -83,7 +85,9 @@
 					<p class="topicdetails">{L_NO_POSTS}</p>
 				<!-- ENDIF -->
 			</td>
+			<!-- EVENT forumlist_body_forum_row_append -->
 		</tr>
+		<!-- EVENT forumlist_body_forum_row_after -->
 	<!-- ENDIF -->
 	<!-- EVENT forumlist_body_last_row_after -->
 <!-- BEGINELSE -->
