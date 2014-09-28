@@ -56,6 +56,11 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		return 'app.php';
 	}
 
+	protected function path_to_app()
+	{
+		return '';
+	}
+
 	protected function generate_route_objects()
 	{
 		$request = new phpbb_mock_request();
@@ -93,30 +98,30 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_no_rewrite()
 	{
 		return array(
-			array('controller2', array('t' => 1, 'f' => 2), true, false, '/app.php/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller2', array('t' => 1, 'f' => 2), false, false, '/app.php/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '/app.php/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '/app.php/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
 
 			// Custom sid parameter
-			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '/app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '/app.php/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '/app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
 
 			// Testing anchors
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/app.php/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '/app.php/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/app.php/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
 
 			// Anchors and custom sid
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '/app.php/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
 
 			// Empty parameters should not append the &amp; or ?
-			array('controller2', array(), true, false, '/app.php/foo/bar', 'no params using empty array'),
-			array('controller2', array(), false, false, '/app.php/foo/bar', 'no params using empty array'),
-			array('controller3', array('p' => 3), true, false, '/app.php/foo/bar/p-3', 'no params using empty array'),
+			array('controller2', array(), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, '/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
 		);
 	}
 
@@ -132,30 +137,30 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_with_rewrite()
 	{
 		return array(
-			array('controller2', array('t' => 1, 'f' => 2), true, false, '/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller2', array('t' => 1, 'f' => 2), false, false, '/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), true, false, '/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, '/' . $this->path_to_app() . 'foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '/' . $this->path_to_app() . 'foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
 
 			// Custom sid parameter
-			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '/' . $this->path_to_app() . 'foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
 
 			// Testing anchors
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '/' . $this->path_to_app() . 'foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
 
 			// Anchors and custom sid
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '/' . $this->path_to_app() . 'foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
 
 			// Empty parameters should not append the &amp; or ?
-			array('controller2', array(), true, false, '/foo/bar', 'no params using empty array'),
-			array('controller2', array(), false, false, '/foo/bar', 'no params using empty array'),
-			array('controller3', array('p' => 3), true, false, '/foo/bar/p-3', 'no params using empty array'),
+			array('controller2', array(), true, false, '/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, '/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, '/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
 		);
 	}
 
@@ -172,30 +177,30 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_absolute()
 	{
 		return array(
-			array('controller2', array('t' => 1, 'f' => 2), true, false, 'http://localhost/app.php/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller2', array('t' => 1, 'f' => 2), false, false, 'http://localhost/app.php/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, 'http://localhost/app.php/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, 'http://localhost/app.php/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
 
 			// Custom sid parameter
-			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', 'http://localhost/app.php/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
 
 			// Testing anchors
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/app.php/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, 'http://localhost/app.php/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/app.php/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
 
 			// Anchors and custom sid
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', 'http://localhost/app.php/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
 
 			// Empty parameters should not append the &amp; or ?
-			array('controller2', array(), true, false, 'http://localhost/app.php/foo/bar', 'no params using empty array'),
-			array('controller2', array(), false, false, 'http://localhost/app.php/foo/bar', 'no params using empty array'),
-			array('controller3', array('p' => 3), true, false, 'http://localhost/app.php/foo/bar/p-3', 'no params using empty array'),
+			array('controller2', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
 		);
 	}
 
@@ -252,30 +257,30 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_network()
 	{
 		return array(
-			array('controller2', array('t' => 1, 'f' => 2), true, false, '//localhost/app.php/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller2', array('t' => 1, 'f' => 2), false, false, '//localhost/app.php/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '//localhost/app.php/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '//localhost/app.php/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
 
 			// Custom sid parameter
-			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '//localhost/app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '//localhost/app.php/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '//localhost/app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
 
 			// Testing anchors
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/app.php/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '//localhost/app.php/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/app.php/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
 
 			// Anchors and custom sid
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '//localhost/app.php/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '//localhost/' . $this->path_to_app() . 'app.php/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
 
 			// Empty parameters should not append the &amp; or ?
-			array('controller2', array(), true, false, '//localhost/app.php/foo/bar', 'no params using empty array'),
-			array('controller2', array(), false, false, '//localhost/app.php/foo/bar', 'no params using empty array'),
-			array('controller3', array('p' => 3), true, false, '//localhost/app.php/foo/bar/p-3', 'no params using empty array'),
+			array('controller2', array(), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
 		);
 	}
 
@@ -292,30 +297,30 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_absolute_with_rewrite()
 	{
 		return array(
-			array('controller2', array('t' => 1, 'f' => 2), true, false, 'http://localhost/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller2', array('t' => 1, 'f' => 2), false, false, 'http://localhost/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, 'http://localhost/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, 'http://localhost/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
 
 			// Custom sid parameter
-			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', 'http://localhost/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
 
 			// Testing anchors
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, 'http://localhost/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
 
 			// Anchors and custom sid
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', 'http://localhost/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
 
 			// Empty parameters should not append the &amp; or ?
-			array('controller2', array(), true, false, 'http://localhost/foo/bar', 'no params using empty array'),
-			array('controller2', array(), false, false, 'http://localhost/foo/bar', 'no params using empty array'),
-			array('controller3', array('p' => 3), true, false, 'http://localhost/foo/bar/p-3', 'no params using empty array'),
+			array('controller2', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
 		);
 	}
 
@@ -372,30 +377,30 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_network_with_rewrite()
 	{
 		return array(
-			array('controller2', array('t' => 1, 'f' => 2), true, false, '//localhost/foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller2', array('t' => 1, 'f' => 2), false, false, '//localhost/foo/bar?t=1&f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '//localhost/foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '//localhost/foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller2', array('t' => 1, 'f' => 2), false, false, '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2', 'parameters in params-argument as array'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), false, false, '//localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&f=2', 'parameters in params-argument as array'),
 
 			// Custom sid parameter
-			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '//localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '//localhost/foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '//localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2), false, 'custom-sid', '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2&sid=custom-sid', 'params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid', 'params-argument (array) using session_id'),
 
 			// Testing anchors
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '//localhost/foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, false, '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2#anchor', 'anchor in params-argument (array)'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2#anchor', 'anchor in params-argument (array)'),
 
 			// Anchors and custom sid
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '//localhost/foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
-			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller2', array('t' => 1, 'f' => 2, '#' => 'anchor'), false, 'custom-sid', '//localhost/' . $this->path_to_app() . 'foo/bar?t=1&f=2&sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
+			array('controller3', array('p' => 3, 't' => 1, 'f' => 2, '#' => 'anchor'), true, 'custom-sid', '//localhost/' . $this->path_to_app() . 'foo/bar/p-3?t=1&amp;f=2&amp;sid=custom-sid#anchor', 'anchor in params-argument (array) using session_id'),
 
 			// Empty parameters should not append the &amp; or ?
-			array('controller2', array(), true, false, '//localhost/foo/bar', 'no params using empty array'),
-			array('controller2', array(), false, false, '//localhost/foo/bar', 'no params using empty array'),
-			array('controller3', array('p' => 3), true, false, '//localhost/foo/bar/p-3', 'no params using empty array'),
+			array('controller2', array(), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
+			array('controller2', array(), false, false, '//localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
+			array('controller3', array('p' => 3), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
 		);
 	}
 
