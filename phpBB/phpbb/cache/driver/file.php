@@ -28,7 +28,12 @@ class file extends \phpbb\cache\driver\base
 	function __construct($cache_dir = null)
 	{
 		global $phpbb_root_path;
-		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/';
+		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
+
+		if (!is_dir($this->cache_dir))
+		{
+			@mkdir($this->cache_dir, 0777, true);
+		}
 	}
 
 	/**

@@ -11,6 +11,7 @@
 *
 */
 
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
@@ -34,14 +35,10 @@ if (!defined('IN_PHPBB'))
 */
 function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext $context, $root_path, $php_ext)
 {
-	if (defined('DEBUG'))
+	$config_cache = new ConfigCache($root_path . 'cache/' . PHPBB_ENVIRONMENT . '/url_matcher.' . $php_ext, defined('DEBUG'));
+	if (!$config_cache->isFresh())
 	{
-		return phpbb_create_url_matcher($manager, $context, $root_path);
-	}
-
-	if (!phpbb_url_matcher_dumped($root_path, $php_ext))
-	{
-		phpbb_create_dumped_url_matcher($manager, $root_path, $php_ext);
+		phpbb_create_dumped_url_matcher($manager, $root_path, $config_cache);
 	}
 
 	return phpbb_load_url_matcher($context, $root_path, $php_ext);
@@ -52,10 +49,10 @@ function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext
 *
 * @param \phpbb\extension\manager $manager Extension manager
 * @param string $root_path Root path
-* @param string $php_ext PHP file extension
+ * @param ConfigCache $config_cache The config cache
 * @return null
 */
-function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $root_path, $php_ext)
+function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $root_path, $config_cache)
 {
 	$provider = new \phpbb\controller\provider($root_path);
 	$provider->find_routing_files($manager->all_enabled());
@@ -65,7 +62,7 @@ function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $roo
 		'class'			=> 'phpbb_url_matcher',
 	));
 
-	file_put_contents($root_path . 'cache/url_matcher.' . $php_ext, $cached_url_matcher_dump);
+	$config_cache->write($cached_url_matcher_dump, $routes->getResources());
 }
 
 /**
@@ -93,20 +90,6 @@ function phpbb_create_url_matcher(\phpbb\extension\manager $manager, RequestCont
 */
 function phpbb_load_url_matcher(RequestContext $context, $root_path, $php_ext)
 {
-	require($root_path . 'cache/url_matcher.' . $php_ext);
+	require($root_path . 'cache/' . PHPBB_ENVIRONMENT . '/url_matcher.' . $php_ext);
 	return new phpbb_url_matcher($context);
-}
-
-/**
-* Determine whether we have our dumped URL matcher
-*
-* The class is automatically dumped to the cache directory
-*
-* @param string $root_path Root path
-* @param string $php_ext PHP file extension
-* @return bool True if it exists, false if not
-*/
-function phpbb_url_matcher_dumped($root_path, $php_ext)
-{
-	return file_exists($root_path . 'cache/url_matcher.' . $php_ext);
 }
