@@ -1,4 +1,9 @@
 services:
+# ----- Auth management -----
+    auth:
+        class: phpbb\auth\auth
+
+# ----- Auth providers -----
     auth.provider_collection:
         class: phpbb\auth\provider_collection
         arguments:
@@ -6,6 +11,7 @@ services:
             - @config
         tags:
             - { name: service_collection, tag: auth.provider }
+
     auth.provider.db:
         class: phpbb\auth\provider\db
         arguments:
@@ -19,6 +25,7 @@ services:
             - %core.php_ext%
         tags:
             - { name: auth.provider }
+
     auth.provider.apache:
         class: phpbb\auth\provider\apache
         arguments:
@@ -31,6 +38,7 @@ services:
             - %core.php_ext%
         tags:
             - { name: auth.provider }
+
     auth.provider.ldap:
         class: phpbb\auth\provider\ldap
         arguments:
@@ -40,6 +48,7 @@ services:
             - @user
         tags:
             - { name: auth.provider }
+
     auth.provider.oauth:
         class: phpbb\auth\provider\oauth\oauth
         arguments:
@@ -57,12 +66,15 @@ services:
             - %core.php_ext%
         tags:
             - { name: auth.provider }
+
+# ----- OAuth services providers -----
     auth.provider.oauth.service_collection:
         class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:
             - { name: service_collection, tag: auth.provider.oauth.service }
+
     auth.provider.oauth.service.bitly:
         class: phpbb\auth\provider\oauth\service\bitly
         arguments:
@@ -70,6 +82,7 @@ services:
             - @request
         tags:
             - { name: auth.provider.oauth.service }
+
     auth.provider.oauth.service.facebook:
         class: phpbb\auth\provider\oauth\service\facebook
         arguments:
@@ -77,6 +90,7 @@ services:
             - @request
         tags:
             - { name: auth.provider.oauth.service }
+
     auth.provider.oauth.service.google:
         class: phpbb\auth\provider\oauth\service\google
         arguments:

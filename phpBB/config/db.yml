@@ -1,4 +1,20 @@
 services:
+    dbal.conn:
+        class: phpbb\db\driver\factory
+        arguments:
+            - @service_container
+
+    dbal.conn.driver:
+        class: %dbal.driver.class%
+        calls:
+            - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
+
+    dbal.tools:
+        class: phpbb\db\tools
+        arguments:
+            - @dbal.conn
+
+# ----- Migrator -----
     migrator:
         class: phpbb\db\migrator
         arguments:
@@ -15,6 +31,7 @@ services:
     migrator.helper:
         class: phpbb\db\migration\helper
 
+# ----- Migrator's tools -----
     migrator.tool_collection:
         class: phpbb\di\service_collection
         arguments:

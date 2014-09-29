@@ -1,4 +1,26 @@
 services:
+    cron.manager:
+        class: phpbb\cron\manager
+        arguments:
+            - @cron.task_collection
+            - %core.root_path%
+            - %core.php_ext%
+
+    cron.lock_db:
+        class: phpbb\lock\db
+        arguments:
+            - cron_lock
+            - @config
+            - @dbal.conn
+
+# ----- Cron tasks -----
+    cron.task_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: cron.task }
+
     cron.task.core.prune_all_forums:
         class: phpbb\cron\task\core\prune_all_forums
         arguments:
