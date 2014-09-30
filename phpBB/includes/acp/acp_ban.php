@@ -25,14 +25,13 @@ class acp_ban
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $phpbb_dispatcher;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $user, $template, $request, $phpbb_dispatcher;
+		global $phpbb_root_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-		$bansubmit	= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit = (isset($_POST['unbansubmit'])) ? true : false;
-		$current_time = time();
+		$bansubmit	= $request->is_set_post('bansubmit');
+		$unbansubmit = $request->is_set_post('unbansubmit');
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
@@ -48,12 +47,12 @@ class acp_ban
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= utf8_normalize_nfc(request_var('ban', '', true));
-			$ban_length			= request_var('banlength', 0);
-			$ban_length_other	= request_var('banlengthother', '');
-			$ban_exclude		= request_var('banexclude', 0);
-			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
-			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
+			$ban				= $request->variable('ban', '', true);
+			$ban_length			= $request->variable('banlength', 0);
+			$ban_length_other	= $request->variable('banlengthother', '');
+			$ban_exclude		= $request->variable('banexclude', 0);
+			$ban_reason			= $request->variable('banreason', '', true);
+			$ban_give_reason	= $request->variable('bangivereason', '', true);
 
 			if ($ban)
 			{
@@ -120,7 +119,7 @@ class acp_ban
 		}
 		else if ($unbansubmit)
 		{
-			$ban = request_var('unban', array(''));
+			$ban = $request->variable('unban', array(''));
 
 			if ($ban)
 			{

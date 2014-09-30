@@ -25,7 +25,7 @@ class mcp_ban
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $phpbb_dispatcher;
+		global $db, $user, $auth, $template, $request, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -33,9 +33,8 @@ class mcp_ban
 		// Include the admin banning interface...
 		include($phpbb_root_path . 'includes/acp/acp_ban.' . $phpEx);
 
-		$bansubmit		= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit	= (isset($_POST['unbansubmit'])) ? true : false;
-		$current_time	= time();
+		$bansubmit		= $request->is_set_post('bansubmit');
+		$unbansubmit	= $request->is_set_post('unbansubmit');
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'mcp_ban';
@@ -44,18 +43,12 @@ class mcp_ban
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= request_var('ban', '', ($mode === 'user') ? true : false);
-
-			if ($mode === 'user')
-			{
-				$ban = utf8_normalize_nfc($ban);
-			}
-
-			$ban_length			= request_var('banlength', 0);
-			$ban_length_other	= request_var('banlengthother', '');
-			$ban_exclude		= request_var('banexclude', 0);
-			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
-			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
+			$ban				= $request->variable('ban', '', $mode === 'user');
+			$ban_length			= $request->variable('banlength', 0);
+			$ban_length_other	= $request->variable('banlengthother', '');
+			$ban_exclude		= $request->variable('banexclude', 0);
+			$ban_reason			= $request->variable('banreason', '', true);
+			$ban_give_reason	= $request->variable('bangivereason', '', true);
 
 			if ($ban)
 			{
@@ -150,7 +143,7 @@ class mcp_ban
 		}
 		else if ($unbansubmit)
 		{
-			$ban = request_var('unban', array(''));
+			$ban = $request->variable('unban', array(''));
 
 			if ($ban)
 			{
@@ -226,9 +219,9 @@ class mcp_ban
 		}
 
 		// As a "service" we will check if any post id is specified and populate the username of the poster id if given
-		$post_id = request_var('p', 0);
-		$user_id = request_var('u', 0);
-		$username = $pre_fill = false;
+		$post_id = $request->variable('p', 0);
+		$user_id = $request->variable('u', 0);
+		$pre_fill = false;
 
 		if ($user_id && $user_id <> ANONYMOUS)
 		{
