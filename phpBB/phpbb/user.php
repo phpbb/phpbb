@@ -717,7 +717,7 @@ class user extends \phpbb\session
 			$utc = new \DateTimeZone('UTC');
 		}
 
-		$time = new \phpbb\datetime($this, "@$gmepoch", $utc);
+		$time = new $this->datetime($this, "@$gmepoch", $utc);
 		$time->setTimezone($this->timezone);
 
 		return $time->format($format, $forcedate);
