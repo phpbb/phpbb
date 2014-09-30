@@ -1512,7 +1512,7 @@ class tools
 					$sql .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 				}
 
-				if (!is_null($column_data[1]))
+				if (!is_null($column_data[1]) || (isset($column_data[2]) && $column_data[2] == 'auto_increment'))
 				{
 					$sql .= 'NOT NULL';
 				}
