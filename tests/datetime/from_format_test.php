@@ -60,7 +60,7 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		// If the current time is too close to the testing time,
 		// the relative time will use "x minutes ago" instead of "today ..."
 		// So we use 18:01 in the morning and 06:01 in the afternoon.
-		$testing_time = date('H') <= 12 ? '06:01' : '18:01';
+		$testing_time = date('H') <= 12 ? '18:01' : '06:01';
 
 		return array(
 			array(
