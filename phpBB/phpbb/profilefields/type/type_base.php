@@ -133,7 +133,7 @@ abstract class type_base implements type_interface
 		{
 			foreach ($field_data[$key] as $lang_id => $options)
 			{
-				$field_data[$key][$lang_id] = explode("\n", $options);
+				$field_data[$key][$lang_id] = is_array($options) ? $options : explode("\n", $options);
 			}
 
 			return $current_value;
