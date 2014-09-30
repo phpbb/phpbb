@@ -31,7 +31,7 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 		new \phpbb\recursive_dot_prefix_filter_iterator(
 			new \RecursiveDirectoryIterator(
 				$phpbb_root_path . 'ext/',
-				\FilesystemIterator::SKIP_DOTS
+				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
 			)
 		),
 		\RecursiveIteratorIterator::SELF_FIRST
