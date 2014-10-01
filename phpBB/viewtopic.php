@@ -1203,7 +1203,10 @@ while ($row = $db->sql_fetchrow($result))
 
 			$user_cache[$poster_id] = $user_cache_data;
 
-			get_user_rank($row['user_rank'], false, $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
+			$user_rank_data = phpbb_get_user_rank($row, false);
+			$user_cache[$poster_id]['rank_title'] = $user_rank_data['title'];
+			$user_cache[$poster_id]['rank_image'] = $user_rank_data['img'];
+			$user_cache[$poster_id]['rank_image_src'] = $user_rank_data['img_src'];
 		}
 		else
 		{
@@ -1267,7 +1270,10 @@ while ($row = $db->sql_fetchrow($result))
 
 			$user_cache[$poster_id] = $user_cache_data;
 
-			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
+			$user_rank_data = phpbb_get_user_rank($row, false);
+			$user_cache[$poster_id]['rank_title'] = $user_rank_data['title'];
+			$user_cache[$poster_id]['rank_image'] = $user_rank_data['img'];
+			$user_cache[$poster_id]['rank_image_src'] = $user_rank_data['img_src'];
 
 			if ((!empty($row['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_email'))
 			{

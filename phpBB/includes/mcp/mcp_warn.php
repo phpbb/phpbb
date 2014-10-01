@@ -336,12 +336,12 @@ class mcp_warn
 		$message = generate_text_for_display($user_row['post_text'], $user_row['bbcode_uid'], $user_row['bbcode_bitfield'], $parse_flags, true);
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_rank'))
+		if (!function_exists('phpbb_get_user_rank'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
 
-		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
+		$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
 		$avatar_img = phpbb_get_user_avatar($user_row);
 
 		$template->assign_vars(array(
@@ -350,13 +350,13 @@ class mcp_warn
 			'POST'				=> $message,
 			'USERNAME'			=> $user_row['username'],
 			'USER_COLOR'		=> (!empty($user_row['user_colour'])) ? $user_row['user_colour'] : '',
-			'RANK_TITLE'		=> $rank_title,
+			'RANK_TITLE'		=> $user_rank_data['title'],
 			'JOINED'			=> $user->format_date($user_row['user_regdate']),
 			'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
 			'WARNINGS'			=> ($user_row['user_warnings']) ? $user_row['user_warnings'] : 0,
 
 			'AVATAR_IMG'		=> $avatar_img,
-			'RANK_IMG'			=> $rank_img,
+			'RANK_IMG'			=> $user_rank_data['img'],
 
 			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
 
@@ -486,18 +486,18 @@ class mcp_warn
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_rank'))
+		if (!function_exists('phpbb_get_user_rank'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
-		get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img, $rank_img_src);
+		$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
 		$avatar_img = phpbb_get_user_avatar($user_row);
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
 
-			'RANK_TITLE'		=> $rank_title,
+			'RANK_TITLE'		=> $user_rank_data['title'],
 			'JOINED'			=> $user->format_date($user_row['user_regdate']),
 			'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
 			'WARNINGS'			=> ($user_row['user_warnings']) ? $user_row['user_warnings'] : 0,
@@ -508,7 +508,7 @@ class mcp_warn
 			'U_PROFILE'			=> get_username_string('profile', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
 
 			'AVATAR_IMG'		=> $avatar_img,
-			'RANK_IMG'			=> $rank_img,
+			'RANK_IMG'			=> $user_rank_data['img'],
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,
 		));

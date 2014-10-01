@@ -1402,17 +1402,34 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 /**
 * Get user rank title and image
 *
-* @param int $user_rank the current stored users rank id
+* @param array $user_data the current stored users data
 * @param int $user_posts the users number of posts
-* @param string &$rank_title the rank title will be stored here after execution
-* @param string &$rank_img the rank image as full img tag is stored here after execution
-* @param string &$rank_img_src the rank image source is stored here after execution
+*
+* @return array An associative array containing the rank title (title), the rank image source (img) and the rank image as full img tag (img)
 *
 * Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
 */
-function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
+function phpbb_get_user_rank($user_data, $user_posts)
 {
-	global $ranks, $config, $phpbb_root_path, $phpbb_path_helper;
+	global $ranks, $config, $phpbb_root_path, $phpbb_path_helper, $phpbb_dispatcher;
+
+	$user_rank_data = array(
+		'title'		=> null,
+		'img'		=> null,
+		'img_src'	=> null,
+	);
+
+	/**
+	* Preparing a user's rank before displaying
+	*
+	* @event core.modify_user_rank
+	* @var	array	user_data		Array with user's data
+	* @var	int		user_posts		User_posts to change
+	* @since 3.1.0-RC4
+	*/
+
+	$vars = array('user_data', 'user_posts');
+	extract($phpbb_dispatcher->trigger_event('core.modify_user_rank', compact($vars)));
 
 	if (empty($ranks))
 	{
@@ -1420,11 +1437,14 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 		$ranks = $cache->obtain_ranks();
 	}
 
-	if (!empty($user_rank))
+	if (!empty($user_data['user_rank']))
 	{
-		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
-		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $phpbb_path_helper->update_web_root_path($phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image']) : '';
-		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $rank_img_src . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
+
+		$user_rank_data['title'] = (isset($ranks['special'][$user_data['user_rank']]['rank_title'])) ? $ranks['special'][$user_data['user_rank']]['rank_title'] : '';
+
+		$user_rank_data['img_src'] = (!empty($ranks['special'][$user_data['user_rank']]['rank_image'])) ? $phpbb_path_helper->update_web_root_path($phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_data['user_rank']]['rank_image']) : '';
+
+		$user_rank_data['img'] = (!empty($ranks['special'][$user_data['user_rank']]['rank_image'])) ? '<img src="' . $user_rank_data['img_src'] . '" alt="' . $ranks['special'][$user_data['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_data['user_rank']]['rank_title'] . '" />' : '';
 	}
 	else if ($user_posts !== false)
 	{
@@ -1434,14 +1454,16 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 			{
 				if ($user_posts >= $rank['rank_min'])
 				{
-					$rank_title = $rank['rank_title'];
-					$rank_img_src = (!empty($rank['rank_image'])) ? $phpbb_path_helper->update_web_root_path($phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image']) : '';
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $rank_img_src . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$user_rank_data['title'] = $rank['rank_title'];
+					$user_rank_data['img_src'] = (!empty($rank['rank_image'])) ? $phpbb_path_helper->update_web_root_path($phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image']) : '';
+					$user_rank_data['img'] = (!empty($rank['rank_image'])) ? '<img src="' . $user_rank_data['img_src'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
 					break;
 				}
 			}
 		}
 	}
+
+	return $user_rank_data;
 }
 
 /**
@@ -1454,8 +1476,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	$username = $data['username'];
 	$user_id = $data['user_id'];
 
-	$rank_title = $rank_img = $rank_img_src = '';
-	get_user_rank($data['user_rank'], (($user_id == ANONYMOUS) ? false : $data['user_posts']), $rank_title, $rank_img, $rank_img_src);
+	$user_rank_data = phpbb_get_user_rank($data, (($user_id == ANONYMOUS) ? false : $data['user_posts']));
 
 	if ((!empty($data['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_user'))
 	{
@@ -1536,7 +1557,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	// Dump it out to the template
 	$template_data = array(
 		'AGE'			=> $age,
-		'RANK_TITLE'	=> $rank_title,
+		'RANK_TITLE'	=> $user_rank_data['title'],
 		'JOINED'		=> $user->format_date($data['user_regdate']),
 		'LAST_ACTIVE'	=> (empty($last_active)) ? ' - ' : $user->format_date($last_active),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
@@ -1552,8 +1573,8 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'AVATAR_IMG'		=> phpbb_get_user_avatar($data),
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
-		'RANK_IMG'			=> $rank_img,
-		'RANK_IMG_SRC'		=> $rank_img_src,
+		'RANK_IMG'			=> $user_rank_data['img'],
+		'RANK_IMG_SRC'		=> $user_rank_data['img_src'],
 		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
 		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,

@@ -212,7 +212,7 @@ class user_loader
 			return '';
 		}
 
-		if (!function_exists('get_user_rank'))
+		if (!function_exists('phpbb_get_user_rank'))
 		{
 			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
 		}
@@ -223,7 +223,10 @@ class user_loader
 			'rank_img_src',
 		);
 
-		get_user_rank($user['user_rank'], (($user['user_id'] == ANONYMOUS) ? false : $user['user_posts']), $rank['rank_title'], $rank['rank_img'], $rank['rank_img_src']);
+		$user_rank_data = phpbb_get_user_rank($user, (($user['user_id'] == ANONYMOUS) ? false : $user['user_posts']));
+		$rank['rank_title'] = $user_rank_data['title'];
+		$rank['rank_img'] = $user_rank_data['img'];
+		$rank['rank_img_src'] = $user_rank_data['img_src'];
 
 		return $rank;
 	}
