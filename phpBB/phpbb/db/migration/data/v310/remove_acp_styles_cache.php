@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v310;
 
-class acp_style_cache_module extends \phpbb\db\migration\migration
+class remove_acp_styles_cache extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
@@ -25,12 +25,12 @@ class acp_style_cache_module extends \phpbb\db\migration\migration
 		$module_id = $this->db->sql_fetchfield('module_id');
 		$this->db->sql_freeresult($result);
 
-		return $module_id == false;
+		return !$module_id;
 	}
 
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v310\dev');
+		return array('\phpbb\db\migration\data\v310\rc4');
 	}
 
 	public function update_data()
