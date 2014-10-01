@@ -403,12 +403,15 @@ function get_user_information($user_id, $user_row)
 
 	$user_row['avatar'] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
 
-	if (!function_exists('get_user_rank'))
+	if (!function_exists('phpbb_get_user_rank'))
 	{
 		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
-	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
+	$user_rank_data = phpbb_get_user_rank($user_row, $user_row['user_posts']);
+	$user_row['rank_title'] = $user_rank_data['title'];
+	$user_row['rank_image'] = $user_rank_data['img'];
+	$user_row['rank_image_src'] = $user_rank_data['img_src'];
 
 	if ((!empty($user_row['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_email'))
 	{

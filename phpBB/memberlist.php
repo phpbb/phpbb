@@ -283,21 +283,20 @@ switch ($mode)
 							continue;
 						}
 
-						$rank_title = $rank_img = $rank_img_src = '';
-						get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
+						$user_rank_data = phpbb_get_user_rank($row, (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']));
 
 						$template->assign_block_vars('group.user', array(
 							'USER_ID'		=> $row['user_id'],
 							'FORUMS'		=> $row['forums'],
 							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
-							'RANK_TITLE'	=> $rank_title,
+							'RANK_TITLE'	=> $user_rank_data['title'],
 
 							'GROUP_NAME'	=> $groups_ary[$row['default_group']]['group_name'],
 							'GROUP_COLOR'	=> $groups_ary[$row['default_group']]['group_colour'],
 							'U_GROUP'		=> $groups_ary[$row['default_group']]['u_group'],
 
-							'RANK_IMG'		=> $rank_img,
-							'RANK_IMG_SRC'	=> $rank_img_src,
+							'RANK_IMG'		=> $user_rank_data['img'],
+							'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
 
 							'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 
@@ -1080,10 +1079,14 @@ switch ($mode)
 			$avatar_img = phpbb_get_group_avatar($group_row);
 
 			// ... same for group rank
-			$rank_title = $rank_img = $rank_img_src = '';
+			$user_rank_data = array(
+				'title'		=> null,
+				'img'		=> null,
+				'img_src'	=> null,
+			);
 			if ($group_row['group_rank'])
 			{
-				get_user_rank($group_row['group_rank'], false, $rank_title, $rank_img, $rank_img_src);
+				$user_rank_data = phpbb_get_user_rank($group_row, false);
 
 				if ($rank_img)
 				{
@@ -1096,11 +1099,11 @@ switch ($mode)
 				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
-				'GROUP_RANK'	=> $rank_title,
+				'GROUP_RANK'	=> $user_rank_data['title'],
 
 				'AVATAR_IMG'	=> $avatar_img,
-				'RANK_IMG'		=> $rank_img,
-				'RANK_IMG_SRC'	=> $rank_img_src,
+				'RANK_IMG'		=> $user_rank_data['img'],
+				'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
 
 				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
 			);
