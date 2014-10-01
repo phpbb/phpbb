@@ -2768,7 +2768,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request, $phpbb_container;
+	global $request, $phpbb_container, $phpbb_dispatcher;
 
 	$err = '';
 
@@ -2853,6 +2853,18 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
 			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
+
+			/**
+			* This event allows an extension to modify the redirection when a user successfully logs in
+			*
+			* @event core.login_box_redirect
+			* @var  string	redirect	Redirect string
+			* @var	boolean	admin		Is admin?
+			* @var	bool	return		If true, do not redirect but return the sanitized URL.
+			* @since 3.1.0-RC5
+			*/
+			$vars = array('redirect', 'admin', 'return');
+			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
