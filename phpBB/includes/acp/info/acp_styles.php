@@ -21,7 +21,6 @@ class acp_styles_info
 			'modes'		=> array(
 				'style'		=> array('title' => 'ACP_STYLES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_MANAGEMENT')),
 				'install'	=> array('title' => 'ACP_STYLES_INSTALL', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_MANAGEMENT')),
-				'cache'		=> array('title' => 'ACP_STYLES_CACHE', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_MANAGEMENT')),
 			),
 		);
 	}
