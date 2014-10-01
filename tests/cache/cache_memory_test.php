@@ -1,17 +1,22 @@
 <?php
 /**
-*
-* @package testing
-* @copyright (c) 2014 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 require_once dirname(__FILE__) . '/cache_memory.php';
 
 class phpbb_cache_memory_test extends phpbb_database_test_case
 {
 	protected $cache;
+	protected $db;
 
 	public function getDataSet()
 	{
@@ -25,6 +30,7 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 
 		$this->cache = new phpbb_cache_memory();
 		$db = $this->new_dbal();
+		$this->db = $db;
 	}
 
 	static public function cache_single_query_data()
@@ -97,13 +103,11 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 	*/
 	public function test_cache_single_query($sql_queries, $table)
 	{
-		global $db;
-
 		foreach ($sql_queries as $query)
 		{
-			$sql_request_res = $db->sql_query($query[0]);
+			$sql_request_res = $this->db->sql_query($query[0]);
 
-			$this->cache->sql_save($query[0], $sql_request_res, 1);
+			$this->cache->sql_save($this->db, $query[0], $sql_request_res, 1);
 
 			$results = array();
 			$query_id = $this->cache->sql_load($query[0]);
