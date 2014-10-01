@@ -12,7 +12,7 @@
 */
 
 define('IN_PHPBB', true);
-define('PHPBB_ENVIRONMENT', 'production');
+define('PHPBB_ENVIRONMENT', 'development');
 
 $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
