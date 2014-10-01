@@ -39,6 +39,22 @@ class mcp_ban
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'mcp_ban';
 
+		/**
+		* Use this event to pass perform actions when a ban is issued or revoked
+		*
+		* @event core.mcp_ban_main
+		* @var	bool	bansubmit	True if a ban is issued
+		* @var	bool	unbansubmit	True if a ban is removed
+		* @var	string	mode		Mode of the ban that is being worked on
+		* @since 3.1.0-RC5
+		*/
+		$vars = array(
+			'bansubmit',
+			'unbansubmit',
+			'mode',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_ban_main', compact($vars)));
+
 		// Ban submitted?
 		if ($bansubmit)
 		{
