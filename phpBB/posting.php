@@ -1155,6 +1155,34 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
+	/**
+	* This event allows you to define errors before the post action is performed
+	*
+	* @event core.posting_modify_submission_errors
+	* @var	array	post_data	Array with post data
+	* @var	string	mode		What action to take if the form is submitted
+	*				post|reply|quote|edit|delete|bump|smilies|popup
+	* @var	string	page_title	Title of the mode page
+	* @var	int	post_id		ID of the post
+	* @var	int	topic_id	ID of the topic
+	* @var	int	forum_id	ID of the forum
+	* @var	bool	submit		Whether or not the form has been submitted
+	* @var	array	error		Any error strings; a non-empty array aborts form submission.
+	*				NOTE: Should be actual language strings, NOT language keys.
+	* @since 3.1.0-RC5
+	*/
+	$vars = array(
+		'post_data',
+		'mode',
+		'page_title',
+		'post_id',
+		'topic_id',
+		'forum_id',
+		'submit',
+		'error',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.posting_modify_submission_errors', compact($vars)));
+
 	// Store message, sync counters
 	if (!sizeof($error) && $submit)
 	{
@@ -1246,8 +1274,86 @@ if ($submit || $preview || $refresh)
 			// post's poster, not the poster of the current post). See: PHPBB3-11769 for more information.
 			$post_author_name = ((!$user->data['is_registered'] || $mode == 'edit') && $post_data['username'] !== '') ? $post_data['username'] : '';
 
+			/**
+			* This event allows you to define errors before the post action is performed
+			*
+			* @event core.posting_modify_submit_post_before
+			* @var	array	post_data	Array with post data
+			* @var	array	poll		Array with poll data
+			* @var	array	data		Array with post data going to be stored in the database
+			* @var	string	mode		What action to take if the form is submitted
+			*				post|reply|quote|edit|delete
+			* @var	string	page_title	Title of the mode page
+			* @var	int	post_id		ID of the post
+			* @var	int	topic_id	ID of the topic
+			* @var	int	forum_id	ID of the forum
+			* @var	string	post_author_name	Author name for guest posts
+			* @var	bool	update_message		Boolean if the post message was changed
+			* @var	bool	update_subject		Boolean if the post subject was changed
+			* @var	bool	submit		Whether or not the form has been submitted
+			* @var	array	error		Any error strings; a non-empty array aborts form submission.
+			*				NOTE: Should be actual language strings, NOT language keys.
+			* @since 3.1.0-RC5
+			*/
+			$vars = array(
+				'post_data',
+				'poll',
+				'data',
+				'mode',
+				'page_title',
+				'post_id',
+				'topic_id',
+				'forum_id',
+				'post_author_name',
+				'update_message',
+				'update_subject',
+				'submit',
+				'error',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_before', compact($vars)));
+
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
+
+			/**
+			* This event allows you to define errors after the post action is performed
+			*
+			* @event core.posting_modify_submit_post_after
+			* @var	array	post_data	Array with post data
+			* @var	array	poll		Array with poll data
+			* @var	array	data		Array with post data going to be stored in the database
+			* @var	string	mode		What action to take if the form is submitted
+			*				post|reply|quote|edit|delete
+			* @var	string	page_title	Title of the mode page
+			* @var	int	post_id		ID of the post
+			* @var	int	topic_id	ID of the topic
+			* @var	int	forum_id	ID of the forum
+			* @var	string	post_author_name	Author name for guest posts
+			* @var	bool	update_message		Boolean if the post message was changed
+			* @var	bool	update_subject		Boolean if the post subject was changed
+			* @var	string	redirect_url		URL the user is going to be redirected to
+			* @var	bool	submit		Whether or not the form has been submitted
+			* @var	array	error		Any error strings; a non-empty array aborts form submission.
+			*				NOTE: Should be actual language strings, NOT language keys.
+			* @since 3.1.0-RC5
+			*/
+			$vars = array(
+				'post_data',
+				'poll',
+				'data',
+				'mode',
+				'page_title',
+				'post_id',
+				'topic_id',
+				'forum_id',
+				'post_author_name',
+				'update_message',
+				'update_subject',
+				'redirect_url',
+				'submit',
+				'error',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_after', compact($vars)));
 
 			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 			{
