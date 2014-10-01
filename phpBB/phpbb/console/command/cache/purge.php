@@ -26,7 +26,7 @@ class purge extends \phpbb\console\command\command
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \phpbb\log\log */
+	/** @var \phpbb\log\log_interface */
 	protected $log;
 
 	/** @var \phpbb\config\config */
@@ -42,7 +42,7 @@ class purge extends \phpbb\console\command\command
 	* @param \phpbb\log\log							$log	Logger instance
 	* @param \phpbb\config\config					$config	Config instance
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log $log, \phpbb\config\config $config)
+	public function __construct(\phpbb\user $user, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\config\config $config)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
