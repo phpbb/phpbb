@@ -133,30 +133,8 @@ class acp_styles
 				$this->welcome_message('INSTALL_STYLES', 'INSTALL_STYLES_EXPLAIN');
 				$this->show_available();
 				return;
-			case 'cache':
-				$this->action_cache();
-				return;
 		}
 		trigger_error($this->user->lang['NO_MODE'] . adm_back_link($this->u_action), E_USER_WARNING);
-	}
-
-	/**
-	* Purge cache
-	*/
-	protected function action_cache()
-	{
-		global $db, $cache, $auth;
-
-		$this->config->increment('assets_version', 1);
-		$this->cache->purge();
-
-		// Clear permissions
-		$this->auth->acl_clear_prefetch();
-		phpbb_cache_moderators($db, $cache, $auth);
-
-		add_log('admin', 'LOG_PURGE_CACHE');
-
-		trigger_error($this->user->lang['PURGED_CACHE'] . adm_back_link($this->u_base_action), E_USER_NOTICE);
 	}
 
 	/**
