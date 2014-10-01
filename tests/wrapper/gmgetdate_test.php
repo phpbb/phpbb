@@ -50,7 +50,18 @@ class phpbb_wrapper_gmgetdate_test extends phpbb_test_case
 			$date_array['year']
 		);
 
-		$this->assertEquals($expected, $actual);
+		// Calling second-granularity time functions twice isn't guaranteed to
+		// give the same results. As long as they're in the right order, allow
+		// a 1 second difference.
+		$this->assertGreaterThanOrEqual(
+			$expected, $actual,
+			'Expected second time to be after (or equal to) the previous one'
+		);
+		$this->assertLessThanOrEqual(
+			1,
+			abs($actual - $expected),
+			"Expected $actual to be within 1 second of $expected."
+		);
 
 		if (isset($current_timezone))
 		{
