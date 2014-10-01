@@ -25,14 +25,13 @@ class acp_ban
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $user, $template, $request, $phpbb_dispatcher;
+		global $phpbb_root_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-		$bansubmit	= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit = (isset($_POST['unbansubmit'])) ? true : false;
-		$current_time = time();
+		$bansubmit	= $request->is_set_post('bansubmit');
+		$unbansubmit = $request->is_set_post('unbansubmit');
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
@@ -48,23 +47,79 @@ class acp_ban
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= utf8_normalize_nfc(request_var('ban', '', true));
-			$ban_len			= request_var('banlength', 0);
-			$ban_len_other		= request_var('banlengthother', '');
-			$ban_exclude		= request_var('banexclude', 0);
-			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
-			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
+			$ban				= $request->variable('ban', '', true);
+			$ban_length			= $request->variable('banlength', 0);
+			$ban_length_other	= $request->variable('banlengthother', '');
+			$ban_exclude		= $request->variable('banexclude', 0);
+			$ban_reason			= $request->variable('banreason', '', true);
+			$ban_give_reason	= $request->variable('bangivereason', '', true);
 
 			if ($ban)
 			{
-				user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
+				$abort_ban = false;
+				/**
+				* Use this event to modify the ban details before the ban is performed
+				*
+				* @event core.acp_ban_before
+				* @var	string	mode				One of the following: user, ip, email
+				* @var	string	ban					Either string or array with usernames, ips or email addresses
+				* @var	int		ban_length			Ban length in minutes
+				* @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
+				* @var	bool	ban_exclude			Are we banning or excluding from another ban
+				* @var	string	ban_reason			Ban reason displayed to moderators
+				* @var	string	ban_give_reason		Ban reason displayed to the banned user
+				* @var	mixed	abort_ban			Either false, or an error message that is displayed to the user.
+				*									If a string is given the bans are not issued.
+				* @since 3.1.0-RC5
+				*/
+				$vars = array(
+					'mode',
+					'ban',
+					'ban_length',
+					'ban_length_other',
+					'ban_exclude',
+					'ban_reason',
+					'ban_give_reason',
+					'abort_ban',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_ban_before', compact($vars)));
+
+				if ($abort_ban)
+				{
+					trigger_error($abort_ban . adm_back_link($this->u_action));
+				}
+				user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
+
+				/**
+				* Use this event to perform actions after the ban has been performed
+				*
+				* @event core.acp_ban_after
+				* @var	string	mode				One of the following: user, ip, email
+				* @var	string	ban					Either string or array with usernames, ips or email addresses
+				* @var	int		ban_length			Ban length in minutes
+				* @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
+				* @var	bool	ban_exclude			Are we banning or excluding from another ban
+				* @var	string	ban_reason			Ban reason displayed to moderators
+				* @var	string	ban_give_reason		Ban reason displayed to the banned user
+				* @since 3.1.0-RC5
+				*/
+				$vars = array(
+					'mode',
+					'ban',
+					'ban_length',
+					'ban_length_other',
+					'ban_exclude',
+					'ban_reason',
+					'ban_give_reason',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_ban_after', compact($vars)));
 
 				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
 			}
 		}
 		else if ($unbansubmit)
 		{
-			$ban = request_var('unban', array(''));
+			$ban = $request->variable('unban', array(''));
 
 			if ($ban)
 			{
