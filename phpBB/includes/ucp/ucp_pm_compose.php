@@ -250,7 +250,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	int		reply_to_all			Value of reply_to_all request variable.
 		* @var	string	limit_time_sql			String with the SQL code to limit the time interval of the post (Note: May be empty string)
 		* @var	string	sort_order_sql			String with the ORDER BY SQL code used in this query
-		* @since 3.1.0-RC4
+		* @since 3.1.0-RC5
 		*/
 		$vars = array(
 			'sql',
