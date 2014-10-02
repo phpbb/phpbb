@@ -745,11 +745,11 @@ class mcp_queue
 
 						if (!$post_data['topic_posts_approved'])
 						{
-							$phpbb_notifications->add_notifications('notification.type.approve_post', $post_data);
+							$phpbb_notifications->add_notifications('notification.type.approve_topic', $post_data);
 						}
 						else
 						{
-							$phpbb_notifications->add_notifications('notification.type.approve_topic', $post_data);
+							$phpbb_notifications->add_notifications('notification.type.approve_post', $post_data);
 						}
 					}
 				}
