@@ -330,11 +330,11 @@ $help = array(
 	),
 	array(
 		0 => '--',
-		1 => 'phpBB 3 Issues'
+		1 => 'phpBB3 Issues'
 	),
 	array(
 		0 => 'Who wrote this bulletin board?',
-		1 => 'This software (in its unmodified form) is produced, released and is copyright <a href="https://www.phpbb.com/">phpBB Limited</a>. It is made available under the GNU General Public License and may be freely distributed. See the link for more details.'
+		1 => 'This software (in its unmodified form) is produced, released and is copyright <a href="https://www.phpbb.com/">phpBB Limited</a>. It is made available under the GNU General Public License, version 2 (GPL-2.0) and may be freely distributed. See the link for more details.'
 	),
 	array(
 		0 => 'Why isn’t X feature available?',
@@ -343,5 +343,9 @@ $help = array(
 	array(
 		0 => 'Who do I contact about abusive and/or legal matters related to this board?',
 		1 => 'Any of the administrators listed on the “The team” page should be an appropriate point of contact for your complaints. If this still gets no response then you should contact the owner of the domain (do a <a href="http://www.google.com/search?q=whois">whois lookup</a>) or, if this is running on a free service (e.g. Yahoo!, free.fr, f2s.com, etc.), the management or abuse department of that service. Please note that the phpBB Limited has <strong>absolutely no jurisdiction</strong> and cannot in any way be held liable over how, where or by whom this board is used. Do not contact the phpBB Limited in relation to any legal (cease and desist, liable, defamatory comment, etc.) matter <strong>not directly related</strong> to the phpBB.com website or the discrete software of phpBB itself. If you do email phpBB Limited <strong>about any third party</strong> use of this software then you should expect a terse response or no response at all.'
+	),
+	array(
+		0 => 'Who do I contact a board administrator?',
+		1 => 'All users of the board can use the form “Contact us”, if the option was enabled by the board administrator.<br />Members of the board, can also use “The team” link.'
 	),
 );
