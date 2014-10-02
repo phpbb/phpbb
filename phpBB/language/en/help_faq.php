@@ -117,7 +117,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I post a topic in a forum?',
-		1 => 'To post a new topic in a forum, click the relevant button on either the forum or topic screens. You may need to register before you can post a message. A list of your permissions in each forum is available at the bottom of the forum and topic screens. Example: You can post new topics, You can vote in polls, etc.'
+		1 => 'To post a new topic in a forum, click the relevant button on either the forum or topic screens. You may need to register before you can post a message. A list of your permissions in each forum is available at the bottom of the forum and topic screens. Example: You can post new topics, You can post attachments, etc.'
 	),
 	array(
 		0 => 'How do I edit or delete a post?',
