@@ -289,6 +289,7 @@ services:
             - @template
             - @user
             - @controller.helper
+            - @dispatcher
 
     path_helper:
         class: phpbb\path_helper
