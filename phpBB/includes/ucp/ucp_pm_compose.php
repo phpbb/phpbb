@@ -283,7 +283,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			* @var	string	action				One of: post, reply, quote, forward, quotepost, edit, delete, smilies
 			* @var	bool	delete				If deleting message
 			* @var	int		reply_to_all		Value of reply_to_all request variable.
-			* @since 3.1.0-RC4
+			* @since 3.1.0-RC5
 			*/
 			$vars = array(
 				'sql',
