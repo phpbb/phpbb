@@ -298,7 +298,7 @@ $help = array(
 	),
 	array(
 		0 => 'How can I find my own posts and topics?',
-		1 => 'Your own posts can be retrieved either by clicking the “Search user’s posts” within the User Control Panel or via your own profile page. To search for your topics, use the Advanced search page and fill in the various options appropriately.'
+		1 => 'Your own posts can be retrieved either by clicking the “Show your posts” within the User Control Panel or by clicking “Search user’s posts” via your own profile page. To search for your topics, use the Advanced search page and fill in the various options appropriately.'
 	),
 	array(
 		0 => '--',
