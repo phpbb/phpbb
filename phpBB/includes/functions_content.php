@@ -912,7 +912,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		return;
 	}
 
-	global $template, $cache, $user;
+	global $template, $cache, $user, $phpbb_dispatcher;
 	global $extensions, $config, $phpbb_root_path, $phpEx;
 
 	//
@@ -1186,6 +1186,34 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				'L_DOWNLOAD_COUNT'		=> $user->lang($l_downloaded_viewed, (int) $attachment['download_count']),
 			);
 		}
+
+		/**
+		* Use this event to modify the attachment template data.
+		*
+		* This event is triggered once per attachment.
+		*
+		* @event core.parse_attachments_modify_template_data
+		* @var array	attachment		Array with attachment data
+		* @var array	block_array		Template data of the attachment
+		* @var int		display_cat		Attachment category data
+		* @var string	download_link	Attachment download link
+		* @var array	extensions		Array with attachment extensions data
+		* @var mixed 	forum_id 		The forum id the attachments are displayed in (false if in private message)
+		* @var bool		preview			Flag indicating if we are in post preview mode
+		* @var array	update_count	Array with attachment ids to update download count
+		* @since 3.1.0-RC5
+		*/
+		$vars = array(
+			'attachment',
+			'block_array',
+			'display_cat',
+			'download_link',
+			'extensions',
+			'forum_id',
+			'preview',
+			'update_count',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.parse_attachments_modify_template_data', compact($vars)));
 
 		$template->assign_block_vars('_file', $block_array);
 
