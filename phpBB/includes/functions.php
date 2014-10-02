@@ -5290,6 +5290,18 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		}
 	}
 
+	/**
+	* Execute code and/or modify output before displaying the template.
+	*
+	* @event core.page_footer_after
+	* @var	bool display_template	Whether or not to display the template
+	* @var	bool exit_handler		Whether or not to run the exit_handler()
+	*
+	* @since 3.1.0-RC5
+	*/
+	$vars = array('display_template', 'exit_handler');
+	extract($phpbb_dispatcher->trigger_event('core.page_footer_after', compact($vars)));
+
 	if ($display_template)
 	{
 		$template->display('body');
