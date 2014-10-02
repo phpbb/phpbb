@@ -310,7 +310,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I subscribe to specific forums or topics?',
-		1 => 'To subscribe to a specific forum, click the “Subscribe forum” link upon entering the forum. To subscribe to a topic, reply to the topic with the subscribe checkbox checked or click the “Subscribe topic” link within the topic itself.'
+		1 => 'To subscribe to a specific forum, click the “Subscribe forum” link upon entering the forum.<br />To subscribe to a topic, reply to the topic with the subscribe checkbox checked or click the “Subscribe topic” link by clicking the button “Topic tools”.<br /> These links are usually at the bottom of page.'
 	),
 	array(
 		0 => 'How do I remove my subscriptions?',
