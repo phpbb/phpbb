@@ -21,18 +21,26 @@ class pagination
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $phpbb_dispatcher;
+
 	/**
 	* Constructor
 	*
-	* @param	\phpbb\template\template	$template
-	* @param	\phpbb\user					$user
-	* @param	\phpbb\controller\helper	$helper
+	* @param	\phpbb\template\template			$template
+	* @param	\phpbb\user							$user
+	* @param	\phpbb\controller\helper			$helper
+	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\controller\helper $helper, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->helper = $helper;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 	}
 
 	/**
@@ -50,6 +58,36 @@ class pagination
 	*/
 	protected function generate_page_link($base_url, $on_page, $start_name, $per_page)
 	{
+		// A listener can set this variable to the new pagination URL
+		// to override the generate_page_link() function generated value
+		$generate_page_link_override = false;
+
+		/**
+		* Execute code and/or override generate_page_link()
+		*
+		* To override the generate_page_link() function generated value
+		* set $generate_page_link_override to the new URL value
+		*
+		* @event core.pagination_generate_page_link
+		* @var string base_url is url prepended to all links generated within the function
+		*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
+		*							for the page. Also be sure to specify the pagination path information into the start_name argument
+		* @var string on_page is the page for which we want to generate the link
+		* @var string start_name is the name of the parameter containing the first item of the given page (example: start=20)
+		*							If you use page numbers inside your controller route, start name should be the string
+		*							that should be removed for the first page (example: /page/%d)
+		* @var int per_page the number of items, posts, etc. to display per page, used to determine the number of pages to produce
+		* @var bool|string generate_page_link_override Shall we return custom pagination link (string URL) or not (false)
+		* @since 3.1.0-RC5
+		*/
+		$vars = array('base_url', 'on_page', 'start_name', 'per_page', 'generate_page_link_override');
+		extract($this->phpbb_dispatcher->trigger_event('core.pagination_generate_page_link', compact($vars)));
+
+		if ($generate_page_link_override)
+		{
+			return $generate_page_link_override;
+		}
+
 		if (!is_string($base_url))
 		{
 			if (is_array($base_url['routes']))
