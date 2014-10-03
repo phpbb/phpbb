@@ -34,3 +34,10 @@ services:
             - @user
         tags:
             - { name: twig.extension }
+
+    template.twig.extensions.routing:
+        class: Symfony\Bridge\Twig\Extension\RoutingExtension
+        arguments:
+            - @router
+        tags:
+            - { name: twig.extension }
