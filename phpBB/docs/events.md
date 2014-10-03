@@ -1155,6 +1155,70 @@ ucp_friend_list_after
 * Since: 3.1.0-a4
 * Purpose: Add optional elements after list of friends in UCP
 
+viewforum_buttons_bottom_before
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons before New Topic button on the bottom of the topic's list
+
+viewforum_buttons_bottom_after
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons after New Topic button on the bottom of the topic's list
+
+viewforum_buttons_top_before
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons before New Topic button on the top of the topic's list
+
+viewforum_buttons_top_after
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+    + styles/subsilver2/template/viewforum_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons after New Topic button on the top of the topic's list
+
+viewtopic_buttons_bottom_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons before Post Reply button on the bottom of the posts's list
+
+viewtopic_buttons_bottom_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons after Post Reply button on the bottom of the posts's list
+
+viewtopic_buttons_top_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons before Post Reply button on the top of the posts's list
+
+viewtopic_buttons_top_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.0-rc4
+* Purpose: Add buttons after Post Reply button on the top of the posts's list
+
 viewforum_forum_name_append
 ===
 * Locations:
