@@ -1160,7 +1160,7 @@ viewforum_buttons_bottom_before
 * Locations:
     + styles/prosilver/template/viewforum_body.html
     + styles/subsilver2/template/viewforum_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons before New Topic button on the bottom of the topic's list
 
 viewforum_buttons_bottom_after
@@ -1168,7 +1168,7 @@ viewforum_buttons_bottom_after
 * Locations:
     + styles/prosilver/template/viewforum_body.html
     + styles/subsilver2/template/viewforum_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons after New Topic button on the bottom of the topic's list
 
 viewforum_buttons_top_before
@@ -1176,7 +1176,7 @@ viewforum_buttons_top_before
 * Locations:
     + styles/prosilver/template/viewforum_body.html
     + styles/subsilver2/template/viewforum_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons before New Topic button on the top of the topic's list
 
 viewforum_buttons_top_after
@@ -1184,7 +1184,7 @@ viewforum_buttons_top_after
 * Locations:
     + styles/prosilver/template/viewforum_body.html
     + styles/subsilver2/template/viewforum_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons after New Topic button on the top of the topic's list
 
 viewtopic_buttons_bottom_before
@@ -1192,7 +1192,7 @@ viewtopic_buttons_bottom_before
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons before Post Reply button on the bottom of the posts's list
 
 viewtopic_buttons_bottom_after
@@ -1200,7 +1200,7 @@ viewtopic_buttons_bottom_after
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons after Post Reply button on the bottom of the posts's list
 
 viewtopic_buttons_top_before
@@ -1208,7 +1208,7 @@ viewtopic_buttons_top_before
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons before Post Reply button on the top of the posts's list
 
 viewtopic_buttons_top_after
@@ -1216,7 +1216,7 @@ viewtopic_buttons_top_after
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
-* Since: 3.1.0-rc4
+* Since: 3.1.0-rc5
 * Purpose: Add buttons after Post Reply button on the top of the posts's list
 
 viewforum_forum_name_append
