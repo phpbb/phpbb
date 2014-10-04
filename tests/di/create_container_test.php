@@ -146,7 +146,6 @@ namespace
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			$this->assertTrue($container->hasParameter('my_parameter'));
-			$this->assertFalse($container->hasParameter('core.root_path'));
 		}
 	}
 }

@@ -195,6 +195,8 @@ class container_builder
 			$loader = new YamlFileLoader($this->container, new FileLocator(phpbb_realpath($this->get_config_path())));
 			$loader->load(PHPBB_ENVIRONMENT . '/config.yml');
 
+			$this->inject_custom_parameters();
+
 			if ($this->compile_container)
 			{
 				$this->container->compile();
@@ -428,6 +430,20 @@ class container_builder
 		$container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions_alias));
 
 		return $container;
+	}
+
+	/**
+	 * Inject the customs parameters into the container
+	 */
+	protected function inject_custom_parameters()
+	{
+		if ($this->custom_parameters !== null)
+		{
+			foreach ($this->custom_parameters as $key => $value)
+			{
+				$this->container->setParameter($key, $value);
+			}
+		}
 	}
 
 	/**
