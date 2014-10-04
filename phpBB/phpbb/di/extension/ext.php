@@ -48,16 +48,16 @@ class ext extends Extension
 			$services_directory = false;
 			$services_file = false;
 
-			if (file_exists($path . 'config/' . PHPBB_ENVIRONMENT . '/environment.yml'))
+			if (file_exists($path . 'config/' . PHPBB_ENVIRONMENT . '/container/environment.yml'))
 			{
-				$services_directory = $path . 'config/' . PHPBB_ENVIRONMENT;
+				$services_directory = $path . 'config/' . PHPBB_ENVIRONMENT . '/container/';
 				$services_file = 'environment.yml';
 			}
 			else if (!is_dir($path . 'config/' . PHPBB_ENVIRONMENT))
 			{
-				if (file_exists($path . 'config/default/environment.yml'))
+				if (file_exists($path . 'config/default/container/environment.yml'))
 				{
-					$services_directory = $path . 'config/default';
+					$services_directory = $path . 'config/default/container/';
 					$services_file = 'environment.yml';
 				}
 				else if (!is_dir($path . 'config/default') && file_exists($path . '/config/services.yml'))

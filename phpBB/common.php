@@ -96,14 +96,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-if (PHPBB_ENVIRONMENT == 'debug' && !class_exists('Goutte\Client', true))
-{
-	trigger_error(
-		'Composer development dependencies have not been set up for the development environment yet, run ' .
-		"'php ../composer.phar install --dev' from the phpBB directory to do so.",
-		E_USER_ERROR
-	);
-}
 phpbb_load_extensions_autoloaders($phpbb_root_path);
 
 // Set up container

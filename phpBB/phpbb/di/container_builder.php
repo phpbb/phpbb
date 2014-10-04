@@ -14,9 +14,13 @@
 namespace phpbb\di;
 
 use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpKernel\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 class container_builder
 {
@@ -151,7 +155,6 @@ class container_builder
 		}
 		else
 		{
-
 			$container_extensions = array(new \phpbb\di\extension\core($this->get_config_path()));
 
 			if ($this->use_extensions)
@@ -179,7 +182,8 @@ class container_builder
 				}
 			}
 
-			$this->inject_custom_parameters();
+			$loader = new YamlFileLoader($this->container, new FileLocator(phpbb_realpath($this->get_config_path())));
+			$loader->load(PHPBB_ENVIRONMENT . '/config.yml');
 
 			if ($this->compile_container)
 			{
@@ -400,36 +404,59 @@ class container_builder
 	*/
 	protected function create_container(array $extensions)
 	{
-		$container = new ContainerBuilder();
+		$container = new ContainerBuilder(new ParameterBag($this->get_core_parameters()));
+
+		$extensions_alias = array();
 
 		foreach ($extensions as $extension)
 		{
 			$container->registerExtension($extension);
-			$container->loadFromExtension($extension->getAlias());
+			$extensions_alias[] = $extension->getAlias();
+			//$container->loadFromExtension($extension->getAlias());
 		}
+
+		$container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions_alias));
 
 		return $container;
 	}
 
 	/**
-	* Inject the customs parameters into the container
-	*/
-	protected function inject_custom_parameters()
+	 * Returns the core parameters.
+	 *
+	 * @return array An array of core parameters
+	 */
+	protected function get_core_parameters()
 	{
-		if ($this->custom_parameters === null)
+		return array_merge(
+			array(
+				'core.root_path'     => $this->phpbb_root_path,
+				'core.php_ext'       => $this->php_ext,
+				'core.environment'   => PHPBB_ENVIRONMENT,
+				'core.debug'         => DEBUG,
+			),
+			$this->get_env_parameters()
+		);
+	}
+
+	/**
+	 * Gets the environment parameters.
+	 *
+	 * Only the parameters starting with "PHPBB__" are considered.
+	 *
+	 * @return array An array of parameters
+	 */
+	protected function get_env_parameters()
+	{
+		$parameters = array();
+		foreach ($_SERVER as $key => $value)
 		{
-			$this->custom_parameters = array(
-				'core.root_path' => $this->phpbb_root_path,
-				'core.php_ext' => $this->php_ext,
-			);
+			if (0 === strpos($key, 'PHPBB__'))
+			{
+				$parameters[strtolower(str_replace('__', '.', substr($key, 9)))] = $value;
+			}
 		}
 
-		$this->custom_parameters['environment'] = PHPBB_ENVIRONMENT;
-
-		foreach ($this->custom_parameters as $key => $value)
-		{
-			$this->container->setParameter($key, $value);
-		}
+		return $parameters;
 	}
 
 	/**
