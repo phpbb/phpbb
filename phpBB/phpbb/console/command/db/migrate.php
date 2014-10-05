@@ -55,6 +55,8 @@ class migrate extends \phpbb\console\command\command
 	{
 		$this->migrator->create_migrations_table();
 
+		$this->cache->purge();
+
 		$this->load_migrations();
 		$orig_version = $this->config['version'];
 		while (!$this->migrator->finished())
