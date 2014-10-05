@@ -171,8 +171,7 @@ abstract class type_base implements type_interface
 	}
 
 	/**
-	* Return templated value/field. Possible values for $mode are:
-	* change == user is able to set/enter profile values; preview == just show the value
+	* {@inheritDoc}
 	*/
 	public function process_field_row($mode, $profile_row)
 	{
@@ -180,7 +179,7 @@ abstract class type_base implements type_interface
 
 		// set template filename
 		$this->template->set_filenames(array(
-			'cp_body'		=> $this->get_template_filename(),
+			'cp_body'		=> $mode == 'search' ? $this->get_search_template_filename() : $this->get_template_filename(),
 		));
 
 		// empty previously filled blockvars
@@ -190,5 +189,31 @@ abstract class type_base implements type_interface
 		$this->generate_field($profile_row, $preview_options);
 
 		return $this->template->assign_display('cp_body');
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_search_template_filename()
+	{
+		// Resolve to using normal input template for this field while searching, this should cover
+		// most of the cases. A CPF can override it if they want to have a different search input
+		return $this->get_template_filename();
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_search_clause($field_data, $table_alias, \phpbb\db\driver\driver_interface $db)
+	{
+		$value = $this->request->variable($this->get_field_ident($field_data), '');
+
+		if (!empty($value))
+		{
+			return $table_alias . '.' . $this->get_field_ident($field_data) . ' ' .
+				$db->sql_like_expression($db->get_any_char() . $this->get_profile_value_raw($value, $field_data) . $db->get_any_char());
+		}
+
+		return false;
 	}
 }

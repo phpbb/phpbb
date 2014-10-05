@@ -16,38 +16,6 @@ namespace phpbb\profilefields\type;
 class type_date extends type_base
 {
 	/**
-	* Request object
-	* @var \phpbb\request\request
-	*/
-	protected $request;
-
-	/**
-	* Template object
-	* @var \phpbb\template\template
-	*/
-	protected $template;
-
-	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
-	* Construct
-	*
-	* @param	\phpbb\request\request		$request	Request object
-	* @param	\phpbb\template\template	$template	Template object
-	* @param	\phpbb\user					$user		User object
-	*/
-	public function __construct(\phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user)
-	{
-		$this->request = $request;
-		$this->template = $template;
-		$this->user = $user;
-	}
-
-	/**
 	* {@inheritDoc}
 	*/
 	public function get_name_short()

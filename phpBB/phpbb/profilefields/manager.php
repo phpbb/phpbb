@@ -99,7 +99,12 @@ class manager
 
 	/**
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
+	* or memberlist (for searching)
 	* Called by ucp_profile and ucp_register
+	*
+	* @param string	$mode	Can be register|profile|memberlist
+	* @param int	$lang_id	Language ID of the profile field's data to load
+	* @return void
 	*/
 	public function generate_profile_fields($mode, $lang_id)
 	{
@@ -117,6 +122,10 @@ class manager
 				{
 					$sql_where .= ' AND f.field_show_profile = 1';
 				}
+			break;
+
+			case 'memberlist':
+				$sql_where .= ' AND f.field_show_on_ml = 1';
 			break;
 
 			default:
@@ -137,7 +146,7 @@ class manager
 		{
 			// Return templated field
 			$profile_field = $this->type_collection[$row['field_type']];
-			$tpl_snippet = $profile_field->process_field_row('change', $row);
+			$tpl_snippet = $profile_field->process_field_row($mode == 'memberlist' ? 'search' : 'change', $row);
 
 			$this->template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $this->user->lang($row['lang_name']),
@@ -276,6 +285,7 @@ class manager
 			$profile_field = $this->type_collection[$field_data['field_type']];
 
 			$tpl_fields[] = array(
+				'PROFILE_FIELD_IDENT'   => $field_ident,
 				'PROFILE_FIELD_TYPE'	=> $field_data['field_type'],
 				'PROFILE_FIELD_NAME'	=> $profile_field->get_field_name($field_data['lang_name']),
 				'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($field_data['lang_explain']),
@@ -478,5 +488,37 @@ class manager
 		$this->db->sql_freeresult($result);
 
 		return $cp_data;
+	}
+
+	/**
+	* Process fields while searching and generate SQL search clause
+	*
+	* @param string $filter Filter profile field with respect to this column
+	* @param string $table_alias SQL alias for the profile_fields_data table
+	* @return string|false
+	*/
+	public function build_search_sql_clause($filter = '', $table_alias = 'f')
+	{
+		if (empty($this->profile_cache))
+		{
+			$this->build_cache();
+		}
+
+		$clauses = array();
+		foreach ($this->profile_cache as $ident => $field)
+		{
+			if (!empty($filter) && empty($field[$filter]))
+			{
+				continue;
+			}
+
+			$clause = $this->type_collection[$field['field_type']]->get_search_clause($field, $table_alias, $this->db);
+			if ($clause !== false)
+			{
+				$clauses[] = $clause;
+			}
+		}
+
+		return !empty($clauses) ? implode(' AND ', $clauses) : false;
 	}
 }

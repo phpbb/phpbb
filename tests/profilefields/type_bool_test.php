@@ -47,10 +47,10 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 		$template = $this->getMock('\phpbb\template\template');
 
 		$this->cp = new \phpbb\profilefields\type\type_bool(
-			$lang,
 			$request,
 			$template,
-			$user
+			$user,
+			$lang
 		);
 
 		$this->field_options = array(

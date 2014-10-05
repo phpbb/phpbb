@@ -208,11 +208,29 @@ interface type_interface
 
 	/**
 	* Return templated value/field. Possible values for $mode are:
-	* change == user is able to set/enter profile values; preview == just show the value
+	* change == user is able to set/enter profile values; preview == just show the value;
+	* search == empty field meant for searching
 	*
-	* @param string	$mode			Mode for displaying the field (preview|change)
+	* @param string	$mode			Mode for displaying the field (preview|change|search)
 	* @param array	$profile_row	Array with data for this field
 	* @return null
 	*/
 	public function process_field_row($mode, $profile_row);
+
+	/**
+	* Returns the template name for search interface
+	*
+	* @return string
+	*/
+	public function get_search_template_filename();
+
+	/**
+	* Returns the SQL clause while searching for the field
+	*
+	* @param array $field_data
+	* @param string $table_alias
+	* @param \phpbb\db\driver\driver_interface $db
+	* @return string
+	*/
+	public function get_search_clause($field_data, $table_alias, \phpbb\db\driver\driver_interface $db);
 }

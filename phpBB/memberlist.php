@@ -604,9 +604,9 @@ switch ($mode)
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
-			$cp = $phpbb_container->get('profilefields.manager');
-			$profile_fields = $cp->grab_profile_fields_data($user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
+			$profilefields_manager = $phpbb_container->get('profilefields.manager');
+			$profile_fields_data = $profilefields_manager->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields_data[$user_id])) ? $profilefields_manager->generate_profile_fields_template_data($profile_fields_data[$user_id]) : array();
 		}
 
 		/**
@@ -854,6 +854,28 @@ switch ($mode)
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
+		// Load custom profile fields
+		$profilefields_rows = array();
+		$cpf_sql = false;
+		if ($config['load_cpf_memberlist'])
+		{
+			$profilefields_manager = $phpbb_container->get('profilefields.manager');
+
+			$profilefields_manager->generate_profile_fields('memberlist', $user->get_iso_lang_id());
+
+			$profilefields_rows = $profilefields_manager->generate_profile_fields_template_headlines('field_show_on_ml');
+			foreach ($profilefields_rows as $profile_field)
+			{
+				if ($sort_key == $profile_field['PROFILE_FIELD_IDENT'])
+				{
+					$cpf_sql = true;
+				}
+
+				$sort_key_text[$profile_field['PROFILE_FIELD_IDENT']] = $profile_field['PROFILE_FIELD_NAME'];
+				$sort_key_sql[$profile_field['PROFILE_FIELD_IDENT']] = 'pfd.pf_' . $profile_field['PROFILE_FIELD_IDENT'];
+			}
+		}
+
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
 		{
@@ -870,8 +892,8 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
-
+		$sql_select = $sql_where_data = $sql_where = $order_by = '';
+		$sql_joins = array();
 
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
@@ -879,6 +901,10 @@ switch ($mode)
 
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		foreach ($profilefields_rows as $profile_field)
+		{
+			$search_params[] = $profile_field['PROFILE_FIELD_NAME'];
+		}
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -950,11 +976,15 @@ switch ($mode)
 				}
 			}
 
-			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
+			$sql_where .= ($search_group_id) ? " AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
 
 			if ($search_group_id)
 			{
-				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+				$sql_joins[] = array(
+					'FROM' => array(USER_GROUP_TABLE => 'ug'),
+					'ON' => 'u.user_id = ug.user_id',
+				);
+				$sql_where .= ' AND u.user_id = ug.user_id';
 			}
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
@@ -1011,6 +1041,17 @@ switch ($mode)
 					unset($ip_forums);
 
 					$db->sql_freeresult($result);
+				}
+			}
+
+			// Add SQL constraints if searching by custom profile fields displayed at the memberlist
+			if ($config['load_cpf_memberlist'])
+			{
+				$cpf_clause = $profilefields_manager->build_search_sql_clause('field_show_on_ml', 'pfd');
+				if ($cpf_clause !== false)
+				{
+					$cpf_sql = true;
+					$sql_where .= ' AND ' . $cpf_clause;
 				}
 			}
 		}
@@ -1109,10 +1150,13 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+			$sql_joins[] = array(
+				'FROM' => array(USER_GROUP_TABLE => 'ug'),
+				'ON' => 'u.user_id = ug.user_id',
+			);
 			$order_by = 'ug.group_leader DESC, ';
 
-			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
+			$sql_where .= " AND u.user_id = ug.user_id AND ug.user_pending = 0 AND ug.group_id = $group_id";
 			$sql_where_data = " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
 		}
 
@@ -1130,13 +1174,30 @@ switch ($mode)
 			$order_by .= ', u.user_posts DESC';
 		}
 
+		if ($cpf_sql)
+		{
+			$sql_joins[] = array(
+				'FROM' => array(PROFILE_FIELDS_DATA_TABLE => 'pfd'),
+				'ON' => 'u.user_id = pfd.user_id',
+			);
+		}
+
 		// Count the users ...
 		if ($sql_where)
 		{
-			$sql = 'SELECT COUNT(u.user_id) AS total_users
-				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where";
+			$sql_ary = array(
+				'SELECT' => 'COUNT(u.user_id) AS total_users',
+
+				'FROM' => array(
+					USERS_TABLE => 'u',
+				),
+
+				'LEFT_JOIN' => $sql_joins,
+
+				'WHERE' => "u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+					$sql_where",
+			);
+			$sql = $db->sql_build_query('SELECT', $sql_ary);
 			$result = $db->sql_query($sql);
 			$total_users = (int) $db->sql_fetchfield('total_users');
 			$db->sql_freeresult($result);
@@ -1228,6 +1289,15 @@ switch ($mode)
 			));
 		}
 
+		// Assign the custom profile fields to the template
+		foreach ($profilefields_rows as $profile_field)
+		{
+			$profile_field['PROFILE_FIELD_SORT_URL'] = $sort_url . '&amp;sk=' . $profile_field['PROFILE_FIELD_IDENT'] .
+				'&amp;sd=' . (($sort_key == $profile_field['PROFILE_FIELD_IDENT'] && $sort_dir == 'a') ? 'd' : 'a');
+
+			$template->assign_block_vars('custom_fields', $profile_field);
+		}
+
 		// Some search user specific data
 		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
@@ -1313,12 +1383,21 @@ switch ($mode)
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
 
 		// Get us some users :D
-		$sql = "SELECT u.user_id
-			FROM " . USERS_TABLE . " u
-				$sql_from
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where
-			ORDER BY $order_by";
+		$sql_ary = array(
+			'SELECT' => 'u.user_id',
+
+			'FROM' => array(
+				USERS_TABLE => 'u',
+			),
+
+			'LEFT_JOIN' => $sql_joins,
+
+			'WHERE' => "u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+					$sql_where",
+
+			'ORDER_BY' => $order_by,
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		$user_list = array();
@@ -1327,18 +1406,6 @@ switch ($mode)
 			$user_list[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
-
-		// Load custom profile fields
-		if ($config['load_cpf_memberlist'])
-		{
-			$cp = $phpbb_container->get('profilefields.manager');
-
-			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
-			foreach ($cp_row as $profile_field)
-			{
-				$template->assign_block_vars('custom_fields', $profile_field);
-			}
-		}
 
 		$leaders_set = false;
 		// So, did we get any users?
@@ -1362,12 +1429,19 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
-				$sql = "SELECT u.*
-						$sql_select
-					FROM " . USERS_TABLE . " u
-						$sql_from
-					WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-						$sql_where_data";
+				$sql_ary = array(
+					'SELECT' => 'u.*',
+
+					'FROM' => array(
+						USERS_TABLE => 'u',
+					),
+
+					'LEFT_JOIN' => $sql_joins,
+
+					'WHERE' => $db->sql_in_set('u.user_id', $user_list) . "
+						$sql_where_data",
+				);
+				$sql = $db->sql_build_query('SELECT', $sql_ary);
 			}
 			else
 			{
@@ -1391,7 +1465,7 @@ switch ($mode)
 			if ($config['load_cpf_memberlist'])
 			{
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
-				$profile_fields_cache = $cp->grab_profile_fields_data($user_list);
+				$profile_fields_cache = $profilefields_manager->grab_profile_fields_data($user_list);
 
 				// Filter the fields we don't want to show
 				foreach ($profile_fields_cache as $user_id => $user_profile_fields)
@@ -1423,7 +1497,7 @@ switch ($mode)
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $profilefields_manager->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
 				$memberrow = array_merge(phpbb_show_profile($row), array(
