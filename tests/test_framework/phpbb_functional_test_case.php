@@ -934,8 +934,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
 	{
-		$this->assertSame(
-			'',
+		$this->assertNull(
 			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
 			$message ?: "Failed asserting that checkbox $name is unchecked."
 		);
