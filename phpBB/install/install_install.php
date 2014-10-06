@@ -1654,6 +1654,19 @@ class install_install extends module
 				$db->sql_freeresult($result);
 
 				$_module->move_module_by($row, 'move_up', 5);
+
+				// Move extension management module 1 up...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_langname = 'ACP_EXTENSION_MANAGEMENT'
+						AND module_class = 'acp'
+						AND module_mode = ''
+						AND module_basename = ''";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_module->move_module_by($row, 'move_up', 1);
 			}
 
 			if ($module_class == 'mcp')
