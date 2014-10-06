@@ -65,13 +65,16 @@ class acp_board
 						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
-						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => false),
+
+						'legend2'				=> 'BOARD_STYLE',
+						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => true),
+						'guest_style'			=> array('lang' => 'GUEST_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array($this->guest_style_get(), false), 'explain' => true),
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
-						'legend2'				=> 'WARNINGS',
+						'legend3'				=> 'WARNINGS',
 						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 
-						'legend3'					=> 'ACP_SUBMIT_CHANGES',
+						'legend4'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -509,6 +512,14 @@ class acp_board
 				continue;
 			}
 
+			if ($config_name == 'guest_style')
+			{
+				if (isset($cfg_array[$config_name])) {
+					$this->guest_style_set($cfg_array[$config_name]);
+				}
+				continue;
+			}
+
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($config_name == 'email_function_name')
@@ -909,6 +920,39 @@ class acp_board
 		$timezone_select = phpbb_timezone_select($template, $user, $value, true);
 
 		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select . '</select>';
+	}
+
+	/**
+	* Get guest style
+	*/
+	public function guest_style_get()
+	{
+		global $db;
+
+		$sql = 'SELECT user_style
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . ANONYMOUS;
+		$result = $db->sql_query($sql);
+
+		$style = (int) $db->sql_fetchfield('user_style');
+		$db->sql_freeresult($result);
+
+		return $style;
+	}
+
+	/**
+	* Set guest style
+	*
+	* @param	int		$style_id	The style ID
+	*/
+	public function guest_style_set($style_id)
+	{
+		global $db;
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_style = ' . (int) $style_id . '
+			WHERE user_id = ' . ANONYMOUS;
+		$db->sql_query($sql);
 	}
 
 	/**
