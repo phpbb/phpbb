@@ -19,6 +19,7 @@ services:
             - @dbal.conn
             - %tables.profile_fields_options_language%
 
+# ----- Profile fields types -----
     profilefields.type_collection:
         class: phpbb\di\service_collection
         arguments:

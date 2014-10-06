@@ -1,0 +1,34 @@
+services:
+    dispatcher:
+        class: phpbb\event\dispatcher
+        arguments:
+            - @service_container
+
+    hook_finder:
+        class: phpbb\hook\finder
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
+            - @cache.driver
+
+    kernel_request_subscriber:
+        class: phpbb\event\kernel_request_subscriber
+        arguments:
+            - @ext.manager
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_exception_subscriber:
+        class: phpbb\event\kernel_exception_subscriber
+        arguments:
+            - @template
+            - @user
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_terminate_subscriber:
+        class: phpbb\event\kernel_terminate_subscriber
+        tags:
+            - { name: kernel.event_subscriber }

@@ -1,4 +1,18 @@
 services:
+    avatar.manager:
+        class: phpbb\avatar\manager
+        arguments:
+            - @config
+            - @avatar.driver_collection
+
+# ----- Avatar drivers -----
+    avatar.driver_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: avatar.driver }
+
     avatar.driver.gravatar:
         class: phpbb\avatar\driver\gravatar
         arguments:
@@ -51,10 +65,3 @@ services:
             - [set_name, [avatar.driver.upload]]
         tags:
             - { name: avatar.driver }
-
-    avatar.driver_collection:
-        class: phpbb\di\service_collection
-        arguments:
-            - @service_container
-        tags:
-            - { name: service_collection, tag: avatar.driver }
