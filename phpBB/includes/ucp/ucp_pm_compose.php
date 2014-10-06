@@ -27,8 +27,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 {
 	global $template, $db, $auth, $user, $cache;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request;
-	global $phpbb_container;
+	global $request, $phpbb_dispatcher, $phpbb_container;
 
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
@@ -302,6 +301,40 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			{
 				trigger_error('NOT_AUTHORISED');
 			}
+
+			/**
+			* Get the result of querying for the post to be quoted in the pm message
+			*
+			* @event core.ucp_pm_compose_quotepost_query_after
+			* @var	string	sql					The original SQL used in the query
+			* @var	array	post				Associative array with the data of the quoted post
+			* @var	array	msg_id				The post_id that was searched to get the message for quoting
+			* @var	int		visibility_const	Visibility of the quoted post (one of the possible ITEM_* constant values)
+			* @var	int		topic_id			Topic ID of the quoted post
+			* @var	int		to_user_id			Users the message is sent to
+			* @var	int		to_group_id			Groups the message is sent to
+			* @var	bool	submit				Whether the user is sending the PM or not
+			* @var	bool	preview				Whether the user is previewing the PM or not
+			* @var	string	action				One of: post, reply, quote, forward, quotepost, edit, delete, smilies
+			* @var	bool	delete				If deleting message
+			* @var	int		reply_to_all		Value of reply_to_all request variable.
+			* @since 3.1.0-RC5
+			*/
+			$vars = array(
+				'sql',
+				'post',
+				'msg_id',
+				'visibility_const',
+				'topic_id',
+				'to_user_id',
+				'to_group_id',
+				'submit',
+				'preview',
+				'action',
+				'delete',
+				'reply_to_all',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_quotepost_query_after', compact($vars)));
 
 			// Passworded forum?
 			if ($post['forum_id'])
