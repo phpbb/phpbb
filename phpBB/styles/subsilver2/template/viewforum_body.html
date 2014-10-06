@@ -150,9 +150,16 @@
 	<!-- IF S_DISPLAY_POST_INFO or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
+			<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+			<!-- EVENT viewforum_buttons_top_before -->
+
 			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
-				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a></td>
+				<a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>
 			<!-- ENDIF -->
+
+			<!-- EVENT viewforum_buttons_top_after -->
+			</td>
+
 			<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
@@ -273,9 +280,16 @@
 	<!-- IF S_DISPLAY_POST_INFO or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
+			<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+			<!-- EVENT viewforum_buttons_bottom_before -->
+
 			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
-				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a></td>
+				<a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>
 			<!-- ENDIF -->
+
+			<!-- EVENT viewforum_buttons_bottom_after -->
+			</td>
+
 			<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>

@@ -32,10 +32,14 @@
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+		<!-- EVENT viewtopic_buttons_top_before -->
+
 		<!-- IF not S_IS_BOT -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
+
+		<!-- EVENT viewtopic_buttons_top_after -->
 		</td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
@@ -371,10 +375,14 @@
 	<table width="100%" cellspacing="1">
 	<tr>
 		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap">
+		<!-- EVENT viewtopic_buttons_bottom_before -->
+
 		<!-- IF not S_IS_BOT -->
 			<!-- IF S_DISPLAY_POST_INFO --><a href="{U_POST_NEW_TOPIC}" class="imageset">{POST_IMG}</a>&nbsp;<!-- ENDIF -->
 			<!-- IF S_DISPLAY_REPLY_INFO --><a href="{U_POST_REPLY_TOPIC}" class="imageset">{REPLY_IMG}</a><!-- ENDIF -->
 		<!-- ENDIF -->
+
+		<!-- EVENT viewtopic_buttons_bottom_after -->
 		</td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
