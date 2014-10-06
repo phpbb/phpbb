@@ -1,8 +1,3 @@
-parameters:
-    tables.captcha_qa_questions: %core.table_prefix%captcha_questions
-    tables.captcha_qa_answers: %core.table_prefix%captcha_answers
-    tables.captcha_qa_confirm: %core.table_prefix%qa_confirm
-
 services:
     captcha.factory:
         class: phpbb\captcha\factory
@@ -10,6 +5,8 @@ services:
             - @service_container
             - @captcha.plugins.service_collection
 
+# ----- Captcha plugins -----
+# Scope MUST be prototype for all the plugins to work.
     captcha.plugins.service_collection:
         class: phpbb\di\service_collection
         arguments:
@@ -19,7 +16,7 @@ services:
 
     core.captcha.plugins.gd:
         class: phpbb\captcha\plugins\gd
-        scope: prototype # scope MUST be prototype for this to work!
+        scope: prototype
         calls:
             - [set_name, [core.captcha.plugins.gd]]
         tags:
@@ -27,7 +24,7 @@ services:
 
     core.captcha.plugins.gd_wave:
         class: phpbb\captcha\plugins\gd_wave
-        scope: prototype # scope MUST be prototype for this to work!
+        scope: prototype
         calls:
             - [set_name, [core.captcha.plugins.gd_wave]]
         tags:
@@ -35,7 +32,7 @@ services:
 
     core.captcha.plugins.nogd:
         class: phpbb\captcha\plugins\nogd
-        scope: prototype # scope MUST be prototype for this to work!
+        scope: prototype
         calls:
             - [set_name, [core.captcha.plugins.nogd]]
         tags:
@@ -43,7 +40,7 @@ services:
 
     core.captcha.plugins.qa:
         class: phpbb\captcha\plugins\qa
-        scope: prototype # scope MUST be prototype for this to work!
+        scope: prototype
         arguments:
             - %tables.captcha_qa_questions%
             - %tables.captcha_qa_answers%
@@ -55,7 +52,7 @@ services:
 
     core.captcha.plugins.recaptcha:
         class: phpbb\captcha\plugins\recaptcha
-        scope: prototype # scope MUST be prototype for this to work!
+        scope: prototype
         calls:
             - [set_name, [core.captcha.plugins.recaptcha]]
         tags:
