@@ -119,6 +119,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array('* @since 3.1.0-b3', '3.1.0-b3'),
 			array('	* @since 3.1.0-b3', '3.1.0-b3'),
 			array('* @since 3.1.0-RC2', '3.1.0-RC2'),
+			array(' * @since 3.1.0-a1', '3.1.0-a1'),
 		);
 	}
 
@@ -133,7 +134,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	static public function validate_since_throws_data()
 	{
 		return array(
-			array(' * @since 3.1.0-a1'),
 			array('* @since 3.1.0-a1 '),
 			array('* @since 3.1.0-a1 bertie is cool'),
 			array('bertie* @since 3.1.0-a1'),
@@ -156,6 +156,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 		return array(
 			array('test.event', '* @event test.event', 'test.event'),
 			array('test.event2', '	* @event test.event2', 'test.event2'),
+			array('test.event', ' * @event test.event', 'test.event'),
 		);
 	}
 
@@ -170,7 +171,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 	static public function validate_event_throws_data()
 	{
 		return array(
-			array('test.event', ' * @event test.event', 1),
 			array('test.event', '* @event test.event bertie is cool', 2),
 			array('test.event', 'bertie* @event test.event', 2),
 		);
