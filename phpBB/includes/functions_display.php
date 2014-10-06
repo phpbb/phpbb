@@ -649,6 +649,28 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'UNAPPROVED_POST_IMG'	=> $user->img('icon_topic_unapproved', 'POSTS_UNAPPROVED_FORUM'),
 	));
 
+	/**
+	* Event to perform additional actions after the forum list has been generated
+	*
+	* @event core.display_forums_after
+	* @var	array	active_forum_ary	Array with forum data to display active topics
+	* @var	bool	display_moderators	Flag indicating if we display forum moderators
+	* @var	array	forum_moderators	Array with forum moderators list
+	* @var	array	forum_rows			Data array of all forums we display
+	* @var	bool	return_moderators	Flag indicating if moderators list should be returned
+	* @var	array	root_data			Array with the root forum data
+	* @since 3.1.0-RC5
+	*/
+	$vars = array(
+		'active_forum_ary',
+		'display_moderators',
+		'forum_moderators',
+		'forum_rows',
+		'return_moderators',
+		'root_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_after', compact($vars)));
+
 	if ($return_moderators)
 	{
 		return array($active_forum_ary, $forum_moderators);
