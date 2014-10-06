@@ -35,6 +35,11 @@ then
 	travis/setup-webserver.sh
 fi
 
+if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.4', '>=');"` == "1" ]
+then
+	travis/setup-phpbb-test.sh
+fi
+
 cd phpBB
 php ../composer.phar install --dev --no-interaction --prefer-source
 cd ..
