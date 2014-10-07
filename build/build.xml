@@ -270,6 +270,9 @@
 			</else>
 		</if>
 
+		<!-- Create schema.json -->
+		<exec dir="${dir}" command="php develop/create_schema_files.php" />
+
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
 		<delete dir="${dir}/install/data" />
