@@ -1,0 +1,11 @@
+{% for loop_inner in loop %}
+
+{% if loop_inner.S_ROW_NUM is divisible by 4 %}on{% else %}off{% endif %}
+
+{% endfor %}
+
+{% for loop_inner in loop %}
+
+{% if loop_inner.S_ROW_NUM is divisible by 3 %}on{% else %}off{% endif %}
+
+{% endfor %}
