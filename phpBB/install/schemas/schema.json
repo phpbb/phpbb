@@ -2010,7 +2010,7 @@
                 ""
             ],
             "field_validation": [
-                "VCHAR_UNI:20",
+                "VCHAR_UNI:64",
                 ""
             ],
             "field_required": [
