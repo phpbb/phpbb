@@ -356,8 +356,23 @@ class phpbb_database_test_connection_manager
 		}
 
 		// Ok we have the db info go ahead and work on building the table
-		$db_table_schema = file_get_contents($directory . 'schema.json');
-		$db_table_schema = json_decode($db_table_schema, true);
+		if (file_exists($directory . 'schema.json'))
+		{
+			$db_table_schema = file_get_contents($directory . 'schema.json');
+			$db_table_schema = json_decode($db_table_schema, true);
+		}
+		else
+		{
+			global $phpbb_root_path, $phpEx, $table_prefix;
+
+			$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+			$classes = $finder->core_path('phpbb/db/migration/data/')
+				->get_classes();
+
+			$db = new \phpbb\db\driver\sqlite();
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$db_table_schema = $schema_generator->get_schema();
+		}
 
 		$db_tools = new \phpbb\db\tools($db, true);
 		foreach ($db_table_schema as $table_name => $table_data)

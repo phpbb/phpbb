@@ -57,4 +57,4 @@ $fp = fopen($schema_path . 'schema.json', 'wb');
 fwrite($fp, json_encode($schema_data, JSON_PRETTY_PRINT));
 fclose($fp);
 
-echo 'done';
+echo 'Successfully created schema file';

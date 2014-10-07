@@ -1175,8 +1175,31 @@ class install_install extends module
 		}
 
 		// Ok we have the db info go ahead and work on building the table
-		$db_table_schema = @file_get_contents('schemas/schema.json');
-		$db_table_schema = json_decode($db_table_schema, true);
+		if (file_exists('schemas/schema.json'))
+		{
+			$db_table_schema = @file_get_contents('schemas/schema.json');
+			$db_table_schema = json_decode($db_table_schema, true);
+		}
+		else
+		{
+			global $phpbb_root_path, $phpEx, $table_prefix;
+			$table_prefix = 'phpbb_';
+
+			if (!defined('CONFIG_TABLE'))
+			{
+				// We need to include the constants file for the table constants
+				// when we generate the schema from the migration files.
+				include($phpbb_root_path . 'includes/constants.' . $phpEx);
+			}
+
+			$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+			$classes = $finder->core_path('phpbb/db/migration/data/')
+				->get_classes();
+
+			$sqlite_db = new \phpbb\db\driver\sqlite();
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, new \phpbb\db\tools($sqlite_db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$db_table_schema = $schema_generator->get_schema();
+		}
 
 		if (!defined('CONFIG_TABLE'))
 		{
