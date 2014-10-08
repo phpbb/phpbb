@@ -54,37 +54,31 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	static public function setUpBeforeClass()
 	{
+		global $phpbb_root_path, $phpEx;
+
 		$setup_extensions = static::setup_extensions();
 
-		$schema_md5 = md5(serialize($setup_extensions));
-		self::$schema_file = __DIR__ . '/../tmp/' . $schema_md5 . '.json';
+		$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+		$finder->core_path('phpbb/db/migration/data/');
+		if (!empty($setup_extensions))
+		{
+			$finder->set_extensions($setup_extensions)
+				->extension_directory('/migrations');
+		}
+		$classes = $finder->get_classes();
+
+		$schema_sha1 = sha1(serialize($classes));
+		self::$schema_file = __DIR__ . '/../tmp/' . $schema_sha1 . '.json';
 		self::$install_schema_file = __DIR__ . '/../../phpBB/install/schemas/schema.json';
 
 		if (!file_exists(self::$schema_file))
 		{
-			global $phpbb_root_path, $phpEx, $table_prefix;
-			$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
 
-			if (!empty($setup_extensions))
-			{
-				$classes = $finder->core_path('phpbb/db/migration/data/')
-					->set_extensions($setup_extensions)
-					->extension_directory('/migrations')
-					->get_classes();
-
-			}
-			else
-			{
-
-				$classes = $finder->core_path('phpbb/db/migration/data/')
-					->get_classes();
-			}
+			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite();
 			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
-			$schema_data = $schema_generator->get_schema();
-
-			file_put_contents(self::$schema_file, json_encode($schema_data));
+			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
 		}
 
 		copy(self::$schema_file, self::$install_schema_file);
