@@ -88,7 +88,11 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	static public function tearDownAfterClass()
 	{
-		unlink(self::$install_schema_file);
+		if (file_exists(self::$install_schema_file))
+		{
+			unlink(self::$install_schema_file);
+		}
+
 		parent::tearDownAfterClass();
 	}
 
