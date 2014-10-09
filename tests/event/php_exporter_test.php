@@ -62,6 +62,18 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				),
 			),
 			array(
+				'trigger_wspace.test',
+				array(
+					'core.trigger'	=> array(
+						'event'			=> 'core.trigger',
+						'file'			=> 'trigger_wspace.test',
+						'arguments'		=> array('cp_row', 'current_row_number', 'end', 'row', 'start'),
+						'since'			=> '3.1.0-a3',
+						'description'	=> 'Event after the post data has been assigned to the template',
+					),
+				),
+			),
+			array(
 				'trigger_many_vars.test',
 				array(
 					'core.posting_modify_template_vars'	=> array(
