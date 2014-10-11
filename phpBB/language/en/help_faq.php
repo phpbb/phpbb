@@ -298,7 +298,7 @@ $help = array(
 	),
 	array(
 		0 => 'How can I find my own posts and topics?',
-		1 => 'Your own posts can be retrieved either by clicking the “Show your posts” link within the User Control Panel or by clicking the “Search user’s posts” link via your own profile page or by clicking the “Quick links” menu on the top of the board. To search for your topics, use the Advanced search page and fill in the various options appropriately.',
+		1 => 'Your own posts can be retrieved either by clicking the “Show your posts” link within the User Control Panel or by clicking the “Search user’s posts” link via your own profile page or by clicking the “Quick links” menu at the top of the board. To search for your topics, use the Advanced search page and fill in the various options appropriately.',
 	),
 	array(
 		0 => '--',
@@ -306,7 +306,7 @@ $help = array(
 	),
 	array(
 		0 => 'What is the difference between bookmarking and subscribing?',
-		1 => 'With phpBB 3.0, bookmarking a topic was much like bookmarking in your web browser. You were not alerted when there was an update. Since phpBB 3.1, bookmarking is much like subscribing to a topic. You can to be notified when there is an update. However, unlike subscribing, you are not able to bookmark a forum.',
+		1 => 'In phpBB 3.0, bookmarking topics worked much like bookmarking in a web browser. You were not alerted when there was an update. As of phpBB 3.1, bookmarking is more like subscribing to a topic. You can be notified when a bookmarked topic is updated. Subscribing, however, will notify you when there is an update to a topic or forum on the board. Notification options for bookmarks and subscriptions can be configured in the User Control Panel.',
 	),
 	array(
 		0 => 'How do I bookmark or subscribe to specific topics?',
