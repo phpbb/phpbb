@@ -2400,7 +2400,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'topic_type',
 		'poll',
 		'data',
-		'post_visibility,'
+		'post_visibility',
 		'update_message',
 		'update_search_index',
 		'url',
