@@ -2369,8 +2369,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
 	$url = append_sid($url, 'f=' . $data['forum_id'] . $params) . $add_anchor;
 
-	// update post_visibility in $data
-	$data['post_visibility'] = $post_visibility;
 	/**
 	* This event is used for performing actions directly after a post or topic
 	* has been submitted. When a new topic is posted, the topic ID is
@@ -2386,6 +2384,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	int		topic_type			Variable containing topic type value
 	* @var	array	poll				Array with the poll data for the post
 	* @var	array	data				Array with the data for the post
+	* @var	int		post_visibility		Variable containing up to date post visibility
 	* @var	bool	update_message		Flag indicating if the post will be updated
 	* @var	bool	update_search_index	Flag indicating if the search index will be updated
 	* @var	string	url					The "Return to topic" URL
@@ -2401,6 +2400,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'topic_type',
 		'poll',
 		'data',
+		'post_visibility,'
 		'update_message',
 		'update_search_index',
 		'url',
