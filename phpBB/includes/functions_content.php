@@ -943,7 +943,15 @@ function smiley_text($text, $force_option = false)
 	else
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
-		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
+		$match = array(
+			'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#',
+			'#<!\-\- s(.*?) \-\-><img src="(?<!\{SMILIES_PATH\}\/)(.*?) \/><!\-\- s\1 \-\->#',
+		);
+		$replacement = array(
+			'<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />',
+			'<img class="smilies" src="' . $root_path . '\2 />',
+		);
+		return preg_replace($match, $replacement, $text);
 	}
 }
 
