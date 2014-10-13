@@ -1,5 +1,3 @@
-/* global phpbb */
-
 /**
 * phpBB3 forum functions
 */
@@ -321,7 +319,8 @@ function parseDocument($container) {
 	'use strict';
 
 	var test = document.createElement('div'),
-		oldBrowser = (typeof test.style.borderRadius == 'undefined');
+		oldBrowser = (typeof test.style.borderRadius == 'undefined'),
+		$body = $('body');
 
 	/**
 	* Reset avatar dimensions when changing URL or EMAIL
@@ -348,7 +347,7 @@ function parseDocument($container) {
 	$container.find('.pagination .dropdown-trigger').click(function() {
 		var $dropdownContainer = $(this).parent();
 		// Wait a little bit to make sure the dropdown has activated
-		setTimeout(function() { 
+		setTimeout(function() {
 			if ($dropdownContainer.hasClass('dropdown-visible')) {
 				$dropdownContainer.find('input.inputbox').focus();
 			}
@@ -356,7 +355,7 @@ function parseDocument($container) {
 	});
 
 	/**
-	* Adjust HTML code for IE8 and older versions		
+	* Adjust HTML code for IE8 and older versions
 	*/
 	if (oldBrowser) {
 		// Fix .linklist.bulletin lists
@@ -364,7 +363,7 @@ function parseDocument($container) {
 	}
 
 	/**
-	* Resize navigation block to keep all links on same line
+	* Resize navigation (breadcrumbs) block to keep all links on same line
 	*/
 	$container.find('.navlinks').each(function() {
 		var $this = $(this),
@@ -394,7 +393,6 @@ function parseDocument($container) {
 	*/
 	$container.find('.breadcrumbs:not([data-skip-responsive])').each(function() {
 		var $this = $(this),
-			$body = $('body'),
 			$links = $this.find('.crumb'),
 			length = $links.length,
 			classes = ['wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny'],
@@ -461,151 +459,158 @@ function parseDocument($container) {
 	*/
 	$container.find('.linklist:not(.navlinks, [data-skip-responsive]), .postbody .post-buttons:not([data-skip-responsive])').each(function() {
 		var $this = $(this),
-			$body = $('body'),
 			filterSkip = '.breadcrumbs, [data-skip-responsive]',
 			filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
-			persist = $this.attr('id') == 'nav-main',
-			$allLinks = $this.children(),
-			$links = $allLinks.not(filterSkip),
-			html = '<li class="responsive-menu" style="display:none;"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown" style="display:none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-			$filterLastList = $links.filter(filterLast),
-			slack = 1; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured. 
+			$linksAll = $this.children(),
+			$linksNotSkip = $linksAll.not(filterSkip), // All items that can potentially be hidden
+			$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
+			$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
+			persistent = $this.attr('id') == 'nav-main', // Does this list already have a menu (such as quick-links)?
+			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown hidden"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
-		if (!persist) {
-			if ($links.is('.rightside')) {
-				$links.filter('.rightside:first').before(html);
+		// Add a hidden drop-down menu to each links list (except those that already have one)
+		if (!persistent) {
+			if ($linksNotSkip.is('.rightside')) {
+				$linksNotSkip.filter('.rightside:first').before(html);
 				$this.children('.responsive-menu').addClass('rightside');
 			} else {
 				$this.append(html);
 			}
 		}
 
-		var $item = $this.children('.responsive-menu'),
-			$menu = $item.find('.dropdown-contents'),
+		// Set some object references and initial states
+		var $menu = $this.children('.responsive-menu'),
+			$menuContents = $menu.find('.dropdown-contents'),
+			persistentContent = $menuContents.find('li:not(.separator)').length,
 			lastWidth = false,
 			compact = false,
-			responsive = false,
-			copied = false;
+			responsive1 = false,
+			responsive2 = false,
+			copied1 = false,
+			copied2 = false,
+			maxHeight = 0;
+
+		// Find the tallest element in the list (we assume that all elements are roughly the same height)
+		$linksAll.each(function() {
+			if (!$(this).height()) {
+				return;
+			}
+			maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
+		});
+		if (maxHeight < 1) {
+			return; // Shouldn't be possible, but just in case, abort
+		} else {
+			maxHeight = maxHeight + slack;
+		}
 
 		function check() {
 			var width = $body.width();
-			if (responsive && width <= lastWidth) {
+			// We can't make it any smaller than this, so just skip
+			if (responsive2 && compact && (width <= lastWidth)) {
 				return;
 			}
-
-			// Unhide the quick-links menu if it has content
-			if (persist) {
-				$item.addClass('hidden');
-				if ($menu.find('li:not(.separator, .clone)').length || (responsive && $menu.find('li.clone').length)) {
-					$item.removeClass('hidden');
-				}
-			}
+			lastWidth = width;
 
 			// Reset responsive and compact layout
-			if (responsive) {
-				$this.removeClass('responsive');
-				$links.css('display', '');
-				if (!persist) {
-					$item.css('display', 'none');
-				}
+			if (responsive1 || responsive2) {
+				$linksNotSkip.removeClass('hidden');
+				$menuContents.children('.clone').addClass('hidden');
+				responsive1 = responsive2 = false;
 			}
-
 			if (compact) {
 				$this.removeClass('compact');
+				compact = false;
 			}
 
-			// Find tallest element
-			var maxHeight = 0;
-			$allLinks.each(function() {
-				if (!$(this).height()) {
-					return;
-				}
-				maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-			});
-
-			if (maxHeight < 1) {
-				return;
+			// Unhide the quick-links menu if it has "persistent" content
+			if (persistent && persistentContent) {
+				$menu.removeClass('hidden');
+			} else {
+				$menu.addClass('hidden');
 			}
 
 			// Nothing to resize if block's height is not bigger than tallest element's height
-			if ($this.height() <= (maxHeight + slack)) {
+			if ($this.height() <= maxHeight) {
 				return;
 			}
 
-			// Enable compact layout, find tallest element, compare to height of whole block
-			$this.addClass('compact');
-
-			var compactMaxHeight = 0;
-			$allLinks.each(function() {
-				if (!$(this).height()) {
-					return;
-				}
-				compactMaxHeight = Math.max(compactMaxHeight, $(this).outerHeight(true));
-			});
-
-			if ($this.height() <= (maxHeight + slack)) {
+			// STEP 1: Compact
+			if (!compact) {
+				$this.addClass('compact');
+				compact = true;
+			}
+			if ($this.height() <= maxHeight) {
 				return;
 			}
 
-			// Compact layout did not resize block enough, switch to responsive layout
-			$this.removeClass('compact');
-			responsive = true;
-
-			if (!copied) {
-				var clone = $links.clone(true);
-				clone.filter('.rightside').each(function() {
-					if (persist) {
-						$(this).addClass('clone');
-					}
-					$menu.prepend(this);
-				});
-				
-				if (persist) {
-					$menu.prepend(clone.not('.rightside').addClass('clone'));
-				} else {
-					$menu.prepend(clone.not('.rightside'));
-				}
-
-				$menu.find('li.leftside, li.rightside').removeClass('leftside rightside');
-				$menu.find('.inputbox').parents('li:first').css('white-space', 'normal');
+			// STEP 2: First responsive set - compact
+			if (compact) {
+				$this.removeClass('compact');
+				compact = false;
+			}
+			// Copy the list items to the dropdown
+			if (!copied1) {
+				var $clones1 = $linksFirst.clone();
+				$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
 				if ($this.hasClass('post-buttons')) {
-					$('.button', $menu).removeClass('button icon-button');
-					$('.responsive-menu-link', $item).addClass('button icon-button').prepend('<span></span>');
+					$('.button', $menuContents).removeClass('button icon-button');
+					$('.responsive-menu-link', $menu).addClass('button icon-button').prepend('<span></span>');
 				}
-				copied = true;
-			} else {
-				$menu.children().css('display', '');
+				copied1 = true;
+			}
+			if (!responsive1) {
+				$linksFirst.addClass('hidden');
+				responsive1 = true;
+				$menuContents.children('.clone-first').removeClass('hidden');
+				$menu.removeClass('hidden');
+			}
+			if ($this.height() <= maxHeight) {
+				return;
 			}
 
-			$item.css('display', '');
-			$this.addClass('responsive');
-
-			// Try to not hide filtered items
-			if ($filterLastList.length) {
-				$links.not(filterLast).css('display', 'none');
-
-				maxHeight = 0;
-				$filterLastList.each(function() {
-					if (!$(this).height()) return;
-					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
-				});
-
-				if ($this.height() <= (maxHeight + slack)) {
-					$menu.children().filter(filterLast).css('display', 'none');
-					return;
-				}
+			// STEP 3: First responsive set + compact
+			if (!compact) {
+				$this.addClass('compact');
+				compact = true;
+			}
+			if ($this.height() <= maxHeight) {
+				return;
 			}
 
-			// If even responsive isn't enough, use both responsive and compact at same time
-			compact = true;
-			$this.addClass('compact');
+			// STEP 4: Last responsive set - compact
+			if (compact) {
+				$this.removeClass('compact');
+				compact = false;
+			}
+			// Copy the list items to the dropdown
+			if (!copied2) {
+				var $clones2 = $linksLast.clone();
+				$menuContents.prepend($clones2.addClass('clone clone-last').removeClass('leftside rightside'));
+				copied2 = true;
+			}
+			if (!responsive2) {
+				$linksLast.addClass('hidden');
+				responsive2 = true;
+				$menuContents.children('.clone-last').removeClass('hidden');
+			}
+			if ($this.height() <= maxHeight) {
+				return;
+			}
 
-			$links.css('display', 'none');
+			// STEP 5: Last responsive set + compact
+			if (!compact) {
+				$this.addClass('compact');
+				compact = true;
+			}
+			if ($this.height() <= maxHeight) {
+				return;
+			}
 		}
 
-		if (!persist) {
-			phpbb.registerDropdown($item.find('a.responsive-menu-link'), $item.find('.dropdown'));
+		if (!persistent) {
+			phpbb.registerDropdown($menu.find('a.responsive-menu-link'), $menu.find('.dropdown'), false);
 		}
 
 		check();
@@ -613,7 +618,7 @@ function parseDocument($container) {
 	});
 
 	/**
-	* Do not run functions below for old browsers	
+	* Do not run functions below for old browsers
 	*/
 	if (oldBrowser) {
 		return;
@@ -747,7 +752,7 @@ function parseDocument($container) {
 				$this.addClass('show-header');
 			}
 		});
-		
+
 		headersLength = headers.length;
 
 		// Add header text to each cell as <dfn>
@@ -804,7 +809,6 @@ function parseDocument($container) {
 	*/
 	$container.find('#tabs, #minitabs').not('[data-skip-responsive]').each(function() {
 		var $this = $(this),
-			$body = $('body'),
 			$ul = $this.children(),
 			$tabs = $ul.children().not('[data-skip-responsive]'),
 			$links = $tabs.children('a'),

@@ -1289,18 +1289,10 @@ ul.linklist:after,
 	width: 50px;
 }
 
-.dropdown .clone {
+.dropdown .clone.hidden + li.separator {
 	display: none;
 }
 
-.responsive .dropdown .clone {
-	display: inherit;
-}
-
-.dropdown .clone + li.separator {
-	display: none;
-}
-
-.responsive .dropdown .clone + li.separator {
-	display: inherit;
+.dropdown .clone.hidden + li {
+	border-top: none;
 }
