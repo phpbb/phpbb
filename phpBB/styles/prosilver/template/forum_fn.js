@@ -580,6 +580,9 @@ function parseDocument($container) {
 			}
 
 			// STEP 4: Last responsive set - compact
+			if (!$linksLast.length) {
+				return; // No other links to hide, can't do more
+			}
 			if (compact) {
 				$this.removeClass('compact');
 				compact = false;
@@ -603,9 +606,6 @@ function parseDocument($container) {
 			if (!compact) {
 				$this.addClass('compact');
 				compact = true;
-			}
-			if ($this.height() <= maxHeight) {
-				return;
 			}
 		}
 
