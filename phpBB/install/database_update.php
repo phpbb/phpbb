@@ -174,6 +174,19 @@ define('IN_DB_UPDATE', true);
 // End startup code
 
 $migrator = $phpbb_container->get('migrator');
+$migrator->set_output_handler(
+	new \phpbb\db\migrator_output_handler(
+		function($message, $verbosity) use ($user)
+		{
+			if ($verbosity <= \phpbb\db\migrator_output_handler::VERBOSITY_NORMAL)
+			{
+				$final_message = call_user_func_array(array($user, 'lang'), $message);
+				echo $final_message . "<br />\n";
+			}
+		}
+	)
+);
+
 $migrator->create_migrations_table();
 
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
@@ -199,8 +212,6 @@ $safe_time_limit = min(15, ($phpbb_ini->get_int('max_execution_time') / 2));
 
 while (!$migrator->finished())
 {
-	$migration_start_time = microtime(true);
-
 	try
 	{
 		$migrator->update();
@@ -218,28 +229,6 @@ while (!$migrator->finished())
 		),
 		$migrator->last_run_migration['state']
 	);
-
-	if (isset($migrator->last_run_migration['effectively_installed']) && $migrator->last_run_migration['effectively_installed'])
-	{
-		echo $user->lang('MIGRATION_EFFECTIVELY_INSTALLED', $migrator->last_run_migration['name']);
-	}
-	else
-	{
-		if ($migrator->last_run_migration['task'] == 'process_data_step' && $state['migration_data_done'])
-		{
-			echo $user->lang('MIGRATION_DATA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
-		}
-		else if ($migrator->last_run_migration['task'] == 'process_data_step')
-		{
-			echo $user->lang('MIGRATION_DATA_IN_PROGRESS', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
-		}
-		else if ($state['migration_schema_done'])
-		{
-			echo $user->lang('MIGRATION_SCHEMA_DONE', $migrator->last_run_migration['name'], (microtime(true) - $migration_start_time));
-		}
-	}
-
-	echo "<br />\n";
 
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)
