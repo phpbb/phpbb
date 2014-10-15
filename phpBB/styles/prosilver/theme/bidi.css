@@ -1121,4 +1121,20 @@ li.breadcrumbs span:first-child > a {
 	.rtl .has-profile .post-buttons {
 		left: 20px;
 	}
+
+	/* Forms
+	----------------------------------------*/
+	.rtl fieldset dt, .rtl fieldset.fields1 dt, .rtl fieldset.fields2 dt {
+		float: none;
+	}
+
+	.rtl fieldset dd, .rtl fieldset.fields1 dd, .rtl fieldset.fields2 dd {
+		margin-right: 20px;
+	}
+
+	@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
+		.captcha-panel dd.captcha {
+			margin-right: 0;
+		}
+	}
 }
