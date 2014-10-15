@@ -589,6 +589,7 @@ $lang = array_merge($lang, array(
 	),
 	'VIEW_PREVIOUS_HISTORY'		=> 'Previous PM in history',
 	'VIEW_PREVIOUS_PM'			=> 'Previous PM',
+	'VIEW_PROFILE'				=> 'View profile',
 	'VIEW_SIGS'					=> 'Display signatures',
 	'VIEW_SMILIES'				=> 'Display smilies as images',
 	'VIEW_TOPICS_DAYS'			=> 'Display topics from previous days',

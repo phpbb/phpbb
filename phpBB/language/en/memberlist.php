@@ -54,6 +54,8 @@ $lang = array_merge($lang, array(
 	'DEST_LANG'				=> 'Language',
 	'DEST_LANG_EXPLAIN'		=> 'Select an appropriate language (if available) for the recipient of this message.',
 
+	'EDIT_PROFILE'			=> 'Edit profile',
+
 	'EMAIL_BODY_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.',
 	'EMAIL_DISABLED'		=> 'Sorry but all email related functions have been disabled.',
 	'EMAIL_SENT'			=> 'The email has been sent.',
