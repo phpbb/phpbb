@@ -1270,7 +1270,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			$user_cache[$poster_id] = $user_cache_data;
 
-			$user_rank_data = phpbb_get_user_rank($row, false);
+			$user_rank_data = phpbb_get_user_rank($row, $row['user_posts']);
 			$user_cache[$poster_id]['rank_title'] = $user_rank_data['title'];
 			$user_cache[$poster_id]['rank_image'] = $user_rank_data['img'];
 			$user_cache[$poster_id]['rank_image_src'] = $user_rank_data['img_src'];
