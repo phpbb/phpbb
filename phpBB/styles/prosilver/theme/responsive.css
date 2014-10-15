@@ -350,6 +350,31 @@ fieldset.quick-login label[for="autologin"] {
 	select, .inputbox {
 		max-width: 260px;
 	}
+
+	.captcha-panel dd.captcha {
+		margin-left: 0;
+	}
+
+	.captcha-panel dd.captcha-image img {
+		width: 100%;
+	}
+
+	#recaptcha_challenge_image,
+	#recaptcha_response_field,
+	.recaptchatable #recaptcha_image {
+		width: 100% !important;
+		height: auto !important;
+	}
+
+	.recaptchatable tr td:last-child {
+		display: none;
+	}
+
+	.captcha-panel .recaptcha-responsive {
+		display: inline-block !important;
+		margin-top: 10px;
+		vertical-align: middle;
+	}
 }
 
 @media only screen and (max-width: 430px), only screen and (max-device-width: 430px) {
