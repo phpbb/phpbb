@@ -13,13 +13,26 @@
 
 namespace phpbb\db;
 
-class migrator_output_handler
+use phpbb\user;
+
+class html_migrator_output_handler extends migrator_output_handler
 {
-	const VERBOSITY_QUIET        = 0;
-	const VERBOSITY_NORMAL       = 1;
-	const VERBOSITY_VERBOSE      = 2;
-	const VERBOSITY_VERY_VERBOSE = 3;
-	const VERBOSITY_DEBUG        = 4;
+	/**
+	 * User object.
+	 *
+	 * @var user
+	 */
+	private $user;
+
+	/**
+	 * Constructor
+	 *
+	 * @param user $user	User object
+	 */
+	public function __construct(user $user)
+	{
+		$this->user = $user;
+	}
 
 	/**
 	 * Write output using the configured closure.
@@ -29,5 +42,10 @@ class migrator_output_handler
 	 */
 	public function write($message, $verbosity)
 	{
+		if ($verbosity <= migrator_output_handler::VERBOSITY_NORMAL)
+		{
+			$final_message = call_user_func_array(array($this->user, 'lang'), $message);
+			echo $final_message . "<br />\n";
+		}
 	}
 }

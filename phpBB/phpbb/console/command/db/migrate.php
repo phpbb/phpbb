@@ -53,29 +53,7 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$user = $this->user;
-		$this->migrator->set_output_handler(
-			new \phpbb\db\migrator_output_handler(
-				function($message, $verbosity) use ($output, $user)
-				{
-					if ($verbosity <= $output->getVerbosity())
-					{
-						$final_message = call_user_func_array(array($user, 'lang'), $message);
-
-						if ($verbosity === \phpbb\db\migrator_output_handler::VERBOSITY_NORMAL)
-						{
-							$final_message = '<info>' . $final_message . '</info>';
-						}
-						else if ($verbosity === \phpbb\db\migrator_output_handler::VERBOSITY_VERY_VERBOSE)
-						{
-							$final_message = '<comment>' . $final_message . '</comment>';
-						}
-
-						$output->writeln($final_message);
-					}
-				}
-			)
-		);
+		$this->migrator->set_output_handler(new console_migrator_output_handler($this->user, $output));
 
 		$this->migrator->create_migrations_table();
 

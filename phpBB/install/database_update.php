@@ -174,18 +174,7 @@ define('IN_DB_UPDATE', true);
 // End startup code
 
 $migrator = $phpbb_container->get('migrator');
-$migrator->set_output_handler(
-	new \phpbb\db\migrator_output_handler(
-		function($message, $verbosity) use ($user)
-		{
-			if ($verbosity <= \phpbb\db\migrator_output_handler::VERBOSITY_NORMAL)
-			{
-				$final_message = call_user_func_array(array($user, 'lang'), $message);
-				echo $final_message . "<br />\n";
-			}
-		}
-	)
-);
+$migrator->set_output_handler(new \phpbb\db\html_migrator_output_handler($user));
 
 $migrator->create_migrations_table();
 
