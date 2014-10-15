@@ -613,6 +613,13 @@ function parseDocument($container) {
 			phpbb.registerDropdown($menu.find('a.responsive-menu-link'), $menu.find('.dropdown'), false);
 		}
 
+		// If there are any images in the links list, run the check again after they have loaded
+		$linksAll.find('img').each(function() {
+			$(this).load(function() {
+				check();
+			});
+		});
+
 		check();
 		$(window).resize(check);
 	});
