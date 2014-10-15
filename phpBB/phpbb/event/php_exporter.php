@@ -253,7 +253,7 @@ class php_exporter
 	public function get_event_name($event_line, $is_dispatch)
 	{
 		$event_text_line = $this->file_lines[$event_line];
-		$event_text_line = ltrim($event_text_line, "\t");
+		$event_text_line = ltrim($event_text_line, "\t ");
 
 		if ($is_dispatch)
 		{
@@ -389,7 +389,7 @@ class php_exporter
 		$found_comment_end = false;
 		while (ltrim($this->file_lines[$this->current_event_line - $current_doc_line], "\t") !== '/**')
 		{
-			if (ltrim($this->file_lines[$this->current_event_line - $current_doc_line], "\t") === '*/')
+			if (ltrim($this->file_lines[$this->current_event_line - $current_doc_line], "\t ") === '*/')
 			{
 				$found_comment_end = true;
 			}
@@ -471,7 +471,7 @@ class php_exporter
 	{
 		$find_tag_line = 0;
 		$found_comment_end = false;
-		while (strpos(ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t"), '* @' . $find_tag . ' ') !== 0)
+		while (strpos(ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t "), '* @' . $find_tag . ' ') !== 0)
 		{
 			if ($found_comment_end && ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t") === '/**')
 			{
@@ -482,7 +482,7 @@ class php_exporter
 
 			foreach ($disallowed_tags as $disallowed_tag)
 			{
-				if ($found_comment_end && strpos(ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t"), '* @' . $disallowed_tag) === 0)
+				if ($found_comment_end && strpos(ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t "), '* @' . $disallowed_tag) === 0)
 				{
 					// Found @var after the @since
 					throw new \LogicException("Found '@{$disallowed_tag}' information after '@{$find_tag}' for event "
@@ -490,7 +490,7 @@ class php_exporter
 				}
 			}
 
-			if (ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t") === '*/')
+			if (ltrim($this->file_lines[$this->current_event_line - $find_tag_line], "\t ") === '*/')
 			{
 				$found_comment_end = true;
 			}
@@ -550,7 +550,7 @@ class php_exporter
 	public function validate_since($line)
 	{
 		$match = array();
-		preg_match('#^\* @since (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)$#', ltrim($line, "\t"), $match);
+		preg_match('#^\* @since (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)$#', ltrim($line, "\t "), $match);
 		if (!isset($match[1]))
 		{
 			throw new \LogicException("Invalid '@since' information for event "
@@ -570,7 +570,7 @@ class php_exporter
 	*/
 	public function validate_event($event_name, $line)
 	{
-		$event = substr(ltrim($line, "\t"), strlen('* @event '));
+		$event = substr(ltrim($line, "\t "), strlen('* @event '));
 
 		if ($event !== trim($event))
 		{
