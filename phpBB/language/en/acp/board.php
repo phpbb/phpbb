@@ -222,6 +222,7 @@ $lang = array_merge($lang, array(
 
 	'ACC_ACTIVATION'				=> 'Account activation',
 	'ACC_ACTIVATION_EXPLAIN'		=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations. <em>“Board-wide email” must be enabled in order to use user or admin activation.</em>',
+	'ACC_ACTIVATION_WARNING'		=> 'Please note that the currently selected activation method requires emails to be enabled, otherwise registration will be disabled. We recommend to either select a different activation method or reenable emails.',
 	'NEW_MEMBER_POST_LIMIT'			=> 'New member post limit',
 	'NEW_MEMBER_POST_LIMIT_EXPLAIN'	=> 'New members are within the <em>Newly Registered Users</em> group until they reach this number of posts. You can use this group to keep them from using the PM system or to review their posts. <strong>A value of 0 disables this feature.</strong>',
 	'NEW_MEMBER_GROUP_DEFAULT'		=> 'Set Newly Registered Users group to default',

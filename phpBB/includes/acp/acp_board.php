@@ -615,7 +615,15 @@ class acp_board
 		{
 			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
 
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+			$message = $user->lang('CONFIG_UPDATED');
+			$message_type = E_USER_NOTICE;
+			if (!$config['email_enable'] && in_array($mode, array('email', 'registration')) &&
+				in_array($config['require_activation'], array(USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN)))
+			{
+				$message .= '<br /><br />' . $user->lang('ACC_ACTIVATION_WARNING');
+				$message_type = E_USER_WARNING;
+			}
+			trigger_error($message . adm_back_link($this->u_action), $message_type);
 		}
 
 		$this->tpl_name = 'acp_board';
