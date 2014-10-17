@@ -754,7 +754,8 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
+	$check_permission = ($is_soft) ? 'm_softdelete' : 'm_delete';
+	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array($check_permission)))
 	{
 		return;
 	}
@@ -882,7 +883,8 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 {
 	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
-	if (!phpbb_check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_softdelete')))
+	$check_permission = ($is_soft) ? 'm_softdelete' : 'm_delete';
+	if (!phpbb_check_ids($post_ids, POSTS_TABLE, 'post_id', array($check_permission)))
 	{
 		return;
 	}
