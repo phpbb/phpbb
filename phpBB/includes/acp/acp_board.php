@@ -792,20 +792,19 @@ class acp_board
 		global $user, $config;
 
 		$act_ary = array(
-			'ACC_DISABLE' => USER_ACTIVATION_DISABLE,
-			'ACC_NONE' => USER_ACTIVATION_NONE,
+			'ACC_DISABLE'	=> array(true, USER_ACTIVATION_DISABLE),
+			'ACC_NONE'		=> array(true, USER_ACTIVATION_NONE),
+			'ACC_USER'		=> array($config['email_enable'], USER_ACTIVATION_SELF),
+			'ACC_ADMIN'		=> array($config['email_enable'], USER_ACTIVATION_ADMIN),
 		);
-		if ($config['email_enable'])
-		{
-			$act_ary['ACC_USER'] = USER_ACTIVATION_SELF;
-			$act_ary['ACC_ADMIN'] = USER_ACTIVATION_ADMIN;
-		}
-		$act_options = '';
 
-		foreach ($act_ary as $key => $value)
+		$act_options = '';
+		foreach ($act_ary as $key => $data)
 		{
+			list($available, $value) = $data;
 			$selected = ($selected_value == $value) ? ' selected="selected"' : '';
-			$act_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$key] . '</option>';
+			$class = (!$available) ? ' class="disabled-option"' : '';
+			$act_options .= '<option value="' . $value . '"' . $selected . $class . '>' . $user->lang($key) . '</option>';
 		}
 
 		return $act_options;

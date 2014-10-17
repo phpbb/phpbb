@@ -33,7 +33,8 @@ class ucp_register
 		global $request, $phpbb_container;
 
 		//
-		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
+		if ($config['require_activation'] == USER_ACTIVATION_DISABLE ||
+			(in_array($config['require_activation'], array(USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN)) && !$config['email_enable']))
 		{
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
