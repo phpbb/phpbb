@@ -61,15 +61,15 @@ $help = array(
 	),
 	array(
 		0 => 'I’ve lost my password!',
-		1 => 'Don’t panic! While your password cannot be retrieved, it can easily be reset. Visit the login page and click <em>I forgot my password</em>. Follow the instructions and you should be able to log in again shortly.<br />However, if you are not able to reset your password, contact the board administrator.',
+		1 => 'Don’t panic! While your password cannot be retrieved, it can easily be reset. Visit the login page and click <em>I forgot my password</em>. Follow the instructions and you should be able to log in again shortly.<br />However, if you are not able to reset your password, contact a board administrator.',
 	),
 	array(
 		0 => 'Why do I get logged off automatically?',
-		1 => 'If you do not check the <em>Remember me</em> box when you login, the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in, check the <em>Remember me</em> box during login. This is not recommended if you access the board from a shared computer, e.g. library, internet cafe, university computer lab, etc. If you do not see this checkbox, it means the board administrator has disabled this feature.',
+		1 => 'If you do not check the <em>Remember me</em> box when you login, the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in, check the <em>Remember me</em> box during login. This is not recommended if you access the board from a shared computer, e.g. library, internet cafe, university computer lab, etc. If you do not see this checkbox, it means a board administrator has disabled this feature.',
 	),
 	array(
 		0 => 'What does the “Delete all board cookies” do?',
-		1 => '“Delete all board cookies” deletes the cookies created by phpBB which keep you authenticated and logged into the board. It also provides functions such as read tracking if they have been enabled by the board administrator. If you are having login or logout problems, deleting board cookies may help.',
+		1 => '“Delete all board cookies” deletes the cookies created by phpBB which keep you authenticated and logged into the board. They also provide functions such as read tracking if they have been enabled by a board administrator. If you are having login or logout problems, deleting board cookies may help.',
 	),
 	array(
 		0 => '--',
@@ -93,10 +93,10 @@ $help = array(
 	),
 	array(
 		0 => 'My language is not in the list!',
-		1 => 'Either the administrator has not installed your language or nobody has translated this board into your language. Try asking the board administrator if they can install the language pack you need. If the language pack does not exist, feel free to create a new translation. More information can be found at the <a href="https://www.phpbb.com/">phpBB</a>&reg; website.',
+		1 => 'Either the administrator has not installed your language or nobody has translated this board into your language. Try asking a board administrator if he can install the language pack you need. If the language pack does not exist, feel free to create a new translation. More information can be found at the <a href="https://www.phpbb.com/">phpBB</a>&reg; website.',
 	),
 	array(
-		0 => 'What do the images next to my username?',
+		0 => 'What are the images next to my username?',
 		1 => 'There are two images which may appear along with a username when viewing posts. One of them may be an image associated with your rank, generally in the form of stars, blocks or dots, indicating how many posts you have made or your status on the board. Another, usually a larger image, is known as an avatar and is generally unique or personal to each user.',
 	),
 	array(
@@ -116,8 +116,8 @@ $help = array(
 		1 => 'Posting Issues'
 	),
 	array(
-		0 => 'How do I post a topic in a forum?',
-		1 => 'To post a new topic in a forum, click the relevant button on either the forum or topic screens. You may need to register before you can post a message. A list of your permissions in each forum is available at the bottom of the forum and topic screens. Example: You can post new topics, You can post attachments, etc.',
+		0 => 'How do I create a new topic in a forum or reply to any of them?',
+		1 => 'Click the button “New Topic” on the forum screen or “Post Reply” on the topic screens. You may need to register before you can post a message. A list of your permissions in each forum is available at the bottom of the forum screen. Example: You can post new topics, You can post attachments, etc.',
 	),
 	array(
 		0 => 'How do I edit or delete a post?',
@@ -306,11 +306,11 @@ $help = array(
 	),
 	array(
 		0 => 'What is the difference between bookmarking and subscribing?',
-		1 => 'In phpBB 3.0, bookmarking topics worked much like bookmarking in a web browser. You were not alerted when there was an update. As of phpBB 3.1, bookmarking is more like subscribing to a topic. You can be notified when a bookmarked topic is updated. Subscribing, however, will notify you when there is an update to a topic or forum on the board. Notification options for bookmarks and subscriptions can be configured in the User Control Panel.',
+		1 => 'In phpBB 3.0, bookmarking topics worked much like bookmarking in a web browser. You were not alerted when there was an update. As of phpBB 3.1, bookmarking is more like subscribing to a topic. You can be notified when a bookmarked topic is updated. Subscribing, however, will notify you when there is an update to a topic or forum on the board. Notification options for bookmarks and subscriptions can be configured in the User Control Panel, under “Board preferences”.',
 	),
 	array(
 		0 => 'How do I bookmark or subscribe to specific topics?',
-		1 => 'You can bookmark or subscribe to a specific topic by clicking the appropriate link in the “Topic tools” menu, conveniently located near the top and bottom of a topic discussion.<br />You can also subscribe, not bookmark, to a topic by replying to a topic and checking the “Notify me when a reply is posted” checkbox.',
+		1 => 'You can add bookmark or subscribe to a specific topic by clicking the appropriate link in the “Topic tools” menu, conveniently located near the top and bottom of a topic discussion.<br />Replying to a topic with the “Notify me when a reply is posted” option checked will also subscribe you to the topic.',
 	),
 	array(
 		0 => 'How do I subscribe to specific forums?',
