@@ -256,8 +256,8 @@ class fulltext_sphinx
 				array('type',						$this->dbtype . ' # mysql or pgsql'),
 				// This config value sql_host needs to be changed incase sphinx and sql are on different servers
 				array('sql_host',					$dbhost . ' # SQL server host sphinx connects to'),
-				array('sql_user',					$dbuser),
-				array('sql_pass',					$dbpasswd),
+				array('sql_user',					'[dbuser]'),
+				array('sql_pass',					'[dbpassword]'),
 				array('sql_db',						$dbname),
 				array('sql_port',					$dbport . ' # optional, default is 3306 for mysql and 5432 for pgsql'),
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
