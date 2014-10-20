@@ -14,7 +14,6 @@
 namespace phpbb\console\command\db;
 
 use phpbb\user;
-use phpbb\db\migrator_output_handler;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class console_migrator_output_handler implements migrator_output_handler_interface
