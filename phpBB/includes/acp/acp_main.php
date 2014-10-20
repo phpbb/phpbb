@@ -606,8 +606,8 @@ class acp_main
 				'S_MBSTRING_LOADED'						=> true,
 				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> (intval(@ini_get('mbstring.func_overload')) & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> (@ini_get('mbstring.encoding_translation') != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> (@ini_get('mbstring.http_input') != 'pass'),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> (@ini_get('mbstring.http_output') != 'pass'),
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !in_array(@ini_get('mbstring.http_input'), array('pass', '')),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !in_array(@ini_get('mbstring.http_output'), array('pass', '')),
 			));
 		}
 
