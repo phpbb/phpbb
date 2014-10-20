@@ -58,7 +58,7 @@ class console_migrator_output_handler implements migrator_output_handler_interfa
 			{
 				$translated_message = '<info>' . $translated_message . '</info>';
 			}
-			else if ($verbosity === migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE)
+			else if ($verbosity === migrator_output_handler_interface::VERBOSITY_VERBOSE)
 			{
 				$translated_message = '<comment>' . $translated_message . '</comment>';
 			}

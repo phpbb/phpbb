@@ -91,7 +91,7 @@ class migrator
 
 		$this->table_prefix = $table_prefix;
 
-		$this->output_handler = new migrator_output_handler();
+		$this->output_handler = new null_migrator_output_handler();
 
 		foreach ($tools as $tool)
 		{
@@ -257,7 +257,7 @@ class migrator
 
 				$this->last_run_migration['effectively_installed'] = true;
 
-				$this->output_handler->write(array('MIGRATION_EFFECTIVELY_INSTALLED', $name), migrator_output_handler::VERBOSITY_NORMAL);
+				$this->output_handler->write(array('MIGRATION_EFFECTIVELY_INSTALLED', $name), migrator_output_handler::VERBOSITY_VERBOSE);
 			}
 			else
 			{
@@ -269,7 +269,7 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
-			$this->output_handler->write(array('MIGRATION_SCHEMA_RUNNING', $name), migrator_output_handler::VERBOSITY_VERY_VERBOSE);
+			$this->output_handler->write(array('MIGRATION_SCHEMA_RUNNING', $name), migrator_output_handler::VERBOSITY_VERBOSE);
 
 			$this->last_run_migration['task'] = 'process_schema_step';
 			$elapsed_time = microtime(true);
@@ -286,7 +286,7 @@ class migrator
 		{
 			try
 			{
-				$this->output_handler->write(array('MIGRATION_DATA_RUNNING', $name), migrator_output_handler::VERBOSITY_VERY_VERBOSE);
+				$this->output_handler->write(array('MIGRATION_DATA_RUNNING', $name), migrator_output_handler::VERBOSITY_VERBOSE);
 
 				$this->last_run_migration['task'] = 'process_data_step';
 
@@ -304,7 +304,7 @@ class migrator
 				}
 				else
 				{
-					$this->output_handler->write(array('MIGRATION_DATA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler::VERBOSITY_VERBOSE);
+					$this->output_handler->write(array('MIGRATION_DATA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler::VERBOSITY_VERY_VERBOSE);
 				}
 			}
 			catch (\phpbb\db\migration\exception $e)

@@ -39,7 +39,7 @@ class html_migrator_output_handler implements migrator_output_handler_interface
 	 */
 	public function write($message, $verbosity)
 	{
-		if ($verbosity <= migrator_output_handler_interface::VERBOSITY_NORMAL)
+		if ($verbosity <= migrator_output_handler_interface::VERBOSITY_VERBOSE)
 		{
 			$final_message = call_user_func_array(array($this->user, 'lang'), $message);
 			echo $final_message . "<br />\n";
