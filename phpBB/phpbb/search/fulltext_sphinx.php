@@ -715,6 +715,7 @@ class fulltext_sphinx
 					),
 					'ON'	=> 'p1.topic_id = p2.topic_id',
 				)),
+				'WHERE' => 'p2.post_id = ' . ((int) $post_id),
 			);
 
 			$sql = $this->db->sql_build_query('SELECT', $sql_array);
