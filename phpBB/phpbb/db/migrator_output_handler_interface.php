@@ -13,7 +13,7 @@
 
 namespace phpbb\db;
 
-class migrator_output_handler
+interface migrator_output_handler_interface
 {
 	const VERBOSITY_QUIET        = 0;
 	const VERBOSITY_NORMAL       = 1;
@@ -27,7 +27,5 @@ class migrator_output_handler
 	 * @param string|array $message The message to write or an array containing the language key and all of its parameters.
 	 * @param int $verbosity The verbosity of the message.
 	 */
-	public function write($message, $verbosity)
-	{
-	}
+	public function write($message, $verbosity);
 }

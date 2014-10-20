@@ -17,7 +17,7 @@ use phpbb\user;
 use phpbb\db\migrator_output_handler;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class console_migrator_output_handler extends migrator_output_handler
+class console_migrator_output_handler implements migrator_output_handler_interface
 {
 	/**
 	 * User object.
@@ -46,10 +46,7 @@ class console_migrator_output_handler extends migrator_output_handler
 	}
 
 	/**
-	 * Write output using the configured closure.
-	 *
-	 * @param string|array $message The message to write or an array containing the language key and all of its parameters.
-	 * @param int $verbosity The verbosity of the message.
+	 * {@inheritdoc}
 	 */
 	public function write($message, $verbosity)
 	{
@@ -57,11 +54,11 @@ class console_migrator_output_handler extends migrator_output_handler
 		{
 			$translated_message = call_user_func_array(array($this->user, 'lang'), $message);
 
-			if ($verbosity === \phpbb\db\migrator_output_handler::VERBOSITY_NORMAL)
+			if ($verbosity === migrator_output_handler_interface::VERBOSITY_NORMAL)
 			{
 				$translated_message = '<info>' . $translated_message . '</info>';
 			}
-			else if ($verbosity === \phpbb\db\migrator_output_handler::VERBOSITY_VERY_VERBOSE)
+			else if ($verbosity === migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE)
 			{
 				$translated_message = '<comment>' . $translated_message . '</comment>';
 			}

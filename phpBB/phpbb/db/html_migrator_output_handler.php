@@ -15,7 +15,7 @@ namespace phpbb\db;
 
 use phpbb\user;
 
-class html_migrator_output_handler extends migrator_output_handler
+class html_migrator_output_handler implements migrator_output_handler_interface
 {
 	/**
 	 * User object.
@@ -35,14 +35,11 @@ class html_migrator_output_handler extends migrator_output_handler
 	}
 
 	/**
-	 * Write output using the configured closure.
-	 *
-	 * @param string|array $message The message to write or an array containing the language key and all of its parameters.
-	 * @param int $verbosity The verbosity of the message.
+	 * {@inheritdoc}
 	 */
 	public function write($message, $verbosity)
 	{
-		if ($verbosity <= migrator_output_handler::VERBOSITY_NORMAL)
+		if ($verbosity <= migrator_output_handler_interface::VERBOSITY_NORMAL)
 		{
 			$final_message = call_user_func_array(array($this->user, 'lang'), $message);
 			echo $final_message . "<br />\n";
