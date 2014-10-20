@@ -593,15 +593,15 @@ class session
 		}
 		else if (!$bot)
 		{
-            $provider_collection = $phpbb_container->get('auth.provider_collection');
-            $provider = $provider_collection->get_provider();
-            $this->data = $provider->autologin();
+			$provider_collection = $phpbb_container->get('auth.provider_collection');
+			$provider = $provider_collection->get_provider();
+			$this->data = $provider->autologin();
 
-            if (sizeof($this->data))
-            {
-                $this->cookie_data['k'] = '';
-                $this->cookie_data['u'] = $this->data['user_id'];
-            }
+			if (sizeof($this->data))
+			{
+				$this->cookie_data['k'] = '';
+				$this->cookie_data['u'] = $this->data['user_id'];
+			}
 
 			// If we're presented with an autologin key we'll join against it.
 			// Else if we've been passed a user_id we'll grab data based on that
