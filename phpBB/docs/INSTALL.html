@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="keywords" content="" />
 <meta name="description" content="phpBB 3.1.x Installation, updating and conversion informations" />
-<title>phpBB3 &bull; Install</title>
+<title>phpBB &bull; Install</title>
 
 <link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
 
@@ -39,7 +39,7 @@
 
 <p>This document will walk you through the basics on installing, updating and converting the forum software.</p>
 
-<p>A basic overview of running phpBB3 can be found in the accompanying <a href="README.html">README</a> file. Please ensure you read that document in addition to this! For more detailed information on using, installing, updating and converting phpBB3 you should read <a href="https://www.phpbb.com/support/documentation/3.0/">the documentation</a> available online.</p>
+<p>A basic overview of running phpBB can be found in the accompanying <a href="README.html">README</a> file. Please ensure you read that document in addition to this! For more detailed information on using, installing, updating and converting phpBB you should read <a href="https://www.phpbb.com/support/documentation/3.0/">the documentation</a> available online.</p>
 
 <h1>Install</h1>
 
@@ -176,23 +176,23 @@
 
 		<div class="content">
 
-	<p>Installation of phpBB3 will vary according to your server and database. If you have <em>shell access</em> to your account (via telnet or ssh for example) you may want to upload the entire phpBB3 archive (in binary mode!) to a directory on your host and unarchive it there.</p>
+	<p>Installation of phpBB will vary according to your server and database. If you have <em>shell access</em> to your account (via telnet or ssh for example) you may want to upload the entire phpBB archive (in binary mode!) to a directory on your host and unarchive it there.</p>
 
-	<p>If you do not have shell access or do not wish to use it, you will need to decompress the phpBB3 archive to a local directory on your system using your favourite compression program, e.g. winzip, rar, zip, etc. From there you must FTP <strong>ALL</strong> the files it contains (being sure to retain the directory structure and filenames) to your host. Please ensure that the cases of filenames are retained, do <strong>NOT</strong> force filenames to all lower or upper case as doing so will cause errors later.</p>
+	<p>If you do not have shell access or do not wish to use it, you will need to decompress the phpBB archive to a local directory on your system using your favourite compression program, e.g. winzip, rar, zip, etc. From there you must FTP <strong>ALL</strong> the files it contains (being sure to retain the directory structure and filenames) to your host. Please ensure that the cases of filenames are retained, do <strong>NOT</strong> force filenames to all lower or upper case as doing so will cause errors later.</p>
 
 	<p>All .php, .sql, .cfg, .css, .js, .html, .htaccess and .txt files should be uploaded in <strong>ASCII</strong> mode, while all graphics should be uploaded in <strong>BINARY</strong> mode. If you are unfamiliar with what this means please refer to your FTP client documentation. In most cases this is all handled transparantly by your ftp client, but if you encounter problems later you should be sure the files were uploaded correctly as described here.</p>
 
-	<p>phpBB3 comes supplied with British English as its standard language. However, a number of separate packs for different languages are available. If you are not a native English speaker you may wish to install one or more of these packages before continuing. The installation process below will allow you to select a default language from those available (you can, of course, change this default at a later stage). For more details on language packs, where to obtain them and how to install them please see the <a href="README.html#i18n">README</a>.</p>
+	<p>phpBB comes supplied with British English as its standard language. However, a number of separate packs for different languages are available. If you are not a native English speaker you may wish to install one or more of these packages before continuing. The installation process below will allow you to select a default language from those available (you can, of course, change this default at a later stage). For more details on language packs, where to obtain them and how to install them please see the <a href="README.html#i18n">README</a>.</p>
 
-	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB3 files in the directory <code>/phpBB3</code> off your web root you would enter <code>http://www.example.com/phpBB3/install/</code> or (alternatively) <code>http://www.example.com/phpBB3/install/index.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB3 Introduction</em></strong> screen appear.</p>
+	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB3</code> off your web root you would enter <code>http://www.example.com/phpBB3/install/</code> or (alternatively) <code>http://www.example.com/phpBB3/install/index.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
 
 	<h4>Introduction:</h4>
 
-	<p>The initial screen gives you a short introduction into phpBB. It allows you to read the license phpBB3 is released under (General Public License v2) and provides information about how you can receive support. To start the installation, use the <strong><em>INSTALL</em></strong> tab.</p>
+	<p>The initial screen gives you a short introduction into phpBB. It allows you to read the license phpBB is released under (General Public License v2) and provides information about how you can receive support. To start the installation, use the <strong><em>INSTALL</em></strong> tab.</p>
 
 	<h4>Requirements</h4>
 
-	<p>The first page you will see after starting the installation is the Requirements list. phpBB3 automatically checks whether everything that it needs to run properly is installed on your server. You need to have at least the minimum PHP version installed, and at least one database available to continue the installation. Also important, is that all shown folders are available and have the correct permissions. Please see the description of each section to find out whether they are optional or required for phpBB3 to run. If everything is in order, you can continue the installation with <em>Start Install</em>.</p>
+	<p>The first page you will see after starting the installation is the Requirements list. phpBB automatically checks whether everything that it needs to run properly is installed on your server. You need to have at least the minimum PHP version installed, and at least one database available to continue the installation. Also important, is that all shown folders are available and have the correct permissions. Please see the description of each section to find out whether they are optional or required for phpBB to run. If everything is in order, you can continue the installation with <em>Start Install</em>.</p>
 
 	<h4>Database settings</h4>
 
@@ -212,7 +212,7 @@
 
 	<p>You don't need to change the Prefix for tables in database setting, unless you plan on using multipe phpBB installations on one database. In this case, you can use a different prefix for each installation to make it work.</p>
 
-	<p>After you entered your details, you can continue with the <em>Proceed to next step</em> button. Now phpBB3 will check whether the data you entered will lead to a successful database connection and whether tables with the same prefix already exist.</p>
+	<p>After you entered your details, you can continue with the <em>Proceed to next step</em> button. Now phpBB will check whether the data you entered will lead to a successful database connection and whether tables with the same prefix already exist.</p>
 
 	<p>A <em>Could not connect to the database</em> error means that you didn't enter the database data correctly and it is not possible for phpBB to connect. Make sure that everything you entered is in order and try again. Again, if you are unsure about your database settings, please contact your host.</p>
 
@@ -222,7 +222,7 @@
 
 	<h4>Administrator details</h4>
 
-	<p>Now you have to create your administration user. This user will have full administration access and he/she will be the first user on your forum. All fields on this page are required. You can also set the default language of your forum on this page. In a vanilla phpBB3 installation, we only include British English. You can download further languages from <a href="https://www.phpbb.com/">www.phpbb.com</a>, and add them before installing or later.</p>
+	<p>Now you have to create your administration user. This user will have full administration access and he/she will be the first user on your forum. All fields on this page are required. You can also set the default language of your forum on this page. In a vanilla phpBB installation, we only include British English. You can download further languages from <a href="https://www.phpbb.com/">www.phpbb.com</a>, and add them before installing or later.</p>
 
 	<h4>Configuration file</h4>
 
@@ -236,7 +236,7 @@
 
 	<p>If the installation was successful, you can now use the <em>Login</em> button to visit the Administration Control Panel. Congratulations, you have installed phpBB successfully. But there is still work ahead!</p>
 
-	<p>If you are unable to get phpBB3 installed even after reading this guide, please look at the support section of the installer's introduction page to find out where you can ask for further assistance.</p>
+	<p>If you are unable to get phpBB installed even after reading this guide, please look at the support section of the installer's introduction page to find out where you can ask for further assistance.</p>
 
 	<p>At this point if you are converting from phpBB 2.0.x, you should refer to the <a href="#convert">conversion steps</a> for further information. If not, you should remove the install directory from your server as you will only be able to access the Administration Control Panel whilst it is present.</p>
 
@@ -256,15 +256,15 @@
 
 		<div class="content">
 
-<p>If you are currently using a stable release of phpBB3, updating to this version is straightforward. You would have downloaded one of four packages and your choice determines what you need to do. <strong>Note</strong>: Before updating, we heavily recommend you do a <em>full backup of your database and existing phpBB3 files</em>! If you are unsure how to achieve this please ask your hosting provider for advice.</p>
+<p>If you are currently using a stable release of phpBB, updating to this version is straightforward. You would have downloaded one of four packages and your choice determines what you need to do. <strong>Note</strong>: Before updating, we heavily recommend you do a <em>full backup of your database and existing phpBB files</em>! If you are unsure how to achieve this please ask your hosting provider for advice.</p>
 
-<p><strong>Please make sure you update your phpBB3 source files too, even if you run the <code>database_update.php</code> file.</strong></p>
+<p><strong>Please make sure you update your phpBB source files too, even if you run the <code>database_update.php</code> file.</strong></p>
 
 <a name="update_full"></a><h3>4.i. Full package</h3>
 
 	<p>The full package is normally meant for new installations only, but if you want to replace all source files, this package comes in handy.</p>
 
-	<p>First, you should make a copy of your existing <code>config.php</code> file; keep it in a safe place! Next, delete all the existing phpBB3 files, you may want to leave your <code>files/</code> and <code>images/</code> directorie in place. You can leave alternative styles in place too. With this complete, you can upload the new phpBB files (see <a href="#install">New installation</a> for details if necessary). Once complete, copy back your saved <code>config.php</code>, replacing the new one. Another method is to just <strong>replace</strong> the existing files with the files from the full package - though make sure you do <strong>not</strong> overwrite your config.php file.</p>
+	<p>First, you should make a copy of your existing <code>config.php</code> file; keep it in a safe place! Next, delete all the existing phpBB files, you may want to leave your <code>files/</code> and <code>images/</code> directories in place. You can leave alternative styles in place too. With this complete, you can upload the new phpBB files (see <a href="#install">New installation</a> for details if necessary). Once complete, copy back your saved <code>config.php</code>, replacing the new one. Another method is to just <strong>replace</strong> the existing files with the files from the full package - though make sure you do <strong>not</strong> overwrite your config.php file.</p>
 
 	<p>You should now run <code>install/database_update.php</code> which, depending on your previous version, will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
 
@@ -303,7 +303,7 @@
 	<ul>
 		<li>Go to the <a href="https://www.phpbb.com/downloads/">downloads page</a> and download the latest update package listed there, matching your current version.</li>
 		<li>Upload the uncompressed archive contents to your phpBB installation - only the install folder is required. Upload the whole install folder, retaining the file structure.</li>
-		<li>After the install folder is present, phpBB3 will go offline automatically.</li>
+		<li>After the install folder is present, phpBB will go offline automatically.</li>
 		<li>Point your browser to the install directory, for example <code>http://www.example.com/phpBB3/install/</code></li>
 		<li>Choose the "Update" Tab and follow the instructions</li>
 	</ul>
@@ -429,13 +429,13 @@
 
 		<div class="content">
 
-	<p>Once you have successfully installed phpBB3 you <strong>MUST</strong> ensure you remove the entire <code>install/</code> directory. Leaving the install directory in place is a <em>very serious potential security issue</em> which may lead to deletion or alteration of files, etc. Please note that until this directory is removed, phpBB will not operate and a warning message will be displayed. Beyond this <strong>essential</strong> deletion, you may also wish to delete the docs/ directory if you wish.</p>
+	<p>Once you have successfully installed phpBB you <strong>MUST</strong> ensure you remove the entire <code>install/</code> directory. Leaving the install directory in place is a <em>very serious potential security issue</em> which may lead to deletion or alteration of files, etc. Please note that until this directory is removed, phpBB will not operate and a warning message will be displayed. Beyond this <strong>essential</strong> deletion, you may also wish to delete the docs/ directory if you wish.</p>
 
 	<p>With these directories deleted, you should proceed to the administration panel. Depending on how the installation completed, you may have been directed there automatically. If not, login as the administrator you specified during install/conversion and click the <strong>Administration Control Panel</strong> link at the bottom of any page. Ensure that details specified on the <strong>General</strong> tab are correct!</p>
 
 <a name="avatars"></a><h3>6.i. Uploadable avatars</h3>
 
-	<p>phpBB3 supports several methods for allowing users to select their own <em>avatar</em> (an avatar is a small image generally unique to a user and displayed just below their username in posts).</p>
+	<p>phpBB supports several methods for allowing users to select their own <em>avatar</em> (an avatar is a small image generally unique to a user and displayed just below their username in posts).</p>
 
 	<p>Two of these options allow users to upload an avatar from their machine or a remote location (via a URL). If you wish to enable this function you should first ensure the correct path for uploadable avatars is set in <strong>Administration Control Panel -&gt; General -&gt; Board Configuration -&gt; Avatar settings</strong>. By default this is <code>images/avatars/uploads</code>, but you can set it to whatever you like, just ensure the configuration setting is updated. You must also ensure this directory can be written to by the webserver. Usually this means you have to alter its permissions to allow anyone to read and write to it. Exactly how you should do this depends on your FTP client or server operating system.</p>
 
