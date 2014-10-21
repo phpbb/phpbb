@@ -95,35 +95,25 @@ class ucp_notifications
 			case 'notification_list':
 			default:
 				// Mark all items read
-				if ($request->variable('mark', '') == 'all' && (confirm_box(true) || check_link_hash($request->variable('token', ''), 'mark_all_notifications_read')))
+				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_notifications_read'))
 				{
-					if (confirm_box(true))
+					$phpbb_notifications->mark_notifications_read(false, false, $user->data['user_id'], $form_time);
+
+					meta_refresh(3, $this->u_action);
+					$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
+
+					if ($request->is_ajax())
 					{
-						$phpbb_notifications->mark_notifications_read(false, false, $user->data['user_id'], $form_time);
-
-						meta_refresh(3, $this->u_action);
-						$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
-
-						if ($request->is_ajax())
-						{
-							$json_response = new \phpbb\json_response();
-							$json_response->send(array(
-								'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
-								'MESSAGE_TEXT'	=> $message,
-								'success'		=> true,
-							));
-						}
-						$message .= '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
-
-						trigger_error($message);
+						$json_response = new \phpbb\json_response();
+						$json_response->send(array(
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $message,
+							'success'		=> true,
+						));
 					}
-					else
-					{
-						confirm_box(false, 'NOTIFICATIONS_MARK_ALL_READ', build_hidden_fields(array(
-							'mark'		=> 'all',
-							'form_time'	=> $form_time,
-						)));
-					}
+					$message .= '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+
+					trigger_error($message);
 				}
 
 				// Mark specific notifications read
