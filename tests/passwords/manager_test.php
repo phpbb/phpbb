@@ -326,4 +326,22 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$this->assertFalse($this->manager->hash(str_repeat('a', 1024 * 1024 * 16)));
 		$this->assertLessThanOrEqual(5, time() - $start_time);
 	}
+
+	public function data_test_string_compare()
+	{
+		return array(
+			array('foo', 'bar', false),
+			array(1, '1', false),
+			array('one', 'one', true),
+			array('foobar', 'foobaf', false),
+		);
+	}
+
+	/**
+	 * @dataProvider data_test_string_compare
+	 */
+	public function test_string_compare($a, $b, $expected)
+	{
+		$this->assertSame($expected, $this->driver_helper->string_compare($a, $b));
+	}
 }
