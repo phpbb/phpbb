@@ -23,6 +23,9 @@ class md5_phpbb2 extends base
 	/** @var \phpbb\passwords\driver\salted_md5 */
 	protected $salted_md5;
 
+	/** @var \phpbb\passwords\driver\helper */
+	protected $helper;
+
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
@@ -34,13 +37,15 @@ class md5_phpbb2 extends base
 	*
 	* @param \phpbb\request\request $request phpBB request object
 	* @param \phpbb\passwords\driver\salted_md5 $salted_md5 Salted md5 driver
+	 * @param \phpbb\passwords\driver\helper $helper Driver helper
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct($request, \phpbb\passwords\driver\salted_md5 $salted_md5, $phpbb_root_path, $php_ext)
+	public function __construct($request, salted_md5 $salted_md5, helper $helper, $phpbb_root_path, $php_ext)
 	{
 		$this->request = $request;
 		$this->salted_md5 = $salted_md5;
+		$this->helper = $helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -105,7 +110,7 @@ class md5_phpbb2 extends base
 				include($this->phpbb_root_path . 'includes/utf/data/recode_basic.' . $this->php_ext);
 			}
 
-			if (md5($password_old_format) === $hash || md5(\utf8_to_cp1252($password_old_format)) === $hash
+			if ($this->helper->string_compare(md5($password_old_format), $hash) || $this->helper->string_compare(md5(\utf8_to_cp1252($password_old_format)), $hash)
 				|| $this->salted_md5->check(md5($password_old_format), $hash) === true
 				|| $this->salted_md5->check(md5(\utf8_to_cp1252($password_old_format)), $hash) === true)
 			{

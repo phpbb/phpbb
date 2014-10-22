@@ -54,7 +54,7 @@ class sha1_wcf1 extends base
 		else
 		{
 			// Works for standard WCF 1.x, i.e. WBB3 and similar
-			return $hash === sha1($user_row['user_passwd_salt'] . sha1($user_row['user_passwd_salt'] . sha1($password)));
+			return $this->helper->string_compare($hash, sha1($user_row['user_passwd_salt'] . sha1($user_row['user_passwd_salt'] . sha1($password))));
 		}
 	}
 }

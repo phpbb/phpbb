@@ -47,6 +47,6 @@ class sha1 extends base
 	*/
 	public function check($password, $hash, $user_row = array())
 	{
-		return (strlen($hash) == 40) ? $hash === sha1($password) : false;
+		return (strlen($hash) == 40) ? $this->helper->string_compare($hash, sha1($password)) : false;
 	}
 }
