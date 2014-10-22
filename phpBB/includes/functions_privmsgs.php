@@ -914,6 +914,24 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	}
 }
 
+function mark_folder_read($user_id, $folder_id)
+{
+	global $db;
+
+	$sql = 'SELECT msg_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE folder_id = ' . ((int) $folder_id) . '
+			AND user_id = ' . ((int) $user_id) . '
+			AND pm_unread = 1';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		update_unread_status(true, $row['msg_id'], $user_id, $folder_id);
+	}
+	$db->sql_freeresult($result);
+}
+
 /**
 * Handle all actions possible with marked messages
 */
