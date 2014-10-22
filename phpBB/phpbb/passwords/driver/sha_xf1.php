@@ -54,8 +54,8 @@ class sha_xf1 extends base
 		else
 		{
 			// Works for xenforo 1.0, 1.1
-			if ($hash === sha1(sha1($password) . $user_row['user_passwd_salt'])
-				|| $hash === hash('sha256', hash('sha256', $password) . $user_row['user_passwd_salt']))
+			if ($this->helper->string_compare($hash, sha1(sha1($password) . $user_row['user_passwd_salt']))
+				|| $this->helper->string_compare($hash, hash('sha256', hash('sha256', $password) . $user_row['user_passwd_salt'])))
 			{
 				return true;
 			}

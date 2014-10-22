@@ -41,7 +41,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 			'passwords.driver.md5_vb'		=> new \phpbb\passwords\driver\md5_vb($config, $this->driver_helper),
 			'passwords.driver.sha_xf1'	=> new \phpbb\passwords\driver\sha_xf1($config, $this->driver_helper),
 		);
-		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $phpbb_root_path, $php_ext);
+		$this->passwords_drivers['passwords.driver.md5_phpbb2']	= new \phpbb\passwords\driver\md5_phpbb2($request, $this->passwords_drivers['passwords.driver.salted_md5'], $this->driver_helper, $phpbb_root_path, $php_ext);
 		$this->passwords_drivers['passwords.driver.bcrypt_wcf2'] = new \phpbb\passwords\driver\bcrypt_wcf2($this->passwords_drivers['passwords.driver.bcrypt'], $this->driver_helper);
 
 		$this->helper = new \phpbb\passwords\helper;
@@ -325,5 +325,23 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$start_time = time();
 		$this->assertFalse($this->manager->hash(str_repeat('a', 1024 * 1024 * 16)));
 		$this->assertLessThanOrEqual(5, time() - $start_time);
+	}
+
+	public function data_test_string_compare()
+	{
+		return array(
+			array('foo', 'bar', false),
+			array(1, '1', false),
+			array('one', 'one', true),
+			array('foobar', 'foobaf', false),
+		);
+	}
+
+	/**
+	 * @dataProvider data_test_string_compare
+	 */
+	public function test_string_compare($a, $b, $expected)
+	{
+		$this->assertSame($expected, $this->driver_helper->string_compare($a, $b));
 	}
 }

@@ -107,7 +107,7 @@ class salted_md5 extends base
 			return md5($password) === $hash;
 		}
 
-		return $hash === $this->hash($password, $hash);
+		return $this->helper->string_compare($hash, $this->hash($password, $hash));
 	}
 
 	/**
