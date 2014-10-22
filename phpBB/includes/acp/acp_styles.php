@@ -69,16 +69,23 @@ class acp_styles
 		$action = $this->request->variable('action', '');
 		$post_actions = array('install', 'activate', 'deactivate', 'uninstall');
 
-		if ($action && in_array($action, $post_actions) && !check_link_hash($request->variable('hash', ''), $action))
-		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
 		foreach ($post_actions as $key)
 		{
 			if ($this->request->is_set_post($key))
 			{
 				$action = $key;
+			}
+		}
+
+		// The uninstall action uses confirm_box() to verify the validity of the request,
+		// so there is no need to check for a valid token here.
+		if (in_array($action, $post_actions) && $action != 'uninstall')
+		{
+			$is_valid_request = check_link_hash($request->variable('hash', ''), $action) || check_form_key('styles_management');
+
+			if (!$is_valid_request)
+			{
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -121,6 +128,8 @@ class acp_styles
 	*/
 	protected function frontend()
 	{
+		add_form_key('styles_management');
+
 		// Check mode
 		switch ($this->mode)
 		{
