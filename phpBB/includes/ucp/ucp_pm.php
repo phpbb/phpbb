@@ -268,7 +268,6 @@ class ucp_pm
 					trigger_error($message);
 				}
 
-
 				$message_row = array();
 				if ($action == 'view_message' && $msg_id)
 				{
