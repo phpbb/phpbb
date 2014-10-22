@@ -2638,7 +2638,7 @@ function check_form_key($form_name, $timespan = false)
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db, $request;
-	global $phpEx, $phpbb_root_path, $request;
+	global $phpbb_path_helper, $phpbb_root_path;
 
 	if (isset($_POST['cancel']))
 	{
@@ -2700,8 +2700,8 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
-	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
-	$u_action = reapply_sid($use_page);
+	$use_page = ($u_action) ? $u_action : str_replace('&', '&amp;', $user->page['page']);
+	$u_action = reapply_sid($phpbb_path_helper->get_valid_user_page($use_page));
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
