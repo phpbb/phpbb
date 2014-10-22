@@ -445,4 +445,35 @@ class path_helper
 
 		return $url_parts['base'] . (($params) ? '?' . $this->glue_url_params($params) : '');
 	}
+
+	/**
+	 * Get a valid user page
+	 *
+	 * @param string $user_page The current user page
+	 * @param bool $mod_rewrite Whether mod_rewrite is enabled, default: false
+	 *
+	 * @return string A valid user page based on user page and mod_rewrite
+	 */
+	public function get_valid_user_page($user_page, $mod_rewrite = false)
+	{
+		// We need to be cautious here.
+		// On some situations, the redirect path is an absolute URL, sometimes a relative path
+		// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+		// else we use the URL directly.
+		$url_parts = parse_url($user_page);
+
+		// URL
+		if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
+		{
+			// Remove 'app.php/' from the page, when rewrite is enabled
+			if ($mod_rewrite && strpos($user_page, 'app.' . $this->php_ext . '/') === 0)
+			{
+				$user_page = substr($user_page, strlen('app.' . $this->php_ext . '/'));
+			}
+
+			$user_page = $this->get_phpbb_root_path() . $user_page;
+		}
+
+		return $user_page;
+	}
 }
