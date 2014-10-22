@@ -422,7 +422,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($this->phpbb_root_path . $expected, $this->path_helper->get_web_root_path_from_ajax_referer($referer_url, $board_url));
 	}
 
-	public function data_get_valid_user_page()
+	public function data_get_valid_page()
 	{
 		return array(
 			// array( current page , mod_rewrite setting , expected output )
@@ -436,10 +436,10 @@ class phpbb_path_helper_test extends phpbb_test_case
 	}
 
 	/**
-	 * @dataProvider data_get_valid_user_page
+	 * @dataProvider data_get_valid_page
 	 */
-	public function test_get_valid_user_page($page, $mod_rewrite, $expected)
+	public function test_get_valid_page($page, $mod_rewrite, $expected)
 	{
-		$this->assertEquals($this->phpbb_root_path . $expected, $this->path_helper->get_valid_user_page($page, $mod_rewrite));
+		$this->assertEquals($this->phpbb_root_path . $expected, $this->path_helper->get_valid_page($page, $mod_rewrite));
 	}
 }
