@@ -655,9 +655,14 @@ class ucp_profile
 					{
 						if (!empty($keys))
 						{
+							foreach ($keys as $key => $id)
+							{
+								$keys[$key] = $db->sql_like_expression($id . $db->get_any_char());
+							}
+							$sql_where = '(key_id ' . implode(' OR key_id ', $keys) . ')';
 							$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 								WHERE user_id = ' . (int) $user->data['user_id'] . '
-								AND ' . $db->sql_in_set('key_id', $keys) ;
+								AND ' . $sql_where ;
 
 							$db->sql_query($sql);
 
@@ -681,7 +686,7 @@ class ucp_profile
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('sessions', array(
-						'KEY' => $row['key_id'],
+						'KEY' => substr($row['key_id'], 0, 8),
 						'IP' => $row['last_ip'],
 						'LOGIN_TIME' => $user->format_date($row['last_login']),
 					));
