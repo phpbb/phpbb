@@ -54,7 +54,7 @@ class md5_mybb extends base
 		else
 		{
 			// Works for myBB 1.1.x, 1.2.x, 1.4.x, 1.6.x
-			return $hash === md5(md5($user_row['user_passwd_salt']) . md5($password));
+			return $this->helper->string_compare($hash, md5(md5($user_row['user_passwd_salt']) . md5($password)));
 		}
 	}
 }

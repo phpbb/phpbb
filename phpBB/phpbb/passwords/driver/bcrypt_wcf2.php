@@ -78,7 +78,7 @@ class bcrypt_wcf2 extends base
 				return false;
 			}
 			// Works for standard WCF 2.x, i.e. WBB4 and similar
-			return $hash === $this->bcrypt->hash($this->bcrypt->hash($password, $salt), $salt);
+			return $this->helper->string_compare($hash, $this->bcrypt->hash($this->bcrypt->hash($password, $salt), $salt));
 		}
 	}
 }
