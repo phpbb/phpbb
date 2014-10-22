@@ -918,10 +918,11 @@ function mark_folder_read($user_id, $folder_id)
 {
 	global $db;
 
-	$sql = 'SELECT msg_id FROM ' . PRIVMSGS_TO_TABLE . "
-		WHERE folder_id = $folder_id
-			AND user_id = $user_id
-			AND pm_unread = 1";
+	$sql = 'SELECT msg_id
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE folder_id = ' . ((int) $folder_id) . '
+			AND user_id = ' . ((int) $user_id) . '
+			AND pm_unread = 1';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

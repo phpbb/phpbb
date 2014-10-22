@@ -248,7 +248,6 @@ class ucp_pm
 
 				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_pms_read'))
 				{
-					// mark unread
 					mark_folder_read($user->data['user_id'], $folder_id);
 
 					meta_refresh(3, $this->u_action);
