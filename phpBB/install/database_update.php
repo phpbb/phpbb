@@ -174,7 +174,7 @@ define('IN_DB_UPDATE', true);
 // End startup code
 
 $migrator = $phpbb_container->get('migrator');
-$migrator->set_output_handler(new \phpbb\db\html_migrator_output_handler($user));
+$migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log'));
 
 $migrator->create_migrations_table();
 
