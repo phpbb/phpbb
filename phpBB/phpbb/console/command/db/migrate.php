@@ -53,7 +53,7 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$this->migrator->set_output_handler(new console_migrator_output_handler($this->user, $output));
+		$this->migrator->set_output_handler(new \phpbb\db\console_migrator_output_handler($this->user, $output));
 
 		$this->migrator->create_migrations_table();
 
