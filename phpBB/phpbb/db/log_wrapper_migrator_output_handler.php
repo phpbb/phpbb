@@ -25,11 +25,11 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 	protected $user;
 
 	/**
-	 * HTML migrator output handler
+	 * A migrator output handler
 	 *
-	 * @var html_migrator_output_handler
+	 * @var migrator_output_handler_interface
 	 */
-	protected $html_migrator;
+	protected $migrator;
 
 	/**
 	 * Log file handle
@@ -41,13 +41,13 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 	 * Constructor
 	 *
 	 * @param user $user	User object
-	 * @param html_migrator_output_handler $html_migrator HTML migrator output handler
+	 * @param migrator_output_handler_interface $migrator Migrator output handler
 	 * @param string $log_file	File to log to
 	 */
-	public function __construct(user $user, html_migrator_output_handler $html_migrator, $log_file)
+	public function __construct(user $user, migrator_output_handler_interface $migrator, $log_file)
 	{
 		$this->user = $user;
-		$this->html_migrator = $html_migrator;
+		$this->migrator = $migrator;
 		$this->file_open($log_file);
 	}
 
@@ -73,7 +73,7 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 	 */
 	public function write($message, $verbosity)
 	{
-		$this->html_migrator->write($message, $verbosity);
+		$this->migrator->write($message, $verbosity);
 
 		if ($this->file_handle !== false)
 		{

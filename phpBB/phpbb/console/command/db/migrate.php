@@ -32,13 +32,17 @@ class migrate extends \phpbb\console\command\command
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log)
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
+	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, $phpbb_root_path)
 	{
 		$this->migrator = $migrator;
 		$this->extension_manager = $extension_manager;
 		$this->config = $config;
 		$this->cache = $cache;
 		$this->log = $log;
+		$this->phpbb_root_path = $phpbb_root_path;
 		parent::__construct($user);
 		$this->user->add_lang(array('common', 'install', 'migrator'));
 	}
@@ -53,7 +57,7 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$this->migrator->set_output_handler(new \phpbb\db\console_migrator_output_handler($this->user, $output));
+		$this->migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($this->user, new \phpbb\db\console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log'));
 
 		$this->migrator->create_migrations_table();
 
