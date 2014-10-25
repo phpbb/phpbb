@@ -161,10 +161,10 @@ function user_update_name($old_name, $new_name)
 *
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
- * @param array $notifications_data The notifications settings for the new user
+* @param array $notifications_data The notifications settings for the new user
 * @return the new user's ID.
 */
-function user_add($user_row, $cp_data = false, $notifications_data = array())
+function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
 	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
 	global $phpbb_dispatcher, $phpbb_container;
@@ -346,6 +346,21 @@ function user_add($user_row, $cp_data = false, $notifications_data = array())
 		$db->sql_freeresult($result);
 
 		set_config('newest_user_colour', $row['group_colour'], true);
+	}
+
+	// Use default notifications settings if notifications_data is not set
+	if ($notifications_data === null)
+	{
+		$notifications_data = array(
+			array(
+				'item_type'	=> 'notification.type.post',
+				'method'	=> 'notification.method.email',
+			),
+			array(
+				'item_type'	=> 'notification.type.topic',
+				'method'	=> 'notification.method.email',
+			),
+		);
 	}
 
 	// Subscribe user to notifications if necessary
