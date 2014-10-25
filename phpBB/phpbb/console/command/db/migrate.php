@@ -57,7 +57,7 @@ class migrate extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$this->migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($this->user, new \phpbb\db\console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log'));
+		$this->migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($this->user, new console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log'));
 
 		$this->migrator->create_migrations_table();
 
