@@ -73,6 +73,6 @@ class queue extends \phpbb\cron\task\base
 	*/
 	public function should_run()
 	{
-		return $this->config['last_queue_run'] < time() - $this->config['queue_interval_config'];
+		return $this->config['last_queue_run'] < time() - $this->config['queue_interval'];
 	}
 }
