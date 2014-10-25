@@ -314,13 +314,24 @@ class ucp_register
 					'user_inactive_time'	=> $user_inactive_time,
 				);
 
+				$user_notifications_data = array(
+					array(
+						'item_type'	=> 'notification.type.post',
+						'method'	=> 'notification.method.email',
+					),
+					array(
+						'item_type'	=> 'notification.type.topic',
+						'method'	=> 'notification.method.email',
+					),
+				);
+
 				if ($config['new_member_post_limit'])
 				{
 					$user_row['user_new'] = 1;
 				}
 
 				// Register user...
-				$user_id = user_add($user_row, $cp_data);
+				$user_id = user_add($user_row, $cp_data, $user_notifications_data);
 
 				// This should not happen, because the required variables are listed above...
 				if ($user_id === false)
