@@ -84,6 +84,7 @@ services:
             - @config
             - @cache
             - @log
+            - %core.root_path%
         tags:
             - { name: console.command }
 
