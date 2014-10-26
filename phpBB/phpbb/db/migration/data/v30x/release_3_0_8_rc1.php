@@ -30,7 +30,6 @@ class release_3_0_8_rc1 extends \phpbb\db\migration\migration
 		return array(
 			array('custom', array(array(&$this, 'update_file_extension_group_names'))),
 			array('custom', array(array(&$this, 'update_module_auth'))),
-			array('custom', array(array(&$this, 'update_bots'))),
 			array('custom', array(array(&$this, 'delete_orphan_shadow_topics'))),
 			array('module.add', array(
 				'acp',
@@ -112,70 +111,6 @@ class release_3_0_8_rc1 extends \phpbb\db\migration\migration
 				AND module_basename = \'profile\'
 				AND module_mode = \'avatar\'';
 		$this->sql_query($sql);
-	}
-
-	public function update_bots()
-	{
-		$bot_name = 'Bing [Bot]';
-		$bot_name_clean = utf8_clean_string($bot_name);
-
-		$sql = 'SELECT user_id
-			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $this->db->sql_escape($bot_name_clean) . "'";
-		$result = $this->db->sql_query($sql);
-		$bing_already_added = (bool) $this->db->sql_fetchfield('user_id');
-		$this->db->sql_freeresult($result);
-
-		if (!$bing_already_added)
-		{
-			$bot_agent = 'bingbot/';
-			$bot_ip = '';
-			$sql = 'SELECT group_id, group_colour
-				FROM ' . GROUPS_TABLE . "
-				WHERE group_name = 'BOTS'";
-			$result = $this->db->sql_query($sql);
-			$group_row = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-
-			if (!$group_row)
-			{
-				// default fallback, should never get here
-				$group_row['group_id'] = 6;
-				$group_row['group_colour'] = '9E8DA7';
-			}
-
-			if (!function_exists('user_add'))
-			{
-				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
-			}
-
-			$user_row = array(
-				'user_type'				=> USER_IGNORE,
-				'group_id'				=> $group_row['group_id'],
-				'username'				=> $bot_name,
-				'user_regdate'			=> time(),
-				'user_password'			=> '',
-				'user_colour'			=> $group_row['group_colour'],
-				'user_email'			=> '',
-				'user_lang'				=> $this->config['default_lang'],
-				'user_style'			=> $this->config['default_style'],
-				'user_timezone'			=> 0,
-				'user_dateformat'		=> $this->config['default_dateformat'],
-				'user_allow_massemail'	=> 0,
-			);
-
-			$user_id = user_add($user_row);
-
-			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
-				'bot_active'	=> 1,
-				'bot_name'		=> (string) $bot_name,
-				'user_id'		=> (int) $user_id,
-				'bot_agent'		=> (string) $bot_agent,
-				'bot_ip'		=> (string) $bot_ip,
-			));
-
-			$this->sql_query($sql);
-		}
 	}
 
 	public function delete_orphan_shadow_topics()
