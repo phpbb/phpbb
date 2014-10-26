@@ -31,7 +31,6 @@ class release_3_0_12_rc1 extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('custom', array(array(&$this, 'update_module_auth'))),
-			array('custom', array(array(&$this, 'update_bots'))),
 			array('custom', array(array(&$this, 'disable_bots_from_receiving_pms'))),
 
 			array('config.update', array('version', '3.0.12-RC1')),
@@ -69,61 +68,5 @@ class release_3_0_12_rc1 extends \phpbb\db\migration\migration
 				AND module_basename = \'profile\'
 				AND module_mode = \'signature\'';
 		$this->sql_query($sql);
-	}
-
-	public function update_bots()
-	{
-		// Update bots
-		if (!function_exists('user_delete'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
-		}
-
-		$bots_updates = array(
-			// Bot Deletions
-			'NG-Search [Bot]'		=> false,
-			'Nutch/CVS [Bot]'		=> false,
-			'OmniExplorer [Bot]'	=> false,
-			'Seekport [Bot]'		=> false,
-			'Synoo [Bot]'			=> false,
-			'WiseNut [Bot]'			=> false,
-
-			// Bot Updates
-			// Bot name to bot user agent map
-			'Baidu [Spider]'	=> 'Baiduspider',
-			'Exabot [Bot]'		=> 'Exabot',
-			'Voyager [Bot]'		=> 'voyager/',
-			'W3C [Validator]'	=> 'W3C_Validator',
-		);
-
-		foreach ($bots_updates as $bot_name => $bot_agent)
-		{
-			$sql = 'SELECT user_id
-				FROM ' . USERS_TABLE . '
-				WHERE user_type = ' . USER_IGNORE . "
-					AND username_clean = '" . $this->db->sql_escape(utf8_clean_string($bot_name)) . "'";
-			$result = $this->db->sql_query($sql);
-			$bot_user_id = (int) $this->db->sql_fetchfield('user_id');
-			$this->db->sql_freeresult($result);
-
-			if ($bot_user_id)
-			{
-				if ($bot_agent === false)
-				{
-					$sql = 'DELETE FROM ' . BOTS_TABLE . "
-						WHERE user_id = $bot_user_id";
-					$this->sql_query($sql);
-
-					user_delete('retain', $bot_user_id);
-				}
-				else
-				{
-					$sql = 'UPDATE ' . BOTS_TABLE . "
-						SET bot_agent = '" .  $this->db->sql_escape($bot_agent) . "'
-						WHERE user_id = $bot_user_id";
-					$this->sql_query($sql);
-				}
-			}
-		}
 	}
 }
