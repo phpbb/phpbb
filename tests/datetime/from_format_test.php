@@ -60,44 +60,44 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		// If the current time is too close to the testing time,
 		// the relative time will use "x minutes ago" instead of "today ..."
 		// So we use 18:01 in the morning and 06:01 in the afternoon.
-		$testing_time = date('H') <= 12 ? '18:01' : '06:01';
+		$testing_time = gmdate('H') <= 12 ? '18:01' : '06:01';
 
 		return array(
 			array(
-				date('Y-m-d', time() + 2 * 86400) . ' ' . $testing_time, false,
-				date('Y-m-d', time() + 2 * 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', time() + 2 * 86400) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', time() + 2 * 86400) . ' ' . $testing_time,
 			),
 
 			array(
-				date('Y-m-d', time() + 86400) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', time() + 86400) . ' ' . $testing_time, false,
 				'Tomorrow ' . $testing_time,
 			),
 			array(
-				date('Y-m-d', time() + 86400) . ' ' . $testing_time, true,
-				date('Y-m-d', time() + 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', time() + 86400) . ' ' . $testing_time, true,
+				gmdate('Y-m-d', time() + 86400) . ' ' . $testing_time,
 			),
 
 			array(
-				date('Y-m-d') . ' ' . $testing_time, false,
+				gmdate('Y-m-d') . ' ' . $testing_time, false,
 				'Today ' . $testing_time,
 			),
 			array(
-				date('Y-m-d') . ' ' . $testing_time, true,
-				date('Y-m-d') . ' ' . $testing_time,
+				gmdate('Y-m-d') . ' ' . $testing_time, true,
+				gmdate('Y-m-d') . ' ' . $testing_time,
 			),
 
 			array(
-				date('Y-m-d', time() - 86400) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', time() - 86400) . ' ' . $testing_time, false,
 				'Yesterday ' . $testing_time,
 			),
 			array(
-				date('Y-m-d', time() - 86400) . ' ' . $testing_time, true,
-				date('Y-m-d', time() - 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', time() - 86400) . ' ' . $testing_time, true,
+				gmdate('Y-m-d', time() - 86400) . ' ' . $testing_time,
 			),
 
 			array(
-				date('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time, false,
-				date('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time,
 			),
 		);
 	}
