@@ -61,8 +61,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 	{
 		$this->login('user-reg-test');
 		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options&sid=' . $this->sid);
-		$form_values = $crawler->selectButton('Submit')->form()->getValues();
-		$this->assertEquals(1, $form_values['notification.type.post_notification.method.email']);
-		$this->assertEquals(1, $form_values['notification.type.topic_notification.method.email']);
+		$this->assert_checkbox_is_checked($crawler, 'notification.type.post_notification.method.email');
+		$this->assert_checkbox_is_checked($crawler, 'notification.type.topic_notification.method.email');
 	}
 }
