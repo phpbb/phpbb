@@ -19,6 +19,7 @@ class gold extends \phpbb\db\migration\migration
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\rc6',
+			'\phpbb\db\migration\data\v310\bot_update',
 		);
 	}
 
