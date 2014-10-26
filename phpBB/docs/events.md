@@ -418,6 +418,30 @@ memberlist_body_username_prepend
 * Purpose: Add information before every username in the memberlist. Works in
 all display modes (leader, group and normal memberlist).
 
+memberlist_search_fields_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_search.html
+    + styles/subsilver2/template/memberlist_search.html
+* Since: 3.1.2-RC1
+* Purpose: Add information after the search fields column.
+
+memberlist_search_fields_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_search.html
+    + styles/subsilver2/template/memberlist_search.html
+* Since: 3.1.2-RC1
+* Purpose: Add information before the search fields column.
+
+memberlist_search_sorting_options_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_search.html
+    + styles/subsilver2/template/memberlist_search.html
+* Since: 3.1.2-RC1
+* Purpose: Add information before the search sorting options field.
+
 memberlist_view_contact_after
 ===
 * Locations:
