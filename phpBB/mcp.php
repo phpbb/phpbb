@@ -142,7 +142,7 @@ if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 * @event core.mcp_global_f_read_auth_after
 * @var	string	topic_id				The topic the user tried to access
 * @var	array	forum_id				The forum the user tried to access
-* @since 3.1.0-RC5
+* @since 3.1.1-RC1
 */
 $vars = array(
 	'topic_id',
