@@ -136,6 +136,19 @@ if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
 	trigger_error('NOT_AUTHORISED');
 }
+/**
+* Allow applying additional permissions to MCP access besides f_read
+*
+* @event core.mcp_global_f_read_auth_after
+* @var	string	topic_id				The topic the user tried to access
+* @var	array	forum_id				The forum the user tried to access
+* @since 3.1.0-RC5
+*/
+$vars = array(
+	'topic_id',
+	'forum_id',
+);
+extract($phpbb_dispatcher->trigger_event('core.mcp_global_f_read_auth_after', compact($vars)));
 
 if ($forum_id)
 {
