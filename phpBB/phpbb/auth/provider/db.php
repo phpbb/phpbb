@@ -232,7 +232,7 @@ class db extends \phpbb\auth\provider\base
 		// Give status about wrong password...
 		return array(
 			'status'		=> ($show_captcha) ? LOGIN_ERROR_ATTEMPTS : LOGIN_ERROR_PASSWORD,
-			'error_msg'		=> ($show_captcha) ? 'LOGIN_ERROR_ATTEMPTS' : 'LOGIN_ERROR_PASSWORD',
+			'error_msg'		=> 'LOGIN_ERROR_PASSWORD',
 			'user_row'		=> $row,
 		);
 	}
