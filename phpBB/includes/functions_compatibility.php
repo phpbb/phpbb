@@ -101,18 +101,21 @@ function phpbb_clean_path($path)
 	}
 	else if (!$phpbb_path_helper)
 	{
+		global $phpbb_root_path, $phpEx;
+
 		// The container is not yet loaded, use a new instance
 		if (!class_exists('\phpbb\path_helper'))
 		{
-			global $phpbb_root_path, $phpEx;
 			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
 		}
 
+		$request = new phpbb\request\request();
 		$phpbb_path_helper = new phpbb\path_helper(
 			new phpbb\symfony_request(
-				new phpbb\request\request()
+				$request
 			),
 			new phpbb\filesystem(),
+			$request,
 			$phpbb_root_path,
 			$phpEx
 		);
