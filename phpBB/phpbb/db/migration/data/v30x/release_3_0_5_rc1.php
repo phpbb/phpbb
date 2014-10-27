@@ -55,6 +55,9 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration
 
 	public function hash_old_passwords()
 	{
+		global $phpbb_container;
+
+		$passwords_manager = $phpbb_container->get('passwords.manager');
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
 				WHERE user_pass_convert = 1';
@@ -65,7 +68,7 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration
 			if (strlen($row['user_password']) == 32)
 			{
 				$sql_ary = array(
-					'user_password'	=> phpbb_hash($row['user_password']),
+					'user_password'	=> '$CP$' . $passwords_manager->hash($row['user_password'], 'passwords.driver.salted_md5'),
 				);
 
 				$this->sql_query('UPDATE ' . $this->table_prefix . 'users SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $row['user_id']);
