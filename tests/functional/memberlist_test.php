@@ -106,4 +106,32 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 		$this->assertContains('admin', $crawler->eq(0)->text());
 		$this->assertNotContains('admin', $crawler->eq(1)->text());
 	}
+
+	public function test_group_rank()
+	{
+		copy(__DIR__ . '/fixtures/files/valid.jpg', __DIR__ . '/../../phpBB/images/ranks/valid.jpg');
+
+		$this->login();
+		$this->admin_login();
+		$this->add_lang(array('acp/groups', 'acp/posting'));
+
+		// Set a group rank to the registered users
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_groups&mode=manage&action=edit&g=2");
+		$form = $crawler->selectButton('Submit')->form();
+		$form['group_rank']->select('1');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('GROUP_UPDATED', $crawler->filter('.successbox')->text());
+
+		// Set a rank image for site_admin
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_ranks&mode=ranks&action=edit&id=1");
+		$form = $crawler->selectButton('Submit')->form();
+		$form['rank_image']->select('valid.jpg');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('RANK_UPDATED', $crawler->filter('.successbox')->text());
+
+		$crawler = self::request('GET', 'memberlist.php?mode=group&g=2');
+		$this->assertContains('memberlist-test-user', $crawler->text());
+
+		unlink(__DIR__ . '/../../phpBB/images/ranks/valid.jpg');
+	}
 }
