@@ -68,7 +68,7 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration
 			if (strlen($row['user_password']) == 32)
 			{
 				$sql_ary = array(
-					'user_password'	=> $passwords_manager->hash($row['user_password'], 'passwords.driver.salted_md5'),
+					'user_password'	=> '$CP$' . $passwords_manager->hash($row['user_password'], 'passwords.driver.salted_md5'),
 				);
 
 				$this->sql_query('UPDATE ' . $this->table_prefix . 'users SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $row['user_id']);
