@@ -25,7 +25,8 @@
             <file>./tests/lint_test.php</file>
         </testsuite>
         <testsuite name="phpBB UI Tests">
-            <directory suffix="_test.php">./tests/ui</directory>
+            <directory suffix="_test.php" phpVersion="5.3.19"
+                phpVersionOperator=">=">./tests/ui</directory>
         </testsuite>
     </testsuites>
 
