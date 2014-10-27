@@ -1089,9 +1089,9 @@ switch ($mode)
 			{
 				$user_rank_data = phpbb_get_user_rank($group_row, false);
 
-				if ($rank_img)
+				if ($user_rank_data['img'])
 				{
-					$rank_img .= '<br />';
+					$user_rank_data['img'] .= '<br />';
 				}
 			}
 
