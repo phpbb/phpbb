@@ -131,23 +131,35 @@ class remote extends \phpbb\avatar\driver\driver
 			// Timeout after 1 second
 			stream_set_timeout($file_stream, 1);
 			$meta = stream_get_meta_data($file_stream);
+
+			$found_content_type = false;
 			foreach ($meta['wrapper_data'] as $header)
 			{
-				$header = preg_split('/ /', $header, 2);
-				if (strtr(strtolower(trim($header[0], ':')), '_', '-') === 'content-type')
+				if (is_string($header))
 				{
-					if (strpos($header[1], 'image/') !== 0)
+					$header = preg_split('/ /', $header, 2);
+					if (strtr(strtolower(trim($header[0], ':')), '_', '-') === 'content-type')
 					{
-						$error[] = 'AVATAR_URL_INVALID';
-						fclose($file_stream);
-						return false;
-					}
-					else
-					{
-						fclose($file_stream);
-						break;
+						if (strpos($header[1], 'image/') !== 0)
+						{
+							$error[] = 'AVATAR_URL_INVALID';
+							fclose($file_stream);
+							return false;
+						}
+						else
+						{
+							fclose($file_stream);
+							$found_content_type = true;
+							break;
+						}
 					}
 				}
+			}
+
+			if (!$found_content_type)
+			{
+				$error[] = 'AVATAR_URL_INVALID';
+				return false;
 			}
 		}
 		else
