@@ -154,7 +154,7 @@ class local extends \phpbb\avatar\driver\driver
 	*/
 	protected function get_avatar_list($user)
 	{
-		$avatar_list = ($this->cache == null) ? false : $this->cache->get('avatar_local_list');
+		$avatar_list = ($this->cache == null) ? false : $this->cache->get('_avatar_local_list');
 
 		if ($avatar_list === false)
 		{
@@ -192,7 +192,7 @@ class local extends \phpbb\avatar\driver\driver
 
 			if ($this->cache != null)
 			{
-				$this->cache->put('avatar_local_list', $avatar_list, 86400);
+				$this->cache->put('_avatar_local_list', $avatar_list, 86400);
 			}
 		}
 
