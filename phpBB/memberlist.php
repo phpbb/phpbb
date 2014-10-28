@@ -1427,7 +1427,7 @@ switch ($mode)
 					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
 				}
 
-				$memberrow = array_merge(phpbb_show_profile($row), array(
+				$memberrow = array_merge(phpbb_show_profile($row, false, false, false), array(
 					'ROW_NUMBER'		=> $i + ($start + 1),
 
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,

@@ -1491,7 +1491,7 @@ function phpbb_get_user_rank($user_data, $user_posts)
 /**
 * Prepare profile data
 */
-function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
+function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false, $check_can_receive_pm = true)
 {
 	global $config, $auth, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
@@ -1559,7 +1559,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	}
 
 	// Can this user receive a Private Message?
-	$can_receive_pm = (
+	$can_receive_pm = $check_can_receive_pm && (
 		// They must be a "normal" user
 		$data['user_type'] != USER_IGNORE &&
 
