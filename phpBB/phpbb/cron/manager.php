@@ -73,6 +73,7 @@ class manager
 	*/
 	public function find_one_ready_task()
 	{
+		shuffle($this->tasks);
 		foreach ($this->tasks as $task)
 		{
 			if ($task->is_ready())
