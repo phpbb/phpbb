@@ -5254,7 +5254,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 
 	// Call cron-type script
 	$call_cron = false;
-	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'] && !$cache->get('cron.lock_check'))
+	if (!defined('IN_CRON') && !$config['use_system_cron'] && $run_cron && !$config['board_disable'] && !$user->data['is_bot'] && !$cache->get('_cron.lock_check'))
 	{
 		$call_cron = true;
 		$time_now = (!empty($user->time_now) && is_int($user->time_now)) ? $user->time_now : time();
@@ -5286,7 +5286,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		}
 		else
 		{
-			$cache->put('cron.lock_check', true, 300);
+			$cache->put('_cron.lock_check', true, 60);
 		}
 	}
 
