@@ -577,6 +577,43 @@ class session
 			}
 		}
 
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$provider = $provider_collection->get_provider();
+		$this->data = $provider->autologin();
+
+		if ($user_id !== false && sizeof($this->data) && $this->data['user_id'] != $user_id)
+		{
+			$this->data = array();
+		}
+
+		if (sizeof($this->data))
+		{
+			$this->cookie_data['k'] = '';
+			$this->cookie_data['u'] = $this->data['user_id'];
+		}
+
+		// If we're presented with an autologin key we'll join against it.
+		// Else if we've been passed a user_id we'll grab data based on that
+		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
+		{
+			$sql = 'SELECT u.*
+				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+					AND k.user_id = u.user_id
+					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
+			$result = $db->sql_query($sql);
+			$user_data = $db->sql_fetchrow($result);
+
+			if ($user_id === false || (isset($user_data['user_id']) && $user_id == $user_data['user_id']))
+			{
+				$this->data = $user_data;
+				$bot = false;
+			}
+
+			$db->sql_freeresult($result);
+		}
+
 		if ($user_id !== false && !sizeof($this->data))
 		{
 			$this->cookie_data['k'] = '';
@@ -590,34 +627,6 @@ class session
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 			$bot = false;
-		}
-		else if (!$bot)
-		{
-			$provider_collection = $phpbb_container->get('auth.provider_collection');
-			$provider = $provider_collection->get_provider();
-			$this->data = $provider->autologin();
-
-			if (sizeof($this->data))
-			{
-				$this->cookie_data['k'] = '';
-				$this->cookie_data['u'] = $this->data['user_id'];
-			}
-
-			// If we're presented with an autologin key we'll join against it.
-			// Else if we've been passed a user_id we'll grab data based on that
-			if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
-			{
-				$sql = 'SELECT u.*
-					FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-					WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
-						AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
-						AND k.user_id = u.user_id
-						AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
-				$result = $db->sql_query($sql);
-				$this->data = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-				$bot = false;
-			}
 		}
 
 		// Bot user, if they have a SID in the Request URI we need to get rid of it
