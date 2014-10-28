@@ -130,8 +130,24 @@ class remote extends \phpbb\avatar\driver\driver
 		{
 			// Timeout after 1 second
 			stream_set_timeout($file_stream, 1);
+			// read some data to ensure headers are present
+			fread($file_stream, 1024);
 			$meta = stream_get_meta_data($file_stream);
-			foreach ($meta['wrapper_data'] as $header)
+
+			if (isset($meta['wrapper_data']['headers']) && is_array($meta['wrapper_data']['headers']))
+			{
+				$headers = $meta['wrapper_data']['headers'];
+			}
+			else if (isset($meta['wrapper_data']) && is_array($meta['wrapper_data']))
+			{
+				$headers = $meta['wrapper_data'];
+			}
+			else
+			{
+				$headers = array();
+			}
+
+			foreach ($headers as $header)
 			{
 				$header = preg_split('/ /', $header, 2);
 				if (strtr(strtolower(trim($header[0], ':')), '_', '-') === 'content-type')
