@@ -605,7 +605,7 @@ class session
 			$result = $db->sql_query($sql);
 			$user_data = $db->sql_fetchrow($result);
 
-			if ($user_id === false || $user_id == $user_data['user_id'])
+			if ($user_id === false || (isset($user_data['user_id']) && $user_id == $user_data['user_id']))
 			{
 				$this->data = $user_data;
 				$bot = false;
@@ -935,7 +935,7 @@ class session
 			}
 
 			// Reset the data array
-			$this->data = false;
+			$this->data = array();
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
