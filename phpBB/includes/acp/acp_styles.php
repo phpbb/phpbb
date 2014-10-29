@@ -29,6 +29,7 @@ class acp_styles
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 	protected $default_style = 0;
+	protected $reserved_style_names = array('adm', 'admin', 'all');
 
 	protected $db;
 	protected $user;
@@ -164,6 +165,12 @@ class acp_styles
 		$last_installed = false;
 		foreach ($dirs as $dir)
 		{
+			if (in_array($dir, $this->reserved_style_names))
+			{
+				$messages[] = $this->user->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
+				continue;
+			}
+
 			$found = false;
 			foreach ($styles as &$style)
 			{
