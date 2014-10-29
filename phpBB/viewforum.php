@@ -694,10 +694,10 @@ if ($s_display_active)
 
 // We need to remove the global announcements from the forums total topic count,
 // otherwise the number is different from the one on the forum list
-$total_topic_count = $topics_count - sizeof($global_announce_forums);
+$total_topic_count = $topics_count - sizeof($announcement_list);
 
 $base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
-$pagination->generate_template_pagination($base_url, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
+$pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_topic_count, $config['topics_per_page'], $start);
 
 $template->assign_vars(array(
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : $user->lang('VIEW_FORUM_TOPICS', (int) $total_topic_count),
