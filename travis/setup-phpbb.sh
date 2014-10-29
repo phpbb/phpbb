@@ -33,6 +33,7 @@ fi
 if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` == "1" ]
 then
 	travis/setup-webserver.sh
+	travis/install-phpbb-test-dependencies.sh
 fi
 
 cd phpBB
