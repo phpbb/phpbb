@@ -21,3 +21,4 @@
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*
+/tests/vendor
