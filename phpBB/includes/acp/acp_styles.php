@@ -31,13 +31,28 @@ class acp_styles
 	protected $default_style = 0;
 	protected $reserved_style_names = array('adm', 'admin', 'all');
 
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\request\request_interface */
 	protected $request;
+
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
+
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/** @var string */
 	protected $phpbb_root_path;
+
+	/** @var string */
 	protected $php_ext;
 
 	public function main($id, $mode)
