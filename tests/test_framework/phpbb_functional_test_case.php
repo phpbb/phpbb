@@ -38,6 +38,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	static protected $config = array();
 	static protected $already_installed = false;
+	static protected $last_post_timestamp = 0;
 
 	static public function setUpBeforeClass()
 	{
@@ -1098,6 +1099,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	protected function submit_message($posting_url, $posting_contains, $form_data)
 	{
+		if (time() == self::$last_post_timestamp)
+		{
+			// Travis is too fast, so we have to wait to not mix up the post/topic order
+			sleep(1);
+		}
+		self::$last_post_timestamp = time();
 
 		$crawler = self::request('GET', $posting_url);
 		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
