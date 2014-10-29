@@ -29,6 +29,7 @@ class acp_styles
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 	protected $default_style = 0;
+	protected $styles_list_cols = 0;
 	protected $reserved_style_names = array('adm', 'admin', 'all');
 
 	/** @var \phpbb\db\driver\driver_interface */
@@ -831,7 +832,7 @@ class acp_styles
 	* Update styles tree
 	*
 	* @param array $styles Styles list, passed as reference
-	* @param array $style Current style, false if root
+	* @param array|false $style Current style, false if root
 	* @return bool True if something was updated, false if not
 	*/
 	protected function update_styles_tree(&$styles, $style = false)
@@ -1113,7 +1114,7 @@ class acp_styles
 	/**
 	* Install style
 	*
-	* @param $style style data
+	* @param array $style style data
 	* @return int Style id
 	*/
 	protected function install_style($style)
