@@ -24,6 +24,9 @@ class manager
 	protected $notification_types;
 
 	/** @var array */
+	protected $subscription_types;
+
+	/** @var array */
 	protected $notification_methods;
 
 	/** @var ContainerInterface */
@@ -524,33 +527,36 @@ class manager
 	*/
 	public function get_subscription_types()
 	{
-		$subscription_types = array();
-
-		foreach ($this->notification_types as $type_name => $data)
+		if ($this->subscription_types === null)
 		{
-			$type = $this->get_item_type_class($type_name);
+			$this->subscription_types = array();
 
-			if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
+			foreach ($this->notification_types as $type_name => $data)
 			{
-				$options = array_merge(array(
-					'id'		=> $type->get_type(),
-					'lang'		=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
-					'group'		=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
-				), (($type::$notification_option !== false) ? $type::$notification_option : array()));
+				$type = $this->get_item_type_class($type_name);
 
-				$subscription_types[$options['group']][$options['id']] = $options;
+				if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
+				{
+					$options = array_merge(array(
+						'id' => $type->get_type(),
+						'lang' => 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
+						'group' => 'NOTIFICATION_GROUP_MISCELLANEOUS',
+					), (($type::$notification_option !== false) ? $type::$notification_option : array()));
+
+					$this->subscription_types[$options['group']][$options['id']] = $options;
+				}
+			}
+
+			// Move Miscellaneous to the very last section
+			if (isset($this->subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']))
+			{
+				$miscellaneous = $this->subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS'];
+				unset($this->subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
+				$this->subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS'] = $miscellaneous;
 			}
 		}
 
-		// Move Miscellaneous to the very last section
-		if (isset($subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']))
-		{
-			$miscellaneous = $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS'];
-			unset($subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
-			$subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS'] = $miscellaneous;
-		}
-
-		return $subscription_types;
+		return $this->subscription_types;
 	}
 
 	/**
