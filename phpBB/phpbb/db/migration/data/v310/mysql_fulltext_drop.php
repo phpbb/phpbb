@@ -15,10 +15,18 @@ namespace phpbb\db\migration\data\v310;
 
 class mysql_fulltext_drop extends \phpbb\db\migration\migration
 {
+	protected $indexes;
+
 	public function effectively_installed()
 	{
 		// This migration is irrelevant for all non-MySQL DBMSes.
-		return strpos($this->db->get_sql_layer(), 'mysql') === false;
+		if (strpos($this->db->get_sql_layer(), 'mysql') === false)
+		{
+			return true;
+		}
+
+		$indexes = $this->get_indexes_to_drop();
+		return empty($indexes);
 	}
 
 	static public function depends_on()
@@ -40,12 +48,28 @@ class mysql_fulltext_drop extends \phpbb\db\migration\migration
 		*/
 		return array(
 			'drop_keys' => array(
-				$this->table_prefix . 'posts' => array(
-					'post_subject',
-					'post_text',
-					'post_content',
-				),
+				$this->table_prefix . 'posts' => $this->get_indexes_to_drop(),
 			),
 		);
+	}
+
+	public function get_indexes_to_drop()
+	{
+		if ($this->indexes !== null)
+		{
+			return $this->indexes;
+		}
+
+		$this->indexes = array();
+		$potential_keys = array('post_subject', 'post_text', 'post_content');
+		foreach ($potential_keys as $key)
+		{
+			if ($this->db_tools->sql_index_exists($this->table_prefix . 'posts', $key))
+			{
+				$this->indexes[] = $key;
+			}
+		}
+
+		return $this->indexes;
 	}
 }
