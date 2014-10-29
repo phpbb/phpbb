@@ -504,8 +504,8 @@ if ($start > $topics_count / 2)
 	// Select the sort order
 	$direction = (($sort_dir == 'd') ? 'ASC' : 'DESC');
 
-	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $topics_count);
-	$sql_start = $pagination->reverse_start($start, $sql_limit, $topics_count);
+	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $topics_count - sizeof($announcement_list));
+	$sql_start = $pagination->reverse_start($start, $sql_limit, $topics_count - sizeof($announcement_list));
 }
 else
 {
