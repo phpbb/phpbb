@@ -49,7 +49,7 @@ class provider_collection extends \phpbb\di\service_collection
 	*/
 	public function get_provider($provider_name = '')
 	{
-		$provider_name = ($provider_name !== '') ?: basename(trim($this->config['auth_method']));
+		$provider_name = ($provider_name !== '') ? $provider_name : basename(trim($this->config['auth_method']));
 		if ($this->offsetExists('auth.provider.' . $provider_name))
 		{
 			return $this->offsetGet('auth.provider.' . $provider_name);
