@@ -34,6 +34,30 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 	}
 
 	/**
+	 * @dependsOn test_login_other
+	 */
+	public function test_login_ucp_other_auth_provider()
+	{
+		global $cache, $config;
+		$cache = new phpbb_mock_null_cache;
+		$db = $this->get_db();
+		$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = 'foobar' WHERE config_name = 'auth_method'";
+		$db->sql_query($sql);
+		$crawler = self::request('GET', 'ucp.php?mode=login');
+		$form = $crawler->selectButton('Login')->form();
+		$form->setValues(array(
+			'username'	=> 'anothertestuser',
+			'password'	=> str_repeat('anothertestuser', 2),
+		));
+		$config['auth_method'] = 'foobar';
+		$crawler = self::submit($form);
+		$this->assertContains('anothertestuser', $crawler->filter('#username_logged_in')->text());
+		$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = 'db' WHERE config_name =  'auth_method'";
+		$db->sql_query($sql);
+		$config['auth_method'] = 'db';
+	}
+
+	/**
 	* @depends test_login
 	*/
 	public function test_logout()
