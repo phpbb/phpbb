@@ -239,7 +239,7 @@ class version_helper
 	*/
 	public function get_versions($force_update = false, $force_cache = false)
 	{
-		$cache_file = '_versioncheck_' . $this->host . $this->path . $this->file;
+		$cache_file = '_versioncheck_' . str_replace('/', '-', $this->host . $this->path . $this->file);
 
 		$info = $this->cache->get($cache_file);
 
