@@ -43,14 +43,9 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$db = $this->get_db();
 		$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = 'foobar' WHERE config_name = 'auth_method'";
 		$db->sql_query($sql);
-		$crawler = self::request('GET', 'ucp.php?mode=login');
-		$form = $crawler->selectButton('Login')->form();
-		$form->setValues(array(
-			'username'	=> 'anothertestuser',
-			'password'	=> str_repeat('anothertestuser', 2),
-		));
 		$config['auth_method'] = 'foobar';
-		$crawler = self::submit($form);
+		$this->login('anothertestuser');
+		$crawler = self::request('GET', 'index.php');
 		$this->assertContains('anothertestuser', $crawler->filter('#username_logged_in')->text());
 		$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = 'db' WHERE config_name =  'auth_method'";
 		$db->sql_query($sql);
