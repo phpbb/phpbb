@@ -21,3 +21,4 @@
 /tests/test_config*.php
 /tests/tmp/*
 /tests/vendor
+.idea/*

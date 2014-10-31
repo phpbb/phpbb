@@ -13,7 +13,7 @@
 
 namespace phpbb\model\exception;
 
-class not_authed_exception extends api_exception
+class invalid_key_exception extends api_exception
 {
 
 }

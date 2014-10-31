@@ -16,14 +16,34 @@ class client
 
 	public function get_auth_link()
 	{
-		$json = file_get_contents($this->api_url . '/api/auth/generatekeys');
+		$json = file_get_contents($this->api_url . '/api/auth/generate_keys');
+
+		echo $json;
+
 		$response = json_decode($json);
 
 		$key_file = fopen($this->key_store, 'a');
-		fwrite($key_file, $response->data->auth_key . '|' . $response->data->sign_key . '|false|1');
+		fwrite($key_file, $response->exchange_key . '|null|false|1');
 		fclose($key_file);
 
-		return $this->api_url . '/api/auth/' . $response->data->auth_key . '/' . $response->data->sign_key;
+		return $this->api_url . '/api/auth/authorize/' . $response->exchange_key;
+	}
+
+	public function exchange() {
+		$keys = file_get_contents($this->key_store);
+		$keyarr = explode('|', $keys);
+
+		$json = file_get_contents($this->api_url . '/api/auth/exchange_key/' . $keyarr[0]);
+		$response = json_decode($json);
+
+		$keyarr[0] = $response->data->auth_key;
+		$keyarr[1] = $response->data->sign_key;
+
+		$keys = implode('|', $keyarr);
+
+		$keys_file = fopen($this->key_store, 'w');
+		fwrite($keys_file, $keys);
+		fclose($keys_file);
 	}
 
 	public function verify()

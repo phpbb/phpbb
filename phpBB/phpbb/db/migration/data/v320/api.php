@@ -1,9 +1,13 @@
 <?php
 /**
  *
- * @package migration
- * @copyright (c) 2013 phpBB Group
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License v2
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
  *
  */
 
@@ -22,7 +26,7 @@ class api extends \phpbb\db\migration\migration
 			'add_tables'		=> array(
 				$this->table_prefix . 'api_keys'	=> array(
 					'COLUMNS'		=> array(
-						'key_id'			=> array('UINT', 0, 'auto_increment'),
+						'key_id'			=> array('UINT', null, 'auto_increment'),
 						'user_id'			=> array('UINT', 0),
 						'name'				=> array('VCHAR', ''),
 						'auth_key'			=> array('VCHAR:16', ''),
@@ -30,6 +34,17 @@ class api extends \phpbb\db\migration\migration
 						'serial'			=> array('UINT', 0),
 					),
 					'PRIMARY_KEY'			=> 'key_id',
+				),
+				$this->table_prefix . 'api_exchange_keys'	=> array(
+					'COLUMNS'		=> array(
+						'exchange_key'		=> array('VCHAR:16', ''),
+						'timestamp'			=> array('TIMESTAMP', 0),
+						'auth_key'			=> array('VCHAR:16', ''),
+						'sign_key'			=> array('VCHAR:16', ''),
+						'user_id'			=> array('UINT', 0),
+						'name'				=> array('VCHAR', ''),
+					),
+					'PRIMARY_KEY'			=> 'exchange_key',
 				),
 			),
 		);
@@ -40,6 +55,7 @@ class api extends \phpbb\db\migration\migration
 		return array(
 			'drop_tables'	=> array(
 				$this->table_prefix . 'api_keys',
+				$this->table_prefix . 'api_exchange_keys',
 			),
 		);
 	}

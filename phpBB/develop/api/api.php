@@ -23,7 +23,10 @@ if (!isset($_GET['mode']))
 	{
 		$keyarr = explode('|', $keys);
 
-		if ($keyarr[2] == 'false')
+		if ($keyarr[1] == 'null') {
+			echo '<a href="?mode=exchange">Please exchange keys</a>';
+		}
+		else if ($keyarr[2] == 'false')
 		{
 			echo '<a href="?mode=verify">Please verify</a>';
 		}
@@ -48,6 +51,9 @@ else if ($_GET['mode'] == 'verify')
 	{
 		echo '<a href="?mode=verify">Please verify : try again</a>';
 	}
+}
+else if ($_GET['mode'] == 'exchange') {
+	$client->exchange();
 }
 
 if (isset($_POST['method']))

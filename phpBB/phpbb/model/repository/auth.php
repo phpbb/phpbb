@@ -1,9 +1,13 @@
 <?php
 /**
  *
- * @package api
- * @copyright (c) 2013 phpBB Group
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
  *
  */
 
@@ -17,10 +21,15 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+use phpbb\config\config;
+use phpbb\db\driver\driver;
 use phpbb\model\exception\api_exception;
+use phpbb\model\exception\duplicate_name_exception;
+use phpbb\model\exception\invalid_key_exception;
 use phpbb\model\exception\invalid_request_exception;
 use phpbb\model\exception\no_permission_exception;
 use phpbb\model\exception\not_authed_exception;
+use phpbb\request\request;
 
 /**
  * This repository handles authentication
@@ -31,11 +40,11 @@ class auth
 
 	/**
 	 * phpBB configuration
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
-	protected $config;
+	protected $phpbb_config;
 
-	/** @var \phpbb\db\driver\driver */
+	/** @var driver */
 	protected $db;
 
 	/** @var \phpbb\auth\auth */
@@ -43,35 +52,146 @@ class auth
 
 	/**
 	 * Request object
-	 * @var \phpbb\request\request
+	 * @var request
 	 */
 	protected $request;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\config\config $config
-	 * @param \phpbb\db\driver\driver $db
+	 * @param config $config
+	 * @param driver $db
 	 * @param \phpbb\auth\auth $auth
-	 * @param \phpbb\request\request $request
+	 * @param request $request
 	 */
-	function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver $db, \phpbb\auth\auth $auth, \phpbb\request\request $request)
+	function __construct(config $config, $db, \phpbb\auth\auth $auth, request $request)
 	{
-		$this->config = $config;
+		$this->phpbb_config = $config;
 		$this->db = $db;
 		$this->auth = $auth;
 		$this->request = $request;
 	}
 
-	public function allow($auth_key, $sign_key, $user_id, $name)
+	/**
+	 * Don't let the user select auth and sign keys to protect user safety from malicious developers/others
+	 * @return string
+	 */
+	public function generate_keys()
 	{
-		$sql = 'INSERT INTO ' . API_KEYS_TABLE
-			. " (user_id, name, auth_key, sign_key) VALUES (' " . $user_id
-			. "', '" . $this->db->sql_escape($name)
-			. "', '" . $this->db->sql_escape($auth_key)
-			. "', '" . $this->db->sql_escape($sign_key) . "')";
+		$auth_key = unique_id();
+		$sign_key = unique_id();
+		$exchange_key = unique_id();
+
+		$sql = 'INSERT INTO ' . API_EXCHANGE_KEYS_TABLE
+			. " (timestamp, exchange_key, auth_key, sign_key, user_id, name) VALUES ('" . time() . "', '$exchange_key','$auth_key',
+			'$sign_key', 0, '')";
 
 		$this->db->sql_query($sql);
+		$this->db->sql_freeresult();
+
+		return $exchange_key;
+	}
+
+	public function allow($exchange_key, $user_id, $name)
+	{
+		if (strlen($exchange_key) !== 16)
+		{
+			throw new invalid_key_exception('Exchange key too short or too long.', 400);
+		}
+
+		$exchange_key = $this->db->sql_escape($exchange_key);
+		$name = $this->db->sql_escape($name);
+
+		$sql = 'SELECT *
+			FROM ' . API_EXCHANGE_KEYS_TABLE . "
+			WHERE exchange_key =  '$exchange_key'";
+
+		$result = $this->db->sql_query($sql);
+
+		if ($result->num_rows === 0)
+		{
+			throw new invalid_key_exception('Exchange key not found.', 400);
+		}
+
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT count(key_id)
+			FROM ' . API_KEYS_TABLE . "
+			WHERE user_id =  '$user_id'
+				AND name = '$name'";
+
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($row['count(key_id)'] !== '0') {
+			throw new duplicate_name_exception('The user already have a key with this name.', 400);
+		}
+
+		$sql = 'UPDATE ' . API_EXCHANGE_KEYS_TABLE . "
+			SET user_id =  $user_id,
+			name = '$name'
+			WHERE exchange_key = '$exchange_key'";
+
+		$this->db->sql_query($sql);
+		$this->db->sql_freeresult();
+	}
+
+	public function exchange_key($exchange_key)
+	{
+		if (strlen($exchange_key) !== 16)
+		{
+			throw new invalid_key_exception('Exchange key too short or too long.', 400);
+		}
+
+		$exchange_key = $this->db->sql_escape($exchange_key);
+
+		$sql = 'SELECT *
+			FROM ' . API_EXCHANGE_KEYS_TABLE . "
+			WHERE exchange_key =  '$exchange_key'";
+
+		$result = $this->db->sql_query($sql);
+
+		if ($result->num_rows === 0)
+		{
+			throw new invalid_key_exception('Exchange key not found.', 400);
+		}
+
+		$row = $this->db->sql_fetchrow($result);
+
+		// User has not allowed this application yet!!
+		if ($row['user_id'] === '0')
+		{
+			throw new no_permission_exception('Application not allowed.', 400);
+		}
+
+		$auth_key = $row['auth_key'];
+		$sign_key = $row['sign_key'];
+		$user_id = $row['user_id'];
+		$name = $row['name'];
+
+		$sql = 'INSERT INTO ' . API_KEYS_TABLE . " (user_id, name, auth_key, sign_key, serial)
+			VALUES ('$user_id',
+			'$name',
+			'$auth_key',
+			'$sign_key',
+			0)";
+
+		$this->db->sql_freeresult($result);
+
+		$this->db->sql_query($sql);
+		$this->db->sql_freeresult();
+
+		$sql = 'DELETE FROM ' . API_EXCHANGE_KEYS_TABLE
+			. " WHERE exchange_key = '$exchange_key'";
+
+		$this->db->sql_query($sql);
+		$this->db->sql_freeresult();
+
+		return array(
+			'auth_key' => $auth_key,
+			'sign_key' => $sign_key,
+		);
 	}
 
 	/**
@@ -99,7 +219,7 @@ class auth
 		$serial = (isset($serial)) ? $serial : $this->request->variable('serial', -1);
 		$hash = (isset($hash)) ? $hash : $this->request->variable('hash', '');
 
-		if (!$this->config['allow_api'])
+		if (!$this->phpbb_config['allow_api'])
 		{
 			throw new api_exception('The API is not enabled on this board', 500);
 		}
@@ -128,7 +248,7 @@ class auth
 			}
 			else
 			{
-				// This probably needs to be changed before release
+				// @TODO: This probably needs to be changed before release
 				$request .= 'auth_key=' . $auth_key . '&serial=' . $serial;
 			}
 
@@ -159,7 +279,7 @@ class auth
 
 				$sql = 'UPDATE ' . API_KEYS_TABLE
 					. ' SET serial = ' . $this->db->sql_escape($serial)
-					. " WHERE user_id = '" . $user_id . "'";
+					. " WHERE user_id = '$user_id'";
 				$this->db->sql_query($sql);
 
 				return $user_id;

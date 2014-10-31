@@ -40,4 +40,37 @@
             <value>0</value>
         </row>
     </table>
+    <table name="phpbb_api_exchange_keys">
+        <column>exchange_key</column>
+        <column>timestamp</column>
+        <column>auth_key</column>
+        <column>sign_key</column>
+        <column>user_id</column>
+        <column>name</column>
+        <row>
+            <value>llllllllllllllll</value>
+            <value>1337</value>
+            <value>xxxxxxxxxxxxxxxx</value>
+            <value>zzzzzzzzzzzzzzzz</value>
+            <value>2</value>
+            <value>tester</value>
+        </row>
+        <row>
+            <value>cccccccccccccccd</value>
+            <value>1337</value>
+            <value>aaaaaaaaaaaaaaaa</value>
+            <value>bbbbbbbbbbbbbbbb</value>
+            <value>0</value>
+            <value></value>
+        </row>
+        <row>
+            <value>qqqqqqqqqqqqqqqq</value>
+            <value>25</value>
+            <value>gggggggggggggggg</value>
+            <value>hhhhhhhhhhhhhhhh</value>
+            <value>0</value>
+            <value></value>
+        </row>
+    </table>
+
 </dataset>

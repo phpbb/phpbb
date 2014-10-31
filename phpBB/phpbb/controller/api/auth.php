@@ -1,9 +1,13 @@
 <?php
 /**
  *
- * @package controller
- * @copyright (c) 2013 phpBB Group
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
  *
  */
 
@@ -17,10 +21,16 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use phpbb\config\config;
+use phpbb\controller\helper;
 use phpbb\model\exception\api_exception;
+use phpbb\model\exception\invalid_key_exception;
+use phpbb\request\request;
+use phpbb\template\template;
+use phpbb\user;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Controller for authentication
@@ -29,61 +39,65 @@ use phpbb\model\exception\api_exception;
 class auth
 {
 	/**
-	 * API Model
+	 * API Repository
 	 * @var \phpbb\model\repository\auth
 	 */
 	protected $auth_repository;
 
 	/**
 	 * User object
-	 * @var \phpbb\user
+	 * @var user
 	 */
 	protected $user;
 
 	/**
 	 * Controller helper object
-	 * @var \phpbb\controller\helper
+	 * @var helper
 	 */
 	protected $helper;
 
 	/**
 	 * Template object
-	 * @var \phpbb\template\template
+	 * @var template
 	 */
 	protected $template;
 
 	/**
 	 * Template object
-	 * @var \phpbb\request\request
+	 * @var request
 	 */
 	protected $request;
 
 	/**
 	 * Config object
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
 	 * Auth object
-	 * @var \phpbb\model\repository\auth
+	 * @var \phpbb\auth\auth
 	 */
 	protected $auth;
+
+	/**
+	 * @var \Symfony\Component\Serializer\Serializer
+	 */
+	protected $serializer;
 
 	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\model\repository\auth $auth_repository
-	 * @param \phpbb\user $user
-	 * @param \phpbb\controller\helper $helper
-	 * @param \phpbb\template\template $template
-	 * @param \phpbb\request\request $request
-	 * @param \phpbb\config\config $config
+	 * @param user $user
+	 * @param helper $helper
+	 * @param template $template
+	 * @param request $request
+	 * @param config $config
 	 * @param \phpbb\auth\auth $auth
 	 */
-	function __construct(\phpbb\model\repository\auth $auth_repository, \phpbb\user $user,
-						 \phpbb\controller\helper $helper, \phpbb\template\template $template, \phpbb\request\request $request,
-						 \phpbb\config\config $config, \phpbb\auth\auth $auth)
+	function __construct(\phpbb\model\repository\auth $auth_repository, user $user,	 helper $helper, template $template,
+						 request $request, config $config, \phpbb\auth\auth $auth)
 	{
 		$this->auth_repository = $auth_repository;
 		$this->user = $user;
@@ -92,36 +106,32 @@ class auth
 		$this->request = $request;
 		$this->config = $config;
 		$this->auth = $auth;
+		$this->serializer = new Serializer(array(), array(new JsonEncoder()));
 
 		$this->user->add_lang('api');
 	}
 
 	public function generate_keys()
 	{
-		$serializer = new Serializer(array(), array(new JsonEncoder()));
-
-		$keys = array(
-			'auth_key' => unique_id(),
-			'sign_key' => unique_id(),
-		);
+		$exchange_key = $this->auth_repository->generate_keys();
 
 		$response = array(
 			'status' => 200,
-			'data' => $keys,
-			);
+			'exchange_key' => $exchange_key,
+		);
 
-		return new Response($serializer->serialize($response, 'json'), $response['status']);
+		return new Response($this->serializer->serialize($response, 'json'), $response['status']);
 	}
 
-	public function auth($auth_key, $sign_key)
+	public function authorize_application($exchange_key)
 	{
 		if (!$this->auth->acl_get('u_api'))
 		{
 			return $this->helper->error($this->user->lang('API_NO_PERMISSION'));
 		}
 
-		try {
-
+		try
+		{
 			if (!$this->config['allow_api'])
 			{
 				throw new api_exception('The API is not enabled on this board', 500);
@@ -131,8 +141,7 @@ class auth
 
 			$this->template->assign_vars(array(
 				'S_AUTH_ACTION' => $url,
-				'T_AUTH_KEY' => $auth_key,
-				'T_SIGN_KEY' => $sign_key,
+				'T_EXCHANGE_KEY' => $exchange_key,
 			));
 
 			add_form_key('api_auth');
@@ -169,29 +178,28 @@ class auth
 				redirect(generate_board_url());
 			}
 
-			$auth_key = $this->request->variable('auth_key', '');
-			$sign_key = $this->request->variable('sign_key', '');
-			$appname = $this->request->variable('appname', '');
+			$exchange_key = $this->request->variable('exchange_key', '');
+			$app_name = $this->request->variable('appname', '');
 
-			if (empty($appname))
+			if (empty($app_name))
 			{
 				$url = $this->helper->route('api/auth', array(
-					'auth_key' => $auth_key,
-					'sign_key' => $sign_key,
+					'exchange_key' => $exchange_key,
 				));
 				return $this->helper->error($this->user->lang['AUTH_MISSING_NAME'] . ' <a href="' . $url . '">' .
 					$this->user->lang['AUTH_RETURN'] . '</a>');
 			}
 
-			if (strlen($auth_key) != 16 || strlen($sign_key) != 16)
+			if (strlen($exchange_key) != 16)
 			{
 				return $this->helper->error($this->user->lang['AUTH_KEY_ERROR']);
 			}
 
-			$this->auth_repository->allow($auth_key, $sign_key, $this->user->data['user_id'], $appname);
+			$this->auth_repository->allow($exchange_key, $this->user->data['user_id'], $app_name);
 
 			$this->template->assign_vars(array(
-				'MESSAGE_TEXT'	=> $this->user->lang['AUTH_ALLOWED']  . '<br /><br />' . sprintf($this->user->lang['RETURN_TO_INDEX'], '<a href="' . generate_board_url() . '">', '</a>'),
+				'MESSAGE_TEXT'	=> $this->user->lang['AUTH_ALLOWED']  . '<br /><br />
+					 <a href="' . generate_board_url() . '">' . $this->user->lang['RETURN_TO_INDEX'] . '</a>',
 				'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
 			));
 
@@ -203,11 +211,35 @@ class auth
 		}
 	}
 
+	public function exchange_key($exchange_key)
+	{
+		try
+		{
+			$keys = $this->auth_repository->exchange_key($exchange_key);
+
+			$response = array(
+				'status' => 200,
+				'data' => $keys,
+			);
+
+		}
+		catch (invalid_key_exception $e)
+		{
+			$response = array(
+				'status' => $e->getCode(),
+				'data' => array(
+					'error' => $e->getMessage(),
+				),
+			);
+		}
+
+		return new Response($this->serializer->serialize($response, 'json'), $response['status']);
+	}
+
 	public function verify()
 	{
-		$serializer = new Serializer(array(), array(new JsonEncoder()));
-
-		try {
+		try
+		{
 			$user_id = $this->auth_repository->auth();
 			if ($user_id == ANONYMOUS)
 			{
@@ -241,6 +273,6 @@ class auth
 			);
 		}
 
-		return new Response($serializer->serialize($response, 'json'), $response['status']);
+		return new Response($this->serializer->serialize($response, 'json'), $response['status']);
 	}
 }

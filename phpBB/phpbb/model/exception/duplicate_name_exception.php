@@ -13,7 +13,7 @@
 
 namespace phpbb\model\exception;
 
-class not_authed_exception extends api_exception
+class duplicate_name_exception extends api_exception
 {
 
 }
