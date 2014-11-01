@@ -87,8 +87,8 @@ class ucp_register
 		if (!empty($login_link_data))
 		{
 			// Confirm that we have all necessary data
-			$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
-			$auth_provider = $phpbb_container->get($auth_provider);
+			$provider_collection = $phpbb_container->get('auth.provider_collection');
+			$auth_provider = $provider_collection->get_provider($request->variable('auth_provider', ''));
 
 			$result = $auth_provider->login_link_has_necessary_data($login_link_data);
 			if ($result !== null)
