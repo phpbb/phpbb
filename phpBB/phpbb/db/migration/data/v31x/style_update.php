@@ -29,16 +29,25 @@ class style_update extends \phpbb\db\migration\migration
 
 	public function update_installed_styles()
 	{
-		// First check if prosilver is properly installed
-		$sql = 'SELECT style_id, style_active
-				FROM ' . $this->table_prefix . "styles
-				WHERE style_name = 'prosilver'";
+		// Get all currently available styles
+		$styles = $this->find_style_dirs();
+		$style_paths = $style_ids = array();
+
+		$sql = 'SELECT style_path, style_id
+				FROM ' . $this->table_prefix . 'styles';
 		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
+		while ($styles_row = $this->db->sql_fetchrow())
+		{
+			if (in_array($styles_row['style_path'], $styles))
+			{
+				$style_paths[] = $styles_row['style_path'];
+				$style_ids[] = $styles_row['style_id'];
+			}
+		}
 		$this->db->sql_freeresult($result);
 
-		// Make sure prosilver is installed
-		if (empty($row) || !isset($row['style_id']))
+		// Install prosilver if no style is available and prosilver can be installed
+		if (empty($style_paths) && in_array('prosilver', $styles))
 		{
 			// Try to parse config file
 			$cfg = parse_cfg_file($this->phpbb_root_path . 'styles/prosilver/style.cfg');
@@ -46,7 +55,7 @@ class style_update extends \phpbb\db\migration\migration
 			// Stop running this if prosilver doesn't exist
 			if (empty($cfg))
 			{
-				return;
+				throw new \RuntimeException('No styles available and could not fall back to prosilver.');
 			}
 
 			// Check data
@@ -75,31 +84,18 @@ class style_update extends \phpbb\db\migration\migration
 			$row = array('style_id'		=> $this->db->sql_nextid());
 
 			$this->db->sql_transaction('commit');
+
+			// Set prosilver to default style
+			$this->config->set('default_style', $row['style_id']);
 		}
-		// Make sure prosilver is activated
-		else if (!isset($row['style_active']) || !$row['style_active'])
+		else if (empty($styles) && empty($available_styles))
 		{
-			$sql = 'UPDATE ' . STYLES_TABLE . ' SET style_active = 1 WHERE style_id = ' . $row['style_id'];
-			$this->db->sql_query($sql);
+			throw new \RuntimeException('No valid styles available');
 		}
 
-		// Get all currently available styles
-		$styles = $this->find_style_dirs();
-
-		// Get IDs of the available styles
-		$style_ids = array();
-		$sql = 'SELECT DISTINCT(style_id) AS style_id
-				FROM ' . $this->table_prefix . 'styles
-				WHERE ' . $this->db->sql_in_set('style_name', $styles);
-		$result = $this->db->sql_query($sql);
-		while ($styles_row = $this->db->sql_fetchrow())
-		{
-			$style_ids[] = $styles_row['style_id'];
-		}
-		$this->db->sql_freeresult($result);
-
+		// Reset users to default style if their user_style is nonexistent
 		$sql = 'UPDATE ' . $this->table_prefix . "users
-			SET user_style = {$row['style_id']}
+			SET user_style = {$this->config['default_style']}
 			WHERE " . $this->db->sql_in_set('user_style', $style_ids, true);
 		$this->db->sql_query($sql);
 	}
