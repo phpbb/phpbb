@@ -2643,7 +2643,7 @@ class tools
 							AND cols.id = ix.id
 					WHERE ix.id = object_id('{$table_name}')
 						AND cols.name = '{$column_name}'
-						AND INDEXPROPERTY(ix.id, ix.name, 'IsUnique') = " . ($unique) ? '1' : '0';
+						AND INDEXPROPERTY(ix.id, ix.name, 'IsUnique') = " . ($unique ? '1' : '0');
 				}
 				else
 				{
@@ -2657,7 +2657,7 @@ class tools
 							AND cols.object_id = ix.object_id
 					WHERE ix.object_id = object_id('{$table_name}')
 						AND cols.name = '{$column_name}'
-						AND ix.is_unique = " . ($unique) ? '1' : '0';
+						AND ix.is_unique = " . ($unique ? '1' : '0');
 				}
 			break;
 
