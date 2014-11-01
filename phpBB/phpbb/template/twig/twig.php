@@ -115,6 +115,11 @@ class twig extends \phpbb\template\base
 			)
 		);
 
+		if (defined('DEBUG'))
+		{
+			$this->twig->addExtension(new \Twig_Extension_Debug());
+		}
+
 		$lexer = new \phpbb\template\twig\lexer($this->twig);
 
 		$this->twig->setLexer($lexer);
