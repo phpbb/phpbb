@@ -927,11 +927,11 @@ class auth
 	*/
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
 
-		$method = trim(basename($config['auth_method']));
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
 
-		$provider = $phpbb_container->get('auth.provider.' . $method);
+		$provider = $provider_collection->get_provider();
 		if ($provider)
 		{
 			$login = $provider->login($username, $password);

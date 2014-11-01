@@ -34,11 +34,12 @@ class ucp_auth_link
 	*/
 	public function main($id, $mode)
 	{
-		global $config, $request, $template, $phpbb_container, $user;
+		global $request, $template, $phpbb_container, $user;
 
 		$error = array();
 
-		$auth_provider = $phpbb_container->get('auth.provider.' . $config['auth_method']);
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$auth_provider = $provider_collection->get_provider();
 
 		// confirm that the auth provider supports this page
 		$provider_data = $auth_provider->get_auth_link_data();

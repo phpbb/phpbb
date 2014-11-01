@@ -38,6 +38,7 @@ class provider_collection extends \phpbb\di\service_collection
 	/**
 	* Get an auth provider.
 	*
+	* @param string $provider_name The name of the auth provider
 	* @return object	Default auth provider selected in config if it
 	*			does exist. Otherwise the standard db auth
 	*			provider.
@@ -46,11 +47,12 @@ class provider_collection extends \phpbb\di\service_collection
 	*			auth provider exist. The db auth provider
 	*			should always exist in a phpBB installation.
 	*/
-	public function get_provider()
+	public function get_provider($provider_name = '')
 	{
-		if ($this->offsetExists('auth.provider.' . basename(trim($this->config['auth_method']))))
+		$provider_name = ($provider_name !== '') ? $provider_name : basename(trim($this->config['auth_method']));
+		if ($this->offsetExists('auth.provider.' . $provider_name))
 		{
-			return $this->offsetGet('auth.provider.' . basename(trim($this->config['auth_method'])));
+			return $this->offsetGet('auth.provider.' . $provider_name);
 		}
 		// Revert to db auth provider if selected method does not exist
 		else if ($this->offsetExists('auth.provider.db'))

@@ -39,7 +39,7 @@ class ucp_login_link
 	*/
 	function main($id, $mode)
 	{
-		global $config, $phpbb_container, $request, $template, $user;
+		global $phpbb_container, $request, $template, $user;
 		global $phpbb_root_path, $phpEx;
 
 		// Initialize necessary variables
@@ -57,8 +57,8 @@ class ucp_login_link
 		}
 
 		// Use the auth_provider requested even if different from configured
-		$auth_provider = 'auth.provider.' . $request->variable('auth_provider', $config['auth_method']);
-		$auth_provider = $phpbb_container->get($auth_provider);
+		$provider_collection = $phpbb_container->get('auth.provider_collection');
+		$auth_provider = $provider_collection->get_provider($request->variable('auth_provider', ''));
 
 		// Set the link_method to login_link
 		$data['link_method'] = 'login_link';
