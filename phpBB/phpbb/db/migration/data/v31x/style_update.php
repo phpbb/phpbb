@@ -52,16 +52,10 @@ class style_update extends \phpbb\db\migration\migration
 			// Try to parse config file
 			$cfg = parse_cfg_file($this->phpbb_root_path . 'styles/prosilver/style.cfg');
 
-			// Stop running this if prosilver doesn't exist
+			// Stop running this if prosilver cfg file can't be read
 			if (empty($cfg))
 			{
 				throw new \RuntimeException('No styles available and could not fall back to prosilver.');
-			}
-
-			// Check data
-			if (!isset($cfg['template_bitfield']))
-			{
-				$cfg['template_bitfield'] = $this->default_bitfield();
 			}
 
 			$style = array(
@@ -69,7 +63,7 @@ class style_update extends \phpbb\db\migration\migration
 				'style_copyright'	=> '&copy; phpBB Limited',
 				'style_active'		=> 1,
 				'style_path'		=> 'prosilver',
-				'bbcode_bitfield'	=> $cfg['template_bitfield'],
+				'bbcode_bitfield'	=> 'kNg=',
 				'style_parent_id'	=> 0,
 				'style_parent_tree'	=> '',
 			);
@@ -81,59 +75,30 @@ class style_update extends \phpbb\db\migration\migration
 					' . $this->db->sql_build_array('INSERT', $style);
 			$this->db->sql_query($sql);
 
-			$row = array('style_id'		=> $this->db->sql_nextid());
+			$style_id = $this->db->sql_nextid();
+			$style_ids[] = $style_id;
 
 			$this->db->sql_transaction('commit');
 
 			// Set prosilver to default style
-			$this->config->set('default_style', $row['style_id']);
+			$this->config->set('default_style', $style_id);
 		}
 		else if (empty($styles) && empty($available_styles))
 		{
 			throw new \RuntimeException('No valid styles available');
 		}
 
+		// Make sure default style is available
+		if (!in_array($this->config['default_style'], $style_ids))
+		{
+			$this->config->set('default_style', array_pop($style_ids));
+		}
+
 		// Reset users to default style if their user_style is nonexistent
 		$sql = 'UPDATE ' . $this->table_prefix . "users
 			SET user_style = {$this->config['default_style']}
-			WHERE " . $this->db->sql_in_set('user_style', $style_ids, true);
+			WHERE " . $this->db->sql_in_set('user_style', $style_ids, true, true);
 		$this->db->sql_query($sql);
-	}
-
-	/**
-	 * Generates default bitfield
-	 * Copied from acp_styles
-	 *
-	 * This bitfield decides which bbcodes are defined in a template.
-	 *
-	 * @return string Bitfield
-	 */
-	protected function default_bitfield()
-	{
-		static $value;
-		if (isset($value))
-		{
-			return $value;
-		}
-
-		if (!class_exists('bitfield'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_content.' . $this->php_ext);
-		}
-
-		// Hardcoded template bitfield to add for new templates
-		$bitfield = new \bitfield();
-		$bitfield->set(0);
-		$bitfield->set(1);
-		$bitfield->set(2);
-		$bitfield->set(3);
-		$bitfield->set(4);
-		$bitfield->set(8);
-		$bitfield->set(9);
-		$bitfield->set(11);
-		$bitfield->set(12);
-		$value = $bitfield->get_base64();
-		return $value;
 	}
 
 	/**
