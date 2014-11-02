@@ -38,6 +38,9 @@ class symfony_request extends Request
 
 		array_walk_recursive($get_parameters, $sanitizer);
 		array_walk_recursive($post_parameters, $sanitizer);
+		array_walk_recursive($server_parameters, $sanitizer);
+		array_walk_recursive($files_parameters, $sanitizer);
+		array_walk_recursive($cookie_parameters, $sanitizer);
 
 		parent::__construct($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 	}

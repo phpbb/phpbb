@@ -87,7 +87,7 @@ class session
 		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
-			$page_name .= $symfony_request_path;
+			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
 		}
 
 		// current directory within the phpBB root (for example: adm)
