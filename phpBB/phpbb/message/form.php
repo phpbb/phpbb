@@ -146,7 +146,7 @@ abstract class form
 				WHERE user_id = ' . $this->user->data['user_id'];
 			$this->db->sql_query($sql);
 
-			if ($this->cc_sender)
+			if ($this->cc_sender && $this->user->data['is_registered'])
 			{
 				$this->message->cc_sender();
 			}
