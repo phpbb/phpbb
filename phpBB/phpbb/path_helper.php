@@ -465,13 +465,16 @@ class path_helper
 		// URL
 		if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 		{
-			// Remove 'app.php/' from the page, when rewrite is enabled
-			if ($mod_rewrite && strpos($page, 'app.' . $this->php_ext . '/') === 0)
+			// Remove 'app.php/' from the page, when rewrite is enabled.
+			// Treat app.php as a reserved file name and remove on mod rewrite
+			// even if it might not be in the phpBB root.
+			if ($mod_rewrite && ($app_position = strpos($page, 'app.' . $this->php_ext . '/')) !== false)
 			{
-				$page = substr($page, strlen('app.' . $this->php_ext . '/'));
+				$page = substr($page, 0, $app_position) . substr($page, $app_position + strlen('app.' . $this->php_ext . '/'));
 			}
 
-			$page = $this->get_phpbb_root_path() . $page;
+			// Remove preceding slashes from page name and prepend root path
+			$page = $this->get_phpbb_root_path() . preg_replace('@^(?:([\\/\\\])?)@', '', $page);
 		}
 
 		return $page;
