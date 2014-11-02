@@ -1024,6 +1024,7 @@ class mcp_queue
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
+			'f'				=> $request->variable('f', \phpbb\request\request_interface::POST),
 			'mode'			=> $mode,
 			'post_id_list'	=> $post_id_list,
 			'action'		=> 'disapprove',
