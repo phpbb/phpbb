@@ -30,6 +30,11 @@ class symfony_request extends Request
 			$type_cast_helper->set_var($value, $value, gettype($value), true);
 		};
 
+		// This function is meant for additional handling of server variables
+		$server_sanitizer = function(&$value, $key) {
+			$value = str_replace('&amp;', '&', $value);
+		};
+
 		$get_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::GET);
 		$post_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::POST);
 		$server_parameters = $phpbb_request->get_super_global(\phpbb\request\request_interface::SERVER);
@@ -41,6 +46,7 @@ class symfony_request extends Request
 		array_walk_recursive($server_parameters, $sanitizer);
 		array_walk_recursive($files_parameters, $sanitizer);
 		array_walk_recursive($cookie_parameters, $sanitizer);
+		array_walk_recursive($server_parameters, $server_sanitizer);
 
 		parent::__construct($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
 	}
