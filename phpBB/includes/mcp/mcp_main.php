@@ -813,7 +813,6 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 
 		$user->add_lang('posting');
 
-		$only_shadow = false;
 		// If there are only shadow topics, we neither need a reason nor softdelete
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . '
