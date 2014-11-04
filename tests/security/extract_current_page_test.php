@@ -84,8 +84,13 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 
 	protected function sanitizer($value)
 	{
+		// Fix for objects passed in phpunit
+		if (is_object($value))
+		{
+			return $value;
+		}
 		$type_cast_helper = new \phpbb\request\type_cast_helper();
 		$type_cast_helper->set_var($value, $value, gettype($value), true);
-		return $value;
+		return str_replace('&amp;', '&', $value);
 	}
 }

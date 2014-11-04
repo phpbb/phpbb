@@ -31,7 +31,8 @@ class symfony_request extends Request
 		};
 
 		// This function is meant for additional handling of server variables
-		$server_sanitizer = function(&$value, $key) {
+		$server_sanitizer = function(&$value, $key) use ($sanitizer) {
+			$sanitizer($value, $key);
 			$value = str_replace('&amp;', '&', $value);
 		};
 
@@ -43,11 +44,10 @@ class symfony_request extends Request
 
 		array_walk_recursive($get_parameters, $sanitizer);
 		array_walk_recursive($post_parameters, $sanitizer);
-		array_walk_recursive($server_parameters, $sanitizer);
 		array_walk_recursive($files_parameters, $sanitizer);
 		array_walk_recursive($cookie_parameters, $sanitizer);
 
-		// Run additional sanitizer for server superglobal
+		// Run special sanitizer for server superglobal
 		array_walk_recursive($server_parameters, $server_sanitizer);
 
 		parent::__construct($get_parameters, $post_parameters, array(), $cookie_parameters, $files_parameters, $server_parameters);
