@@ -313,7 +313,7 @@ class bbcode_firstpass extends bbcode
 		$in = str_replace(' ', '%20', $in);
 
 		// Checking urls
-		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
+		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
 		{
 			return '[img]' . $in . '[/img]';
 		}
@@ -381,8 +381,8 @@ class bbcode_firstpass extends bbcode
 		$in = str_replace(' ', '%20', $in);
 
 		// Make sure $in is a URL.
-		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) &&
-			!preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
+		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $in) &&
+			!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
 		{
 			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}
@@ -973,9 +973,9 @@ class bbcode_firstpass extends bbcode
 		$url = str_replace(' ', '%20', $url);
 
 		// Checking urls
-		if (preg_match('#^' . get_preg_expression('url') . '$#i', $url) ||
-			preg_match('#^' . get_preg_expression('www_url') . '$#i', $url) ||
-			preg_match('#^' . preg_quote(generate_board_url(), '#') . get_preg_expression('relative_url') . '$#i', $url))
+		if (preg_match('#^' . get_preg_expression('url') . '$#iu', $url) ||
+			preg_match('#^' . get_preg_expression('www_url') . '$#iu', $url) ||
+			preg_match('#^' . preg_quote(generate_board_url(), '#') . get_preg_expression('relative_url') . '$#iu', $url))
 		{
 			$valid = true;
 		}
