@@ -2397,7 +2397,7 @@ function build_url($strip_vars = false)
 	global $config, $user, $phpbb_path_helper;
 
 	$php_ext = $phpbb_path_helper->get_php_ext();
-	$page = str_replace('&amp;', '&', $user->page['page']);
+	$page = $user->page['page'];
 
 	// We need to be cautious here.
 	// On some situations, the redirect path is an absolute URL, sometimes a relative path
