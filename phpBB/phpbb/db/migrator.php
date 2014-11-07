@@ -59,6 +59,13 @@ class migrator
 	protected $migrations = array();
 
 	/**
+	* Array of migrations that have been determined to be fulfillable
+	*
+	* @var array
+	*/
+	protected $fulfillable_migrations = array();
+
+	/**
 	* 'name,' 'class,' and 'state' of the last migration run
 	*
 	* 'effectively_installed' set and set to true if the migration was effectively_installed
@@ -653,7 +660,7 @@ class migrator
 	*/
 	public function unfulfillable($name)
 	{
-		if (isset($this->migration_state[$name]))
+		if (isset($this->migration_state[$name]) || isset($this->fulfillable_migrations[$name]))
 		{
 			return false;
 		}
@@ -674,6 +681,7 @@ class migrator
 				return $unfulfillable;
 			}
 		}
+		$this->fulfillable_migrations[$name] = true;
 
 		return false;
 	}
