@@ -43,7 +43,7 @@ class session
 
 		// First of all, get the request uri...
 		$script_name = $symfony_request->getScriptName();
-		$args = explode('&', $symfony_request->getQueryString());
+		$args = explode('&amp;', $symfony_request->getQueryString());
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)
@@ -61,8 +61,8 @@ class session
 
 		// Since some browser do not encode correctly we need to do this with some "special" characters...
 		// " -> %22, ' => %27, < -> %3C, > -> %3E
-		$find = array('"', "'", '<', '>');
-		$replace = array('%22', '%27', '%3C', '%3E');
+		$find = array('"', "'", '<', '>', '&quot;', '&lt;', '&gt;');
+		$replace = array('%22', '%27', '%3C', '%3E', '%22', '%3C', '%3E');
 
 		foreach ($args as $key => $argument)
 		{
