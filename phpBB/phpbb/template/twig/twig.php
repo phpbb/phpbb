@@ -191,19 +191,19 @@ class twig extends \phpbb\template\base
 				$template_path = $path . 'template/';
 				$theme_path = $path . 'theme/';
 
-				$ok = false;
+				$is_valid_dir = false;
 				if (is_dir($template_path))
 				{
-					$ok = true;
+					$is_valid_dir = true;
 					$paths[] = $template_path;
 				}
 				if (is_dir($theme_path))
 				{
-					$ok = true;
+					$is_valid_dir = true;
 					$paths[] = $theme_path;
 				}
 
-				if ($ok)
+				if ($is_valid_dir)
 				{
 					// Add the base style directory as a safe directory
 					$this->twig->getLoader()->addSafeDirectory($path);
