@@ -54,6 +54,7 @@ else if ($_GET['mode'] == 'verify')
 }
 else if ($_GET['mode'] == 'exchange') {
 	$client->exchange();
+	echo '<a href="api.php?mode=verify">Please verify!</a>';
 }
 
 if (isset($_POST['method']))

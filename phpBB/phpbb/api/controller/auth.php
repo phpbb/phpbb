@@ -1,30 +1,22 @@
 <?php
 /**
- *
- * This file is part of the phpBB Forum Software package.
- *
- * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- * For full copyright and license information, please see
- * the docs/CREDITS.txt file.
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
-namespace phpbb\controller\api;
-
-/**
- * @ignore
- */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\api\controller;
 
 use phpbb\config\config;
 use phpbb\controller\helper;
-use phpbb\model\exception\api_exception;
-use phpbb\model\exception\invalid_key_exception;
+use phpbb\api\exception\api_exception;
+use phpbb\api\exception\invalid_key_exception;
 use phpbb\request\request;
 use phpbb\template\template;
 use phpbb\user;
@@ -40,7 +32,7 @@ class auth
 {
 	/**
 	 * API Repository
-	 * @var \phpbb\model\repository\auth
+	 * @var \phpbb\api\repository\auth
 	 */
 	protected $auth_repository;
 
@@ -88,7 +80,7 @@ class auth
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\model\repository\auth $auth_repository
+	 * @param \phpbb\api\repository\auth $auth_repository
 	 * @param user $user
 	 * @param helper $helper
 	 * @param template $template
@@ -96,7 +88,7 @@ class auth
 	 * @param config $config
 	 * @param \phpbb\auth\auth $auth
 	 */
-	function __construct(\phpbb\model\repository\auth $auth_repository, user $user,	 helper $helper, template $template,
+	function __construct(\phpbb\api\repository\auth $auth_repository, user $user, helper $helper, template $template,
 						 request $request, config $config, \phpbb\auth\auth $auth)
 	{
 		$this->auth_repository = $auth_repository;
@@ -137,7 +129,7 @@ class auth
 				throw new api_exception('The API is not enabled on this board', 500);
 			}
 
-			$url = $this->helper->route('api_auth_allow_controller');
+			$url = $this->helper->route('api_auth_authorize_controller');
 
 			$this->template->assign_vars(array(
 				'S_AUTH_ACTION' => $url,
@@ -154,7 +146,7 @@ class auth
 		}
 	}
 
-	public function allow()
+	public function authorize_application_post()
 	{
 		if (!$this->auth->acl_get('u_api'))
 		{
@@ -195,7 +187,7 @@ class auth
 				return $this->helper->error($this->user->lang['AUTH_KEY_ERROR']);
 			}
 
-			$this->auth_repository->allow($exchange_key, $this->user->data['user_id'], $app_name);
+			$this->auth_repository->authorize($exchange_key, $this->user->data['user_id'], $app_name);
 
 			$this->template->assign_vars(array(
 				'MESSAGE_TEXT'	=> $this->user->lang['AUTH_ALLOWED']  . '<br /><br />
@@ -240,7 +232,7 @@ class auth
 	{
 		try
 		{
-			$user_id = $this->auth_repository->auth();
+			$user_id = $this->auth_repository->authenticate();
 			if ($user_id == ANONYMOUS)
 			{
 				$response = array(

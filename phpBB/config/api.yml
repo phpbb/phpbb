@@ -1,11 +1,3 @@
-services:
-    api.controller.auth:
-        class: phpbb\controller\api\auth
-        arguments:
-            - @model.repository.auth
-            - @user
-            - @controller.helper
-            - @template
-            - @request
-            - @config
-            - @auth
+api_auth:
+    resource: "api/auth.yml"
+    prefix: /auth

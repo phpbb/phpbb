@@ -7,15 +7,8 @@
 	<div class="inner">
 
 		<fieldset>
-			<!-- IF .errors -->
-			<p class="error">
-				<!-- BEGIN errors -->
-				{errors} <br />
-				<!-- END errors -->
-			</p>
-			<!-- ENDIF -->
-
 			<p>{L_PROFILE_API_KEYS}</p><br />
+			<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 			<table cellspacing="1" class="table1">
 				<thead>
 				<tr>

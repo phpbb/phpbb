@@ -1,12 +1,15 @@
 <?php
 /**
- *
- * @package testing
- * @copyright (c) 2013 phpBB Group
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
- *
- */
-
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 class phpbb_api_auth_test extends phpbb_database_test_case
 {
@@ -15,7 +18,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 
 	/**
 	 * API Repository
-	 * @var \phpbb\model\repository\auth
+	 * @var \phpbb\api\repository\auth
 	 */
 	protected $auth_repository;
 	protected $auth;
@@ -39,7 +42,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			'rand_seed' => 0,
 		));
 
-		$this->auth_repository = new \phpbb\model\repository\auth($config,
+		$this->auth_repository = new \phpbb\api\repository\auth($config,
 			$this->db, $this->auth, new phpbb\request\request(), $phpbb_root_path, $phpEx);
 
 		if (!function_exists('unique_id'))
@@ -68,7 +71,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 		$this->db->sql_freeresult($result);
 	}
 
-	static public function allow_data()
+	static public function authorize_data()
 	{
 		return array(
 			array(
@@ -96,7 +99,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				400,
-				'\phpbb\model\exception\invalid_key_exception',
+				'\phpbb\api\exception\invalid_key_exception',
 				null,
 				array(
 					array(
@@ -110,7 +113,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				400,
-				'\phpbb\model\exception\duplicate_name_exception',
+				'\phpbb\api\exception\duplicate_name_exception',
 				null,
 				array(
 					array(
@@ -126,16 +129,16 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 	}
 
 	/**
-	 * @dataProvider allow_data
+	 * @dataProvider authorize_data
 	 */
-	public function test_allow($status, $exception, $where, $inputs, $expected, $description)
+	public function test_authorize($status, $exception, $where, $inputs, $expected, $description)
 	{
 		if($exception !== null) {
 			$this->setExpectedException($exception, null, $status);
 		}
 
 		foreach ($inputs as $input) {
-			$this->auth_repository->allow($input['exchange_key'], $input['user_id'], $input['name']);
+			$this->auth_repository->authorize($input['exchange_key'], $input['user_id'], $input['name']);
 		}
 
 		if($exception !== null) {
@@ -184,7 +187,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				400,
-				'\phpbb\model\exception\no_permission_exception',
+				'\phpbb\api\exception\no_permission_exception',
 				null,
 				array(
 					array(
@@ -196,7 +199,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				400,
-				'\phpbb\model\exception\invalid_key_exception',
+				'\phpbb\api\exception\invalid_key_exception',
 				null,
 				array(
 					array(
@@ -243,7 +246,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	static public function auth_data()
+	static public function authenticate_data()
 	{
 		return array(
 			array(
@@ -266,7 +269,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				400,
-				'\phpbb\model\exception\invalid_request_exception',
+				'\phpbb\api\exception\invalid_request_exception',
 				false,
 				'aaaaaaaaaaaaaaaa',
 				0,
@@ -275,7 +278,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				401,
-				'\phpbb\model\exception\not_authed_exception',
+				'\phpbb\api\exception\not_authed_exception',
 				true,
 				'invalid',
 				'invalid',
@@ -284,7 +287,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				403,
-				'\phpbb\model\exception\no_permission_exception',
+				'\phpbb\api\exception\no_permission_exception',
 				true,
 				'aaaaaaaaaaaaaaaa',
 				3,
@@ -293,7 +296,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			),
 			array(
 				400,
-				'\phpbb\model\exception\invalid_request_exception',
+				'\phpbb\api\exception\invalid_request_exception',
 				true,
 				'aaaaaaaaaaaaaaaa',
 				4,
@@ -304,9 +307,9 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 	}
 
 	/**
-	 * @dataProvider auth_data
+	 * @dataProvider authenticate_data
 	 */
-	public function test_auth($status, $exception, $nopermission, $auth_key, $serial, $hash, $description)
+	public function test_authenticate($status, $exception, $nopermission, $auth_key, $serial, $hash, $description)
 	{
 		if (!$nopermission)
 		{
@@ -319,7 +322,7 @@ class phpbb_api_auth_test extends phpbb_database_test_case
 			$this->setExpectedException($exception, null, $status);
 		}
 
-		$response = $this->auth_repository->auth(0, 'api/auth/verify', $auth_key, $serial, $hash);
+		$response = $this->auth_repository->authenticate(0, 'api/auth/verify', $auth_key, $serial, $hash);
 		$this->assertEquals($status, $response, $description);
 
 	}

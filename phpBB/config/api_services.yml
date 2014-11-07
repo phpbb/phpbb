@@ -1,0 +1,19 @@
+services:
+    api.controller.auth:
+        class: phpbb\api\controller\auth
+        arguments:
+            - @api.repository.auth
+            - @user
+            - @controller.helper
+            - @template
+            - @request
+            - @config
+            - @auth
+
+    api.repository.auth:
+        class: phpbb\api\repository\auth
+        arguments:
+            - @config
+            - @dbal.conn
+            - @auth
+            - @request

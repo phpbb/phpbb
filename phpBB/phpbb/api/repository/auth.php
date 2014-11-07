@@ -1,34 +1,26 @@
 <?php
 /**
- *
- * This file is part of the phpBB Forum Software package.
- *
- * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- * For full copyright and license information, please see
- * the docs/CREDITS.txt file.
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
-namespace phpbb\model\repository;
-
-/**
- * @ignore
- */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace phpbb\api\repository;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver;
-use phpbb\model\exception\api_exception;
-use phpbb\model\exception\duplicate_name_exception;
-use phpbb\model\exception\invalid_key_exception;
-use phpbb\model\exception\invalid_request_exception;
-use phpbb\model\exception\no_permission_exception;
-use phpbb\model\exception\not_authed_exception;
+use phpbb\api\exception\api_exception;
+use phpbb\api\exception\duplicate_name_exception;
+use phpbb\api\exception\invalid_key_exception;
+use phpbb\api\exception\invalid_request_exception;
+use phpbb\api\exception\no_permission_exception;
+use phpbb\api\exception\not_authed_exception;
 use phpbb\request\request;
 
 /**
@@ -92,7 +84,16 @@ class auth
 		return $exchange_key;
 	}
 
-	public function allow($exchange_key, $user_id, $name)
+	/**
+	 * Authorizes an application to the API
+	 *
+	 * @param $exchange_key
+	 * @param $user_id
+	 * @param $name
+	 * @throws duplicate_name_exception
+	 * @throws invalid_key_exception
+	 */
+	public function authorize($exchange_key, $user_id, $name)
 	{
 		if (strlen($exchange_key) !== 16)
 		{
@@ -137,6 +138,14 @@ class auth
 		$this->db->sql_freeresult();
 	}
 
+	/**
+	 * Exchanges an exchange key for the auth key and sign key
+	 *
+	 * @param string $exchange_key
+	 * @return array An array with an auth_key and an sign_key
+	 * @throws invalid_key_exception
+	 * @throws no_permission_exception
+	 */
 	public function exchange_key($exchange_key)
 	{
 		if (strlen($exchange_key) !== 16)
@@ -198,21 +207,17 @@ class auth
 	 * Verifies a request
 	 *
 	 * @param int $forum_id
-	 * @param null $request
-	 * @param null $auth_key
-	 * @param null $serial
-	 * @param null $hash
-	 * @throws \phpbb\model\exception\invalid_request_exception
-	 * @throws \phpbb\model\exception\no_permission_exception
-	 * @throws \phpbb\model\exception\not_authed_exception
-	 * @throws \phpbb\model\exception\api_exception
-	 * @internal param String $request The request url, for example api/forums/2....
-	 * @internal param string $auth_key
-	 * @internal param $serial
-	 * @internal param $hash
+	 * @param string|null $request
+	 * @param string|null $auth_key
+	 * @param int|null $serial
+	 * @param string|null $hash
+	 * @throws \phpbb\api\exception\invalid_request_exception
+	 * @throws \phpbb\api\exception\no_permission_exception
+	 * @throws \phpbb\api\exception\not_authed_exception
+	 * @throws \phpbb\api\exception\api_exception
 	 * @return array|int
 	 */
-	public function auth($forum_id = 0, $request = null, $auth_key = null, $serial = null, $hash = null)
+	public function authenticate($forum_id = 0, $request = null, $auth_key = null, $serial = null, $hash = null)
 	{
 		$request = (isset($request)) ? $request : $this->request->server("PATH_INFO");
 		$auth_key = (isset($auth_key)) ? $auth_key : $this->request->variable('auth_key', 'guest');
@@ -278,8 +283,8 @@ class auth
 				}
 
 				$sql = 'UPDATE ' . API_KEYS_TABLE
-					. ' SET serial = ' . $this->db->sql_escape($serial)
-					. " WHERE user_id = '$user_id'";
+					. " SET serial = $serial
+					  WHERE user_id = $user_id";
 				$this->db->sql_query($sql);
 
 				return $user_id;
