@@ -178,6 +178,7 @@ class admin_form extends form
 			'S_CONTACT_ADMIN'	=> true,
 			'S_CONTACT_FORM'	=> $this->config['contact_admin_form_enable'],
 			'S_IS_REGISTERED'	=> $this->user->data['is_registered'],
+			'S_POST_ACTION'		=> append_sid($this->phpbb_root_path . 'memberlist.' . $this->phpEx, 'mode=contactadmin'),
 
 			'CONTACT_INFO'		=> $l_admin_info,
 			'MESSAGE'			=> $this->body,
