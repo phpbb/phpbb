@@ -271,7 +271,7 @@ class version_helper
 			{
 				foreach ($branches as $branch => $branch_data)
 				{
-					$info[$stability][$branch]['announcement'] = str_replace('&', '&amp;', $branch_data['announcement']);
+					$info[$stability][$branch]['announcement'] = (!empty($branch_data['announcement'])) ? str_replace('&', '&amp;', $branch_data['announcement']) : '';
 				}
 			}
 
