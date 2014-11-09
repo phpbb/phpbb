@@ -500,7 +500,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 */
 function move_topics($topic_ids, $forum_id, $auto_sync = true)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (empty($topic_ids))
 	{
@@ -548,6 +548,17 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		sync('forum', 'forum_id', $forum_ids, true, true);
 		unset($forum_ids);
 	}
+                                                                
+        /**
+        * Event after topics are moved to another forum
+        *
+        * @event core.move_topics
+        * @var	array	topic_ids	Topics moving
+        * @var	int	forum_id	Id of the new forum parent
+        * @since 3.1.2
+        */
+        $vars = array('topic_ids', 'forum_id');
+        extract($phpbb_dispatcher->trigger_event('core.move_topics', compact($vars)));
 }
 
 /**
@@ -618,7 +629,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db, $config, $phpbb_container;
+	global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -680,7 +691,17 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	}
 	unset($table_ary);
 
-	$moved_topic_ids = array();
+        /**
+        * Event when we delete topics
+        *
+        * @event core.delete_topics
+        * @var	array	topic_ids	Array of topic Id to be deleted
+        * @since 3.1.2
+        */
+        $vars = array('topic_ids');
+        extract($phpbb_dispatcher->trigger_event('core.delete_topics', compact($vars)));
+
+        $moved_topic_ids = array();
 
 	// update the other forums
 	$sql = 'SELECT topic_id, forum_id
