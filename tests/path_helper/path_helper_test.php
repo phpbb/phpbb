@@ -411,6 +411,21 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'http://www.phpbb.com/community',
 				'../community/',
 			),
+			array(
+				'http://www.phpbb.com/foobar',
+				'http://www.phpbb.com',
+				'',
+			),
+			array(
+				'http://www.foobar.com',
+				'http://www.phpbb.com',
+				'/www.phpbb.com/',
+			),
+			array(
+				'foobar',
+				'http://www.phpbb.com/community',
+				'',
+			)
 		);
 	}
 

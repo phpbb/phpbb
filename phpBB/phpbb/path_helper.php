@@ -278,10 +278,16 @@ class path_helper
 			$referer_dir = dirname($referer_dir);
 		}
 
-		while (strpos($absolute_board_url, $referer_dir) !== 0)
+		while (($dir_position = strpos($absolute_board_url, $referer_dir)) !== 0)
 		{
 			$fixed_root_path .= '../';
 			$referer_dir = dirname($referer_dir);
+
+			// Just return phpbb_root_path if we reach the top directory
+			if ($referer_dir === '.')
+			{
+				return $this->phpbb_root_path;
+			}
 		}
 
 		$fixed_root_path .= substr($absolute_board_url, strlen($referer_dir) + 1);
