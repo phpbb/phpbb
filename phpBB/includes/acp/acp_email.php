@@ -72,11 +72,15 @@ class acp_email
 				if ($usernames)
 				{
 					// If giving usernames the admin is able to email inactive users too...
-					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang
-						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
-							AND user_allow_massemail = 1
-						ORDER BY user_lang, user_notify_type'; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
+					$sql_ary = array(
+						'SELECT'	=> 'username, user_email, user_jabber, user_notify_type, user_lang',
+						'FROM'		=> array(
+							USERS_TABLE		=> '',
+						),
+						'WHERE'		=> $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
+							AND user_allow_massemail = 1',
+						'ORDER_BY'	=> 'user_lang, user_notify_type',
+					);
 				}
 				else
 				{
@@ -123,8 +127,8 @@ class acp_email
 							),
 						);
 					}
-					$sql = $db->sql_build_query('SELECT', $sql_ary);
 				}
+				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 
