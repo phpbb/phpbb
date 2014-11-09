@@ -329,8 +329,8 @@ class manager
 		$result = $this->prefix_avatar_columns($prefix, self::$default_row);
 
 		$sql = 'UPDATE ' . $table . '
-				SET ' . $db->sql_build_array('UPDATE', $result) . '
-				WHERE ' . $prefix . 'id = ' . (int) $avatar_data['id'];
+			SET ' . $db->sql_build_array('UPDATE', $result) . '
+			WHERE ' . $prefix . 'id = ' . (int) $avatar_data['id'];
 		$db->sql_query($sql);
 
 		// Make sure we also delete this avatar from the users
@@ -339,8 +339,8 @@ class manager
 			$result = $this->prefix_avatar_columns('user_', self::$default_row);
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
-					SET ' . $db->sql_build_array('UPDATE', $result) . "
-					WHERE user_avatar = '" . $db->sql_escape($avatar_data['avatar']) . "'";
+				SET ' . $db->sql_build_array('UPDATE', $result) . "
+				WHERE user_avatar = '" . $db->sql_escape($avatar_data['avatar']) . "'";
 			$db->sql_query($sql);
 		}
 	}
