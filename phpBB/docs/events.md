@@ -16,6 +16,12 @@ acp_bbcodes_edit_fieldsets_after
 * Since: 3.1.0-a3
 * Purpose: Add settings to BBCode add/edit form
 
+acp_email_options_after
+===
+* Location: adm/style/acp_email.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to mass email form
+
 acp_forums_normal_settings_append
 ===
 * Location: adm/style/acp_forums.html
