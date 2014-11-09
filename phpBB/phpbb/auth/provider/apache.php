@@ -137,7 +137,7 @@ class apache extends \phpbb\auth\provider\base
 			return array(
 				'status'		=> LOGIN_SUCCESS_CREATE_PROFILE,
 				'error_msg'		=> false,
-				'user_row'		=> user_row_apache($php_auth_user, $php_auth_pw),
+				'user_row'		=> $this->user_row($php_auth_user, $php_auth_pw),
 			);
 		}
 
@@ -185,7 +185,7 @@ class apache extends \phpbb\auth\provider\base
 			}
 
 			// create the user if he does not exist yet
-			user_add(user_row_apache($php_auth_user, $php_auth_pw));
+			user_add($this->user_row($php_auth_user, $php_auth_pw));
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
