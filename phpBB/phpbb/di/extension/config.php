@@ -39,16 +39,24 @@ class config extends Extension
 	*/
 	public function load(array $config, ContainerBuilder $container)
 	{
-		$container->setParameter('core.adm_relative_path', ($this->config_php->get('phpbb_adm_relative_path') ? $this->config_php->get('phpbb_adm_relative_path') : 'adm/'));
-		$container->setParameter('core.table_prefix', $this->config_php->get('table_prefix'));
-		$container->setParameter('cache.driver.class', $this->convert_30_acm_type($this->config_php->get('acm_type')));
-		$container->setParameter('dbal.driver.class', $this->config_php->convert_30_dbms_to_31($this->config_php->get('dbms')));
-		$container->setParameter('dbal.dbhost', $this->config_php->get('dbhost'));
-		$container->setParameter('dbal.dbuser', $this->config_php->get('dbuser'));
-		$container->setParameter('dbal.dbpasswd', $this->config_php->get('dbpasswd'));
-		$container->setParameter('dbal.dbname', $this->config_php->get('dbname'));
-		$container->setParameter('dbal.dbport', $this->config_php->get('dbport'));
-		$container->setParameter('dbal.new_link', defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK);
+		$parameters = array(
+			'core.adm_relative_path'	=> $this->config_php->get('phpbb_adm_relative_path') ? $this->config_php->get('phpbb_adm_relative_path') : 'adm/',
+			'core.table_prefix'			=> $this->config_php->get('table_prefix'),
+			'cache.driver.class'		=> $this->convert_30_acm_type($this->config_php->get('acm_type')),
+			'dbal.driver.class'			=> $this->config_php->convert_30_dbms_to_31($this->config_php->get('dbms')),
+			'dbal.dbhost'				=> $this->config_php->get('dbhost'),
+			'dbal.dbuser'				=> $this->config_php->get('dbuser'),
+			'dbal.dbpasswd'				=> $this->config_php->get('dbpasswd'),
+			'dbal.dbname'				=> $this->config_php->get('dbname'),
+			'dbal.dbport'				=> $this->config_php->get('dbport'),
+			'dbal.new_link'				=> defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK,
+		);
+		$parameter_bag = $container->getParameterBag();
+
+		foreach ($parameters as $parameter => $value)
+		{
+			$container->setParameter($parameter, $parameter_bag->escapeValue($value));
+		}
 	}
 
 	/**
