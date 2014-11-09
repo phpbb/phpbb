@@ -26,7 +26,7 @@ class acp_email
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $phpbb_dispatcher;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
@@ -128,6 +128,16 @@ class acp_email
 						);
 					}
 				}
+				/**
+				* Modify sql query to change the list of users the email is sent to
+				*
+				* @event core.acp_email_modify_sql
+				* @var	array	sql_ary		Array which is used to build the sql query
+				* @since 3.1.2-RC1
+				*/
+				$vars = array('sql_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_email_modify_sql', compact($vars)));
+
 				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
