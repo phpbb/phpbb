@@ -1788,6 +1788,29 @@ class acp_forums
 	{
 		global $db, $config, $phpbb_root_path, $phpEx;
 
+                global $phpbb_dispatcher;
+
+		$errors = array();
+
+		/**
+		* Event when we delete forum content
+		*
+		* @event core.acp_manage_forums_delete_content
+		* @var	int		forum_id	Id of the forum
+		* @var	array	errors		Array of errors, should be strings and not
+		*							language key. If this array is not empty,
+		*							The content will not be deleted.
+		* @since 3.1.2
+		*/
+		$vars = array('forum_id', 'errors');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_delete_content', compact($vars)));
+
+		// Return if there were errors
+		if (!empty($errors))
+		{
+			return $errors;
+		}
+                
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
 		$db->sql_transaction('begin');
