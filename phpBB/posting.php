@@ -1125,7 +1125,7 @@ if ($submit || $preview || $refresh)
 			break;
 		}
 
-		if (!$auth->acl_get($auth_option, $forum_id))
+		if ($auth_option != '' && !$auth->acl_get($auth_option, $forum_id))
 		{
 			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod.
 			// Another case would be a mod not having sticky permissions for example but edit permissions.
