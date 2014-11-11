@@ -24,7 +24,7 @@ class error_collector
 
 	function install()
 	{
-		set_error_handler(array(&$this, 'error_handler'));
+		set_error_handler(array(&$this, 'error_handler'), error_reporting());
 	}
 
 	function uninstall()
