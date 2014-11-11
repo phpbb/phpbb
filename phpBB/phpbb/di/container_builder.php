@@ -193,7 +193,7 @@ class container_builder
 			}
 
 			$loader = new YamlFileLoader($this->container, new FileLocator(phpbb_realpath($this->get_config_path())));
-			$loader->load(PHPBB_ENVIRONMENT . '/config.yml');
+			$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 			$this->inject_custom_parameters();
 
@@ -327,7 +327,7 @@ class container_builder
 	 */
 	protected function get_cache_dir()
 	{
-		return $this->cache_dir ?: $this->phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
+		return $this->cache_dir ?: $this->phpbb_root_path . 'cache/' . $this->get_environment() . '/';
 	}
 
 	/**
@@ -457,7 +457,7 @@ class container_builder
 			array(
 				'core.root_path'     => $this->phpbb_root_path,
 				'core.php_ext'       => $this->php_ext,
-				'core.environment'   => PHPBB_ENVIRONMENT,
+				'core.environment'   => $this->get_environment(),
 				'core.debug'         => DEBUG,
 			),
 			$this->get_env_parameters()
@@ -494,5 +494,15 @@ class container_builder
 	{
 		$filename = str_replace(array('/', '.'), array('slash', 'dot'), $this->phpbb_root_path);
 		return $this->get_cache_dir() . 'container_' . $filename . '.' . $this->php_ext;
+	}
+
+	/**
+	 * Return the name of the current environment.
+	 *
+	 * @return string
+	 */
+	protected function get_environment()
+	{
+		return PHPBB_ENVIRONMENT;
 	}
 }

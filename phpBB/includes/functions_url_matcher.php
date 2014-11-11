@@ -35,7 +35,9 @@ if (!defined('IN_PHPBB'))
 */
 function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext $context, $root_path, $php_ext)
 {
-	$config_cache = new ConfigCache($root_path . 'cache/' . PHPBB_ENVIRONMENT . '/url_matcher.' . $php_ext, defined('DEBUG'));
+	global $phpbb_container;
+
+	$config_cache = new ConfigCache($root_path . 'cache/' . $phpbb_container->getParameter('core.environment') . '/url_matcher.' . $php_ext, defined('DEBUG'));
 	if (!$config_cache->isFresh())
 	{
 		phpbb_create_dumped_url_matcher($manager, $root_path, $config_cache);
@@ -90,6 +92,8 @@ function phpbb_create_url_matcher(\phpbb\extension\manager $manager, RequestCont
 */
 function phpbb_load_url_matcher(RequestContext $context, $root_path, $php_ext)
 {
-	require($root_path . 'cache/' . PHPBB_ENVIRONMENT . '/url_matcher.' . $php_ext);
+	global $phpbb_container;
+
+	require($root_path . 'cache/' . $phpbb_container->getParameter('core.environment') . '/url_matcher.' . $php_ext);
 	return new phpbb_url_matcher($context);
 }
