@@ -102,7 +102,6 @@ phpbb_require_updated('includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 phpbb_include_updated('includes/functions_admin.' . $phpEx);
-phpbb_include_updated('includes/utf/utf_normalizer.' . $phpEx);
 phpbb_include_updated('includes/utf/utf_tools.' . $phpEx);
 phpbb_require_updated('includes/functions_install.' . $phpEx);
 

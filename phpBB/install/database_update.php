@@ -74,7 +74,6 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
-include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Set PHP error handler to ours
