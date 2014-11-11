@@ -123,7 +123,7 @@ class db extends \phpbb\auth\provider\base
 				'username_clean'		=> $username_clean,
 			);
 			$sql = 'INSERT INTO ' . LOGIN_ATTEMPT_TABLE . $this->db->sql_build_array('INSERT', $attempt_data);
-			$result = $this->db->sql_query($sql);
+			$this->db->sql_query($sql);
 		}
 		else
 		{
