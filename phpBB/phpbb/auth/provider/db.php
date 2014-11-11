@@ -87,7 +87,7 @@ class db extends \phpbb\auth\provider\base
 
 		$username_clean = utf8_clean_string($username);
 
-		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type, user_login_attempts
+		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
 			WHERE username_clean = '" . $this->db->sql_escape($username_clean) . "'";
 		$result = $this->db->sql_query($sql);
@@ -175,7 +175,7 @@ class db extends \phpbb\auth\provider\base
 		}
 
 		// Check password ...
-		if ($this->passwords_manager->check($password, $row['user_password']))
+		if ($this->passwords_manager->check($password, $row['user_password'], $row))
 		{
 			// Check for old password hash...
 			if ($this->passwords_manager->convert_flag || strlen($row['user_password']) == 32)
