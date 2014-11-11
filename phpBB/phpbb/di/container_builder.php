@@ -162,7 +162,7 @@ class container_builder
 				$installed_exts = $this->get_installed_extensions();
 				foreach ($installed_exts as $ext_name => $path)
 				{
-					$extension_class = '\\' . str_replace('/', '\\', $ext_name) . '\\di\extension';
+					$extension_class = '\\' . str_replace('/', '\\', $ext_name) . '\\di\\extension';
 
 					if (!class_exists($extension_class))
 					{
