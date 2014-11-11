@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "1344b97ad0b4c8eb75a384a545065333",
+    "hash": "3c4d83fc3d00d6d76787dbb1d89ee405",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -2313,11 +2313,17 @@
             "time": "2014-09-23 05:25:11"
         }
     ],
-    "aliases": [],
+    "aliases": [
+
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.3.3"
     },
-    "platform-dev": []
+    "platform-dev": [
+
+    ]
 }
