@@ -26,17 +26,18 @@ class error_collector
 	 * the error_reporting() function will be used to determine which errors
 	 * the collector will keep.
 	 *
+	 * @see PHPBB3-13306
 	 * @param int|null $error_types
 	 */
 	function __construct($error_types = null)
 	{
 		$this->errors = array();
-		$this->error_types = ($error_types !== null) ? $error_types : error_reporting();
+		$this->error_types = $error_types;
 	}
 
 	function install()
 	{
-		set_error_handler(array(&$this, 'error_handler'), $this->error_types);
+		set_error_handler(array(&$this, 'error_handler'), ($this->error_types !== null) ? $this->error_types : error_reporting());
 	}
 
 	function uninstall()
