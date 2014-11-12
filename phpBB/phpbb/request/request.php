@@ -416,4 +416,27 @@ class request implements \phpbb\request\request_interface
 	{
 		return $this->input[$super_global];
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function escape($var, $multibyte)
+	{
+		if (is_array($var))
+		{
+			$result = array();
+			foreach ($var as $key => $value)
+			{
+				$this->type_cast_helper->set_var($key, $key, gettype($key), $multibyte);
+				$result[$key] = $this->escape($value, $multibyte);
+			}
+			$var = $result;
+		}
+		else
+		{
+			$this->type_cast_helper->set_var($var, $var, 'string', $multibyte);
+		}
+
+		return $var;
+	}
 }

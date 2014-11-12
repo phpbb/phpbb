@@ -1,15 +1,15 @@
 <?php
 /**
- *
- * This file is part of the phpBB Forum Software package.
- *
- * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- * For full copyright and license information, please see
- * the docs/CREDITS.txt file.
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 require_once dirname(__FILE__) . '/base.php';
 
@@ -27,8 +27,8 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	}
 
 	/**
-	 * @dataProvider security_variables
-	 */
+	* @dataProvider security_variables
+	*/
 	public function test_query_string_php_self($query_string, $expected)
 	{
 		global $symfony_request, $request;
@@ -46,8 +46,8 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	}
 
 	/**
-	 * @dataProvider security_variables
-	 */
+	* @dataProvider security_variables
+	*/
 	public function test_query_string_request_uri($query_string, $expected)
 	{
 		global $symfony_request, $request;

@@ -44,6 +44,9 @@ class helper
 	/* @var \phpbb\symfony_request */
 	protected $symfony_request;
 
+	/* @var \phpbb\request\request_interface */
+	protected $request;
+
 	/**
 	* @var \phpbb\filesystem The filesystem object
 	*/
@@ -70,16 +73,18 @@ class helper
 	* @param \phpbb\controller\provider $provider Path provider
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
+	* @param \phpbb\request\request_interface $request phpBB request object
 	* @param \phpbb\filesystem $filesystem The filesystem object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
 		$this->symfony_request = $symfony_request;
+		$this->request = $request;
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -153,7 +158,7 @@ class helper
 			}
 		}
 
-		$base_url = $this->filesystem->clean_path($base_url);
+		$base_url = $this->request->escape($this->filesystem->clean_path($base_url), true);
 
 		$context->setBaseUrl($base_url);
 
@@ -197,6 +202,6 @@ class helper
 	*/
 	public function get_current_url()
 	{
-		return generate_board_url(true) . $this->symfony_request->getRequestUri();
+		return generate_board_url(true) . $this->request->escape($this->symfony_request->getRequestUri(), true);
 	}
 }
