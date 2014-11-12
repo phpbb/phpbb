@@ -69,11 +69,6 @@ class phpbb_build_url_test extends phpbb_test_case
 				array('f', 'style', 't'),
 				'http://test.phpbb.com/viewtopic.php?',
 			),
-			array(
-				'posting.php?f=2&mode=delete&p=20%22%3Cscript%3Ealert%281%29%3B%3C%2Fscript%3E',
-				false,
-				'phpBB/posting.php?f=2&amp;mode=delete&amp;p=20%22%3Cscript%3Ealert%281%29%3B%3C%2Fscript%3E',
-			)
 		);
 	}
 
@@ -85,7 +80,6 @@ class phpbb_build_url_test extends phpbb_test_case
 		global $user, $phpbb_root_path;
 
 		$user->page['page'] = $page;
-
 		$output = build_url($strip_vars);
 
 		$this->assertEquals($expected, $output);
