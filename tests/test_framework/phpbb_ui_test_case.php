@@ -49,7 +49,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		{
 			try {
 				$capabilities = array(\WebDriverCapabilityType::BROWSER_NAME => 'firefox');
-				self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);	
+				self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);
 			} catch (WebDriverCurlException $e) {
 				self::markTestSkipped('PhantomJS webserver is not running.');
 			}
