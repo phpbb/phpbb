@@ -352,7 +352,7 @@ class type_bool extends type_base
 			}
 		}
 
-		if ($step == 3 && ($field_data[$key] || $action != 'edit') && $key == 'l_lang_options')
+		if ($key == 'l_lang_options' && $this->request->is_set($key))
 		{
 			$field_data[$key] = $this->request->variable($key, array(0 => array('')), true);
 
