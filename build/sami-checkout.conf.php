@@ -31,23 +31,8 @@ $iterator = Symfony\Component\Finder\Finder::create()
 	->notPath('data')
 ;
 
-$versions = Sami\Version\GitVersionCollection::create(__DIR__ . '/../')
-	/*
-	This would be nice, but currently causes various problems that need
-	debugging.
-	->addFromTags('release-3.0.*')
-	->add('develop-olympus', '3.0-next (olympus)')
-	->addFromTags('release-3.1.*')
-	->add('develop-ascraeus', '3.1-next (ascraeus)')
-	->add('develop')
-	*/
-	->add('develop-olympus')
-	->add('develop-ascraeus')
-;
-
 $config = array(
 	'theme'                => 'enhanced',
-	'versions'             => $versions,
 	'title'                => 'phpBB API Documentation',
 	'build_dir'            => __DIR__.'/api/output/%version%',
 	'cache_dir'            => __DIR__.'/api/cache/%version%',
