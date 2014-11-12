@@ -31,7 +31,7 @@ class error_collector
 	function __construct($error_types = null)
 	{
 		$this->errors = array();
-		$this->error_types = !empty($error_types) ? $error_types : error_reporting();
+		$this->error_types = ($error_types !== null) ? $error_types : error_reporting();
 	}
 
 	function install()
