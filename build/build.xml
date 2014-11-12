@@ -73,9 +73,16 @@
 			passthru="true" />
 	</target>
 
+	<!-- Builds docs for current branch into build/api/output/master -->
 	<target name="docs">
 		<exec dir="."
-			command="phpBB/vendor/bin/sami.php update build/sami.conf.php"
+			command="phpBB/vendor/bin/sami.php update build/sami-checkout.conf.php"
+			passthru="true" />
+	</target>
+	<!-- Builds docs for multiple branches/tags into build/api/output/$branch -->
+	<target name="docs-all">
+		<exec dir="."
+			command="phpBB/vendor/bin/sami.php update build/sami-all.conf.php"
 			passthru="true" />
 	</target>
 
