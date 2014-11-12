@@ -34,6 +34,14 @@ phpbb.plupload.initialize = function() {
 		if (uploader.features.dragdrop) {
 			$('#drag-n-drop-message').show();
 		}
+
+		// Ensure "Add files" button position is correctly calculated.
+		if ($('#attach-panel-multi').is(':visible')) {
+			uploader.refresh();
+		}
+		$('[data-subpanel="attach-panel"]').one('click', function() {
+			uploader.refresh();
+		});
 	});
 };
 
