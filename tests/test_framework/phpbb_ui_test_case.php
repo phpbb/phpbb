@@ -10,7 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once __DIR__ . '/../vendor/facebook/webdriver/lib/__init__.php';
+
 require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
 
 class phpbb_ui_test_case extends phpbb_test_case
@@ -31,6 +31,18 @@ class phpbb_ui_test_case extends phpbb_test_case
 	{
 		parent::setUpBeforeClass();
 
+		if (version_compare(PHP_VERSION, '5.3.19', '<'))
+		{
+			self::markTestSkipped('UI test case requires at least PHP 5.3.19.');
+		}
+		else if (!class_exists('\RemoteWebDriver'))
+		{
+			self::markTestSkipped(
+				'Could not find RemoteWebDriver class. ' .
+				'Run "php ../composer.phar install" from the tests folder.'
+			);
+		}
+
 		self::$config = phpbb_test_case_helpers::get_test_config();
 		self::$root_url = self::$config['phpbb_functional_url'];
 
@@ -49,7 +61,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		{
 			try {
 				$capabilities = array(\WebDriverCapabilityType::BROWSER_NAME => 'firefox');
-				self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);	
+				self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);
 			} catch (WebDriverCurlException $e) {
 				self::markTestSkipped('PhantomJS webserver is not running.');
 			}
