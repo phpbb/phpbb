@@ -75,7 +75,7 @@ class ucp_login_link
 		{
 			if ($request->is_set_post('login'))
 			{
-				$login_username = $request->variable('login_username', '', false, \phpbb\request\request_interface::POST);
+				$login_username = $request->variable('login_username', '', true, \phpbb\request\request_interface::POST);
 				$login_password = $request->untrimmed_variable('login_password', '', true, \phpbb\request\request_interface::POST);
 
 				$login_result = $auth_provider->login($login_username, $login_password);
