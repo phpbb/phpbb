@@ -16,6 +16,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\cron\run;
 
 require_once dirname(__FILE__) . '/tasks/simple.php';
+require_once dirname(__FILE__) . '/../../../phpBB/includes/functions.php';
 
 class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 {
