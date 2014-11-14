@@ -11,6 +11,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_acp.php';
+
 class phpbb_functions_insert_config_array_test extends phpbb_test_case
 {
 	public function config_display_vars()
