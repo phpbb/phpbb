@@ -32,8 +32,8 @@
     </groups>
 
     <filter>
-        <blacklist>
-            <directory>./tests</directory>
-        </blacklist>
+        <whitelist>
+            <directory suffix=".php">./phpBB/includes/</directory>
+        </whitelist>
     </filter>
 </phpunit>
