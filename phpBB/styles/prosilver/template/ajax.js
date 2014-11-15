@@ -101,7 +101,6 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 phpbb.addAjaxCallback('notification.mark_all_read', function(res) {
 	if (typeof res.success !== 'undefined') {
 		phpbb.markNotifications($('#notification_list li.bg2'), 0);
-		$('#notification_list').hide();
 		phpbb.closeDarkenWrapper(3000);
 	}
 });
