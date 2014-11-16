@@ -15,11 +15,13 @@ class phpbb_mock_metadata_manager extends \phpbb\extension\metadata_manager
 {
 	public function set_metadata($metadata)
 	{
+		array_walk_recursive($metadata, array($this, 'sanitize_json'));
 		$this->metadata = $metadata;
 	}
 
 	public function merge_metadata($metadata)
 	{
+		array_walk_recursive($metadata, array($this, 'sanitize_json'));
 		$this->metadata = array_merge($this->metadata, $metadata);
 	}
 }
