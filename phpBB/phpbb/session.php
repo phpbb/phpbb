@@ -31,10 +31,11 @@ class session
 	var $update_session_page = true;
 
 	/**
-	* Extract current session page
-	*
-	* @param string $root_path current root path (phpbb_root_path)
-	*/
+	 * Extract current session page
+	 *
+	 * @param string $root_path current root path (phpbb_root_path)
+	 * @return array
+	 */
 	static function extract_current_page($root_path)
 	{
 		global $request, $symfony_request, $phpbb_filesystem;
@@ -42,8 +43,8 @@ class session
 		$page_array = array();
 
 		// First of all, get the request uri...
-		$script_name = $symfony_request->getScriptName();
-		$args = explode('&amp;', $symfony_request->getQueryString());
+		$script_name = $request->escape($symfony_request->getScriptName(), true);
+		$args = $request->escape(explode('&', $symfony_request->getQueryString()), true);
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)

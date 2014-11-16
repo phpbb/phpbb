@@ -73,6 +73,8 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 
 	protected function setUp()
 	{
+		global $phpbb_dispatcher;
+
 		parent::setUp();
 
 		$GLOBALS['config'] = array(
@@ -80,6 +82,8 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 		);
 
 		$this->path_helper = $this->get_path_helper();
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 	}
 
 	/**

@@ -85,7 +85,6 @@ class phpbb_build_url_test extends phpbb_test_case
 		global $user, $phpbb_root_path;
 
 		$user->page['page'] = $page;
-
 		$output = build_url($strip_vars);
 
 		$this->assertEquals($expected, $output);
