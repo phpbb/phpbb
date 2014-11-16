@@ -50,8 +50,7 @@ function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext
 * Create a new UrlMatcher class and dump it into the cache file
 *
 * @param \phpbb\extension\manager $manager Extension manager
-* @param string $root_path Root path
- * @param ConfigCache $config_cache The config cache
+* @param string $root_path Root path* @param ConfigCache $config_cache The config cache
 * @return null
 */
 function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $root_path, $config_cache)
