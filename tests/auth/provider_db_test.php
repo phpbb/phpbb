@@ -78,7 +78,14 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 				),
 		);
 
-		$this->assertEquals($expected, $provider->login('foobar', 'example'));
+		$login_return = $provider->login('foobar', 'example');
+		$this->assertEquals($expected['status'], $login_return['status']);
+		$this->assertEquals($expected['error_msg'], $login_return['error_msg']);
+
+		foreach ($expected['user_row'] as $key => $value)
+		{
+			$this->assertEquals($value, $login_return['user_row'][$key]);
+		}
 
 		// Check if convert works
 		$login_return = $provider->login('foobar2', 'example');
