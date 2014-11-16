@@ -154,6 +154,7 @@ class path_helper
 			return $this->web_root_path;
 		}
 
+		// We do not need to escape $path_info, $request_uri and $script_name because we can not find their content in the result.
 		// Path info (e.g. /foo/bar)
 		$path_info = $this->filesystem->clean_path($this->symfony_request->getPathInfo());
 
@@ -203,9 +204,12 @@ class path_helper
 		*/
 		if ($this->request->is_ajax() && $this->symfony_request->get('_referer'))
 		{
+			// We need to escape $absolute_board_url because it can be partially concatenated to the result.
+			$absolute_board_url = $this->request->escape($this->symfony_request->getSchemeAndHttpHost() . $this->symfony_request->getBasePath(), true);
+
 			$referer_web_root_path = $this->get_web_root_path_from_ajax_referer(
 				$this->symfony_request->get('_referer'),
-				$this->symfony_request->getSchemeAndHttpHost() . $this->symfony_request->getBasePath()
+				$absolute_board_url
 			);
 			return $this->web_root_path = $this->phpbb_root_path . $referer_web_root_path;
 		}

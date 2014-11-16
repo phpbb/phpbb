@@ -20,33 +20,25 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	public function security_variables()
 	{
 		return array(
-			array('http://localhost/phpBB/index.php', 'mark=forums&x="><script>alert(/XSS/);</script>', 'mark=forums&x=%22%3E%3Cscript%3Ealert(/XSS/);%3C/script%3E'),
-			array('http://localhost/phpBB/index.php', 'mark=forums&x=%22%3E%3Cscript%3Ealert(/XSS/);%3C/script%3E', 'mark=forums&x=%22%3E%3Cscript%3Ealert(/XSS/);%3C/script%3E'),
+			array('mark=forums&x="><script>alert(/XSS/);</script>', 'mark=forums&x=%22%3E%3Cscript%3Ealert%28%2FXSS%2F%29%3B%3C%2Fscript%3E'),
+			array('mark=forums&x=%22%3E%3Cscript%3Ealert(/XSS/);%3C/script%3E', 'mark=forums&x=%22%3E%3Cscript%3Ealert%28%2FXSS%2F%29%3B%3C%2Fscript%3E'),
+			array('mark=forums&x=%22%3E%3Cscript%3Ealert%28%2FXSS%2F%29%3B%3C%2Fscript%3E', 'mark=forums&x=%22%3E%3Cscript%3Ealert%28%2FXSS%2F%29%3B%3C%2Fscript%3E'),
 		);
 	}
 
 	/**
 	* @dataProvider security_variables
 	*/
-	public function test_query_string_php_self($url, $query_string, $expected)
+	public function test_query_string_php_self($query_string, $expected)
 	{
 		global $symfony_request, $request;
 
-		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
-			$request,
-		));
-		$symfony_request->expects($this->any())
-			->method('getScriptName')
-			->will($this->returnValue($this->sanitizer($url)));
-		$symfony_request->expects($this->any())
-			->method('getQueryString')
-			->will($this->returnValue($this->sanitizer($query_string)));
-		$symfony_request->expects($this->any())
-			->method('getBasePath')
-			->will($this->returnValue($server['REQUEST_URI']));
-		$symfony_request->expects($this->sanitizer($this->any()))
-			->method('getPathInfo')
-			->will($this->returnValue($this->sanitizer('/')));
+		$this->server['REQUEST_URI'] = '';
+		$this->server['QUERY_STRING'] = $query_string;
+
+		$request = new phpbb_mock_request(array(), array(), array(), $this->server);
+		$symfony_request = new \phpbb\symfony_request($request);
+
 		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with PHP_SELF filled.';
@@ -56,41 +48,18 @@ class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 	/**
 	* @dataProvider security_variables
 	*/
-	public function test_query_string_request_uri($url, $query_string, $expected)
+	public function test_query_string_request_uri($query_string, $expected)
 	{
 		global $symfony_request, $request;
 
-		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
-			$request,
-		));
-		$symfony_request->expects($this->any())
-			->method('getScriptName')
-			->will($this->returnValue($this->sanitizer($url)));
-		$symfony_request->expects($this->any())
-			->method('getQueryString')
-			->will($this->returnValue($this->sanitizer($query_string)));
-		$symfony_request->expects($this->any())
-			->method('getBasePath')
-			->will($this->returnValue($this->sanitizer($server['REQUEST_URI'])));
-		$symfony_request->expects($this->any())
-			->method('getPathInfo')
-			->will($this->returnValue($this->sanitizer('/')));
+		$this->server['QUERY_STRING'] = $query_string;
+
+		$request = new phpbb_mock_request(array(), array(), array(), $this->server);
+		$symfony_request = new \phpbb\symfony_request($request);
 
 		$result = \phpbb\session::extract_current_page('./');
 
 		$label = 'Running extract_current_page on ' . $query_string . ' with REQUEST_URI filled.';
 		$this->assertEquals($expected, $result['query_string'], $label);
-	}
-
-	protected function sanitizer($value)
-	{
-		// Fix for objects passed in phpunit
-		if (is_object($value))
-		{
-			return $value;
-		}
-		$type_cast_helper = new \phpbb\request\type_cast_helper();
-		$type_cast_helper->set_var($value, $value, gettype($value), true);
-		return str_replace('&amp;', '&', $value);
 	}
 }
