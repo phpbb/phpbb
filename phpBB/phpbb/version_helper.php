@@ -259,20 +259,18 @@ class version_helper
 
 			$info = json_decode($info, true);
 
+			// Sanitize any data we retrieve from a server
+			$json_sanitizer = function(&$value, $key) {
+				$type_cast_helper = new \phpbb\request\type_cast_helper();
+				$type_cast_helper->set_var($value, $value, gettype($value), true);
+			};
+			array_walk_recursive($info, $json_sanitizer);
+
 			if (empty($info['stable']) && empty($info['unstable']))
 			{
 				$this->user->add_lang('acp/common');
 
 				throw new \RuntimeException($this->user->lang('VERSIONCHECK_FAIL'));
-			}
-
-			// Replace & with &amp; on announcement links
-			foreach ($info as $stability => $branches)
-			{
-				foreach ($branches as $branch => $branch_data)
-				{
-					$info[$stability][$branch]['announcement'] = (!empty($branch_data['announcement'])) ? str_replace('&', '&amp;', $branch_data['announcement']) : '';
-				}
 			}
 
 			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];
