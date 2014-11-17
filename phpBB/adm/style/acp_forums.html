@@ -111,7 +111,7 @@
 
 	<fieldset>
 		<legend>{L_FORUM_SETTINGS}</legend>
-    <!-- EVENT acp_forums_main_settings_prepend -->
+	<!-- EVENT acp_forums_main_settings_prepend -->
 	<dl>
 		<dt><label for="forum_type">{L_FORUM_TYPE}{L_COLON}</label></dt>
 		<dd><select id="forum_type" name="forum_type" onchange="display_options(this.options[this.selectedIndex].value);">{S_FORUM_TYPE_OPTIONS}</select></dd>
@@ -183,7 +183,7 @@
 		<dt><label for="forum_style">{L_FORUM_STYLE}{L_COLON}</label></dt>
 		<dd><select id="forum_style" name="forum_style"><option value="0">{L_DEFAULT_STYLE}</option>{S_STYLES_OPTIONS}</select></dd>
 	</dl>
-    <!-- EVENT acp_forums_main_settings_append -->
+	<!-- EVENT acp_forums_main_settings_append -->
 	</fieldset>
 
 	<div id="forum_cat_options">
@@ -200,7 +200,7 @@
 	<div id="forum_post_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
-        <!-- EVENT acp_forums_normal_settings_prepend -->
+		<!-- EVENT acp_forums_normal_settings_prepend -->
 		<dl>
 			<dt><label for="forum_status">{L_FORUM_STATUS}{L_COLON}</label></dt>
 			<dd><select id="forum_status" name="forum_status">{S_STATUS_OPTIONS}</select></dd>
@@ -249,7 +249,7 @@
 
 		<fieldset>
 			<legend>{L_FORUM_PRUNE_SETTINGS}</legend>
-        <!-- EVENT acp_forums_prune_settings_prepend -->
+		<!-- EVENT acp_forums_prune_settings_prepend -->
 		<dl>
 			<dt><label for="enable_prune">{L_FORUM_AUTO_PRUNE}{L_COLON}</label><br /><span>{L_FORUM_AUTO_PRUNE_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_prune" value="1"<!-- IF S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -295,7 +295,7 @@
 			<dt><label for="prune_shadow_days">{L_AUTO_PRUNE_SHADOW_DAYS}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_SHADOW_DAYS_EXPLAIN}</span></dt>
 			<dd><input type="number" id="prune_shadow_days" name="prune_shadow_days" value="{PRUNE_SHADOW_DAYS}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
-        <!-- EVENT acp_forums_prune_settings_append -->
+		<!-- EVENT acp_forums_prune_settings_append -->
 		</fieldset>
 	</div>
 
@@ -322,7 +322,7 @@
 	<div id="forum_rules_options">
 		<fieldset>
 			<legend>{L_FORUM_RULES}</legend>
-        <!-- EVENT acp_forums_rules_settings_prepend -->
+		<!-- EVENT acp_forums_rules_settings_prepend -->
 		<dl>
 			<dt><label for="forum_rules_link">{L_FORUM_RULES_LINK}{L_COLON}</label><br /><span>{L_FORUM_RULES_LINK_EXPLAIN}</span></dt>
 			<dd><input class="text medium" type="text" id="forum_rules_link" name="forum_rules_link" value="{FORUM_RULES_LINK}" maxlength="255" /></dd>
@@ -340,7 +340,7 @@
 				<label><input type="checkbox" class="radio" name="rules_parse_smilies"<!-- IF S_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
 				<label><input type="checkbox" class="radio" name="rules_parse_urls"<!-- IF S_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
 		</dl>
-        <!-- EVENT acp_forums_rules_settings_append -->
+		<!-- EVENT acp_forums_rules_settings_append -->
 		</fieldset>
 	</div>
 
