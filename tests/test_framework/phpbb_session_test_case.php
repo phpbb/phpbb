@@ -11,6 +11,7 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../session/testable_factory.php';
 require_once dirname(__FILE__) . '/../session/testable_facade.php';
 

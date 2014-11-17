@@ -14,7 +14,7 @@
 /**
 * @group functional
 */
-abstract class phpbb_functional_common_groups_test extends phpbb_functional_test_case
+abstract class phpbb_functional_common_groups_test_case extends phpbb_functional_test_case
 {
 	abstract protected function get_url();
 
