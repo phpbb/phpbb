@@ -2512,6 +2512,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 			{
 				$usernames_ary[$row['user_id']] = $row['username'];
 			}
+			$db->sql_freeresult($result);
 
 			foreach ($hold_ary as $user_id => $forum_id_ary)
 			{
@@ -2806,6 +2807,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 
 		$users[] = $row;
 	}
+	$db->sql_freeresult($result);
 
 	return $offset;
 }
