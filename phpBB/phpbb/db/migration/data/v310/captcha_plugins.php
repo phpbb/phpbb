@@ -25,9 +25,13 @@ class captcha_plugins extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		$captcha_plugin = $this->config['captcha_plugin'];
-		if (strpos($this->config['captcha_plugin'], 'phpbb_captcha_') === 0)
+		if (strpos($captcha_plugin, 'phpbb_captcha_') === 0)
 		{
-			$captcha_plugin = substr($this->config['captcha_plugin'], strlen('phpbb_captcha_'));
+			$captcha_plugin = substr($captcha_plugin, strlen('phpbb_captcha_'));
+		}
+		else if (strpos($captcha_plugin, 'phpbb_') === 0)
+		{
+			$captcha_plugin = substr($captcha_plugin, strlen('phpbb_'));
 		}
 
 		return array(
