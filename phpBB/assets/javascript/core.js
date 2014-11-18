@@ -386,7 +386,8 @@ phpbb.ajaxify = function(options) {
 				type: method,
 				data: data,
 				success: returnHandler,
-				error: errorHandler
+				error: errorHandler,
+				cache: false
 			});
 			request.always(function() {
 				$loadingIndicator.fadeOut(phpbb.alertTime);
