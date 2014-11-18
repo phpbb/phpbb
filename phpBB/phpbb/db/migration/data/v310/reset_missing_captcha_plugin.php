@@ -29,7 +29,7 @@ class reset_missing_captcha_plugin extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('if', array(
-				(!is_dir($this->phpbb_root_path . 'phpbb/captcha/plugins/') &&
+				(is_dir($this->phpbb_root_path . 'includes/captcha/plugins/') &&
 				!is_file($this->phpbb_root_path . "includes/captcha/plugins/{$this->config['captcha_plugin']}_plugin." . $this->php_ext)),
 				array('config.update', array('captcha_plugin', 'phpbb_captcha_nogd')),
 			)),
