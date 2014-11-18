@@ -601,7 +601,7 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .breadcrumbs .crumb:before {
-	content: '‹';
+	content: '\2039';
 	font-weight: bold;
 	padding: 0 0.5em;
 }
