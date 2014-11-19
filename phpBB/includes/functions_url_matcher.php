@@ -55,7 +55,9 @@ function phpbb_get_url_matcher(\phpbb\extension\manager $manager, RequestContext
 */
 function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $root_path, $config_cache)
 {
-	$provider = new \phpbb\controller\provider($root_path);
+	global $phpbb_container;
+
+	$provider = new \phpbb\controller\provider($phpbb_container->getParameter('core.environment'), $root_path);
 	$provider->find_routing_files($manager->all_enabled());
 	$routes = $provider->find()->get_routes();
 	$dumper = new PhpMatcherDumper($routes);
@@ -75,7 +77,9 @@ function phpbb_create_dumped_url_matcher(\phpbb\extension\manager $manager, $roo
 */
 function phpbb_create_url_matcher(\phpbb\extension\manager $manager, RequestContext $context, $root_path)
 {
-	$provider = new \phpbb\controller\provider($root_path);
+	global $phpbb_container;
+
+	$provider = new \phpbb\controller\provider($phpbb_container->getParameter('core.environment'), $root_path);
 	$provider->find_routing_files($manager->all_enabled());
 	$routes = $provider->find()->get_routes();
 	return new UrlMatcher($routes, $context);

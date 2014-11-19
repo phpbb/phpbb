@@ -450,15 +450,7 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 
 	$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
 	$config_data .= "// @define('PHPBB_DISPLAY_LOAD_TIME', true);\n";
-
-	if ($debug)
-	{
-		$config_data .= "@define('PHPBB_ENVIRONMENT', 'development');\n";
-	}
-	else
-	{
-		$config_data .= "@define('PHPBB_ENVIRONMENT', 'production');\n";
-	}
+	$config_data .= "@define('PHPBB_ENVIRONMENT', 'test');\n";
 
 	if ($debug_container)
 	{
