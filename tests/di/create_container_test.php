@@ -13,8 +13,6 @@
 
 namespace
 {
-	define('PHPBB_ENVIRONMENT', 'production');
-
 	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 	require_once dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
