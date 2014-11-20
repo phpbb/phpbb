@@ -34,6 +34,7 @@
 		"symfony/event-dispatcher": "2.5.*",
 		"symfony/http-kernel": "2.5.*",
 		"symfony/routing": "2.5.*",
+		"symfony/twig-bridge": "2.5.*",
 		"symfony/yaml": "2.5.*",
 		"twig/twig": "1.13.*"
 	},

@@ -33,11 +33,11 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			));
 	}
 
-	public function test_provider()
+	public function test_router_find_files()
 	{
-		$provider = new \phpbb\controller\provider();
-		$provider->find_routing_files($this->extension_manager->get_finder());
-		$routes = $provider->find(__DIR__)->get_routes();
+		$router = new \phpbb\routing\router($this->extension_manager, dirname(__FILE__) . '/', 'php');
+		$router->find_routing_files($this->extension_manager->get_finder());
+		$routes = $router->find(__DIR__)->get_routes();
 
 		// This will need to be updated if any new routes are defined
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('core_controller'));

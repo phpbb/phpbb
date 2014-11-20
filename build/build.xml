@@ -382,6 +382,12 @@
 		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.markdown" />
+
+		<delete dir="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Tests" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/.gitignore" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/README.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/phpunit.xml.dist" />
 	</target>
 
 	<target name="clean-diff-dir">
