@@ -72,11 +72,10 @@ class router implements RouterInterface
 	/**
 	* Construct method
 	*
-	* @param manager $extension_manager The extension manager
-	* @param string $phpbb_root_path    phpBB root path
-	* @param string $php_ext            PHP file extension
-	* @param array  $routing_files      Array of strings containing paths
-	*                                   to YAML files holding route information
+	* @param manager	$extension_manager	The extension manager
+	* @param string		$phpbb_root_path	phpBB root path
+	* @param string		$php_ext			PHP file extension
+	* @param array		$routing_files		Array of strings containing paths to YAML files holding route information
 	*/
 	public function __construct(manager $extension_manager, $phpbb_root_path, $php_ext, $routing_files = array())
 	{
