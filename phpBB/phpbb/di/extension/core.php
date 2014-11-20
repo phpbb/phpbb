@@ -25,29 +25,29 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 class core extends Extension
 {
 	/**
-	* Config path
-	* @var string
-	*/
+	 * Config path
+	 * @var string
+	 */
 	protected $config_path;
 
 	/**
-	* Constructor
-	*
-	* @param string $config_path Config path
-	*/
+	 * Constructor
+	 *
+	 * @param string $config_path Config path
+	 */
 	public function __construct($config_path)
 	{
 		$this->config_path = $config_path;
 	}
 
 	/**
-	* Loads a specific configuration.
-	*
-	* @param array            $configs   An array of configuration values
-	* @param ContainerBuilder $container A ContainerBuilder instance
-	*
-	* @throws \InvalidArgumentException When provided tag is not defined in this extension
-	*/
+	 * Loads a specific configuration.
+	 *
+	 * @param array            $configs   An array of configuration values
+	 * @param ContainerBuilder $container A ContainerBuilder instance
+	 *
+	 * @throws \InvalidArgumentException When provided tag is not defined in this extension
+	 */
 	public function load(array $configs, ContainerBuilder $container)
 	{
 		$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->config_path)));
@@ -81,12 +81,12 @@ class core extends Extension
 	}
 
 	/**
-	* Returns the recommended alias to use in XML.
-	*
-	* This alias is also the mandatory prefix to use when using YAML.
-	*
-	* @return string The alias
-	*/
+	 * Returns the recommended alias to use in XML.
+	 *
+	 * This alias is also the mandatory prefix to use when using YAML.
+	 *
+	 * @return string The alias
+	 */
 	public function getAlias()
 	{
 		return 'core';

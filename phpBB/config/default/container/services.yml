@@ -157,6 +157,7 @@ services:
             - @ext.manager
             - %core.root_path%
             - %core.php_ext%
+            - %core.environment%
 
     router.listener:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener

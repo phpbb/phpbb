@@ -41,8 +41,9 @@ class helper
 	protected $config;
 
 	/**
-	* @var \phpbb\routing\router phpBB router
-	*/
+	 * phpBB router
+	 * @var \phpbb\routing\router
+	 */
 	protected $router;
 
 	/* @var \phpbb\symfony_request */

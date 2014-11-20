@@ -20,8 +20,8 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
-* Container core extension
-*/
+ * Container core extension
+ */
 class extension_base extends Extension
 {
 	/**

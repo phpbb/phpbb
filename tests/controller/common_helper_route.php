@@ -113,8 +113,8 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$this->router = new phpbb_mock_router($this->extension_manager, dirname(__FILE__) . '/', 'php');
-		$this->router->find_routing_files($finder);
+		$this->router = new phpbb_mock_router($this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$this->router->find_routing_files($this->extension_manager->all_enabled());
 		$this->router->find(dirname(__FILE__) . '/');
 		// Set correct current phpBB root path
 		$this->root_path = $this->get_phpbb_root_path();
@@ -319,7 +319,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
 		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH), $description);
 	}
-//TODO
+
 	public function helper_url_data_absolute_with_rewrite()
 	{
 		return array(
