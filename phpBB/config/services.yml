@@ -186,4 +186,5 @@ services:
         arguments:
             - @cache
             - @config
+            - @file_downloader
             - @user
