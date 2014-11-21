@@ -50,6 +50,9 @@ class version_helper
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\file_downloader */
+	protected $file_downloader;
+
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -58,12 +61,14 @@ class version_helper
 	 *
 	 * @param \phpbb\cache\service $cache
 	 * @param \phpbb\config\config $config
+	 * @param \phpbb\file_downloader $file_downloader
 	 * @param \phpbb\user $user
 	 */
-	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\user $user)
+	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, file_downloader $file_downloader, \phpbb\user $user)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
+		$this->file_downloader = $file_downloader;
 		$this->user = $user;
 
 		if (defined('PHPBB_QA'))
@@ -249,12 +254,18 @@ class version_helper
 		}
 		else if ($info === false || $force_update)
 		{
-			$errstr = $errno = '';
-			$info = get_remote_file($this->host, $this->path, $this->file, $errstr, $errno);
-
-			if (!empty($errstr))
+			try {
+				$info = $this->file_downloader->get($this->host, $this->path, $this->file);
+			}
+			catch (\RuntimeException $exception)
 			{
-				throw new \RuntimeException($errstr);
+				throw new \RuntimeException(call_user_func_array(array($this->user, 'lang'), $exception->getMessage()));
+			}
+			$error_string = $this->file_downloader->get_error_string();
+
+			if (!empty($error_string))
+			{
+				throw new \RuntimeException($error_string);
 			}
 
 			$info = json_decode($info, true);
