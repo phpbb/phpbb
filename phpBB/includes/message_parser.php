@@ -1103,7 +1103,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $phpbb_dispatcher;
 
 		$this->mode = $mode;
 
@@ -1156,6 +1156,49 @@ class parse_message extends bbcode_firstpass
 				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : ($user->lang('CHARS_POST_CONTAINS', $message_length) . '<br />' . $user->lang('TOO_FEW_CHARS_LIMIT', (int) $config['min_post_chars']));
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
+		}
+
+		/**
+		* This event can be used for additional message checks/cleanup before parsing
+		*
+		* @event core.message_parser_check_message
+		* @var bool		allow_bbcode			Do we allow BBCodes
+		* @var bool		allow_magic_url			Do we allow magic urls
+		* @var bool		allow_smilies			Do we allow smilies
+		* @var bool		allow_img_bbcode		Do we allow image BBCode
+		* @var bool		allow_flash_bbcode		Do we allow flash BBCode
+		* @var bool		allow_quote_bbcode		Do we allow quote BBCode
+		* @var bool		allow_url_bbcode		Do we allow url BBCode
+		* @var bool		update_this_message		Do we alter the parsed message
+		* @var string	mode					Posting mode
+		* @var string	message					The message text to parse
+		* @var bool		return					Do we return after the event is triggered if $warn_msg is not empty
+		* @var array	warn_msg				Array of the warning messages
+		* @since 3.1.2-RC1
+		*/
+		$message = $this->message;
+		$warn_msg = $this->warn_msg;
+		$return = false;
+		$vars = array(
+			'allow_bbcode',
+			'allow_magic_url',
+			'allow_smilies',
+			'allow_img_bbcode',
+			'allow_flash_bbcode',
+			'allow_quote_bbcode',
+			'allow_url_bbcode',
+			'update_this_message',
+			'mode',
+			'message',
+			'return',
+			'warn_msg',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.message_parser_check_message', compact($vars)));
+		$this->message = $message;
+		$this->warn_msg = $warn_msg;
+		if ($return && !empty($this->warn_msg))
+		{
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
 		// Prepare BBcode (just prepares some tags for better parsing)
