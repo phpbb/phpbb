@@ -107,7 +107,7 @@ class router implements RouterInterface
 	 * Find the list of routing files
 	 *
 	 * @param array $paths Array of paths where to look for routing files.
-	 * @return null
+	 * @return router
 	 */
 	public function find_routing_files(array $paths)
 	{
@@ -130,6 +130,8 @@ class router implements RouterInterface
 				}
 			}
 		}
+
+		return $this;
 	}
 
 	/**
