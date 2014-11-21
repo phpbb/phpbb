@@ -2982,68 +2982,19 @@ function get_database_size()
 
 /**
 * Retrieve contents from remotely stored file
+*
+* @deprecated	3.1.2	Use file_downloader instead
 */
 function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
 {
-	global $user;
+	global $phpbb_container;
 
-	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
-	{
-		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
-		@fputs($fsock, "HOST: $host\r\n");
-		@fputs($fsock, "Connection: close\r\n\r\n");
+	// Get file downloader and assign $errstr and $errno
+	$file_downloader = $phpbb_container->get('file_downloader')
+		->set_error_string($errstr)
+		->set_error_number($errno);
 
-		$timer_stop = time() + $timeout;
-		stream_set_timeout($fsock, $timeout);
-
-		$file_info = '';
-		$get_info = false;
-
-		while (!@feof($fsock))
-		{
-			if ($get_info)
-			{
-				$file_info .= @fread($fsock, 1024);
-			}
-			else
-			{
-				$line = @fgets($fsock, 1024);
-				if ($line == "\r\n")
-				{
-					$get_info = true;
-				}
-				else if (stripos($line, '404 not found') !== false)
-				{
-					$errstr = $user->lang('FILE_NOT_FOUND', $filename);
-					return false;
-				}
-			}
-
-			$stream_meta_data = stream_get_meta_data($fsock);
-
-			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
-			{
-				$errstr = $user->lang['FSOCK_TIMEOUT'];
-				return false;
-			}
-		}
-		@fclose($fsock);
-	}
-	else
-	{
-		if ($errstr)
-		{
-			$errstr = utf8_convert_message($errstr);
-			return false;
-		}
-		else
-		{
-			$errstr = $user->lang['FSOCK_DISABLED'];
-			return false;
-		}
-	}
-
-	return $file_info;
+	return $file_downloader->get($host, $directory, $filename, $port, $timeout);
 }
 
 /*
