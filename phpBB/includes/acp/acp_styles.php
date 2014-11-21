@@ -29,14 +29,31 @@ class acp_styles
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 	protected $default_style = 0;
+	protected $styles_list_cols = 0;
+	protected $reserved_style_names = array('adm', 'admin', 'all');
 
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var \phpbb\template\template */
 	protected $template;
+
+	/** @var \phpbb\request\request_interface */
 	protected $request;
+
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache;
+
+	/** @var \phpbb\auth\auth */
 	protected $auth;
+
+	/** @var string */
 	protected $phpbb_root_path;
+
+	/** @var string */
 	protected $php_ext;
 
 	public function main($id, $mode)
@@ -164,6 +181,12 @@ class acp_styles
 		$last_installed = false;
 		foreach ($dirs as $dir)
 		{
+			if (in_array($dir, $this->reserved_style_names))
+			{
+				$messages[] = $this->user->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
+				continue;
+			}
+
 			$found = false;
 			foreach ($styles as &$style)
 			{
@@ -809,7 +832,7 @@ class acp_styles
 	* Update styles tree
 	*
 	* @param array $styles Styles list, passed as reference
-	* @param array $style Current style, false if root
+	* @param array|false $style Current style, false if root
 	* @return bool True if something was updated, false if not
 	*/
 	protected function update_styles_tree(&$styles, $style = false)
@@ -1091,7 +1114,7 @@ class acp_styles
 	/**
 	* Install style
 	*
-	* @param $style style data
+	* @param array $style style data
 	* @return int Style id
 	*/
 	protected function install_style($style)
