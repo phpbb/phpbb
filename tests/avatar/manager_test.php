@@ -299,17 +299,32 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	public function data_handle_avatar_delete()
 	{
 		return array(
-			array(array(
-				'avatar'		=> '',
-				'avatar_type'	=> '',
-				'avatar_width'	=> 0,
-				'avatar_height'	=> 0,
-			), 1, array(
-				'avatar'		=> 'foobar@example.com',
-				'avatar_type'	=> 'avatar.driver.gravatar',
-				'avatar_width'	=> '16',
-				'avatar_height'	=> '16',
-			), USERS_TABLE, 'user_'),
+			array(
+				array(
+					'avatar'		=> '',
+					'avatar_type'	=> '',
+					'avatar_width'	=> 0,
+					'avatar_height'	=> 0,
+				), 1, array(
+					'avatar'		=> 'foobar@example.com',
+					'avatar_type'	=> 'avatar.driver.gravatar',
+					'avatar_width'	=> '16',
+					'avatar_height'	=> '16',
+				), USERS_TABLE, 'user_',
+			),
+			array(
+				array(
+					'avatar'		=> '',
+					'avatar_type'	=> '',
+					'avatar_width'	=> 0,
+					'avatar_height'	=> 0,
+				), 5, array(
+					'avatar'		=> 'g5_1414350991.jpg',
+					'avatar_type'	=> 'avatar.driver.upload',
+					'avatar_width'	=> '80',
+					'avatar_height'	=> '80'
+				), GROUPS_TABLE, 'group_',
+			),
 		);
 	}
 
@@ -332,5 +347,24 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		{
 			$this->assertEquals($value, $row[$key]);
 		}
+	}
+
+	/**
+	 * @dependsOn test_handle_avatar_delete
+	 */
+	public function test_user_group_avatar_deleted()
+	{
+		$sql = 'SELECT * FROM ' . USERS_TABLE . '
+				WHERE user_id = 3';
+		$result = $this->db->sql_query_limit($sql, 1);
+		$row = $this->manager->clean_row($this->db->sql_fetchrow($result), 'user');
+		$this->db->sql_freeresult($result);
+
+		$this->assertEquals(array(
+			'avatar'		=> '',
+			'avatar_type'	=> '',
+			'avatar_width'	=> 0,
+			'avatar_height'	=> 0,
+		), $row);
 	}
 }
