@@ -2990,11 +2990,13 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	global $phpbb_container;
 
 	// Get file downloader and assign $errstr and $errno
-	$file_downloader = $phpbb_container->get('file_downloader')
-		->set_error_string($errstr)
-		->set_error_number($errno);
+	$file_downloader = $phpbb_container->get('file_downloader');
 
-	return $file_downloader->get($host, $directory, $filename, $port, $timeout);
+	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
+	$errstr = $file_downloader->get_error_string();
+	$errno = $file_downloader->get_error_number();
+
+	return $file_data;
 }
 
 /*

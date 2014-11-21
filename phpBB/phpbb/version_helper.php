@@ -254,9 +254,6 @@ class version_helper
 		}
 		else if ($info === false || $force_update)
 		{
-			$errstr = $errno = '';
-			$this->file_downloader->set_error_number($errno)
-				->set_error_string($errstr);
 			try {
 				$info = $this->file_downloader->get($this->host, $this->path, $this->file);
 			}
@@ -264,10 +261,11 @@ class version_helper
 			{
 				throw new \RuntimeException(call_user_func_array(array($this->user, 'lang'), $exception->getMessage()));
 			}
+			$error_string = $this->file_downloader->get_error_string();
 
-			if (!empty($errstr))
+			if (!empty($error_string))
 			{
-				throw new \RuntimeException($errstr);
+				throw new \RuntimeException($error_string);
 			}
 
 			$info = json_decode($info, true);

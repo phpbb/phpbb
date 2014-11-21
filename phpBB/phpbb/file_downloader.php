@@ -38,6 +38,10 @@ class file_downloader
 	 */
 	function get($host, $directory, $filename, $port = 80, $timeout = 6)
 	{
+		// Set default values for error variables
+		$this->error_number = 0;
+		$this->error_string = '';
+
 		if ($socket = @fsockopen($host, $port, $this->error_number, $this->error_string, $timeout))
 		{
 			@fputs($socket, "GET $directory/$filename HTTP/1.0\r\n");
@@ -95,30 +99,22 @@ class file_downloader
 	}
 
 	/**
-	 * Set error string
+	 * Get error string
 	 *
-	 * @param string $error_string Error string
-	 *
-	 * @return self
+	 * @return string Error string
 	 */
-	public function set_error_string(&$error_string)
+	public function get_error_string()
 	{
-		$this->error_string = &$error_string;
-
-		return $this;
+		return $this->error_string;
 	}
 
 	/**
-	 * Set error number
+	 * Get error number
 	 *
-	 * @param int $error_number Error number
-	 *
-	 * @return self
+	 * @return int Error number
 	 */
-	public function set_error_number(&$error_number)
+	public function get_error_number()
 	{
-		$this->error_number = &$error_number;
-
-		return $this;
+		return $this->error_number;
 	}
 }
