@@ -26,8 +26,10 @@ class recaptcha extends captcha_abstract
 	var $challenge;
 	var $response;
 
-	// PHP4 Constructor
-	function phpbb_recaptcha()
+	/**
+	* Constructor
+	*/
+	public function __construct()
 	{
 		global $request;
 		$this->recaptcha_server = $request->is_secure() ? $this->recaptcha_server_secure : $this->recaptcha_server;
