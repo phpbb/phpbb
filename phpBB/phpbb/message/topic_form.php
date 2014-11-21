@@ -117,7 +117,7 @@ class topic_form extends form
 			'TOPIC_NAME'	=> htmlspecialchars_decode($this->topic_row['topic_title']),
 			'U_TOPIC'		=> generate_board_url() . '/viewtopic.' . $this->phpEx . '?f=' . $this->topic_row['forum_id'] . '&t=' . $this->topic_id,
 		));
-
+		$this->message->set_body($this->body);
 		$this->message->add_recipient(
 			$this->recipient_name,
 			$this->recipient_address,
