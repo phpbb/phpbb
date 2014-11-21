@@ -15,24 +15,11 @@ namespace phpbb;
 
 class file_downloader
 {
-	/** @var \phpbb\user */
-	protected $user;
-
 	/** @var string Error string */
 	public $error_string = '';
 
 	/** @var int Error number */
 	public $error_number = 0;
-
-	/**
-	 * Constructor
-	 *
-	 * @param \phpbb\user $user phpBB user object
-	 */
-	public function __construct(user $user)
-	{
-		$this->user = $user;
-	}
 
 	/**
 	 * Retrieve contents from remotely stored file
@@ -45,6 +32,9 @@ class file_downloader
 	 *
 	 * @return mixed File data as string if file can be read and there is no
 	 *			timeout, false if there were errors or the connection timed out
+	 *
+	 * @throws \RuntimeException If data can't be retrieved and no error
+	 *		message is returned
 	 */
 	function get($host, $directory, $filename, $port = 80, $timeout = 6)
 	{
@@ -75,8 +65,7 @@ class file_downloader
 					}
 					else if (stripos($line, '404 not found') !== false)
 					{
-						$this->error_string = $this->user->lang('FILE_NOT_FOUND', $filename);
-						return false;
+						throw new \RuntimeException(array('FILE_NOT_FOUND', $filename));
 					}
 				}
 
@@ -84,8 +73,7 @@ class file_downloader
 
 				if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
 				{
-					$this->error_string = $this->user->lang['FSOCK_TIMEOUT'];
-					return false;
+					throw new \RuntimeException('FSOCK_TIMEOUT');
 				}
 			}
 			@fclose($socket);
@@ -99,8 +87,7 @@ class file_downloader
 			}
 			else
 			{
-				$this->error_string = $this->user->lang['FSOCK_DISABLED'];
-				return false;
+				throw new \RuntimeException('FSOCK_DISABLED');
 			}
 		}
 

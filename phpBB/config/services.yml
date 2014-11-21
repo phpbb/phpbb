@@ -111,8 +111,6 @@ services:
 
     file_downloader:
         class: phpbb\file_downloader
-        arguments:
-            - @user
 
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel

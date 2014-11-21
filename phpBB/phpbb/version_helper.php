@@ -257,7 +257,13 @@ class version_helper
 			$errstr = $errno = '';
 			$this->file_downloader->set_error_number($errno)
 				->set_error_string($errstr);
-			$info = $this->file_downloader->get($this->host, $this->path, $this->file);
+			try {
+				$info = $this->file_downloader->get($this->host, $this->path, $this->file);
+			}
+			catch (\RuntimeException $exception)
+			{
+				throw new \RuntimeException(call_user_func_array(array($this->user, 'lang'), $exception->getMessage()));
+			}
 
 			if (!empty($errstr))
 			{
