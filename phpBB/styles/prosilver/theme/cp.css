@@ -59,10 +59,6 @@ ul.cplist {
 	border-bottom: none;
 }
 
-#cp-main .postbody p {
-	font-size: 1.1em;
-}
-
 #cp-main .pm-message {
 	border: 1px solid transparent;
 	margin: 10px 0;
@@ -76,6 +72,10 @@ ul.cplist {
 
 #cp-main .postbody h3, #cp-main .box2 h3 {
 	margin-top: 0;
+}
+
+.panel-container .postbody p.author {
+	font-size: 1.1em;
 }
 
 #cp-main .buttons {
