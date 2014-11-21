@@ -22,11 +22,53 @@ acp_email_options_after
 * Since: 3.1.2-RC1
 * Purpose: Add settings to mass email form
 
+acp_forums_main_settings_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums at end of main settings section
+
+acp_forums_main_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before main settings section
+
 acp_forums_normal_settings_append
 ===
 * Location: adm/style/acp_forums.html
 * Since: 3.1.0-a1
-* Purpose: Add settings to forums
+* Purpose: Add settings to forums at end of normal settings section
+
+acp_forums_normal_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before normal settings section
+
+acp_forums_prune_settings_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums at end of prune settings section
+
+acp_forums_prune_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before prune settings section
+
+acp_forums_rules_settings_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums at end of rules settings section
+
+acp_forums_rules_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before rules settings section
 
 acp_group_options_before
 ===
