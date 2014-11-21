@@ -36,16 +36,10 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 
 		$filesystem = new \phpbb\filesystem();
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
-		$finder = new \phpbb\finder(
-			$filesystem,
-			dirname(__FILE__) . '/',
-			new phpbb_mock_cache()
-		);
-		$finder->set_extensions(array_keys($manager->all_enabled()));
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$router = new phpbb_mock_router($manager, dirname(__FILE__) . '/', 'php');
-		$router->find_routing_files($finder);
+		$router = new phpbb_mock_router($manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$router->find_routing_files($manager->all_enabled());
 		$router->find(dirname(__FILE__) . '/');
 
 		$request = new phpbb_mock_request();

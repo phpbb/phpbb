@@ -1,19 +1,19 @@
 imports:
-    - { resource: auth.yml }
-    - { resource: avatar.yml }
-    - { resource: captcha.yml }
-    - { resource: console.yml }
-    - { resource: content.yml }
-    - { resource: cron.yml }
-    - { resource: db.yml }
-    - { resource: event.yml }
-    - { resource: feed.yml }
-    - { resource: mimetype_guesser.yml }
-    - { resource: notification.yml }
-    - { resource: password.yml }
-    - { resource: profilefield.yml }
-    - { resource: twig.yml }
-    - { resource: user.yml }
+    - { resource: services_auth.yml }
+    - { resource: services_avatar.yml }
+    - { resource: services_captcha.yml }
+    - { resource: services_console.yml }
+    - { resource: services_content.yml }
+    - { resource: services_cron.yml }
+    - { resource: services_db.yml }
+    - { resource: services_event.yml }
+    - { resource: services_feed.yml }
+    - { resource: services_mimetype_guesser.yml }
+    - { resource: services_notification.yml }
+    - { resource: services_password.yml }
+    - { resource: services_profilefield.yml }
+    - { resource: services_twig.yml }
+    - { resource: services_user.yml }
 
     - { resource: tables.yml }
     - { resource: parameters.yml }
@@ -157,6 +157,7 @@ services:
             - @ext.manager
             - %core.root_path%
             - %core.php_ext%
+            - %core.environment%
 
     router.listener:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener

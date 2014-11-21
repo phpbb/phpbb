@@ -25,95 +25,121 @@ use Symfony\Component\Config\FileLocator;
 use phpbb\extension\manager;
 
 /**
-* Integration of all pieces of the routing system for easier use.
-*/
+ * Integration of all pieces of the routing system for easier use.
+ */
 class router implements RouterInterface
 {
 	/**
-	* @var manager Extension manager
-	*/
+	 * Extension manager
+	 *
+	 * @var manager
+	 */
 	protected $extension_manager;
 
 	/**
-	* @var string phpBB root path
-	*/
+	 * phpBB root path
+	 *
+	 * @var string
+	 */
 	protected $phpbb_root_path;
 
 	/**
-	* @var string PHP file extensions
-	*/
+	 * PHP file extensions
+	 *
+	 * @var string
+	 */
 	protected $php_ext;
 
 	/**
-	* @var array YAML file(s) containing route information
-	*/
+	 * Name of the current environment
+	 *
+	 * @var string
+	 */
+	protected $environment;
+
+	/**
+	 * YAML file(s) containing route information
+	 *
+	 * @var array
+	 */
 	protected $routing_files;
 
 	/**
-	* @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface|null
-	*/
+	 * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface|null
+	 */
 	protected $matcher;
 
 	/**
-	* @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface|null
-	*/
+	 * @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface|null
+	 */
 	protected $generator;
 
 	/**
-	* @var RequestContext
-	*/
+	 * @var RequestContext
+	 */
 	protected $context;
 
 	/**
-	* @var RouteCollection|null
-	*/
+	 * @var RouteCollection|null
+	 */
 	protected $route_collection;
 
 	/**
-	* Construct method
-	*
-	* @param manager	$extension_manager	The extension manager
-	* @param string		$phpbb_root_path	phpBB root path
-	* @param string		$php_ext			PHP file extension
-	* @param array		$routing_files		Array of strings containing paths to YAML files holding route information
-	*/
-	public function __construct(manager $extension_manager, $phpbb_root_path, $php_ext, $routing_files = array())
+	 * Construct method
+	 *
+	 * @param manager	$extension_manager	Extension manager
+	 * @param string	$phpbb_root_path	phpBB root path
+	 * @param string	$php_ext			PHP file extension
+	 * @param string	$environment		Name of the current environment
+	 * @param array		$routing_files		Array of strings containing paths to YAML files holding route information
+	 */
+	public function __construct(manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
 	{
 		$this->extension_manager	= $extension_manager;
 		$this->routing_files		= $routing_files;
 		$this->phpbb_root_path		= $phpbb_root_path;
 		$this->php_ext				= $php_ext;
+		$this->environment			= $environment;
 		$this->context				= new RequestContext();
 	}
 
 	/**
-	* Find the list of routing files
-	*
-	* @param \phpbb\finder $finder
-	* @return router
-	*/
-	public function find_routing_files(\phpbb\finder $finder)
+	 * Find the list of routing files
+	 *
+	 * @param array $paths Array of paths where to look for routing files.
+	 * @return router
+	 */
+	public function find_routing_files(array $paths)
 	{
-		if ($this->routing_files === null || empty($this->routing_files))
+		$this->routing_files = array($this->phpbb_root_path . 'config/' . $this->environment . '/routing/environment.yml');
+		foreach ($paths as $path)
 		{
-			// We hardcode the path to the core config directory
-			// because the finder cannot find it
-			$this->routing_files = array_merge($this->routing_files, array('config/routing.yml'), array_keys($finder
-					->directory('/config')
-					->suffix('routing.yml')
-					->find()
-			));
+			if (file_exists($path . 'config/' . $this->environment . '/routing/environment.yml'))
+			{
+				$this->routing_files[] = $path . 'config/' . $this->environment . '/routing/environment.yml';
+			}
+			else if (!is_dir($path . 'config/' . $this->environment))
+			{
+				if (file_exists($path . 'config/default/routing/environment.yml'))
+				{
+					$this->routing_files[] = $path . 'config/default/routing/environment.yml';
+				}
+				else if (!is_dir($path . 'config/default/routing') && file_exists($path . 'config/routing.yml'))
+				{
+					$this->routing_files[] = $path . 'config/routing.yml';
+				}
+			}
 		}
 
 		return $this;
 	}
 
 	/**
-	* Find a list of controllers
-	*
-	* @param string $base_path Base path to prepend to file paths
-	* @return router
-	*/
+	 * Find a list of controllers
+	 *
+	 * @param string $base_path Base path to prepend to file paths
+	 * @return router
+	 */
 	public function find($base_path = '')
 	{
 		if ($this->route_collection === null || $this->route_collection->count() === 0)
@@ -130,15 +156,15 @@ class router implements RouterInterface
 	}
 
 	/**
-	* Get the list of routes
-	*
-	* @return RouteCollection Get the route collection
-	*/
+	 * Get the list of routes
+	 *
+	 * @return RouteCollection Get the route collection
+	 */
 	public function get_routes()
 	{
 		if ($this->route_collection == null || empty($this->routing_files))
 		{
-			$this->find_routing_files($this->extension_manager->get_finder())
+			$this->find_routing_files($this->extension_manager->all_enabled())
 				->find($this->phpbb_root_path);
 		}
 
@@ -146,16 +172,16 @@ class router implements RouterInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function getRouteCollection()
 	{
 		return $this->get_routes();
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function setContext(RequestContext $context)
 	{
 		$this->context = $context;
@@ -171,34 +197,34 @@ class router implements RouterInterface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function getContext()
 	{
 		return $this->context;
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
 	{
 		return $this->get_generator()->generate($name, $parameters, $referenceType);
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function match($pathinfo)
 	{
 		return $this->get_matcher()->match($pathinfo);
 	}
 
 	/**
-	* Gets the UrlMatcher instance associated with this Router.
-	*
-	* @return \Symfony\Component\Routing\Matcher\UrlMatcherInterface A UrlMatcherInterface instance
-	*/
+	 * Gets the UrlMatcher instance associated with this Router.
+	 *
+	 * @return \Symfony\Component\Routing\Matcher\UrlMatcherInterface A UrlMatcherInterface instance
+	 */
 	public function get_matcher()
 	{
 		if ($this->matcher !== null)
@@ -218,8 +244,8 @@ class router implements RouterInterface
 		return $this->matcher;
 	}
 	/**
-	* Creates a new dumped URL Matcher (dump it if necessary)
-	*/
+	 * Creates a new dumped URL Matcher (dump it if necessary)
+	 */
 	protected function create_dumped_url_matcher()
 	{
 		if (!file_exists($this->phpbb_root_path . 'cache/url_matcher.' . $this->php_ext))
@@ -240,18 +266,18 @@ class router implements RouterInterface
 	}
 
 	/**
-	* Creates a new URL Matcher
-	*/
+	 * Creates a new URL Matcher
+	 */
 	protected function create_new_url_matcher()
 	{
 		$this->matcher = new UrlMatcher($this->get_routes(), $this->context);
 	}
 
 	/**
-	* Gets the UrlGenerator instance associated with this Router.
-	*
-	* @return \Symfony\Component\Routing\Generator\UrlGeneratorInterface A UrlGeneratorInterface instance
-	*/
+	 * Gets the UrlGenerator instance associated with this Router.
+	 *
+	 * @return \Symfony\Component\Routing\Generator\UrlGeneratorInterface A UrlGeneratorInterface instance
+	 */
 	public function get_generator()
 	{
 		if ($this->generator !== null)
@@ -272,8 +298,8 @@ class router implements RouterInterface
 	}
 
 	/**
-	* Creates a new dumped URL Generator (dump it if necessary)
-	*/
+	 * Creates a new dumped URL Generator (dump it if necessary)
+	 */
 	protected function create_dumped_url_generator()
 	{
 		if (!file_exists($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext))
@@ -294,8 +320,8 @@ class router implements RouterInterface
 	}
 
 	/**
-	* Creates a new URL Generator
-	*/
+	 * Creates a new URL Generator
+	 */
 	protected function create_new_url_generator()
 	{
 		$this->generator = new UrlGenerator($this->get_routes(), $this->context);

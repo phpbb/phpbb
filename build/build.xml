@@ -283,6 +283,8 @@
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
 		<delete dir="${dir}/install/data" />
+		<delete dir="${dir}/config/development" />
+		<delete dir="${dir}/config/test" />
 
 		<phingcall target="clean-vendor-dir">
 			<property name="dir" value="${dir}" />

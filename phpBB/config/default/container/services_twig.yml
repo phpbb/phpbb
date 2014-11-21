@@ -1,5 +1,5 @@
 parameters:
-    core.template.cache_path: %core.root_path%cache/twig/
+    core.template.cache_path: %core.root_path%cache/%core.environment%/twig/
 
 services:
     template.twig.environment:

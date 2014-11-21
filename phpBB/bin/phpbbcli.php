@@ -21,6 +21,12 @@ if (php_sapi_name() != 'cli')
 }
 
 define('IN_PHPBB', true);
+
+if (!defined('PHPBB_ENVIRONMENT'))
+{
+	@define('PHPBB_ENVIRONMENT', 'production');
+}
+
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
