@@ -616,7 +616,9 @@ $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=
 * @var	int		topic_id			Topic ID
 * @var	array	topic_tracking_info	Array with topic tracking data
 * @var	int		total_posts			Topic total posts count
+* @var	string	viewtopic_url		URL to the topic page
 * @since 3.1.0-RC4
+* @change 3.1.2-RC1 Added viewtopic_url
 */
 $vars = array(
 	'base_url',
@@ -628,6 +630,7 @@ $vars = array(
 	'topic_id',
 	'topic_tracking_info',
 	'total_posts',
+	'viewtopic_url',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_before', compact($vars)));
 
