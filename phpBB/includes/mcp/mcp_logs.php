@@ -137,7 +137,7 @@ class mcp_logs
 
 					if ($mode == 'topic_logs')
 					{
-						$conditions['topic_logs'] = $topic_id;
+						$conditions['topic_id'] = $topic_id;
 					}
 
 					$phpbb_log->delete('mod', $conditions);
