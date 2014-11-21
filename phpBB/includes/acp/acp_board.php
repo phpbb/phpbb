@@ -615,7 +615,15 @@ class acp_board
 		{
 			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
 
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+			$message = $user->lang('CONFIG_UPDATED');
+			$message_type = E_USER_NOTICE;
+			if (!$config['email_enable'] && in_array($mode, array('email', 'registration')) &&
+				in_array($config['require_activation'], array(USER_ACTIVATION_SELF, USER_ACTIVATION_ADMIN)))
+			{
+				$message .= '<br /><br />' . $user->lang('ACC_ACTIVATION_WARNING');
+				$message_type = E_USER_WARNING;
+			}
+			trigger_error($message . adm_back_link($this->u_action), $message_type);
 		}
 
 		$this->tpl_name = 'acp_board';
@@ -792,20 +800,19 @@ class acp_board
 		global $user, $config;
 
 		$act_ary = array(
-			'ACC_DISABLE' => USER_ACTIVATION_DISABLE,
-			'ACC_NONE' => USER_ACTIVATION_NONE,
+			'ACC_DISABLE'	=> array(true, USER_ACTIVATION_DISABLE),
+			'ACC_NONE'		=> array(true, USER_ACTIVATION_NONE),
+			'ACC_USER'		=> array($config['email_enable'], USER_ACTIVATION_SELF),
+			'ACC_ADMIN'		=> array($config['email_enable'], USER_ACTIVATION_ADMIN),
 		);
-		if ($config['email_enable'])
-		{
-			$act_ary['ACC_USER'] = USER_ACTIVATION_SELF;
-			$act_ary['ACC_ADMIN'] = USER_ACTIVATION_ADMIN;
-		}
-		$act_options = '';
 
-		foreach ($act_ary as $key => $value)
+		$act_options = '';
+		foreach ($act_ary as $key => $data)
 		{
+			list($available, $value) = $data;
 			$selected = ($selected_value == $value) ? ' selected="selected"' : '';
-			$act_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$key] . '</option>';
+			$class = (!$available) ? ' class="disabled-option"' : '';
+			$act_options .= '<option value="' . $value . '"' . $selected . $class . '>' . $user->lang($key) . '</option>';
 		}
 
 		return $act_options;
