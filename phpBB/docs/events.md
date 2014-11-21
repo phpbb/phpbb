@@ -117,7 +117,7 @@ acp_ranks_list_column_before
 * Locations:
     + adm/style/acp_ranks.html
 * Since: 3.1.0-RC3
-* Purpose: Add content after the last column (but before the action column) 
+* Purpose: Add content after the last column (but before the action column)
 in the ranks list in the ACP
 
 acp_ranks_list_header_after
@@ -132,7 +132,7 @@ acp_ranks_list_header_before
 * Locations:
     + adm/style/acp_ranks.html
 * Since: 3.1.0-RC3
-* Purpose: Add content after the last header-column (but before the action column) 
+* Purpose: Add content after the last header-column (but before the action column)
 in the ranks list in the ACP
 
 acp_simple_footer_after
@@ -325,6 +325,13 @@ index_body_block_stats_prepend
     + styles/prosilver/template/index_body.html
 * Since: 3.1.0-b3
 * Purpose: Prepend content to the statistics list on the Board index
+
+index_body_forumlist_body_after
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+* Since: 3.1.1
+* Purpose: Add content after the forum list body on the index page
 
 index_body_markforums_after
 ===
@@ -957,7 +964,7 @@ ucp_pm_viewmessage_post_buttons_after
 * Locations:
     + styles/prosilver/template/ucp_pm_viewmessage.html
 * Since: 3.1.0-RC3
-* Purpose: Add post button to private messages (next to edit, quote etc), at 
+* Purpose: Add post button to private messages (next to edit, quote etc), at
 the end of the list.
 
 ucp_pm_viewmessage_post_buttons_before
@@ -965,7 +972,7 @@ ucp_pm_viewmessage_post_buttons_before
 * Locations:
     + styles/prosilver/template/ucp_pm_viewmessage.html
 * Since: 3.1.0-RC3
-* Purpose: Add post button to private messages (next to edit, quote etc), at 
+* Purpose: Add post button to private messages (next to edit, quote etc), at
 the start of the list.
 
 ucp_pm_viewmessage_print_head_append
