@@ -16,10 +16,10 @@ namespace phpbb;
 class file_downloader
 {
 	/** @var string Error string */
-	public $error_string = '';
+	protected $error_string = '';
 
 	/** @var int Error number */
-	public $error_number = 0;
+	protected $error_number = 0;
 
 	/**
 	 * Retrieve contents from remotely stored file
@@ -36,7 +36,7 @@ class file_downloader
 	 * @throws \RuntimeException If data can't be retrieved and no error
 	 *		message is returned
 	 */
-	function get($host, $directory, $filename, $port = 80, $timeout = 6)
+	public function get($host, $directory, $filename, $port = 80, $timeout = 6)
 	{
 		// Set default values for error variables
 		$this->error_number = 0;
