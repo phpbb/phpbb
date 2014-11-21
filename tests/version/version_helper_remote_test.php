@@ -11,11 +11,9 @@
  *
  */
 
-namespace phpbb;
-
 class version_helper_remote_test extends \phpbb_test_case
 {
-	static $remote_data = '';
+	protected $file_downloader;
 	protected $cache;
 	protected $version_helper;
 
@@ -37,10 +35,12 @@ class version_helper_remote_test extends \phpbb_test_case
 			->method('get')
 			->with($this->anything())
 			->will($this->returnValue(false));
+		$this->file_downloader = new phpbb_mock_file_downloader();
 
 		$this->version_helper = new \phpbb\version_helper(
 			$this->cache,
 			$config,
+			$this->file_downloader,
 			new \phpbb\user('\phpbb\datetime')
 		);
 		$this->user = new \phpbb\user('\phpbb\datetime');
@@ -153,7 +153,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	 */
 	public function test_get_versions($input, $valid_data, $expected_return = '')
 	{
-		self::$remote_data = $input;
+		$this->file_downloader->set($input);;
 
 		if (!$valid_data)
 		{
@@ -170,12 +170,4 @@ class version_helper_remote_test extends \phpbb_test_case
 
 		$this->assertEquals($expected_return, $return);
 	}
-}
-
-/**
- * Mock function for get_remote_file()
- */
-function get_remote_file($host, $path, $file, $errstr, $errno)
-{
-	return \phpbb\version_helper_remote_test::$remote_data;
 }
