@@ -107,11 +107,16 @@ class tools_array implements tools_interface
 			{
 				foreach ($indexes as $index_name)
 				{
-					if (!$this->sql_index_exists($table, $index_name))
+					if ($this->sql_index_exists($table, $index_name))
 					{
+						$this->sql_index_drop($table, $index_name);
 						continue;
 					}
-					$this->sql_index_drop($table, $index_name);
+					else if ($this->sql_unique_index_exists($table, $index_name))
+					{
+						$this->sql_unique_index_drop($table, $index_name);
+						continue;
+					}
 				}
 			}
 		}
@@ -392,7 +397,7 @@ class tools_array implements tools_interface
 		{
 			throw new \Exception('Table "' . $table_name . '" does not exist');
 		}
-		if (!isset($this->table_data[$table_name]['KEYS'][$index_name]))
+		if (!isset($this->table_data[$table_name]['KEYS'][$index_name]) && $this->table_data[$table_name]['KEYS'][$index_name][0] === 'INDEX')
 		{
 			throw new \Exception('Index "' . $index_name . '" does not exists on table "' . $table_name . '"');
 		}
@@ -430,6 +435,25 @@ class tools_array implements tools_interface
 		}
 
 		$this->table_data[$table_name]['KEYS'][$index_name] = array('UNIQUE', $column);
+
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function sql_unique_index_drop($table_name, $index_name)
+	{
+		if (!isset($this->table_data[$table_name]))
+		{
+			throw new \Exception('Table "' . $table_name . '" does not exist');
+		}
+		if (!isset($this->table_data[$table_name]['KEYS'][$index_name]) && $this->table_data[$table_name]['KEYS'][$index_name][0] === 'UNIQUE')
+		{
+			throw new \Exception('Index "' . $index_name . '" does not exists on table "' . $table_name . '"');
+		}
+
+		unset($this->table_data[$table_name]['KEYS'][$index_name]);
 
 		return true;
 	}

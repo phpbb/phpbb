@@ -800,16 +800,23 @@ class tools implements tools_interface
 			{
 				foreach ($indexes as $index_name)
 				{
-					if (!$this->sql_index_exists($table, $index_name))
+					if ($this->sql_index_exists($table, $index_name))
 					{
-						continue;
+						$result = $this->sql_index_drop($table, $index_name);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
-
-					$result = $this->sql_index_drop($table, $index_name);
-
-					if ($this->return_statements)
+					else if ($this->sql_unique_index_exists($table, $index_name))
 					{
-						$statements = array_merge($statements, $result);
+						$result = $this->sql_unique_index_drop($table, $index_name);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
 				}
 			}
@@ -1907,6 +1914,33 @@ class tools implements tools_interface
 			case 'sqlite3':
 				$statements[] = 'DROP INDEX ' . $table_name . '_' . $index_name;
 			break;
+		}
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	function sql_unique_index_drop($table_name, $index_name)
+	{
+		$statements = array();
+
+		switch ($this->sql_layer)
+		{
+			case 'mssql':
+			case 'mssqlnative':
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP CONSTRAINT ' . $index_name;
+				break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+			case 'oracle':
+			case 'postgres':
+			case 'sqlite':
+			case 'sqlite3':
+				return $this->sql_index_drop($table_name, $index_name);
+				break;
 		}
 
 		return $this->_sql_run_sql($statements);
