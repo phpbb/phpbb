@@ -153,7 +153,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	 */
 	public function test_get_versions($input, $valid_data, $expected_return = '')
 	{
-		$this->file_downloader->set($input);;
+		$this->file_downloader->set($input);
 
 		if (!$valid_data)
 		{
