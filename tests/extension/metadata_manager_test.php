@@ -123,6 +123,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 
 		$json = json_decode(file_get_contents($this->phpbb_root_path . 'ext/vendor2/foo/composer.json'), true);
+		array_walk_recursive($json, array($manager, 'sanitize_json'));
 
 		$this->assertEquals($metadata, $json);
 	}
