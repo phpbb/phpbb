@@ -160,7 +160,7 @@ interface tools_interface
 	public function sql_create_index($table_name, $index_name, $column);
 
 	/**
-	 * Drop Index
+	 * Drop index
 	 *
 	 * @param string	$table_name		Table to modify
 	 * @param string	$index_name		Name of the index to delete
@@ -188,6 +188,15 @@ interface tools_interface
 	 * @return array|true	Statements to run, or true if the statements have been executed
 	 */
 	public function sql_create_unique_index($table_name, $index_name, $column);
+
+	/**
+	 * Drop unique index
+	 *
+	 * @param string	$table_name		Table to modify
+	 * @param string	$index_name		Name of the unique index to delete
+	 * @return array|true	Statements to run, or true if the statements have been executed
+	 */
+	public function sql_unique_index_drop($table_name, $index_name);
 
 	/**
 	 * Add primary key
