@@ -104,6 +104,9 @@ services:
     filesystem:
         class: phpbb\filesystem
 
+    file_downloader:
+        class: phpbb\file_downloader
+
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
         arguments:
@@ -194,4 +197,5 @@ services:
         arguments:
             - @cache
             - @config
+            - @file_downloader
             - @user
