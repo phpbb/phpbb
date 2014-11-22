@@ -371,10 +371,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Gets a list of tables in the database.
-	*
-	* @return array		Array of table names  (all lower case)
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_list_tables()
 	{
 		switch ($this->db->get_sql_layer())
@@ -431,12 +429,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Check if table exists
-	*
-	*
-	* @param string	$table_name	The table name to check for
-	* @return bool true if table exists, else false
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_table_exists($table_name)
 	{
 		$this->db->sql_return_on_error(true);
@@ -453,12 +447,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Create SQL Table
-	*
-	* @param string	$table_name	The table name to create
-	* @param array	$table_data	Array containing table data.
-	* @return array	Statements if $return_statements is true.
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_table($table_name, $table_data)
 	{
 		// holds the DDL for a column
@@ -679,27 +669,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Handle passed database update array.
-	* Expected structure...
-	* Key being one of the following
-	*	drop_tables: Drop tables
-	*	add_tables: Add tables
-	*	change_columns: Column changes (only type, not name)
-	*	add_columns: Add columns to a table
-	*	drop_keys: Dropping keys
-	*	drop_columns: Removing/Dropping columns
-	*	add_primary_keys: adding primary keys
-	*	add_unique_index: adding an unique index
-	*	add_index: adding an index (can be column:index_size if you need to provide size)
-	*
-	* The values are in this format:
-	*		{TABLE NAME}		=> array(
-	*			{COLUMN NAME}		=> array({COLUMN TYPE}, {DEFAULT VALUE}, {OPTIONAL VARIABLES}),
-	*			{KEY/INDEX NAME}	=> array({COLUMN NAMES}),
-	*		)
-	*
-	* For more information have a look at /develop/create_schema_files.php (only available through SVN)
-	*/
+	 * {@inheritDoc}
+	 */
 	function perform_schema_changes($schema_changes)
 	{
 		if (empty($schema_changes))
@@ -1079,12 +1050,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Gets a list of columns of a table.
-	*
-	* @param string $table_name		Table name
-	*
-	* @return array				Array of column names (all lower case)
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_list_columns($table_name)
 	{
 		$columns = array();
@@ -1173,13 +1140,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Check whether a specified column exist in a table
-	*
-	* @param string	$table_name		Table to check
-	* @param string	$column_name	Column to check
-	*
-	* @return bool		True if column exists, false otherwise
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_exists($table_name, $column_name)
 	{
 		$columns = $this->sql_list_columns($table_name);
@@ -1188,13 +1150,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
-	*
-	* @param string	$table_name		Table to check the index at
-	* @param string	$index_name		The index name to check
-	*
-	* @return bool True if index exists, else false
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_index_exists($table_name, $index_name)
 	{
 		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
@@ -1285,13 +1242,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Check if a specified index exists in table. Does not return PRIMARY KEY indexes.
-	*
-	* @param string	$table_name		Table to check the index at
-	* @param string	$index_name		The index name to check
-	*
-	* @return bool True if index exists, else false
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_unique_index_exists($table_name, $index_name)
 	{
 		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
@@ -1684,8 +1636,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Add new column
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
@@ -1802,8 +1754,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Drop column
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_remove($table_name, $column_name, $inline = false)
 	{
 		$statements = array();
@@ -1931,8 +1883,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Drop Index
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_index_drop($table_name, $index_name)
 	{
 		$statements = array();
@@ -1961,8 +1913,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Drop Table
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_table_drop($table_name)
 	{
 		$statements = array();
@@ -2014,8 +1966,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Add primary key
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_primary_key($table_name, $column, $inline = false)
 	{
 		$statements = array();
@@ -2098,8 +2050,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Add unique index
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_unique_index($table_name, $index_name, $column)
 	{
 		$statements = array();
@@ -2135,8 +2087,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Add index
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
@@ -2188,11 +2140,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* List all of the indices that belong to a table,
-	* does not count:
-	* * UNIQUE indices
-	* * PRIMARY keys
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_list_index($table_name)
 	{
 		$index_array = array();
@@ -2287,8 +2236,8 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Change column type (not name!)
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
 	{
 		$original_column_data = $column_data;
