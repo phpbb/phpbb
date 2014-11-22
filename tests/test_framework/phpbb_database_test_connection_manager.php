@@ -370,7 +370,7 @@ class phpbb_database_test_connection_manager
 				->get_classes();
 
 			$db = new \phpbb\db\driver\sqlite();
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools_array(), $phpbb_root_path, $phpEx, $table_prefix);
 			$db_table_schema = $schema_generator->get_schema();
 		}
 
