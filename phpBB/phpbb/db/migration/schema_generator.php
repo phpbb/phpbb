@@ -24,7 +24,7 @@ class schema_generator
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools */
+	/** @var \phpbb\db\tools_array */
 	protected $db_tools;
 
 	/** @var array */
@@ -48,7 +48,7 @@ class schema_generator
 	/**
 	* Constructor
 	*/
-	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(array $class_names, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools_array $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -79,120 +79,17 @@ class schema_generator
 		{
 			foreach ($migrations as $migration_class)
 			{
+				/** @var $migration_class \phpbb\db\migration\migration */
 				$open_dependencies = array_diff($migration_class::depends_on(), $tree);
 
 				if (empty($open_dependencies))
 				{
+					/** @var $migration \phpbb\db\migration\migration */
 					$migration = new $migration_class($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
 					$tree[] = $migration_class;
 					$migration_key = array_search($migration_class, $migrations);
 
-					foreach ($migration->update_schema() as $change_type => $data)
-					{
-						if ($change_type === 'add_tables')
-						{
-							foreach ($data as $table => $table_data)
-							{
-								$this->tables[$table] = $table_data;
-							}
-						}
-						else if ($change_type === 'drop_tables')
-						{
-							foreach ($data as $table)
-							{
-								unset($this->tables[$table]);
-							}
-						}
-						else if ($change_type === 'add_columns')
-						{
-							foreach ($data as $table => $add_columns)
-							{
-								foreach ($add_columns as $column => $column_data)
-								{
-									if (isset($column_data['after']))
-									{
-										$columns = $this->tables[$table]['COLUMNS'];
-										$offset = array_search($column_data['after'], array_keys($columns));
-										unset($column_data['after']);
-
-										if ($offset === false)
-										{
-											$this->tables[$table]['COLUMNS'][$column] = array_values($column_data);
-										}
-										else
-										{
-											$this->tables[$table]['COLUMNS'] = array_merge(array_slice($columns, 0, $offset + 1, true), array($column => array_values($column_data)), array_slice($columns, $offset));
-										}
-									}
-									else
-									{
-										$this->tables[$table]['COLUMNS'][$column] = $column_data;
-									}
-								}
-							}
-						}
-						else if ($change_type === 'change_columns')
-						{
-							foreach ($data as $table => $change_columns)
-							{
-								foreach ($change_columns as $column => $column_data)
-								{
-									$this->tables[$table]['COLUMNS'][$column] = $column_data;
-								}
-							}
-						}
-						else if ($change_type === 'drop_columns')
-						{
-							foreach ($data as $table => $drop_columns)
-							{
-								if (is_array($drop_columns))
-								{
-									foreach ($drop_columns as $column)
-									{
-										unset($this->tables[$table]['COLUMNS'][$column]);
-									}
-								}
-								else
-								{
-									unset($this->tables[$table]['COLUMNS'][$drop_columns]);
-								}
-							}
-						}
-						else if ($change_type === 'add_unique_index')
-						{
-							foreach ($data as $table => $add_index)
-							{
-								foreach ($add_index as $key => $index_data)
-								{
-									$this->tables[$table]['KEYS'][$key] = array('UNIQUE', $index_data);
-								}
-							}
-						}
-						else if ($change_type === 'add_index')
-						{
-							foreach ($data as $table => $add_index)
-							{
-								foreach ($add_index as $key => $index_data)
-								{
-									$this->tables[$table]['KEYS'][$key] = array('INDEX', $index_data);
-								}
-							}
-						}
-						else if ($change_type === 'drop_keys')
-						{
-							foreach ($data as $table => $drop_keys)
-							{
-								foreach ($drop_keys as $key)
-								{
-									unset($this->tables[$table]['KEYS'][$key]);
-								}
-							}
-						}
-						else
-						{
-							var_dump($change_type);
-						}
-					}
+					$this->db_tools->perform_schema_changes($migration->update_schema());
 					unset($migrations[$migration_key]);
 				}
 				else if ($check_dependencies)
@@ -208,6 +105,8 @@ class schema_generator
 				$check_dependencies = false;
 			}
 		}
+
+		$this->tables = $this->db_tools->get_structure();
 
 		ksort($this->tables);
 		return $this->tables;
