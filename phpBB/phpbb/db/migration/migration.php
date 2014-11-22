@@ -28,7 +28,7 @@ abstract class migration
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools */
+	/** @var \phpbb\db\tools_interface */
 	protected $db_tools;
 
 	/** @var string */
@@ -51,12 +51,12 @@ abstract class migration
 	*
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
-	* @param \phpbb\db\tools $db_tools
+	* @param \phpbb\db\tools_interface $db_tools
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $table_prefix
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools_interface $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
 	{
 		$this->config = $config;
 		$this->db = $db;

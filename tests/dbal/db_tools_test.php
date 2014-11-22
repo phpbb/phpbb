@@ -17,7 +17,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
-	/** @var \phpbb\db\tools */
+	/** @var \phpbb\db\tools_interface */
 	protected $tools;
 	protected $table_exists;
 	protected $table_data;
