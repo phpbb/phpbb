@@ -497,7 +497,7 @@ blockquote.uncited {
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
 	margin-bottom: 3px;
-	font-size: 0.8em;
+	font-size: 0.8em !important;
 	font-weight: bold;
 	display: block;
 }
