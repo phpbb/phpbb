@@ -115,6 +115,7 @@ class acp_words
 				}
 
 				$cache->destroy('_word_censors');
+				$phpbb_container->get('text_formatter.cache')->invalidate();
 
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
 
@@ -148,6 +149,7 @@ class acp_words
 					$db->sql_query($sql);
 
 					$cache->destroy('_word_censors');
+					$phpbb_container->get('text_formatter.cache')->invalidate();
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WORD_DELETE', false, array($deleted_word));
 

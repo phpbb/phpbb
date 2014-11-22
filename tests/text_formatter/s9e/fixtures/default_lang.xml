@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+
+		<row>
+			<value>13</value>
+			<value>foo</value>
+			<value></value>
+			<value>1</value>
+			<value>[foo]{TEXT}[/foo]</value>
+			<value>{L_FOO_BAR}</value>
+		</row>
+	</table>
+</dataset>

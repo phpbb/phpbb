@@ -352,6 +352,11 @@ class acp_main
 						$config->increment('assets_version', 1);
 						$cache->purge();
 
+						// Remove old renderers from the text_formatter service. Since this
+						// operation is performed after the cache is purged, there is not "current"
+						// renderer and in effect all renderers will be purged
+						$phpbb_container->get('text_formatter.cache')->tidy();
+
 						// Clear permissions
 						$auth->acl_clear_prefetch();
 						phpbb_cache_moderators($db, $cache, $auth);

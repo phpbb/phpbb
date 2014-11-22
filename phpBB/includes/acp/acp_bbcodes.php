@@ -269,6 +269,7 @@ class acp_bbcodes
 
 						$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_ADDED';
 						$log_action = 'LOG_BBCODE_ADD';
@@ -280,6 +281,7 @@ class acp_bbcodes
 							WHERE bbcode_id = ' . $bbcode_id;
 						$db->sql_query($sql);
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_EDITED';
 						$log_action = 'LOG_BBCODE_EDIT';
