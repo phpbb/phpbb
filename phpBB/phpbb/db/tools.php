@@ -17,7 +17,7 @@ namespace phpbb\db;
 * Database Tools for handling cross-db actions such as altering columns, etc.
 * Currently not supported is returning SQL for creating tables.
 */
-class tools
+class tools implements tools_interface
 {
 	/**
 	* Current sql layer
@@ -1081,11 +1081,11 @@ class tools
 	/**
 	* Gets a list of columns of a table.
 	*
-	* @param string $table		Table name
+	* @param string $table_name		Table name
 	*
 	* @return array				Array of column names (all lower case)
 	*/
-	function sql_list_columns($table)
+	function sql_list_columns($table_name)
 	{
 		$columns = array();
 
@@ -1093,7 +1093,7 @@ class tools
 		{
 			case 'mysql_40':
 			case 'mysql_41':
-				$sql = "SHOW COLUMNS FROM $table";
+				$sql = "SHOW COLUMNS FROM $table_name";
 			break;
 
 			// PostgreSQL has a way of doing this in a much simpler way but would
@@ -1101,7 +1101,7 @@ class tools
 			case 'postgres':
 				$sql = "SELECT a.attname
 					FROM pg_class c, pg_attribute a
-					WHERE c.relname = '{$table}'
+					WHERE c.relname = '{$table_name}'
 						AND a.attnum > 0
 						AND a.attrelid = c.oid";
 			break;
@@ -1113,13 +1113,13 @@ class tools
 				$sql = "SELECT c.name
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
-					WHERE o.name = '{$table}'";
+					WHERE o.name = '{$table_name}'";
 			break;
 
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
-					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
+					WHERE LOWER(table_name) = '" . strtolower($table_name) . "'";
 			break;
 
 			case 'sqlite':
@@ -1127,7 +1127,7 @@ class tools
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
-						AND name = '{$table}'";
+						AND name = '{$table_name}'";
 
 				$result = $this->db->sql_query($sql);
 
@@ -1175,14 +1175,14 @@ class tools
 	/**
 	* Check whether a specified column exist in a table
 	*
-	* @param string	$table			Table to check
+	* @param string	$table_name		Table to check
 	* @param string	$column_name	Column to check
 	*
 	* @return bool		True if column exists, false otherwise
 	*/
-	function sql_column_exists($table, $column_name)
+	function sql_column_exists($table_name, $column_name)
 	{
-		$columns = $this->sql_list_columns($table);
+		$columns = $this->sql_list_columns($table_name);
 
 		return isset($columns[$column_name]);
 	}
