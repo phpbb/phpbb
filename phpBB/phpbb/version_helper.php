@@ -64,7 +64,7 @@ class version_helper
 	 * @param \phpbb\file_downloader $file_downloader
 	 * @param \phpbb\user $user
 	 */
-	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, file_downloader $file_downloader, \phpbb\user $user)
+	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\file_downloader $file_downloader, \phpbb\user $user)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
