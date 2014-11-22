@@ -30,7 +30,7 @@ class acp_icons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_extension_manager;
 
 		$user->add_lang('acp/posting');
 
@@ -72,20 +72,19 @@ class acp_icons
 		// Grab file list of paks and images
 		if ($action == 'edit' || $action == 'add' || $action == 'import')
 		{
-			$imglist = filelist($phpbb_root_path . $img_path, '');
-
-			foreach ($imglist as $path => $img_ary)
+			$finder = $phpbb_extension_manager->get_finder();
+			$imglist = array_keys($finder
+				->extension_directory("/{$mode}")
+				->core_path("{$img_path}/")
+				->find()
+			);
+			if (!empty($imglist))
 			{
-				if (empty($img_ary))
-				{
-					continue;
-				}
+				asort($imglist, SORT_STRING);
 
-				asort($img_ary, SORT_STRING);
-
-				foreach ($img_ary as $img)
+				foreach ($imglist as $img)
 				{
-					$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $path . $img);
+					$img_size = getimagesize($phpbb_root_path . $img);
 
 					if (!$img_size[0] || !$img_size[1] || strlen($img) > 255)
 					{
@@ -107,28 +106,23 @@ class acp_icons
 						}
 					}
 
-					$_images[$path . $img]['file'] = $path . $img;
-					$_images[$path . $img]['width'] = $img_size[0];
-					$_images[$path . $img]['height'] = $img_size[1];
+					$_images[$img]['file'] = $img;
+					$_images[$img]['width'] = $img_size[0];
+					$_images[$img]['height'] = $img_size[1];
 				}
+				unset($imglist);
 			}
-			unset($imglist);
 
-			if ($dir = @opendir($phpbb_root_path . $img_path))
+			$_paks = array_keys($finder
+				->extension_directory("/{$mode}")
+				->core_path("{$img_path}/")
+				->suffix('.pak')
+				->find()
+			);
+
+			if (!empty($_paks))
 			{
-				while (($file = readdir($dir)) !== false)
-				{
-					if (is_file($phpbb_root_path . $img_path . '/' . $file) && preg_match('#\.pak$#i', $file))
-					{
-						$_paks[] = $file;
-					}
-				}
-				closedir($dir);
-
-				if (!empty($_paks))
-				{
-					asort($_paks, SORT_STRING);
-				}
+				asort($_paks, SORT_STRING);
 			}
 		}
 
@@ -283,7 +277,7 @@ class acp_icons
 					$template->assign_block_vars('items', array(
 						'IMG'		=> $img,
 						'A_IMG'		=> addslashes($img),
-						'IMG_SRC'	=> $phpbb_root_path . $img_path . '/' . $img,
+						'IMG_SRC'	=> $phpbb_root_path . $img,
 
 						'CODE'		=> ($mode == 'smilies' && isset($img_row['code'])) ? $img_row['code'] : '',
 						'EMOTION'	=> ($mode == 'smilies' && isset($img_row['emotion'])) ? $img_row['emotion'] : '',
@@ -307,7 +301,7 @@ class acp_icons
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
 
-						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
+						'IMG_SRC'			=> $phpbb_root_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 
 						'CODE'				=> $default_row['code'],
@@ -395,7 +389,7 @@ class acp_icons
 					{
 						// skip images where add wasn't checked
 					}
-					else if (!file_exists($phpbb_root_path . $img_path . '/' . $image))
+					else if (!file_exists($phpbb_root_path . $image))
 					{
 						$errors[$image] = 'SMILIE_NO_FILE';
 					}
@@ -403,7 +397,7 @@ class acp_icons
 					{
 						if ($image_width[$image] == 0 || $image_height[$image] == 0)
 						{
-							$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $image);
+							$img_size = getimagesize($phpbb_root_path . $image);
 							$image_width[$image] = $img_size[0];
 							$image_height[$image] = $img_size[1];
 						}
@@ -513,7 +507,7 @@ class acp_icons
 				{
 					$order = 0;
 
-					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
+					if (!($pak_ary = @file($phpbb_root_path . '/' . $pak)))
 					{
 						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -921,7 +915,7 @@ class acp_icons
 			$template->assign_block_vars('items', array(
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,
 				'ALT_TEXT'		=> $alt_text,
-				'IMG_SRC'		=> $phpbb_root_path . $img_path . '/' . $row[$fields . '_url'],
+				'IMG_SRC'		=> $phpbb_root_path . '/' . $row[$fields . '_url'],
 				'WIDTH'			=> $row[$fields . '_width'],
 				'HEIGHT'		=> $row[$fields . '_height'],
 				'CODE'			=> (isset($row['code'])) ? $row['code'] : '',
