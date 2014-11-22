@@ -104,6 +104,84 @@
 
 	<a name="v311"></a><h3>1.i. Changes since 3.1.1</h3>
 
+	<h4>Security</h4>
+	<ul>
+		<li>[SECURITY-171] - Version helper does not properly escape version info</li>
+		<li>[SECURITY-169] - AJAX request with unexpected referrer causes infinite loop</li>
+	</ul>
+
+	<h4>Bug</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10442">PHPBB3-10442</a>] - XHTML is invalid when a forum link without redirect counter is present</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10744">PHPBB3-10744</a>] - Prevent user from installing styles with reserved directory names</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11863">PHPBB3-11863</a>] - User registration settings show incorrectly as disabled when board-wide emails are disabled</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12703">PHPBB3-12703</a>] - Notification System sends exact same SQL query multiple times</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13083">PHPBB3-13083</a>] - Language correction in NO_ENTRIES in acp_logs</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13100">PHPBB3-13100</a>] - Don't display &quot;delete reason&quot; dialog for shadow-topics</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13193">PHPBB3-13193</a>] - Post counts in Private Messages should link to the user's posts</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13197">PHPBB3-13197</a>] - Group Avatar not deleted from users</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13204">PHPBB3-13204</a>] - Login flood control error supresses incorrect credential error</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13209">PHPBB3-13209</a>] - Boolean (Yes/No) custom profile field doesn't show given name</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13216">PHPBB3-13216</a>] - Datetime tests fail randomly</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13228">PHPBB3-13228</a>] - &quot;Code: Select all&quot; font-size too big in Private Messages</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13239">PHPBB3-13239</a>] - Can´t upload Attachments on iOS</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13241">PHPBB3-13241</a>] - Topics are being duplicated in multipage forums</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13242">PHPBB3-13242</a>] - Validation error in Contact a Board Administrator</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13243">PHPBB3-13243</a>] - Debug error when clicking Re-check all versions on ACP manage extensions page</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13251">PHPBB3-13251</a>] - Database password containing special characters no longer accepted after upgrade to 3.1.0</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13253">PHPBB3-13253</a>] - MCP queue link in active topics search is missing</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13265">PHPBB3-13265</a>] - &quot;Edit profile&quot; link on view-own-profile page should only show if user has permission to edit</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13270">PHPBB3-13270</a>] - Upgrading from 3.0.12 to 3.1.1 does not display moderator soft delete permissions</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13277">PHPBB3-13277</a>] - Move Up &amp; Down does not take work in Internet Explorer</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13280">PHPBB3-13280</a>] - $user-&gt;page['page'] - is invalid resulting in confirm_box() not working correctly</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13284">PHPBB3-13284</a>] - Message body not included in email topic message </li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13298">PHPBB3-13298</a>] - Use mysql_free_result to free result sets which were requested using mysql_query()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13300">PHPBB3-13300</a>] - Jabber field still shown in profile when feature is disabled</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13301">PHPBB3-13301</a>] - Apache Authentication is probably broken</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13303">PHPBB3-13303</a>] - Migrator caught in loop calculating dependencies</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13315">PHPBB3-13315</a>] - Upgrade from 3.0.12 to 3.1.1 resets CAPTCHA selection</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13316">PHPBB3-13316</a>] - reCAPTCHA does not work on secured connection</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13318">PHPBB3-13318</a>] - login_username doesn't have multibyte parameter set to true</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13323">PHPBB3-13323</a>] - posting.php can pass invalid auth option to acl_get()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13332">PHPBB3-13332</a>] - Insufficient information passed to password drivers for converted boards</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13337">PHPBB3-13337</a>] - Mark subforums read triggers error if subforums contain no topics</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13338">PHPBB3-13338</a>] - Some tests fail when run on their own</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13342">PHPBB3-13342</a>] - 310/captcha_plugins migration changes recaptcha to nogd</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13349">PHPBB3-13349</a>] - Incorrect entities used for breadcrumb separator in CSS</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13354">PHPBB3-13354</a>] - Unknown column 'topic_logs' in 'where clause' when deleting topic log in MCP</li>
+	</ul>
+
+	<h4>Improvement</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12681">PHPBB3-12681</a>] - Cache the compiled routes and dump the url_generator</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12885">PHPBB3-12885</a>] - Wrong index page title when using Board Index text</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13023">PHPBB3-13023</a>] - [event] - Add Event posting_editor_buttons_custom_tags_before</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13133">PHPBB3-13133</a>] - Allow @vendor_extname in INCLUDECSS</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13182">PHPBB3-13182</a>] - [event] - Add posting.php core event to allow modifying the message before parsing</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13220">PHPBB3-13220</a>] - [event] - Add template events to memberlist_search.html</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13290">PHPBB3-13290</a>] - [event] - Add template event index_body_forumlist_body_after</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13294">PHPBB3-13294</a>] - [event] - Add message_parser.php core event for additional message handling before parsing</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13297">PHPBB3-13297</a>] - Add unicode modifier to url/email regular expression patterns</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13309">PHPBB3-13309</a>] - [event] - Add ACP template event acp_email_options_after</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13310">PHPBB3-13310</a>] - [event] - Add core event core.acp_email_modify_sql</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13326">PHPBB3-13326</a>] - Add viewtopic_url variable to a viewtopic event</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13328">PHPBB3-13328</a>] - [event] - Add event core.mcp_view_forum_modify_sql</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13347">PHPBB3-13347</a>] - [event] - Add new template events to acp_forums.html</li>
+	</ul>
+
+	<h4>New Feature</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12962">PHPBB3-12962</a>] - Use phantomjs and webdriver for UI testing</li>
+	</ul>
+
+	<h4>Task</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13324">PHPBB3-13324</a>] - Composer no longer downloads sami/sami and fabpot/goutte</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13325">PHPBB3-13325</a>] - Make installing dependencies for tests more user friendly or optional</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13331">PHPBB3-13331</a>] - Sami run as part of phing MUST NOT switch branches</li>
+	</ul>
+
+
 	<a name="v310"></a><h3>1.ii. Changes since 3.1.0</h3>
 
 	<h4>Security</h4>
