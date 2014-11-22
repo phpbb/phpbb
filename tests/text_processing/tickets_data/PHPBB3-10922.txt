@@ -1,0 +1,1 @@
+[email]user@example.org[/email][email=user@example.org]...[/email]

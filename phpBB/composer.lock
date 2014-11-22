@@ -145,7 +145,7 @@
                     "Psr\\Log\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -162,6 +162,63 @@
                 "psr-3"
             ],
             "time": "2012-12-21 11:40:51"
+        },
+        {
+            "name": "s9e/text-formatter",
+            "version": "dev-release/php5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s9e/TextFormatter.git",
+                "reference": "872ed9d9204986668afc0b3e633be99e397e201b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/872ed9d9204986668afc0b3e633be99e397e201b",
+                "reference": "872ed9d9204986668afc0b3e633be99e397e201b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-filter": "*",
+                "php": ">=5.3.3"
+            },
+            "suggest": {
+                "ext-intl": "Allows international URLs to be accepted by the URL filter",
+                "ext-json": "Enables the generation of a JavaScript parser",
+                "ext-mbstring": "Enables some optimizations in the PHP renderer",
+                "ext-tokenizer": "Enables optimizations in the PHP renderer",
+                "ext-xsl": "Enables the XSLT renderer",
+                "ext-zlib": "Enables gzip compression when scraping content via the MediaEmbed plugin"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "s9e\\TextFormatter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Multi-purpose text formatting and markup library. Plugins offer support for BBCodes, Markdown, emoticons, HTML, embedding media (YouTube, etc...), enhanced typography and more.",
+            "keywords": [
+                "bbcode",
+                "bbcodes",
+                "blog",
+                "censor",
+                "embed",
+                "emoji",
+                "emoticons",
+                "engine",
+                "forum",
+                "html",
+                "markdown",
+                "markup",
+                "media",
+                "parser",
+                "shortcodes"
+            ],
+            "time": "2014-11-22 14:23:43"
         },
         {
             "name": "symfony/config",
@@ -960,16 +1017,14 @@
                     "Twig_": "lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Armin Ronacher",
@@ -993,21 +1048,21 @@
     "packages-dev": [
         {
             "name": "fabpot/goutte",
-            "version": "v1.0.7",
+            "version": "v1.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/FriendsOfPHP/Goutte.git",
-                "reference": "794b196e76bdd37b5155cdecbad311f0a3b07625"
+                "url": "https://github.com/fabpot/Goutte.git",
+                "reference": "75c9f23c4122caf4ea3e87a42a00b471366e707f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Goutte/zipball/794b196e76bdd37b5155cdecbad311f0a3b07625",
-                "reference": "794b196e76bdd37b5155cdecbad311f0a3b07625",
+                "url": "https://api.github.com/repos/fabpot/Goutte/zipball/75c9f23c4122caf4ea3e87a42a00b471366e707f",
+                "reference": "75c9f23c4122caf4ea3e87a42a00b471366e707f",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "guzzle/http": "~3.1",
+                "guzzle/http": ">=3.0.5,<3.8-dev",
                 "php": ">=5.3.0",
                 "symfony/browser-kit": "~2.1",
                 "symfony/css-selector": "~2.1",
@@ -1016,8 +1071,8 @@
                 "symfony/process": "~2.1"
             },
             "require-dev": {
-                "guzzle/plugin-history": "~3.1",
-                "guzzle/plugin-mock": "~3.1"
+                "guzzle/plugin-history": ">=3.0.5,<3.8-dev",
+                "guzzle/plugin-mock": ">=3.0.5,<3.8-dev"
             },
             "type": "application",
             "extra": {
@@ -1037,7 +1092,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "A simple PHP Web Scraper",
@@ -1045,7 +1102,7 @@
             "keywords": [
                 "scraper"
             ],
-            "time": "2014-10-09 15:52:51"
+            "time": "2013-08-16 06:03:22"
         },
         {
             "name": "guzzle/common",
@@ -1376,8 +1433,7 @@
             "authors": [
                 {
                     "name": "Michiel Rook",
-                    "email": "mrook@php.net",
-                    "role": "Lead"
+                    "email": "mrook@php.net"
                 },
                 {
                     "name": "Phing Community",
@@ -1881,16 +1937,16 @@
         },
         {
             "name": "sami/sami",
-            "version": "v1.4",
+            "version": "v1.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/FriendsOfPHP/Sami.git",
-                "reference": "70f29c781f7bef30181c814b9471b2ceac694454"
+                "url": "https://github.com/fabpot/Sami.git",
+                "reference": "76f2ed80b3420f7e2f6dcd5b7218b5a5781f4110"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfPHP/Sami/zipball/70f29c781f7bef30181c814b9471b2ceac694454",
-                "reference": "70f29c781f7bef30181c814b9471b2ceac694454",
+                "url": "https://api.github.com/repos/fabpot/Sami/zipball/76f2ed80b3420f7e2f6dcd5b7218b5a5781f4110",
+                "reference": "76f2ed80b3420f7e2f6dcd5b7218b5a5781f4110",
                 "shasum": ""
             },
             "require": {
@@ -1911,7 +1967,7 @@
             "type": "application",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.4-dev"
+                    "dev-master": "1.3-dev"
                 }
             },
             "autoload": {
@@ -1926,7 +1982,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "Sami, an API documentation generator",
@@ -1934,7 +1992,7 @@
             "keywords": [
                 "phpdoc"
             ],
-            "time": "2014-06-25 11:24:03"
+            "time": "2013-11-30 17:16:25"
         },
         {
             "name": "sebastian/comparator",
