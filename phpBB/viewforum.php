@@ -565,6 +565,8 @@ $sql_ary = array(
 * @var	bool	store_reverse	Flag indicating if we select from the late pages
 *
 * @since 3.1.0-RC4
+*
+* @changed 3.1.1 Added forum_data
 */
 $vars = array(
 	'forum_data',
