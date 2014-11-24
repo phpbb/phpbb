@@ -395,7 +395,7 @@ $sql_array = array(
 * @var	array	forum_data			Array with forum data
 * @var	array	sql_array			The SQL array to get the data of all topics
 * @since 3.1.0-a1
-* @change 3.1.0-RC4 Added forum_data var 
+* @change 3.1.0-RC4 Added forum_data var
 */
 $vars = array(
 	'forum_data',
@@ -554,6 +554,7 @@ $sql_ary = array(
 * Event to modify the SQL query before the topic ids data is retrieved
 *
 * @event core.viewforum_get_topic_ids_data
+* @var	array	forum_data		Data about the forum
 * @var	array	sql_ary			SQL query array to get the topic ids data
 * @var	string	sql_approved	Topic visibility SQL string
 * @var	int		sql_limit		Number of records to select
@@ -566,6 +567,7 @@ $sql_ary = array(
 * @since 3.1.0-RC4
 */
 $vars = array(
+	'forum_data',
 	'sql_ary',
 	'sql_approved',
 	'sql_limit',
