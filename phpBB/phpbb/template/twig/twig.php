@@ -103,7 +103,7 @@ class twig extends \phpbb\template\base
 			array(
 				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
 				'debug'			=> defined('DEBUG'),
-				'auto_reload'	=> (bool) $this->config['load_tplcompile'],
+				'auto_reload'	=> defined('DEBUG') || (bool) $this->config['load_tplcompile'],
 				'autoescape'	=> false,
 			)
 		);
