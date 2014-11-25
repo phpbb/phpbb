@@ -11,6 +11,7 @@ services:
             - %core.template.cache_path%
             - @ext.manager
             - @template.twig.loader
+            - []
 
     template.twig.lexer:
         class: phpbb\template\twig\lexer

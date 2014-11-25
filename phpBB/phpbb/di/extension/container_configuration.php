@@ -34,6 +34,8 @@ class container_configuration implements ConfigurationInterface
 				->arrayNode('twig')
 					->addDefaultsIfNotSet()
 					->children()
+						->booleanNode('debug')->defaultValue(null)->end()
+						->booleanNode('auto_reload')->defaultValue(null)->end()
 						->booleanNode('enable_debug_extension')->defaultValue(false)->end()
 					->end()
 				->end()
