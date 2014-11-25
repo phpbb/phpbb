@@ -255,7 +255,7 @@ class router implements RouterInterface
 			$cache->write($dumper->dump($options), $this->get_routes()->getResources());
 		}
 
-		require_once $cache;
+		require_once($cache);
 
 		$this->matcher = new \phpbb_url_matcher($this->context);
 	}
@@ -303,7 +303,7 @@ class router implements RouterInterface
 			$cache->write($dumper->dump($options), $this->get_routes()->getResources());
 		}
 
-		require_once $cache;
+		require_once($cache);
 
 		$this->generator = new \phpbb_url_generator($this->context);
 	}
