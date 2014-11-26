@@ -1,8 +1,8 @@
 *~
 /phpunit.xml
 /phpBB/cache/*
-!/phpBB/.htaccess
-!/phpBB/index.html
+!/phpBB/cache/.htaccess
+!/phpBB/cache/index.html
 /phpBB/composer.phar
 /phpBB/config*.php
 /phpBB/ext/*
