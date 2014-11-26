@@ -40,6 +40,7 @@ class acp_email
 		$error = array();
 
 		$usernames	= request_var('usernames', '', true);
+		$usernames	= explode("\n", $usernames);
 		$group_id	= request_var('g', 0);
 		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
 		$message	= utf8_normalize_nfc(request_var('message', '', true));
@@ -77,7 +78,7 @@ class acp_email
 						'FROM'		=> array(
 							USERS_TABLE		=> '',
 						),
-						'WHERE'		=> $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
+						'WHERE'		=> $db->sql_in_set('username_clean', array_map('utf8_clean_string', $usernames)) . '
 							AND user_allow_massemail = 1',
 						'ORDER_BY'	=> 'user_lang, user_notify_type',
 					);
@@ -194,6 +195,39 @@ class acp_email
 
 				$errored = false;
 
+				$email_template = 'admin_send_email';
+				$template_data = array(
+					'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
+					'MESSAGE'		=> htmlspecialchars_decode($message),
+				);
+				$generate_log_entry = true;
+
+				/**
+				* Modify email template data before the emails are sent
+				*
+				* @event core.acp_email_send_before
+				* @var	string	email_template		The template to be used for sending the email
+				* @var	string	subject				The subject of the email
+				* @var	array	template_data		Array with template data assigned to email template
+				* @var	bool	generate_log_entry	If false, no log entry will be created
+				* @var	array	usernames			Usernames which will be displayed in log entry, if it will be created
+				* @var	int		group_id			The group this email will be sent to
+				* @var	bool	use_queue			If true, email queue will be used for sending
+				* @var	int		priority			Priority of sent emails
+				* @since 3.1.3-RC1
+				*/
+				$vars = array(
+					'email_template',
+					'subject',
+					'template_data',
+					'generate_log_entry',
+					'usernames',
+					'group_id',
+					'use_queue',
+					'priority',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
+
 				for ($i = 0, $size = sizeof($email_list); $i < $size; $i++)
 				{
 					$used_lang = $email_list[$i][0]['lang'];
@@ -207,17 +241,14 @@ class acp_email
 						$messenger->im($email_row['jabber'], $email_row['name']);
 					}
 
-					$messenger->template('admin_send_email', $used_lang);
+					$messenger->template($email_template, $used_lang);
 
 					$messenger->anti_abuse_headers($config, $user);
 
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);
 
-					$messenger->assign_vars(array(
-						'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
-						'MESSAGE'		=> htmlspecialchars_decode($message))
-					);
+					$messenger->assign_vars($template_data);
 
 					if (!($messenger->send($used_method)))
 					{
@@ -228,24 +259,26 @@ class acp_email
 
 				$messenger->save_queue();
 
-				if ($usernames)
+				if ($generate_log_entry)
 				{
-					$usernames = explode("\n", $usernames);
-					add_log('admin', 'LOG_MASS_EMAIL', implode(', ', utf8_normalize_nfc($usernames)));
-				}
-				else
-				{
-					if ($group_id)
+					if ($usernames)
 					{
-						$group_name = get_group_name($group_id);
+						add_log('admin', 'LOG_MASS_EMAIL', implode(', ', utf8_normalize_nfc($usernames)));
 					}
 					else
 					{
-						// Not great but the logging routine doesn't cope well with localising on the fly
-						$group_name = $user->lang['ALL_USERS'];
-					}
+						if ($group_id)
+						{
+							$group_name = get_group_name($group_id);
+						}
+						else
+						{
+							// Not great but the logging routine doesn't cope well with localising on the fly
+							$group_name = $user->lang['ALL_USERS'];
+						}
 
-					add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+						add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+					}
 				}
 
 				if (!$errored)
@@ -286,7 +319,7 @@ class acp_email
 			'WARNING_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'U_ACTION'				=> $this->u_action,
 			'S_GROUP_OPTIONS'		=> $select_list,
-			'USERNAMES'				=> $usernames,
+			'USERNAMES'				=> implode("\n", $usernames),
 			'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
 			'SUBJECT'				=> $subject,
 			'MESSAGE'				=> $message,
