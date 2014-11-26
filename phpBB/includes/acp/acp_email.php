@@ -70,7 +70,7 @@ class acp_email
 
 			if (!sizeof($error))
 			{
-				if ($usernames)
+				if (!empty($usernames))
 				{
 					// If giving usernames the admin is able to email inactive users too...
 					$sql_ary = array(
@@ -261,7 +261,7 @@ class acp_email
 
 				if ($generate_log_entry)
 				{
-					if ($usernames)
+					if (!empty($usernames))
 					{
 						add_log('admin', 'LOG_MASS_EMAIL', implode(', ', utf8_normalize_nfc($usernames)));
 					}
