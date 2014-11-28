@@ -146,7 +146,7 @@ if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 * @var	p_master	module			Module system class
 * @var	bool		quickmod		True if the user is accessing using quickmod tools
 * @var	int			topic_id		The topic the user tried to access
-* @since 3.1.1-RC1
+* @since 3.1.3-RC1
 */
 $vars = array(
 	'action',
