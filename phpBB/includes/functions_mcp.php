@@ -424,7 +424,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 					AND t.topic_visibility <> p.post_visibility';
 
 			/**
-			* This event allows you to control the SQL query to retrieve the list of unaproved and deleted posts
+			* This event allows you to control the SQL query to retrieve the list of unapproved and deleted posts
 			*
 			* @event core.mcp_sorting_unapproved_deleted_posts_query_before
 			* @var	string	sql					The current SQL search string
