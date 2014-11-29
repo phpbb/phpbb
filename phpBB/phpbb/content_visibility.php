@@ -185,7 +185,7 @@ class content_visibility
 		);
 		extract($phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
 
-		if ($contentReplaced)
+		if ($content_replaced)
 		{
 			return $where_sql;
 		}
