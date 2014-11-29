@@ -158,6 +158,25 @@ class content_visibility
 	{
 		$where_sql = '(';
 
+		/**
+		* Allow changing the result of calling get_forums_visibility_sql
+		*
+		* @event core.phpbb_content_visibility_get_forums_visibility_before
+		* @var	string		where_sql			The action the user tried to execute
+		* @var	string		mode				Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_ids			Array of forum ids which the posts/topics are limited to
+		* @var	string		table_alias			Table alias to prefix in SQL queries
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'where_sql',
+			'mode',
+			'forum_ids',
+			'table_alias',
+			'content_replaced',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
+
 		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
 
 		if (sizeof($approve_forums))
