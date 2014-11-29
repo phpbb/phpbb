@@ -11,174 +11,23 @@
 *
 */
 
-namespace phpbb\db;
+namespace phpbb\db\tools;
 
 /**
  * Database Tools version that works on a local array without touching the database
  * This version MUST NOT BE used in installed boards, but only to generate the schema!
  */
-class tools_array implements tools_interface
+class tools_array extends tools
 {
 	protected $table_data = array();
+	protected $return_statements = false;
+
+	//TODO remove
+	protected $sql_layer = 'array';
 
 	public function get_structure()
 	{
 		return $this->table_data;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function perform_schema_changes($schema_changes)
-	{
-		if (empty($schema_changes))
-		{
-			return;
-		}
-
-		// Drop tables?
-		if (!empty($schema_changes['drop_tables']))
-		{
-			foreach ($schema_changes['drop_tables'] as $table)
-			{
-				// only drop table if it exists
-				if ($this->sql_table_exists($table))
-				{
-					$this->sql_table_drop($table);
-				}
-			}
-		}
-
-		// Add tables?
-		if (!empty($schema_changes['add_tables']))
-		{
-			foreach ($schema_changes['add_tables'] as $table => $table_data)
-			{
-				$this->sql_create_table($table, $table_data);
-			}
-		}
-
-		// Change columns?
-		if (!empty($schema_changes['change_columns']))
-		{
-			foreach ($schema_changes['change_columns'] as $table => $columns)
-			{
-				foreach ($columns as $column_name => $column_data)
-				{
-					// If the column exists we change it, else we add it ;)
-					if ($column_exists = $this->sql_column_exists($table, $column_name))
-					{
-						$this->sql_column_change($table, $column_name, $column_data, true);
-					}
-					else
-					{
-						$this->sql_column_add($table, $column_name, $column_data, true);
-					}
-				}
-			}
-		}
-
-		// Add columns?
-		if (!empty($schema_changes['add_columns']))
-		{
-			foreach ($schema_changes['add_columns'] as $table => $columns)
-			{
-				foreach ($columns as $column_name => $column_data)
-				{
-					// Only add the column if it does not exist yet
-					if ($column_exists = $this->sql_column_exists($table, $column_name))
-					{
-						continue;
-						// This is commented out here because it can take tremendous time on updates
-//						$result = $this->sql_column_change($table, $column_name, $column_data, true);
-					}
-					else
-					{
-						$this->sql_column_add($table, $column_name, $column_data, true);
-					}
-				}
-			}
-		}
-
-		// Remove keys?
-		if (!empty($schema_changes['drop_keys']))
-		{
-			foreach ($schema_changes['drop_keys'] as $table => $indexes)
-			{
-				foreach ($indexes as $index_name)
-				{
-					if ($this->sql_index_exists($table, $index_name))
-					{
-						$this->sql_index_drop($table, $index_name);
-						continue;
-					}
-					else if ($this->sql_unique_index_exists($table, $index_name))
-					{
-						$this->sql_unique_index_drop($table, $index_name);
-						continue;
-					}
-				}
-			}
-		}
-
-		// Drop columns?
-		if (!empty($schema_changes['drop_columns']))
-		{
-			foreach ($schema_changes['drop_columns'] as $table => $columns)
-			{
-				foreach ($columns as $column)
-				{
-					// Only remove the column if it exists...
-					if ($this->sql_column_exists($table, $column))
-					{
-						$this->sql_column_remove($table, $column, true);
-					}
-				}
-			}
-		}
-
-		// Add primary keys?
-		if (!empty($schema_changes['add_primary_keys']))
-		{
-			foreach ($schema_changes['add_primary_keys'] as $table => $columns)
-			{
-				$this->sql_create_primary_key($table, $columns, true);
-			}
-		}
-
-		// Add unique indexes?
-		if (!empty($schema_changes['add_unique_index']))
-		{
-			foreach ($schema_changes['add_unique_index'] as $table => $index_array)
-			{
-				foreach ($index_array as $index_name => $column)
-				{
-					if ($this->sql_unique_index_exists($table, $index_name))
-					{
-						continue;
-					}
-
-					$this->sql_create_unique_index($table, $index_name, $column);
-				}
-			}
-		}
-
-		// Add indexes?
-		if (!empty($schema_changes['add_index']))
-		{
-			foreach ($schema_changes['add_index'] as $table => $index_array)
-			{
-				foreach ($index_array as $index_name => $column)
-				{
-					if ($this->sql_index_exists($table, $index_name))
-					{
-						continue;
-					}
-
-					$this->sql_create_index($table, $index_name, $column);
-				}
-			}
-		}
 	}
 
 	/**

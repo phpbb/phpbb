@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db;
+namespace phpbb\db\tools;
 
 /**
 * Database Tools for handling cross-db actions such as altering columns, etc.
@@ -22,18 +22,18 @@ class tools implements tools_interface
 	/**
 	* Current sql layer
 	*/
-	var $sql_layer = '';
+	protected $sql_layer = '';
 
 	/**
 	* @var object DB object
 	*/
-	var $db = null;
+	protected $db;
 
 	/**
 	* The Column types for every database we support
 	* @var array
 	*/
-	var $dbms_type_map = array();
+	protected $dbms_type_map = array();
 
 	/**
 	* Is the used MS SQL Server a SQL Server 2000?
@@ -682,7 +682,7 @@ class tools implements tools_interface
 		$sqlite = false;
 
 		// For SQLite we need to perform the schema changes in a much more different way
-		if (($this->db->get_sql_layer() == 'sqlite' || $this->db->get_sql_layer() == 'sqlite3') && $this->return_statements)
+		if (($this->sql_layer == 'sqlite' || $this->sql_layer == 'sqlite3') && $this->return_statements)
 		{
 			$sqlite_data = array();
 			$sqlite = true;
