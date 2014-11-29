@@ -240,8 +240,6 @@ class content_visibility
 	*/
 	public function get_global_visibility_sql($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
-		global $phpbb_dispatcher;
-
 		$where_sqls = array();
 
 		$approve_forums = array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $exclude_forum_ids);
@@ -267,7 +265,7 @@ class content_visibility
 			'approve_forums',
 			'content_replaced',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_global_visibility_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_global_visibility_before', compact($vars)));
 
 		if ($content_replaced)
 		{
