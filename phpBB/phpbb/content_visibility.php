@@ -44,6 +44,12 @@ class content_visibility
 	protected $config;
 
 	/**
+	* Event dispatcher object
+	* @var \phpbb\event\dispatcher
+	*/
+	protected $phpbb_dispatcher;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -60,6 +66,7 @@ class content_visibility
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	\phpbb\config\config	$config	Config object
+	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher object
 	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user			User object
 	* @param	string		$phpbb_root_path	Root path
@@ -69,10 +76,11 @@ class content_visibility
 	* @param	string		$topics_table		Topics table name
 	* @param	string		$users_table		Users table name
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -202,10 +210,13 @@ class content_visibility
 	*/
 	public function get_global_visibility_sql($mode, $exclude_forum_ids = array(), $table_alias = '')
 	{
+		global $phpbb_dispatcher;
+
 		$where_sqls = array();
 
 		$approve_forums = array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $exclude_forum_ids);
 
+		$content_replaced = null;
 		/**
 		* Allow changing the result of calling get_global_visibility_sql
 		*
@@ -215,6 +226,7 @@ class content_visibility
 		* @var	array		forum_ids				Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias				Table alias to prefix in SQL queries
 		* @var	array		approve_forums			Array of forums where the user has m_approve permissions
+		* @var	string		content_replaced		Forces the function to return an implosion of where_sqls (joined by "OR")
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -223,8 +235,15 @@ class content_visibility
 			'forum_ids',
 			'table_alias',
 			'approve_forums',
+			'content_replaced',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_global_visibility_before', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_global_visibility_before', compact($vars)));
+
+		if ($content_replaced)
+		{
+			return $content_replaced;
+		}
+
 
 		if (sizeof($exclude_forum_ids))
 		{
