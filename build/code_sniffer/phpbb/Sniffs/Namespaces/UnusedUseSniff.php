@@ -145,6 +145,68 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 		{
 			$old_function_declaration = $function_declaration;
 
+			// Check docblocks
+			$find = array(
+				T_COMMENT,
+				T_DOC_COMMENT,
+				T_CLASS,
+				T_FUNCTION,
+				T_OPEN_TAG,
+			);
+			
+			$comment_end = $phpcsFile->findPrevious($find, ($function_declaration - 1));
+			if ($comment_end !== false)
+			{
+				if (!$tokens[$comment_end]['code'] !== T_DOC_COMMENT)
+				{
+					$comment_start = ($phpcsFile->findPrevious(T_DOC_COMMENT, ($comment_end - 1), null, true) + 1);
+					$comment      = $phpcsFile->getTokensAsString($comment_start, ($comment_end - $comment_start + 1));
+
+					try
+					{
+						$comment_parser = new PHP_CodeSniffer_CommentParser_FunctionCommentParser($comment, $phpcsFile);
+						$comment_parser->parse();
+
+						foreach ($comment_parser->getParams() as $param) {
+							$type = $param->getType();
+
+							if ($type === $class_name_full)
+							{
+								$error = 'Either use statement or full name must be used.';
+								$phpcsFile->addError($error, $param->getLine() + $comment_start, 'FullName');
+							}
+
+							if ($type === $class_name_short)
+							{
+								$ok = true;
+							}
+						}
+
+						$return = $comment_parser->getReturn();
+						if ($return !== null)
+						{
+							$type = $return->getValue();
+
+							if ($type === $class_name_full)
+							{
+								$error = 'Either use statement or full name must be used.';
+								$phpcsFile->addError($error, $return->getLine() + $comment_start, 'FullName');
+							}
+
+							if ($type === $class_name_short)
+							{
+								$ok = true;
+							}
+						}
+					}
+					catch (PHP_CodeSniffer_CommentParser_ParserException $e)
+					{
+						$line = ($e->getLineWithinComment() + $comment_start);
+						$phpcsFile->addError($e->getMessage(), $line, 'FailedParse');
+					}
+				}
+			}
+
 			$end_function = $phpcsFile->findNext(array(T_CLOSE_PARENTHESIS), ($function_declaration + 1));
 			$old_argument = $function_declaration;
 			while (($argument = $phpcsFile->findNext(T_VARIABLE, ($old_argument + 1), $end_function)) !== false)
