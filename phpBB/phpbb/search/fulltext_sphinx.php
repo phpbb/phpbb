@@ -85,7 +85,7 @@ class fulltext_sphinx
 
 	/**
 	 * Database Tools object
-	 * @var \phpbb\db\tools
+	 * @var \phpbb\db\tools_interface
 	 */
 	protected $db_tools;
 

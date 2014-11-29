@@ -17,7 +17,7 @@ namespace phpbb\db;
 * Database Tools for handling cross-db actions such as altering columns, etc.
 * Currently not supported is returning SQL for creating tables.
 */
-class tools
+class tools implements tools_interface
 {
 	/**
 	* Current sql layer
@@ -371,10 +371,8 @@ class tools
 	}
 
 	/**
-	* Gets a list of tables in the database.
-	*
-	* @return array		Array of table names  (all lower case)
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_list_tables()
 	{
 		switch ($this->db->get_sql_layer())
@@ -431,12 +429,8 @@ class tools
 	}
 
 	/**
-	* Check if table exists
-	*
-	*
-	* @param string	$table_name	The table name to check for
-	* @return bool true if table exists, else false
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_table_exists($table_name)
 	{
 		$this->db->sql_return_on_error(true);
@@ -453,12 +447,8 @@ class tools
 	}
 
 	/**
-	* Create SQL Table
-	*
-	* @param string	$table_name	The table name to create
-	* @param array	$table_data	Array containing table data.
-	* @return array	Statements if $return_statements is true.
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_table($table_name, $table_data)
 	{
 		// holds the DDL for a column
@@ -679,27 +669,8 @@ class tools
 	}
 
 	/**
-	* Handle passed database update array.
-	* Expected structure...
-	* Key being one of the following
-	*	drop_tables: Drop tables
-	*	add_tables: Add tables
-	*	change_columns: Column changes (only type, not name)
-	*	add_columns: Add columns to a table
-	*	drop_keys: Dropping keys
-	*	drop_columns: Removing/Dropping columns
-	*	add_primary_keys: adding primary keys
-	*	add_unique_index: adding an unique index
-	*	add_index: adding an index (can be column:index_size if you need to provide size)
-	*
-	* The values are in this format:
-	*		{TABLE NAME}		=> array(
-	*			{COLUMN NAME}		=> array({COLUMN TYPE}, {DEFAULT VALUE}, {OPTIONAL VARIABLES}),
-	*			{KEY/INDEX NAME}	=> array({COLUMN NAMES}),
-	*		)
-	*
-	* For more information have a look at /develop/create_schema_files.php (only available through SVN)
-	*/
+	 * {@inheritDoc}
+	 */
 	function perform_schema_changes($schema_changes)
 	{
 		if (empty($schema_changes))
@@ -829,16 +800,23 @@ class tools
 			{
 				foreach ($indexes as $index_name)
 				{
-					if (!$this->sql_index_exists($table, $index_name))
+					if ($this->sql_index_exists($table, $index_name))
 					{
-						continue;
+						$result = $this->sql_index_drop($table, $index_name);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
-
-					$result = $this->sql_index_drop($table, $index_name);
-
-					if ($this->return_statements)
+					else if ($this->sql_unique_index_exists($table, $index_name))
 					{
-						$statements = array_merge($statements, $result);
+						$result = $this->sql_unique_index_drop($table, $index_name);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
 				}
 			}
@@ -1079,13 +1057,9 @@ class tools
 	}
 
 	/**
-	* Gets a list of columns of a table.
-	*
-	* @param string $table		Table name
-	*
-	* @return array				Array of column names (all lower case)
-	*/
-	function sql_list_columns($table)
+	 * {@inheritDoc}
+	 */
+	function sql_list_columns($table_name)
 	{
 		$columns = array();
 
@@ -1093,7 +1067,7 @@ class tools
 		{
 			case 'mysql_40':
 			case 'mysql_41':
-				$sql = "SHOW COLUMNS FROM $table";
+				$sql = "SHOW COLUMNS FROM $table_name";
 			break;
 
 			// PostgreSQL has a way of doing this in a much simpler way but would
@@ -1101,7 +1075,7 @@ class tools
 			case 'postgres':
 				$sql = "SELECT a.attname
 					FROM pg_class c, pg_attribute a
-					WHERE c.relname = '{$table}'
+					WHERE c.relname = '{$table_name}'
 						AND a.attnum > 0
 						AND a.attrelid = c.oid";
 			break;
@@ -1113,13 +1087,13 @@ class tools
 				$sql = "SELECT c.name
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
-					WHERE o.name = '{$table}'";
+					WHERE o.name = '{$table_name}'";
 			break;
 
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
-					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
+					WHERE LOWER(table_name) = '" . strtolower($table_name) . "'";
 			break;
 
 			case 'sqlite':
@@ -1127,7 +1101,7 @@ class tools
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
-						AND name = '{$table}'";
+						AND name = '{$table_name}'";
 
 				$result = $this->db->sql_query($sql);
 
@@ -1173,28 +1147,18 @@ class tools
 	}
 
 	/**
-	* Check whether a specified column exist in a table
-	*
-	* @param string	$table			Table to check
-	* @param string	$column_name	Column to check
-	*
-	* @return bool		True if column exists, false otherwise
-	*/
-	function sql_column_exists($table, $column_name)
+	 * {@inheritDoc}
+	 */
+	function sql_column_exists($table_name, $column_name)
 	{
-		$columns = $this->sql_list_columns($table);
+		$columns = $this->sql_list_columns($table_name);
 
 		return isset($columns[$column_name]);
 	}
 
 	/**
-	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
-	*
-	* @param string	$table_name		Table to check the index at
-	* @param string	$index_name		The index name to check
-	*
-	* @return bool True if index exists, else false
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_index_exists($table_name, $index_name)
 	{
 		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
@@ -1285,13 +1249,8 @@ class tools
 	}
 
 	/**
-	* Check if a specified index exists in table. Does not return PRIMARY KEY indexes.
-	*
-	* @param string	$table_name		Table to check the index at
-	* @param string	$index_name		The index name to check
-	*
-	* @return bool True if index exists, else false
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_unique_index_exists($table_name, $index_name)
 	{
 		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
@@ -1684,8 +1643,8 @@ class tools
 	}
 
 	/**
-	* Add new column
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_add($table_name, $column_name, $column_data, $inline = false)
 	{
 		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
@@ -1802,8 +1761,8 @@ class tools
 	}
 
 	/**
-	* Drop column
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_remove($table_name, $column_name, $inline = false)
 	{
 		$statements = array();
@@ -1931,8 +1890,8 @@ class tools
 	}
 
 	/**
-	* Drop Index
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_index_drop($table_name, $index_name)
 	{
 		$statements = array();
@@ -1961,8 +1920,35 @@ class tools
 	}
 
 	/**
-	* Drop Table
-	*/
+	 * {@inheritDoc}
+	 */
+	function sql_unique_index_drop($table_name, $index_name)
+	{
+		$statements = array();
+
+		switch ($this->sql_layer)
+		{
+			case 'mssql':
+			case 'mssqlnative':
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP CONSTRAINT ' . $index_name;
+				break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+			case 'oracle':
+			case 'postgres':
+			case 'sqlite':
+			case 'sqlite3':
+				return $this->sql_index_drop($table_name, $index_name);
+				break;
+		}
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	function sql_table_drop($table_name)
 	{
 		$statements = array();
@@ -2014,8 +2000,8 @@ class tools
 	}
 
 	/**
-	* Add primary key
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_primary_key($table_name, $column, $inline = false)
 	{
 		$statements = array();
@@ -2098,8 +2084,8 @@ class tools
 	}
 
 	/**
-	* Add unique index
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_unique_index($table_name, $index_name, $column)
 	{
 		$statements = array();
@@ -2135,8 +2121,8 @@ class tools
 	}
 
 	/**
-	* Add index
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
@@ -2188,11 +2174,8 @@ class tools
 	}
 
 	/**
-	* List all of the indices that belong to a table,
-	* does not count:
-	* * UNIQUE indices
-	* * PRIMARY keys
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_list_index($table_name)
 	{
 		$index_array = array();
@@ -2287,8 +2270,8 @@ class tools
 	}
 
 	/**
-	* Change column type (not name!)
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_column_change($table_name, $column_name, $column_data, $inline = false)
 	{
 		$original_column_data = $column_data;
