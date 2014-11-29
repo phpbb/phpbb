@@ -185,7 +185,7 @@ class content_visibility
 
 		if ($contentReplaced)
 		{
-			return $content_replaced;
+			return $where_sql;
 		}
 
 		if (sizeof($approve_forums))
