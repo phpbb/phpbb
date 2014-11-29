@@ -136,6 +136,7 @@ if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
 	trigger_error('NOT_AUTHORISED');
 }
+
 /**
 * Allow applying additional permissions to MCP access besides f_read
 *
