@@ -190,6 +190,7 @@ class content_visibility
 			return $where_sql;
 		}
 
+
 		if (sizeof($approve_forums))
 		{
 			// Remove moderator forums from the rest
