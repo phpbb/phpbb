@@ -158,6 +158,7 @@ class content_visibility
 	{
 		$where_sql = '(';
 
+		$content_replaced = false;
 		/**
 		* Allow changing the result of calling get_forums_visibility_sql
 		*
@@ -166,6 +167,7 @@ class content_visibility
 		* @var	string		mode				Either "topic" or "post" depending on the query this is being used in
 		* @var	array		forum_ids			Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias			Table alias to prefix in SQL queries
+		* @var	bool		content_replaced	Forces the function to return where_sql after executing the event
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -176,6 +178,11 @@ class content_visibility
 			'content_replaced',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
+
+		if ($contentReplaced)
+		{
+			return $content_replaced;
+		}
 
 		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
 
