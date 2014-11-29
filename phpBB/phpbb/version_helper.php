@@ -259,7 +259,7 @@ class version_helper
 			}
 			catch (\RuntimeException $exception)
 			{
-				throw new \RuntimeException(call_user_func_array(array($this->user, 'lang'), $exception->getMessage()));
+				throw new \RuntimeException($this->user->lang($exception->getMessage()));
 			}
 			$error_string = $this->file_downloader->get_error_string();
 
