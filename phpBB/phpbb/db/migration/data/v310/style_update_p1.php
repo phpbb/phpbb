@@ -92,7 +92,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		else
 		{
 			$sql = 'SELECT s.style_id, t.template_path, t.template_id, t.bbcode_bitfield, t.template_inherits_id, t.template_inherit_path, c.theme_path, c.theme_id
-				FROM ' . STYLES_TABLE . ' s, ' . $this->table_prefix . 'styles_template t, ' . $this->table_prefix . "stles_theme c
+				FROM ' . STYLES_TABLE . ' s, ' . $this->table_prefix . 'styles_template t, ' . $this->table_prefix . "styles_theme c
 				WHERE t.template_id = s.template_id
 					AND c.theme_id = s.theme_id";
 		}
