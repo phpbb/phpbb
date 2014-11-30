@@ -160,7 +160,11 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 						// Check @param
 						foreach ($comment_parser->getParams() as $param) {
 							$type = $param->getType();
-							$ok = $this->check($type, $class_name_full, $class_name_short, $param->getLine() + $comment_start) ? true : $ok;
+							$types = explode('|', str_replace('[]', '', $type));
+							foreach ($types as $type)
+							{
+								$ok = $this->check($type, $class_name_full, $class_name_short, $param->getLine() + $comment_start) ? true : $ok;
+							}
 						}
 
 						// Check @return
@@ -168,7 +172,11 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 						if ($return !== null)
 						{
 							$type = $return->getValue();
-							$ok = $this->check($type, $class_name_full, $class_name_short, $return->getLine() + $comment_start) ? true : $ok;
+							$types = explode('|', str_replace('[]', '', $type));
+							foreach ($types as $type)
+							{
+								$ok = $this->check($type, $class_name_full, $class_name_short, $return->getLine() + $comment_start) ? true : $ok;
+							}
 						}
 					}
 					catch (PHP_CodeSniffer_CommentParser_ParserException $e)
