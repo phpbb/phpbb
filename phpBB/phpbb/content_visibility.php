@@ -44,6 +44,12 @@ class content_visibility
 	protected $config;
 
 	/**
+	* Event dispatcher object
+	* @var \phpbb\event\dispatcher
+	*/
+	protected $phpbb_dispatcher;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -60,6 +66,7 @@ class content_visibility
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	\phpbb\config\config	$config	Config object
+	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher object
 	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user			User object
 	* @param	string		$phpbb_root_path	Root path
@@ -69,10 +76,11 @@ class content_visibility
 	* @param	string		$topics_table		Topics table name
 	* @param	string		$users_table		Users table name
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
