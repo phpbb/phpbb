@@ -168,7 +168,7 @@ class content_visibility
 
 		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
 
-		$content_replaced = false;
+		$get_forums_visibility_sql_overwrite = false;
 		/**
 		* Allow changing the result of calling get_forums_visibility_sql
 		*
@@ -178,7 +178,7 @@ class content_visibility
 		* @var	array		forum_ids			Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias			Table alias to prefix in SQL queries
 		* @var	array		approve_forums		Array of forums where the user has m_approve permissions
-		* @var	bool		content_replaced	Forces the function to return where_sql after executing the event
+		* @var	bool		get_forums_visibility_sql_overwrite	Forces the function to return where_sql after executing the event
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -187,13 +187,13 @@ class content_visibility
 			'forum_ids',
 			'table_alias',
 			'approve_forums',
-			'content_replaced',
+			'get_forums_visibility_sql_overwrite',
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
 
-		if ($content_replaced)
+		if ($get_forums_visibility_sql_overwrite)
 		{
-			return $content_replaced;
+			return $get_forums_visibility_sql_overwrite;
 		}
 
 
