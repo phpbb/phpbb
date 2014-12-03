@@ -708,6 +708,20 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
+		/**
+		* Allow modifying or execute extra final filter on log entries
+		*
+		* @event core.get_logs_after
+		* @var	array	log			Array with all our log entries
+		* @var	array	topic_id_list		Array of topic ids, for which we
+		*									get the permission data
+		* @var	array	reportee_id_list	Array of additional user IDs we
+		*									get the username strings for
+		* @since 3.1.3-RC1
+		*/
+		$vars = array('log', 'topic_id_list', 'reportee_id_list');
+		extract($this->dispatcher->trigger_event('core.get_logs_after', compact($vars)));
+
 		return $log;
 	}
 
