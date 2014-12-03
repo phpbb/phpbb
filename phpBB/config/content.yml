@@ -3,8 +3,8 @@ services:
         class: phpbb\content_visibility
         arguments:
             - @auth
-            - @phpbb_dispatcher
             - @config
+            - @phpbb_dispatcher
             - @dbal.conn
             - @user
             - %core.root_path%
