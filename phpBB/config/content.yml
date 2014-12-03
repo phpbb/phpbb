@@ -3,6 +3,7 @@ services:
         class: phpbb\content_visibility
         arguments:
             - @auth
+            - @phpbb_dispatcher
             - @config
             - @dbal.conn
             - @user
