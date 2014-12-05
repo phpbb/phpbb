@@ -319,8 +319,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	array	sort_by_sql		Array of SQL sorting instructions
 	* @var	array	ex_fid_ary		Array of excluded forum ids
 	* @var	array	author_id_ary	Array of exclusive author ids
-	* @var	int		search_id		The id of the search request
-	* @since 3.1.3
+	* @var	string	search_id		The id of the search request
+	* @since 3.1.3-RC1
 	*/
 	$vars = array(
 		'keywords',
