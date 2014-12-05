@@ -329,7 +329,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'author_id_ary',
 		'search_id',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.search_get_posts_data', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.search_modify_param_before', compact($vars)));
 
 	// pre-made searches
 	$sql = $field = $l_search_title = '';
