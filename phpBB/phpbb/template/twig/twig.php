@@ -78,9 +78,12 @@ class twig extends \phpbb\template\base
 	* @param \phpbb\config\config $config
 	* @param \phpbb\user $user
 	* @param \phpbb\template\context $context template context
+	* @param \phpbb\template\twig\environment $twig_environment
+	* @param string $cache_path
+	* @param array|\ArrayAccess $extensions
 	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct(\phpbb\path_helper $path_helper, $config, $user, \phpbb\template\context $context, \phpbb\extension\manager $extension_manager = null)
+	public function __construct(\phpbb\path_helper $path_helper, $config, $user, \phpbb\template\context $context, \phpbb\template\twig\environment $twig_environment, $cache_path, $extensions = array(), \phpbb\extension\manager $extension_manager = null)
 	{
 		$this->path_helper = $path_helper;
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
@@ -89,35 +92,13 @@ class twig extends \phpbb\template\base
 		$this->user = $user;
 		$this->context = $context;
 		$this->extension_manager = $extension_manager;
+		$this->cachepath = $cache_path;
+		$this->twig = $twig_environment;
 
-		$this->cachepath = $this->phpbb_root_path . 'cache/twig/';
-
-		// Initiate the loader, __main__ namespace paths will be setup later in set_style_names()
-		$loader = new \phpbb\template\twig\loader('');
-
-		$this->twig = new \phpbb\template\twig\environment(
-			$this->config,
-			$this->path_helper,
-			$this->extension_manager,
-			$loader,
-			array(
-				'cache'			=> (defined('IN_INSTALL')) ? false : $this->cachepath,
-				'debug'			=> defined('DEBUG'),
-				'auto_reload'	=> (bool) $this->config['load_tplcompile'],
-				'autoescape'	=> false,
-			)
-		);
-
-		$this->twig->addExtension(
-			new \phpbb\template\twig\extension(
-				$this->context,
-				$this->user
-			)
-		);
-
-		$lexer = new \phpbb\template\twig\lexer($this->twig);
-
-		$this->twig->setLexer($lexer);
+		foreach ($extensions as $extension)
+		{
+			$this->twig->addExtension($extension);
+		}
 
 		// Add admin namespace
 		if ($this->path_helper->get_adm_relative_path() !== null && is_dir($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/'))

@@ -36,7 +36,6 @@ class ucp_profile
 
 		$user->add_lang('posting');
 
-		$preview	= $request->variable('preview', false, false, \phpbb\request\request_interface::POST);
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
 		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
@@ -415,79 +414,72 @@ class ucp_profile
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $user->optionget('sig_bbcode') : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $user->optionget('sig_smilies') : false;
-				$enable_urls	= ($config['allow_sig_links']) ? (bool) $user->optionget('sig_links') : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? $user->optionget('sig_bbcode') : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? $user->optionget('sig_smilies') : false;
+				$enable_urls	= ($config['allow_sig_links']) ? $user->optionget('sig_links') : false;
 
-				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
+				$decoded_message	= generate_text_for_edit($user->data['user_sig'], $user->data['user_sig_bbcode_uid'], $user->data['user_sig_bbcode_bitfield']);
+				$signature			= $request->variable('signature', $decoded_message['text'], true);
+				$signature_preview	= '';
 
-				add_form_key('ucp_sig');
-
-				if ($submit || $preview)
+				if ($submit || $request->is_set_post('preview'))
 				{
-					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+					$enable_bbcode	= ($config['allow_sig_bbcode']) ? !$request->variable('disable_bbcode', false) : false;
+					$enable_smilies	= ($config['allow_sig_smilies']) ? !$request->variable('disable_smilies', false) : false;
+					$enable_urls	= ($config['allow_sig_links']) ? !$request->variable('disable_magic_url', false) : false;
 
-					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
-					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
-					$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+					if (!check_form_key('ucp_sig'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+				}
 
+				$bbcode_uid = $bbcode_bitfield = $bbcode_flags = '';
+				$warn_msg = generate_text_for_storage($signature, $bbcode_uid, $bbcode_bitfield, $bbcode_flags, $enable_bbcode, $enable_urls, $enable_smilies);
+
+				if (sizeof($warn_msg))
+				{
+					$error += $warn_msg;
+				}
+
+				if (!$submit)
+				{
+					// Parse it for displaying
+					$signature_preview = generate_text_for_display($signature, $bbcode_uid, $bbcode_bitfield, $bbcode_flags);
+				}
+				else
+				{
 					if (!sizeof($error))
 					{
-						$message_parser = new parse_message($signature);
+						$user->optionset('sig_bbcode', $enable_bbcode);
+						$user->optionset('sig_smilies', $enable_smilies);
+						$user->optionset('sig_links', $enable_urls);
 
-						// Allowing Quote BBCode
-						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
+						$sql_ary = array(
+							'user_sig'					=> $signature,
+							'user_options'				=> $user->data['user_options'],
+							'user_sig_bbcode_uid'		=> $bbcode_uid,
+							'user_sig_bbcode_bitfield'	=> $bbcode_bitfield
+						);
 
-						if (sizeof($message_parser->warn_msg))
-						{
-							$error[] = implode('<br />', $message_parser->warn_msg);
-						}
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
 
-						if (!check_form_key('ucp_sig'))
-						{
-							$error[] = 'FORM_INVALID';
-						}
-
-						if (!sizeof($error) && $submit)
-						{
-							$user->optionset('sig_bbcode', $enable_bbcode);
-							$user->optionset('sig_smilies', $enable_smilies);
-							$user->optionset('sig_links', $enable_urls);
-
-							$sql_ary = array(
-								'user_sig'					=> (string) $message_parser->message,
-								'user_options'				=> $user->data['user_options'],
-								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
-								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
-							);
-
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-								WHERE user_id = ' . $user->data['user_id'];
-							$db->sql_query($sql);
-
-							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-							trigger_error($message);
-						}
+						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						trigger_error($message);
 					}
-
-					// Replace "error" strings with their real, localised form
-					$error = array_map(array($user, 'lang'), $error);
 				}
 
-				$signature_preview = '';
-				if ($preview)
-				{
-					// Now parse it for displaying
-					$signature_preview = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
-					unset($message_parser);
-				}
+				// Replace "error" strings with their real, localised form
+				$error = array_map(array($user, 'lang'), $error);
 
-				decode_message($signature, $user->data['user_sig_bbcode_uid']);
+				$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_bitfield);
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'SIGNATURE'			=> $signature,
+					'SIGNATURE'			=> $decoded_message['text'],
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
 					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? ' checked="checked"' : '',
@@ -509,6 +501,8 @@ class ucp_profile
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
+
+				add_form_key('ucp_sig');
 
 				// Build custom bbcodes array
 				display_custom_bbcodes();

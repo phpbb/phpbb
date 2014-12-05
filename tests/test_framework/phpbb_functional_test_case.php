@@ -204,6 +204,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
+			global $phpbb_container;
+
+			$phpbb_container = new phpbb_mock_container_builder();
+			$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+
 			$this->cache = new \phpbb\cache\driver\file;
 		}
 
@@ -475,7 +480,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			));
 			$db->sql_query($sql);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
 				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
@@ -514,7 +519,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
 			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
 				@rmdir($phpbb_root_path . 'styles/' . $style_path);
@@ -933,8 +938,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
 	{
-		$this->assertSame(
-			'',
+		$this->assertNull(
 			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
 			$message ?: "Failed asserting that checkbox $name is unchecked."
 		);

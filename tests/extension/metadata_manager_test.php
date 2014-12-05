@@ -47,20 +47,35 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->user = new \phpbb\user('\phpbb\datetime');
 		$this->table_prefix = 'phpbb_';
 
-		$this->template = new \phpbb\template\twig\twig(
-			new \phpbb\path_helper(
-				new \phpbb\symfony_request(
-					new phpbb_mock_request()
-				),
-				new \phpbb\filesystem(),
-				$this->getMock('\phpbb\request\request'),
-				$this->phpbb_root_path,
-				$this->phpEx
+		$container = new phpbb_mock_container_builder();
+		$cache_path = $this->phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader('');
+		$phpbb_path_helper =new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
 			),
-			$this->config,
-			$this->user,
-			new \phpbb\template\context()
+			new \phpbb\filesystem(),
+			$this->getMock('\phpbb\request\request'),
+			$this->phpbb_root_path,
+			$this->phpEx
 		);
+		$twig = new \phpbb\template\twig\environment(
+			$this->config,
+			$phpbb_path_helper,
+			$container,
+			$cache_path,
+			null,
+			$loader,
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
+		);
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 
 		$this->migrator = new \phpbb\db\migrator(
 			$this->config,
@@ -73,7 +88,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			array(),
 			new \phpbb\db\migration\helper()
 		);
-		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $this->migrator);
 
 		$this->extension_manager = new \phpbb\extension\manager(

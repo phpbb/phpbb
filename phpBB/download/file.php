@@ -42,6 +42,11 @@ if (isset($_GET['avatar']))
 	$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 	extract($phpbb_config_php_file->get_all());
 
+	if (!defined('PHPBB_ENVIRONMENT'))
+	{
+		@define('PHPBB_ENVIRONMENT', 'production');
+	}
+
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	{
 		exit;

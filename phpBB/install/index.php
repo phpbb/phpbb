@@ -16,6 +16,7 @@
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
+define('PHPBB_ENVIRONMENT', 'production');
 /**#@-*/
 
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
@@ -102,7 +103,6 @@ phpbb_require_updated('includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 phpbb_include_updated('includes/functions_admin.' . $phpEx);
-phpbb_include_updated('includes/utf/utf_normalizer.' . $phpEx);
 phpbb_include_updated('includes/utf/utf_tools.' . $phpEx);
 phpbb_require_updated('includes/functions_install.' . $phpEx);
 
@@ -137,6 +137,7 @@ $phpbb_container_builder->set_custom_parameters(array(
 
 $phpbb_container = $phpbb_container_builder->get_container();
 $phpbb_container->register('dbal.conn.driver')->setSynthetic(true);
+$phpbb_container->register('template.twig.environment')->setSynthetic(true);
 $phpbb_container->compile();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
@@ -268,7 +269,28 @@ $config = new \phpbb\config\config(array(
 $symfony_request = $phpbb_container->get('symfony_request');
 $phpbb_filesystem = $phpbb_container->get('filesystem');
 $phpbb_path_helper = $phpbb_container->get('path_helper');
-$template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context());
+$cache_path = $phpbb_root_path . 'cache/';
+
+$twig_environment = new \phpbb\template\twig\environment(
+	$config,
+	$phpbb_path_helper,
+	$phpbb_container,
+	$cache_path,
+	null,
+	$phpbb_container->get('template.twig.loader')
+);
+
+$phpbb_container->set('template.twig.environment', $twig_environment);
+$template = new \phpbb\template\twig\twig(
+	$phpbb_path_helper,
+	$config,
+	$user,
+	new \phpbb\template\context(),
+	$twig_environment,
+	$cache_path,
+	array($phpbb_container->get('template.twig.extensions.phpbb'))
+);
+
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style(array(
