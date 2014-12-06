@@ -30,6 +30,11 @@ class tools_array extends tools
 		return $this->table_data;
 	}
 
+	public function __construct()
+	{
+
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
