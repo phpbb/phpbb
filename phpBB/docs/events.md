@@ -675,6 +675,14 @@ overall_footer_copyright_prepend
 * Since: 3.1.0-a1
 * Purpose: Add content before the copyright line
 
+overall_footer_lowermost
+===
+* Locations:
+    + styles/prosilver/template/overall_footer.html
+    + styles/subsilver2/template/overall_footer.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
+
 overall_footer_page_body_after
 ===
 * Locations:
