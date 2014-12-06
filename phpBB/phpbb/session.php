@@ -215,7 +215,7 @@ class session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -372,6 +372,14 @@ class session
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
 			{
+				/**
+				* Event to check user session
+				*
+				* @event core.session_check_user_session
+				* @since 3.1.3
+				*/
+				$phpbb_dispatcher->dispatch('core.session_check_user_session');
+
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
@@ -1082,7 +1090,7 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $config, $db;
+		global $config, $db, $phpbb_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
@@ -1195,6 +1203,20 @@ class session
 			}
 		}
 		$db->sql_freeresult($result);
+
+		/**
+		* Event to set custom ban type
+		*
+		* @event core.session_set_custom_ban
+		* @var bool	return			If $return is false this routine does not return on finding a banned user, it outputs a relevant message and stops execution
+		* @var bool	banned			Check if user already banned
+		* @var array	ban_row			Ban data
+		* @var string	ban_triggered_by	Custom ban type
+		* @since 3.1.3
+		*/
+		$ban_row = isset($ban_row) ? $ban_row : false;
+		$vars = array('return', 'banned', 'ban_row', 'ban_triggered_by');
+		extract($phpbb_dispatcher->trigger_event('core.session_set_custom_ban', compact($vars)));
 
 		if ($banned && !$return)
 		{
