@@ -32,7 +32,7 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 		$this->migration = new \phpbb\db\migration\data\v310\notification_options_reconvert(
 			new \phpbb\config\config(array()),
 			$this->db,
-			new \phpbb\db\tools($this->db),
+			new \phpbb\db\tools\tools($this->db),
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_'

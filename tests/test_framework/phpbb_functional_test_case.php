@@ -230,7 +230,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array());
 		$db = $this->get_db();
-		$db_tools = new \phpbb\db\tools($db);
+		$db_tools = new \phpbb\db\tools\tools($db);
 
 		$migrator = new \phpbb\db\migrator(
 			$config,

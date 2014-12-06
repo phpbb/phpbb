@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db;
+namespace phpbb\db\tools;
 
 /**
 * Database Tools for handling cross-db actions such as altering columns, etc.

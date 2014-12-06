@@ -115,7 +115,7 @@ class qa
 	{
 		global $db;
 
-		$db_tool = new \phpbb\db\tools($db);
+		$db_tool = new \phpbb\db\tools\tools($db);
 
 		return $db_tool->sql_table_exists($this->table_captcha_questions);
 	}
@@ -308,7 +308,7 @@ class qa
 	{
 		global $db;
 
-		$db_tool = new \phpbb\db\tools($db);
+		$db_tool = new \phpbb\db\tools\tools($db);
 
 		$tables = array($this->table_captcha_questions, $this->table_captcha_answers, $this->table_qa_confirm);
 

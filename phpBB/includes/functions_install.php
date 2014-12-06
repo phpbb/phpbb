@@ -188,7 +188,7 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function get_tables(&$db)
 {
-	$db_tools = new \phpbb\db\tools($db);
+	$db_tools = new \phpbb\db\tools\tools($db);
 
 	return $db_tools->sql_list_tables();
 }
