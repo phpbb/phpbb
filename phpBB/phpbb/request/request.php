@@ -275,7 +275,7 @@ class request implements \phpbb\request\request_interface
 	*/
 	public function file($form_name)
 	{
-		return $this->variable($form_name, array('name' => 'none'), false, \phpbb\request\request_interface::FILES);
+		return $this->variable($form_name, array('name' => 'none'), true, \phpbb\request\request_interface::FILES);
 	}
 
 	/**
