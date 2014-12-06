@@ -164,6 +164,22 @@ switch ($mode)
 
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
 
+				/**
+				* Event to save custom cookies from deletion
+				*
+				* @event core.ucp_save_custom_cookies
+				* @var string	cookie_name		Cookie name to checking
+				* @var bool	continue		Do we save our cookie or not
+				* @since 3.1.3
+				*/
+				$continue = false;
+				$vars = array('cookie_name', 'continue');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_save_custom_cookies', compact($vars)));
+				if ($continue)
+				{
+					continue;
+				}
+
 				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
 				if (strpos($cookie_name, 'poll_') !== 0)
 				{
