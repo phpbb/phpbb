@@ -1090,7 +1090,7 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $config, $db;
+		global $config, $db, $phpbb_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
@@ -1203,6 +1203,20 @@ class session
 			}
 		}
 		$db->sql_freeresult($result);
+
+		/**
+		* Event to set custom ban type
+		*
+		* @event core.session_set_custom_ban
+		* @var bool	return			If $return is false this routine does not return on finding a banned user, it outputs a relevant message and stops execution
+		* @var bool	banned			Check if user already banned
+		* @var array	ban_row			Ban data
+		* @var string	ban_triggered_by	Custom ban type
+		* @since 3.1.3-RC1
+		*/
+		$ban_row = isset($ban_row) ? $ban_row : false;
+		$vars = array('return', 'banned', 'ban_row', 'ban_triggered_by');
+		extract($phpbb_dispatcher->trigger_event('core.session_set_custom_ban', compact($vars)));
 
 		if ($banned && !$return)
 		{
