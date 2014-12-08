@@ -110,9 +110,11 @@ class phpbb_passwords_manager_test extends PHPUnit_Framework_TestCase
 	{
 		$password = $this->default_pw;
 		$time = microtime(true);
+		$is_tested = false;
 		// Limit each test to 1 second
-		while ((microtime(true) - $time) < 1)
+		while ((microtime(true) - $time) < 1 || !$is_tested)
 		{
+			$is_tested = true;
 			$hash = $this->manager->hash($password, $hash_type);
 			$this->assertEquals(true, $this->manager->check($password, $hash));
 			$password .= $this->pw_characters[mt_rand(0, 66)];

@@ -124,6 +124,8 @@ function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\con
 		}
 	}
 
+	if ($config === null)
+		return;
 	$config->set($config_name, $config_value, !$is_dynamic);
 }
 
