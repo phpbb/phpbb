@@ -10,7 +10,7 @@ services:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
     dbal.tools:
-        class: phpbb\db\tools
+        class: phpbb\db\tools\tools
         arguments:
             - @dbal.conn
 
