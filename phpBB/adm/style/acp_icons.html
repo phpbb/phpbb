@@ -7,7 +7,7 @@
 	<script type="text/javascript" defer="defer">
 	// <![CDATA[
 	<!-- IF S_ADD_CODE -->
-	
+
 			var smiley = Array();
 			<!-- BEGIN smile -->
 				smiley['{smile.SMILEY_URL}'] = Array();
@@ -37,10 +37,10 @@
 					}
 				}
 			}
-		
+
 	<!-- ENDIF -->
 
-	
+
 	function toggle_select(icon, display, select)
 	{
 		var disp = document.getElementById('order_disp_' + select);
@@ -101,7 +101,7 @@
 	<tbody>
 	<!-- BEGIN items -->
 		<tr>
-	
+
 		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="" title="" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
 		<td style="vertical-align: top;">[{items.IMG}]</td>
 		<!-- IF S_SMILIES -->
@@ -121,7 +121,7 @@
 				<optgroup id="order_disp_{items.S_ROW_COUNT}" label="{L_DISPLAY_POSTING}" <!-- IF not items.POSTING_CHECKED -->disabled="disabled" class="disabled-options" <!-- ENDIF -->>{S_ORDER_LIST_DISPLAY}</optgroup>
 				<optgroup id="order_no_disp_{items.S_ROW_COUNT}" label="{L_DISPLAY_POSTING_NO}" <!-- IF  items.POSTING_CHECKED -->disabled="disabled" class="disabled-options" <!-- ENDIF -->>{S_ORDER_LIST_UNDISPLAY}</optgroup>
 			</select></td>
-		<!-- ENDIF -->	
+		<!-- ENDIF -->
 		<!-- IF S_ADD -->
 			<td><input type="checkbox" class="radio" name="add_img[{items.IMG}]" value="1" /></td>
 		<!-- ENDIF -->
@@ -147,6 +147,8 @@
 	</tr>
 	<!-- ENDIF -->
 	<!-- ELSE -->
+	</thead>
+	<tbody>
 	<tr class="row3">
 		<td colspan="{COLSPAN}">{L_NO_ICONS}</td>
 	</tr>
@@ -174,7 +176,7 @@
 
 	<fieldset>
 		<legend>{L_IMPORT}</legend>
-	
+
 	<!-- IF not S_PAK_OPTIONS -->
 		<p>{L_NO_PAK_OPTIONS}</p>
 
@@ -259,7 +261,7 @@
 	</table>
 	<div class="pagination">
 	<!-- IF .pagination -->
-		<!-- INCLUDE pagination.html -->	
+		<!-- INCLUDE pagination.html -->
 	<!-- ENDIF -->
 	</div>
 	<p class="quick">
