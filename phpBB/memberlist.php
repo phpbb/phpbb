@@ -177,10 +177,10 @@ switch ($mode)
 		 * Modify the query used to get the users for the team page
 		 *
 		 * @event core.memberlist_team_modify_query
-		 * @var	array	$sql_ary				Array containing the query
-		 * @var	array	$group_ids				Array of group ids
-		 * @var	array	$teampage_data			The teampage data
-		 * @since 3.1.3
+		 * @var	array	sql_ary				Array containing the query
+		 * @var	array	group_ids				Array of group ids
+		 * @var	array	teampage_data			The teampage data
+		 * @since 3.1.3-RC1
 		 */
 		$vars = array(
 			'sql_ary',
@@ -326,10 +326,10 @@ switch ($mode)
 						 * Modify the template vars for displaying the user in the groups on the teampage
 						 *
 						 * @event core.memberlist_team_modify_template_vars
-						 * @var	array	$template_vars			Array containing the query
-						 * @var array	$row					Array containing the action user row
-						 * @var	array	$groups_ary				Array of groups with all users that should be displayed
-						 * @since 3.1.3
+						 * @var	array	template_vars		Array containing the query
+						 * @var array	row					Array containing the action user row
+						 * @var	array	groups_ary			Array of groups with all users that should be displayed
+						 * @since 3.1.3-RC1
 						 */
 						$vars = array(
 							'template_vars',
