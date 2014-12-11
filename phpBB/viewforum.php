@@ -566,7 +566,7 @@ $sql_ary = array(
 *
 * @since 3.1.0-RC4
 *
-* @changed 3.1.1 Added forum_data
+* @changed 3.1.3 Added forum_data
 */
 $vars = array(
 	'forum_data',
