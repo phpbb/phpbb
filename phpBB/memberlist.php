@@ -172,7 +172,7 @@ switch ($mode)
 
 			'ORDER_BY'	=> 'u.username_clean ASC',
 		);
-		
+
 		/**
 		 * Modify the query used to get the users for the team page
 		 *
@@ -321,7 +321,7 @@ switch ($mode)
 							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 						);
-						
+
 						/**
 						 * Modify the template vars for displaying the user in the groups on the teampage
 						 *
@@ -337,7 +337,7 @@ switch ($mode)
 							'groups_ary',
 						);
 						extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_template_vars', compact($vars)));
-						
+
 						$template->assign_block_vars('group.user', $template_vars);
 
 						if ($config['teampage_memberships'] != 2)
