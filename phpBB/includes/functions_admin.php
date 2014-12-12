@@ -2361,7 +2361,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	* @var int		prune_flags		The prune flags
 	* @var bool		auto_sync		Whether or not to perform auto sync
 	* @var string	sql_and			SQL text appended to where clause
-	* @since 3.1.3
+	* @since 3.1.3-RC1
 	*/
 	$vars = array('forum_id', 'prune_mode', 'prune_date', 'prune_flags', 'auto_sync', 'sql_and');
 	extract($phpbb_dispatcher->trigger_event('core.prune_sql', compact($vars)));
