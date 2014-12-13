@@ -355,7 +355,7 @@ $topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : NULL
 *											Make it NULL to allow auto-filling later.
 *											Make it an array to override original data.
 *
-* @since 3.1.3-RC1	
+* @since 3.1.3-RC1
 */
 $vars = array(
 	'forum_id',
