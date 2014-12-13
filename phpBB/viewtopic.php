@@ -336,6 +336,8 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 // Setup look and feel
 $user->setup('viewtopic', $topic_data['forum_style']);
 
+$overrides_f_read = false;
+$overrides_forum_password = false;
 /**
 * Event to apply extra permissions and to override original phpBB's f_read permission and forum password check
 * on viewtopic access
@@ -346,6 +348,8 @@ $user->setup('viewtopic', $topic_data['forum_style']);
 * @var	int 	post_id						The id of the post the user tries to start viewing at. It may be 0 for none given.
 * @var	string	topic_data					All the information from the topic and forum tables for this topic
 * 											It includes posts information if post_id is not 0
+* @var	array 	overrides_f_read			Set true to remove f_read check afterwards
+* @var	array 	overrides_forum_password	Set true to remove forum_password check afterwards
 *
 * @since 3.1.3-RC1	
 */
@@ -354,11 +358,13 @@ $vars = array(
 	'topic_id',
 	'post_id',
 	'topic_data',
+	'overrides_f_read',
+	'overrides_forum_password',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_before_f_read_check', compact($vars)));
 
 // Start auth check
-if (!$auth->acl_get('f_read', $forum_id))
+if (!$overrides_f_read && !$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -370,7 +376,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box
-if ($topic_data['forum_password'])
+if (!$overrides_forum_password && $topic_data['forum_password'])
 {
 	login_forum_box($topic_data);
 }
