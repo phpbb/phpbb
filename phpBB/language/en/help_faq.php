@@ -80,7 +80,7 @@ $help = array(
 		1 => 'If you are a registered user, all your settings are stored in the board database. To alter them, visit your User Control Panel; a link can usually be found by clicking on your username at the top of board pages. This system will allow you to change all your settings and preferences.',
 	),
 	array(
-		0 => 'How do I prevent my username appearing in the online user listings?',
+		0 => 'How do I prevent my username appearing in the online user listings/hide myself/prevent my presence to be seen by others?',
 		1 => 'Within your User Control Panel, under “Board preferences”, you will find the option <em>Hide your online status</em>. Enable this option and you will only appear to the administrators, moderators and yourself. You will be counted as a hidden user.'
 	),
 	array(
