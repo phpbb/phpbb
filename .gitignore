@@ -11,7 +11,6 @@
 /phpBB/images/avatars/upload/*
 /phpBB/images/ranks/*
 /phpBB/install/schemas/schema.json
-/phpBB/language/*
 !/phpBB/language/en
 /phpBB/store/*
 /phpBB/styles/*
@@ -20,4 +19,4 @@
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*
-/tests/vendor
+/tests/vendor/*
