@@ -111,6 +111,24 @@ class topic extends \phpbb\notification\type\base
 		}
 		$this->db->sql_freeresult($result);
 
+		/**
+		* Event to apply extra permissions to topic notifications
+		*
+		* @event core.notifications_topic_find_users_notification_after
+		* @var	array	users			The array of userid of the users meant to receive notifications.
+		* @var	array 	topic			The data of the topic the post belongs to.
+		* @var	array 	options			Options for finding users for notification.
+		*
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'users',
+			'topic',
+			'options',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.notifications_topic_find_users_notification_after', compact($vars)));
+
+
 		return $this->get_authorised_recipients($users, $topic['forum_id'], $options);
 	}
 
