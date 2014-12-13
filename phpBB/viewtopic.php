@@ -336,6 +336,27 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 // Setup look and feel
 $user->setup('viewtopic', $topic_data['forum_style']);
 
+/**
+* Event to apply extra permissions and to override original phpBB's f_read permission and forum password check
+* on viewtopic access
+*
+* @event core.viewtopic_before_f_read_check
+* @var	int		forum_id					The forum id from where the topic belongs
+* @var	int 	topic_id					The id of the topic the user tries to access
+* @var	int 	post_id						The id of the post the user tries to start viewing at. It may be 0 for none given.
+* @var	string	topic_data					All the information from the topic and forum tables for this topic
+* 											It includes posts information if post_id is not 0
+*
+* @since 3.1.3-RC1	
+*/
+$vars = array(
+	'forum_id',
+	'topic_id',
+	'post_id',
+	'topic_data',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_before_f_read_check', compact($vars)));
+
 // Start auth check
 if (!$auth->acl_get('f_read', $forum_id))
 {
