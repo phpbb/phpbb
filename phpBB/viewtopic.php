@@ -338,6 +338,7 @@ $user->setup('viewtopic', $topic_data['forum_style']);
 
 $overrides_f_read = false;
 $overrides_forum_password = false;
+$topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : NULL;
 /**
 * Event to apply extra permissions and to override original phpBB's f_read permission and forum password check
 * on viewtopic access
@@ -350,6 +351,9 @@ $overrides_forum_password = false;
 * 											It includes posts information if post_id is not 0
 * @var	array 	overrides_f_read			Set true to remove f_read check afterwards
 * @var	array 	overrides_forum_password	Set true to remove forum_password check afterwards
+* @var	array 	topic_tracking_info			Information upon calling get_topic_tracking()
+*											Make it NULL to allow auto-filling later.
+*											Make it an array to override original data.
 *
 * @since 3.1.3-RC1	
 */
@@ -360,6 +364,7 @@ $vars = array(
 	'topic_data',
 	'overrides_f_read',
 	'overrides_forum_password',
+	'topic_tracking_info',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_before_f_read_check', compact($vars)));
 
