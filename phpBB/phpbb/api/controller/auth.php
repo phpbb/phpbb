@@ -20,13 +20,12 @@ use phpbb\api\exception\invalid_key_exception;
 use phpbb\request\request;
 use phpbb\template\template;
 use phpbb\user;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 
 /**
  * Controller for authentication
- * @package phpBB3
  */
 class auth
 {
@@ -73,23 +72,22 @@ class auth
 	protected $auth;
 
 	/**
-	 * @var \Symfony\Component\Serializer\Serializer
+	 * @var Serializer
 	 */
 	protected $serializer;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\api\repository\auth $auth_repository
-	 * @param user $user
-	 * @param helper $helper
-	 * @param template $template
-	 * @param request $request
-	 * @param config $config
-	 * @param \phpbb\auth\auth $auth
+	 * @param \phpbb\api\repository\auth $auth_repository The repository containing logic regarding API authentication
+	 * @param user 						 $user
+	 * @param helper 					 $helper The controller helper object that helps with rendering
+	 * @param template 					 $template
+	 * @param request 					 $request
+	 * @param config 					 $config
+	 * @param \phpbb\auth\auth 			 $auth The phpBB auth object
 	 */
-	function __construct(\phpbb\api\repository\auth $auth_repository, user $user, helper $helper, template $template,
-						 request $request, config $config, \phpbb\auth\auth $auth)
+	function __construct(\phpbb\api\repository\auth $auth_repository, user $user, helper $helper, template $template, request $request, config $config, \phpbb\auth\auth $auth)
 	{
 		$this->auth_repository = $auth_repository;
 		$this->user = $user;
@@ -103,6 +101,13 @@ class auth
 		$this->user->add_lang('api');
 	}
 
+	/**
+	 * Starting endpoint for authorization of an application. Generates 3 keys, an exchange key, an authentication key
+	 * and a sign key. Only the exchange key is returned to the application, which can exchange that key
+	 * for the authentication key and sign key after the user has authorized the application
+	 *
+	 * @return JsonResponse A Json object containing status and the exchange_key
+	 */
 	public function generate_keys()
 	{
 		$exchange_key = $this->auth_repository->generate_keys();
@@ -112,14 +117,23 @@ class auth
 			'exchange_key' => $exchange_key,
 		);
 
-		return new Response($this->serializer->serialize($response, 'json'), $response['status']);
+		return new JsonResponse($this->serializer->serialize($response, 'json'), $response['status']);
 	}
 
+	/**
+	 * Second endpoint in authorization that lets the user authorize the application. This endpoint + exchange_key
+	 * should be given to the user to visit in his or her browser by the application.
+	 *
+	 * @param string $exchange_key The exchange key returned by generate_keys()
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response A page (template) with the required form for the user to
+	 * authorize the application
+	 */
 	public function authorize_application($exchange_key)
 	{
 		if (!$this->auth->acl_get('u_api'))
 		{
-			return $this->helper->error($this->user->lang('API_NO_PERMISSION'));
+			return $this->helper->error($this->user->lang['API_NO_PERMISSION']);
 		}
 
 		try
@@ -142,15 +156,22 @@ class auth
 		}
 		catch (api_exception $e)
 		{
-			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
+			return $this->helper->error($this->user->lang['API_NOT_ENABLED']);
 		}
 	}
 
+	/**
+	 * The post endpoint after the form in authorize_application() has been submitted.
+	 * This either authorizes the application or not, depending on the choice the user made
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response A information page that the application has been authorized
+	 * or a redirect to the homepage if the user presses cancel
+	 */
 	public function authorize_application_post()
 	{
 		if (!$this->auth->acl_get('u_api'))
 		{
-			return $this->helper->error($this->user->lang('API_NO_PERMISSION'));
+			return $this->helper->error($this->user->lang['API_NO_PERMISSION']);
 		}
 
 		try {
@@ -192,17 +213,26 @@ class auth
 			$this->template->assign_vars(array(
 				'MESSAGE_TEXT'	=> $this->user->lang['AUTH_ALLOWED']  . '<br /><br />
 					 <a href="' . generate_board_url() . '">' . $this->user->lang['RETURN_TO_INDEX'] . '</a>',
-				'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
+				'MESSAGE_TITLE'	=> $this->user->lang['INFORMATION'],
 			));
 
-			return $this->helper->render('message_body.html', $this->user->lang('INFORMATION'));
+			return $this->helper->render('message_body.html', $this->user->lang['INFORMATION']);
 		}
 		catch (api_exception $e)
 		{
-			return $this->helper->error($this->user->lang('API_NOT_ENABLED'));
+			return $this->helper->error($this->user->lang['API_NOT_ENABLED']);
 		}
 	}
 
+	/**
+	 * Exchanges an exchange_key for the authentication key and sign key if the user has authorized the application
+	 * Otherwise return an error if the user hasn't
+	 *
+	 * @param string $exchange_key The exchange key that was obtained in generate_keys()
+	 *
+	 * @return JsonResponse Either a Json object containing status, auth key and sign key on success, or
+	 * a Json object containing status and the error on error
+	 */
 	public function exchange_key($exchange_key)
 	{
 		try
@@ -225,14 +255,25 @@ class auth
 			);
 		}
 
-		return new Response($this->serializer->serialize($response, 'json'), $response['status']);
+		return new JsonResponse($this->serializer->serialize($response, 'json'), $response['status']);
 	}
 
+	/**
+	 * Endpoint to let an application verify if it has valid auth data and has access to the board
+	 *
+	 * @return JsonResponse A Json object containing information wether or not the user is logged in (member)
+	 * or a guest, or an error if the API is disabled/not allowed
+	 */
 	public function verify()
 	{
+		$request = $this->request->server("PATH_INFO");
+		$auth_key = $this->request->variable('auth_key', ANONYMOUS);
+		$serial = $this->request->variable('serial', -1);
+		$hash = $this->request->variable('hash', '');
+
 		try
 		{
-			$user_id = $this->auth_repository->authenticate();
+			$user_id = $this->auth_repository->authenticate($request, $auth_key, $serial, $hash);
 			if ($user_id == ANONYMOUS)
 			{
 				$response = array(
@@ -265,6 +306,6 @@ class auth
 			);
 		}
 
-		return new Response($this->serializer->serialize($response, 'json'), $response['status']);
+		return new JsonResponse($this->serializer->serialize($response, 'json'), $response['status']);
 	}
 }

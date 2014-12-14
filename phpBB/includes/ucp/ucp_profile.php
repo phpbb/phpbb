@@ -766,7 +766,7 @@ class ucp_profile
 
 				if ($submit)
 				{
-					$keys = request_var('keys', array(''));
+                    $keys = $request->variable('keys', array(''));
 
 					if (!check_form_key('ucp_api_keys'))
 					{
@@ -784,7 +784,7 @@ class ucp_profile
 							$db->sql_query($sql);
 
 							meta_refresh(3, $this->u_action);
-							$message = $user->lang['API_KEYS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							$message = $user->lang('API_KEYS_DELETED') . '<br /><br />' . $user->lang('RETURN_UCP',  '<a href="' . $this->u_action . '">', '</a>');
 							trigger_error($message);
 						}
 					}

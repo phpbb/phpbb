@@ -1,4 +1,5 @@
 imports:
+    - { resource: services_api.yml }
     - { resource: services_auth.yml }
     - { resource: services_avatar.yml }
     - { resource: services_captcha.yml }
@@ -14,7 +15,6 @@ imports:
     - { resource: services_profilefield.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
-    - { resource: api_services.yml }
     - { resource: tables.yml }
     - { resource: parameters.yml }
 

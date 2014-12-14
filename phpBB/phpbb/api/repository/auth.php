@@ -51,10 +51,10 @@ class auth
 	/**
 	 * Constructor
 	 *
-	 * @param config $config
-	 * @param driver $db
-	 * @param \phpbb\auth\auth $auth
-	 * @param request $request
+	 * @param config 			$config
+	 * @param driver 			$db
+	 * @param \phpbb\auth\auth 	$auth
+	 * @param request 			$request
 	 */
 	function __construct(config $config, $db, \phpbb\auth\auth $auth, request $request)
 	{
@@ -66,7 +66,8 @@ class auth
 
 	/**
 	 * Don't let the user select auth and sign keys to protect user safety from malicious developers/others
-	 * @return string
+	 *
+	 * @return string An exchange key, later to be used to authorize the application and exchange for the real keys
 	 */
 	public function generate_keys()
 	{
@@ -87,11 +88,12 @@ class auth
 	/**
 	 * Authorizes an application to the API
 	 *
-	 * @param $exchange_key
-	 * @param $user_id
-	 * @param $name
-	 * @throws duplicate_name_exception
-	 * @throws invalid_key_exception
+	 * @param string $exchange_key 	The exchange key provided by generate_keys(), should be 16 chars long
+	 * @param int 	 $user_id 		The user_id of the currently logged in user (the one authorizing the application)
+	 * @param string $name			The name of the application, given by the user
+	 *
+	 * @throws duplicate_name_exception	If the user already authorized an application by this name
+	 * @throws invalid_key_exception	If the key is wrong length or otherwise invalid
 	 */
 	public function authorize($exchange_key, $user_id, $name)
 	{
@@ -116,16 +118,15 @@ class auth
 
 		$this->db->sql_freeresult($result);
 
-		$sql = 'SELECT count(key_id)
+		$sql = 'SELECT *
 			FROM ' . API_KEYS_TABLE . "
-			WHERE user_id =  '$user_id'
+			WHERE user_id =  $user_id
 				AND name = '$name'";
 
 		$result = $this->db->sql_query($sql);
-		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($row['count(key_id)'] !== '0') {
+		if ($result->num_rows !== 0) {
 			throw new duplicate_name_exception('The user already have a key with this name.', 400);
 		}
 
@@ -141,10 +142,12 @@ class auth
 	/**
 	 * Exchanges an exchange key for the auth key and sign key
 	 *
-	 * @param string $exchange_key
+	 * @param string $exchange_key The exchange key provided by generate_keys()
+	 *
+	 * @throws invalid_key_exception If the exchange key is too long/short or does not exist
+	 * @throws no_permission_exception If the user hasn't authorized this application
+	 *
 	 * @return array An array with an auth_key and an sign_key
-	 * @throws invalid_key_exception
-	 * @throws no_permission_exception
 	 */
 	public function exchange_key($exchange_key)
 	{
@@ -168,25 +171,25 @@ class auth
 
 		$row = $this->db->sql_fetchrow($result);
 
+		$auth_key = $row['auth_key'];
+		$sign_key = $row['sign_key'];
+		$user_id = (int) $row['user_id'];
+		$name = $row['name'];
+
+		$this->db->sql_freeresult($result);
+
 		// User has not allowed this application yet!!
-		if ($row['user_id'] === '0')
+		if ($user_id == 0)
 		{
 			throw new no_permission_exception('Application not allowed.', 400);
 		}
 
-		$auth_key = $row['auth_key'];
-		$sign_key = $row['sign_key'];
-		$user_id = $row['user_id'];
-		$name = $row['name'];
-
 		$sql = 'INSERT INTO ' . API_KEYS_TABLE . " (user_id, name, auth_key, sign_key, serial)
-			VALUES ('$user_id',
+			VALUES ($user_id,
 			'$name',
 			'$auth_key',
 			'$sign_key',
 			0)";
-
-		$this->db->sql_freeresult($result);
 
 		$this->db->sql_query($sql);
 		$this->db->sql_freeresult();
@@ -204,32 +207,32 @@ class auth
 	}
 
 	/**
-	 * Verifies a request
+	 * Authenticates a request
 	 *
-	 * @param int $forum_id
-	 * @param string|null $request
-	 * @param string|null $auth_key
-	 * @param int|null $serial
-	 * @param string|null $hash
+	 * TODO: Refactor this function into 2 functions, one for base authentication and one for forum authentication
+	 * (checking if user has access to a given forum).
+	 *
+	 * @param string $request
+	 * @param string $auth_key
+	 * @param int 	 $serial
+	 * @param string $hash
+	 *
 	 * @throws \phpbb\api\exception\invalid_request_exception
 	 * @throws \phpbb\api\exception\no_permission_exception
 	 * @throws \phpbb\api\exception\not_authed_exception
 	 * @throws \phpbb\api\exception\api_exception
+	 *
 	 * @return array|int
 	 */
-	public function authenticate($forum_id = 0, $request = null, $auth_key = null, $serial = null, $hash = null)
+	public function authenticate($request, $auth_key, $serial, $hash)
 	{
-		$request = (isset($request)) ? $request : $this->request->server("PATH_INFO");
-		$auth_key = (isset($auth_key)) ? $auth_key : $this->request->variable('auth_key', 'guest');
-		$serial = (isset($serial)) ? $serial : $this->request->variable('serial', -1);
-		$hash = (isset($hash)) ? $hash : $this->request->variable('hash', '');
 
 		if (!$this->phpbb_config['allow_api'])
 		{
 			throw new api_exception('The API is not enabled on this board', 500);
 		}
 
-		if ($auth_key != 'guest')
+		if ($auth_key != ANONYMOUS)
 		{
 			$sql = 'SELECT sign_key, user_id, serial
 					FROM ' . API_KEYS_TABLE
@@ -274,14 +277,6 @@ class auth
 
 			if ($this->auth->acl_get('u_api'))
 			{
-				if ($forum_id != 0)
-				{
-					if (!$this->auth->acl_get('f_read', $forum_id))
-					{
-						throw new no_permission_exception('User has no permission to read this forum', 403);
-					}
-				}
-
 				$sql = 'UPDATE ' . API_KEYS_TABLE
 					. " SET serial = $serial
 					  WHERE user_id = $user_id";
@@ -301,28 +296,12 @@ class auth
 
 			if ($this->auth->acl_get('u_api'))
 			{
-				if ($forum_id != 0)
-				{
-					if (!$this->auth->acl_get('f_read', $forum_id))
-					{
-						throw new no_permission_exception('User has no permission to read this forum', 403);
-					}
-				}
 				return ANONYMOUS;
 			}
 			else
 			{
 				throw new no_permission_exception('User has no permission to use the API', 403);
-
 			}
 		}
-	}
-
-	public function has_permission($user_id, $permission, $forum_id = 0)
-	{
-		$userdata = $this->auth->obtain_user_data($user_id);
-		$this->auth->acl($userdata);
-
-		return $this->auth->acl_get($permission, $forum_id);
 	}
 }
