@@ -42,6 +42,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\event\dispatcher */
+	protected $phpbb_dispatcher;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -97,6 +100,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @param \phpbb\user $user
 	* @param \phpbb\auth\auth $auth
 	* @param \phpbb\config\config $config
+	* @param \phpbb\event\dispatcher $phpbb_dispatcher
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $notification_types_table
@@ -104,7 +108,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @param string $user_notifications_table
 	* @return \phpbb\notification\type\base
 	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher $phpbb_dispatcher, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
@@ -112,6 +116,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
