@@ -126,7 +126,7 @@ class topic extends \phpbb\notification\type\base
 			'topic',
 			'options',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.notifications_topic_find_users_notification_after', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.notifications_topic_find_users_notification_after', compact($vars)));
 
 
 		return $this->get_authorised_recipients($users, $topic['forum_id'], $options);
