@@ -373,7 +373,7 @@ class manager
 			'notify_users',
 			'options',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications', compact($vars)));
 
 		$this->add_notifications_for_users($notification_type_name, $data, $notify_users);
 
