@@ -350,6 +350,26 @@ class manager
 		// find out which users want to receive this type of notification
 		$notify_users = $this->get_item_type_class($notification_type_name)->find_users_for_notification($data, $options);
 
+		/**
+		* Allow filtering the notify_users array for a notification that is about to be sent.
+		* Here, $notify_users is already filtered by f_read and the ignored list included in the options variable
+		*
+		* @event core.notification_manager_add_notifications
+		* @var	string	notification_type_name		The forum id from where the topic belongs
+		* @var	array 	data						Data specific for the notification_type_name used will be inserted
+		* @var	array 	notify_users				The array of userid that are going to be notified for this notification. Set to array() to cancel.
+		* @var	array 	options						The options that were used when this method was called (read only)
+		*
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'notification_type_name',
+			'data',
+			'notify_users',
+			'options',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications', compact($vars)));
+
 		$this->add_notifications_for_users($notification_type_name, $data, $notify_users);
 
 		return $notify_users;
