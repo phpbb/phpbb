@@ -122,7 +122,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 		// Notification Manager
 		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, array(),
-			$phpbb_container, $user_loader, $config, $db, $cache, $user,
+			$phpbb_container, $user_loader, $config, $phpbb_dispatcher, $db, $cache, $user,
 			$phpbb_root_path, $phpEx,
 			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
