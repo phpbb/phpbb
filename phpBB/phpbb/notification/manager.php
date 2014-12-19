@@ -73,7 +73,7 @@ class manager
 	* @param ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
-	* @param \phpbb\event\dispatcher $config
+	* @param \phpbb\event\dispatcher $phpbb_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
