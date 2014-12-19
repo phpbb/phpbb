@@ -38,7 +38,7 @@ class manager
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/**	@var \phpbb\event\dispatcher */
+	/** @var \phpbb\event\dispatcher */
 	protected $phpbb_dispatcher;
 
 	/** @var \phpbb\db\driver\driver_interface */
