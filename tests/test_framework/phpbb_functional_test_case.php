@@ -883,6 +883,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function assert_response_status_code($status_code = 200)
 	{
+		if ($status_code !== self::$client->getResponse()->getStatus())
+		{
+			var_dump(self::$client->getResponse()->getContent());
+		}
 		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
 	}
 
