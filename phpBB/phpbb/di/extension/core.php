@@ -67,6 +67,12 @@ class core extends Extension
 				);
 			}
 		}
+
+		if ($config['twig']['enable_debug_extension'])
+		{
+			$definition = $container->getDefinition('template.twig.extensions.debug');
+			$definition->addTag('twig.extension');
+		}
 	}
 
 	/**

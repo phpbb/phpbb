@@ -41,3 +41,6 @@ services:
             - @router
         tags:
             - { name: twig.extension }
+
+    template.twig.extensions.debug:
+        class: Twig_Extension_Debug

@@ -30,7 +30,13 @@ class container_configuration implements ConfigurationInterface
 		$rootNode = $treeBuilder->root('core');
 		$rootNode
 			->children()
-			->booleanNode('require_dev_dependencies')->defaultValue(false)->end()
+				->booleanNode('require_dev_dependencies')->defaultValue(false)->end()
+				->arrayNode('twig')
+					->addDefaultsIfNotSet()
+					->children()
+						->booleanNode('enable_debug_extension')->defaultValue(false)->end()
+					->end()
+				->end()
 			->end()
 		;
 		return $treeBuilder;

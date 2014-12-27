@@ -3,3 +3,6 @@ imports:
 
 core:
     require_dev_dependencies: true
+
+    twig:
+        enable_debug_extension: true
