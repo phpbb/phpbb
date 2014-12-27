@@ -344,6 +344,48 @@ switch ($mode)
 		}
 	break;
 }
+/**
+* This event allows you to do extra auth checks and verify if the user
+* has the required permissions
+*
+* Extensions should only change the error and is_authed variables.
+*
+* @event core.modify_posting_auth
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @var	int		forum_id	ID of the forum
+* @var	int		draft_id	ID of the draft
+* @var	int		lastclick	Timestamp of when the form was last loaded
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been submitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*							form submission.
+*							NOTE: Should be actual language strings, NOT
+*							language keys.
+* @var	bool	is_authed	Does the user have the required permissions?
+* @since 3.1.3-RC1
+*/
+$vars = array(
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'draft_id',
+	'lastclick',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'refresh',
+	'mode',
+	'error',
+	'is_authed',
+);
+extract($phpbb_dispatcher->trigger_event('core.modify_posting_auth', compact($vars)));
 
 if (!$is_authed)
 {
