@@ -168,8 +168,8 @@ switch ($mode)
 				* Event to save custom cookies from deletion
 				*
 				* @event core.ucp_save_custom_cookies
-				* @var string	cookie_name		Cookie name to checking
-				* @var bool	retain_cookie		Do we retain our cookie or not, true if retain
+				* @var	string	cookie_name		Cookie name to checking
+				* @var	bool	retain_cookie	Do we retain our cookie or not, true if retain
 				* @since 3.1.3-RC1
 				*/
 				$retain_cookie = false;
