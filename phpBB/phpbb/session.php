@@ -1200,10 +1200,10 @@ class session
 		* Event to set custom ban type
 		*
 		* @event core.session_set_custom_ban
-		* @var bool	return			If $return is false this routine does not return on finding a banned user, it outputs a relevant message and stops execution
-		* @var bool	banned			Check if user already banned
-		* @var array	ban_row			Ban data
-		* @var string	ban_triggered_by	Custom ban type
+		* @var	bool		return				If $return is false this routine does not return on finding a banned user, it outputs a relevant message and stops execution
+		* @var	bool		banned				Check if user already banned
+		* @var	array|false	ban_row				Ban data
+		* @var	string		ban_triggered_by	Method that caused ban, can be your custom method
 		* @since 3.1.3-RC1
 		*/
 		$ban_row = isset($ban_row) ? $ban_row : false;
