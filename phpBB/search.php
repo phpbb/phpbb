@@ -311,6 +311,26 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// define some variables needed for retrieving post_id/topic_id information
 	$sort_by_sql = array('a' => 'u.username_clean', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
 
+	/**
+	* Event to modify the SQL parameters before pre-made searches
+	*
+	* @event core.search_modify_param_before
+	* @var	string	keywords		String of the specified keywords
+	* @var	array	sort_by_sql		Array of SQL sorting instructions
+	* @var	array	ex_fid_ary		Array of excluded forum ids
+	* @var	array	author_id_ary	Array of exclusive author ids
+	* @var	string	search_id		The id of the search request
+	* @since 3.1.3-RC1
+	*/
+	$vars = array(
+		'keywords',
+		'sort_by_sql',
+		'ex_fid_ary',
+		'author_id_ary',
+		'search_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.search_modify_param_before', compact($vars)));
+
 	// pre-made searches
 	$sql = $field = $l_search_title = '';
 	if ($search_id)
