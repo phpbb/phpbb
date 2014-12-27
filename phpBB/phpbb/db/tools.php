@@ -2175,7 +2175,7 @@ class tools
 				}
 			// no break
 			case 'mysql_41':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . ' (' . implode(', ', $column) . ')';
 			break;
 
 			case 'mssql':
