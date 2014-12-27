@@ -594,6 +594,13 @@ overall_footer_after
 * Since: 3.1.0-a1
 * Purpose: Add content at the end of the file, directly prior to the `</body>` tag
 
+overall_footer_body_after
+===
+* Locations:
+    + styles/prosilver/template/overall_footer.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
+
 overall_footer_breadcrumb_append
 ===
 * Locations:
