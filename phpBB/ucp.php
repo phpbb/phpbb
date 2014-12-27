@@ -169,13 +169,13 @@ switch ($mode)
 				*
 				* @event core.ucp_save_custom_cookies
 				* @var string	cookie_name		Cookie name to checking
-				* @var bool	continue		Do we save our cookie or not
+				* @var bool	retain_cookie		Do we retain our cookie or not, true if retain
 				* @since 3.1.3-RC1
 				*/
-				$continue = false;
-				$vars = array('cookie_name', 'continue');
+				$retain_cookie = false;
+				$vars = array('cookie_name', 'retain_cookie');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_save_custom_cookies', compact($vars)));
-				if ($continue)
+				if ($retain_cookie)
 				{
 					continue;
 				}
