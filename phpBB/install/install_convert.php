@@ -2014,7 +2014,7 @@ class install_convert extends module
 					{
 						$value = $fields[1][$firstkey];
 					}
-					else if (is_array($fields[2]))
+					else if (is_array($fields[2]) && !is_callable($fields[2]))
 					{
 						// Execute complex function/eval/typecast
 						$value = $fields[1];
