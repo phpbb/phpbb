@@ -24,6 +24,23 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 		return array(T_USE);
 	}
 
+	protected function check($found_name, $full_name, $short_name, $line)
+	{
+
+		if ($found_name === $full_name)
+		{
+			$error = 'Either use statement or full name must be used.';
+			$phpcsFile->addError($error, $line, 'FullName');
+		}
+
+		if ($found_name === $short_name)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	/**
 	* {@inheritdoc}
 	*/
@@ -74,16 +91,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 				$simple_class_name = trim($phpcsFile->getTokensAsString($simple_class_name_start, ($simple_class_name_end - $simple_class_name_start)));
 
-				if ($simple_class_name === $class_name_full)
-				{
-					$error = 'Either use statement or full name must be used.';
-					$phpcsFile->addError($error, $simple_statement, 'FullName');
-				}
-
-				if ($simple_class_name === $class_name_short)
-				{
-					$ok = true;
-				}
+				$ok = $this->check($simple_class_name, $class_name_full, $class_name_short, $simple_statement) ? true : $ok;
 			}
 		}
 
@@ -98,16 +106,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 			$paamayim_nekudotayim_class_name = trim($phpcsFile->getTokensAsString($paamayim_nekudotayim_class_name_start + 1, ($paamayim_nekudotayim_class_name_end - $paamayim_nekudotayim_class_name_start)));
 
-			if ($paamayim_nekudotayim_class_name === $class_name_full)
-			{
-				$error = 'Either use statement or full name must be used.';
-				$phpcsFile->addError($error, $paamayim_nekudotayim, 'FullName');
-			}
-
-			if ($paamayim_nekudotayim_class_name === $class_name_short)
-			{
-				$ok = true;
-			}
+			$ok = $this->check($paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) ? true : $ok;
 		}
 
 		// Checks in implements
@@ -126,16 +125,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 				$implements_class_name = trim($phpcsFile->getTokensAsString($implements_class_name_start, ($implements_class_name_end - $implements_class_name_start)));
 
-				if ($implements_class_name === $class_name_full)
-				{
-					$error = 'Either use statement or full name must be used.';
-					$phpcsFile->addError($error, $implements, 'FullName');
-				}
-
-				if ($implements_class_name === $class_name_short)
-				{
-					$ok = true;
-				}
+				$ok = $this->check($implements_class_name, $class_name_full, $class_name_short, $implements) ? true : $ok;
 			}
 		}
 
@@ -145,33 +135,63 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 		{
 			$old_function_declaration = $function_declaration;
 
-			$end_function = $phpcsFile->findNext(array(T_CLOSE_PARENTHESIS), ($function_declaration + 1));
-			$old_argument = $function_declaration;
-			while (($argument = $phpcsFile->findNext(T_VARIABLE, ($old_argument + 1), $end_function)) !== false)
+			// Check docblocks
+			$find = array(
+				T_COMMENT,
+				T_DOC_COMMENT,
+				T_CLASS,
+				T_FUNCTION,
+				T_OPEN_TAG,
+			);
+
+			$comment_end = $phpcsFile->findPrevious($find, ($function_declaration - 1));
+			if ($comment_end !== false)
 			{
-				$old_argument = $argument;
-
-				$start_argument = $phpcsFile->findPrevious(array(T_OPEN_PARENTHESIS, T_COMMA), $argument);
-				$argument_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($start_argument + 1), $argument);
-
-				// Skip the parameter if no type is defined.
-				if ($argument_class_name_start !== false)
+				if (!$tokens[$comment_end]['code'] !== T_DOC_COMMENT)
 				{
-					$argument_class_name_end = $phpcsFile->findNext($find, ($argument_class_name_start + 1), null, true);
+					$comment_start = ($phpcsFile->findPrevious(T_DOC_COMMENT, ($comment_end - 1), null, true) + 1);
+					$comment      = $phpcsFile->getTokensAsString($comment_start, ($comment_end - $comment_start + 1));
 
-					$argument_class_name = $phpcsFile->getTokensAsString($argument_class_name_start, ($argument_class_name_end - $argument_class_name_start - 1));
-
-					if ($argument_class_name === $class_name_full)
+					try
 					{
-						$error = 'Either use statement or full name must be used.';
-						$phpcsFile->addError($error, $function_declaration, 'FullName');
+						$comment_parser = new PHP_CodeSniffer_CommentParser_FunctionCommentParser($comment, $phpcsFile);
+						$comment_parser->parse();
+
+						// Check @param
+						foreach ($comment_parser->getParams() as $param) {
+							$type = $param->getType();
+							$types = explode('|', str_replace('[]', '', $type));
+							foreach ($types as $type)
+							{
+								$ok = $this->check($type, $class_name_full, $class_name_short, $param->getLine() + $comment_start) ? true : $ok;
+							}
+						}
+
+						// Check @return
+						$return = $comment_parser->getReturn();
+						if ($return !== null)
+						{
+							$type = $return->getValue();
+							$types = explode('|', str_replace('[]', '', $type));
+							foreach ($types as $type)
+							{
+								$ok = $this->check($type, $class_name_full, $class_name_short, $return->getLine() + $comment_start) ? true : $ok;
+							}
+						}
 					}
-
-					if ($argument_class_name === $class_name_short)
+					catch (PHP_CodeSniffer_CommentParser_ParserException $e)
 					{
-						$ok = true;
+						$line = ($e->getLineWithinComment() + $comment_start);
+						$phpcsFile->addError($e->getMessage(), $line, 'FailedParse');
 					}
 				}
+			}
+
+			// Check type hint
+			$params = $phpcsFile->getMethodParameters($function_declaration);
+			foreach ($params as $param)
+			{
+				$ok = $this->check($param['type_hint'], $class_name_full, $class_name_short, $function_declaration) ? true : $ok;
 			}
 		}
 
