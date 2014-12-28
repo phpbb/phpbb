@@ -750,7 +750,6 @@ class log implements \phpbb\log\log_interface
 			'profile_url',
 			'log_type',
 		);
-		$vars = array();
 		extract($this->dispatcher->trigger_event('core.get_logs_after', compact($vars)));
 
 		return $log;
