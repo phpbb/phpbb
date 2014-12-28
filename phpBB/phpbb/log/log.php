@@ -736,7 +736,7 @@ class log implements \phpbb\log\log_interface
 		$vars = array(
 			'log',
 			'topic_id_list',
-			'reportee_id_list'
+			'reportee_id_list',
 			'mode',
 			'count_logs',
 			'limit',
