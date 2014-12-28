@@ -17,10 +17,8 @@ api_exchange_key_controller:
         _method: GET
 
 api_auth_authorize_controller:
-    pattern: /authorize
+    pattern: /authorize_post
     defaults: { _controller: api.controller.auth:authorize_application_post }
-    requirements:
-        _method: POST
 
 api_auth_verify_controller:
     pattern: /verify

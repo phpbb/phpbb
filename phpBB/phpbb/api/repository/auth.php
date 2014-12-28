@@ -124,9 +124,10 @@ class auth
 				AND name = '$name'";
 
 		$result = $this->db->sql_query($sql);
+		$num_rows= $result->num_rows;
 		$this->db->sql_freeresult($result);
 
-		if ($result->num_rows !== 0) {
+		if ($num_rows !== 0) {
 			throw new duplicate_name_exception('The user already have a key with this name.', 400);
 		}
 
@@ -232,7 +233,7 @@ class auth
 			throw new api_exception('The API is not enabled on this board', 500);
 		}
 
-		if ($auth_key != ANONYMOUS)
+		if ($auth_key != 'guest')
 		{
 			$sql = 'SELECT sign_key, user_id, serial
 					FROM ' . API_KEYS_TABLE
@@ -244,6 +245,8 @@ class auth
 			$sign_key = $row['sign_key'];
 			$user_id = (int) $row['user_id'];
 			$dbserial =  (int) $row['serial'];
+
+			$this->db->sql_freeresult($result);
 
 			if (empty($sign_key))
 			{
@@ -281,6 +284,7 @@ class auth
 					. " SET serial = $serial
 					  WHERE user_id = $user_id";
 				$this->db->sql_query($sql);
+				$this->db->sql_freeresult();
 
 				return $user_id;
 			}

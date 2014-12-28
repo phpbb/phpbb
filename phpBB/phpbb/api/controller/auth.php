@@ -21,8 +21,6 @@ use phpbb\request\request;
 use phpbb\template\template;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * Controller for authentication
@@ -72,11 +70,6 @@ class auth
 	protected $auth;
 
 	/**
-	 * @var Serializer
-	 */
-	protected $serializer;
-
-	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\api\repository\auth $auth_repository The repository containing logic regarding API authentication
@@ -96,7 +89,6 @@ class auth
 		$this->request = $request;
 		$this->config = $config;
 		$this->auth = $auth;
-		$this->serializer = new Serializer(array(), array(new JsonEncoder()));
 
 		$this->user->add_lang('api');
 	}
@@ -117,7 +109,7 @@ class auth
 			'exchange_key' => $exchange_key,
 		);
 
-		return new JsonResponse($this->serializer->serialize($response, 'json'), $response['status']);
+		return new JsonResponse($response, $response['status']);
 	}
 
 	/**
@@ -255,7 +247,7 @@ class auth
 			);
 		}
 
-		return new JsonResponse($this->serializer->serialize($response, 'json'), $response['status']);
+		return new JsonResponse($response, $response['status']);
 	}
 
 	/**
@@ -267,7 +259,7 @@ class auth
 	public function verify()
 	{
 		$request = $this->request->server("PATH_INFO");
-		$auth_key = $this->request->variable('auth_key', ANONYMOUS);
+		$auth_key = $this->request->variable('auth_key', 'guest');
 		$serial = $this->request->variable('serial', -1);
 		$hash = $this->request->variable('hash', '');
 
@@ -306,6 +298,6 @@ class auth
 			);
 		}
 
-		return new JsonResponse($this->serializer->serialize($response, 'json'), $response['status']);
+		return new JsonResponse($response, $response['status']);
 	}
 }

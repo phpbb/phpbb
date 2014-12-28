@@ -37,7 +37,6 @@
 		"symfony/security-core": "2.7.*@dev",
 		"symfony/security-csrf": "2.7.*@dev",
 		"symfony/twig-bridge": "2.7.*@dev",
-		"symfony/serializer": "2.7.*@dev",
 		"symfony/yaml": "2.7.*@dev",
 		"twig/twig": "1.*"
 	},
