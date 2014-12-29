@@ -178,7 +178,9 @@ class content_visibility
 		* @var	array		forum_ids			Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias			Table alias to prefix in SQL queries
 		* @var	array		approve_forums		Array of forums where the user has m_approve permissions
-		* @var	bool		get_forums_visibility_sql_overwrite	Forces the function to return where_sql after executing the event
+		* @var	mixed		get_forums_visibility_sql_overwrite	If a string, forces the function to return get_forums_visibility_sql_overwrite after executing the event
+		* 														If false, get_forums_visibility_sql continues normally
+		* 														It must be either boolean or string
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -191,7 +193,7 @@ class content_visibility
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
 
-		if ($get_forums_visibility_sql_overwrite)
+		if ($get_forums_visibility_sql_overwrite !== false)
 		{
 			return $get_forums_visibility_sql_overwrite;
 		}
