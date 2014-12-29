@@ -731,7 +731,7 @@ class log implements \phpbb\log\log_interface
 		*							keywords in log_operation or log_data
 		* @var	string	profile_url	URL to the users profile
 		* @var	int		log_type	The type of logs it was filtered
-		* @since 3.1.0-a1
+		* @since 3.1.3-RC1
 		*/
 		$vars = array(
 			'log',
