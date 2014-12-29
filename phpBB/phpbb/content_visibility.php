@@ -173,11 +173,11 @@ class content_visibility
 		* Allow changing the result of calling get_forums_visibility_sql
 		*
 		* @event core.phpbb_content_visibility_get_forums_visibility_before
-		* @var	string		where_sql			The action the user tried to execute
-		* @var	string		mode				Either "topic" or "post" depending on the query this is being used in
-		* @var	array		forum_ids			Array of forum ids which the posts/topics are limited to
-		* @var	string		table_alias			Table alias to prefix in SQL queries
-		* @var	array		approve_forums		Array of forums where the user has m_approve permissions
+		* @var	string		where_sql							The action the user tried to execute
+		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
+		* @var	string		table_alias							Table alias to prefix in SQL queries
+		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
 		* @var	mixed		get_forums_visibility_sql_overwrite	If a string, forces the function to return get_forums_visibility_sql_overwrite after executing the event
 		* 														If false, get_forums_visibility_sql continues normally
 		* 														It must be either boolean or string
