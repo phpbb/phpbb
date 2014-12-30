@@ -28,8 +28,6 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		parent::setUp();
 
-		global $phpbb_root_path, $phpEx;
-
 		$this->db = $this->new_dbal();
 		$this->user = new \phpbb\user('\phpbb\datetime');
 		$this->service_name = 'auth.provider.oauth.service.testing';

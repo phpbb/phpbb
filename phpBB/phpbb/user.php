@@ -543,8 +543,6 @@ class user extends \phpbb\session
 	*/
 	function add_lang($lang_set, $use_db = false, $use_help = false, $ext_name = '')
 	{
-		global $phpEx;
-
 		if (is_array($lang_set))
 		{
 			foreach ($lang_set as $key => $lang_file)
@@ -869,8 +867,6 @@ class user extends \phpbb\session
 	*/
 	function leave_newly_registered()
 	{
-		global $db;
-
 		if (empty($this->data['user_new']))
 		{
 			return false;

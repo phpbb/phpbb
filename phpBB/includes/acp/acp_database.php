@@ -21,6 +21,9 @@ if (!defined('IN_PHPBB'))
 
 class acp_database
 {
+	/**
+	 * @var \phpbb\db\tools\tools_interface
+	 */
 	var $db_tools;
 	var $u_action;
 
@@ -37,7 +40,6 @@ class acp_database
 		$this->page_title = 'ACP_DATABASE';
 
 		$action	= $request->variable('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
 
 		$template->assign_vars(array(
 			'MODE'	=> $mode
@@ -1917,7 +1919,7 @@ class oracle_extractor extends base_extractor
 		$result = $db->sql_query($sql);
 
 		$primary_key = array();
-		$contraint_name = '';
+		$constraint_name = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$constraint_name = '"' . $row['constraint_name'] . '"';
@@ -1938,7 +1940,7 @@ class oracle_extractor extends base_extractor
 		$result = $db->sql_query($sql);
 
 		$unique = array();
-		$contraint_name = '';
+		$constraint_name = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$constraint_name = '"' . $row['constraint_name'] . '"';
@@ -2027,8 +2029,6 @@ class oracle_extractor extends base_extractor
 			$ary_type[$i] = ocicolumntype($result, $i + 1);
 			$ary_name[$i] = ocicolumnname($result, $i + 1);
 		}
-
-		$sql_data = '';
 
 		while ($row = $db->sql_fetchrow($result))
 		{

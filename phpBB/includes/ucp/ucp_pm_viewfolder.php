@@ -41,13 +41,11 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		$color_rows = array('marked', 'replied');
 
-		// only show the friend/foe color rows if the module is enabled
-		$zebra_enabled = false;
-
 		$_module = new p_master();
 		$_module->list_modules('ucp');
 		$_module->set_active('zebra');
 
+		// only show the friend/foe color rows if the module is enabled
 		$zebra_enabled = ($_module->active_module === false) ? false : true;
 
 		unset($_module);

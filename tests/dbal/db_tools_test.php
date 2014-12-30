@@ -184,10 +184,10 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 		// empty table
 		$sql = 'DELETE FROM prefix_table_name';
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 
 		$sql = 'INSERT INTO prefix_table_name ' . $this->db->sql_build_array('INSERT', $row_insert);
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 
 		$sql = "SELECT *
 			FROM prefix_table_name";

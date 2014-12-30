@@ -115,6 +115,7 @@ class qa
 	{
 		global $phpbb_container;
 
+		/* @var $db_tool \phpbb\db\tools\tools_interface */
 		$db_tool = $phpbb_container->get('dbal.tools');
 
 		return $db_tool->sql_table_exists($this->table_captcha_questions);
@@ -125,7 +126,7 @@ class qa
 	*/
 	public function is_available()
 	{
-		global $config, $db, $phpbb_root_path, $phpEx, $user;
+		global $config, $db, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
@@ -263,7 +264,7 @@ class qa
 	*/
 	function garbage_collect($type = 0)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT c.confirm_id
 			FROM ' . $this->table_qa_confirm . ' c
@@ -308,6 +309,7 @@ class qa
 	{
 		global $phpbb_container;
 
+		/* @var $db_tool \phpbb\db\tools\tools_interface */
 		$db_tool = $phpbb_container->get('dbal.tools');
 
 		$schemas = array(
@@ -364,7 +366,7 @@ class qa
 	*/
 	function validate()
 	{
-		global $config, $db, $user;
+		global $user;
 
 		$error = '';
 
@@ -611,8 +613,7 @@ class qa
 	*/
 	function acp_page($id, &$module)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template, $phpbb_log, $request, $config;
 
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
@@ -674,7 +675,6 @@ class qa
 		else
 		{
 			// okay, show the editor
-			$error = false;
 			$input_question = $request->variable('question_text', '', true);
 			$input_answers = $request->variable('answers', '', true);
 			$input_lang = $request->variable('lang_iso', '', true);

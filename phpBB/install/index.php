@@ -29,7 +29,7 @@ if (version_compare(PHP_VERSION, '5.3.9') < 0)
 
 function phpbb_require_updated($path, $optional = false)
 {
-	global $phpbb_root_path, $table_prefix;
+	global $phpbb_root_path;
 
 	$new_path = $phpbb_root_path . 'install/update/new/' . $path;
 	$old_path = $phpbb_root_path . $path;
@@ -342,7 +342,7 @@ class module
 	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $db, $config, $phpEx, $phpbb_root_path;
+		global $phpEx;
 
 		$module = array();
 
@@ -416,8 +416,6 @@ class module
 	*/
 	function load($mode = false, $run = true)
 	{
-		global $phpbb_root_path, $phpEx;
-
 		if ($run)
 		{
 			if (!empty($mode))
@@ -450,7 +448,7 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage, $phpbb_admin_path, $path;
+		global $template, $lang, $phpbb_admin_path, $path;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
@@ -567,7 +565,7 @@ class module
 	*/
 	function generate_navigation()
 	{
-		global $lang, $template, $phpEx, $language;
+		global $lang, $template, $language;
 
 		if (is_array($this->module_ary))
 		{
@@ -820,7 +818,7 @@ class module
 	*/
 	function inst_language_select($default = '')
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path;
 
 		$dir = @opendir($phpbb_root_path . 'language');
 

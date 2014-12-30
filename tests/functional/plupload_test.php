@@ -90,7 +90,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			self::$client->setServerParameter('HTTP_X_PHPBB_USING_PLUPLOAD', '1');
 
-			$crawler = self::$client->request(
+			self::$client->request(
 				'POST',
 				$url . '&sid=' . $this->sid,
 				array(
@@ -133,7 +133,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			'error' => UPLOAD_ERR_OK,
 		);
 
-		$crawler = self::$client->request(
+		self::$client->request(
 			'POST',
 			$url . '&sid=' . $this->sid,
 			array(

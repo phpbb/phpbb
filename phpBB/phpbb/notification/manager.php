@@ -350,8 +350,6 @@ class manager
 			return $notified_users;
 		}
 
-		$item_id = $this->get_item_type_class($notification_type_name)->get_item_id($data);
-
 		// find out which users want to receive this type of notification
 		$notify_users = $this->get_item_type_class($notification_type_name)->find_users_for_notification($data, $options);
 
@@ -404,7 +402,7 @@ class manager
 		$item_id = $this->get_item_type_class($notification_type_name)->get_item_id($data);
 
 		$user_ids = array();
-		$notification_objects = $notification_methods = array();
+		$notification_methods = array();
 
 		// Never send notifications to the anonymous user!
 		unset($notify_users[ANONYMOUS]);

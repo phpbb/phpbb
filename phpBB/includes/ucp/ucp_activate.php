@@ -30,7 +30,7 @@ class ucp_activate
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $auth, $template, $phpbb_container, $phpbb_log;
+		global $db, $user, $auth, $phpbb_container, $phpbb_log;
 
 		$user_id = $request->variable('u', 0);
 		$key = $request->variable('k', '');

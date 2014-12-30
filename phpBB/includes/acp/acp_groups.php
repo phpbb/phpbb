@@ -26,7 +26,7 @@ class acp_groups
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('acp/groups');
@@ -296,8 +296,6 @@ class acp_groups
 			case 'add':
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
-				$data = $submit_ary = array();
 
 				if ($action == 'edit' && !$group_id)
 				{
@@ -1083,7 +1081,6 @@ class acp_groups
 			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
 		$result = $db->sql_query($sql);
 
-		$s_group_select_legend = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
@@ -1121,7 +1118,6 @@ class acp_groups
 			ORDER BY t.teampage_position ASC';
 		$result = $db->sql_query($sql);
 
-		$category_data = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ($row['teampage_id'] == $category_id)
@@ -1164,7 +1160,6 @@ class acp_groups
 			ORDER BY g.group_type DESC, g.group_name ASC';
 		$result = $db->sql_query($sql);
 
-		$s_group_select_teampage = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];

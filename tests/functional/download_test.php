@@ -36,7 +36,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 	}
 
 	public function test_create_post()
@@ -86,7 +86,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		));
 
 		// Download attachment as guest
-		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
+		self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
 		self::assert_response_status_code(200);
 		$content = self::$client->getResponse()->getContent();
 		$finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -152,7 +152,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$this->login();
 
 		// Download attachment as admin
-		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
+		self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
 		self::assert_response_status_code(200);
 		$content = self::$client->getResponse()->getContent();
 		$finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -219,7 +219,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$this->login();
 
 		// Download attachment as admin
-		$crawler = self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
+		self::request('GET', "download/file.php?id={$this->data['attachments'][$this->data['posts']['Re: Download Topic #1-#2']]}", array(), false);
 		self::assert_response_status_code(200);
 		$content = self::$client->getResponse()->getContent();
 		$finfo = new finfo(FILEINFO_MIME_TYPE);

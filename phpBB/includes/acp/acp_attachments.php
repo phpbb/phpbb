@@ -701,8 +701,6 @@ class acp_attachments
 							$forum_ids = array();
 						}
 
-						$extensions = array();
-
 						$sql = 'SELECT *
 							FROM ' . EXTENSIONS_TABLE . "
 							WHERE group_id = $group_id
@@ -1559,7 +1557,6 @@ class acp_attachments
 						if ($ip_2_counter == 0 && $ip_2_end == 254)
 						{
 							$ip_2_counter = 256;
-							$ip_2_fragment = 256;
 
 							$iplist[] = "'$ip_1_counter.*'";
 						}
@@ -1572,7 +1569,6 @@ class acp_attachments
 							if ($ip_3_counter == 0 && $ip_3_end == 254)
 							{
 								$ip_3_counter = 256;
-								$ip_3_fragment = 256;
 
 								$iplist[] = "'$ip_1_counter.$ip_2_counter.*'";
 							}
@@ -1585,7 +1581,6 @@ class acp_attachments
 								if ($ip_4_counter == 0 && $ip_4_end == 254)
 								{
 									$ip_4_counter = 256;
-									$ip_4_fragment = 256;
 
 									$iplist[] = "'$ip_1_counter.$ip_2_counter.$ip_3_counter.*'";
 								}

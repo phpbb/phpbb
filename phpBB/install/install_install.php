@@ -554,7 +554,7 @@ class install_install extends module
 	*/
 	function obtain_database_settings($mode, $sub)
 	{
-		global $lang, $template, $phpEx;
+		global $lang, $template;
 
 		$this->page_title = $lang['STAGE_DATABASE'];
 
@@ -624,8 +624,6 @@ class install_install extends module
 
 				$available_dbms_temp[$type] = $dbms_ary;
 			}
-
-			$available_dbms = &$available_dbms_temp;
 
 			// And now for the main part of this page
 			$data['table_prefix'] = (!empty($data['table_prefix']) ? $data['table_prefix'] : 'phpbb_');
@@ -1087,10 +1085,9 @@ class install_install extends module
 	*/
 	function load_schema($mode, $sub)
 	{
-		global $db, $lang, $template, $phpbb_root_path, $phpEx, $request;
+		global $db, $lang, $template, $phpEx, $request;
 
 		$this->page_title = $lang['STAGE_CREATE_TABLE'];
-		$s_hidden_fields = '';
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1467,7 +1464,7 @@ class install_install extends module
 	*/
 	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $config, $auth, $user;
+		global $db, $phpbb_root_path, $phpEx, $config, $auth, $user;
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1516,7 +1513,7 @@ class install_install extends module
 	*/
 	function add_modules($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $config, $phpbb_container;
+		global $db, $phpbb_root_path, $phpEx, $phpbb_extension_manager, $phpbb_container;
 
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
@@ -1832,7 +1829,7 @@ class install_install extends module
 	*/
 	function add_language($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $phpbb_root_path;
 
 		$dir = @opendir($phpbb_root_path . 'language');
 
@@ -1879,7 +1876,6 @@ class install_install extends module
 			FROM ' . PROFILE_FIELDS_TABLE;
 		$result = $db->sql_query($sql);
 
-		$profile_fields = array();
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($db, PROFILE_LANG_TABLE);
 		while ($row = $db->sql_fetchrow($result))
 		{

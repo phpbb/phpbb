@@ -31,8 +31,8 @@ class acp_permissions
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $request;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
@@ -160,8 +160,6 @@ class acp_permissions
 		}
 
 		// Define some common variables for every mode
-		$error = array();
-
 		$permission_scope = (strpos($mode, '_global') !== false) ? 'global' : 'local';
 
 		// Showing introductionary page?
@@ -684,8 +682,6 @@ class acp_permissions
 		{
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-
-		$ug_id = $forum_id = 0;
 
 		// We loop through the auth settings defined in our submit
 		list($ug_id, ) = each($psubmit);

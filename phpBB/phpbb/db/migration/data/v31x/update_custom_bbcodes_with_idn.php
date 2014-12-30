@@ -45,7 +45,6 @@ class update_custom_bbcodes_with_idn extends \phpbb\db\migration\migration
 		$sql_ary = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$data = array();
 			if (preg_match('/(URL|LOCAL_URL|RELATIVE_URL)/', $row['bbcode_match']))
 			{
 				$data = $bbcodes->build_regexp($row['bbcode_match'], $row['bbcode_tpl']);

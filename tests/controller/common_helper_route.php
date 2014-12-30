@@ -21,7 +21,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 
 	public function setUp()
 	{
-		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $phpbb_dispatcher;
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',

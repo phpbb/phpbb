@@ -74,7 +74,6 @@ class phpbb_test_case_helpers
 
 	public function setExpectedTriggerError($errno, $message = '')
 	{
-		$exceptionName = '';
 		switch ($errno)
 		{
 			case E_NOTICE:

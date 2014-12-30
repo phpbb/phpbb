@@ -56,7 +56,6 @@ class compress
 			// Clean up path, add closing / if not present
 			$src_path = ($src_path && substr($src_path, -1) != '/') ? $src_path . '/' : $src_path;
 
-			$filelist = array();
 			$filelist = filelist("$phpbb_root_path$src", '', '*');
 			krsort($filelist);
 
@@ -184,7 +183,7 @@ class compress
 }
 
 /**
-* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux,
+* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier MÃ¼ller, LoÃ¯c Chapeaux,
 * Marc Delisle, http://www.phpmyadmin.net/
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com

@@ -54,7 +54,7 @@ class phpbb_dbal_write_sequence_test extends phpbb_database_test_case
 		$sql = "SELECT user_id
 			FROM phpbb_users
 			WHERE username_clean = '" . $db->sql_escape($username) . "'";
-		$result = $db->sql_query_limit($sql, 1);
+		$db->sql_query_limit($sql, 1);
 
 		$this->assertEquals($expected, $db->sql_fetchfield('user_id'));
 	}

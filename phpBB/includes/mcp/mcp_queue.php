@@ -35,7 +35,7 @@ class mcp_queue
 
 	public function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache, $request;
+		global $auth, $db, $user, $template, $request;
 		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 		global $phpbb_dispatcher;
 
@@ -194,7 +194,7 @@ class mcp_queue
 					));
 				}
 
-				$extensions = $attachments = $topic_tracking_info = array();
+				$attachments = $topic_tracking_info = array();
 
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
@@ -216,8 +216,6 @@ class mcp_queue
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
-					$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $post_id . '
@@ -415,7 +413,6 @@ class mcp_queue
 				$sort_by_sql = $sort_order_sql = array();
 				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				$forum_names = array();
@@ -619,7 +616,7 @@ class mcp_queue
 	*/
 	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config, $request, $phpbb_container, $phpbb_dispatcher;
+		global $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
@@ -629,7 +626,7 @@ class mcp_queue
 
 		$redirect = $request->variable('redirect', build_url(array('quickmod')));
 		$redirect = reapply_sid($redirect);
-		$success_msg = $post_url = '';
+		$post_url = '';
 		$approve_log = array();
 		$num_topics = 0;
 
@@ -872,8 +869,8 @@ class mcp_queue
 	*/
 	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config, $phpbb_log;
-		global $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_dispatcher;
+		global $db, $template, $user, $request, $phpbb_log;
+		global $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
 
 		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
 		{
@@ -1069,8 +1066,8 @@ class mcp_queue
 	*/
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config, $phpbb_container, $phpbb_dispatcher;
-		global $phpEx, $phpbb_root_path, $request, $phpbb_log;
+		global $db, $template, $user, $request, $phpbb_container;
+		global $phpEx, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
@@ -1081,7 +1078,7 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$reason = $request->variable('reason', '', true);
 		$reason_id = $request->variable('reason_id', 0);
-		$success_msg = $additional_msg = '';
+		$additional_msg = '';
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -1139,7 +1136,7 @@ class mcp_queue
 
 		if (confirm_box(true))
 		{
-			$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
+			$disapprove_log_topics = $disapprove_log_posts = array();
 			$topic_posts_unapproved = $post_disapprove_list = $topic_information = array();
 
 			// Build a list of posts to be disapproved and get the related topics real replies count

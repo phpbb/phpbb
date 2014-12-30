@@ -94,7 +94,7 @@ class phpbb_session_testable_facade
 		$this->session_factory->merge_config_data($config_overrides);
 		// Bots
 		$this->session_factory->merge_cache_data(array('_bots' => $bot_overrides));
-		global $request;
+
 		$session = $this->session_factory->get_session($this->db);
 		$session->browser = $user_agent;
 		$session->ip = $ip_address;

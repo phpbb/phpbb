@@ -31,7 +31,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		// Set flood interval to 0
 		$this->set_flood_interval(0);
@@ -80,7 +80,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->login('reapprove_testuser');
 
 		// Test creating a reply
-		$post2 = $this->create_post($this->data['forums']['Reapprove Test #1'], $post['topic_id'], 'Re: Reapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$this->create_post($this->data['forums']['Reapprove Test #1'], $post['topic_id'], 'Re: Reapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
 		$this->assertNotContains('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
@@ -96,7 +96,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		), 'after replying');
 
 		// Test creating topic #2
-		$post = $this->create_topic($this->data['forums']['Reapprove Test #1'], 'Reapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$this->create_topic($this->data['forums']['Reapprove Test #1'], 'Reapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Reapprove Test #1']}&sid={$this->sid}");
 
 		$this->assertNotContains('Reapprove Test Topic #2', $crawler->filter('html')->text());

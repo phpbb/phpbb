@@ -392,8 +392,6 @@ function phpbb_clean_search_string($search_string)
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $config;
-
 	if ($bbcode_uid)
 	{
 		$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
@@ -596,7 +594,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $phpbb_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is decoded for editing
@@ -1001,7 +999,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -1043,7 +1040,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		if (!$denied)
 		{
-			$l_downloaded_viewed = $download_link = '';
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
@@ -1290,8 +1286,6 @@ function extension_allowed($forum_id, $extension, &$extensions)
 */
 function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = false, $append = '')
 {
-	$chars = array();
-
 	$strip_reply = false;
 	$stripped = false;
 	if ($allow_reply && strpos($string, 'Re: ') === 0)

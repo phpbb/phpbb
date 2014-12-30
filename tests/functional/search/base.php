@@ -49,7 +49,6 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 			$crawler = self::submit($form);
 
 			$form = $crawler->selectButton('Yes')->form();
-			$values = $form->getValues();
 			$crawler = self::submit($form);
 
 			// check if search backend is not supported

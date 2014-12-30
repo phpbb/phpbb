@@ -25,8 +25,8 @@ class acp_ranks
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
+		global $db, $user, $template, $cache, $request, $phpbb_dispatcher;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpbb_log;
 
 		$user->add_lang('acp/posting');
 
@@ -162,7 +162,7 @@ class acp_ranks
 			case 'edit':
 			case 'add':
 
-				$data = $ranks = $existing_imgs = array();
+				$ranks = $existing_imgs = array();
 
 				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '

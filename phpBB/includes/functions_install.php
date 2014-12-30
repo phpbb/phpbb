@@ -25,7 +25,6 @@ if (!defined('IN_PHPBB'))
 */
 function get_available_dbms($dbms = false, $return_unavailable = false, $only_20x_options = false)
 {
-	global $lang;
 	$available_dbms = array(
 		// Note: php 5.5 alpha 2 deprecated mysql.
 		// Keep mysqli before mysql in this list.
@@ -189,7 +188,7 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
-	global $phpbb_root_path, $phpEx, $config, $lang;
+	global $lang;
 
 	$dbms = $dbms_details['DRIVER'];
 

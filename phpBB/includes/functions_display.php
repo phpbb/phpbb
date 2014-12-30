@@ -30,7 +30,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
-	$sql_from = '';
 
 	// Mark forums read?
 	$mark_read = $request->variable('mark', '');
@@ -712,7 +711,7 @@ function generate_forum_rules(&$forum_data)
 		return;
 	}
 
-	global $template, $phpbb_root_path, $phpEx;
+	global $template;
 
 	if ($forum_data['forum_rules'])
 	{
@@ -732,7 +731,7 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template, $auth, $config;
+	global $template, $auth, $config;
 	global $phpEx, $phpbb_root_path;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
@@ -838,7 +837,7 @@ function get_forum_parents(&$forum_data)
 */
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $config, $template, $db, $phpbb_root_path, $phpEx, $user, $auth;
+	global $db, $phpbb_root_path, $phpEx, $user, $auth;
 
 	$forum_id_ary = array();
 
@@ -949,8 +948,6 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$folder_alt, &$topic_type)
 {
 	global $user, $config;
-
-	$folder = $folder_new = '';
 
 	if ($topic_row['topic_status'] == ITEM_MOVED)
 	{
@@ -1258,8 +1255,7 @@ function display_user_activity(&$userdata)
 */
 function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0, $item_title = '')
 {
-	global $template, $db, $user, $phpEx, $start, $phpbb_root_path;
-	global $request;
+	global $db, $user, $phpEx, $start, $phpbb_root_path, $request;
 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';

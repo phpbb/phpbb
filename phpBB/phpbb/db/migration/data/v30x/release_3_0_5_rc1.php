@@ -118,7 +118,7 @@ class release_3_0_5_rc1 extends container_aware_migration
 				$result = $this->db->sql_query($sql);
 
 				// Skip first row, this is our original auth option we want to preserve
-				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_fetchrow($result);
 
 				while ($row = $this->db->sql_fetchrow($result))
 				{

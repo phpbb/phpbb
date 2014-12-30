@@ -31,7 +31,7 @@ class phpbb_functional_forum_password_test extends phpbb_functional_test_case
 			'forum_password'		=> 'foobar',
 			'forum_password_confirm'	=> 'foobar',
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 	}
 
 	public function data_enter_forum_with_password()

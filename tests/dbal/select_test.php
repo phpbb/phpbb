@@ -422,7 +422,6 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		}
 
 		$sql = 'SELECT user_id FROM phpbb_users ORDER BY user_id ASC';
-		$result1 = $db->sql_query($sql);
 
 		$db->sql_transaction('begin');
 		$result2 = $db->sql_query($sql);

@@ -33,9 +33,8 @@ class acp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
-		global $request, $phpbb_container, $phpbb_log;
+		global $config, $db, $user, $template, $request;
+		global $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_log;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -48,7 +47,6 @@ class acp_profile
 		$action = (isset($_POST['create'])) ? 'create' : $request->variable('action', '');
 
 		$error = array();
-		$s_hidden_fields = '';
 
 		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
 		{
@@ -522,7 +520,6 @@ class acp_profile
 				if (sizeof($error))
 				{
 					$step--;
-					$submit = false;
 				}
 
 				// Build up the specific hidden fields
@@ -719,7 +716,7 @@ class acp_profile
 	*/
 	function build_language_options(&$cp, $field_type, $action = 'create')
 	{
-		global $user, $config, $db, $phpbb_container, $request;
+		global $user, $config, $db, $request;
 
 		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
 
@@ -886,6 +883,7 @@ class acp_profile
 		if ($action == 'create')
 		{
 			$field_ident = 'pf_' . $field_ident;
+
 			/* @var $db_tools \phpbb\db\tools\tools_interface */
 			$db_tools = $phpbb_container->get('dbal.tools');
 			$db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));

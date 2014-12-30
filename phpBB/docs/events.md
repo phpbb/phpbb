@@ -900,7 +900,6 @@ search_results_header_after
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
-    + styles/subsilver2/template/search_results.html
 * Since: 3.1.4-RC1
 * Purpose: Add content after the header of the search results
 
@@ -908,7 +907,6 @@ search_results_header_before
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
-    + styles/subsilver2/template/search_results.html
 * Since: 3.1.4-RC1
 * Purpose: Add content before the header of the search results.
 
@@ -944,7 +942,6 @@ search_results_searchbox_after
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
-    + styles/subsilver2/template/search_results.html
 * Since: 3.1.4-RC1
 * Purpose: Add content right after the searchbox of the search results.
 
@@ -1154,7 +1151,6 @@ ucp_profile_profile_info_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_profile_info.html
-    + styles/subsilver2/template/ucp_profile_profile_info.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - before jabber field.
 
@@ -1162,7 +1158,6 @@ ucp_profile_profile_info_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_profile_info.html
-    + styles/subsilver2/template/ucp_profile_profile_info.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after custom profile fields.
 
@@ -1170,7 +1165,6 @@ ucp_profile_register_details_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_reg_details.html
-    + styles/subsilver2/template/ucp_profile_reg_details.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - before first field.
 
@@ -1178,7 +1172,6 @@ ucp_profile_register_details_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_reg_details.html
-    + styles/subsilver2/template/ucp_profile_reg_details.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after confirm password field.
 

@@ -46,7 +46,7 @@ class phpbb_error_collector_test extends phpbb_test_case
 
 		// Cause a notice
 		$array = array('ITEM' => 'value');
-		$value = $array[ITEM]; $line2 = __LINE__;
+		$value = $array[ITEM];$line2 = __LINE__;
 
 		$collector->uninstall();
 

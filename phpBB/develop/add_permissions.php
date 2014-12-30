@@ -388,7 +388,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 						foreach ($sql_subary as $sql)
 						{
 							$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($sql)";
-							$result = $db->sql_query($sql);
+							$db->sql_query($sql);
 							$sql = '';
 						}
 				}
@@ -396,7 +396,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 				if ($sql != '')
 				{
 					$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) $sql";
-					$result = $db->sql_query($sql);
+					$db->sql_query($sql);
 				}
 				break;
 
@@ -404,7 +404,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 			case 'delete':
 				foreach ($sql_subary as $sql)
 				{
-					$result = $db->sql_query($sql);
+					$db->sql_query($sql);
 					$sql = '';
 				}
 				break;
@@ -412,5 +412,4 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 		unset($sql_ary[$sql_type]);
 	}
 	unset($sql_ary);
-
 }

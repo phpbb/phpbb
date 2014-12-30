@@ -740,7 +740,6 @@ class install_update extends module
 								case 'conflict':
 
 									$option = $conflicts[$file_struct['filename']];
-									$contents = '';
 
 									switch ($option)
 									{
@@ -1107,7 +1106,7 @@ class install_update extends module
 	*/
 	function show_diff(&$update_list)
 	{
-		global $phpbb_root_path, $template, $user, $request, $phpbb_adm_relative_path;
+		global $phpbb_root_path, $template, $user, $request;
 
 		$this->tpl_name = 'install_update_diff';
 
@@ -1274,7 +1273,7 @@ class install_update extends module
 	*/
 	function get_update_structure(&$update_list, $expected_files)
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $phpbb_root_path, $user;
 
 		if ($update_list === false)
 		{
@@ -1661,10 +1660,9 @@ class install_update extends module
 	*/
 	function get_file($mode)
 	{
-		global $user, $db;
+		global $user;
 
 		$errstr = '';
-		$errno = 0;
 
 		switch ($mode)
 		{
@@ -1737,7 +1735,7 @@ class install_update extends module
 	*/
 	function include_file($filename)
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path;
 
 		if (!empty($this->update_info['files']) && in_array($filename, $this->update_info['files']))
 		{

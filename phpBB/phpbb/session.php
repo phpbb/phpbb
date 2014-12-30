@@ -523,7 +523,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_container;
 
 		$this->data = array();
 
@@ -911,7 +911,7 @@ class session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $SID, $_SID, $db, $phpbb_container;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -986,7 +986,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $db, $config, $phpbb_container;
 
 		$batch_size = 10;
 
@@ -1223,7 +1223,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $template, $phpbb_root_path, $phpEx;
+			global $phpbb_root_path, $phpEx;
 
 			// If the session is empty we need to create a valid one...
 			if (empty($this->session_id))
@@ -1400,10 +1400,9 @@ class session
 	*/
 	function set_login_key($user_id = false, $key = false, $user_ip = false)
 	{
-		global $config, $db;
+		global $db;
 
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
-		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
 		$key = ($key === false) ? (($this->cookie_data['k']) ? $this->cookie_data['k'] : false) : $key;
 
 		$key_id = unique_id(hexdec(substr($this->session_id, 0, 8)));
@@ -1447,7 +1446,7 @@ class session
 	*/
 	function reset_login_keys($user_id = false)
 	{
-		global $config, $db;
+		global $db;
 
 		$user_id = ($user_id === false) ? (int) $this->data['user_id'] : (int) $user_id;
 

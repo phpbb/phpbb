@@ -24,9 +24,8 @@ if (!defined('IN_PHPBB'))
 */
 function adm_page_header($page_title)
 {
-	global $config, $db, $user, $template;
+	global $config, $user, $template, $phpbb_dispatcher;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
-	global $phpbb_dispatcher;
 
 	if (defined('HEADER_INC'))
 	{
@@ -140,9 +139,8 @@ function adm_page_header($page_title)
 */
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $user, $auth, $cache;
-	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-	global $request, $phpbb_dispatcher;
+	global $db, $config, $template, $user, $auth;
+	global $phpbb_root_path, $request, $phpbb_dispatcher;
 
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_footer_override = false;
@@ -266,7 +264,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		break;
 
 		case 'number':
-			$min = $max = $maxlength = '';
+			$max = $maxlength = '';
 			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
 			if ( isset($tpl_type[2]) )
 			{
@@ -278,8 +276,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		break;
 
 		case 'dimension':
-			$min = $max = $maxlength = $size = '';
-
+			$max = $maxlength = $size = '';
 			$min = (int) $tpl_type[1];
 
 			if ( isset($tpl_type[2]) )
@@ -313,8 +310,6 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 
 		case 'select':
 		case 'custom':
-
-			$return = '';
 
 			if (isset($vars['method']))
 			{
@@ -637,8 +632,6 @@ function validate_range($value_ary, &$error)
 	foreach ($value_ary as $value)
 	{
 		$column = explode(':', $value['column_type']);
-		$max = $min = 0;
-		$type = 0;
 		if (!isset($column_types[$column[0]]))
 		{
 			continue;
