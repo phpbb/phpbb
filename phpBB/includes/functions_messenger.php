@@ -33,8 +33,6 @@ class messenger
 	/** @var \phpbb\template\template */
 	protected $template;
 
-	var $eol = "\n";
-
 	/**
 	* Constructor
 	*/
@@ -44,10 +42,6 @@ class messenger
 
 		$this->use_queue = (!$config['email_package_size']) ? false : $use_queue;
 		$this->subject = '';
-
-		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
-		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
-		$this->eol = (!$this->eol) ? "\n" : $this->eol;
 	}
 
 	/**
@@ -497,7 +491,7 @@ class messenger
 			$this->from = $board_contact;
 		}
 
-		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
+		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : PHP_EOL;
 
 		// Build to, cc and bcc strings
 		$to = $cc = $bcc = '';
@@ -529,7 +523,7 @@ class messenger
 			}
 			else
 			{
-				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $this->eol, $err_msg);
+				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, PHP_EOL, $err_msg);
 			}
 
 			if (!$result)
@@ -686,10 +680,6 @@ class queue
 
 		$this->data = array();
 		$this->cache_file = "{$phpbb_root_path}cache/queue.$phpEx";
-
-		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
-		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
-		$this->eol = (!$this->eol) ? "\n" : $this->eol;
 	}
 
 	/**
@@ -822,7 +812,7 @@ class queue
 						}
 						else
 						{
-							$result = phpbb_mail($to, $subject, $msg, $headers, $this->eol, $err_msg);
+							$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
 						}
 
 						if (!$result)
