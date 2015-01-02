@@ -309,7 +309,10 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 			)));
 		$user = new \phpbb\user('\phpbb\datetime');
 
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		
+		$phpbb_dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
+			->disableOriginalConstructor()
+			->getMock();
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());

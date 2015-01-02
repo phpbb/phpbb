@@ -126,7 +126,9 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$user = new \phpbb\user('\phpbb\datetime');
 		$config = new phpbb\config\config(array());
-		$phpbb_dispatcher = $this->getMock('\phpbb\event\dispatcher');
+		$phpbb_dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
+			->disableOriginalConstructor()
+			->getMock();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
 		$content_visibility->set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest);
