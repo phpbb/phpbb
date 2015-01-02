@@ -15,7 +15,6 @@ TRAVIS_PHP_VERSION=$1
 
 if [ "$TRAVIS_PHP_VERSION" == "hhvm" ]
 then
-	sed -n '1h;1!H;${;g;s/hhvm.server.port/hhvm.jit = false\nhhvm.server.port/g;p;}' /etc/hhvm/server.ini &> /etc/hhvm/server.ini.bak
-	cp /etc/server.ini.bak /etc/server.ini
+	echo 'hhvm.jit = false' | sudo tee --append /etc/hhvm/server.ini
 	sudo service hhvm restart
 fi
