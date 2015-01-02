@@ -2922,6 +2922,19 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			break;
 		}
+
+		/**
+		 * This event allows an extension to process when a user fails a login attempt
+		 *
+		 * @event core.login_box_failed
+		 * @var array   result      Login result data
+		 * @var string  username    User name used to login
+		 * @var string  password    Password used to login
+		 * @var string  err         Error message
+		 * @since 3.1.3
+		 */
+		$vars = array('result', 'username', 'password', 'err');
+		extract($phpbb_dispatcher->trigger_event('core.login_box_failed', compact($vars)));
 	}
 
 	// Assign credential for username/password pair
