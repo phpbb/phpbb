@@ -296,7 +296,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$phpbb_config = new \phpbb\config\config(array('num_posts' => 3, 'num_topics' => 1));
-		$phpbb_dispatcher = $this->getMock('\phpbb\event\dispatcher');
+		$phpbb_dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
+			->disableOriginalConstructor()
+			->getMock();
 		set_config_count(null, null, null, $phpbb_config);
 
 		// Create auth mock
