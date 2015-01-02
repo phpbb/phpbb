@@ -1463,7 +1463,7 @@ viewtopic_body_post_author_after
 * Since: 3.1.3-RC1
 * Purpose: Add content directly after the post author on the View topic screen
 
-viewtopic_body_post_author_before/after
+viewtopic_body_post_author_before
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
