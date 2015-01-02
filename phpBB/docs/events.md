@@ -1455,6 +1455,22 @@ viewtopic_body_poll_question_prepend
 * Since: 3.1.0-b3
 * Purpose: Add content directly before the poll question on the View topic screen
 
+viewtopic_body_post_author_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.3-RC1
+* Purpose: Add content directly after the post author on the View topic screen
+
+viewtopic_body_post_author_before/after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.3-RC1
+* Purpose: Add content directly before the post author on the View topic screen
+
 viewtopic_body_post_buttons_after
 ===
 * Locations:
