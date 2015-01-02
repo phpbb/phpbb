@@ -1461,7 +1461,7 @@ viewtopic_body_post_author_after
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.3-RC1
-* Purpose: Add content directly after the post author on the View topic screen
+* Purpose: Add content directly after the post author on the view topic screen
 
 viewtopic_body_post_author_before
 ===
@@ -1469,7 +1469,7 @@ viewtopic_body_post_author_before
     + styles/prosilver/template/viewtopic_body.html
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.3-RC1
-* Purpose: Add content directly before the post author on the View topic screen
+* Purpose: Add content directly before the post author on the view topic screen
 
 viewtopic_body_post_buttons_after
 ===
