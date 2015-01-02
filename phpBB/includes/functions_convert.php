@@ -2148,6 +2148,7 @@ function fix_empty_primary_groups()
 	}
 
 	$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . ' WHERE group_id = ' . get_group_id('global_moderators');
+	$result = $db->sql_query($sql);
 
 	$user_ids = array();
 	while ($row = $db->sql_fetchrow($result))
