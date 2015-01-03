@@ -1147,6 +1147,7 @@ class acp_attachments
 				$total_size = $stats['upload_dir_size'];
 
 				// Make sure $start is set to the last page if it exceeds the amount
+				/* @var $pagination phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
 				$start = $pagination->validate_start($start, $attachments_per_page, $num_files);
 

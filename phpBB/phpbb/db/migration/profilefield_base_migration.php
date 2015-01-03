@@ -238,6 +238,8 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 		if ($profile_row === null)
 		{
 			global $phpbb_container;
+
+			/* @var $manager \phpbb\profilefields\manager */
 			$manager = $phpbb_container->get('profilefields.manager');
 			$profile_row = $manager->build_insert_sql_array(array());
 		}

@@ -459,6 +459,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	$message_parser = new parse_message();
+	/* @var $plupload phpbb\plupload\plupload */
 	$plupload = $phpbb_container->get('plupload');
 	$message_parser->set_plupload($plupload);
 

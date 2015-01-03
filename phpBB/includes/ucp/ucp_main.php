@@ -647,6 +647,7 @@ class ucp_main
 
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
 		$start = request_var('start', 0);
+		/* @var $pagination phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		// Grab icons
@@ -769,6 +770,7 @@ class ucp_main
 			}
 		}
 
+		/* @var $phpbb_content_visibility phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		foreach ($topic_list as $topic_id)
