@@ -85,7 +85,7 @@ class fulltext_sphinx
 
 	/**
 	 * Database Tools object
-	 * @var \phpbb\db\tools
+	 * @var \phpbb\db\tools\tools_interface
 	 */
 	protected $db_tools;
 
@@ -135,8 +135,8 @@ class fulltext_sphinx
 		$this->db = $db;
 		$this->auth = $auth;
 
-		// Initialize \phpbb\db\tools object
-		$this->db_tools = new \phpbb\db\tools($this->db);
+		// Initialize \phpbb\db\tools\tools object
+		$this->db_tools = new \phpbb\db\tools\tools($this->db);
 
 		if(!$this->config['fulltext_sphinx_id'])
 		{

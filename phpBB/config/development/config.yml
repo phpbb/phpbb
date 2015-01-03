@@ -1,0 +1,8 @@
+imports:
+    - { resource: ../default/config.yml }
+
+core:
+    require_dev_dependencies: true
+
+    twig:
+        enable_debug_extension: true
