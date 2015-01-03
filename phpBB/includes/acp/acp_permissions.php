@@ -23,6 +23,10 @@ class acp_permissions
 {
 	var $u_action;
 	var $permission_dropdown;
+
+	/**
+	 * @var $phpbb_permissions \phpbb\permissions
+	 */
 	protected $permissions;
 
 	function main($id, $mode)

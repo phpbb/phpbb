@@ -153,6 +153,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1134,6 +1135,7 @@ function display_user_activity(&$userdata)
 	$active_f_row = $active_t_row = array();
 	if (!empty($forum_ary))
 	{
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		// Obtain active forum

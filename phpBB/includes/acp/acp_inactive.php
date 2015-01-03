@@ -50,6 +50,8 @@ class acp_inactive
 
 		$form_key = 'acp_inactive';
 		add_form_key($form_key);
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		// We build the sort key and per page settings here, because they may be needed later

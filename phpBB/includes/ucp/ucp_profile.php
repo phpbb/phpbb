@@ -84,6 +84,7 @@ class ucp_profile
 					}
 
 					// Instantiate passwords manager
+					/* @var $passwords_manager \phpbb\passwords\manager */
 					$passwords_manager = $phpbb_container->get('passwords.manager');
 
 					// Only check the new password against the previous password if there have been no errors
@@ -261,6 +262,7 @@ class ucp_profile
 					trigger_error('NO_AUTH_PROFILEINFO');
 				}
 
+				/* @var $cp \phpbb\profilefields\manager */
 				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
@@ -520,6 +522,7 @@ class ucp_profile
 
 				if ($config['allow_avatar'] && $auth->acl_get('u_chgavatar'))
 				{
+					/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 

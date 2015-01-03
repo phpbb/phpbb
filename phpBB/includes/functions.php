@@ -1159,7 +1159,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		if ($forum_id === false || !sizeof($forum_id))
 		{
 			// Mark all forums read (index page)
-
+			/* @var $phpbb_notifications \phpbb\notification\manager */
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			// Mark all topic notifications read for this user
@@ -1226,6 +1226,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$forum_id = array($forum_id);
 		}
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		$phpbb_notifications->mark_notifications_read_by_parent(array(
@@ -1348,6 +1349,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		// Mark post notifications read for this user in this topic
@@ -1799,6 +1801,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 	// Handle update of unapproved topics info.
 	// Only update for moderators having m_approve permission for the forum.
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	// Check the forum for any left unread topics.
@@ -2954,6 +2957,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$s_hidden_fields['credential'] = $credential;
 	}
 
+	/* @var $provider_collection \phpbb\auth\provider_collection */
 	$provider_collection = $phpbb_container->get('auth.provider_collection');
 	$auth_provider = $provider_collection->get_provider();
 
@@ -3057,6 +3061,7 @@ function login_forum_box($forum_data)
 		}
 		$db->sql_freeresult($result);
 
+		/* @var $passwords_manager \phpbb\passwords\manager */
 		$passwords_manager = $phpbb_container->get('passwords.manager');
 
 		if ($passwords_manager->check($password, $forum_data['forum_password']))
@@ -4746,6 +4751,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false)
 		'height' => $row['avatar_height'],
 	);
 
+	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 	$driver = $phpbb_avatar_manager->get_driver($row['avatar_type'], $ignore_config);
 	$html = '';
@@ -4931,6 +4937,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
+	/* @var $phpbb_path_helper \phpbb\path_helper */
 	$phpbb_path_helper = $phpbb_container->get('path_helper');
 	$corrected_path = $phpbb_path_helper->get_web_root_path();
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
@@ -4969,6 +4976,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$notifications = false;
 	if ($config['load_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
 	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		$notifications = $phpbb_notifications->load_notifications(array(
@@ -5299,6 +5307,8 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	if ($call_cron)
 	{
 		global $phpbb_container;
+
+		/* @var $cron \phpbb\cron\manager */
 		$cron = $phpbb_container->get('cron.manager');
 		$task = $cron->find_one_ready_task();
 

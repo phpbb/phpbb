@@ -25,6 +25,10 @@ class acp_profile
 
 	var $edit_lang_id;
 	var $lang_defs;
+
+	/**
+	 * @var \phpbb\di\service_collection
+	 */
 	protected $type_collection;
 
 	function main($id, $mode)
@@ -51,6 +55,7 @@ class acp_profile
 			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		/* @var $cp \phpbb\profilefields\manager */
 		$cp = $phpbb_container->get('profilefields.manager');
 		$this->type_collection = $phpbb_container->get('profilefields.type_collection');
 
@@ -112,6 +117,7 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
+					/* @var $db_tools \phpbb\db\tools */
 					$db_tools = $phpbb_container->get('dbal.tools');
 					$db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_' . $field_ident);
 
@@ -881,6 +887,7 @@ class acp_profile
 		{
 			$field_ident = 'pf_' . $field_ident;
 
+			/* @var $db_tools \phpbb\db\tools */
 			$db_tools = $phpbb_container->get('dbal.tools');
 			$db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));
 		}

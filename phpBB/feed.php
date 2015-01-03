@@ -65,10 +65,12 @@ if ($forum_id || $topic_id || $mode)
 }
 
 // This boards URL
+/* @var $phpbb_feed_helper \phpbb\feed\helper */
 $phpbb_feed_helper = $phpbb_container->get('feed.helper');
 $board_url = $phpbb_feed_helper->get_board_url();
 
 // Get correct feed object
+/* @var $phpbb_feed_factory \phpbb\feed\factory */
 $phpbb_feed_factory = $phpbb_container->get('feed.factory');
 $feed = $phpbb_feed_factory->get_feed($mode, $forum_id, $topic_id);
 

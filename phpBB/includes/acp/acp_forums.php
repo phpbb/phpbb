@@ -1050,6 +1050,7 @@ class acp_forums
 		else
 		{
 			// Instantiate passwords manager
+			/* @var $passwords_manager \phpbb\passwords\manager */
 			$passwords_manager = $phpbb_container->get('passwords.manager');
 
 			$forum_data_sql['forum_password'] = $passwords_manager->hash($forum_data_sql['forum_password']);

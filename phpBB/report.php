@@ -228,6 +228,7 @@ if ($submit && $reason_id)
 		$db->sql_query($sql);
 		$report_id = $db->sql_nextid();
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		if ($post_id)

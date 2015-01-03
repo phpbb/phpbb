@@ -320,6 +320,7 @@ class acp_groups
 
 				if ($config['allow_avatar'])
 				{
+					/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
@@ -801,8 +802,9 @@ class acp_groups
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$this->page_title = 'GROUP_MEMBERS';
+				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
+				$this->page_title = 'GROUP_MEMBERS';
 
 				// Grab the leaders - always, on every page...
 				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_colour, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
@@ -989,7 +991,7 @@ class acp_groups
 		}
 		else if ($field && in_array($field, array('legend', 'teampage')))
 		{
-
+			/* @var $group_position \phpbb\groupposition\groupposition_interface */
 			$group_position = $phpbb_container->get('groupposition.' . $field);
 		}
 

@@ -881,6 +881,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 
 	global $db, $user, $phpbb_container;
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->mark_notifications_read('notification.type.pm', $msg_id, $user_id);
@@ -1130,6 +1131,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications('notification.type.pm', array_keys($delete_rows));
@@ -1243,6 +1245,7 @@ function phpbb_delete_users_pms($user_ids)
 
 	$db->sql_transaction('begin');
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if (!empty($undelivered_msg))
@@ -1925,6 +1928,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		'recipients'			=> $recipients,
 	));
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if ($mode == 'edit')

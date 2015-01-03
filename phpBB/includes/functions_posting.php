@@ -27,8 +27,9 @@ function generate_smilies($mode, $forum_id)
 	global $db, $user, $config, $template, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_path_helper;
 
-	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
+	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
+	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
 	$start = request_var('start', 0);
 
 	if ($mode == 'window')
@@ -1039,6 +1040,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	global $user, $auth, $db, $template, $bbcode, $cache;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container;
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 	$sql_sort = ($mode == 'post_review') ? 'ASC' : 'DESC';
 
@@ -1276,6 +1278,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		$db->sql_freeresult($result);
 	}
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	// (Soft) delete the post
@@ -2094,6 +2097,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$is_starter = ($post_mode == 'edit_first_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 		$is_latest = ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		$phpbb_content_visibility->set_post_visibility($post_visibility, $data['post_id'], $data['topic_id'], $data['forum_id'], $user->data['user_id'], time(), '', $is_starter, $is_latest);
 	}
@@ -2272,6 +2276,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'post_subject'		=> $subject,
 	));
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if ($post_visibility == ITEM_APPROVED)

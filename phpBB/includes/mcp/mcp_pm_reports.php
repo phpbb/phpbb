@@ -41,8 +41,9 @@ class mcp_pm_reports
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 
-		$start = request_var('start', 0);
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
+		$start = request_var('start', 0);
 
 		$this->page_title = 'MCP_PM_REPORTS';
 
@@ -93,6 +94,7 @@ class mcp_pm_reports
 					trigger_error('NO_REPORT');
 				}
 
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				$phpbb_notifications->mark_notifications_read_by_parent('notification.type.report_pm', $report_id, $user->data['user_id']);

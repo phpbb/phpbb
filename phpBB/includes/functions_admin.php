@@ -715,6 +715,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		set_config_count('num_topics', $approved_topics * (-1), true);
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications(array(
@@ -979,6 +980,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync, false);
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications($delete_notifications_types, $post_ids);
@@ -3005,6 +3007,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	global $phpbb_container;
 
 	// Get file downloader and assign $errstr and $errno
+	/* @var $file_downloader \phpbb\file_downloader */
 	$file_downloader = $phpbb_container->get('file_downloader');
 
 	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
