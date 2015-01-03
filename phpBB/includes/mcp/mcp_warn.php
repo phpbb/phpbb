@@ -135,6 +135,7 @@ class mcp_warn
 		global $template, $db, $user, $auth;
 
 		$user->add_lang('memberlist');
+		/* @var $pagination phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		$start	= request_var('start', 0);

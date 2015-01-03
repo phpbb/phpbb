@@ -904,6 +904,7 @@ class acp_icons
 		);
 
 		$spacer = false;
+		/* @var $pagination phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 		$pagination_start = request_var('start', 0);
 
