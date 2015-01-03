@@ -27,13 +27,15 @@
 	"require": {
 		"php": ">=5.3.3",
 		"lusitanian/oauth": "0.2.*",
-		"symfony/config": "2.3.*",
-		"symfony/console": "2.3.*",
-		"symfony/dependency-injection": "2.3.*",
-		"symfony/event-dispatcher": "2.3.*",
-		"symfony/http-kernel": "2.3.*",
-		"symfony/routing": "2.3.*",
-		"symfony/yaml": "2.3.*",
+		"patchwork/utf8": "1.1.*",
+		"symfony/config": "2.5.*",
+		"symfony/console": "2.5.*",
+		"symfony/dependency-injection": "2.5.*",
+		"symfony/event-dispatcher": "2.5.*",
+		"symfony/http-kernel": "2.5.*",
+		"symfony/routing": "2.5.*",
+		"symfony/twig-bridge": "2.5.*",
+		"symfony/yaml": "2.5.*",
 		"twig/twig": "1.13.*"
 	},
 	"require-dev": {
@@ -43,13 +45,13 @@
 		"phing/phing": "2.4.*",
 		"sami/sami": "1.*",
 		"squizlabs/php_codesniffer": "1.*",
-		"symfony/browser-kit": "2.3.*",
-		"symfony/css-selector": "2.3.*",
-		"symfony/debug": "2.3.*",
-		"symfony/dom-crawler": "2.3.*",
-		"symfony/filesystem": "2.3.*",
-		"symfony/finder": "2.3.*",
-		"symfony/http-foundation": "2.3.*",
-		"symfony/process": "2.3.*"
+		"symfony/browser-kit": "2.5.*",
+		"symfony/css-selector": "2.5.*",
+		"symfony/debug": "2.5.*",
+		"symfony/dom-crawler": "2.5.*",
+		"symfony/filesystem": "2.5.*",
+		"symfony/finder": "2.5.*",
+		"symfony/http-foundation": "2.5.*",
+		"symfony/process": "2.5.*"
 	}
 }

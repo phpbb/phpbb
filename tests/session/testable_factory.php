@@ -96,6 +96,7 @@ class phpbb_session_testable_factory
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()
 		);
+		$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
 		$provider_collection->add('auth.provider.db');
 		$phpbb_container->set(

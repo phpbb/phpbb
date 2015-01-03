@@ -1689,7 +1689,7 @@ class install_update extends module
 					// Get custom installed styles...
 					$sql = 'SELECT style_name, style_path
 						FROM ' . STYLES_TABLE . "
-						WHERE LOWER(style_name) NOT IN ('subsilver2', 'prosilver')";
+						WHERE LOWER(style_name) NOT IN ('prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();

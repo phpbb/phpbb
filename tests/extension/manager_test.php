@@ -150,7 +150,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
-		$db_tools = new \phpbb\db\tools($db);
+		$db_tools = new \phpbb\db\tools\tools($db);
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$php_ext = 'php';
 		$table_prefix = 'phpbb_';

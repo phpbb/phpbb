@@ -18,7 +18,6 @@ class acp_jabber_info
 		return array(
 			'filename'	=> 'acp_jabber',
 			'title'		=> 'ACP_JABBER_SETTINGS',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'settings'		=> array('title' => 'ACP_JABBER_SETTINGS', 'auth' => 'acl_a_jabber', 'cat' => array('ACP_CLIENT_COMMUNICATION')),
 			),
