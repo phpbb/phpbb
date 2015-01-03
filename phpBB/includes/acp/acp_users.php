@@ -173,6 +173,21 @@ class acp_users
 				$delete_type	= request_var('delete_type', '');
 				$ip				= request_var('ip', 'ip');
 
+				/**
+				 * Run code at beginning of ACP users overview
+				 *
+				 * @event core.acp_users_overview_before
+				 * @var	array   user_row    Current user data
+				 * @var	string  mode        Active module
+				 * @var	string  action      Module that should be run
+				 * @var	bool    submit      Do we display the form only
+				 *                          or did the user press submit
+				 * @var	array   error       Array holding error messages
+				 * @since 3.1.3
+				 */
+				$vars = array('user_row', 'mode', 'action', 'submit', 'error');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_before', compact($vars)));
+
 				if ($submit)
 				{
 					if ($delete)
