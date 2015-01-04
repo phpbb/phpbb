@@ -2931,7 +2931,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		 * @var string  username    User name used to login
 		 * @var string  password    Password used to login
 		 * @var string  err         Error message
-		 * @since 3.1.3
+		 * @since 3.1.3-RC1
 		 */
 		$vars = array('result', 'username', 'password', 'err');
 		extract($phpbb_dispatcher->trigger_event('core.login_box_failed', compact($vars)));
