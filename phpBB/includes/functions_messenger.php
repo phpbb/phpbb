@@ -233,23 +233,81 @@ class messenger
 	/**
 	 * Set email template to use
 	 *
-	 * @param string $template_file
-	 * @param string $template_lang
-	 * @param string $template_path
+	 * Note: for extensions use set_template_ext()
+	 *
+	 * @param string $template_file Name of the template to use
+	 * @param string $template_lang Language which should be used. If the template
+	 *                              does not exist in the given language, we fall
+	 *                              back to the default language.
+	 * @param string $template_path Path to the folder of the email template.
+	 *                              `{lang}` is being replaced with the selected
+	 *                              or default language.
+	 *                              Falls back to `language/{lang}/email`
 	 * @return bool
 	 */
-	function template($template_file, $template_lang = '', $template_path = '')
+	public function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $user, $phpbb_extension_manager;
+		global $phpbb_root_path, $user;
+
+		$template_path = trim($template_path);
+		if ($template_path === '')
+		{
+			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+			$template_path .= '{lang}/email';
+		}
+		return $this->set_template_path($template_path, $template_file, $template_lang);
+	}
+
+	/**
+	 * Set extension email template to use
+	 *
+	 * @param string $extension     Name of the extension
+	 * @param string $template_file Name of the template to use
+	 * @param string $template_lang Language which should be used. If the template
+	 *                              does not exist in the given language, we fall
+	 *                              back to the default language.
+	 * @return bool
+	 */
+	public function set_template_ext($extension, $template_file, $template_lang = '')
+	{
+		/** @var \phpbb\extension\manager $phpbb_extension_manager */
+		global $phpbb_extension_manager;
+
+		if (!$phpbb_extension_manager->is_enabled($extension))
+		{
+			trigger_error('The template file of the extension could not be set, because the extension is not enabled.', E_USER_ERROR);
+		}
+
+		$ext_lang_path = $phpbb_extension_manager->get_extension_path($extension, true) . 'language/{lang}/email';
+		return $this->set_template_path($ext_lang_path, $template_file, $template_lang);
+	}
+
+	/**
+	 * Set email template to use
+	 *
+	 * @param string $template_path Path to the folder of the email template.
+	 *                              `{lang}` inside the path is being replaced with
+	 *                              the selected or default language.
+	 * @param string $template_file Name of the template to use
+	 * @param string $template_lang Language which should be used. If the template
+	 *                              does not exist in the given language, we fall
+	 *                              back to the default language.
+	 * @return bool
+	 */
+	protected function set_template_path($template_path, $template_file, $template_lang)
+	{
+		global $config;
 
 		$this->setup_template();
 
-		if (!trim($template_file))
+		$template_file = trim($template_file);
+		if ($template_file === '')
 		{
 			trigger_error('No template file for emailing set.', E_USER_ERROR);
 		}
 
-		if (!trim($template_lang))
+		$template_lang = trim($template_lang);
+		if ($template_lang === '')
 		{
 			// fall back to board default language if the user's language is
 			// missing $template_file.  If this does not exist either,
@@ -257,7 +315,7 @@ class messenger
 			$template_lang = basename($config['default_lang']);
 		}
 
-		if ($template_path)
+		if (strpos($template_path, '{lang}') === false)
 		{
 			$template_paths = array(
 				$template_path,
@@ -265,21 +323,15 @@ class messenger
 		}
 		else
 		{
-			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-			$template_path .= $template_lang . '/email';
-
 			$template_paths = array(
-				$template_path,
+				str_replace('{lang}', $template_lang, $template_path),
 			);
 
 			// we can only specify default language fallback when the path is not a custom one for which we
 			// do not know the default language alternative
 			if ($template_lang !== basename($config['default_lang']))
 			{
-				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-				$fallback_template_path .= basename($config['default_lang']) . '/email';
-
-				$template_paths[] = $fallback_template_path;
+				$template_paths[] = str_replace('{lang}', basename($config['default_lang']), $template_path);
 			}
 		}
 
