@@ -37,6 +37,8 @@ class messenger
 
 	/**
 	* Constructor
+	*
+	* @param bool $use_queue
 	*/
 	function messenger($use_queue = true)
 	{
@@ -80,6 +82,9 @@ class messenger
 
 	/**
 	* Sets an email address to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function to($address, $realname = '')
 	{
@@ -107,6 +112,9 @@ class messenger
 
 	/**
 	* Sets an cc address to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function cc($address, $realname = '')
 	{
@@ -122,6 +130,9 @@ class messenger
 
 	/**
 	* Sets an bcc address to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function bcc($address, $realname = '')
 	{
@@ -137,6 +148,9 @@ class messenger
 
 	/**
 	* Sets a im contact to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function im($address, $realname = '')
 	{
@@ -153,6 +167,8 @@ class messenger
 
 	/**
 	* Set the reply to address
+	*
+	* @param string $address
 	*/
 	function replyto($address)
 	{
@@ -161,6 +177,8 @@ class messenger
 
 	/**
 	* Set the from address
+	*
+	* @param string $address
 	*/
 	function from($address)
 	{
@@ -169,6 +187,8 @@ class messenger
 
 	/**
 	* set up subject for mail
+	*
+	* @param string $subject
 	*/
 	function subject($subject = '')
 	{
@@ -177,6 +197,8 @@ class messenger
 
 	/**
 	* set up extra mail headers
+	*
+	* @param string $headers
 	*/
 	function headers($headers)
 	{
@@ -187,7 +209,7 @@ class messenger
 	* Adds X-AntiAbuse headers
 	*
 	* @param array $config		Configuration array
-	* @param user $user			A user object
+	* @param \phpbb\user $user			A user object
 	*
 	* @return null
 	*/
@@ -201,6 +223,7 @@ class messenger
 
 	/**
 	* Set the email priority
+	* @param int $priority
 	*/
 	function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
 	{
@@ -208,11 +231,16 @@ class messenger
 	}
 
 	/**
-	* Set email template to use
-	*/
+	 * Set email template to use
+	 *
+	 * @param string $template_file
+	 * @param string $template_lang
+	 * @param string $template_path
+	 * @return bool
+	 */
 	function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $config, $phpbb_root_path, $user, $phpbb_extension_manager;
 
 		$this->setup_template();
 
@@ -270,16 +298,24 @@ class messenger
 	}
 
 	/**
-	* assign variables to email template
-	*/
-	function assign_vars($vars)
+	 * Assign key variable pairs from an array
+	 *
+	 * @param array $vars
+	 */
+	function assign_vars(array $vars)
 	{
 		$this->setup_template();
 
 		$this->template->assign_vars($vars);
 	}
 
-	function assign_block_vars($blockname, $vars)
+	/**
+	 * Assign key variable pairs from an array to a specified block
+	 *
+	 * @param string $blockname Name of block to assign $vars to
+	 * @param array $vars
+	 */
+	function assign_block_vars($blockname, array $vars)
 	{
 		$this->setup_template();
 
@@ -287,8 +323,12 @@ class messenger
 	}
 
 	/**
-	* Send the mail out to the recipients set previously in var $this->addresses
-	*/
+	 * Send the mail out to the recipients set previously in var $this->addresses
+	 *
+	 * @param int	$method
+	 * @param bool	$break
+	 * @return bool
+	 */
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		global $config, $user;
@@ -330,6 +370,7 @@ class messenger
 			return true;
 		}
 
+		$result = false;
 		switch ($method)
 		{
 			case NOTIFY_EMAIL:
@@ -352,10 +393,13 @@ class messenger
 
 	/**
 	* Add error message to log
+	*
+	* @param string $type
+	* @param string $msg
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config, $request;
+		global $user, $config, $request;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -365,7 +409,6 @@ class messenger
 
 		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
-		$message = '';
 		switch ($type)
 		{
 			case 'EMAIL':
@@ -459,7 +502,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config, $user;
+		global $config;
 
 		if (empty($config['email_enable']))
 		{
@@ -557,7 +600,7 @@ class messenger
 	*/
 	function msg_jabber()
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $user, $phpbb_root_path, $phpEx;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
