@@ -37,6 +37,8 @@ class messenger
 
 	/**
 	* Constructor
+	*
+	* @param bool $use_queue
 	*/
 	function messenger($use_queue = true)
 	{
@@ -80,6 +82,9 @@ class messenger
 
 	/**
 	* Sets an email address to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function to($address, $realname = '')
 	{
@@ -107,6 +112,9 @@ class messenger
 
 	/**
 	* Sets an cc address to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function cc($address, $realname = '')
 	{
@@ -122,6 +130,9 @@ class messenger
 
 	/**
 	* Sets an bcc address to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function bcc($address, $realname = '')
 	{
@@ -137,6 +148,9 @@ class messenger
 
 	/**
 	* Sets a im contact to send to
+	*
+	* @param string $address
+	* @param string $realname
 	*/
 	function im($address, $realname = '')
 	{
@@ -153,6 +167,8 @@ class messenger
 
 	/**
 	* Set the reply to address
+	*
+	* @param string $address
 	*/
 	function replyto($address)
 	{
@@ -161,6 +177,8 @@ class messenger
 
 	/**
 	* Set the from address
+	*
+	* @param string $address
 	*/
 	function from($address)
 	{
@@ -169,6 +187,8 @@ class messenger
 
 	/**
 	* set up subject for mail
+	*
+	* @param string $subject
 	*/
 	function subject($subject = '')
 	{
@@ -177,6 +197,8 @@ class messenger
 
 	/**
 	* set up extra mail headers
+	*
+	* @param string $headers
 	*/
 	function headers($headers)
 	{
@@ -187,7 +209,7 @@ class messenger
 	* Adds X-AntiAbuse headers
 	*
 	* @param array $config		Configuration array
-	* @param user $user			A user object
+	* @param \phpbb\user $user			A user object
 	*
 	* @return null
 	*/
@@ -201,6 +223,7 @@ class messenger
 
 	/**
 	* Set the email priority
+	* @param int $priority
 	*/
 	function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
 	{
@@ -208,20 +231,83 @@ class messenger
 	}
 
 	/**
-	* Set email template to use
-	*/
-	function template($template_file, $template_lang = '', $template_path = '')
+	 * Set email template to use
+	 *
+	 * Note: for extensions use set_template_ext()
+	 *
+	 * @param string $template_file Name of the template to use
+	 * @param string $template_lang Language which should be used. If the template
+	 *                              does not exist in the given language, we fall
+	 *                              back to the default language.
+	 * @param string $template_path Path to the folder of the email template.
+	 *                              `{lang}` is being replaced with the selected
+	 *                              or default language.
+	 *                              Falls back to `language/{lang}/email`
+	 * @return bool
+	 */
+	public function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $phpbb_root_path, $user;
+
+		$template_path = trim($template_path);
+		if ($template_path === '')
+		{
+			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+			$template_path .= '{lang}/email';
+		}
+		return $this->set_template_path($template_path, $template_file, $template_lang);
+	}
+
+	/**
+	 * Set extension email template to use
+	 *
+	 * @param string $extension     Name of the extension
+	 * @param string $template_file Name of the template to use
+	 * @param string $template_lang Language which should be used. If the template
+	 *                              does not exist in the given language, we fall
+	 *                              back to the default language.
+	 * @return bool
+	 */
+	public function set_template_ext($extension, $template_file, $template_lang = '')
+	{
+		/** @var \phpbb\extension\manager $phpbb_extension_manager */
+		global $phpbb_extension_manager;
+
+		if (!$phpbb_extension_manager->is_enabled($extension))
+		{
+			trigger_error('The template file of the extension could not be set, because the extension is not enabled.', E_USER_ERROR);
+		}
+
+		$ext_lang_path = $phpbb_extension_manager->get_extension_path($extension, true) . 'language/{lang}/email';
+		return $this->set_template_path($ext_lang_path, $template_file, $template_lang);
+	}
+
+	/**
+	 * Set email template to use
+	 *
+	 * @param string $template_path Path to the folder of the email template.
+	 *                              `{lang}` inside the path is being replaced with
+	 *                              the selected or default language.
+	 * @param string $template_file Name of the template to use
+	 * @param string $template_lang Language which should be used. If the template
+	 *                              does not exist in the given language, we fall
+	 *                              back to the default language.
+	 * @return bool
+	 */
+	protected function set_template_path($template_path, $template_file, $template_lang)
+	{
+		global $config;
 
 		$this->setup_template();
 
-		if (!trim($template_file))
+		$template_file = trim($template_file);
+		if ($template_file === '')
 		{
 			trigger_error('No template file for emailing set.', E_USER_ERROR);
 		}
 
-		if (!trim($template_lang))
+		$template_lang = trim($template_lang);
+		if ($template_lang === '')
 		{
 			// fall back to board default language if the user's language is
 			// missing $template_file.  If this does not exist either,
@@ -229,7 +315,7 @@ class messenger
 			$template_lang = basename($config['default_lang']);
 		}
 
-		if ($template_path)
+		if (strpos($template_path, '{lang}') === false)
 		{
 			$template_paths = array(
 				$template_path,
@@ -237,21 +323,15 @@ class messenger
 		}
 		else
 		{
-			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-			$template_path .= $template_lang . '/email';
-
 			$template_paths = array(
-				$template_path,
+				str_replace('{lang}', $template_lang, $template_path),
 			);
 
 			// we can only specify default language fallback when the path is not a custom one for which we
 			// do not know the default language alternative
 			if ($template_lang !== basename($config['default_lang']))
 			{
-				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-				$fallback_template_path .= basename($config['default_lang']) . '/email';
-
-				$template_paths[] = $fallback_template_path;
+				$template_paths[] = str_replace('{lang}', basename($config['default_lang']), $template_path);
 			}
 		}
 
@@ -270,16 +350,24 @@ class messenger
 	}
 
 	/**
-	* assign variables to email template
-	*/
-	function assign_vars($vars)
+	 * Assign key variable pairs from an array
+	 *
+	 * @param array $vars
+	 */
+	function assign_vars(array $vars)
 	{
 		$this->setup_template();
 
 		$this->template->assign_vars($vars);
 	}
 
-	function assign_block_vars($blockname, $vars)
+	/**
+	 * Assign key variable pairs from an array to a specified block
+	 *
+	 * @param string $blockname Name of block to assign $vars to
+	 * @param array $vars
+	 */
+	function assign_block_vars($blockname, array $vars)
 	{
 		$this->setup_template();
 
@@ -287,8 +375,12 @@ class messenger
 	}
 
 	/**
-	* Send the mail out to the recipients set previously in var $this->addresses
-	*/
+	 * Send the mail out to the recipients set previously in var $this->addresses
+	 *
+	 * @param int	$method
+	 * @param bool	$break
+	 * @return bool
+	 */
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		global $config, $user;
@@ -330,6 +422,7 @@ class messenger
 			return true;
 		}
 
+		$result = false;
 		switch ($method)
 		{
 			case NOTIFY_EMAIL:
@@ -352,10 +445,13 @@ class messenger
 
 	/**
 	* Add error message to log
+	*
+	* @param string $type
+	* @param string $msg
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config, $request;
+		global $user, $config, $request;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -365,7 +461,6 @@ class messenger
 
 		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
-		$message = '';
 		switch ($type)
 		{
 			case 'EMAIL':
@@ -459,7 +554,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config, $user;
+		global $config;
 
 		if (empty($config['email_enable']))
 		{
@@ -557,7 +652,7 @@ class messenger
 	*/
 	function msg_jabber()
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $user, $phpbb_root_path, $phpEx;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
