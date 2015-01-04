@@ -183,7 +183,7 @@ class acp_users
 				 * @var	bool    submit      Do we display the form only
 				 *                          or did the user press submit
 				 * @var	array   error       Array holding error messages
-				 * @since 3.1.3
+				 * @since 3.1.3-RC1
 				 */
 				$vars = array('user_row', 'mode', 'action', 'submit', 'error');
 				extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_before', compact($vars)));
