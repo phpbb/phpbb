@@ -50,7 +50,7 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -104,8 +104,8 @@ class acp_search
 		unset($search);
 		unset($error);
 
-		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : array();
-		$updated = request_var('updated', false);
+		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => ''), true) : array();
+		$updated = $request->variable('updated', false);
 
 		foreach ($settings as $config_name => $var_type)
 		{
@@ -232,10 +232,10 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);
 
 		if (isset($_POST['cancel']))
@@ -250,7 +250,7 @@ class acp_search
 			switch ($action)
 			{
 				case 'progress_bar':
-					$type = request_var('type', '');
+					$type = $request->variable('type', '');
 					$this->display_progress_bar($type);
 				break;
 
@@ -269,7 +269,7 @@ class acp_search
 
 			if (empty($this->state[0]))
 			{
-				$this->state[0] = request_var('search_type', '');
+				$this->state[0] = $request->variable('search_type', '');
 			}
 
 			$this->search = null;

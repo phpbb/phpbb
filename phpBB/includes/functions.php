@@ -64,72 +64,6 @@ function set_var(&$result, $var, $type, $multibyte = false)
 }
 
 /**
-* Wrapper function of \phpbb\request\request::variable which exists for backwards compatability.
-* See {@link \phpbb\request\request_interface::variable \phpbb\request\request_interface::variable} for
-* documentation of this function's use.
-*
-* @deprecated
-* @param	mixed			$var_name	The form variable's name from which data shall be retrieved.
-* 										If the value is an array this may be an array of indizes which will give
-* 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
-* 										then specifying array("var", 1) as the name will return "a".
-* 										If you pass an instance of {@link \phpbb\request\request_interface phpbb_request_interface}
-* 										as this parameter it will overwrite the current request class instance. If you do
-* 										not do so, it will create its own instance (but leave superglobals enabled).
-* @param	mixed			$default	A default value that is returned if the variable was not set.
-* 										This function will always return a value of the same type as the default.
-* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
-*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-* @param	bool			$cookie		This param is mapped to \phpbb\request\request_interface::COOKIE as the last param for
-* 										\phpbb\request\request_interface::variable for backwards compatability reasons.
-* @param	\phpbb\request\request_interface|null|false	If an instance of \phpbb\request\request_interface is given the instance is stored in
-*										a static variable and used for all further calls where this parameters is null. Until
-*										the function is called with an instance it automatically creates a new \phpbb\request\request
-*										instance on every call. By passing false this per-call instantiation can be restored
-*										after having passed in a \phpbb\request\request_interface instance.
-*
-* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
-* 					the same as that of $default. If the variable is not set $default is returned.
-*/
-function request_var($var_name, $default, $multibyte = false, $cookie = false, $request = null)
-{
-	// This is all just an ugly hack to add "Dependency Injection" to a function
-	// the only real code is the function call which maps this function to a method.
-	static $static_request = null;
-
-	if ($request instanceof \phpbb\request\request_interface)
-	{
-		$static_request = $request;
-
-		if (empty($var_name))
-		{
-			return;
-		}
-	}
-	else if ($request === false)
-	{
-		$static_request = null;
-
-		if (empty($var_name))
-		{
-			return;
-		}
-	}
-
-	$tmp_request = $static_request;
-
-	// no request class set, create a temporary one ourselves to keep backwards compatability
-	if ($tmp_request === null)
-	{
-		// false param: enable super globals, so the created request class does not
-		// make super globals inaccessible everywhere outside this function.
-		$tmp_request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
-	}
-
-	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? \phpbb\request\request_interface::COOKIE : \phpbb\request\request_interface::REQUEST);
-}
-
-/**
 * Generates an alphanumeric random string of given length
 *
 * @return string
@@ -1618,7 +1552,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 */
 function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001, $sql_limit_offset = 0)
 {
-	global $config, $db, $user;
+	global $config, $db, $user, $request;
 	global $phpbb_dispatcher;
 
 	$user_id = ($user_id === false) ? (int) $user->data['user_id'] : (int) $user_id;
@@ -1697,7 +1631,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 
 		if (empty($tracking_topics))
 		{
-			$tracking_topics = request_var($config['cookie_name'] . '_track', '', false, true);
+			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', false, \phpbb\request\request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -2640,9 +2574,9 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	if ($check && $confirm)
 	{
-		$user_id = request_var('confirm_uid', 0);
-		$session_id = request_var('sess', '');
-		$confirm_key = request_var('confirm_key', '');
+		$user_id = $request->variable('confirm_uid', 0);
+		$session_id = $request->variable('sess', '');
+		$confirm_key = $request->variable('confirm_key', '');
 
 		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || !$confirm_key || !$user->data['user_last_confirm_key'] || $confirm_key != $user->data['user_last_confirm_key'])
 		{
@@ -2684,7 +2618,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	);
 
 	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
-	if (request_var('confirm_key', ''))
+	if ($request->variable('confirm_key', ''))
 	{
 		// This should not occur, therefore we cancel the operation to safe the user
 		return false;
@@ -2767,7 +2701,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// Get credential
 		if ($admin)
 		{
-			$credential = request_var('credential', '');
+			$credential = $request->variable('credential', '');
 
 			if (strspn($credential, 'abcdef0123456789') !== strlen($credential) || strlen($credential) != 32)
 			{
@@ -2785,7 +2719,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$password	= $request->untrimmed_variable('password', '', true);
 		}
 
-		$username	= request_var('username', '', true);
+		$username	= $request->variable('username', '', true);
 		$autologin	= $request->is_set_post('autologin');
 		$viewonline = (int) !$request->is_set_post('viewonline');
 		$admin 		= ($admin) ? 1 : 0;
@@ -2824,7 +2758,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
-			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
+			$redirect = $request->variable('redirect', "{$phpbb_root_path}index.$phpEx");
 
 			/**
 			* This event allows an extension to modify the redirection when a user successfully logs in
@@ -4808,8 +4742,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$forum_id = request_var('f', 0);
-	$topic_id = request_var('t', 0);
+	$forum_id = $request->variable('f', 0);
+	$topic_id = $request->variable('t', 0);
 
 	$s_feed_news = false;
 

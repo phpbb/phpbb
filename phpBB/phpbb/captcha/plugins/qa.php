@@ -58,14 +58,14 @@ class qa
 	*/
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $request;
 
 		// load our language file
 		$user->add_lang('captcha_qa');
 
 		// read input
-		$this->confirm_id = request_var('qa_confirm_id', '');
-		$this->answer = utf8_normalize_nfc(request_var('qa_answer', '', true));
+		$this->confirm_id = $request->variable('qa_confirm_id', '');
+		$this->answer = utf8_normalize_nfc($request->variable('qa_answer', '', true));
 
 		$this->type = (int) $type;
 		$this->question_lang = $user->lang_name;
@@ -544,9 +544,9 @@ class qa
 	*/
 	function check_answer()
 	{
-		global $db;
+		global $db, $request;
 
-		$answer = ($this->question_strict) ? utf8_normalize_nfc(request_var('qa_answer', '', true)) : utf8_clean_string(utf8_normalize_nfc(request_var('qa_answer', '', true)));
+		$answer = ($this->question_strict) ? utf8_normalize_nfc($request->variable('qa_answer', '', true)) : utf8_clean_string(utf8_normalize_nfc($request->variable('qa_answer', '', true)));
 
 		$sql = 'SELECT answer_text
 			FROM ' . $this->table_captcha_answers . '
@@ -598,7 +598,9 @@ class qa
 	*/
 	function is_solved()
 	{
-		if (request_var('qa_answer', false) && $this->solved === 0)
+		global $request;
+
+		if ($request->variable('qa_answer', false) && $this->solved === 0)
 		{
 			$this->validate();
 		}
@@ -611,7 +613,7 @@ class qa
 	*/
 	function acp_page($id, &$module)
 	{
-		global $db, $user, $auth, $template, $phpbb_log;
+		global $db, $user, $auth, $template, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
@@ -627,9 +629,9 @@ class qa
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
-		$submit = request_var('submit', false);
-		$question_id = request_var('question_id', 0);
-		$action = request_var('action', '');
+		$submit = $request->variable('submit', false);
+		$question_id = $request->variable('question_id', 0);
+		$action = $request->variable('action', '');
 
 		// we have two pages, so users might want to navigate from one to the other
 		$list_url = $module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_service_name();
@@ -675,10 +677,10 @@ class qa
 		{
 			// okay, show the editor
 			$error = false;
-			$input_question = request_var('question_text', '', true);
-			$input_answers = request_var('answers', '', true);
-			$input_lang = request_var('lang_iso', '', true);
-			$input_strict = request_var('strict', false);
+			$input_question = $request->variable('question_text', '', true);
+			$input_answers = $request->variable('answers', '', true);
+			$input_lang = $request->variable('lang_iso', '', true);
+			$input_strict = $request->variable('strict', false);
 			$langs = $this->get_languages();
 
 			foreach ($langs as $lang => $entry)
@@ -826,11 +828,13 @@ class qa
 	*/
 	function acp_get_question_input()
 	{
-		$answers = utf8_normalize_nfc(request_var('answers', '', true));
+		global $request;
+
+		$answers = utf8_normalize_nfc($request->variable('answers', '', true));
 		$question = array(
-			'question_text'	=> request_var('question_text', '', true),
-			'strict'		=> request_var('strict', false),
-			'lang_iso'		=> request_var('lang_iso', ''),
+			'question_text'	=> $request->variable('question_text', '', true),
+			'strict'		=> $request->variable('strict', false),
+			'lang_iso'		=> $request->variable('lang_iso', ''),
 			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
 		);
 

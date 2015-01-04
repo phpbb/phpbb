@@ -29,11 +29,11 @@ $auth->acl($user->data);
 
 
 // Grab only parameters needed here
-$post_id	= request_var('p', 0);
-$topic_id	= request_var('t', 0);
-$forum_id	= request_var('f', 0);
-$draft_id	= request_var('d', 0);
-$lastclick	= request_var('lastclick', 0);
+$post_id	= $request->variable('p', 0);
+$topic_id	= $request->variable('t', 0);
+$forum_id	= $request->variable('f', 0);
+$draft_id	= $request->variable('d', 0);
+$lastclick	= $request->variable('lastclick', 0);
 
 $submit		= (isset($_POST['post'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
@@ -43,7 +43,7 @@ $confirm	= $request->is_set_post('confirm');
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
-$mode		= request_var('mode', '');
+$mode		= $request->variable('mode', '');
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
 if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_gets('f_delete', 'm_delete', $forum_id)))
@@ -487,7 +487,7 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 if ($mode == 'bump')
 {
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id'])
-		&& check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
+		&& check_link_hash($request->variable('hash', ''), "topic_{$post_data['topic_id']}"))
 	{
 		$meta_url = phpbb_bump_topic($forum_id, $topic_id, $post_data, $current_time);
 		meta_refresh(3, $meta_url);
@@ -676,9 +676,9 @@ $quote_status	= true;
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
-	$subject = utf8_normalize_nfc(request_var('subject', '', true));
+	$subject = utf8_normalize_nfc($request->variable('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
-	$message = utf8_normalize_nfc(request_var('message', '', true));
+	$message = utf8_normalize_nfc($request->variable('message', '', true));
 
 	if ($subject && $message)
 	{
@@ -748,11 +748,11 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 				if (is_bool($default))
 				{
 					// Use the string representation
-					$hidden_fields[$name] = request_var($name, '');
+					$hidden_fields[$name] = $request->variable($name, '');
 				}
 				else
 				{
-					$hidden_fields[$name] = request_var($name, $default);
+					$hidden_fields[$name] = $request->variable($name, $default);
 				}
 			}
 
@@ -809,20 +809,20 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 
 if ($submit || $preview || $refresh)
 {
-	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
-	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
-	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
+	$post_data['topic_cur_post_id']	= $request->variable('topic_cur_post_id', 0);
+	$post_data['post_subject']		= utf8_normalize_nfc($request->variable('subject', '', true));
+	$message_parser->message		= utf8_normalize_nfc($request->variable('message', '', true));
 
-	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
+	$post_data['username']			= utf8_normalize_nfc($request->variable('username', $post_data['username'], true));
+	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc($request->variable('edit_reason', '', true)) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
-	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
-	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
+	$post_data['topic_type']		= $request->variable('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
+	$post_data['topic_time_limit']	= $request->variable('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 
 	if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
 	{
-		$post_data['icon_id'] = request_var('icon', (int) $post_data['icon_id']);
+		$post_data['icon_id'] = $request->variable('icon', (int) $post_data['icon_id']);
 	}
 
 	$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
@@ -887,10 +887,10 @@ if ($submit || $preview || $refresh)
 	}
 	else
 	{
-		$post_data['poll_title']		= utf8_normalize_nfc(request_var('poll_title', '', true));
-		$post_data['poll_length']		= request_var('poll_length', 0);
-		$post_data['poll_option_text']	= utf8_normalize_nfc(request_var('poll_option_text', '', true));
-		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
+		$post_data['poll_title']		= utf8_normalize_nfc($request->variable('poll_title', '', true));
+		$post_data['poll_length']		= $request->variable('poll_length', 0);
+		$post_data['poll_option_text']	= utf8_normalize_nfc($request->variable('poll_option_text', '', true));
+		$post_data['poll_max_options']	= $request->variable('poll_max_options', 1);
 		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
 	}
 
@@ -959,8 +959,8 @@ if ($submit || $preview || $refresh)
 	// Notify and show user the changed post
 	if ($mode == 'edit' && $post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW)
 	{
-		$edit_post_message_checksum = request_var('edit_post_message_checksum', '');
-		$edit_post_subject_checksum = request_var('edit_post_subject_checksum', '');
+		$edit_post_message_checksum = $request->variable('edit_post_message_checksum', '');
+		$edit_post_subject_checksum = $request->variable('edit_post_subject_checksum', '');
 
 		// $post_data['post_checksum'] is the checksum of the post submitted in the meantime
 		// $message_md5 is the checksum of the post we're about to submit
@@ -1074,9 +1074,9 @@ if ($submit || $preview || $refresh)
 	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 	{
 		$captcha_data = array(
-			'message'	=> utf8_normalize_nfc(request_var('message', '', true)),
-			'subject'	=> utf8_normalize_nfc(request_var('subject', '', true)),
-			'username'	=> utf8_normalize_nfc(request_var('username', '', true)),
+			'message'	=> utf8_normalize_nfc($request->variable('message', '', true)),
+			'subject'	=> utf8_normalize_nfc($request->variable('subject', '', true)),
+			'username'	=> utf8_normalize_nfc($request->variable('username', '', true)),
 		);
 		$vc_response = $captcha->validate($captcha_data);
 		if ($vc_response)
@@ -1701,7 +1701,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($c
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
-$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', $draft_id) . '" />' : '';
+$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . $request->variable('draft_loaded', $draft_id) . '" />' : '';
 
 if ($mode == 'edit')
 {

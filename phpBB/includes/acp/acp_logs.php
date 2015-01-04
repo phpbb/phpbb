@@ -32,18 +32,18 @@ class acp_logs
 		$user->add_lang('mcp');
 
 		// Set up general vars
-		$action		= request_var('action', '');
-		$forum_id	= request_var('f', 0);
-		$topic_id	= request_var('t', 0);
-		$start		= request_var('start', 0);
+		$action		= $request->variable('action', '');
+		$forum_id	= $request->variable('f', 0);
+		$topic_id	= $request->variable('t', 0);
+		$start		= $request->variable('start', 0);
 		$deletemark = $request->variable('delmarked', false, false, \phpbb\request\request_interface::POST);
 		$deleteall	= $request->variable('delall', false, false, \phpbb\request\request_interface::POST);
-		$marked		= request_var('mark', array(0));
+		$marked		= $request->variable('mark', array(0));
 
 		// Sort keys
-		$sort_days	= request_var('st', 0);
-		$sort_key	= request_var('sk', 't');
-		$sort_dir	= request_var('sd', 'd');
+		$sort_days	= $request->variable('st', 0);
+		$sort_key	= $request->variable('sk', 't');
+		$sort_dir	= $request->variable('sd', 'd');
 
 		$this->tpl_name = 'acp_logs';
 		$this->log_type = constant('LOG_' . strtoupper($mode));
@@ -70,7 +70,7 @@ class acp_logs
 						$conditions['log_time'] = array('>=', time() - ($sort_days * 86400));
 					}
 
-					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+					$keywords = utf8_normalize_nfc($request->variable('keywords', '', true));
 					$conditions['keywords'] = $keywords;
 				}
 
@@ -108,7 +108,7 @@ class acp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords = utf8_normalize_nfc($request->variable('keywords', '', true));
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$l_title = $user->lang['ACP_' . strtoupper($mode) . '_LOGS'];

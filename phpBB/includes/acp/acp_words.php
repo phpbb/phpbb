@@ -28,13 +28,13 @@ class acp_words
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
 
 		// Set up general vars
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : ((isset($_POST['save'])) ? 'save' : $action);
 
 		$s_hidden_fields = '';
@@ -50,7 +50,7 @@ class acp_words
 		{
 			case 'edit':
 
-				$word_id = request_var('id', 0);
+				$word_id = $request->variable('id', 0);
 
 				if (!$word_id)
 				{
@@ -88,9 +88,9 @@ class acp_words
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$word_id		= request_var('id', 0);
-				$word			= utf8_normalize_nfc(request_var('word', '', true));
-				$replacement	= utf8_normalize_nfc(request_var('replacement', '', true));
+				$word_id		= $request->variable('id', 0);
+				$word			= utf8_normalize_nfc($request->variable('word', '', true));
+				$replacement	= utf8_normalize_nfc($request->variable('replacement', '', true));
 
 				if ($word === '' || $replacement === '')
 				{
@@ -127,7 +127,7 @@ class acp_words
 
 			case 'delete':
 
-				$word_id = request_var('id', 0);
+				$word_id = $request->variable('id', 0);
 
 				if (!$word_id)
 				{

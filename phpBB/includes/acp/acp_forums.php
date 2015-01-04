@@ -36,11 +36,11 @@ class acp_forums
 		$form_key = 'acp_forums';
 		add_form_key($form_key);
 
-		$action		= request_var('action', '');
+		$action		= $request->variable('action', '');
 		$update		= (isset($_POST['update'])) ? true : false;
-		$forum_id	= request_var('f', 0);
+		$forum_id	= $request->variable('f', 0);
 
-		$this->parent_id	= request_var('parent_id', 0);
+		$this->parent_id	= $request->variable('parent_id', 0);
 		$forum_data = $errors = array();
 		if ($update && !check_form_key($form_key))
 		{
@@ -52,8 +52,8 @@ class acp_forums
 		switch ($action)
 		{
 			case 'progress_bar':
-				$start = request_var('start', 0);
-				$total = request_var('total', 0);
+				$start = $request->variable('start', 0);
+				$total = $request->variable('total', 0);
 
 				$this->display_progress_bar($start, $total);
 			break;
@@ -83,10 +83,10 @@ class acp_forums
 			switch ($action)
 			{
 				case 'delete':
-					$action_subforums	= request_var('action_subforums', '');
-					$subforums_to_id	= request_var('subforums_to_id', 0);
-					$action_posts		= request_var('action_posts', '');
-					$posts_to_id		= request_var('posts_to_id', 0);
+					$action_subforums	= $request->variable('action_subforums', '');
+					$subforums_to_id	= $request->variable('subforums_to_id', 0);
+					$action_posts		= $request->variable('action_posts', '');
+					$posts_to_id		= $request->variable('posts_to_id', 0);
 
 					$errors = $this->delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
@@ -112,45 +112,45 @@ class acp_forums
 				case 'add':
 
 					$forum_data += array(
-						'parent_id'				=> request_var('forum_parent_id', $this->parent_id),
-						'forum_type'			=> request_var('forum_type', FORUM_POST),
-						'type_action'			=> request_var('type_action', ''),
-						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
+						'parent_id'				=> $request->variable('forum_parent_id', $this->parent_id),
+						'forum_type'			=> $request->variable('forum_type', FORUM_POST),
+						'type_action'			=> $request->variable('type_action', ''),
+						'forum_status'			=> $request->variable('forum_status', ITEM_UNLOCKED),
 						'forum_parents'			=> '',
-						'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
-						'forum_link'			=> request_var('forum_link', ''),
-						'forum_link_track'		=> request_var('forum_link_track', false),
-						'forum_desc'			=> utf8_normalize_nfc(request_var('forum_desc', '', true)),
+						'forum_name'			=> utf8_normalize_nfc($request->variable('forum_name', '', true)),
+						'forum_link'			=> $request->variable('forum_link', ''),
+						'forum_link_track'		=> $request->variable('forum_link_track', false),
+						'forum_desc'			=> utf8_normalize_nfc($request->variable('forum_desc', '', true)),
 						'forum_desc_uid'		=> '',
 						'forum_desc_options'	=> 7,
 						'forum_desc_bitfield'	=> '',
-						'forum_rules'			=> utf8_normalize_nfc(request_var('forum_rules', '', true)),
+						'forum_rules'			=> utf8_normalize_nfc($request->variable('forum_rules', '', true)),
 						'forum_rules_uid'		=> '',
 						'forum_rules_options'	=> 7,
 						'forum_rules_bitfield'	=> '',
-						'forum_rules_link'		=> request_var('forum_rules_link', ''),
-						'forum_image'			=> request_var('forum_image', ''),
-						'forum_style'			=> request_var('forum_style', 0),
-						'display_subforum_list'	=> request_var('display_subforum_list', false),
-						'display_on_index'		=> request_var('display_on_index', false),
-						'forum_topics_per_page'	=> request_var('topics_per_page', 0),
-						'enable_indexing'		=> request_var('enable_indexing', true),
-						'enable_icons'			=> request_var('enable_icons', false),
-						'enable_prune'			=> request_var('enable_prune', false),
-						'enable_post_review'	=> request_var('enable_post_review', true),
-						'enable_quick_reply'	=> request_var('enable_quick_reply', false),
-						'enable_shadow_prune'		=> request_var('enable_shadow_prune', false),
-						'prune_days'			=> request_var('prune_days', 7),
-						'prune_viewed'			=> request_var('prune_viewed', 7),
-						'prune_freq'			=> request_var('prune_freq', 1),
-						'prune_old_polls'		=> request_var('prune_old_polls', false),
-						'prune_announce'		=> request_var('prune_announce', false),
-						'prune_sticky'			=> request_var('prune_sticky', false),
-						'prune_shadow_days'		=> request_var('prune_shadow_days', 7),
-						'prune_shadow_freq'		=> request_var('prune_shadow_freq', 1),
-						'forum_password'		=> request_var('forum_password', '', true),
-						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
-						'forum_password_unset'	=> request_var('forum_password_unset', false),
+						'forum_rules_link'		=> $request->variable('forum_rules_link', ''),
+						'forum_image'			=> $request->variable('forum_image', ''),
+						'forum_style'			=> $request->variable('forum_style', 0),
+						'display_subforum_list'	=> $request->variable('display_subforum_list', false),
+						'display_on_index'		=> $request->variable('display_on_index', false),
+						'forum_topics_per_page'	=> $request->variable('topics_per_page', 0),
+						'enable_indexing'		=> $request->variable('enable_indexing', true),
+						'enable_icons'			=> $request->variable('enable_icons', false),
+						'enable_prune'			=> $request->variable('enable_prune', false),
+						'enable_post_review'	=> $request->variable('enable_post_review', true),
+						'enable_quick_reply'	=> $request->variable('enable_quick_reply', false),
+						'enable_shadow_prune'	=> $request->variable('enable_shadow_prune', false),
+						'prune_days'			=> $request->variable('prune_days', 7),
+						'prune_viewed'			=> $request->variable('prune_viewed', 7),
+						'prune_freq'			=> $request->variable('prune_freq', 1),
+						'prune_old_polls'		=> $request->variable('prune_old_polls', false),
+						'prune_announce'		=> $request->variable('prune_announce', false),
+						'prune_sticky'			=> $request->variable('prune_sticky', false),
+						'prune_shadow_days'		=> $request->variable('prune_shadow_days', 7),
+						'prune_shadow_freq'		=> $request->variable('prune_shadow_freq', 1),
+						'forum_password'		=> $request->variable('forum_password', '', true),
+						'forum_password_confirm'=> $request->variable('forum_password_confirm', '', true),
+						'forum_password_unset'	=> $request->variable('forum_password_unset', false),
 					);
 
 					/**
@@ -173,7 +173,7 @@ class acp_forums
 					// Use link_display_on_index setting if forum type is link
 					if ($forum_data['forum_type'] == FORUM_LINK)
 					{
-						$forum_data['display_on_index'] = request_var('link_display_on_index', false);
+						$forum_data['display_on_index'] = $request->variable('link_display_on_index', false);
 					}
 
 					// Linked forums and categories are not able to be locked...
@@ -182,25 +182,25 @@ class acp_forums
 						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
-					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', true) : request_var('display_active', false);
+					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? $request->variable('display_recent', true) : $request->variable('display_active', false);
 
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
 					{
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_parse_bbcode', false), request_var('rules_parse_urls', false), request_var('rules_parse_smilies', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], $request->variable('rules_parse_bbcode', false), $request->variable('rules_parse_urls', false), $request->variable('rules_parse_smilies', false));
 					}
 
 					// Get data for forum description if specified
 					if ($forum_data['forum_desc'])
 					{
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_parse_bbcode', false), request_var('desc_parse_urls', false), request_var('desc_parse_smilies', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], $request->variable('desc_parse_bbcode', false), $request->variable('desc_parse_urls', false), $request->variable('desc_parse_smilies', false));
 					}
 
 					$errors = $this->update_forum_data($forum_data);
 
 					if (!sizeof($errors))
 					{
-						$forum_perm_from = request_var('forum_perm_from', 0);
+						$forum_perm_from = $request->variable('forum_perm_from', 0);
 						$cache->destroy('sql', FORUMS_TABLE);
 
 						$copied_permissions = false;
@@ -311,7 +311,7 @@ class acp_forums
 					$row2['min_topic_id'] = (int) $row2['min_topic_id'];
 					$row2['max_topic_id'] = (int) $row2['max_topic_id'];
 
-					$start = request_var('start', $row2['min_topic_id']);
+					$start = $request->variable('start', $row2['min_topic_id']);
 
 					$batch_size = 2000;
 					$end = $start + $batch_size;
@@ -327,7 +327,7 @@ class acp_forums
 							WHERE forum_id = ' . $forum_id . '
 								AND topic_id BETWEEN ' . $start . ' AND ' . $end;
 						$result = $db->sql_query($sql);
-						$topics_done = request_var('topics_done', 0) + (int) $db->sql_fetchfield('num_topics');
+						$topics_done = $request->variable('topics_done', 0) + (int) $db->sql_fetchfield('num_topics');
 						$db->sql_freeresult($result);
 
 						$start += $batch_size;
@@ -391,13 +391,13 @@ class acp_forums
 				if ($update)
 				{
 					$forum_data['forum_flags'] = 0;
-					$forum_data['forum_flags'] += (request_var('forum_link_track', false)) ? FORUM_FLAG_LINK_TRACK : 0;
-					$forum_data['forum_flags'] += (request_var('prune_old_polls', false)) ? FORUM_FLAG_PRUNE_POLL : 0;
-					$forum_data['forum_flags'] += (request_var('prune_announce', false)) ? FORUM_FLAG_PRUNE_ANNOUNCE : 0;
-					$forum_data['forum_flags'] += (request_var('prune_sticky', false)) ? FORUM_FLAG_PRUNE_STICKY : 0;
+					$forum_data['forum_flags'] += ($request->variable('forum_link_track', false)) ? FORUM_FLAG_LINK_TRACK : 0;
+					$forum_data['forum_flags'] += ($request->variable('prune_old_polls', false)) ? FORUM_FLAG_PRUNE_POLL : 0;
+					$forum_data['forum_flags'] += ($request->variable('prune_announce', false)) ? FORUM_FLAG_PRUNE_ANNOUNCE : 0;
+					$forum_data['forum_flags'] += ($request->variable('prune_sticky', false)) ? FORUM_FLAG_PRUNE_STICKY : 0;
 					$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
-					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? FORUM_FLAG_POST_REVIEW : 0;
-					$forum_data['forum_flags'] += (request_var('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
+					$forum_data['forum_flags'] += ($request->variable('enable_post_review', true)) ? FORUM_FLAG_POST_REVIEW : 0;
+					$forum_data['forum_flags'] += ($request->variable('enable_quick_reply', false)) ? FORUM_FLAG_QUICK_REPLY : 0;
 				}
 
 				// Initialise $row, so we always have it in the event
@@ -445,7 +445,7 @@ class acp_forums
 							'parent_id'				=> $this->parent_id,
 							'forum_type'			=> FORUM_POST,
 							'forum_status'			=> ITEM_UNLOCKED,
-							'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
+							'forum_name'			=> utf8_normalize_nfc($request->variable('forum_name', '', true)),
 							'forum_link'			=> '',
 							'forum_link_track'		=> false,
 							'forum_desc'			=> '',
@@ -517,7 +517,7 @@ class acp_forums
 						$forum_data['forum_rules_bitfield'] = '';
 						$forum_data['forum_rules_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smilies', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], $request->variable('rules_allow_bbcode', false), $request->variable('rules_allow_urls', false), $request->variable('rules_allow_smilies', false));
 					}
 
 					// Generate preview content
@@ -537,7 +537,7 @@ class acp_forums
 						$forum_data['forum_desc_bitfield'] = '';
 						$forum_data['forum_desc_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smilies', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], $request->variable('desc_allow_bbcode', false), $request->variable('desc_allow_urls', false), $request->variable('desc_allow_smilies', false));
 					}
 
 					// decode...
@@ -780,7 +780,7 @@ class acp_forums
 			break;
 
 			case 'copy_perm':
-				$forum_perm_from = request_var('forum_perm_from', 0);
+				$forum_perm_from = $request->variable('forum_perm_from', 0);
 
 				// Copy permissions?
 				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
@@ -946,7 +946,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
+		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
 		$errors = array();
 
@@ -1146,7 +1146,7 @@ class acp_forums
 				// we're turning a postable forum into a non-postable forum
 				if ($forum_data_sql['type_action'] == 'move')
 				{
-					$to_forum_id = request_var('to_forum_id', 0);
+					$to_forum_id = $request->variable('to_forum_id', 0);
 
 					if ($to_forum_id)
 					{
@@ -1176,8 +1176,8 @@ class acp_forums
 				if ($row['right_id'] - $row['left_id'] > 1)
 				{
 					// We are turning a category into a link - but need to decide what to do with the subforums.
-					$action_subforums = request_var('action_subforums', '');
-					$subforums_to_id = request_var('subforums_to_id', 0);
+					$action_subforums = $request->variable('action_subforums', '');
+					$subforums_to_id = $request->variable('subforums_to_id', 0);
 
 					if ($action_subforums == 'delete')
 					{

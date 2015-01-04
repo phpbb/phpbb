@@ -46,8 +46,8 @@ class ucp_profile
 			case 'reg_details':
 
 				$data = array(
-					'username'			=> utf8_normalize_nfc(request_var('username', $user->data['username'], true)),
-					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
+					'username'			=> utf8_normalize_nfc($request->variable('username', $user->data['username'], true)),
+					'email'				=> strtolower($request->variable('email', $user->data['user_email'])),
 					'new_password'		=> $request->variable('new_password', '', true),
 					'cur_password'		=> $request->variable('cur_password', '', true),
 					'password_confirm'	=> $request->variable('password_confirm', '', true),
@@ -302,7 +302,7 @@ class ucp_profile
 				$cp_data = $cp_error = array();
 
 				$data = array(
-					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user->data['user_jabber'], true)),
+					'jabber'		=> utf8_normalize_nfc($request->variable('jabber', $user->data['user_jabber'], true)),
 				);
 
 				if ($config['allow_birthdays'])
@@ -314,9 +314,9 @@ class ucp_profile
 						list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user->data['user_birthday']);
 					}
 
-					$data['bday_day'] = request_var('bday_day', $data['bday_day']);
-					$data['bday_month'] = request_var('bday_month', $data['bday_month']);
-					$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+					$data['bday_day'] = $request->variable('bday_day', $data['bday_day']);
+					$data['bday_month'] = $request->variable('bday_month', $data['bday_month']);
+					$data['bday_year'] = $request->variable('bday_year', $data['bday_year']);
 					$data['user_birthday'] = sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
 				}
 
@@ -697,7 +697,7 @@ class ucp_profile
 
 				if ($submit)
 				{
-					$keys = request_var('keys', array(''));
+					$keys = $request->variable('keys', array(''));
 
 					if (!check_form_key('ucp_autologin_keys'))
 					{

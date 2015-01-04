@@ -41,8 +41,8 @@ class mcp_queue
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
-		$forum_id = request_var('f', 0);
-		$start = request_var('start', 0);
+		$forum_id = $request->variable('f', 0);
+		$start = $request->variable('start', 0);
 
 		$this->page_title = 'MCP_QUEUE';
 
@@ -153,8 +153,8 @@ class mcp_queue
 
 				$user->add_lang(array('posting', 'viewtopic'));
 
-				$post_id = request_var('p', 0);
-				$topic_id = request_var('t', 0);
+				$post_id = $request->variable('p', 0);
+				$topic_id = $request->variable('t', 0);
 
 				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
@@ -319,7 +319,7 @@ class mcp_queue
 					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 					'S_FIRST_POST'			=> ($post_info['topic_first_post_id'] == $post_id),
 

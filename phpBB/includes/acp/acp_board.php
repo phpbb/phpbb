@@ -30,13 +30,13 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 		$user->add_lang('acp/board');
 
-		$action	= request_var('action', '');
+		$action	= $request->variable('action', '');
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
 
 		$form_key = 'acp_board';
@@ -484,7 +484,7 @@ class acp_board
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -1049,10 +1049,10 @@ class acp_board
 
 	function store_feed_forums($option, $key)
 	{
-		global $db, $cache;
+		global $db, $cache, $request;
 
 		// Get key
-		$values = request_var($key, array(0 => 0));
+		$values = $request->variable($key, array(0 => 0));
 
 		// Empty option bit for all forums
 		$sql = 'UPDATE ' . FORUMS_TABLE . '

@@ -42,7 +42,7 @@ function output_image()
 //
 // Attempt to alleviate the problem by doing setup outside of the lock as much as possible.
 
-$cron_type = request_var('cron_type', '');
+$cron_type = $request->variable('cron_type', '');
 
 // Comment this line out for debugging so the page does not return an image.
 output_image();

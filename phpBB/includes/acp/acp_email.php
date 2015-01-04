@@ -25,7 +25,7 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $phpbb_log;
+		global $config, $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $phpbb_dispatcher;
 
 		$user->add_lang('acp/email');
@@ -39,11 +39,11 @@ class acp_email
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = array();
 
-		$usernames	= request_var('usernames', '', true);
+		$usernames	= $request->variable('usernames', '', true);
 		$usernames	= (!empty($usernames)) ? explode("\n", $usernames) : array();
-		$group_id	= request_var('g', 0);
-		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
-		$message	= utf8_normalize_nfc(request_var('message', '', true));
+		$group_id	= $request->variable('g', 0);
+		$subject	= utf8_normalize_nfc($request->variable('subject', '', true));
+		$message	= utf8_normalize_nfc($request->variable('message', '', true));
 
 		// Do the job ...
 		if ($submit)
@@ -51,7 +51,7 @@ class acp_email
 			// Error checking needs to go here ... if no subject and/or no message then skip
 			// over the send and return to the form
 			$use_queue		= (isset($_POST['send_immediately'])) ? false : true;
-			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
+			$priority		= $request->variable('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
 			if (!check_form_key($form_key))
 			{

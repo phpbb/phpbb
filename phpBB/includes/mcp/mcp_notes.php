@@ -35,10 +35,10 @@ class mcp_notes
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
+		global $auth, $db, $user, $template, $request;
 		global $config, $phpbb_root_path, $phpEx;
 
-		$action = request_var('action', array('' => ''));
+		$action = $request->variable('action', array('' => ''));
 
 		if (is_array($action))
 		{
@@ -74,15 +74,15 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config, $phpbb_log;
+		global $phpEx, $phpbb_root_path, $config, $phpbb_log, $request;
 		global $template, $db, $user, $auth, $phpbb_container;
 
-		$user_id = request_var('u', 0);
-		$username = request_var('username', '', true);
-		$start = request_var('start', 0);
-		$st	= request_var('st', 0);
-		$sk	= request_var('sk', 'b');
-		$sd	= request_var('sd', 'd');
+		$user_id = $request->variable('u', 0);
+		$username = $request->variable('username', '', true);
+		$start = $request->variable('start', 0);
+		$st	= $request->variable('st', 0);
+		$sk	= $request->variable('sk', 'b');
+		$sd	= $request->variable('sd', 'd');
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
@@ -116,8 +116,8 @@ class mcp_notes
 
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
-		$marked		= request_var('marknote', array(0));
-		$usernote	= utf8_normalize_nfc(request_var('usernote', '', true));
+		$marked		= $request->variable('marknote', array(0));
+		$usernote	= utf8_normalize_nfc($request->variable('usernote', '', true));
 
 		// Handle any actions
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -201,7 +201,7 @@ class mcp_notes
 		$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords = utf8_normalize_nfc($request->variable('keywords', '', true));
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$log_data = array();

@@ -153,7 +153,7 @@ class install_convert extends module
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
-				$new_conversion = request_var('new_conv', 0);
+				$new_conversion = $request->variable('new_conv', 0);
 
 				if ($new_conversion)
 				{
@@ -390,7 +390,7 @@ class install_convert extends module
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
 
-		$convertor_tag = request_var('tag', '');
+		$convertor_tag = $request->variable('tag', '');
 
 		if (empty($convertor_tag))
 		{
@@ -415,15 +415,15 @@ class install_convert extends module
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
-		$src_dbms			= request_var('src_dbms', $convertor_data['dbms']);
-		$src_dbhost			= request_var('src_dbhost', $convertor_data['dbhost']);
-		$src_dbport			= request_var('src_dbport', $convertor_data['dbport']);
-		$src_dbuser			= request_var('src_dbuser', $convertor_data['dbuser']);
-		$src_dbpasswd		= request_var('src_dbpasswd', $convertor_data['dbpasswd']);
-		$src_dbname			= request_var('src_dbname', $convertor_data['dbname']);
-		$src_table_prefix	= request_var('src_table_prefix', $convertor_data['table_prefix']);
-		$forum_path			= request_var('forum_path', $convertor_data['forum_path']);
-		$refresh			= request_var('refresh', 1);
+		$src_dbms			= $request->variable('src_dbms', $convertor_data['dbms']);
+		$src_dbhost			= $request->variable('src_dbhost', $convertor_data['dbhost']);
+		$src_dbport			= $request->variable('src_dbport', $convertor_data['dbport']);
+		$src_dbuser			= $request->variable('src_dbuser', $convertor_data['dbuser']);
+		$src_dbpasswd		= $request->variable('src_dbpasswd', $convertor_data['dbpasswd']);
+		$src_dbname			= $request->variable('src_dbname', $convertor_data['dbname']);
+		$src_table_prefix	= $request->variable('src_table_prefix', $convertor_data['table_prefix']);
+		$forum_path			= $request->variable('forum_path', $convertor_data['forum_path']);
+		$refresh			= $request->variable('refresh', 1);
 
 		// Default URL of the old board
 		// @todo Are we going to use this for attempting to convert URL references in posts, or should we remove it?
@@ -804,10 +804,10 @@ class install_convert extends module
 		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		$message_parser = new parse_message();
 
-		$jump = request_var('jump', 0);
-		$final_jump = request_var('final_jump', 0);
-		$sync_batch = request_var('sync_batch', -1);
-		$last_statement = request_var('last', 0);
+		$jump = $request->variable('jump', 0);
+		$final_jump = $request->variable('final_jump', 0);
+		$sync_batch = $request->variable('sync_batch', -1);
+		$last_statement = $request->variable('last', 0);
 
 		// We are running sync...
 		if ($sync_batch >= 0)
@@ -828,9 +828,9 @@ class install_convert extends module
 			return;
 		}
 
-		$current_table = request_var('current_table', 0);
+		$current_table = $request->variable('current_table', 0);
 		$old_current_table = min(-1, $current_table - 1);
-		$skip_rows = request_var('skip_rows', 0);
+		$skip_rows = $request->variable('skip_rows', 0);
 
 		if (!$current_table && !$skip_rows)
 		{

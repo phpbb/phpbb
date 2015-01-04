@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions)
 {
-	global $phpbb_root_path, $phpEx, $user, $template, $auth, $config, $db;
+	global $phpbb_root_path, $phpEx, $user, $template, $auth, $config, $db, $request;
 
 	$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=options");
 
@@ -37,7 +37,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			trigger_error('FORM_INVALID');
 		}
 
-		$full_action = request_var('full_action', 0);
+		$full_action = $request->variable('full_action', 0);
 
 		$set_folder_id = 0;
 		switch ($full_action)
@@ -47,7 +47,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			break;
 
 			case 2:
-				$set_folder_id = request_var('full_move_to', PRIVMSGS_INBOX);
+				$set_folder_id = $request->variable('full_move_to', PRIVMSGS_INBOX);
 			break;
 
 			case 3:
@@ -79,7 +79,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
-			$folder_name = utf8_normalize_nfc(request_var('foldername', '', true));
+			$folder_name = utf8_normalize_nfc($request->variable('foldername', '', true));
 			$msg = '';
 
 			if ($folder_name)
@@ -135,8 +135,8 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
-			$new_folder_name = utf8_normalize_nfc(request_var('new_folder_name', '', true));
-			$rename_folder_id= request_var('rename_folder_id', 0);
+			$new_folder_name = utf8_normalize_nfc($request->variable('new_folder_name', '', true));
+			$rename_folder_id= $request->variable('rename_folder_id', 0);
 
 			if (!$new_folder_name)
 			{
@@ -178,11 +178,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Remove Folder
 	if (isset($_POST['remove_folder']))
 	{
-		$remove_folder_id = request_var('remove_folder_id', 0);
+		$remove_folder_id = $request->variable('remove_folder_id', 0);
 
 		// Default to "move all messages to inbox"
-		$remove_action = request_var('remove_action', 1);
-		$move_to = request_var('move_to', PRIVMSGS_INBOX);
+		$remove_action = $request->variable('remove_action', 1);
+		$move_to = $request->variable('move_to', PRIVMSGS_INBOX);
 
 		// Move to same folder?
 		if ($remove_action == 1 && $remove_folder_id == $move_to)
@@ -291,13 +291,13 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
-			$check_option	= request_var('check_option', 0);
-			$rule_option	= request_var('rule_option', 0);
-			$cond_option	= request_var('cond_option', '');
-			$action_option	= explode('|', request_var('action_option', ''));
-			$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc(request_var('rule_string', '', true)) : '';
-			$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
-			$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
+			$check_option	= $request->variable('check_option', 0);
+			$rule_option	= $request->variable('rule_option', 0);
+			$cond_option	= $request->variable('cond_option', '');
+			$action_option	= explode('|', $request->variable('action_option', ''));
+			$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc($request->variable('rule_string', '', true)) : '';
+			$rule_user_id	= ($cond_option != 'none') ? $request->variable('rule_user_id', 0) : 0;
+			$rule_group_id	= ($cond_option != 'none') ? $request->variable('rule_group_id', 0) : 0;
 
 			$action = (int) $action_option[0];
 			$folder_id = (int) $action_option[1];
@@ -371,7 +371,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Remove Rule
 	if (isset($_POST['delete_rule']) && !isset($_POST['cancel']))
 	{
-		$delete_id = array_keys(request_var('delete_rule', array(0 => 0)));
+		$delete_id = array_keys($request->variable('delete_rule', array(0 => 0)));
 		$delete_id = (!empty($delete_id[0])) ? $delete_id[0] : 0;
 
 		if (!$delete_id)
@@ -514,11 +514,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			-> CHECK_* -> RULE_* [IN $global_privmsgs_rules:CHECK_*] -> [IF $rule_conditions[RULE_*] [|text|bool|user|group|own_group]] -> ACTION_*
 	*/
 
-	$check_option	= request_var('check_option', 0);
-	$rule_option	= request_var('rule_option', 0);
-	$cond_option	= request_var('cond_option', '');
-	$action_option	= request_var('action_option', '');
-	$back = (isset($_REQUEST['back'])) ? request_var('back', array('' => 0)) : array();
+	$check_option	= $request->variable('check_option', 0);
+	$rule_option	= $request->variable('rule_option', 0);
+	$cond_option	= $request->variable('cond_option', '');
+	$action_option	= $request->variable('action_option', '');
+	$back = (isset($_REQUEST['back'])) ? $request->variable('back', array('' => 0)) : array();
 
 	if (sizeof($back))
 	{
@@ -698,7 +698,7 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 */
 function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
-	global $db, $template, $auth, $user;
+	global $db, $template, $auth, $user, $request;
 
 	$template->assign_vars(array(
 		'S_COND_DEFINED'	=> true,
@@ -722,7 +722,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	switch ($condition)
 	{
 		case 'text':
-			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
+			$rule_string = utf8_normalize_nfc($request->variable('rule_string', '', true));
 
 			$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
@@ -735,8 +735,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		break;
 
 		case 'user':
-			$rule_user_id = request_var('rule_user_id', 0);
-			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
+			$rule_user_id = $request->variable('rule_user_id', 0);
+			$rule_string = utf8_normalize_nfc($request->variable('rule_string', '', true));
 
 			if ($rule_string && !$rule_user_id)
 			{
@@ -778,8 +778,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		break;
 
 		case 'group':
-			$rule_group_id = request_var('rule_group_id', 0);
-			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
+			$rule_group_id = $request->variable('rule_group_id', 0);
+			$rule_string = utf8_normalize_nfc($request->variable('rule_string', '', true));
 
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 					FROM ' . GROUPS_TABLE . ' g ';

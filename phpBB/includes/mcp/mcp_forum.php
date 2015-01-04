@@ -45,11 +45,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	}
 
 	$forum_id			= $forum_info['forum_id'];
-	$start				= request_var('start', 0);
-	$topic_id_list		= request_var('topic_id_list', array(0));
-	$post_id_list		= request_var('post_id_list', array(0));
-	$source_topic_ids	= array(request_var('t', 0));
-	$to_topic_id		= request_var('to_topic_id', 0);
+	$start				= $request->variable('start', 0);
+	$topic_id_list		= $request->variable('topic_id_list', array(0));
+	$post_id_list		= $request->variable('post_id_list', array(0));
+	$source_topic_ids	= array($request->variable('t', 0));
+	$to_topic_id		= $request->variable('to_topic_id', 0);
 
 	$url_extra = '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
@@ -63,7 +63,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	switch ($action)
 	{
 		case 'resync':
-			$topic_ids = request_var('topic_id_list', array(0));
+			$topic_ids = $request->variable('topic_id_list', array(0));
 			mcp_resync_topics($topic_ids);
 		break;
 
@@ -339,7 +339,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 */
 function mcp_resync_topics($topic_ids)
 {
-	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path, $phpbb_log;
+	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path, $phpbb_log, $request;
 
 	if (!sizeof($topic_ids))
 	{
@@ -374,7 +374,7 @@ function mcp_resync_topics($topic_ids)
 
 	$msg = (sizeof($topic_ids) == 1) ? $user->lang['TOPIC_RESYNC_SUCCESS'] : $user->lang['TOPICS_RESYNC_SUCCESS'];
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = $request->variable('redirect', $user->data['session_page']);
 
 	meta_refresh(3, $redirect);
 	trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
@@ -387,7 +387,7 @@ function mcp_resync_topics($topic_ids)
 */
 function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log, $request;
 
 	if (!sizeof($topic_ids))
 	{
@@ -418,8 +418,8 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	$topic_data = $topic_data[$to_topic_id];
 
-	$post_id_list	= request_var('post_id_list', array(0));
-	$start			= request_var('start', 0);
+	$post_id_list	= $request->variable('post_id_list', array(0));
+	$start			= $request->variable('start', 0);
 
 	if (!sizeof($post_id_list) && sizeof($topic_ids))
 	{
@@ -447,7 +447,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('quickmod')));
+	$redirect = $request->variable('redirect', build_url(array('quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
@@ -496,7 +496,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
-		$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
+		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 
 		meta_refresh(3, $redirect);

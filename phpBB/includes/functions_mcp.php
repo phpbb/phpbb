@@ -369,9 +369,9 @@ function phpbb_get_pm_data($pm_ids)
 */
 function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
-	global $db, $user, $auth, $template;
+	global $db, $user, $auth, $template, $request;
 
-	$sort_days = request_var('st', 0);
+	$sort_days = $request->variable('st', 0);
 	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
 
 	switch ($mode)
@@ -512,8 +512,8 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			break;
 	}
 
-	$sort_key = request_var('sk', $default_key);
-	$sort_dir = request_var('sd', $default_dir);
+	$sort_key = $request->variable('sk', $default_key);
+	$sort_dir = $request->variable('sd', $default_dir);
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
 	switch ($type)

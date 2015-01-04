@@ -109,9 +109,6 @@ $db			= $phpbb_container->get('dbal.conn');
 /* @var $phpbb_log \phpbb\log\log_interface */
 $phpbb_log	= $phpbb_container->get('log');
 
-// make sure request_var uses this request instance
-request_var('', 0, false, false, $request); // "dependency injection" for a function
-
 // Grab global variables, re-cache if necessary
 /* @var $config \phpbb\config\config */
 $config = $phpbb_container->get('config');

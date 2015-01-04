@@ -24,13 +24,13 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config, $request;
 	global $template, $db, $user, $auth, $cache;
 
 	$user->add_lang('posting');
 
-	$post_id = request_var('p', 0);
-	$start	= request_var('start', 0);
+	$post_id = $request->variable('p', 0);
+	$start	= $request->variable('start', 0);
 
 	// Get post data
 	$post_info = phpbb_get_post_data(array($post_id), false, true);
@@ -51,7 +51,7 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($auth->acl_get('m_info', $post_info['forum_id']))
 			{
-				$ip = request_var('ip', '');
+				$ip = $request->variable('ip', '');
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$template->assign_vars(array(
@@ -72,12 +72,12 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($action == 'chgposter')
 			{
-				$username = request_var('username', '', true);
+				$username = $request->variable('username', '', true);
 				$sql_where = "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			}
 			else
 			{
-				$new_user_id = request_var('u', 0);
+				$new_user_id = $request->variable('u', 0);
 				$sql_where = 'user_id = ' . $new_user_id;
 			}
 
@@ -244,7 +244,7 @@ function mcp_post_details($id, $mode, $action)
 		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
-		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
 
 		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
@@ -314,7 +314,7 @@ function mcp_post_details($id, $mode, $action)
 	// Get IP
 	if ($auth->acl_get('m_info', $post_info['forum_id']))
 	{
-		$rdns_ip_num = request_var('rdns', '');
+		$rdns_ip_num = $request->variable('rdns', '');
 
 		if ($rdns_ip_num != 'all')
 		{

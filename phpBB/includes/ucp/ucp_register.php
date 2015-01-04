@@ -42,8 +42,8 @@ class ucp_register
 		$coppa			= $request->is_set('coppa') ? (int) $request->variable('coppa', false) : false;
 		$agreed			= $request->variable('agreed', false);
 		$submit			= $request->is_set_post('submit');
-		$change_lang	= request_var('change_lang', '');
-		$user_lang		= request_var('lang', $user->lang_name);
+		$change_lang	= $request->variable('change_lang', '');
+		$user_lang		= $request->variable('lang', $user->lang_name);
 
 		if ($agreed)
 		{
@@ -115,10 +115,10 @@ class ucp_register
 			{
 				// We do not include the password
 				$s_hidden_fields = array_merge($s_hidden_fields, array(
-					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
-					'email'				=> strtolower(request_var('email', '')),
+					'username'			=> utf8_normalize_nfc($request->variable('username', '', true)),
+					'email'				=> strtolower($request->variable('email', '')),
 					'lang'				=> $user->lang_name,
-					'tz'				=> request_var('tz', $config['board_timezone']),
+					'tz'				=> $request->variable('tz', $config['board_timezone']),
 				));
 
 			}
@@ -192,12 +192,12 @@ class ucp_register
 		$timezone = $config['board_timezone'];
 
 		$data = array(
-			'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
+			'username'			=> utf8_normalize_nfc($request->variable('username', '', true)),
 			'new_password'		=> $request->variable('new_password', '', true),
 			'password_confirm'	=> $request->variable('password_confirm', '', true),
-			'email'				=> strtolower(request_var('email', '')),
-			'lang'				=> basename(request_var('lang', $user->lang_name)),
-			'tz'				=> request_var('tz', $timezone),
+			'email'				=> strtolower($request->variable('email', '')),
+			'lang'				=> basename($request->variable('lang', $user->lang_name)),
+			'tz'				=> $request->variable('tz', $timezone),
 		);
 
 		// Check and initialize some variables if needed

@@ -25,12 +25,12 @@ $auth->acl($user->data);
 $user->setup('memberlist');
 
 // Get and set some variables
-$mode		= request_var('mode', '');
-$session_id	= request_var('s', '');
-$start		= request_var('start', 0);
-$sort_key	= request_var('sk', 'b');
-$sort_dir	= request_var('sd', 'd');
-$show_guests	= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
+$mode		= $request->variable('mode', '');
+$session_id	= $request->variable('s', '');
+$start		= $request->variable('start', 0);
+$sort_key	= $request->variable('sk', 'b');
+$sort_dir	= $request->variable('sd', 'd');
+$show_guests	= ($config['load_online_guests']) ? $request->variable('sg', 0) : 0;
 
 // Can this user view profiles/memberlist?
 if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))

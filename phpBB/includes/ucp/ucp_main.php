@@ -219,8 +219,8 @@ class ucp_main
 				{
 					if (check_form_key('ucp_front_subscribed'))
 					{
-						$forums = array_keys(request_var('f', array(0 => 0)));
-						$topics = array_keys(request_var('t', array(0 => 0)));
+						$forums = array_keys($request->variable('f', array(0 => 0)));
+						$topics = array_keys($request->variable('t', array(0 => 0)));
 						$msg = '';
 
 						if (sizeof($forums) || sizeof($topics))
@@ -401,7 +401,7 @@ class ucp_main
 				if (isset($_POST['unbookmark']))
 				{
 					$s_hidden_fields = array('unbookmark' => 1);
-					$topics = (isset($_POST['t'])) ? array_keys(request_var('t', array(0 => 0))) : array();
+					$topics = (isset($_POST['t'])) ? array_keys($request->variable('t', array(0 => 0))) : array();
 					$url = $this->u_action;
 
 					if (!sizeof($topics))
@@ -457,7 +457,7 @@ class ucp_main
 				{
 					if (check_form_key('ucp_draft'))
 					{
-						$drafts = array_keys(request_var('d', array(0 => 0)));
+						$drafts = array_keys($request->variable('d', array(0 => 0)));
 
 						if (sizeof($drafts))
 						{
@@ -480,8 +480,8 @@ class ucp_main
 
 				if ($submit && $edit)
 				{
-					$draft_subject = utf8_normalize_nfc(request_var('subject', '', true));
-					$draft_message = utf8_normalize_nfc(request_var('message', '', true));
+					$draft_subject = utf8_normalize_nfc($request->variable('subject', '', true));
+					$draft_message = utf8_normalize_nfc($request->variable('message', '', true));
 					if (check_form_key('ucp_draft'))
 					{
 						if ($draft_message && $draft_subject)
@@ -643,12 +643,12 @@ class ucp_main
 	*/
 	function assign_topiclist($mode = 'subscribed', $forbidden_forum_ary = array())
 	{
-		global $user, $db, $template, $config, $cache, $auth, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $user, $db, $template, $config, $cache, $auth, $phpbb_root_path, $phpEx, $phpbb_container, $request;
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
-		$start = request_var('start', 0);
+		$start = $request->variable('start', 0);
 
 		// Grab icons
 		$icons = $cache->obtain_icons();

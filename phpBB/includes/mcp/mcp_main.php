@@ -45,7 +45,7 @@ class mcp_main
 		{
 			case 'lock':
 			case 'unlock':
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
 
 				if (!sizeof($topic_ids))
 				{
@@ -58,7 +58,7 @@ class mcp_main
 			case 'lock_post':
 			case 'unlock_post':
 
-				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
+				$post_ids = (!$quickmod) ? $request->variable('post_id_list', array(0)) : array($request->variable('p', 0));
 
 				if (!sizeof($post_ids))
 				{
@@ -73,7 +73,7 @@ class mcp_main
 			case 'make_global':
 			case 'make_normal':
 
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
 
 				if (!sizeof($topic_ids))
 				{
@@ -86,7 +86,7 @@ class mcp_main
 			case 'move':
 				$user->add_lang('viewtopic');
 
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
 
 				if (!sizeof($topic_ids))
 				{
@@ -99,7 +99,7 @@ class mcp_main
 			case 'fork':
 				$user->add_lang('viewtopic');
 
-				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
+				$topic_ids = (!$quickmod) ? $request->variable('topic_id_list', array(0)) : array($request->variable('t', 0));
 
 				if (!sizeof($topic_ids))
 				{
@@ -189,7 +189,7 @@ class mcp_main
 
 				$user->add_lang('viewforum');
 
-				$forum_id = request_var('f', 0);
+				$forum_id = $request->variable('f', 0);
 
 				$forum_info = phpbb_get_forum_data($forum_id, 'm_', true);
 
@@ -273,7 +273,7 @@ function lock_unlock($action, $ids)
 	}
 	unset($orig_ids);
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
 	$redirect = reapply_sid($redirect);
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -361,7 +361,7 @@ function change_topic_type($action, $topic_ids)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
 	$redirect = reapply_sid($redirect);
 
 	$s_hidden_fields = array(
@@ -441,8 +441,8 @@ function mcp_move_topic($topic_ids)
 		return;
 	}
 
-	$to_forum_id = request_var('to_forum_id', 0);
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$to_forum_id = $request->variable('to_forum_id', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
 	$additional_msg = $success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -662,7 +662,7 @@ function mcp_move_topic($topic_ids)
 		confirm_box(false, 'MOVE_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = $request->variable('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -1163,16 +1163,16 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 function mcp_fork_topic($topic_ids)
 {
 	global $auth, $user, $db, $template, $config;
-	global $phpEx, $phpbb_root_path, $phpbb_log;
+	global $phpEx, $phpbb_root_path, $phpbb_log, $request;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
 	}
 
-	$to_forum_id = request_var('to_forum_id', 0);
-	$forum_id = request_var('f', 0);
-	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
+	$to_forum_id = $request->variable('to_forum_id', 0);
+	$forum_id = $request->variable('f', 0);
+	$redirect = $request->variable('redirect', build_url(array('action', 'quickmod')));
 	$additional_msg = $success_msg = '';
 	$counter = array();
 
@@ -1541,7 +1541,7 @@ function mcp_fork_topic($topic_ids)
 		confirm_box(false, 'FORK_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = $request->variable('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)

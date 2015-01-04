@@ -65,9 +65,9 @@ class acp_modules
 
 		$this->page_title = strtoupper($this->module_class);
 
-		$this->parent_id = request_var('parent_id', 0);
-		$module_id = request_var('m', 0);
-		$action = request_var('action', '');
+		$this->parent_id = $request->variable('parent_id', 0);
+		$module_id = $request->variable('m', 0);
+		$action = $request->variable('action', '');
 		$errors = array();
 
 		switch ($action)
@@ -182,7 +182,7 @@ class acp_modules
 			break;
 
 			case 'quickadd':
-				$quick_install = request_var('quick_install', '');
+				$quick_install = $request->variable('quick_install', '');
 
 				if (confirm_box(true))
 				{
@@ -253,7 +253,7 @@ class acp_modules
 						'module_enabled'	=> 0,
 						'module_display'	=> 1,
 						'parent_id'			=> 0,
-						'module_langname'	=> utf8_normalize_nfc(request_var('module_langname', '', true)),
+						'module_langname'	=> utf8_normalize_nfc($request->variable('module_langname', '', true)),
 						'module_mode'		=> '',
 						'module_auth'		=> '',
 					);
@@ -261,13 +261,13 @@ class acp_modules
 
 				$module_data = array();
 
-				$module_data['module_basename'] = request_var('module_basename', (string) $module_row['module_basename']);
-				$module_data['module_enabled'] = request_var('module_enabled', (int) $module_row['module_enabled']);
-				$module_data['module_display'] = request_var('module_display', (int) $module_row['module_display']);
-				$module_data['parent_id'] = request_var('module_parent_id', (int) $module_row['parent_id']);
+				$module_data['module_basename'] = $request->variable('module_basename', (string) $module_row['module_basename']);
+				$module_data['module_enabled'] = $request->variable('module_enabled', (int) $module_row['module_enabled']);
+				$module_data['module_display'] = $request->variable('module_display', (int) $module_row['module_display']);
+				$module_data['parent_id'] = $request->variable('module_parent_id', (int) $module_row['parent_id']);
 				$module_data['module_class'] = $this->module_class;
-				$module_data['module_langname'] = utf8_normalize_nfc(request_var('module_langname', (string) $module_row['module_langname'], true));
-				$module_data['module_mode'] = request_var('module_mode', (string) $module_row['module_mode']);
+				$module_data['module_langname'] = utf8_normalize_nfc($request->variable('module_langname', (string) $module_row['module_langname'], true));
+				$module_data['module_mode'] = $request->variable('module_mode', (string) $module_row['module_mode']);
 
 				$submit = (isset($_POST['submit'])) ? true : false;
 
@@ -278,7 +278,7 @@ class acp_modules
 						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
-					$module_type = request_var('module_type', 'category');
+					$module_type = $request->variable('module_type', 'category');
 
 					if ($module_type == 'category')
 					{
