@@ -4,6 +4,14 @@
 /**
 * common.css
 */
+/*arabic font reset */
+body,h1,h2,h3,h4,.dropdown-extended .header,.notification_list p.notifications_title ,.button
+,li.header dt, li.header dd ,.postbody h3,.content ,.content p,dl.faq ,p.author,.notice,.attachbox dt,dl.file 
+,dl.file dt,dl.thumbnail dd,fieldset.polls,fieldset.polls dd div,fieldset ,input,select,select optgroup option ,textarea
+,#message-box textarea,a.button1, input.button1, input.button3, a.button2, input.button2 
+,a.forumtitle ,a.topictitle{
+   font-family: Tahoma;
+}
 .rtl h1 {
 	margin-right: 0;
 	margin-left: 200px;
