@@ -831,6 +831,9 @@ li.breadcrumbs span:first-child > a {
 
 /* General form styles
 ----------------------------------------*/
+.rtl select {
+    white-space: normal;
+}
 
 .rtl option {
 	padding-right: 0;
