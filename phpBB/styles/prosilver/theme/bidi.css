@@ -313,6 +313,13 @@ li.breadcrumbs span:first-child > a {
 	padding-right: 19px;
 }
 
+/* Notification mark read link */
+.rtl .dropdown-extended a.mark_read {
+	border-radius: 0 3px 3px 0;
+	left: 0;
+	right: auto;
+}
+
 .rtl a.top {
 	float: left;
 }
