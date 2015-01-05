@@ -237,7 +237,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_log;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
@@ -294,7 +294,11 @@ function lock_unlock($action, $ids)
 
 		foreach ($data as $id => $row)
 		{
-			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_' . strtoupper($action), $row['topic_title']);
+			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($action), false, array(
+				'forum_id' => $row['forum_id'],
+				'topic_id' => $row['topic_id'],
+				$row['topic_title']
+			));
 		}
 
 		$success_msg = $l_prefix . ((sizeof($ids) == 1) ? '' : 'S') . '_' . (($action == 'lock' || $action == 'lock_post') ? 'LOCKED' : 'UNLOCKED') . '_SUCCESS';
@@ -321,7 +325,7 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_log;
 
 	switch ($action)
 	{
@@ -396,7 +400,11 @@ function change_topic_type($action, $topic_ids)
 
 			foreach ($data as $topic_id => $row)
 			{
-				add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_TOPIC_TYPE_CHANGED', false, array(
+					'forum_id' => $forum_id,
+					'topic_id' => $topic_id,
+					$row['topic_title']
+				));
 			}
 		}
 
@@ -679,7 +687,7 @@ function mcp_move_topic($topic_ids)
 */
 function mcp_restore_topic($topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_log;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
 	{
@@ -710,7 +718,12 @@ function mcp_restore_topic($topic_ids)
 			$return = $phpbb_content_visibility->set_topic_visibility(ITEM_APPROVED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), '');
 			if (!empty($return))
 			{
-				add_log('mod', $row['forum_id'], $topic_id, 'LOG_RESTORE_TOPIC', $row['topic_title'], $row['topic_first_poster_name']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_RESTORE_TOPIC', false, array(
+					'forum_id' => $row['forum_id'],
+					'topic_id' => $topic_id,
+					$row['topic_title'],
+					$row['topic_first_poster_name']
+				));
 			}
 		}
 	}
@@ -753,7 +766,7 @@ function mcp_restore_topic($topic_ids)
 */
 function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_topic')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_log;
 
 	$check_permission = ($is_soft) ? 'm_softdelete' : 'm_delete';
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array($check_permission)))
@@ -782,7 +795,11 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		{
 			if ($row['topic_moved_id'])
 			{
-				add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_SHADOW_TOPIC', $row['topic_title']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_SHADOW_TOPIC', false, array(
+					'forum_id' => $row['forum_id'],
+					'topic_id' => $topic_id,
+					$row['topic_title']
+				));
 			}
 			else
 			{
@@ -794,12 +811,24 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 					$return = $phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), $soft_delete_reason);
 					if (!empty($return))
 					{
-						add_log('mod', $row['forum_id'], $topic_id, 'LOG_SOFTDELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name'], $soft_delete_reason);
+						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_SOFTDELETE_TOPIC', false, array(
+							'forum_id' => $row['forum_id'],
+							'topic_id' => $topic_id,
+							$row['topic_title'],
+							$row['topic_first_poster_name'],
+							$soft_delete_reason
+						));
 					}
 				}
 				else
 				{
-					add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_TOPIC', $row['topic_title'], $row['topic_first_poster_name'], $soft_delete_reason);
+					$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_TOPIC', false, array(
+						'forum_id' => $row['forum_id'],
+						'topic_id' => $topic_id,
+						$row['topic_title'],
+						$row['topic_first_poster_name'],
+						$soft_delete_reason
+					));
 				}
 			}
 		}
@@ -893,7 +922,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 */
 function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', $action = 'delete_post')
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_log;
 
 	$check_permission = ($is_soft) ? 'm_softdelete' : 'm_delete';
 	if (!phpbb_check_ids($post_ids, POSTS_TABLE, 'post_id', array($check_permission)))
@@ -965,7 +994,13 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		foreach ($approve_log as $row)
 		{
 			$post_username = ($row['poster_id'] == ANONYMOUS && !empty($row['post_username'])) ? $row['post_username'] : $row['username'];
-			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_SOFTDELETE_POST', $row['post_subject'], $post_username, $soft_delete_reason);
+			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_SOFTDELETE_POST', false, array(
+				'forum_id' => $row['forum_id'],
+				'topic_id' => $row['topic_id'],
+				$row['post_subject'],
+				$post_username,
+				$soft_delete_reason
+			));
 		}
 
 		$topic_id = $request->variable('t', 0);
@@ -1008,7 +1043,13 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		foreach ($post_data as $id => $row)
 		{
 			$post_username = ($row['poster_id'] == ANONYMOUS && !empty($row['post_username'])) ? $row['post_username'] : $row['username'];
-			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_DELETE_POST', $row['post_subject'], $post_username, $soft_delete_reason);
+			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_POST', false, array(
+				'forum_id' => $row['forum_id'],
+				'topic_id' => $row['topic_id'],
+				$row['post_subject'],
+				$post_username,
+				$soft_delete_reason
+			));
 		}
 
 		// Now delete the posts, topics and forums are automatically resync'ed
@@ -1122,7 +1163,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 function mcp_fork_topic($topic_ids)
 {
 	global $auth, $user, $db, $template, $config;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_log;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
@@ -1479,7 +1520,11 @@ function mcp_fork_topic($topic_ids)
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{
-			add_log('mod', $to_forum_id, $new_topic_id, 'LOG_FORK', $topic_row['forum_name']);
+			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_FORK', false, array(
+				'forum_id' => $to_forum_id,
+				'topic_id' => $new_topic_id,
+				$topic_row['forum_name']
+			));
 		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_FORKED_SUCCESS' : 'TOPICS_FORKED_SUCCESS';

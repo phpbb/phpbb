@@ -25,7 +25,7 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $cache, $user, $auth, $template, $request;
+		global $config, $db, $cache, $user, $auth, $template, $request, $phpbb_log;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		// Show restore permissions notice
@@ -123,7 +123,7 @@ class acp_main
 
 						set_config('record_online_users', 1, true);
 						set_config('record_online_date', time(), true);
-						add_log('admin', 'LOG_RESET_ONLINE');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_ONLINE');
 
 						if ($request->is_ajax())
 						{
@@ -178,7 +178,7 @@ class acp_main
 						}
 						update_last_username();
 
-						add_log('admin', 'LOG_RESYNC_STATS');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_STATS');
 
 						if ($request->is_ajax())
 						{
@@ -215,7 +215,7 @@ class acp_main
 						// Still no maximum post id? Then we are finished
 						if (!$max_post_id)
 						{
-							add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
 							break;
 						}
 
@@ -245,7 +245,7 @@ class acp_main
 							$start += $step;
 						}
 
-						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
 
 						if ($request->is_ajax())
 						{
@@ -260,7 +260,7 @@ class acp_main
 						}
 
 						set_config('board_startdate', time() - 1);
-						add_log('admin', 'LOG_RESET_DATE');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_DATE');
 
 						if ($request->is_ajax())
 						{
@@ -340,7 +340,7 @@ class acp_main
 							}
 						}
 
-						add_log('admin', 'LOG_RESYNC_POST_MARKING');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POST_MARKING');
 
 						if ($request->is_ajax())
 						{
@@ -356,7 +356,7 @@ class acp_main
 						$auth->acl_clear_prefetch();
 						phpbb_cache_moderators($db, $cache, $auth);
 
-						add_log('admin', 'LOG_PURGE_CACHE');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_CACHE');
 
 						if ($request->is_ajax())
 						{
@@ -407,7 +407,7 @@ class acp_main
 						$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_PURGE_SESSIONS');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_SESSIONS');
 
 						if ($request->is_ajax())
 						{

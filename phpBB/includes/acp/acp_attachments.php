@@ -43,7 +43,7 @@ class acp_attachments
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
-		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log;
 
 		$this->id = $id;
 		$this->db = $db;
@@ -198,7 +198,7 @@ class acp_attachments
 
 				if ($submit)
 				{
-					add_log('admin', 'LOG_CONFIG_ATTACH');
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_ATTACH');
 
 					// Check Settings
 					$this->test_upload($error, $this->new_config['upload_path'], false);
@@ -359,7 +359,7 @@ class acp_attachments
 									WHERE extension_id = ' . $row['extension_id'];
 								$db->sql_query($sql);
 
-								add_log('admin', 'LOG_ATTACH_EXT_UPDATE', $row['extension']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_UPDATE', false, array($row['extension']));
 							}
 						}
 						$db->sql_freeresult($result);
@@ -386,7 +386,7 @@ class acp_attachments
 								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$db->sql_query($sql);
 
-							add_log('admin', 'LOG_ATTACH_EXT_DEL', $extension_list);
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_DEL', false, array($extension_list));
 						}
 					}
 
@@ -418,7 +418,8 @@ class acp_attachments
 								);
 
 								$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-								add_log('admin', 'LOG_ATTACH_EXT_ADD', $add_extension);
+
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_ADD', false, array($add_extension));
 							}
 						}
 					}
@@ -583,7 +584,7 @@ class acp_attachments
 						}
 
 						$group_name = (isset($user->lang['EXT_GROUP_' . $group_name])) ? $user->lang['EXT_GROUP_' . $group_name] : $group_name;
-						add_log('admin', 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), $group_name);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), false, array($group_name));
 					}
 
 					$extension_list = request_var('extensions', array(0));
@@ -648,7 +649,7 @@ class acp_attachments
 								WHERE group_id = $group_id";
 							$db->sql_query($sql);
 
-							add_log('admin', 'LOG_ATTACH_EXTGROUP_DEL', $group_name);
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_DEL', false, array($group_name));
 
 							$cache->destroy('_extensions');
 
@@ -938,7 +939,7 @@ class acp_attachments
 							WHERE ' . $db->sql_in_set('attach_id', array_keys($delete_files));
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_ORPHAN_DEL', false, array(implode(', ', $delete_files)));
 						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode($user->lang['COMMA_SEPARATOR'], $delete_files));
 					}
 
@@ -1029,7 +1030,7 @@ class acp_attachments
 							$space_taken += $row['filesize'];
 							$files_added++;
 
-							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], $row['real_filename']);
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_FILEUPLOAD', false, array($post_row['post_id'], $row['real_filename']));
 						}
 						$db->sql_freeresult($result);
 
@@ -1095,7 +1096,8 @@ class acp_attachments
 							{
 								$error[] = $user->lang['FILES_GONE'];
 							}
-							add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $deleted_filenames));
+
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode(', ', $deleted_filenames)));
 							$notify[] = sprintf($user->lang['LOG_ATTACHMENTS_DELETED'], implode($user->lang['COMMA_SEPARATOR'], $deleted_filenames));
 						}
 						else
@@ -1527,8 +1529,7 @@ class acp_attachments
 	*/
 	function perform_site_list()
 	{
-		global $db, $user;
-		global $request;
+		global $db, $user, $request, $phpbb_log;
 
 		if (isset($_REQUEST['securesubmit']))
 		{
@@ -1679,7 +1680,7 @@ class acp_attachments
 			{
 				// Update log
 				$log_entry = ($ip_exclude) ? 'LOG_DOWNLOAD_EXCLUDE_IP' : 'LOG_DOWNLOAD_IP';
-				add_log('admin', $log_entry, $ip_list_log);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry, false, array($ip_list_log));
 			}
 
 			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
@@ -1708,7 +1709,7 @@ class acp_attachments
 					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
 				$db->sql_query($sql);
 
-				add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DOWNLOAD_REMOVE_IP', false, array($l_unip_list));
 			}
 
 			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));

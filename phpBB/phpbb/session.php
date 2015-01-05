@@ -215,7 +215,7 @@ class session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $user, $phpbb_log;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -490,11 +490,18 @@ class session
 					{
 						if ($referer_valid)
 						{
-							add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
+							$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_IP_BROWSER_FORWARDED_CHECK', false, array(
+								$u_ip,
+								$s_ip,
+								$u_browser,
+								$s_browser,
+								htmlspecialchars($u_forwarded_for),
+								htmlspecialchars($s_forwarded_for)
+							));
 						}
 						else
 						{
-							add_log('critical', 'LOG_REFERER_INVALID', $this->referer);
+							$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_REFERER_INVALID', false, array($this->referer));
 						}
 					}
 				}

@@ -358,7 +358,7 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log;
 
 	$post_id_list	= request_var('post_id_list', array(0));
 	$forum_id		= request_var('forum_id', 0);
@@ -510,8 +510,16 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$topic_info = phpbb_get_topic_data(array($topic_id));
 		$topic_info = $topic_info[$topic_id];
 
-		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_SPLIT_DESTINATION', $subject);
-		add_log('mod', $forum_id, $topic_id, 'LOG_SPLIT_SOURCE', $topic_info['topic_title']);
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_SPLIT_DESTINATION', false, array(
+			'forum_id' => $to_forum_id,
+			'topic_id' => $to_topic_id,
+			$subject
+		));
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_SPLIT_SOURCE', false, array(
+			'forum_id' => $forum_id,
+			'topic_id' => $topic_id,
+			$topic_info['topic_title']
+		));
 
 		// Change topic title of first post
 		$sql = 'UPDATE ' . POSTS_TABLE . "
@@ -586,7 +594,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log;
 
 	if (!$to_topic_id)
 	{
@@ -645,7 +653,12 @@ function merge_posts($topic_id, $to_topic_id)
 		$to_forum_id = $topic_data['forum_id'];
 
 		move_posts($post_id_list, $to_topic_id, false);
-		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $topic_data['topic_title']);
+
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MERGE', false, array(
+			'forum_id' => $to_forum_id,
+			'topic_id' => $to_topic_id,
+			$topic_data['topic_title']
+		));
 
 		// Message and return links
 		$success_msg = 'POSTS_MERGED_SUCCESS';

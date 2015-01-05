@@ -91,7 +91,7 @@ function phpbb_check_hash($password, $hash)
 * @param string $path Path to clean
 * @return string Cleaned path
 *
-* @deprecated
+* @deprecated 3.1.0 (To be removed: 3.3.0)
 */
 function phpbb_clean_path($path)
 {
@@ -135,7 +135,7 @@ function phpbb_clean_path($path)
 *
 * @return		string		Returns the options for timezone selector only
 *
-* @deprecated
+* @deprecated 3.1.0 (To be removed: 3.3.0)
 */
 function tz_select($default = '', $truncate = false)
 {
@@ -149,7 +149,7 @@ function tz_select($default = '', $truncate = false)
 * via admin_permissions. Changes of usernames and group names
 * must be carried through for the moderators table.
 *
-* @deprecated 3.1
+* @deprecated 3.1.0 (To be removed: 3.3.0)
 * @return null
 */
 function cache_moderators()
@@ -161,7 +161,7 @@ function cache_moderators()
 /**
 * Removes moderators and administrators from foe lists.
 *
-* @deprecated 3.1
+* @deprecated 3.1.0 (To be removed: 3.3.0)
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
 * @return null
@@ -217,4 +217,50 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	$errno = $file_downloader->get_error_number();
 
 	return $file_data;
+}
+
+/**
+ * Add log entry
+ *
+ * @param	string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
+ * @param	int		$forum_id			Mode 'mod' ONLY: forum id of the related item, NOT INCLUDED otherwise
+ * @param	int		$topic_id			Mode 'mod' ONLY: topic id of the related item, NOT INCLUDED otherwise
+ * @param	int		$reportee_id		Mode 'user' ONLY: user id of the reportee, NOT INCLUDED otherwise
+ * @param	string	$log_operation		Name of the operation
+ * @param	array	$additional_data	More arguments can be added, depending on the log_type
+ *
+ * @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
+ *
+ * @deprecated	3.1.0 (To be removed: 3.3.0)
+ */
+function add_log()
+{
+	global $phpbb_log, $user;
+
+	$args = func_get_args();
+	$mode = array_shift($args);
+
+	// This looks kind of dirty, but add_log has some additional data before the log_operation
+	$additional_data = array();
+	switch ($mode)
+	{
+		case 'admin':
+		case 'critical':
+			break;
+		case 'mod':
+			$additional_data['forum_id'] = array_shift($args);
+			$additional_data['topic_id'] = array_shift($args);
+			break;
+		case 'user':
+			$additional_data['reportee_id'] = array_shift($args);
+			break;
+	}
+
+	$log_operation = array_shift($args);
+	$additional_data = array_merge($additional_data, $args);
+
+	$user_id = (empty($user->data)) ? ANONYMOUS : $user->data['user_id'];
+	$user_ip = (empty($user->ip)) ? '' : $user->ip;
+
+	return $phpbb_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
 }

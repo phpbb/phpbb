@@ -246,7 +246,7 @@ while (!$migrator->finished())
 
 if ($orig_version != $config['version'])
 {
-	add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $config['version']);
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_UPDATE_DATABASE', false, array($orig_version, $config['version']));
 }
 
 echo $user->lang['DATABASE_UPDATE_COMPLETE'] . '<br />';

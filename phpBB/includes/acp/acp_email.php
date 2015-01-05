@@ -25,7 +25,7 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $phpbb_dispatcher;
 
 		$user->add_lang('acp/email');
@@ -263,7 +263,7 @@ class acp_email
 				{
 					if (!empty($usernames))
 					{
-						add_log('admin', 'LOG_MASS_EMAIL', implode(', ', utf8_normalize_nfc($usernames)));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MASS_EMAIL', false, array(implode(', ', utf8_normalize_nfc($usernames))));
 					}
 					else
 					{
@@ -277,7 +277,7 @@ class acp_email
 							$group_name = $user->lang['ALL_USERS'];
 						}
 
-						add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MASS_EMAIL', false, array($group_name));
 					}
 				}
 

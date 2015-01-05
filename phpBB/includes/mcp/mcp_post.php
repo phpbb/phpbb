@@ -420,7 +420,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_log;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -519,5 +519,11 @@ function change_poster(&$post_info, $userdata)
 	$post_info = $post_info[$post_id];
 
 	// Now add log entry
-	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
+	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MCP_CHANGE_POSTER', false, array(
+		'forum_id' => $post_info['forum_id'],
+		'topic_id' => $post_info['topic_id'],
+		$post_info['topic_title'],
+		$from_username,
+		$to_username
+	));
 }

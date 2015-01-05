@@ -25,7 +25,7 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$user->add_lang('acp/board');
@@ -86,7 +86,7 @@ class acp_captcha
 						$new_captcha = $factory->get_instance($config['captcha_plugin']);
 						$new_captcha->install();
 
-						add_log('admin', 'LOG_CONFIG_VISUAL');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 					}
 					else
 					{

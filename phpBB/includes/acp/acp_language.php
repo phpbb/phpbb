@@ -31,7 +31,7 @@ class acp_language
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $template;
+		global $config, $db, $user, $template, $phpbb_log;
 		global $phpbb_root_path, $phpEx, $request;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -90,7 +90,7 @@ class acp_language
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE lang_id = ' . $lang_id);
 
-				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_UPDATED', false, array($sql_ary['lang_english_name']));
 
 				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 			break;
@@ -224,7 +224,7 @@ class acp_language
 					$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
 					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_DELETED', false, array($row['lang_english_name']));
 
 					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
 				}
@@ -329,7 +329,7 @@ class acp_language
 				}
 				$db->sql_freeresult($result);
 
-				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_INSTALLED', false, array($lang_pack['name']));
 
 				$message = sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']);
 				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang['LANGUAGE_PACK_CPF_UPDATE'] : '';

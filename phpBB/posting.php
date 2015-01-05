@@ -1293,7 +1293,11 @@ if ($submit || $preview || $refresh)
 
 				$user_lock = ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $post_data['topic_poster']) ? 'USER_' : '';
 
-				add_log('mod', $forum_id, $topic_id, 'LOG_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK'), $post_data['topic_title']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK'), false, array(
+					'forum_id' => $forum_id,
+					'topic_id' => $topic_id,
+					$post_data['topic_title']
+				));
 			}
 
 			// Lock/Unlock Post Edit

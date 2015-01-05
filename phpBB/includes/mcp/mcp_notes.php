@@ -74,7 +74,7 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config;
+		global $phpEx, $phpbb_root_path, $config, $phpbb_log;
 		global $template, $db, $user, $auth, $phpbb_container;
 
 		$user_id = request_var('u', 0);
@@ -144,7 +144,7 @@ class mcp_notes
 							$where_sql";
 					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($userrow['username']));
 
 					$msg = ($deletemark) ? 'MARKED_NOTES_DELETED' : 'ALL_NOTES_DELETED';
 				}
@@ -162,10 +162,17 @@ class mcp_notes
 		{
 			if (check_form_key('mcp_notes'))
 			{
-				add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
-				add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($userrow['username']));
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+					'forum_id' => 0,
+					'topic_id' => 0,
+					$userrow['username']
+				));
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+					'reportee_id' => $user_id,
+					$usernote
+				));
 
-				add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
 				$msg = $user->lang['USER_FEEDBACK_ADDED'];
 			}
 			else

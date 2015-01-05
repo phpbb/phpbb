@@ -28,7 +28,7 @@ class acp_words
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
@@ -117,7 +117,8 @@ class acp_words
 				$cache->destroy('_word_censors');
 
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
-				add_log('admin', $log_action, $word);
+
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($word));
 
 				$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
 				trigger_error($message . adm_back_link($this->u_action));
@@ -148,7 +149,7 @@ class acp_words
 
 					$cache->destroy('_word_censors');
 
-					add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WORD_DELETE', false, array($deleted_word));
 
 					trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
 				}

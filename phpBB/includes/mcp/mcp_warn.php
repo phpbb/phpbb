@@ -523,7 +523,7 @@ class mcp_warn
 */
 function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config, $phpbb_log;
 	global $template, $db, $user, $auth;
 
 	if ($send_pm)
@@ -557,8 +557,11 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		submit_pm('post', $user->lang('WARNING_PM_SUBJECT'), $pm_data, false);
 	}
 
-	add_log('admin', 'LOG_USER_WARNING', $user_row['username']);
-	$log_id = add_log('user', $user_row['user_id'], 'LOG_USER_WARNING_BODY', $warning);
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING', false, array($user_row['username']));
+	$log_id = $phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING_BODY', false, array(
+		'reportee_id' => $user_row['user_id'],
+		$warning
+	));
 
 	$sql_ary = array(
 		'user_id'		=> $user_row['user_id'],
@@ -583,5 +586,9 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_USER_WARNING', $user_row['username']);
+	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING', false, array(
+		'forum_id' => $row['forum_id'],
+		'topic_id' => $row['topic_id'],
+		$user_row['username']
+	));
 }

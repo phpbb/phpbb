@@ -234,7 +234,7 @@ switch ($mode)
 			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
-		add_log('admin', 'LOG_ACL_TRANSFER_PERMISSIONS', $user_row['username']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_TRANSFER_PERMISSIONS', false, array($user_row['username']));
 
 		$message = sprintf($user->lang['PERMISSIONS_TRANSFERRED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 		trigger_error($message);
@@ -257,7 +257,7 @@ switch ($mode)
 		$username = $db->sql_fetchfield('username');
 		$db->sql_freeresult($result);
 
-		add_log('admin', 'LOG_ACL_RESTORE_PERMISSIONS', $username);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_RESTORE_PERMISSIONS', false, array($username));
 
 		$message = $user->lang['PERMISSIONS_RESTORED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 		trigger_error($message);

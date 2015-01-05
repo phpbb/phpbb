@@ -30,7 +30,7 @@ class ucp_activate
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template, $phpbb_container;
+		global $db, $user, $auth, $template, $phpbb_container, $phpbb_log;
 
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
@@ -86,7 +86,10 @@ class ucp_activate
 				WHERE user_id = ' . $user_row['user_id'];
 			$db->sql_query($sql);
 
-			add_log('user', $user_row['user_id'], 'LOG_USER_NEW_PASSWORD', $user_row['username']);
+			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+				'reportee_id' => $user_row['user_id'],
+				$user_row['username']
+			));
 		}
 
 		if (!$update_password)
@@ -101,10 +104,13 @@ class ucp_activate
 			$db->sql_query($sql);
 
 			// Create the correct logs
-			add_log('user', $user_row['user_id'], 'LOG_USER_ACTIVE_USER');
+			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
+				'reportee_id' => $user_row['user_id']
+			));
+
 			if ($auth->acl_get('a_user'))
 			{
-				add_log('admin', 'LOG_USER_ACTIVE', $user_row['username']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($user_row['username']));
 			}
 		}
 

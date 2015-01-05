@@ -1492,7 +1492,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
+	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 	/**
 	* Modify the data for post submitting
@@ -1665,7 +1665,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($user->data['user_id'] != $poster_id)
 			{
 				$log_subject = ($subject) ? $subject : $data['topic_title'];
-				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, (!empty($username)) ? $username : $user->lang['GUEST'], $data['post_edit_reason']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_POST_EDITED', false, array(
+					'forum_id' => $data['forum_id'],
+					'topic_id' => $data['topic_id'],
+					$log_subject,
+					(!empty($username)) ? $username : $user->lang['GUEST'],
+					$data['post_edit_reason']
+				));
 			}
 
 			if (!isset($sql_data[POSTS_TABLE]['sql']))
@@ -2455,7 +2461,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 */
 function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 {
-	global $config, $db, $user, $phpEx, $phpbb_root_path;
+	global $config, $db, $user, $phpEx, $phpbb_root_path, $phpbb_log;
 
 	if ($bump_time === false)
 	{
@@ -2534,7 +2540,11 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 		update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time, false);
 	}
 
-	add_log('mod', $forum_id, $topic_id, 'LOG_BUMP_TOPIC', $post_data['topic_title']);
+	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_BUMP_TOPIC', false, array(
+		'forum_id' => $forum_id,
+		'topic_id' => $topic_id,
+		$post_data['topic_title']
+	));
 
 	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 
@@ -2572,7 +2582,7 @@ function phpbb_upload_popup($forum_style = 0)
 function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {
 	global $user, $auth, $config, $request;
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_log;
 
 	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
 
@@ -2607,14 +2617,26 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 
 			if ($next_post_id === false)
 			{
-				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), $post_data['topic_title'], $post_username, $delete_reason);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), false, array(
+					'forum_id' => $forum_id,
+					'topic_id' => $topic_id,
+					$post_data['topic_title'],
+					$post_username,
+					$delete_reason
+				));
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 				$message = $user->lang['POST_DELETED'];
 			}
 			else
 			{
-				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), $post_data['post_subject'], $post_username, $delete_reason);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), false, array(
+					'forum_id' => $forum_id,
+					'topic_id' => $topic_id,
+					$post_data['post_subject'],
+					$post_username,
+					$delete_reason
+				));
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
 				$message = $user->lang['POST_DELETED'];

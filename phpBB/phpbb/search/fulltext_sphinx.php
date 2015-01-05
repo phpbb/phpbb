@@ -454,6 +454,8 @@ class fulltext_sphinx
 	*/
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
+		global $user, $phpbb_log;
+
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !sizeof($author_ary))
 		{
@@ -601,7 +603,7 @@ class fulltext_sphinx
 
 		if ($this->sphinx->GetLastError())
 		{
-			add_log('critical', 'LOG_SPHINX_ERROR', $this->sphinx->GetLastError());
+			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
 			if ($this->auth->acl_get('a_'))
 			{
 				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));

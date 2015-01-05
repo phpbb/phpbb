@@ -473,7 +473,7 @@ class mcp_reports
 */
 function close_report($report_id_list, $mode, $action, $pm = false)
 {
-	global $db, $template, $user, $config, $auth;
+	global $db, $template, $user, $config, $auth, $phpbb_log;
 	global $phpEx, $phpbb_root_path, $phpbb_container;
 
 	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';
@@ -654,12 +654,20 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		{
 			if ($pm)
 			{
-				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', false, array(
+					'forum_id' => 0,
+					'topic_id' => 0,
+					$post_info[$report['pm_id']]['message_subject']
+				));
 				$phpbb_notifications->delete_notifications('notification.type.report_pm', $report['pm_id']);
 			}
 			else
 			{
-				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_REPORT_' .  strtoupper($action) . 'D', false, array(
+					'forum_id' => $post_info[$report['post_id']]['forum_id'],
+					'topic_id' => $post_info[$report['post_id']]['topic_id'],
+					$post_info[$report['post_id']]['post_subject']
+				));
 				$phpbb_notifications->delete_notifications('notification.type.report_post', $report['post_id']);
 			}
 		}

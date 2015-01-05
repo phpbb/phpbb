@@ -25,7 +25,7 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $request;
+		global $config, $db, $user, $auth, $template, $cache, $request, $phpbb_log;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
@@ -124,7 +124,7 @@ class acp_bots
 
 						$cache->destroy('_bots');
 
-						add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_DELETE', false, array(implode(', ', $bot_name_ary)));
 						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -292,7 +292,7 @@ class acp_bots
 
 						$cache->destroy('_bots');
 
-						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BOT_' . $log, false, array($bot_row['bot_name']));
 						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action));
 
 					}

@@ -28,7 +28,7 @@ class acp_permission_roles
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request;
+		global $request, $phpbb_log;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
@@ -109,7 +109,7 @@ class acp_permission_roles
 						$this->remove_role($role_id, $permission_type);
 
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
-						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_name);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, array($role_name));
 						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -212,7 +212,7 @@ class acp_permission_roles
 					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
 					$role_name = (!empty($user->lang[$role_name])) ? $user->lang[$role_name] : $role_name;
-					add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), $role_name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, array($role_name));
 
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
 

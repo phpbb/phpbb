@@ -25,7 +25,7 @@ class acp_disallow
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -74,7 +74,7 @@ class acp_disallow
 			$cache->destroy('_disallowed_usernames');
 
 			$message = $user->lang['DISALLOW_SUCCESSFUL'];
-			add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_ADD', false, array(str_replace('%', '*', $disallowed_user)));
 
 			trigger_error($message . adm_back_link($this->u_action));
 		}
@@ -93,7 +93,7 @@ class acp_disallow
 
 			$cache->destroy('_disallowed_usernames');
 
-			add_log('admin', 'LOG_DISALLOW_DELETE');
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_DELETE');
 
 			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
 		}
