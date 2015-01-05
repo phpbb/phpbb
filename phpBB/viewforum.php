@@ -320,6 +320,38 @@ if (!empty($_EXTRA_URL))
 	}
 }
 
+/**
+* Event to modify data before template variables are assigned
+*
+* @event core.viewforum_assign_template_vars_before
+* @var	int		forum_id			Forum ID
+* @var	array	forum_data			Array with forum data
+* @var	bool	s_display_active	Are active topics being displayed
+* @var	string	s_sort_dir			Sort direction
+* @var	string	s_sort_key			Sort key
+* @var	int		s_limit_days		Sort limit days
+* @var	array	s_watching_forum	Forum subscription info
+* @var	int		start				Start
+* @var	array	s_search_hidden_fields	Hidden fields for search form
+* @var	array	moderators			Array of moderator info
+* @var	string	u_sort_param		User sort param
+* @since 3.1.3-RC1
+*/
+$vars = array(
+	'forum_id',
+	'forum_data',
+	's_display_active',
+	's_sort_dir',
+	's_sort_key',
+	's_limit_days',
+	's_watching_forum',
+	'start',
+	's_search_hidden_fields',
+	'moderators',
+	'u_sort_param',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewforum_assign_template_vars_before', compact($vars)));
+
 $template->assign_vars(array(
 	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode($user->lang['COMMA_SEPARATOR'], $moderators[$forum_id]) : '',
 
