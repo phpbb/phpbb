@@ -355,7 +355,6 @@ $topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : null
 * @var	array	topic_tracking_info				Information upon calling get_topic_tracking()
 *												Set it to NULL to allow auto-filling later.
 *												Set it to an array to override original data.
-*
 * @since 3.1.3-RC1
 */
 $vars = array(
