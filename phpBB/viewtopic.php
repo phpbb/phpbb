@@ -353,8 +353,8 @@ $topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : null
 * @var	bool	overrides_f_read_check			Set true to remove f_read check afterwards
 * @var	bool	overrides_forum_password_check	Set true to remove forum_password check afterwards
 * @var	array	topic_tracking_info				Information upon calling get_topic_tracking()
-*												Make it NULL to allow auto-filling later.
-*												Make it an array to override original data.
+*												Set it to NULL to allow auto-filling later.
+*												Set it to an array to override original data.
 *
 * @since 3.1.3-RC1
 */
