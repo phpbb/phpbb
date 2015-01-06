@@ -137,7 +137,9 @@
 					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>
+				<!-- EVENT viewtopic_body_post_author_before -->
 				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF -->
+				<!-- EVENT viewtopic_body_post_author_after -->
 			</dt>
 
 			<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_TITLE}<!-- IF postrow.RANK_TITLE and postrow.RANK_IMG --><br /><!-- ENDIF -->{postrow.RANK_IMG}</dd><!-- ENDIF -->
