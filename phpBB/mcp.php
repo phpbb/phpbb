@@ -137,6 +137,28 @@ if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 	trigger_error('NOT_AUTHORISED');
 }
 
+/**
+* Allow applying additional permissions to MCP access besides f_read
+*
+* @event core.mcp_global_f_read_auth_after
+* @var	string		action			The action the user tried to execute
+* @var	int			forum_id		The forum the user tried to access
+* @var	string		mode			The MCP module the user is trying to access
+* @var	p_master	module			Module system class
+* @var	bool		quickmod		True if the user is accessing using quickmod tools
+* @var	int			topic_id		The topic the user tried to access
+* @since 3.1.3-RC1
+*/
+$vars = array(
+	'action',
+	'forum_id',
+	'mode',
+	'module',
+	'quickmod',
+	'topic_id',
+);
+extract($phpbb_dispatcher->trigger_event('core.mcp_global_f_read_auth_after', compact($vars)));
+
 if ($forum_id)
 {
 	$module->acl_forum_id = $forum_id;
