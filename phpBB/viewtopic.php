@@ -345,13 +345,13 @@ $topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : null
 *
 * @event core.viewtopic_before_f_read_check
 * @var	int		forum_id						The forum id from where the topic belongs
-* @var	int 	topic_id						The id of the topic the user tries to access
-* @var	int 	post_id							The id of the post the user tries to start viewing at. It may be 0 for none given.
+* @var	int		topic_id						The id of the topic the user tries to access
+* @var	int		post_id							The id of the post the user tries to start viewing at. It may be 0 for none given.
 * @var	array	topic_data						All the information from the topic and forum tables for this topic
 * 												It includes posts information if post_id is not 0
-* @var	bool 	overrides_f_read_check			Set true to remove f_read check afterwards
-* @var	bool 	overrides_forum_password_check	Set true to remove forum_password check afterwards
-* @var	array 	topic_tracking_info				Information upon calling get_topic_tracking()
+* @var	bool	overrides_f_read_check			Set true to remove f_read check afterwards
+* @var	bool	overrides_forum_password_check	Set true to remove forum_password check afterwards
+* @var	array	topic_tracking_info				Information upon calling get_topic_tracking()
 *												Make it NULL to allow auto-filling later.
 *												Make it an array to override original data.
 *
