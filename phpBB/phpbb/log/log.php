@@ -708,6 +708,50 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
+		/**
+		* Allow modifying or execute extra final filter on log entries
+		*
+		* @event core.get_logs_after
+		* @var	array	log			Array with all our log entries
+		* @var	array	topic_id_list		Array of topic ids, for which we
+		*									get the permission data
+		* @var	array	reportee_id_list	Array of additional user IDs we
+		*									get the username strings for
+		* @var	string	mode		Mode of the entries we display
+		* @var	bool	count_logs	Do we count all matching entries?
+		* @var	int		limit		Limit the number of entries
+		* @var	int		offset		Offset when fetching the entries
+		* @var	mixed	forum_id	Limit entries to the forum_id,
+		*							can also be an array of forum_ids
+		* @var	int		topic_id	Limit entries to the topic_id
+		* @var	int		user_id		Limit entries to the user_id
+		* @var	int		log_time	Limit maximum age of log entries
+		* @var	string	sort_by		SQL order option
+		* @var	string	keywords	Will only return entries that have the
+		*							keywords in log_operation or log_data
+		* @var	string	profile_url	URL to the users profile
+		* @var	int		log_type	The type of logs it was filtered
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'log',
+			'topic_id_list',
+			'reportee_id_list',
+			'mode',
+			'count_logs',
+			'limit',
+			'offset',
+			'forum_id',
+			'topic_id',
+			'user_id',
+			'log_time',
+			'sort_by',
+			'keywords',
+			'profile_url',
+			'log_type',
+		);
+		extract($this->dispatcher->trigger_event('core.get_logs_after', compact($vars)));
+
 		return $log;
 	}
 
