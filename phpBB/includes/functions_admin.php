@@ -2311,7 +2311,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 */
 function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (!is_array($forum_id))
 	{
@@ -2350,6 +2350,21 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	{
 		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
 	}
+
+	/**
+	* Use this event to modify the SQL that selects topics to be pruned
+	*
+	* @event core.prune_sql
+	* @var string	forum_id		The forum id
+	* @var string	prune_mode		The prune mode
+	* @var string	prune_date		The prune date
+	* @var int		prune_flags		The prune flags
+	* @var bool		auto_sync		Whether or not to perform auto sync
+	* @var string	sql_and			SQL text appended to where clause
+	* @since 3.1.3-RC1
+	*/
+	$vars = array('forum_id', 'prune_mode', 'prune_date', 'prune_flags', 'auto_sync', 'sql_and');
+	extract($phpbb_dispatcher->trigger_event('core.prune_sql', compact($vars)));
 
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_TABLE . '
