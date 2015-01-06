@@ -1825,6 +1825,30 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		break;
 	}
 
+	/**
+	* Modify sql query data for post submitting
+	*
+	* @event core.submit_post_modify_sql_data
+	* @var	array	data				Array with the data for the post
+	* @var	array	poll				Array with the poll data for the post
+	* @var	string	post_mode			Variable containing posting mode value
+	* @var	bool	sql_data			Array with the data for the posting SQL query
+	* @var	string	subject				Variable containing post subject value
+	* @var	int		topic_type			Variable containing topic type value
+	* @var	string	username			Variable containing post author name
+	* @since 3.1.3-RC1
+	*/
+	$vars = array(
+		'data',
+		'poll',
+		'post_mode',
+		'sql_data',
+		'subject',
+		'topic_type',
+		'username',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.submit_post_modify_sql_data', compact($vars)));
+
 	// Submit new topic
 	if ($post_mode == 'post')
 	{
