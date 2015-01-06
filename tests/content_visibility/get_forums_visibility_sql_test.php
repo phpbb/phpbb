@@ -136,9 +136,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			->will($this->returnValueMap($permissions));
 		$user = new \phpbb\user('\phpbb\datetime');
 		$config = new phpbb\config\config(array());
-		$phpbb_dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
-			->disableOriginalConstructor()
-			->getMock();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
 		$result = $db->sql_query('SELECT ' . $mode . '_id
