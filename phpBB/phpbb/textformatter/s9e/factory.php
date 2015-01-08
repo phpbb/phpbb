@@ -145,7 +145,7 @@ class factory implements \phpbb\textformatter\cache
 	/**
 	* Generate and return a new configured instance of s9e\TextFormatter\Configurator
 	*
-	* @return s9e\TextFormatter\Configurator
+	* @return Configurator
 	*/
 	public function get_configurator()
 	{

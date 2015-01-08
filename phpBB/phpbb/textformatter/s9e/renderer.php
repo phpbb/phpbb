@@ -50,9 +50,9 @@ class renderer extends \phpbb\textformatter\renderer
 	* Constructor
 	*
 	* @param  phpbb\cache\driver\driver_interface $cache
-	* @param  string                       $cache_dir Path to the cache dir
-	* @param  string                       $key       Cache key
-	* @param  Symfony\Component\DependencyInjection\ContainerInterface $container
+	* @param  string                              $cache_dir Path to the cache dir
+	* @param  string                              $key       Cache key
+	* @param  ContainerInterface                  $container
 	* @return null
 	*/
 	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, ContainerInterface $container)
