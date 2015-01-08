@@ -39,7 +39,7 @@ class parser extends \phpbb\textformatter\parser
 	* @param  phpbb\cache\driver_interface $cache
 	* @param  string $key Cache key
 	* @param  phpbb\user $user
-	* @param  Symfony\Component\DependencyInjection\ContainerInterface $container
+	* @param  ContainerInterface $container
 	* @return null
 	*/
 	public function __construct(\phpbb\cache\driver\driver_interface $cache, $key, \phpbb\user $user, ContainerInterface $container)
@@ -218,7 +218,7 @@ class parser extends \phpbb\textformatter\parser
 	*
 	* @param  string  $height
 	* @param  integer $max_height
-	* @param  s9e\TextFormatter\Parser\Logger $logger
+	* @param  Logger  $logger
 	* @return mixed              Original value if valid, FALSE otherwise
 	*/
 	static public function filter_flash_height($height, $max_height, Logger $logger)
@@ -240,7 +240,7 @@ class parser extends \phpbb\textformatter\parser
 	*
 	* @param  string  $width
 	* @param  integer $max_width
-	* @param  s9e\TextFormatter\Parser\Logger $logger
+	* @param  Logger  $logger
 	* @return mixed              Original value if valid, FALSE otherwise
 	*/
 	static public function filter_flash_width($width, $max_width, Logger $logger)
@@ -262,7 +262,7 @@ class parser extends \phpbb\textformatter\parser
 	*
 	* @param  string  $size     Original size
 	* @param  integer $max_size Maximum allowed size
-	* @param  s9e\TextFormatter\Parser\Logger $logger
+	* @param  Logger  $logger
 	* @return mixed             Original value if valid, FALSE otherwise
 	*/
 	static public function filter_font_size($size, $max_size, Logger $logger)
@@ -289,7 +289,7 @@ class parser extends \phpbb\textformatter\parser
 	*
 	* @param  string  $url        Original URL
 	* @param  array   $url_config Config used by the URL filter
-	* @param  s9e\TextFormatter\Parser\Logger $logger
+	* @param  Logger  $logger
 	* @param  integer $max_height Maximum height allowed
 	* @param  integer $max_width  Maximum width allowed
 	* @return string|bool         Original value if valid, FALSE otherwise
