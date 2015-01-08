@@ -96,7 +96,9 @@ table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
 	background-color: #e1ebf2;
 }
 
-.bg3	{ background-color: #cadceb; }
+.bg3	{
+	background-color: #cadceb;
+}
 
 .ucprowbg {
 	background-color: #DCDEE2;
@@ -164,9 +166,9 @@ dl.details dd {
 ---------------------------------------- */
 
 .pagination li a {
-	color: #5C758C;
 	background-color: #ECEDEE;
 	border-color: #B4BAC0;
+	color: #5C758C;
 }
 
 .pagination li.ellipsis span {
@@ -175,14 +177,14 @@ dl.details dd {
 }
 
 .pagination li.active span {
-	color: #FFFFFF;
 	background-color: #4692BF;
 	border-color: #4692BF;
+	color: #FFFFFF;
 }
 
 .pagination li a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
-	border-color: #368AD2;
 	background-color: #368AD2;
+	border-color: #368AD2;
 	color: #FFFFFF;
 }
 
@@ -263,13 +265,13 @@ a:hover	{ color: #D31141; }
 
 /* Post body links */
 .postlink {
-	color: #368AD2;
 	border-bottom-color: #368AD2;
+	color: #368AD2;
 }
 
 .postlink:visited {
-	color: #5D8FBD;
 	border-bottom-color: #5D8FBD;
+	color: #5D8FBD;
 }
 
 .postlink:hover {
