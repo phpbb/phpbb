@@ -40,7 +40,7 @@ class acp_email
 		$error = array();
 
 		$usernames	= request_var('usernames', '', true);
-		$usernames	= explode("\n", $usernames);
+		$usernames	= (!empty($usernames)) ? explode("\n", $usernames) : array();
 		$group_id	= request_var('g', 0);
 		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
 		$message	= utf8_normalize_nfc(request_var('message', '', true));
