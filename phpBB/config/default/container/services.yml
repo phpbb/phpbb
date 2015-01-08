@@ -16,6 +16,7 @@ imports:
     - { resource: services_text_formatter.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
+
     - { resource: tables.yml }
     - { resource: parameters.yml }
 
