@@ -89,6 +89,32 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 				'FIELD_INVALID_URL-field',
 				'Field should reject invalid URL having multi value parameters',
 			),
+
+			// IDN url type profilefields
+			array(
+				'http://www.täst.de',
+				array(),
+				false,
+				'Field should accept valid IDN',
+			),
+			array(
+				'http://täst.de/index.html?param1=test&param2=awesome',
+				array(),
+				false,
+				'Field should accept valid IDN URL with params',
+			),
+			array(
+				'http://домен.рф/index.html/тест/path?document=get',
+				array(),
+				false,
+				'Field should accept valid IDN URL',
+			),
+			array(
+				'http://домен.рф/index.html/тест/path?document[]=DocType%20test&document[]=AnotherDoc',
+				array(),
+				'FIELD_INVALID_URL-field',
+				'Field should reject invalid IDN URL having multi value parameters',
+			),
 		);
 	}
 
@@ -117,6 +143,20 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 				'http://example.com',
 				array('field_show_novalue' => false),
 				'http://example.com',
+				'Field should return correct raw value',
+			),
+
+			// IDN tests
+			array(
+				'http://täst.de',
+				array('field_show_novalue' => true),
+				'http://täst.de',
+				'Field should return the correct raw value',
+			),
+			array(
+				'http://домен.рф',
+				array('field_show_novalue' => false),
+				'http://домен.рф',
 				'Field should return correct raw value',
 			),
 		);
