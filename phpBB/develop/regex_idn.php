@@ -8,7 +8,6 @@
 //
 die("Please read the first lines of this script for instructions on how to enable it");
 
-
 // IP regular expressions
 
 $dec_octet = '(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])';
@@ -111,33 +110,42 @@ $add_deviations = '\x{00DF}\x{03C2}\x{200C}\x{200D}';
 $remove_chars = "$no_cc$no_symbol$no_hangul$no_cdm$no_musical$no_ancient_greek_musical$no_certain_exceptions";
 $add_chars = "$add_certain_exceptions$add_deviations";
 
-$pct_encoded = "%[\dA-F]{2}";
-$unreserved = "$add_chars\pL0-9\-._~";
-$sub_delims = '!$&\'()*+,;=';
-$pchar = "(?:[^$remove_chars]*[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
+// Initialize inline mode
+$inline = false;
 
-$scheme = '[a-z][a-z\d+\-.]*';
-$reg_name = "(?:[^$remove_chars]*[$unreserved$sub_delims:@|]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" and no ":" (included instead of userinfo)
-//$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
-$ipv4_simple = '[0-9.]+';
-$ipv6_simple = '\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\]';
-$host = "(?:$reg_name|$ipv4_simple|$ipv6_simple)";
-$port = '\d*';
-//$authority = "(?:$userinfo@)?$host(?::$port)?";
-$authority = "$host(?::$port)?";
-$segment = "$pchar*";
-$path_abempty = "(?:/$segment)*";
-$hier_part = "/{2}$authority$path_abempty";
-$query = "(?:[^$remove_chars]*[$unreserved$sub_delims:@/?|]+|$pct_encoded)*"; // pchar | "/" | "?", rfc: no "|"
-$fragment = $query;
+do
+{
+	$inline = !$inline;
 
-$url =  "$scheme:$hier_part(?:\?$query)?(?:\#$fragment)?";
-echo 'URL: ' . $url . "<br /><br />\n\n";
+	$pct_encoded = "%[\dA-F]{2}";
+	$unreserved = "$add_chars\pL0-9\-._~";
+	$sub_delims = ($inline) ? '!$&\'(*+,;=' : '!$&\'()*+,;=';
+	$scheme = ($inline) ? '[a-z][a-z\d+]*': '[a-z][a-z\d+\-.]*' ; // avoid automatic parsing of "word" in "last word.http://..."
+	$pchar = "(?:[^$remove_chars]*[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
 
-// no scheme, shortened authority, but host has to start with www.
-$www_url =  "www\.$reg_name(?::$port)?$path_abempty(?:\?$query)?(?:\#$fragment)?";
-echo 'www.URL: ' . $www_url . "<br /><br />\n\n";
+	$reg_name = "(?:[^$remove_chars]*[$unreserved$sub_delims:@|]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" and no ":" (included instead of userinfo)
+	//$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
+	$ipv4_simple = '[0-9.]+';
+	$ipv6_simple = '\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\]';
+	$host = "(?:$reg_name|$ipv4_simple|$ipv6_simple)";
+	$port = '\d*';
+	//$authority = "(?:$userinfo@)?$host(?::$port)?";
+	$authority = "$host(?::$port)?";
+	$segment = "$pchar*";
+	$path_abempty = "(?:/$segment)*";
+	$hier_part = "/{2}$authority$path_abempty";
+	$query = "(?:[^$remove_chars]*[$unreserved$sub_delims:@/?|]+|$pct_encoded)*"; // pchar | "/" | "?", rfc: no "|"
+	$fragment = $query;
 
-// no schema and no authority
-$relative_url = "$segment$path_abempty(?:\?$query)?(?:\#$fragment)?";
-echo 'relative URL: ' . $relative_url . "<br /><br />\n\n";
+	$url =  "$scheme:$hier_part(?:\?$query)?(?:\#$fragment)?";
+	echo (($inline) ? 'URL inline: ' : 'URL: ') . $url . "<br /><br />\n\n";
+
+	// no scheme, shortened authority, but host has to start with www.
+	$www_url =  "www\.$reg_name(?::$port)?$path_abempty(?:\?$query)?(?:\#$fragment)?";
+	echo (($inline) ? 'www.URL_inline: ' : 'www.URL: ') . $www_url . "<br /><br />\n\n";
+
+	// no schema and no authority
+	$relative_url = "$segment$path_abempty(?:\?$query)?(?:\#$fragment)?";
+	echo (($inline) ? 'relative URL inline: ' : 'relative URL: ') . $relative_url . "<br /><br />\n\n";
+}
+while ($inline);
