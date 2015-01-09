@@ -475,6 +475,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		if (!class_exists('acp_modules'))
 		{
 			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
+			$this->user->add_lang('acp/modules');
 		}
 		$acp_modules = new \acp_modules();
 		$module = $acp_modules->get_module_infos($basename, $class, true);
