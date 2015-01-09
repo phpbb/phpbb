@@ -2083,7 +2083,7 @@ class install_install extends module
 		return array(
 			'language'		=> basename(request_var('language', '')),
 			'dbms'			=> request_var('dbms', ''),
-			'dbhost'		=> request_var('dbhost', ''),
+			'dbhost'		=> request_var('dbhost', '', true),
 			'dbport'		=> request_var('dbport', ''),
 			'dbuser'		=> request_var('dbuser', ''),
 			'dbpasswd'		=> request_var('dbpasswd', '', true),
