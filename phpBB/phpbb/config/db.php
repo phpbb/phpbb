@@ -145,9 +145,9 @@ class db extends \phpbb\config\config
 			$sql .= " AND config_value = '" . $this->db->sql_escape($old_value) . "'";
 		}
 
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 
-		if (!$this->db->sql_affectedrows($result) && isset($this->config[$key]))
+		if (!$this->db->sql_affectedrows() && isset($this->config[$key]))
 		{
 			return false;
 		}
