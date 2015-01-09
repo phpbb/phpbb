@@ -430,10 +430,10 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array('index', false, 'index'),
 			array('foo/index', true, 'foo/index'),
 			array('foo/index', false, 'foo/index'),
-			array('app.php/foo', false, 'app.php/foo'),
 			array('app.php/foo', true, 'foo'),
-			array('/../app.php/foo', false, '../app.php/foo'),
+			array('app.php/foo', false, 'app.php/foo'),
 			array('/../app.php/foo', true, '../foo'),
+			array('/../app.php/foo', false, '../app.php/foo'),
 		);
 	}
 
