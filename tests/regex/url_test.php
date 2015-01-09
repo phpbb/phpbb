@@ -32,6 +32,6 @@ class phpbb_regex_url_test extends phpbb_test_case
 	*/
 	public function test_url($url, $expected)
 	{
-		$this->assertEquals($expected, preg_match('#^' . get_preg_expression('url') . '$#i', $url));
+		$this->assertEquals($expected, preg_match('#^' . get_preg_expression('url') . '$#iu', $url));
 	}
 }
