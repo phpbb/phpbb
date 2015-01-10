@@ -244,7 +244,7 @@ class content_visibility
 
 		$approve_forums = array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $exclude_forum_ids);
 
-		$get_global_visibility_sql_overwrite = null;
+		$visibility_sql_overwrite = null;
 		/**
 		* Allow changing the result of calling get_global_visibility_sql
 		*
@@ -254,7 +254,7 @@ class content_visibility
 		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
 		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
-		* @var	string		get_global_visibility_sql_overwrite	Forces the function to return an implosion of where_sqls (joined by "OR")
+		* @var	string		visibility_sql_overwrite	Forces the function to return an implosion of where_sqls (joined by "OR")
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -263,13 +263,13 @@ class content_visibility
 			'forum_ids',
 			'table_alias',
 			'approve_forums',
-			'get_global_visibility_sql_overwrite',
+			'visibility_sql_overwrite',
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_global_visibility_before', compact($vars)));
 
-		if ($get_global_visibility_sql_overwrite)
+		if ($visibility_sql_overwrite)
 		{
-			return $get_global_visibility_sql_overwrite;
+			return $visibility_sql_overwrite;
 		}
 
 		if (sizeof($exclude_forum_ids))
