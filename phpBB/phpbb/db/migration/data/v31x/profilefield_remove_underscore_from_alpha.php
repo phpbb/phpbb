@@ -40,8 +40,8 @@ class profilefield_remove_underscore_from_alpha extends \phpbb\db\migration\migr
 	public function update_validation_rule($old_validation, $new_validation)
 	{
 		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
-			SET field_validation = '" . $this->db->sql_escpape($new_validation) . "'
-			WHERE field_validation = '" . $this->db->sql_escpape($old_validation) . "'";
+			SET field_validation = '" . $this->db->sql_escape($new_validation) . "'
+			WHERE field_validation = '" . $this->db->sql_escape($old_validation) . "'";
 		$this->db->sql_query($sql);
 	}
 }
