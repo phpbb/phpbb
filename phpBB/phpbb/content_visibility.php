@@ -198,7 +198,6 @@ class content_visibility
 			return $get_forums_visibility_sql_overwrite;
 		}
 
-
 		if (sizeof($approve_forums))
 		{
 			// Remove moderator forums from the rest
