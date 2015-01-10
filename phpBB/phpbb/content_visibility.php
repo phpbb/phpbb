@@ -245,6 +245,7 @@ class content_visibility
 		$approve_forums = array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $exclude_forum_ids);
 
 		$visibility_sql_overwrite = null;
+
 		/**
 		* Allow changing the result of calling get_global_visibility_sql
 		*
