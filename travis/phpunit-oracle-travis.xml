@@ -34,12 +34,11 @@
 	<php>
 		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\oracle" />
 		<server name="PHPBB_TEST_DBHOST" value="localhost" />
-		<server name="PHPBB_TEST_DBPORT" value="" />
+		<server name="PHPBB_TEST_DBPORT" value="1521" />
 		<server name="PHPBB_TEST_DBNAME" value="XE" />
-		<server name="PHPBB_TEST_DBUSER" value="phpbb" />
+		<server name="PHPBB_TEST_DBUSER" value="phpbb_tests" />
 		<server name="PHPBB_TEST_DBPASSWD" value="phpbboracle" />
 		<server name="PHPBB_TEST_REDIS_HOST" value="localhost" />
-		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
 		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
 	</php>
 </phpunit>

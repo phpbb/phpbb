@@ -83,6 +83,14 @@ class phpbb_database_test_connection_manager
 					$dsn .= ';Database=' . $this->config['dbname'];
 				}
 			break;
+			case 'oci':
+				$dsn .= 'dbname=' . $this->config['dbhost'];
+				if ($this->config['dbport'])
+				{
+					$dsn .= ':' . $this->config['dbport'];
+				}
+				$dsn .= '/' . $this->config['dbname'];
+				break;
 
 			default:
 				$dsn .= 'host=' . $this->config['dbhost'];

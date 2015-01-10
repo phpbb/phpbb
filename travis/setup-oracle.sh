@@ -45,7 +45,6 @@ EOF
 
 sudo chmod 755 /usr/bin/free
 
-#
 # ok, bc, is the dependency that is required by DB2 as well => let's remove it from oracle xe dependencies and provide 64bit one only
 #
 sudo apt-get update
@@ -74,7 +73,7 @@ sudo apt-get autoremove -qq
 mkdir /tmp/oracle_unpack
 dpkg-deb -x /var/cache/apt/archives/oracle-xe-universal_10.2.0.1-1.1_i386.deb /tmp/oracle_unpack
 cd /tmp/oracle_unpack
-dpkg-deb --control /var/cache/apt/archives/oracle-xe-universal_10.2.0.1-1.1_i386.deb 
+dpkg-deb --control /var/cache/apt/archives/oracle-xe-universal_10.2.0.1-1.1_i386.deb
 sed -i "s/,\ bc//g" /tmp/oracle_unpack/DEBIAN/control
 mkdir /tmp/oracle_repack
 dpkg -b /tmp/oracle_unpack /tmp/oracle_repack/oracle-xe-universal_fixed_10.2.0.1-1.1_i386.deb
@@ -118,14 +117,14 @@ END
 free_restore
 
 # build php module
-#git clone https://github.com/DeepDiver1975/oracle_instant_client_for_ubuntu_64bit.git instantclient
-#cd instantclient
-#sudo bash -c 'printf "\n" | python system_setup.py'
+git clone https://github.com/DeepDiver1975/oracle_instant_client_for_ubuntu_64bit.git instantclient
+cd instantclient
+sudo bash -c 'printf "\n" | python system_setup.py'
 
-#sudo mkdir -p /usr/lib/oracle/11.2/client64/rdbms/
-#sudo ln -s /usr/include/oracle/11.2/client64/ /usr/lib/oracle/11.2/client64/rdbms/public
+sudo mkdir -p /usr/lib/oracle/11.2/client64/rdbms/
+sudo ln -s /usr/include/oracle/11.2/client64/ /usr/lib/oracle/11.2/client64/rdbms/public
 
-#sudo apt-get install -qq --force-yes libaio1
+sudo apt-get install -qq --force-yes libaio1
 #printf "/usr/lib/oracle/11.2/client64\n" | pecl install oci8
 
 #cat ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
@@ -134,11 +133,20 @@ git clone https://github.com/php/php-src.git
 cd php-src
 git checkout PHP-5.4
 cd ext
+
 cd oci8
-phpize && ./configure && make && make install
+phpize
+./configure --with-oci8=shared,instantclient,/usr/lib/oracle/11.2/client64/lib
+make
+make install
+
 cd ..
 cd pdo_oci
-phpize && ./configure && make && make install
+phpize
+./configure --with-pdo-oci=instantclient,/usr,11.2
+make
+make install
+
 cd ..
 
 # add travis user to oracle user group - necessary for execution of sqlplus
@@ -165,5 +173,9 @@ grant create session
 , create synonym
 , alter session
 to phpbb_tests;
+alter system set processes=300 scope=spfile;
+alter system set sessions=300 scope=spfile;
 exit;
 EOF
+
+sudo /etc/init.d/oracle-xe restart;
