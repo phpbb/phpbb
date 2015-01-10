@@ -54,8 +54,6 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*/
 	public function on_kernel_exception(GetResponseForExceptionEvent $event)
 	{
-		page_header($this->user->lang('INFORMATION'));
-
 		$exception = $event->getException();
 
 		$message = $exception->getMessage();
@@ -67,6 +65,8 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{
+			page_header($this->user->lang('INFORMATION'));
+
 			$this->template->assign_vars(array(
 				'MESSAGE_TITLE' => $this->user->lang('INFORMATION'),
 				'MESSAGE_TEXT'  => $message,
@@ -83,7 +83,11 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		else
 		{
 			$data = array();
-			$data['message'] = $message;
+
+			if (!empty($message))
+			{
+				$data['message'] = $message;
+			}
 
 			if (defined('DEBUG'))
 			{

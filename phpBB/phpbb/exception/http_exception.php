@@ -13,10 +13,12 @@
 
 namespace phpbb\exception;
 
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+
 /**
  * Class http_exception
  */
-class http_exception extends exception implements exception_interface
+class http_exception extends exception implements HttpExceptionInterface
 {
 	/**
 	 * Http status code.
@@ -47,7 +49,7 @@ class http_exception extends exception implements exception_interface
 		$this->status_code = $status_code;
 		$this->headers = $headers;
 
-		parent::__construct($message, $code, $previous);
+		parent::__construct($message, $parameters, $previous, $code);
 	}
 
 	/**
