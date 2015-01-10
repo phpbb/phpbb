@@ -4,7 +4,7 @@ services:
         arguments:
             - @auth
             - @config
-            - @phpbb_dispatcher
+            - @dispatcher
             - @dbal.conn
             - @user
             - %core.root_path%
