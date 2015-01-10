@@ -474,7 +474,7 @@ class path_helper
 			}
 
 			// Remove preceding slashes from page name and prepend root path
-			$page = $this->get_phpbb_root_path() . preg_replace('@^(?:([\\/\\\])?)@', '', $page);
+			$page = $this->get_phpbb_root_path() . ltrim($page, '/\\');
 		}
 
 		return $page;
