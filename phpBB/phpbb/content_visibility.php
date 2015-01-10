@@ -272,7 +272,6 @@ class content_visibility
 			return $get_global_visibility_sql_overwrite;
 		}
 
-
 		if (sizeof($exclude_forum_ids))
 		{
 			$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . '
