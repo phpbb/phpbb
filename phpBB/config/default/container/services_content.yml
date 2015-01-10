@@ -4,6 +4,7 @@ services:
         arguments:
             - @auth
             - @config
+            - @dispatcher
             - @dbal.conn
             - @user
             - %core.root_path%
