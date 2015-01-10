@@ -14,6 +14,7 @@
 namespace phpbb\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
@@ -64,18 +65,33 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($message), $exception->get_parameters()));
 		}
 
-		$this->template->assign_vars(array(
-			'MESSAGE_TITLE'		=> $this->user->lang('INFORMATION'),
-			'MESSAGE_TEXT'		=> $message,
-		));
+		if (!$event->getRequest()->isXmlHttpRequest())
+		{
+			$this->template->assign_vars(array(
+				'MESSAGE_TITLE' => $this->user->lang('INFORMATION'),
+				'MESSAGE_TEXT'  => $message,
+			));
 
-		$this->template->set_filenames(array(
-			'body'	=> 'message_body.html',
-		));
+			$this->template->set_filenames(array(
+				'body' => 'message_body.html',
+			));
 
-		page_footer(true, false, false);
+			page_footer(true, false, false);
 
-		$response = new Response($this->template->assign_display('body'), 500);
+			$response = new Response($this->template->assign_display('body'), 500);
+		}
+		else
+		{
+			$data = array();
+			$data['message'] = $message;
+
+			if (defined('DEBUG'))
+			{
+				$data['trace'] = $exception->getTrace();
+			}
+
+			$response = new JsonResponse($message, 500);
+		}
 
 		if ($exception instanceof HttpExceptionInterface)
 		{
