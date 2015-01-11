@@ -18,7 +18,7 @@ class phpbb_controller_helper_slash_test extends phpbb_controller_common_helper_
 {
 	protected function get_phpbb_root_path()
 	{
-		return '';
+		return './';
 	}
 
 	protected function get_uri()
