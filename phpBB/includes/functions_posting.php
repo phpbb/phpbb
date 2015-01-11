@@ -1909,9 +1909,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			if ($post_mode == 'post')
 			{
-				set_config_count('num_topics', 1, true);
+				$config->increment('num_topics', 1, false);
 			}
-			set_config_count('num_posts', 1, true);
+			$config->increment('num_posts', 1, false);
 
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data['post_id'];
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
@@ -2084,8 +2084,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		if ($space_taken && $files_added)
 		{
-			set_config_count('upload_dir_size', $space_taken, true);
-			set_config_count('num_files', $files_added, true);
+			$config->increment('upload_dir_size', $space_taken, false);
+			$config->increment('num_files', $files_added, false);
 		}
 	}
 

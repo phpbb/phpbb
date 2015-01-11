@@ -115,7 +115,6 @@ class install_update extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config_count(null, null, null, $config);
 
 		// Force template recompile
 		$config['load_tplcompile'] = 1;

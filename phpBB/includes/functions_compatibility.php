@@ -297,3 +297,30 @@ function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\con
 
 	$config->set($config_name, $config_value, !$is_dynamic);
 }
+
+/**
+ * Increments an integer config value directly in the database.
+ *
+ * @param string $config_name   The configuration option's name
+ * @param int    $increment     Amount to increment by
+ * @param bool   $is_dynamic    Whether this variable should be cached (false) or
+ *                              if it changes too frequently (true) to be
+ *                              efficiently cached.
+ *
+ * @return null
+ *
+ * @deprecated 3.1.0 (To be removed: 3.3.0)
+ */
+function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\config\config $set_config = null)
+{
+	static $config = null;
+	if ($set_config !== null)
+	{
+		$config = $set_config;
+		if (empty($config_name))
+		{
+			return;
+		}
+	}
+	$config->increment($config_name, $increment, !$is_dynamic);
+}
