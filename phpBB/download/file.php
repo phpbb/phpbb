@@ -92,7 +92,6 @@ if (isset($_GET['avatar']))
 
 	/* @var $config \phpbb\config\config */
 	$config = $phpbb_container->get('config');
-	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
 	// load extensions

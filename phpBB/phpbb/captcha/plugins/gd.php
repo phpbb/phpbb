@@ -80,7 +80,7 @@ class gd extends captcha_abstract
 				$value = request_var($captcha_var, 0);
 				if ($value >= 0)
 				{
-					set_config($captcha_var, $value);
+					$config->set($captcha_var, $value);
 				}
 			}
 

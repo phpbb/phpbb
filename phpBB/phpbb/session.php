@@ -345,8 +345,8 @@ class session
 			}
 			else
 			{
-				set_config('limit_load', '0');
-				set_config('limit_search_load', '0');
+				$config->set('limit_load', '0');
+				$config->set('limit_search_load', '0');
 			}
 		}
 
@@ -1036,7 +1036,7 @@ class session
 		{
 			// Less than 10 users, update gc timer ... else we want gc
 			// called again to delete other sessions
-			set_config('session_last_gc', $this->time_now, true);
+			$config->set('session_last_gc', $this->time_now, false);
 
 			if ($config['max_autologin_time'])
 			{

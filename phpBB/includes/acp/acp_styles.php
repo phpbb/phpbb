@@ -32,6 +32,9 @@ class acp_styles
 	protected $styles_list_cols = 0;
 	protected $reserved_style_names = array('adm', 'admin', 'all');
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -538,7 +541,7 @@ class acp_styles
 				{
 					trigger_error($this->user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
 				}
-				set_config('default_style', $id);
+				$this->config->set('default_style', $id);
 				$this->cache->purge();
 			}
 

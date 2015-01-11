@@ -33,7 +33,6 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 
 		$config = new \phpbb\config\config(array());
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		$cache = new \phpbb\cache\service(

@@ -103,13 +103,13 @@ class acp_jabber
 				$db->sql_query($sql);
 			}
 
-			set_config('jab_enable', $jab_enable);
-			set_config('jab_host', $jab_host);
-			set_config('jab_port', $jab_port);
-			set_config('jab_username', $jab_username);
-			set_config('jab_password', $jab_password);
-			set_config('jab_package_size', $jab_package_size);
-			set_config('jab_use_ssl', $jab_use_ssl);
+			$config->set('jab_enable', $jab_enable);
+			$config->set('jab_host', $jab_host);
+			$config->set('jab_port', $jab_port);
+			$config->set('jab_username', $jab_username);
+			$config->set('jab_password', $jab_password);
+			$config->set('jab_package_size', $jab_package_size);
+			$config->set('jab_use_ssl', $jab_use_ssl);
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . $log);
 			trigger_error($message . adm_back_link($this->u_action));

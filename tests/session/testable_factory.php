@@ -84,7 +84,6 @@ class phpbb_session_testable_factory
 		request_var(null, null, null, null, $request);
 
 		$config = $this->config = new \phpbb\config\config($this->get_config_data());
-		set_config(null, null, null, $config);
 
 		$db = $dbal;
 

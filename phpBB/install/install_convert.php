@@ -150,7 +150,6 @@ class install_convert extends module
 
 				// We need to fill the config to let internal functions correctly work
 				$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-				set_config(null, null, null, $config);
 				set_config_count(null, null, null, $config);
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
@@ -391,7 +390,6 @@ class install_convert extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		$convertor_tag = request_var('tag', '');
@@ -534,24 +532,27 @@ class install_convert extends module
 			if (!sizeof($error))
 			{
 				// Save convertor Status
-				set_config('convert_progress', serialize(array(
+				$config->set('convert_progress', serialize(array(
 					'step'			=> '',
 					'table_prefix'	=> $src_table_prefix,
 					'tag'			=> $convertor_tag,
-				)), true);
-				set_config('convert_db_server', serialize(array(
+				)), false);
+				$config->set('convert_db_server', serialize(array(
 					'dbms'			=> $src_dbms,
 					'dbhost'		=> $src_dbhost,
 					'dbport'		=> $src_dbport,
 					'dbname'		=> $src_dbname,
-				)), true);
-				set_config('convert_db_user', serialize(array(
+				)), false);
+				$config->set('convert_db_user', serialize(array(
 					'dbuser'		=> $src_dbuser,
 					'dbpasswd'		=> $src_dbpasswd,
-				)), true);
+				)), false);
 
 				// Save options
-				set_config('convert_options', serialize(array('forum_path' => './../' . $forum_path, 'refresh' => $refresh)), true);
+				$config->set('convert_options', serialize(array(
+					'forum_path' => './../' . $forum_path,
+					'refresh' => $refresh
+				)), false);
 
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['VERIFY_OPTIONS'],
@@ -635,7 +636,6 @@ class install_convert extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		// Override a couple of config variables for the duration
@@ -788,7 +788,7 @@ class install_convert extends module
 		if (!class_exists($search_type))
 		{
 			$search_type = '\phpbb\search\fulltext_native';
-			set_config('search_type', $search_type);
+			$config->set('search_type', $search_type);
 		}
 
 		if (!class_exists($search_type))
@@ -1561,26 +1561,26 @@ class install_convert extends module
 	*/
 	function save_convert_progress($step)
 	{
-		global $convert, $language;
+		global $config, $convert, $language;
 
 		// Save convertor Status
-		set_config('convert_progress', serialize(array(
+		$config->set('convert_progress', serialize(array(
 			'step'			=> $step,
 			'table_prefix'	=> $convert->src_table_prefix,
 			'tag'			=> $convert->convertor_tag,
-		)), true);
+		)), false);
 
-		set_config('convert_db_server', serialize(array(
+		$config->set('convert_db_server', serialize(array(
 			'dbms'			=> $convert->src_dbms,
 			'dbhost'		=> $convert->src_dbhost,
 			'dbport'		=> $convert->src_dbport,
 			'dbname'		=> $convert->src_dbname,
-		)), true);
+		)), false);
 
-		set_config('convert_db_user', serialize(array(
+		$config->set('convert_db_user', serialize(array(
 			'dbuser'		=> $convert->src_dbuser,
 			'dbpasswd'		=> $convert->src_dbpasswd,
-		)), true);
+		)), false);
 
 		return $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step&amp;language=$language";
 	}
@@ -1759,7 +1759,7 @@ class install_convert extends module
 
 			if (!isset($config['board_startdate']) || ($row['board_startdate'] < $config['board_startdate'] && $row['board_startdate'] > 0))
 			{
-				set_config('board_startdate', $row['board_startdate']);
+				$config->set('board_startdate', $row['board_startdate']);
 				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_regdate = ' . $row['board_startdate'] . ' WHERE user_id = ' . ANONYMOUS);
 			}
 

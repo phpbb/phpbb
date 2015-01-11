@@ -115,7 +115,6 @@ class install_update extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		// Force template recompile
@@ -236,7 +235,7 @@ class install_update extends module
 		// Fill DB version
 		if (empty($config['dbms_version']))
 		{
-			set_config('dbms_version', $db->sql_server_info(true));
+			$config->set('dbms_version', $db->sql_server_info(true));
 		}
 
 		if ($this->test_update === false)

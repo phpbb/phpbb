@@ -1493,7 +1493,6 @@ class install_install extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		$error = false;
@@ -1910,7 +1909,6 @@ class install_install extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		$sql = 'SELECT group_id
@@ -1984,7 +1982,6 @@ class install_install extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
 		$user->session_begin();
@@ -2032,12 +2029,12 @@ class install_install extends module
 	*/
 	function disable_avatars_if_unwritable()
 	{
-		global $phpbb_root_path;
+		global $config, $phpbb_root_path;
 
 		if (!phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'))
 		{
-			set_config('allow_avatar', 0);
-			set_config('allow_avatar_upload', 0);
+			$config->set('allow_avatar', 0);
+			$config->set('allow_avatar_upload', 0);
 		}
 	}
 

@@ -121,8 +121,8 @@ class acp_main
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						set_config('record_online_users', 1, true);
-						set_config('record_online_date', time(), true);
+						$config->set('record_online_users', 1, false);
+						$config->set('record_online_date', time(), false);
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_ONLINE');
 
 						if ($request->is_ajax())
@@ -141,35 +141,35 @@ class acp_main
 							FROM ' . POSTS_TABLE . '
 							WHERE post_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
-						set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_posts', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(topic_id) AS stat
 							FROM ' . TOPICS_TABLE . '
 							WHERE topic_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
-						set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_topics', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(user_id) AS stat
 							FROM ' . USERS_TABLE . '
 							WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
 						$result = $db->sql_query($sql);
-						set_config('num_users', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_users', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(attach_id) as stat
 							FROM ' . ATTACHMENTS_TABLE . '
 							WHERE is_orphan = 0';
 						$result = $db->sql_query($sql);
-						set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_files', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT SUM(filesize) as stat
 							FROM ' . ATTACHMENTS_TABLE . '
 							WHERE is_orphan = 0';
 						$result = $db->sql_query($sql);
-						set_config('upload_dir_size', (float) $db->sql_fetchfield('stat'), true);
+						$config->set('upload_dir_size', (float) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						if (!function_exists('update_last_username'))
@@ -259,7 +259,7 @@ class acp_main
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						set_config('board_startdate', time() - 1);
+						$config->set('board_startdate', time() - 1);
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_DATE');
 
 						if ($request->is_ajax())
@@ -664,7 +664,7 @@ class acp_main
 		// Fill dbms version if not yet filled
 		if (empty($config['dbms_version']))
 		{
-			set_config('dbms_version', $db->sql_server_info(true));
+			$config->set('dbms_version', $db->sql_server_info(true));
 		}
 
 		$this->tpl_name = 'acp_main';

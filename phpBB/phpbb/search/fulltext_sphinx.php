@@ -140,7 +140,7 @@ class fulltext_sphinx
 
 		if(!$this->config['fulltext_sphinx_id'])
 		{
-			set_config('fulltext_sphinx_id', unique_id());
+			$this->config->set('fulltext_sphinx_id', unique_id());
 		}
 		$this->id = $this->config['fulltext_sphinx_id'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
@@ -211,7 +211,7 @@ class fulltext_sphinx
 		}
 
 		// Move delta to main index each hour
-		set_config('search_gc', 3600);
+		$this->config->set('search_gc', 3600);
 
 		return false;
 	}
@@ -757,7 +757,7 @@ class fulltext_sphinx
 	*/
 	public function tidy($create = false)
 	{
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**

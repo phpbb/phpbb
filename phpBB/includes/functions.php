@@ -130,39 +130,6 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 }
 
 /**
-* Sets a configuration option's value.
-*
-* Please note that this function does not update the is_dynamic value for
-* an already existing config option.
-*
-* @param string $config_name   The configuration option's name
-* @param string $config_value  New configuration value
-* @param bool   $is_dynamic    Whether this variable should be cached (false) or
-*                              if it changes too frequently (true) to be
-*                              efficiently cached.
-*
-* @return null
-*
-* @deprecated
-*/
-function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\config\config $set_config = null)
-{
-	static $config = null;
-
-	if ($set_config !== null)
-	{
-		$config = $set_config;
-
-		if (empty($config_name))
-		{
-			return;
-		}
-	}
-
-	$config->set($config_name, $config_value, !$is_dynamic);
-}
-
-/**
 * Increments an integer config value directly in the database.
 *
 * @param string $config_name   The configuration option's name
@@ -235,8 +202,8 @@ function unique_id($extra = 'c')
 
 	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
 	{
-		set_config('rand_seed_last_update', time(), true);
-		set_config('rand_seed', $config['rand_seed'], true);
+		$config->set('rand_seed_last_update', time(), false);
+		$config->set('rand_seed', $config['rand_seed'], false);
 		$dss_seeded = true;
 	}
 
@@ -4783,8 +4750,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 		if ($total_online_users > $config['record_online_users'])
 		{
-			set_config('record_online_users', $total_online_users, true);
-			set_config('record_online_date', time(), true);
+			$config->set('record_online_users', $total_online_users, false);
+			$config->set('record_online_date', time(), false);
 		}
 
 		$l_online_record = $user->lang('RECORD_ONLINE_USERS', (int) $config['record_online_users'], $user->format_date($config['record_online_date'], false, true));

@@ -95,7 +95,7 @@ class file extends \phpbb\cache\driver\base
 	*/
 	function tidy()
 	{
-		global $phpEx;
+		global $config, $phpEx;
 
 		$dir = @opendir($this->cache_dir);
 
@@ -149,7 +149,7 @@ class file extends \phpbb\cache\driver\base
 			}
 		}
 
-		set_config('cache_last_gc', time(), true);
+		$config->set('cache_last_gc', time(), false);
 	}
 
 	/**

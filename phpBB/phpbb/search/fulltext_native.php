@@ -1425,7 +1425,7 @@ class fulltext_native extends \phpbb\search\base
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
 		if (!$this->config['fulltext_native_load_upd'])
 		{
-			set_config('search_last_gc', time(), true);
+			$this->config->set('search_last_gc', time(), false);
 			return;
 		}
 
@@ -1460,7 +1460,7 @@ class fulltext_native extends \phpbb\search\base
 
 				// by setting search_last_gc to the new time here we make sure that if a user reloads because the
 				// following query takes too long, he won't run into it again
-				set_config('search_last_gc', time(), true);
+				$this->config->set('search_last_gc', time(), false);
 
 				// Delete the matches
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
@@ -1476,7 +1476,7 @@ class fulltext_native extends \phpbb\search\base
 			$this->destroy_cache(array_unique($destroy_cache_words));
 		}
 
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**

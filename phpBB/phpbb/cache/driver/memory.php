@@ -81,9 +81,10 @@ abstract class memory extends \phpbb\cache\driver\base
 	*/
 	function tidy()
 	{
-		// cache has auto GC, no need to have any code here :)
+		global $config;
 
-		set_config('cache_last_gc', time(), true);
+		// cache has auto GC, no need to have any code here :)
+		$config->set('cache_last_gc', time(), false);
 	}
 
 	/**

@@ -514,12 +514,12 @@ function phpbb_user_id($user_id)
 		// If there is a user id 1, we need to increment user ids. :/
 		if ($id === 1)
 		{
-			set_config('increment_user_id', ($max_id + 1), true);
+			$config->set('increment_user_id', ($max_id + 1), false);
 			$config['increment_user_id'] = $max_id + 1;
 		}
 		else
 		{
-			set_config('increment_user_id', 0, true);
+			$config->set('increment_user_id', 0, false);
 			$config['increment_user_id'] = 0;
 		}
 	}
@@ -1682,29 +1682,29 @@ function phpbb_import_attach_config()
 	}
 	$src_db->sql_freeresult($result);
 
-	set_config('allow_attachments', 1);
+	$config->set('allow_attachments', 1);
 
 	// old attachment mod? Must be very old if this entry do not exist...
 	if (!empty($attach_config['display_order']))
 	{
-		set_config('display_order', $attach_config['display_order']);
+		$config->set('display_order', $attach_config['display_order']);
 	}
-	set_config('max_filesize', $attach_config['max_filesize']);
-	set_config('max_filesize_pm', $attach_config['max_filesize_pm']);
-	set_config('attachment_quota', $attach_config['attachment_quota']);
-	set_config('max_attachments', $attach_config['max_attachments']);
-	set_config('max_attachments_pm', $attach_config['max_attachments_pm']);
-	set_config('allow_pm_attach', $attach_config['allow_pm_attach']);
+	$config->set('max_filesize', $attach_config['max_filesize']);
+	$config->set('max_filesize_pm', $attach_config['max_filesize_pm']);
+	$config->set('attachment_quota', $attach_config['attachment_quota']);
+	$config->set('max_attachments', $attach_config['max_attachments']);
+	$config->set('max_attachments_pm', $attach_config['max_attachments_pm']);
+	$config->set('allow_pm_attach', $attach_config['allow_pm_attach']);
 
-	set_config('img_display_inlined', $attach_config['img_display_inlined']);
-	set_config('img_max_width', $attach_config['img_max_width']);
-	set_config('img_max_height', $attach_config['img_max_height']);
-	set_config('img_link_width', $attach_config['img_link_width']);
-	set_config('img_link_height', $attach_config['img_link_height']);
-	set_config('img_create_thumbnail', $attach_config['img_create_thumbnail']);
-	set_config('img_max_thumb_width', 400);
-	set_config('img_min_thumb_filesize', $attach_config['img_min_thumb_filesize']);
-	set_config('img_imagick', $attach_config['img_imagick']);
+	$config->set('img_display_inlined', $attach_config['img_display_inlined']);
+	$config->set('img_max_width', $attach_config['img_max_width']);
+	$config->set('img_max_height', $attach_config['img_max_height']);
+	$config->set('img_link_width', $attach_config['img_link_width']);
+	$config->set('img_link_height', $attach_config['img_link_height']);
+	$config->set('img_create_thumbnail', $attach_config['img_create_thumbnail']);
+	$config->set('img_max_thumb_width', 400);
+	$config->set('img_min_thumb_filesize', $attach_config['img_min_thumb_filesize']);
+	$config->set('img_imagick', $attach_config['img_imagick']);
 }
 
 /**

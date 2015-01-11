@@ -1312,7 +1312,7 @@ function restore_config($schema)
 				$config_value = truncate_string(utf8_htmlspecialchars($config_value), 255, 255, false);
 			}
 
-			set_config($config_name, $config_value);
+			$config->set($config_name, $config_value);
 		}
 	}
 }
@@ -1968,9 +1968,9 @@ function update_dynamic_config()
 
 	if ($row)
 	{
-		set_config('newest_user_id', $row['user_id'], true);
-		set_config('newest_username', $row['username'], true);
-		set_config('newest_user_colour', $row['user_colour'], true);
+		$config->set('newest_user_id', $row['user_id'], false);
+		$config->set('newest_username', $row['username'], false);
+		$config->set('newest_user_colour', $row['user_colour'], false);
 	}
 
 //	Also do not reset record online user/date. There will be old data or the fresh data from the schema.
@@ -1984,7 +1984,7 @@ function update_dynamic_config()
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	set_config('num_posts', (int) $row['stat'], true);
+	$config->set('num_posts', (int) $row['stat'], false);
 
 	$sql = 'SELECT COUNT(topic_id) AS stat
 		FROM ' . TOPICS_TABLE . '
@@ -1993,7 +1993,7 @@ function update_dynamic_config()
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	set_config('num_topics', (int) $row['stat'], true);
+	$config->set('num_topics', (int) $row['stat'], false);
 
 	$sql = 'SELECT COUNT(user_id) AS stat
 		FROM ' . USERS_TABLE . '
@@ -2002,20 +2002,20 @@ function update_dynamic_config()
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	set_config('num_users', (int) $row['stat'], true);
+	$config->set('num_users', (int) $row['stat'], false);
 
 	$sql = 'SELECT COUNT(attach_id) as stat
 		FROM ' . ATTACHMENTS_TABLE . '
 		WHERE is_orphan = 0';
 	$result = $db->sql_query($sql);
-	set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
+	$config->set('num_files', (int) $db->sql_fetchfield('stat'), false);
 	$db->sql_freeresult($result);
 
 	$sql = 'SELECT SUM(filesize) as stat
 		FROM ' . ATTACHMENTS_TABLE . '
 		WHERE is_orphan = 0';
 	$result = $db->sql_query($sql);
-	set_config('upload_dir_size', (float) $db->sql_fetchfield('stat'), true);
+	$config->set('upload_dir_size', (float) $db->sql_fetchfield('stat'), false);
 	$db->sql_freeresult($result);
 
 	/**

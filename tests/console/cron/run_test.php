@@ -39,7 +39,6 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
-		set_config(null, null, null, $this->config);
 		$this->lock = new \phpbb\lock\db('cron_lock', $this->config, $this->db);
 
 		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
