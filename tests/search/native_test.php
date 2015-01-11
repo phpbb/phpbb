@@ -56,6 +56,14 @@ class phpbb_search_native_test extends phpbb_search_test_case
 				array(),
 			),
 			array(
+				'foo*',
+				'all',
+				true,
+				array(1),
+				array(),
+				array(),
+			),
+			array(
 				'foo bar',
 				'all',
 				true,
