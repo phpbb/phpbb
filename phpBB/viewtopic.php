@@ -339,6 +339,7 @@ $user->setup('viewtopic', $topic_data['forum_style']);
 $overrides_f_read_check = false;
 $overrides_forum_password_check = false;
 $topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : null;
+
 /**
 * Event to apply extra permissions and to override original phpBB's f_read permission and forum password check
 * on viewtopic access
