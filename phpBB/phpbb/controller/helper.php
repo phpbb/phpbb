@@ -143,7 +143,7 @@ class helper
 		$base_url = $context->getBaseUrl();
 
 		// Regarding PHPBB3-13493 - if we request url ending on / there is no $page_name
-		if (!strpos($base_url, $page_name))
+		if (strpos($base_url, $page_name) === false)
 		{
 			$base_url = $base_url . '/' . $page_name;
 		}
