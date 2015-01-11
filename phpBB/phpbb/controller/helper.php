@@ -145,7 +145,7 @@ class helper
 		// Regarding PHPBB3-13493 - if we request url ending on / there is no $page_name
 		if (strpos($base_url, $page_name) === false)
 		{
-			$base_url = $base_url . '/' . $page_name;
+			$base_url .= '/' . $page_name;
 		}
 
 		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
