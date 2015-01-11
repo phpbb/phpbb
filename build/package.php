@@ -394,6 +394,7 @@ if (sizeof($package->old_packages))
 		$package->run_command('mkdir ' . $package->get('files_directory') . '/release');
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $package->get('files_directory') . '/release');
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $package->get('files_directory') . '/release');
+		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $package->get('files_directory') . '/release');
 
 		$package->run_command('rm -v ' . $package->get('files_directory') . '/release/install/install_install.php');
 		$package->run_command('rm -v ' . $package->get('files_directory') . '/release/install/install_update.php');
