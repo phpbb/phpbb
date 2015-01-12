@@ -28,7 +28,6 @@ class main_info
 		return array(
 			'filename'	=> 'foo\bar\acp\main_module',
 			'title'		=> 'ACP_FOOBAR_TITLE',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'mode'		=> array('title' => 'ACP_FOOBAR_MODE', 'auth' => '', 'cat' => array('ACP_FOOBAR_TITLE')),
 			),

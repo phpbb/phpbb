@@ -30,6 +30,7 @@ class acp_captcha
 
 		$user->add_lang('acp/board');
 
+		/* @var $factory \phpbb\captcha\factory */
 		$factory = $phpbb_container->get('captcha.factory');
 		$captchas = $factory->get_captcha_types();
 

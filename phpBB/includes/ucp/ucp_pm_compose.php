@@ -458,8 +458,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$icon_id = 0;
 	}
 
-	$message_parser = new parse_message();
+	/* @var $plupload \phpbb\plupload\plupload */
 	$plupload = $phpbb_container->get('plupload');
+	$message_parser = new parse_message();
 	$message_parser->set_plupload($plupload);
 
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;

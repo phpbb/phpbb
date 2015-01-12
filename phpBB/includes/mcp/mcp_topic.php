@@ -29,8 +29,9 @@ function mcp_topic_view($id, $mode, $action)
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
-	$user->add_lang('viewtopic');
+	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
+	$user->add_lang('viewtopic');
 
 	$topic_id = request_var('t', 0);
 	$topic_info = phpbb_get_topic_data(array($topic_id), false, true);
@@ -116,8 +117,9 @@ function mcp_topic_view($id, $mode, $action)
 	$sort_by_sql = $sort_order_sql = array();
 	phpbb_mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
-	$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+	$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	if ($total == -1)
 	{

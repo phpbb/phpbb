@@ -464,6 +464,7 @@ class ucp_groups
 
 						if ($config['allow_avatar'])
 						{
+							/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
@@ -826,6 +827,7 @@ class ucp_groups
 							$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 						}
 
+						/* @var $pagination \phpbb\pagination */
 						$pagination = $phpbb_container->get('pagination');
 						$base_url = $this->u_action . "&amp;action=$action&amp;g=$group_id";
 						$start = $pagination->validate_start($start, $config['topics_per_page'], $total_members);

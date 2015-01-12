@@ -108,7 +108,10 @@ class install_install extends module
 				$phpbb_container = $phpbb_container_builder->get_container();
 
 				// Sets the global variables
+				/* @var $cache \phpbb\cache\service */
 				$cache = $phpbb_container->get('cache');
+
+				/* @var $phpbb_log \phpbb\log\log_interface */
 				$phpbb_log = $phpbb_container->get('log');
 
 				$this->build_search_index($mode, $sub);
@@ -1197,7 +1200,7 @@ class install_install extends module
 				->get_classes();
 
 			$sqlite_db = new \phpbb\db\driver\sqlite();
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, new \phpbb\db\tools($sqlite_db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, new \phpbb\db\tools\tools($sqlite_db, true), $phpbb_root_path, $phpEx, $table_prefix);
 			$db_table_schema = $schema_generator->get_schema();
 		}
 
@@ -1209,7 +1212,7 @@ class install_install extends module
 			define('CONFIG_TABLE', $data['table_prefix'] . 'config');
 		}
 
-		$db_tools = new \phpbb\db\tools($db);
+		$db_tools = new \phpbb\db\tools\tools($db);
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
 			$db_tools->sql_create_table(
@@ -1517,6 +1520,7 @@ class install_install extends module
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
+			/* @var $phpbb_extension_manager \phpbb\extension\manager */
 			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 

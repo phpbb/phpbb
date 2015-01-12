@@ -115,6 +115,7 @@ class acp_board
 			break;
 
 			case 'avatar':
+				/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 				$avatar_drivers = $phpbb_avatar_manager->get_all_drivers();
 
@@ -553,6 +554,7 @@ class acp_board
 		if ($mode == 'auth')
 		{
 			// Retrieve a list of auth plugins and check their config values
+			/* @var $auth_providers \phpbb\auth\provider_collection */
 			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
 			$updated_auth_settings = false;
@@ -720,8 +722,9 @@ class acp_board
 	{
 		global $phpbb_root_path, $phpEx, $phpbb_container;
 
-		$auth_plugins = array();
+		/* @var $auth_providers \phpbb\auth\provider_collection */
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
+		$auth_plugins = array();
 
 		foreach ($auth_providers as $key => $value)
 		{

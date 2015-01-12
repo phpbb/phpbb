@@ -65,6 +65,7 @@ class mcp_logs
 		$this->tpl_name = 'mcp_logs';
 		$this->page_title = 'MCP_LOGS';
 
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));

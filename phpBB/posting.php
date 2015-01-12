@@ -116,6 +116,7 @@ if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$foru
 	trigger_error('NO_FORUM');
 }
 
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // We need to know some basic information in all cases before we do anything.
@@ -561,7 +562,10 @@ if ($mode == 'edit')
 $orig_poll_options_size = sizeof($post_data['poll_options']);
 
 $message_parser = new parse_message();
+/* @var $plupload \phpbb\plupload\plupload */
 $plupload = $phpbb_container->get('plupload');
+
+/* @var $mimetype_guesser \phpbb\mimetype\guesser */
 $mimetype_guesser = $phpbb_container->get('mimetype.guesser');
 $message_parser->set_plupload($plupload);
 $message_parser->set_mimetype_guesser($mimetype_guesser);

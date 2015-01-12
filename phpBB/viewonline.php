@@ -43,7 +43,10 @@ if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
 }
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
+
+/* @var $viewonline_helper \phpbb\viewonline_helper */
 $viewonline_helper = $phpbb_container->get('viewonline_helper');
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);

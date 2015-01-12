@@ -1926,7 +1926,7 @@ function phpbb_check_username_collisions()
 function phpbb_convert_timezone($timezone)
 {
 	global $config, $db, $phpbb_root_path, $phpEx, $table_prefix;
-	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, new \phpbb\db\tools($db), $phpbb_root_path, $phpEx, $table_prefix);
+	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, new \phpbb\db\tools\tools($db), $phpbb_root_path, $phpEx, $table_prefix);
 	return $timezone_migration->convert_phpbb30_timezone($timezone, 0);
 }
 
@@ -1974,6 +1974,7 @@ function phpbb_convert_password_hash($hash)
 {
 	global $phpbb_container;
 
+	/* @var $manager \phpbb\passwords\manager */
 	$manager = $phpbb_container->get('passwords.manager');
 	$hash = $manager->hash($hash, '$H$');
 

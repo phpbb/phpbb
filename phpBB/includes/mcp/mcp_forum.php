@@ -77,6 +77,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		break;
 	}
 
+	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
 
 	$selected_ids = '';
@@ -157,6 +158,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	$sql = 'SELECT t.topic_id

@@ -83,6 +83,8 @@ class mcp_notes
 		$st	= request_var('st', 0);
 		$sk	= request_var('sk', 'b');
 		$sd	= request_var('sd', 'd');
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		add_form_key('mcp_notes');

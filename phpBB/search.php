@@ -123,7 +123,10 @@ $sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SOR
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
 if ($keywords || $author || $author_id || $search_id || $submit)

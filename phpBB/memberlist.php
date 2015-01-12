@@ -638,6 +638,7 @@ switch ($mode)
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
+			/* @var $cp \phpbb\profilefields\manager */
 			$cp = $phpbb_container->get('profilefields.manager');
 			$profile_fields = $cp->grab_profile_fields_data($user_id);
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
@@ -805,6 +806,8 @@ switch ($mode)
 		{
 			trigger_error('NO_EMAIL');
 		}
+
+		/** @var $form \phpbb\message\form */
 		$form = $phpbb_container->get('message.form.' . $form_name);
 
 		$form->bind($request);
@@ -860,6 +863,8 @@ switch ($mode)
 		// The basic memberlist
 		$page_title = $user->lang['MEMBERLIST'];
 		$template_html = 'memberlist_body.html';
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		// Sorting
@@ -1366,6 +1371,7 @@ switch ($mode)
 		// Load custom profile fields
 		if ($config['load_cpf_memberlist'])
 		{
+			/* @var $cp \phpbb\profilefields\manager */
 			$cp = $phpbb_container->get('profilefields.manager');
 
 			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');

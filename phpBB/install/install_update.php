@@ -84,6 +84,7 @@ class install_update extends module
 		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Writes into global $cache
+		/* @var $cache \phpbb\cache\service */
 		$cache = $phpbb_container->get('cache');
 
 		$this->tpl_name = 'install_update';
@@ -161,6 +162,7 @@ class install_update extends module
 		));
 
 		// Get current and latest version
+		/* @var $version_helper \phpbb\version_helper */
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{
@@ -519,6 +521,8 @@ class install_update extends module
 				if ($all_up_to_date)
 				{
 					global $phpbb_container;
+
+					/* @var $phpbb_log \phpbb\log\log_interface */
 					$phpbb_log = $phpbb_container->get('log');
 
 					// Add database update to log
@@ -1689,7 +1693,7 @@ class install_update extends module
 					// Get custom installed styles...
 					$sql = 'SELECT style_name, style_path
 						FROM ' . STYLES_TABLE . "
-						WHERE LOWER(style_name) NOT IN ('subsilver2', 'prosilver')";
+						WHERE LOWER(style_name) NOT IN ('prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();

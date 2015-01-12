@@ -429,6 +429,7 @@ class acp_main
 			));
 		}
 
+		/* @var $version_helper \phpbb\version_helper */
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{
