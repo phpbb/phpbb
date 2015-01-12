@@ -198,3 +198,23 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 	$rank_img = $rank_data['img'];
 	$rank_img_src = $rank_data['img_src'];
 }
+
+/**
+ * Retrieve contents from remotely stored file
+ *
+ * @deprecated	3.1.2	Use file_downloader instead
+ */
+function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
+{
+	global $phpbb_container;
+
+	// Get file downloader and assign $errstr and $errno
+	/* @var $file_downloader \phpbb\file_downloader */
+	$file_downloader = $phpbb_container->get('file_downloader');
+
+	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
+	$errstr = $file_downloader->get_error_string();
+	$errno = $file_downloader->get_error_number();
+
+	return $file_data;
+}
