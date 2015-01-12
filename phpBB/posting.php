@@ -1736,7 +1736,7 @@ $page_data = array(
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
-	'EDIT_REASON'			=> $request->variable('edit_reason', ''),
+	'EDIT_REASON'			=> $request->variable('edit_reason', '', true),
 	'SHOW_PANEL'			=> $request->variable('show_panel', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
