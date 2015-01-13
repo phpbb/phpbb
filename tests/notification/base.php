@@ -66,6 +66,8 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			$phpbb_root_path,
 			$phpEx
 		);
+		
+		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$phpbb_container = $this->container = new phpbb_mock_container_builder();
 
@@ -75,6 +77,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			$this->container,
 			$this->user_loader,
 			$this->config,
+			$this->phpbb_dispatcher,
 			$this->db,
 			$this->cache,
 			$this->user,

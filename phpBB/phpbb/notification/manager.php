@@ -38,6 +38,9 @@ class manager
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\event\dispatcher */
+	protected $phpbb_dispatcher;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -70,6 +73,7 @@ class manager
 	* @param ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
+	* @param \phpbb\event\dispatcher $phpbb_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
@@ -81,7 +85,7 @@ class manager
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
@@ -89,6 +93,7 @@ class manager
 
 		$this->user_loader = $user_loader;
 		$this->config = $config;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
@@ -349,6 +354,26 @@ class manager
 
 		// find out which users want to receive this type of notification
 		$notify_users = $this->get_item_type_class($notification_type_name)->find_users_for_notification($data, $options);
+
+		/**
+		* Allow filtering the notify_users array for a notification that is about to be sent.
+		* Here, $notify_users is already filtered by f_read and the ignored list included in the options variable
+		*
+		* @event core.notification_manager_add_notifications
+		* @var	string	notification_type_name		The forum id from where the topic belongs
+		* @var	array 	data						Data specific for the notification_type_name used will be inserted
+		* @var	array 	notify_users				The array of userid that are going to be notified for this notification. Set to array() to cancel.
+		* @var	array 	options						The options that were used when this method was called (read only)
+		*
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'notification_type_name',
+			'data',
+			'notify_users',
+			'options',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications', compact($vars)));
 
 		$this->add_notifications_for_users($notification_type_name, $data, $notify_users);
 
