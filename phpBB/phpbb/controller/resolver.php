@@ -126,9 +126,18 @@ class resolver implements ControllerResolverInterface
 	*/
 	public function getArguments(Request $request, $controller)
 	{
-		// At this point, $controller contains the object and method name
-		list($object, $method) = $controller;
-		$mirror = new \ReflectionMethod($object, $method);
+		// At this point, $controller should be a callable
+		if (is_array($controller))
+		{
+			list($object, $method) = $controller;
+			$mirror = new \ReflectionMethod($object, $method);
+		} else if (is_object($controller) && !$controller instanceof \Closure)
+		{
+			$mirror = new \ReflectionObject($controller);
+			$mirror = $mirror->getMethod('__invoke');
+		} else {
+			$mirror = new \ReflectionFunction($controller);
+		}
 
 		$arguments = array();
 		$parameters = $mirror->getParameters();
