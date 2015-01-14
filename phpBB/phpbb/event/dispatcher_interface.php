@@ -37,4 +37,14 @@ interface dispatcher_interface extends \Symfony\Component\EventDispatcher\EventD
 	* @return mixed
 	*/
 	public function trigger_event($eventName, $data = array());
+
+	/**
+	 * Disable the event dispatcher.
+	 */
+	public function disable();
+
+	/**
+	 * Enable the event dispatcher.
+	 */
+	public function enable();
 }

@@ -13,11 +13,19 @@
 
 namespace phpbb\db;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
 * The migrator is responsible for applying new migrations in the correct order.
 */
 class migrator
 {
+	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
+
 	/** @var \phpbb\config\config */
 	protected $config;
 
@@ -77,15 +85,16 @@ class migrator
 	/**
 	 * The output handler. A null handler is configured by default.
 	 *
-	 * @var migrator_output_handler
+	 * @var migrator_output_handler_interface
 	 */
 	public $output_handler;
 
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
+	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
+		$this->container = $container;
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
@@ -171,6 +180,18 @@ class migrator
 	* @return null
 	*/
 	public function update()
+	{
+		$this->container->get('dispatcher')->disable();
+		$this->update_do();
+		$this->container->get('dispatcher')->enable();
+	}
+
+	/**
+	 * Effectively runs a single update step from the next migration to be applied.
+	 *
+	 * @return null
+	 */
+	protected function update_do()
 	{
 		foreach ($this->migrations as $name)
 		{
@@ -317,7 +338,7 @@ class migrator
 			catch (\phpbb\db\migration\exception $e)
 			{
 				// Revert the schema changes
-				$this->revert($name);
+				$this->revert_do($name);
 
 				// Rethrow exception
 				throw $e;
@@ -337,9 +358,21 @@ class migrator
 	* check if revert() needs to be called again use the migration_state() method.
 	*
 	* @param string $migration String migration name to revert (including any that depend on this migration)
-	* @return null
 	*/
 	public function revert($migration)
+	{
+		$this->container->get('dispatcher')->disable();
+		$this->revert_do($migration);
+		$this->container->get('dispatcher')->enable();
+	}
+
+	/**
+	 * Effectively runs a single revert step from the last migration installed
+	 *
+	 * @param string $migration String migration name to revert (including any that depend on this migration)
+	 * @return null
+	 */
+	protected function revert_do($migration)
 	{
 		if (!isset($this->migration_state[$migration]))
 		{
@@ -351,7 +384,7 @@ class migrator
 		{
 			if (!empty($state['migration_depends_on']) && in_array($migration, $state['migration_depends_on']))
 			{
-				$this->revert($name);
+				$this->revert_do($name);
 			}
 		}
 
@@ -742,7 +775,14 @@ class migrator
 	*/
 	protected function get_migration($name)
 	{
-		return new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+		$migration = new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+
+		if ($migration instanceof ContainerAwareInterface)
+		{
+			$migration->setContainer($this->container);
+		}
+
+		return $migration;
 	}
 
 	/**
