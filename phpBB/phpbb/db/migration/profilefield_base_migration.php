@@ -13,7 +13,10 @@
 
 namespace phpbb\db\migration;
 
-abstract class profilefield_base_migration extends \phpbb\db\migration\migration
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+abstract class profilefield_base_migration extends \phpbb\db\migration\migration implements ContainerAwareInterface
 {
 	protected $profilefield_name;
 
@@ -39,6 +42,11 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 	protected $profilefield_language_data;
 
 	protected $user_column_name;
+
+	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
 
 	public function effectively_installed()
 	{
@@ -237,11 +245,18 @@ abstract class profilefield_base_migration extends \phpbb\db\migration\migration
 
 		if ($profile_row === null)
 		{
-			global $phpbb_container;
-			$manager = $phpbb_container->get('profilefields.manager');
+			$manager = $this->container->get('profilefields.manager');
 			$profile_row = $manager->build_insert_sql_array(array());
 		}
 
 		return $profile_row;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setContainer(ContainerInterface $container = null)
+	{
+		$this->container = $container;
 	}
 }

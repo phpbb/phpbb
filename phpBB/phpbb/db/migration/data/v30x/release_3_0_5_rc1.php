@@ -13,8 +13,16 @@
 
 namespace phpbb\db\migration\data\v30x;
 
-class release_3_0_5_rc1 extends \phpbb\db\migration\migration
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+class release_3_0_5_rc1 extends \phpbb\db\migration\migration implements ContainerAwareInterface
 {
+	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
+
 	public function effectively_installed()
 	{
 		return phpbb_version_compare($this->config['version'], '3.0.5-RC1', '>=');
@@ -55,9 +63,7 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration
 
 	public function hash_old_passwords()
 	{
-		global $phpbb_container;
-
-		$passwords_manager = $phpbb_container->get('passwords.manager');
+		$passwords_manager = $this->container->get('passwords.manager');
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
 				WHERE user_pass_convert = 1';
@@ -129,5 +135,13 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration
 				$this->db->sql_freeresult($result);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setContainer(ContainerInterface $container = null)
+	{
+		$this->container = $container;
 	}
 }

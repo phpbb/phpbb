@@ -13,13 +13,21 @@
 
 namespace phpbb\db\migration\data\v310;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * Migration to convert the Soft Delete MOD for 3.0
  *
  * https://www.phpbb.com/customise/db/mod/soft_delete/
  */
-class soft_delete_mod_convert extends \phpbb\db\migration\migration
+class soft_delete_mod_convert extends \phpbb\db\migration\migration implements ContainerAwareInterface
 {
+	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
+
 	static public function depends_on()
 	{
 		return array(
@@ -115,19 +123,19 @@ class soft_delete_mod_convert extends \phpbb\db\migration\migration
 		}
 	}
 
+	/**
+	 * @return \phpbb\content_visibility
+	 */
 	protected function get_content_visibility()
 	{
-		return new \phpbb\content_visibility(
-			new \phpbb\auth\auth(),
-			$this->config,
-			$this->db,
-			new \phpbb\user('\phpbb\datetime'),
-			$this->phpbb_root_path,
-			$this->php_ext,
-			$this->table_prefix . 'forums',
-			$this->table_prefix . 'posts',
-			$this->table_prefix . 'topics',
-			$this->table_prefix . 'users'
-		);
+		return $this->container->get('content.visibility');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setContainer(ContainerInterface $container = null)
+	{
+		$this->container = $container;
 	}
 }
