@@ -48,6 +48,7 @@ $sort_dir	= request_var('sd', $default_sort_dir);
 
 $update		= request_var('update', false);
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
 $s_can_vote = false;
@@ -62,6 +63,7 @@ if (!$topic_id && !$post_id)
 	trigger_error('NO_TOPIC');
 }
 
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // Find topic id if user requested a newer or older topic
@@ -1347,6 +1349,7 @@ $db->sql_freeresult($result);
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
 {
+	/* @var $cp \phpbb\profilefields\manager */
 	$cp = $phpbb_container->get('profilefields.manager');
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache

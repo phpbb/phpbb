@@ -71,27 +71,38 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 	// set up caching
+	/* @var $cache \phpbb\cache\service */
 	$cache = $phpbb_container->get('cache');
 
+	/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
 	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+
+	/* @var $request \phpbb\request\request_interface */
 	$request	= $phpbb_container->get('request');
+
+	/* @var $db \phpbb\db\driver\driver_interface */
 	$db			= $phpbb_container->get('dbal.conn');
+
+	/* @var $phpbb_log \phpbb\log\log_interface */
 	$phpbb_log	= $phpbb_container->get('log');
 
 	unset($dbpasswd);
 
 	request_var('', 0, false, false, $request);
 
+	/* @var $config \phpbb\config\config */
 	$config = $phpbb_container->get('config');
 	set_config(null, null, null, $config);
 	set_config_count(null, null, null, $config);
 
 	// load extensions
+	/* @var $phpbb_extension_manager \phpbb\extension\manager */
 	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
+	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 	$filename = request_var('avatar', '');

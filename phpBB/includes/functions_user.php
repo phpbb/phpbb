@@ -281,6 +281,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	{
 		$cp_data['user_id'] = (int) $user_id;
 
+		/* @var $cp \phpbb\profilefields\manager */
 		$cp = $phpbb_container->get('profilefields.manager');
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
 			$db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
@@ -366,6 +367,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	// Subscribe user to notifications if necessary
 	if (!empty($notifications_data))
 	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 		foreach ($notifications_data as $subscription)
 		{
@@ -2249,8 +2251,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$current_legend = \phpbb\groupposition\legend::GROUP_DISABLED;
 		$current_teampage = \phpbb\groupposition\teampage::GROUP_DISABLED;
 
+		/* @var $legend \phpbb\groupposition\legend */
 		$legend = $phpbb_container->get('groupposition.legend');
+
+		/* @var $teampage \phpbb\groupposition\teampage */
 		$teampage = $phpbb_container->get('groupposition.teampage');
+
 		if ($group_id)
 		{
 			try
@@ -2564,6 +2570,7 @@ function group_delete($group_id, $group_name = false)
 	// Delete group from legend and teampage
 	try
 	{
+		/* @var $legend \phpbb\groupposition\legend */
 		$legend = $phpbb_container->get('groupposition.legend');
 		$legend->delete_group($group_id);
 		unset($legend);
@@ -2577,6 +2584,7 @@ function group_delete($group_id, $group_name = false)
 
 	try
 	{
+		/* @var $teampage \phpbb\groupposition\teampage */
 		$teampage = $phpbb_container->get('groupposition.teampage');
 		$teampage->delete_group($group_id);
 		unset($teampage);
@@ -2720,6 +2728,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if ($pending)
 	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		foreach ($add_id_ary as $user_id)
@@ -2879,6 +2888,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	group_update_listings($group_id);
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications('notification.type.group_request', $user_id_ary, $group_id);
@@ -3043,6 +3053,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 
+			/* @var $phpbb_notifications \phpbb\notification\manager */
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			$phpbb_notifications->add_notifications('notification.type.group_request_approved', array(

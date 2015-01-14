@@ -418,6 +418,7 @@ class acp_users
 							{
 								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 								{
+									/* @var $phpbb_notifications \phpbb\notification\manager */
 									$phpbb_notifications = $phpbb_container->get('notification_manager');
 									$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
@@ -481,6 +482,7 @@ class acp_users
 							}
 
 							// Delete old avatar if present
+							/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $phpbb_avatar_manager->clean_row($user_row, 'user'), USERS_TABLE, 'user_');
 
@@ -831,6 +833,7 @@ class acp_users
 					}
 
 					// Instantiate passwords manager
+					/* @var $passwords_manager \phpbb\passwords\manager */
 					$passwords_manager = $phpbb_container->get('passwords.manager');
 
 					// Which updates do we need to do?
@@ -1105,6 +1108,8 @@ class acp_users
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= request_var('mark', array(0));
 				$message	= utf8_normalize_nfc(request_var('message', '', true));
+
+				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
@@ -1347,6 +1352,7 @@ class acp_users
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
+				/* @var $cp \phpbb\profilefields\manager */
 				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
@@ -1741,6 +1747,7 @@ class acp_users
 
 				if ($config['allow_avatar'])
 				{
+					/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
@@ -1986,11 +1993,12 @@ class acp_users
 			break;
 
 			case 'attach':
+				/* @var $pagination \phpbb\pagination */
+				$pagination = $phpbb_container->get('pagination');
 
 				$start		= request_var('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$marked		= request_var('mark', array(0));
-				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
 				$sort_key	= request_var('sk', 'a');

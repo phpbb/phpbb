@@ -299,6 +299,7 @@ class acp_permission_roles
 					trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
+				/* @var $phpbb_permissions \phpbb\permissions */
 				$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 				$template->assign_vars(array(
@@ -471,6 +472,7 @@ class acp_permission_roles
 	{
 		global $template, $user, $phpbb_container;
 
+		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		$content_array = $categories = array();

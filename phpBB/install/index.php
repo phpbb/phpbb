@@ -143,7 +143,10 @@ $phpbb_container->compile();
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
+/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
+
+/* @var $request \phpbb\request\request_interface */
 $request	= $phpbb_container->get('request');
 
 // make sure request_var uses this request instance
@@ -250,6 +253,7 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
+	/* @var $phpbb_hook_finder \phpbb\hook\finder */
 	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 	foreach ($phpbb_hook_finder->find() as $hook)
 	{
@@ -266,8 +270,13 @@ $config = new \phpbb\config\config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+/* @var $symfony_request \phpbb\symfony_request */
 $symfony_request = $phpbb_container->get('symfony_request');
+
+/* @var $phpbb_filesystem \phpbb\filesystem */
 $phpbb_filesystem = $phpbb_container->get('filesystem');
+
+/* @var $phpbb_path_helper \phpbb\path_helper */
 $phpbb_path_helper = $phpbb_container->get('path_helper');
 $cache_path = $phpbb_root_path . 'cache/';
 

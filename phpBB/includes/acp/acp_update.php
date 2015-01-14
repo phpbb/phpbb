@@ -33,6 +33,7 @@ class acp_update
 		$this->tpl_name = 'acp_update';
 		$this->page_title = 'ACP_VERSION_CHECK';
 
+		/* @var $version_helper \phpbb\version_helper */
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{

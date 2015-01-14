@@ -59,6 +59,7 @@ function phpbb_hash($password)
 {
 	global $phpbb_container;
 
+	/* @var $passwords_manager \phpbb\passwords\manager */
 	$passwords_manager = $phpbb_container->get('passwords.manager');
 	return $passwords_manager->hash($password);
 }
@@ -77,6 +78,7 @@ function phpbb_check_hash($password, $hash)
 {
 	global $phpbb_container;
 
+	/* @var $passwords_manager \phpbb\passwords\manager */
 	$passwords_manager = $phpbb_container->get('passwords.manager');
 	return $passwords_manager->check($password, $hash);
 }
@@ -97,6 +99,7 @@ function phpbb_clean_path($path)
 
 	if (!$phpbb_path_helper && $phpbb_container)
 	{
+		/* @var $phpbb_path_helper \phpbb\path_helper */
 		$phpbb_path_helper = $phpbb_container->get('path_helper');
 	}
 	else if (!$phpbb_path_helper)

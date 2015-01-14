@@ -37,6 +37,7 @@ $sort_days	= request_var('st', $default_sort_days);
 $sort_key	= request_var('sk', $default_sort_key);
 $sort_dir	= request_var('sd', $default_sort_dir);
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
 // Check if the user has actually sent a forum ID with his/her request
@@ -146,6 +147,7 @@ else
 	}
 }
 
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // Dump out the page header and load viewforum template
@@ -218,6 +220,7 @@ if ($forum_data['forum_topics_per_page'])
 // Do the forum Prune thang - cron type job ...
 if (!$config['use_system_cron'])
 {
+	/* @var $cron \phpbb\cron\manager */
 	$cron = $phpbb_container->get('cron.manager');
 
 	$task = $cron->find_task('cron.task.core.prune_forum');

@@ -703,6 +703,7 @@ function mcp_restore_topic($topic_ids)
 
 		$data = phpbb_get_topic_data($topic_ids);
 
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		foreach ($data as $topic_id => $row)
 		{
@@ -788,6 +789,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 				// Only soft delete non-shadow topics
 				if ($is_soft)
 				{
+					/* @var $phpbb_content_visibility \phpbb\content_visibility */
 					$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 					$return = $phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $row['forum_id'], $user->data['user_id'], time(), $soft_delete_reason);
 					if (!empty($return))
@@ -948,6 +950,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			);
 		}
 
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		foreach ($topic_info as $topic_id => $topic_data)
 		{

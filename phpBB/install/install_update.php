@@ -84,6 +84,7 @@ class install_update extends module
 		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Writes into global $cache
+		/* @var $cache \phpbb\cache\service */
 		$cache = $phpbb_container->get('cache');
 
 		$this->tpl_name = 'install_update';
@@ -161,6 +162,7 @@ class install_update extends module
 		));
 
 		// Get current and latest version
+		/* @var $version_helper \phpbb\version_helper */
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{
@@ -519,6 +521,8 @@ class install_update extends module
 				if ($all_up_to_date)
 				{
 					global $phpbb_container;
+
+					/* @var $phpbb_log \phpbb\log\log_interface */
 					$phpbb_log = $phpbb_container->get('log');
 
 					// Add database update to log

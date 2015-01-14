@@ -123,6 +123,7 @@ class ucp_attachments
 		$db->sql_freeresult($result);
 
 		// Ensure start is a valid value
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $num_attachments);
 

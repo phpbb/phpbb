@@ -409,6 +409,7 @@ class session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
+					/* @var $provider_collection \phpbb\auth\provider_collection */
 					$provider_collection = $phpbb_container->get('auth.provider_collection');
 					$provider = $provider_collection->get_provider();
 
@@ -578,6 +579,7 @@ class session
 			}
 		}
 
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
 		$this->data = $provider->autologin();
@@ -910,6 +912,7 @@ class session
 		$db->sql_query($sql);
 
 		// Allow connecting logout with external auth method logout
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
 		$provider->logout($this->data, $new_session);
@@ -1036,6 +1039,7 @@ class session
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
+			/* @var $captcha_factory \phpbb\captcha\factory */
 			$captcha_factory = $phpbb_container->get('captcha.factory');
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 

@@ -87,20 +87,33 @@ $phpbb_container_builder->set_dump_container(false);
 $phpbb_container = $phpbb_container_builder->get_container();
 
 // set up caching
+/* @var $cache \phpbb\cache\service */
 $cache = $phpbb_container->get('cache');
 
 // Instantiate some basic classes
+/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
+
+/* @var $request \phpbb\request\request_interface */
 $request	= $phpbb_container->get('request');
+
+/* @var $user \phpbb\user */
 $user		= $phpbb_container->get('user');
+
+/* @var $auth \phpbb\auth\auth */
 $auth		= $phpbb_container->get('auth');
+
+/* @var $db \phpbb\db\driver\driver_interface */
 $db			= $phpbb_container->get('dbal.conn');
+
+/* @var $phpbb_log \phpbb\log\log_interface */
 $phpbb_log	= $phpbb_container->get('log');
 
 // make sure request_var uses this request instance
 request_var('', 0, false, false, $request); // "dependency injection" for a function
 
 // Grab global variables, re-cache if necessary
+/* @var $config \phpbb\config\config */
 $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
@@ -120,6 +133,7 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
+	/* @var $phpbb_hook_finder \phpbb\hook\finder */
 	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 	foreach ($phpbb_hook_finder->find() as $hook)
 	{
@@ -172,11 +186,13 @@ define('IN_DB_UPDATE', true);
 
 // End startup code
 
+/* @var $migrator \phpbb\db\migrator */
 $migrator = $phpbb_container->get('migrator');
 $migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log'));
 
 $migrator->create_migrations_table();
 
+/* @var $phpbb_extension_manager \phpbb\extension\manager */
 $phpbb_extension_manager = $phpbb_container->get('ext.manager');
 
 $migrations = $phpbb_extension_manager

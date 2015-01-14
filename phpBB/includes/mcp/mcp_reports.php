@@ -90,6 +90,7 @@ class mcp_reports
 					trigger_error('NO_REPORT');
 				}
 
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				$phpbb_notifications->mark_notifications_read('notification.type.report_post', $post_id, $user->data['user_id']);
@@ -323,9 +324,10 @@ class mcp_reports
 					$forum_list = array($forum_id);
 				}
 
+				/* @var $pagination \phpbb\pagination */
+				$pagination = $phpbb_container->get('pagination');
 				$forum_list[] = 0;
 				$forum_data = array();
-				$pagination = $phpbb_container->get('pagination');
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
@@ -645,6 +647,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 		unset($close_report_posts, $close_report_topics);
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		foreach ($reports as $report)

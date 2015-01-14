@@ -38,6 +38,7 @@ class ucp_auth_link
 
 		$error = array();
 
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$auth_provider = $provider_collection->get_provider();
 

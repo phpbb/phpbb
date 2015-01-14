@@ -108,7 +108,10 @@ class install_install extends module
 				$phpbb_container = $phpbb_container_builder->get_container();
 
 				// Sets the global variables
+				/* @var $cache \phpbb\cache\service */
 				$cache = $phpbb_container->get('cache');
+
+				/* @var $phpbb_log \phpbb\log\log_interface */
 				$phpbb_log = $phpbb_container->get('log');
 
 				$this->build_search_index($mode, $sub);
@@ -1517,6 +1520,7 @@ class install_install extends module
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
+			/* @var $phpbb_extension_manager \phpbb\extension\manager */
 			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 

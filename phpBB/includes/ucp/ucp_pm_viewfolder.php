@@ -406,6 +406,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$sort_key	= request_var('sk', 't');
 	$sort_dir	= request_var('sd', 'd');
 
+	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
 
 	// PM ordering options

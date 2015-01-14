@@ -1974,6 +1974,7 @@ function phpbb_convert_password_hash($hash)
 {
 	global $phpbb_container;
 
+	/* @var $manager \phpbb\passwords\manager */
 	$manager = $phpbb_container->get('passwords.manager');
 	$hash = $manager->hash($hash, '$H$');
 

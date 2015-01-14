@@ -92,6 +92,7 @@ class ucp_remind
 			$user_actkey = gen_rand_string(mt_rand(6, 10));
 
 			// Instantiate passwords manager
+			/* @var $manager \phpbb\passwords\manager */
 			$passwords_manager = $phpbb_container->get('passwords.manager');
 
 			$sql = 'UPDATE ' . USERS_TABLE . "

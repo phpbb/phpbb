@@ -47,6 +47,8 @@ class acp_logs
 
 		$this->tpl_name = 'acp_logs';
 		$this->log_type = constant('LOG_' . strtoupper($mode));
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		// Delete entries if requested and able
@@ -72,6 +74,7 @@ class acp_logs
 					$conditions['keywords'] = $keywords;
 				}
 
+				/* @var $phpbb_log \phpbb\log\log_interface */
 				$phpbb_log = $phpbb_container->get('log');
 				$phpbb_log->delete($mode, $conditions);
 			}

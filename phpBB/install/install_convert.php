@@ -131,6 +131,7 @@ class install_convert extends module
 		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Create cache
+		/* @var $cache \phpbb\cache\service */
 		$cache = $phpbb_container->get('cache');
 
 		switch ($sub)
@@ -1603,6 +1604,7 @@ class install_convert extends module
 		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log
+		/* @var $phpbb_log \phpbb\log\log_interface */
 		$phpbb_log = $phpbb_container->get('log');
 		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
 

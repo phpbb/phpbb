@@ -64,6 +64,7 @@ $phpbb_container = $phpbb_container_builder->get_container();
 $phpbb_container->get('request')->enable_super_globals();
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
+/* @var $user \phpbb\user */
 $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
 $user->add_lang('cli');

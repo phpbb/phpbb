@@ -156,6 +156,7 @@ class mcp_queue
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);
 
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				if ($topic_id)
@@ -340,6 +341,8 @@ class mcp_queue
 
 				$topic_id = $request->variable('t', 0);
 				$forum_info = array();
+
+				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
 
 				if ($topic_id)
@@ -679,6 +682,7 @@ class mcp_queue
 				);
 			}
 
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
 			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
@@ -693,6 +697,7 @@ class mcp_queue
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				// Handle notifications
@@ -866,6 +871,7 @@ class mcp_queue
 		{
 			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
 
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
 			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 			$first_post_ids = array();
 
@@ -909,6 +915,7 @@ class mcp_queue
 				$db->sql_freeresult($result);
 
 				// Handle notifications
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				foreach ($topic_info as $topic_id => $topic_data)
@@ -1168,6 +1175,7 @@ class mcp_queue
 				}
 			}
 
+			/* @var $phpbb_notifications \phpbb\notification\manager */
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			$lang_reasons = array();
