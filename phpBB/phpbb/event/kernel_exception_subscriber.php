@@ -94,7 +94,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 				$data['trace'] = $exception->getTrace();
 			}
 
-			$response = new JsonResponse($message, 500);
+			$response = new JsonResponse($data, 500);
 		}
 
 		if ($exception instanceof HttpExceptionInterface)
