@@ -487,6 +487,10 @@ blockquote.uncited {
 }
 
 /* Code block */
+blockquote .codebox {
+	margin-left: 0;
+}
+
 .codebox {
 	padding: 3px;
 	border: 1px solid transparent;
@@ -500,10 +504,6 @@ blockquote.uncited {
 	font-size: 0.8em !important;
 	font-weight: bold;
 	display: block;
-}
-
-blockquote .codebox {
-	margin-left: 0;
 }
 
 .codebox code {
