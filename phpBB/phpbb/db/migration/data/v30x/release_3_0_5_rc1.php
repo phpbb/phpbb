@@ -13,16 +13,10 @@
 
 namespace phpbb\db\migration\data\v30x;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use phpbb\db\migration\container_aware_migration;
 
-class release_3_0_5_rc1 extends \phpbb\db\migration\migration implements ContainerAwareInterface
+class release_3_0_5_rc1 extends container_aware_migration
 {
-	/**
-	 * @var ContainerInterface
-	 */
-	protected $container;
-
 	public function effectively_installed()
 	{
 		return phpbb_version_compare($this->config['version'], '3.0.5-RC1', '>=');
@@ -135,13 +129,5 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration implements Contain
 				$this->db->sql_freeresult($result);
 			}
 		}
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setContainer(ContainerInterface $container = null)
-	{
-		$this->container = $container;
 	}
 }
