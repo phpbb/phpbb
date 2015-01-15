@@ -334,7 +334,7 @@ class acp_email
 		* @var	array	exclude				Array with groups which are excluded from group selection
 		* @var	array	usernames			Usernames which will be displayed in form
 		*
-		* @since 3.1.3-RC1
+		* @since 3.1.4-RC1
 		*/
 		$vars = array('template_data', 'exclude', 'usernames');
 		extract($phpbb_dispatcher->trigger_event('core.acp_email_display', compact($vars)));
