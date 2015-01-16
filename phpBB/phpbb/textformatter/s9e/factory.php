@@ -167,8 +167,9 @@ class factory implements \phpbb\textformatter\cache
 		$configurator->attributeFilters->add('#local_url', $filter);
 		$configurator->attributeFilters->add('#relative_url', $filter);
 
-		$regexp = '!^([\p{L}\p{N}\-+,_. ]+)$!Du';
-		$configurator->attributeFilters->add('#inttext', new RegexpFilter($regexp));
+		// INTTEXT regexp from acp_bbcodes
+		$filter = new RegexpFilter('!^([\p{L}\p{N}\-+,_. ]+)$!Du');
+		$configurator->attributeFilters->add('#inttext', $filter);
 
 		// Create custom filters for Flash restrictions, which use the same values as the image
 		// restrictions but have their own error message
