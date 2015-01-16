@@ -376,8 +376,7 @@ function still_on_time($extra_time = 15)
 {
 	static $max_execution_time, $start_time;
 
-	$time = explode(' ', microtime());
-	$current_time = $time[0] + $time[1];
+	$current_time = microtime(true);
 
 	if (empty($max_execution_time))
 	{
@@ -802,7 +801,7 @@ function phpbb_own_realpath($path)
 
 	$max = sizeof($bits) - 1;
 
-	// Check if we are able to resolve symlinks, Windows cannot.
+	// Check if we are able to resolve symlinks, Windows (prior to Vista and Server 2008) cannot.
 	$symlink_resolve = (function_exists('readlink')) ? true : false;
 
 	foreach ($bits as $i => $bit)
@@ -3664,38 +3663,12 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 		return (@gethostbyname($host_fqdn) == $host_fqdn) ? false : true;
 	}
 
-	// checkdnsrr() is available on Windows since PHP 5.3,
-	// but until 5.3.3 it only works for MX records
-	// See: http://bugs.php.net/bug.php?id=51844
-
-	// Call checkdnsrr() if
-	// we're looking for an MX record or
-	// we're not on Windows or
-	// we're running a PHP version where #51844 has been fixed
-
-	// checkdnsrr() supports AAAA since 5.0.0
-	// checkdnsrr() supports TXT since 5.2.4
-	if (
-		($type == 'MX' || DIRECTORY_SEPARATOR != '\\' || version_compare(PHP_VERSION, '5.3.3', '>=')) &&
-		($type != 'AAAA' || version_compare(PHP_VERSION, '5.0.0', '>=')) &&
-		($type != 'TXT' || version_compare(PHP_VERSION, '5.2.4', '>=')) &&
-		function_exists('checkdnsrr')
-	)
+	if (function_exists('checkdnsrr'))
 	{
 		return checkdnsrr($host_fqdn, $type);
 	}
 
-	// dns_get_record() is available since PHP 5; since PHP 5.3 also on Windows,
-	// but on Windows it does not work reliable for AAAA records before PHP 5.3.1
-
-	// Call dns_get_record() if
-	// we're not looking for an AAAA record or
-	// we're not on Windows or
-	// we're running a PHP version where AAAA lookups work reliable
-	if (
-		($type != 'AAAA' || DIRECTORY_SEPARATOR != '\\' || version_compare(PHP_VERSION, '5.3.1', '>=')) &&
-		function_exists('dns_get_record')
-	)
+	if (function_exists('dns_get_record'))
 	{
 		// dns_get_record() expects an integer as second parameter
 		// We have to convert the string $type to the corresponding integer constant.
@@ -3840,11 +3813,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
 	{
 		$msg_text = $msg_long_text;
-	}
-
-	if (!defined('E_DEPRECATED'))
-	{
-		define('E_DEPRECATED', 8192);
 	}
 
 	switch ($errno)

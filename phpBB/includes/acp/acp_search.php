@@ -303,8 +303,7 @@ class acp_search
 					}
 					else
 					{
-						$starttime = explode(' ', microtime());
-						$starttime = $starttime[1] + $starttime[0];
+						$starttime = microtime(true);
 						$row_count = 0;
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
@@ -336,8 +335,7 @@ class acp_search
 
 						if ($post_counter <= $this->max_post_id)
 						{
-							$mtime = explode(' ', microtime());
-							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
 							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter, $rows_per_second));
@@ -376,8 +374,7 @@ class acp_search
 						}
 						$db->sql_freeresult($result);
 
-						$starttime = explode(' ', microtime());
-						$starttime = $starttime[1] + $starttime[0];
+						$starttime = microtime(true);
 						$row_count = 0;
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
@@ -426,8 +423,7 @@ class acp_search
 
 						if ($post_counter <= $this->max_post_id)
 						{
-							$mtime = explode(' ', microtime());
-							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
 							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
