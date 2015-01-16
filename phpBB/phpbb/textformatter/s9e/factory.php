@@ -163,13 +163,11 @@ class factory implements \phpbb\textformatter\cache
 
 		// Create custom filters for BBCode tokens that are supported in phpBB but not in
 		// s9e\TextFormatter
-		$filter = new RegexpFilter('#^' . get_preg_expression('relative_url') . '$#D');
+		$filter = new RegexpFilter('#^' . get_preg_expression('relative_url') . '$#Du');
 		$configurator->attributeFilters->add('#local_url', $filter);
 		$configurator->attributeFilters->add('#relative_url', $filter);
 
-		$regexp = (phpbb_pcre_utf8_support())
-			? '!^([\p{L}\p{N}\-+,_. ]+)$!uD'
-			: '!^([a-zA-Z0-9\-+,_. ]+)$!uD';
+		$regexp = '!^([\p{L}\p{N}\-+,_. ]+)$!Du';
 		$configurator->attributeFilters->add('#inttext', new RegexpFilter($regexp));
 
 		// Create custom filters for Flash restrictions, which use the same values as the image
