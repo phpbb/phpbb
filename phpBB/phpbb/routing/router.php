@@ -106,25 +106,25 @@ class router implements RouterInterface
 	/**
 	 * Find the list of routing files
 	 *
-	 * @param array $paths Array of paths where to look for routing files.
+	 * @param array $paths Array of paths where to look for routing files (they must be relative to the phpBB root path).
 	 * @return router
 	 */
 	public function find_routing_files(array $paths)
 	{
-		$this->routing_files = array($this->phpbb_root_path . 'config/' . $this->environment . '/routing/environment.yml');
+		$this->routing_files = array('config/' . $this->environment . '/routing/environment.yml');
 		foreach ($paths as $path)
 		{
-			if (file_exists($path . 'config/' . $this->environment . '/routing/environment.yml'))
+			if (file_exists($this->phpbb_root_path . $path . 'config/' . $this->environment . '/routing/environment.yml'))
 			{
 				$this->routing_files[] = $path . 'config/' . $this->environment . '/routing/environment.yml';
 			}
-			else if (!is_dir($path . 'config/' . $this->environment))
+			else if (!is_dir($this->phpbb_root_path . $path . 'config/' . $this->environment))
 			{
-				if (file_exists($path . 'config/default/routing/environment.yml'))
+				if (file_exists($this->phpbb_root_path . $path . 'config/default/routing/environment.yml'))
 				{
 					$this->routing_files[] = $path . 'config/default/routing/environment.yml';
 				}
-				else if (!is_dir($path . 'config/default/routing') && file_exists($path . 'config/routing.yml'))
+				else if (!is_dir($this->phpbb_root_path . $path . 'config/default/routing') && file_exists($this->phpbb_root_path . $path . 'config/routing.yml'))
 				{
 					$this->routing_files[] = $path . 'config/routing.yml';
 				}
@@ -164,7 +164,7 @@ class router implements RouterInterface
 	{
 		if ($this->route_collection == null || empty($this->routing_files))
 		{
-			$this->find_routing_files($this->extension_manager->all_enabled())
+			$this->find_routing_files($this->extension_manager->all_enabled(false))
 				->find($this->phpbb_root_path);
 		}
 
