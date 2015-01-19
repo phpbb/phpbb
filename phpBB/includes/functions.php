@@ -2396,26 +2396,7 @@ function build_url($strip_vars = false)
 {
 	global $config, $user, $phpbb_path_helper;
 
-	$php_ext = $phpbb_path_helper->get_php_ext();
-	$page = $user->page['page'];
-
-	// We need to be cautious here.
-	// On some situations, the redirect path is an absolute URL, sometimes a relative path
-	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
-	// else we use the URL directly.
-	$url_parts = parse_url($page);
-
-	// URL
-	if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
-	{
-		// Remove 'app.php/' from the page, when rewrite is enabled
-		if ($config['enable_mod_rewrite'] && strpos($page, 'app.' . $php_ext . '/') === 0)
-		{
-			$page = substr($page, strlen('app.' . $php_ext . '/'));
-		}
-
-		$page = $phpbb_path_helper->get_phpbb_root_path() . $page;
-	}
+	$page = $phpbb_path_helper->get_valid_page($user->page['page'], $config['enable_mod_rewrite']);
 
 	// Append SID
 	$redirect = append_sid($page, false, false);
@@ -2657,7 +2638,7 @@ function check_form_key($form_name, $timespan = false)
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db, $request;
-	global $phpEx, $phpbb_root_path, $request;
+	global $config, $phpbb_path_helper;
 
 	if (isset($_POST['cancel']))
 	{
@@ -2719,8 +2700,8 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
-	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
-	$u_action = reapply_sid($use_page);
+	$use_page = ($u_action) ? $u_action : str_replace('&', '&amp;', $user->page['page']);
+	$u_action = reapply_sid($phpbb_path_helper->get_valid_page($use_page, $config['enable_mod_rewrite']));
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
