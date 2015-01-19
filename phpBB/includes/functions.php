@@ -1150,9 +1150,42 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
-	global $request, $phpbb_container;
+	global $request, $phpbb_container, $phpbb_dispatcher;
 
 	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
+
+	$should_markread = true;
+
+	/**
+	 * This event is used for performing actions directly before marking forums,
+	 * topics or posts as read.
+	 * 
+	 * It is also possible to prevent the marking. For that, the $should_markread parameter
+	 * should be set to FALSE.
+	 *
+	 * @event core.markread_before
+	 * @var	string	mode				Variable containing marking mode value
+	 * @var	mixed	forum_id			Variable containing forum id, or false
+	 * @var	mixed	topic_id			Variable containing topic id, or false
+	 * @var	int		post_time			Variable containing post time
+	 * @var	int		user_id				Variable containing the user id
+	 * @var	bool	should_markread		Flag indicating if the markread should be done or not.
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+		'mode',
+		'forum_id',
+		'topic_id',
+		'post_time',
+		'user_id',
+		'should_markread',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.markread_before', compact($vars)));
+
+	if (!$should_markread)
+	{
+		return;
+	}
 
 	if ($mode == 'all')
 	{
