@@ -135,6 +135,11 @@ class bbcode
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
 
+			if (empty($user->theme['template_inherits_id']) && !empty($template->orig_tpl_inherits_id))
+			{
+				$user->theme['template_inherits_id'] = $template->orig_tpl_inherits_id;
+			}
+
 			if (!@file_exists($this->template_filename))
 			{
 				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
