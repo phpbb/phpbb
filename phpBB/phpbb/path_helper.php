@@ -455,4 +455,38 @@ class path_helper
 
 		return $url_parts['base'] . (($params) ? '?' . $this->glue_url_params($params) : '');
 	}
+
+	/**
+	 * Get a valid page
+	 *
+	 * @param string $page The page to verify
+	 * @param bool $mod_rewrite Whether mod_rewrite is enabled, default: false
+	 *
+	 * @return string A valid page based on given page and mod_rewrite
+	 */
+	public function get_valid_page($page, $mod_rewrite = false)
+	{
+		// We need to be cautious here.
+		// On some situations, the redirect path is an absolute URL, sometimes a relative path
+		// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+		// else we use the URL directly.
+		$url_parts = parse_url($page);
+
+		// URL
+		if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
+		{
+			// Remove 'app.php/' from the page, when rewrite is enabled.
+			// Treat app.php as a reserved file name and remove on mod rewrite
+			// even if it might not be in the phpBB root.
+			if ($mod_rewrite && ($app_position = strpos($page, 'app.' . $this->php_ext . '/')) !== false)
+			{
+				$page = substr($page, 0, $app_position) . substr($page, $app_position + strlen('app.' . $this->php_ext . '/'));
+			}
+
+			// Remove preceding slashes from page name and prepend root path
+			$page = $this->get_phpbb_root_path() . ltrim($page, '/\\');
+		}
+
+		return $page;
+	}
 }
