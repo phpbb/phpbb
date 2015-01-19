@@ -434,6 +434,8 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array('app.php/foo', false, 'app.php/foo'),
 			array('/../app.php/foo', true, '../foo'),
 			array('/../app.php/foo', false, '../app.php/foo'),
+			array('/../example/app.php/foo/bar', true, '../example/foo/bar'),
+			array('/../example/app.php/foo/bar', false, '../example/app.php/foo/bar'),
 		);
 	}
 
