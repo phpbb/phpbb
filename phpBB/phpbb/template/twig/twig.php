@@ -261,19 +261,19 @@ class twig extends \phpbb\template\base
 						$ext_style_theme_path = $ext_style_path . 'theme/';
 					}
 
-					$ok = false;
+					$is_valid_dir = false;
 					if (is_dir($ext_style_template_path))
 					{
-						$ok = true;
+						$is_valid_dir = true;
 						$paths[] = $ext_style_template_path;
 					}
 					if (is_dir($ext_style_theme_path))
 					{
-						$ok = true;
+						$is_valid_dir = true;
 						$paths[] = $ext_style_theme_path;
 					}
 
-					if ($ok)
+					if ($is_valid_dir)
 					{
 						// Add the base style directory as a safe directory
 						$this->twig->getLoader()->addSafeDirectory($ext_style_path);
