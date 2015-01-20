@@ -110,7 +110,7 @@ class release_3_0_5_rc1 extends container_aware_migration
 				// Select auth_option_ids... the largest id will be preserved
 				$sql = 'SELECT auth_option_id
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option = '" . $db->sql_escape($option) . "'
+					WHERE auth_option = '" . $this->db->sql_escape($option) . "'
 					ORDER BY auth_option_id DESC";
 				// sql_query_limit not possible here, due to bug in postgresql layer
 				$result = $this->db->sql_query($sql);
