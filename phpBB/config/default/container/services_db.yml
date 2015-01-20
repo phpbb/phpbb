@@ -18,6 +18,7 @@ services:
     migrator:
         class: phpbb\db\migrator
         arguments:
+            - @service_container
             - @config
             - @dbal.conn
             - @dbal.tools

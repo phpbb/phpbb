@@ -156,7 +156,10 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$table_prefix = 'phpbb_';
 		$user = new \phpbb\user('\phpbb\user');
 
+		$container = new phpbb_mock_container_builder();
+
 		$migrator = new \phpbb\db\migrator(
+			$container,
 			$config,
 			$db,
 			$db_tools,
@@ -167,7 +170,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			array(),
 			new \phpbb\db\migration\helper()
 		);
-		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
 
 		return new \phpbb\extension\manager(

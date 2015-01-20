@@ -232,7 +232,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$db = $this->get_db();
 		$db_tools = new \phpbb\db\tools\tools($db);
 
+		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(
+			$container,
 			$config,
 			$db,
 			$db_tools,
@@ -243,8 +245,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			array(),
 			new \phpbb\db\migration\helper()
 		);
-		$container = new phpbb_mock_container_builder();
 		$container->set('migrator', $migrator);
+		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
 		$user = new \phpbb\user('\phpbb\datetime');
 
 		$extension_manager = new \phpbb\extension\manager(

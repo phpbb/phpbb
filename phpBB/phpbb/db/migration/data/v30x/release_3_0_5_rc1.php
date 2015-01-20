@@ -13,7 +13,9 @@
 
 namespace phpbb\db\migration\data\v30x;
 
-class release_3_0_5_rc1 extends \phpbb\db\migration\migration
+use phpbb\db\migration\container_aware_migration;
+
+class release_3_0_5_rc1 extends container_aware_migration
 {
 	public function effectively_installed()
 	{
@@ -55,10 +57,9 @@ class release_3_0_5_rc1 extends \phpbb\db\migration\migration
 
 	public function hash_old_passwords()
 	{
-		global $phpbb_container;
-
 		/* @var $passwords_manager \phpbb\passwords\manager */
-		$passwords_manager = $phpbb_container->get('passwords.manager');
+		$passwords_manager = $this->container->get('passwords.manager');
+
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
 				WHERE user_pass_convert = 1';
