@@ -29,7 +29,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Change "full folder" setting - what to do if folder is full
 	if (isset($_POST['fullfolder']))
 	{
-		check_form_key('ucp_pm_options', $config['form_token_lifetime'], $redirect_url);
+		if (!check_form_key('ucp_pm_options'))
+		{
+			trigger_error('FORM_INVALID');
+		}
+
 		$full_action = request_var('full_action', 0);
 
 		$set_folder_id = 0;
