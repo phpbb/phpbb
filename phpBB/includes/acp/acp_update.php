@@ -34,7 +34,7 @@ class acp_update
 		$this->page_title = 'ACP_VERSION_CHECK';
 
 		// Get current and latest version
-		$info = obtain_latest_version_info(request_var('versioncheck_force', false));
+		$info = htmlspecialchars(obtain_latest_version_info(request_var('versioncheck_force', false)));
 
 		if (empty($info))
 		{
