@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 /**
  * Class http_exception
  */
-class http_exception extends exception implements HttpExceptionInterface
+class http_exception extends runtime_exception implements HttpExceptionInterface
 {
 	/**
 	 * Http status code.

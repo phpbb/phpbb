@@ -35,7 +35,7 @@ class exception_listener extends phpbb_test_case
 			),
 			array(
 				true,
-				new \phpbb\exception\exception('AJAX_ERROR_TEXT'),
+				new \phpbb\exception\runtime_exception('AJAX_ERROR_TEXT'),
 				array(
 					'status_code' => 500,
 					'content' => 'Something went wrong when processing your request.',
@@ -84,7 +84,7 @@ class exception_listener extends phpbb_test_case
 
 		$exception_listener = new \phpbb\event\kernel_exception_subscriber($template, $user);
 
-		$event = new \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent(new \phpbb\kernel('test'), $request, \Symfony\Component\HttpKernel\HttpKernelInterface::MASTER_REQUEST, $exception);
+		$event = new \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent($this->getMock('Symfony\Component\HttpKernel\HttpKernelInterface'), $request, \Symfony\Component\HttpKernel\HttpKernelInterface::MASTER_REQUEST, $exception);
 		$exception_listener->on_kernel_exception($event);
 
 		$response = $event->getResponse();
