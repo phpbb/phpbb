@@ -95,6 +95,40 @@ function deregister_globals()
 	unset($input);
 }
 
+/**
+ * Check if requested page uses a trailing path
+ *
+ * @param string $phpEx PHP extension
+ *
+ * @return bool True if trailing path is used, false if not
+ */
+function phpbb_has_trailing_path($phpEx)
+{
+	// Check if path_info is being used
+	if (!empty($_SERVER['PATH_INFO']) || !empty($_SERVER['ORIG_PATH_INFO']))
+	{
+		return true;
+	}
+
+	// Match any trailing path appended to a php script in the REQUEST_URI.
+	// It is assumed that only actual PHP scripts use names like foo.php. Due
+	// to this, any phpBB board inside a directory that has the php extension
+	// appended to its name will stop working, i.e. if the board is at
+	// example.com/phpBB/test.php/ or example.com/test.php/
+	if (preg_match('#^[^?]+\.' . preg_quote($phpEx, '#') . '/#', $_SERVER['REQUEST_URI']))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+// Check if trailing path is used
+if (phpbb_has_trailing_path($phpEx))
+{
+	exit('Trailing paths and path_info is not supported by phpBB 3.0');
+}
+
 // Register globals and magic quotes have been dropped in PHP 5.4
 if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 {
