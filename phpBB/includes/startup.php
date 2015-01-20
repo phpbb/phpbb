@@ -126,7 +126,21 @@ function phpbb_has_trailing_path($phpEx)
 // Check if trailing path is used
 if (phpbb_has_trailing_path($phpEx))
 {
-	exit('Trailing paths and path_info is not supported by phpBB 3.0');
+	if (substr(strtolower(@php_sapi_name()), 0, 3) === 'cgi')
+	{
+		$prefix = 'Status:';
+	}
+	else if (!empty($_SERVER['SERVER_PROTOCOL']))
+	{
+		$prefix = $_SERVER['SERVER_PROTOCOL'];
+	}
+	else
+	{
+		$prefix = 'HTTP/1.0';
+	}
+	header("$prefix 404 Not Found", true, 404);
+	echo 'Trailing paths and PATH_INFO is not supported by phpBB 3.0';
+	exit;
 }
 
 // Register globals and magic quotes have been dropped in PHP 5.4
