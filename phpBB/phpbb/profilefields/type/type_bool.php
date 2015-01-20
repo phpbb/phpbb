@@ -173,7 +173,7 @@ class type_bool extends type_base
 		}
 		else
 		{
-			return $this->lang_helper->is_set($field_id, $lang_id, $field_value + 1);
+			return $this->lang_helper->is_set($field_id, $lang_id, $field_value + 1) ? $this->lang_helper->get($field_id, $lang_id, $field_value + 1) : null;
 		}
 	}
 
