@@ -101,9 +101,10 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 		$values["config[check_attachment_content]"] = 0;
 		$form->setValues($values);
 		$crawler = self::submit($form);
+		var_export($crawler->text());
 
 		// Request index for correct URL
-		$crawler = self::request('GET', 'index.php?sid=' . $this->sid);
+		self::request('GET', 'index.php?sid=' . $this->sid);
 
 		$crawler = $this->upload_file('disallowed.jpg', 'image/jpeg');
 
