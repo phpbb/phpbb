@@ -900,6 +900,7 @@ search_results_header_after
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
 * Since: 3.1.4-RC1
 * Purpose: Add content after the header of the search results
 
@@ -907,6 +908,7 @@ search_results_header_before
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
 * Since: 3.1.4-RC1
 * Purpose: Add content before the header of the search results.
 
@@ -942,6 +944,7 @@ search_results_searchbox_after
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
+    + styles/subsilver2/template/search_results.html
 * Since: 3.1.4-RC1
 * Purpose: Add content right after the searchbox of the search results.
 
