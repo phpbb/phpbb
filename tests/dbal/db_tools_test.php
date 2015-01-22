@@ -415,4 +415,11 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->tools->sql_create_unique_index('prefix_table_name', 'i_uniq_ts_id', array('c_timestamp', 'c_id'));
 		$this->assertTrue($this->tools->sql_unique_index_exists('prefix_table_name', 'i_uniq_ts_id'));
 	}
+
+	public function test_create_int_default_null()
+	{
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_13282'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_13282', array('TINT:2')));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_13282'));
+	}
 }
