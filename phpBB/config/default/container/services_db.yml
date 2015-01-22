@@ -9,8 +9,13 @@ services:
         calls:
             - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
 
+# ----- DB Tools -----
+    dbal.tools.factory:
+        class: phpbb\db\tools\factory
+
     dbal.tools:
         class: phpbb\db\tools\tools
+        factory: ["@dbal.tools.factory", get]
         arguments:
             - @dbal.conn
 
