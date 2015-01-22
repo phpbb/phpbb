@@ -831,7 +831,7 @@ class qa
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
-			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
+			'answers'		=> (strlen($answers)) ? array_filter(array_map('trim', explode("\n", $answers))) : '',
 		);
 
 		return $question;
