@@ -187,6 +187,8 @@ class helper
 	* @param string $message The error message
 	* @param int $code The error code (e.g. 404, 500, 503, etc.)
 	* @return Response A Response instance
+	*
+	* @deprecated 3.1.3 (To be removed: 3.3.0) Use exceptions instead.
 	*/
 	public function error($message, $code = 500)
 	{
