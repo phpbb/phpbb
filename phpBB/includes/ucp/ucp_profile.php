@@ -32,7 +32,7 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('posting');
 
@@ -285,6 +285,17 @@ class ucp_profile
 					$data['user_birthday'] = sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
 				}
 
+				/**
+				* Modify user data on editing profile in UCP
+				*
+				* @event core.ucp_profile_modify_profile_info
+				* @var	array	data		Array with user profile data
+				* @var	bool	submit		Flag indicating if submit button has been pressed
+				* @since 3.1.4-RC1
+				*/
+				$vars = array('data', 'submit');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_profile_info', compact($vars)));
+
 				add_form_key('ucp_profile_info');
 
 				if ($submit)
@@ -340,6 +351,17 @@ class ucp_profile
 						{
 							$sql_ary['user_birthday'] = $data['user_birthday'];
 						}
+
+						/**
+						* Modify profile data in UCP before submitting to the database
+						*
+						* @event core.ucp_profile_info_modify_sql_ary
+						* @var	array	cp_data		Array with the user custom profile fields data
+						* @var	array	data		Array with user profile data
+						* @since 3.1.4-RC1
+						*/
+						$vars = array('cp_data', 'data');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
