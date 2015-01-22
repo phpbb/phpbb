@@ -1575,7 +1575,7 @@ class tools
 				else
 				{
 					// Integers need to have 0 instead of empty string as default
-					if (preg_match('/int/i', $column_type))
+					if (strpos($column_type, 'INT') === 0)
 					{
 						$default_val = '0';
 					}
