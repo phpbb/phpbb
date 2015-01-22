@@ -415,4 +415,34 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->tools->sql_create_unique_index('prefix_table_name', 'i_uniq_ts_id', array('c_timestamp', 'c_id'));
 		$this->assertTrue($this->tools->sql_unique_index_exists('prefix_table_name', 'i_uniq_ts_id'));
 	}
+
+	public function data_prepare_column_defaults()
+	{
+		return array(
+			// array(column_name, column_data, mysql default, postgres default, sqlite default)
+			array('cid', array('UINT'), 'UNSIGNED NULL', 'NULL DEFAULT 0', 'UNSIGNED'),
+			array('c_int_size', array('INT:4'), 'int(4) NULL', 'NULL DEFAULT 0', 'INT(4)'),
+		);
+	}
+
+	/**
+	 * @dataProvider data_prepare_column_defaults
+	 */
+	public function test_prepare_column_defaults($column_name, $column_data, $mysql_default, $postgres_default, $sqlite_default)
+	{
+		$column_data = $this->tools->sql_prepare_column_data('prefix_table_name', $column_name, $column_data);
+
+		if (stripos(get_class($this->db), 'mysql') !== false)
+		{
+			$this->assertContains($mysql_default, $column_data['column_type_sql']);
+		}
+		else if (stripos(get_class($this->db), 'postgres') !== false)
+		{
+			$this->assertContains($postgres_default, $column_data['column_type_sql']);
+		}
+		else if (stripos(get_class($this->db), 'sqlite') !== false)
+		{
+			$this->assertContains($sqlite_default, $column_data['column_type_sql']);
+		}
+	}
 }
