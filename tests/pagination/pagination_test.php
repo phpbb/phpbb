@@ -172,6 +172,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
 	}
 
+	/**
+	 * @dataProvider generate_template_pagination_data
+	 */
+	public function test_generate_template_pagination_sub($base_url, $start_name, $num_items, $per_page, $start_item, $expect)
+	{
+		$this->pagination->generate_template_pagination($base_url, 'sub.pagination', $start_name, $num_items, $per_page, $start_item);
+		$this->template->set_filenames(array('test' => 'pagination_sub.html'));
+
+		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
+	}
+
 	public function on_page_data()
 	{
 		return array(
