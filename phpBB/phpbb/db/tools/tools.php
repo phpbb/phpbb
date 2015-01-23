@@ -1526,7 +1526,15 @@ class tools implements tools_interface
 				}
 				else
 				{
-					$default_val = "'" . $column_data[1] . "'";
+					// Integers need to have 0 instead of empty string as default
+					if (strpos($column_type, 'INT') === 0)
+					{
+						$default_val = '0';
+					}
+					else
+					{
+						$default_val = "'" . $column_data[1] . "'";
+					}
 					$return_array['null'] = 'NULL';
 					$sql .= 'NULL ';
 				}
