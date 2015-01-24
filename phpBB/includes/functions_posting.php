@@ -1205,12 +1205,12 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		*
 		* @event core.topic_review_modify_row
 		* @var	string	mode				The review mode
-		* @var  int		topic_id			The topic that is being reviewed
-		* @var  int		forum_id			The topic's forum
-		* @var  int		cur_post_id			Post offset id
+		* @var	int		topic_id			The topic that is being reviewed
+		* @var	int		forum_id			The topic's forum
+		* @var	int		cur_post_id			Post offset id
 		* @var	int		current_row_number	Number of the current row being iterated
 		* @var	array	post_row			Template block array of the current post
-		* @since 3.1.4
+		* @since 3.1.4-RC1
 		*/
 		$vars = array(
 			'mode',
