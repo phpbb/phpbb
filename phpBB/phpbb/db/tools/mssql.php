@@ -117,6 +117,8 @@ class mssql extends tools
 				$this->sql_layer = 'mssqlnative';
 			break;
 		}
+
+		$this->dbms_type_map = self::get_dbms_type_map();
 	}
 
 	/**
@@ -344,7 +346,7 @@ class mssql extends tools
 		}
 
 		// Get type
-		list($column_type, $orig_column_type) = $this->get_column_type($column_data[0]);
+		list($column_type, ) = $this->get_column_type($column_data[0]);
 
 		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))

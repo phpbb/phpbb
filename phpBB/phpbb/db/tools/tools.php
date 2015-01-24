@@ -1354,6 +1354,7 @@ class tools implements tools_interface
 	*/
 	function get_column_type($column_map_type)
 	{
+		$column_type = '';
 		if (strpos($column_map_type, ':') !== false)
 		{
 			list($orig_column_type, $column_length) = explode(':', $column_map_type);
