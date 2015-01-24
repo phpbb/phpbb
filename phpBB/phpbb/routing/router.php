@@ -13,6 +13,7 @@
 
 namespace phpbb\routing;
 
+use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
 use Symfony\Component\Routing\Generator\Dumper\PhpGeneratorDumper;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -232,14 +233,7 @@ class router implements RouterInterface
 			return $this->matcher;
 		}
 
-		if (defined('DEBUG'))
-		{
-			$this->create_new_url_matcher();
-		}
-		else
-		{
-			$this->create_dumped_url_matcher();
-		}
+		$this->create_dumped_url_matcher();
 
 		return $this->matcher;
 	}
@@ -248,21 +242,22 @@ class router implements RouterInterface
 	 */
 	protected function create_dumped_url_matcher()
 	{
-		if (!file_exists($this->phpbb_root_path . 'cache/url_matcher.' . $this->php_ext))
+		$cache = new ConfigCache("{$this->phpbb_root_path}cache/{$this->environment}/url_matcher.{$this->php_ext}", defined('DEBUG'));
+		if (!$cache->isFresh())
 		{
 			$dumper = new PhpMatcherDumper($this->get_routes());
 
 			$options = array(
-				'class' => 'phpbb_url_matcher',
+				'class'      => 'phpbb_url_matcher',
+				'base_class' => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
 			);
 
-			$dump = $dumper->dump($options);
-			file_put_contents($this->phpbb_root_path . 'cache/url_matcher.' . $this->php_ext, $dump);
+			$cache->write($dumper->dump($options), $this->get_routes()->getResources());
 		}
 
-		require_once($this->phpbb_root_path . 'cache/url_matcher.' . $this->php_ext);
+		require_once($cache);
 
-		$this->matcher = new phpbb_url_matcher($this->context);
+		$this->matcher = new \phpbb_url_matcher($this->context);
 	}
 
 	/**
@@ -285,14 +280,7 @@ class router implements RouterInterface
 			return $this->generator;
 		}
 
-		if (defined('DEBUG'))
-		{
-			$this->create_new_url_generator();
-		}
-		else
-		{
-			$this->create_dumped_url_generator();
-		}
+		$this->create_dumped_url_generator();
 
 		return $this->generator;
 	}
@@ -302,21 +290,22 @@ class router implements RouterInterface
 	 */
 	protected function create_dumped_url_generator()
 	{
-		if (!file_exists($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext))
+		$cache = new ConfigCache("{$this->phpbb_root_path}cache/{$this->environment}/url_generator.{$this->php_ext}", defined('DEBUG'));
+		if (!$cache->isFresh())
 		{
 			$dumper = new PhpGeneratorDumper($this->get_routes());
 
 			$options = array(
-				'class' => 'phpbb_url_generator',
+				'class'      => 'phpbb_url_generator',
+				'base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
 			);
 
-			$dump = $dumper->dump($options);
-			file_put_contents($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext, $dump);
+			$cache->write($dumper->dump($options), $this->get_routes()->getResources());
 		}
 
-		require_once($this->phpbb_root_path . 'cache/url_generator.' . $this->php_ext);
+		require_once($cache);
 
-		$this->generator = new phpbb_url_generator($this->context);
+		$this->generator = new \phpbb_url_generator($this->context);
 	}
 
 	/**
