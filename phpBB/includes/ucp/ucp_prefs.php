@@ -85,11 +85,11 @@ class ucp_prefs
 						$data['user_style'] = (int) $user->data['user_style'];
 					}
 
-					$error = validate_data($data, array(
+					$error = array_merge(validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('language_iso_name'),
 						'tz'			=> array('timezone'),
-					));
+					)), $error);
 
 					if (!check_form_key('ucp_prefs_personal'))
 					{
