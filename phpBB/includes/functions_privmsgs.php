@@ -2139,17 +2139,56 @@ function set_user_message_limit()
 {
 	global $user, $db, $config;
 
-	// Get maximum about from user memberships - if it is 0, there is no limit set and we use the maximum value within the config.
-	$sql = 'SELECT MAX(g.group_message_limit) as max_message_limit
+	// Get maximum about from user memberships
+	$message_limit = phpbb_get_max_setting_from_group($db, $user->data['user_id'], 'message_limit');
+
+	// If it is 0, there is no limit set and we use the maximum value within the config.
+	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+}
+
+/**
+ * Get the maximum PM setting for the groups of the user
+ *
+ * @param \phpbb\db\driver\driver_interface $db
+ * @param int $user_id
+ * @param string $setting Only 'max_recipients' and 'message_limit' are supported
+ * @return int The maximum setting for all groups of the user, unless one group has '0'
+ */
+function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db, $user_id, $setting)
+{
+	if ($setting !== 'max_recipients' && $setting !== 'message_limit')
+	{
+		throw new InvalidArgumentException('Setting "' . $setting . '" is not supported');
+	}
+
+	// Get maximum number of allowed recipients
+	$sql = 'SELECT MAX(g.group_' . $setting . ') as max_setting
 		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.user_id = ' . $user->data['user_id'] . '
+		WHERE ug.user_id = ' . (int) $user_id . '
 			AND ug.user_pending = 0
 			AND ug.group_id = g.group_id';
 	$result = $db->sql_query($sql);
-	$message_limit = (int) $db->sql_fetchfield('max_message_limit');
+	$max_setting = (int) $db->sql_fetchfield('max_setting');
 	$db->sql_freeresult($result);
 
-	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+	if ($max_setting)
+	{
+		// If the user is limited by a group, check whether he is also set to
+		// unlimited in another group (value 0)
+		$sql = 'SELECT g.group_' . $setting . ' as max_setting
+			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
+			WHERE ug.user_id = ' . (int) $user_id . '
+				AND ug.user_pending = 0
+				AND ug.group_id = g.group_id
+				AND g.group_max_recipients = 0';
+		$result = $db->sql_query($sql);
+		$is_unlimited = $db->sql_fetchfield('max_setting');
+		$db->sql_freeresult($result);
+
+		$max_setting = ($is_unlimited === false) ? $max_setting : 0;
+	}
+
+	return $max_setting;
 }
 
 /**
