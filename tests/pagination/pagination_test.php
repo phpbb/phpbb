@@ -177,6 +177,11 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	 */
 	public function test_generate_template_pagination_sub($base_url, $start_name, $num_items, $per_page, $start_item, $expect)
 	{
+		// Block needs to be assigned before pagination
+		$this->template->assign_block_vars('sub', array(
+			'FOO'		=> 'bar',
+		));
+
 		$this->pagination->generate_template_pagination($base_url, 'sub.pagination', $start_name, $num_items, $per_page, $start_item);
 		$this->template->set_filenames(array('test' => 'pagination_sub.html'));
 
