@@ -827,13 +827,22 @@ class qa
 	function acp_get_question_input()
 	{
 		$answers = utf8_normalize_nfc(request_var('answers', '', true));
+
+		// Convert answers into array and filter if answers are set
+		if (strlen($answers))
+		{
+			$answers = array_filter(explode("\n", $answers), function ($value) {
+				return trim($value) !== '';
+			});
+		}
+
+
 		$question = array(
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
-			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
+			'answers'		=> $answers,
 		);
-
 		return $question;
 	}
 
