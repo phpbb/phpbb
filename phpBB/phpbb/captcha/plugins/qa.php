@@ -113,9 +113,9 @@ class qa
 	*/
 	public function is_installed()
 	{
-		global $db;
+		global $phpbb_container;
 
-		$db_tool = new \phpbb\db\tools\tools($db);
+		$db_tool = $phpbb_container->get('dbal.tools');
 
 		return $db_tool->sql_table_exists($this->table_captcha_questions);
 	}
@@ -306,11 +306,9 @@ class qa
 	*/
 	function install()
 	{
-		global $db;
+		global $phpbb_container;
 
-		$db_tool = new \phpbb\db\tools\tools($db);
-
-		$tables = array($this->table_captcha_questions, $this->table_captcha_answers, $this->table_qa_confirm);
+		$db_tool = $phpbb_container->get('dbal.tools');
 
 		$schemas = array(
 				$this->table_captcha_questions		=> array (
@@ -352,7 +350,7 @@ class qa
 				),
 		);
 
-		foreach($schemas as $table => $schema)
+		foreach ($schemas as $table => $schema)
 		{
 			if (!$db_tool->sql_table_exists($table))
 			{

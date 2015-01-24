@@ -32,7 +32,8 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->tools = new \phpbb\db\tools\tools($this->db);
+		$factory = new \phpbb\db\tools\factory();
+		$this->tools = $factory->get($this->db);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(

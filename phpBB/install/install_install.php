@@ -1200,7 +1200,9 @@ class install_install extends module
 				->get_classes();
 
 			$sqlite_db = new \phpbb\db\driver\sqlite();
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, new \phpbb\db\tools\tools($sqlite_db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$factory = new \phpbb\db\tools\factory();
+			$db_tools = $factory->get($sqlite_db, true);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 			$db_table_schema = $schema_generator->get_schema();
 		}
 
@@ -1212,7 +1214,8 @@ class install_install extends module
 			define('CONFIG_TABLE', $data['table_prefix'] . 'config');
 		}
 
-		$db_tools = new \phpbb\db\tools\tools($db);
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($db);
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
 			$db_tools->sql_create_table(
