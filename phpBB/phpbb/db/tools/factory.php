@@ -25,7 +25,11 @@ class factory
 	 */
 	public function get($db_driver, $return_statements = false)
 	{
-		if ($db_driver instanceof \phpbb\db\driver\driver_interface)
+		if ($db_driver instanceof \phpbb\db\driver\mssql || $db_driver instanceof \phpbb\db\driver\mssql_base)
+		{
+			return new \phpbb\db\tools\mssql($db_driver, $return_statements);
+		}
+		else if ($db_driver instanceof \phpbb\db\driver\driver_interface)
 		{
 			return new \phpbb\db\tools\tools($db_driver, $return_statements);
 		}

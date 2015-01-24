@@ -36,12 +36,6 @@ class tools implements tools_interface
 	var $dbms_type_map = array();
 
 	/**
-	* Is the used MS SQL Server a SQL Server 2000?
-	* @var bool
-	*/
-	protected $is_sql_server_2000;
-
-	/**
 	* Get the column types for every database we support
 	*
 	* @return array
@@ -107,66 +101,6 @@ class tools implements tools_interface
 				'VCHAR_UNI:'=> array('varbinary(%d)', 'limit' => array('mult', 3, 255, 'blob')),
 				'VCHAR_CI'	=> 'blob',
 				'VARBINARY'	=> 'varbinary(255)',
-			),
-
-			'mssql'		=> array(
-				'INT:'		=> '[int]',
-				'BINT'		=> '[float]',
-				'UINT'		=> '[int]',
-				'UINT:'		=> '[int]',
-				'TINT:'		=> '[int]',
-				'USINT'		=> '[int]',
-				'BOOL'		=> '[int]',
-				'VCHAR'		=> '[varchar] (255)',
-				'VCHAR:'	=> '[varchar] (%d)',
-				'CHAR:'		=> '[char] (%d)',
-				'XSTEXT'	=> '[varchar] (1000)',
-				'STEXT'		=> '[varchar] (3000)',
-				'TEXT'		=> '[varchar] (8000)',
-				'MTEXT'		=> '[text]',
-				'XSTEXT_UNI'=> '[varchar] (100)',
-				'STEXT_UNI'	=> '[varchar] (255)',
-				'TEXT_UNI'	=> '[varchar] (4000)',
-				'MTEXT_UNI'	=> '[text]',
-				'TIMESTAMP'	=> '[int]',
-				'DECIMAL'	=> '[float]',
-				'DECIMAL:'	=> '[float]',
-				'PDECIMAL'	=> '[float]',
-				'PDECIMAL:'	=> '[float]',
-				'VCHAR_UNI'	=> '[varchar] (255)',
-				'VCHAR_UNI:'=> '[varchar] (%d)',
-				'VCHAR_CI'	=> '[varchar] (255)',
-				'VARBINARY'	=> '[varchar] (255)',
-			),
-
-			'mssqlnative'	=> array(
-				'INT:'		=> '[int]',
-				'BINT'		=> '[float]',
-				'UINT'		=> '[int]',
-				'UINT:'		=> '[int]',
-				'TINT:'		=> '[int]',
-				'USINT'		=> '[int]',
-				'BOOL'		=> '[int]',
-				'VCHAR'		=> '[varchar] (255)',
-				'VCHAR:'	=> '[varchar] (%d)',
-				'CHAR:'		=> '[char] (%d)',
-				'XSTEXT'	=> '[varchar] (1000)',
-				'STEXT'		=> '[varchar] (3000)',
-				'TEXT'		=> '[varchar] (8000)',
-				'MTEXT'		=> '[text]',
-				'XSTEXT_UNI'=> '[varchar] (100)',
-				'STEXT_UNI'	=> '[varchar] (255)',
-				'TEXT_UNI'	=> '[varchar] (4000)',
-				'MTEXT_UNI'	=> '[text]',
-				'TIMESTAMP'	=> '[int]',
-				'DECIMAL'	=> '[float]',
-				'DECIMAL:'	=> '[float]',
-				'PDECIMAL'	=> '[float]',
-				'PDECIMAL:'	=> '[float]',
-				'VCHAR_UNI'	=> '[varchar] (255)',
-				'VCHAR_UNI:'=> '[varchar] (%d)',
-				'VCHAR_CI'	=> '[varchar] (255)',
-				'VARBINARY'	=> '[varchar] (255)',
 			),
 
 			'oracle'	=> array(
@@ -298,12 +232,6 @@ class tools implements tools_interface
 	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 	/**
-	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
-	* @var array
-	*/
-	var $supported_dbms = array('mssql', 'mssqlnative', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite', 'sqlite3');
-
-	/**
 	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
 	* This mode has no effect on some methods (inserting of data for example). This is expressed within the methods command.
 	*/
@@ -342,15 +270,6 @@ class tools implements tools_interface
 
 			case 'mysqli':
 				$this->sql_layer = 'mysql_41';
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-				$this->sql_layer = 'mssql';
-			break;
-
-			case 'mssqlnative':
-				$this->sql_layer = 'mssqlnative';
 			break;
 
 			default:
@@ -394,14 +313,6 @@ class tools implements tools_interface
 					FROM sqlite_master
 					WHERE type = "table"
 						AND name <> "sqlite_sequence"';
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'mssqlnative':
-				$sql = "SELECT name
-					FROM sysobjects
-					WHERE type='U'";
 			break;
 
 			case 'postgres':
@@ -469,26 +380,7 @@ class tools implements tools_interface
 		$create_sequence = false;
 
 		// Begin table sql statement
-		switch ($this->sql_layer)
-		{
-			case 'mssql':
-			case 'mssqlnative':
-				$table_sql = 'CREATE TABLE [' . $table_name . '] (' . "\n";
-			break;
-
-			default:
-				$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
-			break;
-		}
-
-		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
-		{
-			if (!isset($table_data['PRIMARY_KEY']))
-			{
-				$table_data['COLUMNS']['mssqlindex'] = array('UINT', null, 'auto_increment');
-				$table_data['PRIMARY_KEY'] = 'mssqlindex';
-			}
-		}
+		$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
 
 		// Iterate through the columns to create a table
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -502,17 +394,7 @@ class tools implements tools_interface
 			}
 
 			// here we add the definition of the new column to the list of columns
-			switch ($this->sql_layer)
-			{
-				case 'mssql':
-				case 'mssqlnative':
-					$columns[] = "\t [{$column_name}] " . $prepared_column['column_type_sql_default'];
-				break;
-
-				default:
-					$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
-				break;
-			}
+			$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
 
 			// see if we have found a primary key set due to a column definition if we have found it, we can stop looking
 			if (!$primary_key_gen)
@@ -529,16 +411,6 @@ class tools implements tools_interface
 
 		// this makes up all the columns in the create table statement
 		$table_sql .= implode(",\n", $columns);
-
-		// Close the table for two DBMS and add to the statements
-		switch ($this->sql_layer)
-		{
-			case 'mssql':
-			case 'mssqlnative':
-				$table_sql .= "\n);";
-				$statements[] = $table_sql;
-			break;
-		}
 
 		// we have yet to create a primary key for this table,
 		// this means that we can add the one we really wanted instead
@@ -560,21 +432,6 @@ class tools implements tools_interface
 					case 'sqlite':
 					case 'sqlite3':
 						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
-					break;
-
-					case 'mssql':
-					case 'mssqlnative':
-						// We need the data here
-						$old_return_statements = $this->return_statements;
-						$this->return_statements = true;
-
-						$primary_key_stmts = $this->sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
-						foreach ($primary_key_stmts as $pk_stmt)
-						{
-							$statements[] = $pk_stmt;
-						}
-
-						$this->return_statements = $old_return_statements;
 					break;
 
 					case 'oracle':
@@ -1073,16 +930,6 @@ class tools implements tools_interface
 						AND a.attrelid = c.oid";
 			break;
 
-			// same deal with PostgreSQL, we must perform more complex operations than
-			// we technically could
-			case 'mssql':
-			case 'mssqlnative':
-				$sql = "SELECT c.name
-					FROM syscolumns c
-					LEFT JOIN sysobjects o ON c.id = o.id
-					WHERE o.name = '{$table_name}'";
-			break;
-
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
@@ -1154,27 +1001,6 @@ class tools implements tools_interface
 	 */
 	function sql_index_exists($table_name, $index_name)
 	{
-		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
-		{
-			$sql = "EXEC sp_statistics '$table_name'";
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				if ($row['TYPE'] == 3)
-				{
-					if (strtolower($row['INDEX_NAME']) == strtolower($index_name))
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-			}
-			$this->db->sql_freeresult($result);
-
-			return false;
-		}
-
 		switch ($this->sql_layer)
 		{
 			case 'postgres':
@@ -1246,27 +1072,6 @@ class tools implements tools_interface
 	 */
 	function sql_unique_index_exists($table_name, $index_name)
 	{
-		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
-		{
-			$sql = "EXEC sp_statistics '$table_name'";
-			$result = $this->db->sql_query($sql);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				// Usually NON_UNIQUE is the column we want to check, but we allow for both
-				if ($row['TYPE'] == 3)
-				{
-					if (strtolower($row['INDEX_NAME']) == strtolower($index_name))
-					{
-						$this->db->sql_freeresult($result);
-						return true;
-					}
-				}
-			}
-			$this->db->sql_freeresult($result);
-			return false;
-		}
-
 		switch ($this->sql_layer)
 		{
 			case 'postgres':
@@ -1410,50 +1215,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				$sql .= " {$column_type} ";
-				$sql_default = " {$column_type} ";
-
-				// For adding columns we need the default definition
-				if (!is_null($column_data[1]))
-				{
-					// For hexadecimal values do not use single quotes
-					if (strpos($column_data[1], '0x') === 0)
-					{
-						$return_array['default'] = 'DEFAULT (' . $column_data[1] . ') ';
-						$sql_default .= $return_array['default'];
-					}
-					else
-					{
-						$return_array['default'] = 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
-						$sql_default .= $return_array['default'];
-					}
-				}
-
-				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
-				{
-//					$sql .= 'IDENTITY (1, 1) ';
-					$sql_default .= 'IDENTITY (1, 1) ';
-				}
-
-				$return_array['textimage'] = $column_type === '[text]';
-
-				if (!is_null($column_data[1]) || (isset($column_data[2]) && $column_data[2] == 'auto_increment'))
-				{
-					$sql .= 'NOT NULL';
-					$sql_default .= 'NOT NULL';
-				}
-				else
-				{
-					$sql .= 'NULL';
-					$sql_default .= 'NULL';
-				}
-
-				$return_array['column_type_sql_default'] = $sql_default;
-
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$sql .= " {$column_type} ";
@@ -1653,12 +1414,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				// Does not support AFTER, only through temporary table
-				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
@@ -1770,51 +1525,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				// We need the data here
-				$old_return_statements = $this->return_statements;
-				$this->return_statements = true;
-
-				$indexes = $this->get_existing_indexes($table_name, $column_name);
-				$indexes = array_merge($indexes, $this->get_existing_indexes($table_name, $column_name, true));
-
-				// Drop any indexes
-				$recreate_indexes = array();
-				if (!empty($indexes))
-				{
-					foreach ($indexes as $index_name => $index_data)
-					{
-						$result = $this->sql_index_drop($table_name, $index_name);
-						$statements = array_merge($statements, $result);
-						if (sizeof($index_data) > 1)
-						{
-							// Remove this column from the index and recreate it
-							$recreate_indexes[$index_name] = array_diff($index_data, array($column_name));
-						}
-					}
-				}
-
-				// Drop default value constraint
-				$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
-				$statements = array_merge($statements, $result);
-
-				// Remove the column
-				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
-
-				if (!empty($recreate_indexes))
-				{
-					// Recreate indexes after we removed the column
-					foreach ($recreate_indexes as $index_name => $index_data)
-					{
-						$result = $this->sql_create_index($table_name, $index_name, $index_data);
-						$statements = array_merge($statements, $result);
-					}
-				}
-
-				$this->return_statements = $old_return_statements;
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` DROP COLUMN `' . $column_name . '`';
@@ -1899,11 +1609,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
@@ -1988,16 +1693,6 @@ class tools implements tools_interface
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
 
-			case 'mssql':
-			case 'mssqlnative':
-				$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
-				$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
-				$sql .= '[' . implode("],\n\t\t[", $column) . ']';
-				$sql .= ')';
-
-				$statements[] = $sql;
-			break;
-
 			case 'oracle':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
@@ -2064,12 +1759,7 @@ class tools implements tools_interface
 	{
 		$statements = array();
 
-		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
-		if (strlen($table_name . '_' . $index_name) - strlen($table_prefix) > 24)
-		{
-			$max_length = strlen($table_prefix) + 24;
-			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
-		}
+		$this->check_index_name_length($table_name, $index_name);
 
 		switch ($this->sql_layer)
 		{
@@ -2084,11 +1774,6 @@ class tools implements tools_interface
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD UNIQUE INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
 			break;
-
-			case 'mssql':
-			case 'mssqlnative':
-				$statements[] = 'CREATE UNIQUE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
-			break;
 		}
 
 		return $this->_sql_run_sql($statements);
@@ -2101,12 +1786,7 @@ class tools implements tools_interface
 	{
 		$statements = array();
 
-		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
-		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
-		{
-			$max_length = strlen($table_prefix) + 24;
-			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
-		}
+		$this->check_index_name_length($table_name, $index_name);
 
 		// remove index length unless MySQL4
 		if ('mysql_40' != $this->sql_layer)
@@ -2137,14 +1817,25 @@ class tools implements tools_interface
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . ' (' . implode(', ', $column) . ')';
 			break;
-
-			case 'mssql':
-			case 'mssqlnative':
-				$statements[] = 'CREATE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
-			break;
 		}
 
 		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * Check whether the index name is too long
+	 *
+	 * @param string $table_name
+	 * @param string $index_name
+	 */
+	protected function check_index_name_length($table_name, $index_name)
+	{
+		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		{
+			$max_length = strlen($table_prefix) + 24;
+			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+		}
 	}
 
 	/**
@@ -2154,79 +1845,63 @@ class tools implements tools_interface
 	{
 		$index_array = array();
 
-		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
+		switch ($this->sql_layer)
 		{
-			$sql = "EXEC sp_statistics '$table_name'";
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				if ($row['TYPE'] == 3)
-				{
-					$index_array[] = $row['INDEX_NAME'];
-				}
-			}
-			$this->db->sql_freeresult($result);
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisunique != 't')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+				break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name;
+				$col = 'Key_name';
+				break;
+
+			case 'oracle':
+				$sql = "SELECT index_name
+					FROM user_indexes
+					WHERE table_name = '" . strtoupper($table_name) . "'
+						AND generated = 'N'
+						AND uniqueness = 'NONUNIQUE'";
+				$col = 'index_name';
+				break;
+
+			case 'sqlite':
+			case 'sqlite3':
+				$sql = "PRAGMA index_info('" . $table_name . "');";
+				$col = 'name';
+				break;
 		}
-		else
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
 		{
+			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
+			{
+				continue;
+			}
+
 			switch ($this->sql_layer)
 			{
-				case 'postgres':
-					$sql = "SELECT ic.relname as index_name
-						FROM pg_class bc, pg_class ic, pg_index i
-						WHERE (bc.oid = i.indrelid)
-							AND (ic.oid = i.indexrelid)
-							AND (bc.relname = '" . $table_name . "')
-							AND (i.indisunique != 't')
-							AND (i.indisprimary != 't')";
-					$col = 'index_name';
-				break;
-
-				case 'mysql_40':
-				case 'mysql_41':
-					$sql = 'SHOW KEYS
-						FROM ' . $table_name;
-					$col = 'Key_name';
-				break;
-
 				case 'oracle':
-					$sql = "SELECT index_name
-						FROM user_indexes
-						WHERE table_name = '" . strtoupper($table_name) . "'
-							AND generated = 'N'
-							AND uniqueness = 'NONUNIQUE'";
-					$col = 'index_name';
-				break;
-
+				case 'postgres':
 				case 'sqlite':
 				case 'sqlite3':
-					$sql = "PRAGMA index_info('" . $table_name . "');";
-					$col = 'name';
-				break;
-			}
-
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
-				{
-					continue;
-				}
-
-				switch ($this->sql_layer)
-				{
-					case 'oracle':
-					case 'postgres':
-					case 'sqlite':
-					case 'sqlite3':
-						$row[$col] = substr($row[$col], strlen($table_name) + 1);
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
 					break;
-				}
-
-				$index_array[] = $row[$col];
 			}
-			$this->db->sql_freeresult($result);
+
+			$index_array[] = $row[$col];
 		}
+		$this->db->sql_freeresult($result);
 
 		return array_map('strtolower', $index_array);
 	}
@@ -2254,62 +1929,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				// We need the data here
-				$old_return_statements = $this->return_statements;
-				$this->return_statements = true;
-
-				$indexes = $this->get_existing_indexes($table_name, $column_name);
-				$unique_indexes = $this->get_existing_indexes($table_name, $column_name, true);
-
-				// Drop any indexes
-				if (!empty($indexes) || !empty($unique_indexes))
-				{
-					$drop_indexes = array_merge(array_keys($indexes), array_keys($unique_indexes));
-					foreach ($drop_indexes as $index_name)
-					{
-						$result = $this->sql_index_drop($table_name, $index_name);
-						$statements = array_merge($statements, $result);
-					}
-				}
-
-				// Drop default value constraint
-				$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
-				$statements = array_merge($statements, $result);
-
-				// Change the column
-				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
-
-				if (!empty($column_data['default']))
-				{
-					// Add new default value constraint
-					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
-				}
-
-				if (!empty($indexes))
-				{
-					// Recreate indexes after we changed the column
-					foreach ($indexes as $index_name => $index_data)
-					{
-						$result = $this->sql_create_index($table_name, $index_name, $index_data);
-						$statements = array_merge($statements, $result);
-					}
-				}
-
-				if (!empty($unique_indexes))
-				{
-					// Recreate unique indexes after we changed the column
-					foreach ($unique_indexes as $index_name => $index_data)
-					{
-						$result = $this->sql_create_unique_index($table_name, $index_name, $index_data);
-						$statements = array_merge($statements, $result);
-					}
-				}
-
-				$this->return_statements = $old_return_statements;
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` CHANGE `' . $column_name . '` `' . $column_name . '` ' . $column_data['column_type_sql'];
@@ -2512,52 +2131,6 @@ class tools implements tools_interface
 	}
 
 	/**
-	* Get queries to drop the default constraints of a column
-	*
-	* We need to drop the default constraints of a column,
-	* before being able to change their type or deleting them.
-	*
-	* @param string $table_name
-	* @param string $column_name
-	* @return array		Array with SQL statements
-	*/
-	protected function mssql_get_drop_default_constraints_queries($table_name, $column_name)
-	{
-		$statements = array();
-		if ($this->mssql_is_sql_server_2000())
-		{
-			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-			// Deprecated in SQL Server 2005
-			$sql = "SELECT so.name AS def_name
-				FROM sysobjects so
-				JOIN sysconstraints sc ON so.id = sc.constid
-				WHERE object_name(so.parent_obj) = '{$table_name}'
-					AND so.xtype = 'D'
-					AND sc.colid = (SELECT colid FROM syscolumns
-						WHERE id = object_id('{$table_name}')
-							AND name = '{$column_name}')";
-		}
-		else
-		{
-			$sql = "SELECT dobj.name AS def_name
-				FROM sys.columns col
-					LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
-				WHERE col.object_id = object_id('{$table_name}')
-					AND col.name = '{$column_name}'
-					AND dobj.name IS NOT NULL";
-		}
-
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
-		}
-		$this->db->sql_freeresult($result);
-
-		return $statements;
-	}
-
-	/**
 	* Get a list with existing indexes for the column
 	*
 	* @param string $table_name
@@ -2584,40 +2157,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				if ($this->mssql_is_sql_server_2000())
-				{
-					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-					// Deprecated in SQL Server 2005
-					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
-					FROM sysindexes ix
-					INNER JOIN sysindexkeys ixc
-						ON ixc.id = ix.id
-							AND ixc.indid = ix.indid
-					INNER JOIN syscolumns cols
-						ON cols.colid = ixc.colid
-							AND cols.id = ix.id
-					WHERE ix.id = object_id('{$table_name}')
-						AND cols.name = '{$column_name}'
-						AND INDEXPROPERTY(ix.id, ix.name, 'IsUnique') = " . ($unique ? '1' : '0');
-				}
-				else
-				{
-					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name
-					FROM sys.indexes ix
-					INNER JOIN sys.index_columns ixc
-						ON ixc.object_id = ix.object_id
-							AND ixc.index_id = ix.index_id
-					INNER JOIN sys.columns cols
-						ON cols.column_id = ixc.column_id
-							AND cols.object_id = ix.object_id
-					WHERE ix.object_id = object_id('{$table_name}')
-						AND cols.name = '{$column_name}'
-						AND ix.is_unique = " . ($unique ? '1' : '0');
-				}
-			break;
-
 			case 'oracle':
 				$sql = "SELECT ix.index_name  AS phpbb_index_name, ix.uniqueness AS is_unique
 					FROM all_ind_columns ixc, all_indexes ix
@@ -2644,36 +2183,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'mssql':
-			case 'mssqlnative':
-				if ($this->mssql_is_sql_server_2000())
-				{
-					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-						FROM sysindexes ix
-						INNER JOIN sysindexkeys ixc
-							ON ixc.id = ix.id
-								AND ixc.indid = ix.indid
-						INNER JOIN syscolumns cols
-							ON cols.colid = ixc.colid
-								AND cols.id = ix.id
-						WHERE ix.id = object_id('{$table_name}')
-							AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-				}
-				else
-				{
-					$sql = "SELECT DISTINCT ix.name AS phpbb_index_name, cols.name AS phpbb_column_name
-						FROM sys.indexes ix
-						INNER JOIN sys.index_columns ixc
-							ON ixc.object_id = ix.object_id
-								AND ixc.index_id = ix.index_id
-						INNER JOIN sys.columns cols
-							ON cols.column_id = ixc.column_id
-								AND cols.object_id = ix.object_id
-						WHERE ix.object_id = object_id('{$table_name}')
-							AND " . $this->db->sql_in_set('ix.name', array_keys($existing_indexes));
-				}
-			break;
-
 			case 'oracle':
 				$sql = "SELECT index_name AS phpbb_index_name, column_name AS phpbb_column_name
 					FROM all_ind_columns
@@ -2690,25 +2199,6 @@ class tools implements tools_interface
 		$this->db->sql_freeresult($result);
 
 		return $existing_indexes;
-	}
-
-	/**
-	* Is the used MS SQL Server a SQL Server 2000?
-	*
-	* @return bool
-	*/
-	protected function mssql_is_sql_server_2000()
-	{
-		if ($this->is_sql_server_2000 === null)
-		{
-			$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
-			$result = $this->db->sql_query($sql);
-			$properties = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-			$this->is_sql_server_2000 = $properties['mssql_version'][0] == '8';
-		}
-
-		return $this->is_sql_server_2000;
 	}
 
 	/**
