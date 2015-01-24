@@ -830,11 +830,10 @@ class qa
 		// Convert answers into array and filter if answers are set
 		if (strlen($answers))
 		{
-			$answers = array_filter(explode("\n", $answers), function ($value) {
-				return trim($value) !== '';
+			$answers = array_filter(array_map('trim', explode("\n", $answers)), function ($value) {
+				return $value !== '';
 			});
 		}
-
 
 		$question = array(
 			'question_text'	=> request_var('question_text', '', true),
