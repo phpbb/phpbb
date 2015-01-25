@@ -672,10 +672,7 @@ class qa
 		else
 		{
 			// okay, show the editor
-			$input_question = request_var('question_text', '', true);
-			$input_answers = request_var('answers', '', true);
-			$input_lang = request_var('lang_iso', '', true);
-			$input_strict = request_var('strict', false);
+			$question_input = $this->acp_get_question_input();
 			$langs = $this->get_languages();
 
 			foreach ($langs as $lang => $entry)
@@ -694,12 +691,12 @@ class qa
 			{
 				if ($question = $this->acp_get_question_data($question_id))
 				{
-					$answers = (isset($input_answers[$lang])) ? $input_answers[$lang] : implode("\n", $question['answers']);
+					$answers = (isset($question_input['answers'][$lang])) ? $question_input['answers'][$lang] : implode("\n", $question['answers']);
 
 					$template->assign_vars(array(
-						'QUESTION_TEXT'		=> ($input_question) ? $input_question : $question['question_text'],
-						'LANG_ISO'			=> ($input_lang) ? $input_lang : $question['lang_iso'],
-						'STRICT'			=> (isset($_REQUEST['strict'])) ? $input_strict : $question['strict'],
+						'QUESTION_TEXT'		=> ($question_input['question_text']) ? $question_input['question_text'] : $question['question_text'],
+						'LANG_ISO'			=> ($question_input['lang_iso']) ? $question_input['lang_iso'] : $question['lang_iso'],
+						'STRICT'			=> (isset($_REQUEST['strict'])) ? $question_input['strict'] : $question['strict'],
 						'ANSWERS'			=> $answers,
 					));
 				}
@@ -711,10 +708,10 @@ class qa
 			else
 			{
 				$template->assign_vars(array(
-					'QUESTION_TEXT'		=> $input_question,
-					'LANG_ISO'			=> $input_lang,
-					'STRICT'			=> $input_strict,
-					'ANSWERS'			=> $input_answers,
+					'QUESTION_TEXT'		=> $question_input['question_text'],
+					'LANG_ISO'			=> $question_input['lang_iso'],
+					'STRICT'			=> $question_input['strict'],
+					'ANSWERS'			=> $question_input['answers'],
 				));
 			}
 
