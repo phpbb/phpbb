@@ -1210,6 +1210,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		* @var	int		cur_post_id			Post offset id
 		* @var	int		current_row_number	Number of the current row being iterated
 		* @var	array	post_row			Template block array of the current post
+		* @var	array	row					Array with original post and user data
 		* @since 3.1.4-RC1
 		*/
 		$vars = array(
@@ -1219,6 +1220,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'cur_post_id',
 			'current_row_number',
 			'post_row',
+			'row',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.topic_review_modify_row', compact($vars)));
 
