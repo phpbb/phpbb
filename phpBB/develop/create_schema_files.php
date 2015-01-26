@@ -237,6 +237,19 @@ $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', '
 
 foreach ($supported_dbms as $dbms)
 {
+	$schema_data = get_schema_struct();
+	if ($dbms == 'mssql')
+	{
+		foreach ($schema_data as $table_name => $table_data)
+		{
+			if (!isset($table_data['PRIMARY_KEY']))
+			{
+				$schema_data[$table_name]['COLUMNS']['mssqlindex'] = array('UINT', NULL, 'auto_increment');
+				$schema_data[$table_name]['PRIMARY_KEY'] = 'mssqlindex';
+			}
+		}
+	}
+
 	$fp = fopen($schema_path . $dbms . '_schema.sql', 'wb');
 
 	$line = '';
@@ -552,7 +565,7 @@ foreach ($supported_dbms as $dbms)
 
 			case 'mssql':
 				$line = substr($line, 0, -2);
-				$line .= "\n) ON [PRIMARY]" . (($textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '') . "\n";
+				$line .= "\n)";// ON [PRIMARY]" . (($textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '') . "\n";
 				$line .= "GO\n\n";
 			break;
 		}
@@ -589,7 +602,7 @@ foreach ($supported_dbms as $dbms)
 					$line .= "\tCONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED \n";
 					$line .= "\t(\n";
 					$line .= "\t\t[" . implode("],\n\t\t[", $table_data['PRIMARY_KEY']) . "]\n";
-					$line .= "\t)  ON [PRIMARY] \n";
+					$line .= "\t)\n";
 					$line .= "GO\n\n";
 				break;
 
@@ -684,7 +697,7 @@ foreach ($supported_dbms as $dbms)
 					case 'mssql':
 						$line .= ($key_data[0] == 'INDEX') ? 'CREATE  INDEX' : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? 'CREATE  UNIQUE  INDEX' : '';
-						$line .= " [{$key_name}] ON [{$table_name}]([" . implode('], [', $key_data[1]) . "]) ON [PRIMARY]\n";
+						$line .= " [{$key_name}] ON [{$table_name}]([" . implode('], [', $key_data[1]) . "])\n";
 						$line .= "GO\n\n";
 					break;
 

@@ -471,17 +471,11 @@ else
 $highlight_match = $highlight = '';
 if ($hilit_words)
 {
-	foreach (explode(' ', trim($hilit_words)) as $word)
-	{
-		if (trim($word))
-		{
-			$word = str_replace('\*', '\w+?', preg_quote($word, '#'));
-			$word = preg_replace('#(^|\s)\\\\w\*\?(\s|$)#', '$1\w+?$2', $word);
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . $word;
-		}
-	}
-
-	$highlight = urlencode($hilit_words);
+	$highlight_match = phpbb_clean_search_string($hilit_words);
+	$highlight = urlencode($highlight_match);
+	$highlight_match = str_replace('\*', '\w+?', preg_quote($highlight_match, '#'));
+	$highlight_match = preg_replace('#(?<=^|\s)\\\\w\*\?(?=\s|$)#', '\w+?', $highlight_match);
+	$highlight_match = str_replace(' ', '|', $highlight_match);
 }
 
 // Make sure $start is set to the last page if it exceeds the amount
@@ -1509,13 +1503,19 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$edit_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_edit', $forum_id) || (
 		$user->data['user_id'] == $poster_id &&
 		$auth->acl_get('f_edit', $forum_id) &&
+		$topic_data['topic_status'] != ITEM_LOCKED &&
 		!$row['post_edit_locked'] &&
 		($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])
 	)));
 
+	$quote_allowed = $auth->acl_get('m_edit', $forum_id) || ($topic_data['topic_status'] != ITEM_LOCKED &&
+		($user->data['user_id'] == ANONYMOUS || $auth->acl_get('f_reply', $forum_id))
+	);
+
 	$delete_allowed = ($user->data['is_registered'] && ($auth->acl_get('m_delete', $forum_id) || (
 		$user->data['user_id'] == $poster_id &&
 		$auth->acl_get('f_delete', $forum_id) &&
+		$topic_data['topic_status'] != ITEM_LOCKED &&
 		$topic_data['topic_last_post_id'] == $row['post_id'] &&
 		($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']) &&
 		// we do not want to allow removal of the last post if a moderator locked it!
@@ -1556,7 +1556,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
 		'U_EDIT'			=> ($edit_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
-		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+		'U_QUOTE'			=> ($quote_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($delete_allowed) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 

@@ -394,6 +394,10 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	{
 		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
 	}
+	else if (!$config['check_attachment_content'])
+	{
+		$upload->set_disallowed_content(array());
+	}
 
 	if (!$local)
 	{

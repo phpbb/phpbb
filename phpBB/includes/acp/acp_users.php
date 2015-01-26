@@ -172,8 +172,7 @@ class acp_users
 
 				if ($submit)
 				{
-					// You can't delete the founder
-					if ($delete && $user_row['user_type'] != USER_FOUNDER)
+					if ($delete)
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
@@ -184,6 +183,12 @@ class acp_users
 						if ($user_id == ANONYMOUS)
 						{
 							trigger_error($user->lang['CANNOT_REMOVE_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
+
+						// Founders can not be deleted.
+						if ($user_row['user_type'] == USER_FOUNDER)
+						{
+							trigger_error($user->lang['CANNOT_REMOVE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						if ($user_id == $user->data['user_id'])
@@ -1032,6 +1037,7 @@ class acp_users
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
 					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
+					'U_SEARCH_USER'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$user_row['user_id']}&amp;sr=posts") : '',
 
 					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_row['user_id']}&amp;hash=" . generate_link_hash('switchperm')) : '',
 
@@ -2009,7 +2015,7 @@ class acp_users
 					WHERE a.poster_id = ' . $user_id . "
 						AND a.is_orphan = 0
 					ORDER BY $order_by";
-				$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				while ($row = $db->sql_fetchrow($result))
 				{

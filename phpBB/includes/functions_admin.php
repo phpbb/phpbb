@@ -3057,8 +3057,24 @@ function get_database_size()
 		case 'mssql':
 		case 'mssql_odbc':
 		case 'mssqlnative':
+			$sql = 'SELECT @@VERSION AS mssql_version';
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
+
+			if ($row)
+			{
+				// Azure stats are stored elsewhere
+				if (strpos($row['mssql_version'], 'SQL Azure') !== false)
+				{
+					$sql = 'SELECT ((SUM(reserved_page_count) * 8.0) * 1024.0) as dbsize 
+					FROM sys.dm_db_partition_stats';
+				}
+			}
+
 			$result = $db->sql_query($sql, 7200);
 			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);

@@ -166,6 +166,7 @@ class mcp_pm_reports
 					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),
 					'S_CAN_VIEWIP'			=> $auth->acl_getf_global('m_info'),
 					'S_POST_REPORTED'		=> $pm_info['message_reported'],
+					'S_REPORT_CLOSED'		=> $report['report_closed'],
 					'S_USER_NOTES'			=> true,
 
 					'U_MCP_REPORT'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $report_id),

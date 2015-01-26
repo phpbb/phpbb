@@ -98,6 +98,8 @@ class ucp_remind
 			$messenger->to($user_row['user_email'], $user_row['username']);
 			$messenger->im($user_row['user_jabber'], $user_row['username']);
 
+			$messenger->anti_abuse_headers($config, $user);
+
 			$messenger->assign_vars(array(
 				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 				'PASSWORD'		=> htmlspecialchars_decode($user_password),

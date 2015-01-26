@@ -13,7 +13,7 @@
 		<div class="postbody">
 			<h3>{L_REPORT_REASON}: {REPORT_REASON_TITLE}</h3>
 			<p class="author">{L_REPORTED} {L_POST_BY_AUTHOR} {REPORTER_FULL} &laquo; {REPORT_DATE}</p>
-		<!-- IF not S_POST_REPORTED -->
+		<!-- IF S_REPORT_CLOSED -->
 			<p class="rules">{L_REPORT_CLOSED}</p>
 		<!-- ENDIF -->
 			<div class="content">
@@ -31,7 +31,7 @@
 	<form method="post" id="mcp_report" action="{S_CLOSE_ACTION}">
 
 	<fieldset class="submit-buttons">
-		<!-- IF S_POST_REPORTED -->
+		<!-- IF not S_REPORT_CLOSED -->
 			<input class="button1" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
 		<!-- ENDIF -->
 		<input class="button2" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />

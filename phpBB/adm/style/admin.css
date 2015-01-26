@@ -731,6 +731,10 @@ optgroup, select {
 	color: #000;
 }
 
+select:focus {
+	outline-style: none;
+}
+
 optgroup {
 	font-size: 1.00em;
 	font-weight: bold;
@@ -976,6 +980,7 @@ input:focus, textarea:focus {
 	border: 1px solid #BC2A4D;
 	background-color: #E9E9E2;
 	color: #BC2A4D;
+	outline-style: none;
 }
 
 /* Submit button fieldset or paragraph
@@ -1068,6 +1073,11 @@ a.button2:hover, input.button2:hover {
 input.disabled {
 	font-weight: normal;
 	color: #666666;
+}
+
+/* Focus states */
+input.button1:focus, input.button2:focus, input.button3:focus {
+	outline-style: none;
 }
 
 /* Pagination

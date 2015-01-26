@@ -138,6 +138,7 @@ $lang = array_merge($lang, array(
 	),
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Board presence',
+	'USERS_PER_PAGE'		=> 'Users per page',
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VISITED'				=> 'Last visited',

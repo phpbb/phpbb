@@ -181,7 +181,7 @@ p.datetime {
 p.searchbar {
 	padding: 2px 0;
 	white-space: nowrap;
-} 
+}
 
 p.searchbarreg {
 	margin: 0;
@@ -292,7 +292,11 @@ p.topicdetails {
 	text-decoration: none;
 }
 
-.error {
+.online {
+	color: green;
+}
+
+.offline, .error, .inactive {
 	color: red;
 }
 
@@ -358,6 +362,10 @@ td.profile {
 
 .spacer {
 	background-color: #D1D7DC;
+}
+
+.current {
+	background-color: lightblue;
 }
 
 hr {
@@ -455,7 +463,7 @@ textarea {
 	background-color: #FAFAFA;
 	color: #333333;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.3em; 
+	font-size: 1.3em;
 	line-height: 1.4em;
 	font-weight: normal;
 	border: 1px solid #A9B8C2;
@@ -535,6 +543,9 @@ input.radio {
 	border-style: none;
 }
 
+input:focus, select:focus, textarea:focus {
+	outline-style: none;
+}
 
 /* BBCode
  ------------ */

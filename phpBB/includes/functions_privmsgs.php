@@ -208,7 +208,7 @@ function get_folder($user_id, $folder_id = false)
 		);
 	}
 
-	if ($folder_id !== false && !isset($folder[$folder_id]))
+	if ($folder_id !== false && $folder_id !== PRIVMSGS_HOLD_BOX && !isset($folder[$folder_id]))
 	{
 		trigger_error('UNKNOWN_FOLDER');
 	}

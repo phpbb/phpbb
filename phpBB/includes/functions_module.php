@@ -436,21 +436,21 @@ class p_master
 
 		if ($this->active_module === false)
 		{
-			trigger_error('Module not accessible', E_USER_ERROR);
+			trigger_error('MODULE_NOT_ACCESS', E_USER_ERROR);
 		}
 
 		if (!class_exists("{$this->p_class}_$this->p_name"))
 		{
 			if (!file_exists("$module_path/{$this->p_class}_$this->p_name.$phpEx"))
 			{
-				trigger_error("Cannot find module $module_path/{$this->p_class}_$this->p_name.$phpEx", E_USER_ERROR);
+				trigger_error($user->lang('MODULE_NOT_FIND', "$module_path/{$this->p_class}_$this->p_name.$phpEx"), E_USER_ERROR);
 			}
 
 			include("$module_path/{$this->p_class}_$this->p_name.$phpEx");
 
 			if (!class_exists("{$this->p_class}_$this->p_name"))
 			{
-				trigger_error("Module file $module_path/{$this->p_class}_$this->p_name.$phpEx does not contain correct class [{$this->p_class}_$this->p_name]", E_USER_ERROR);
+				trigger_error($user->lang('MODULE_FILE_INCORRECT_CLASS', "$module_path/{$this->p_class}_$this->p_name.$phpEx", "{$this->p_class}_$this->p_name"), E_USER_ERROR);
 			}
 
 			if (!empty($mode))

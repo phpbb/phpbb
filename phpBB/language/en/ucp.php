@@ -266,7 +266,7 @@ $lang = array_merge($lang, array(
 	'MOVE_DELETED_MESSAGES_TO'		=> 'Move messages from removed folder to',
 	'MOVE_DOWN'						=> 'Move down',
 	'MOVE_MARKED_TO_FOLDER'			=> 'Move marked to %s',
-	'MOVE_PM_ERROR'					=> 'An error occurred while moving the messages to the new folder, only %1d from %2d messages were moved.',
+	'MOVE_PM_ERROR'					=> 'An error occurred while moving the messages to the new folder, only %1$d from %2$d messages were moved.',
 	'MOVE_TO_FOLDER'				=> 'Move to folder',
 	'MOVE_UP'						=> 'Move up',
 

@@ -452,9 +452,6 @@ class phpbb_db_tools
 		// Determine if we have created a PRIMARY KEY in the earliest
 		$primary_key_gen = false;
 
-		// Determine if the table must be created with TEXTIMAGE
-		$create_textimage = false;
-
 		// Determine if the table requires a sequence
 		$create_sequence = false;
 
@@ -471,13 +468,22 @@ class phpbb_db_tools
 			break;
 		}
 
+		if ($this->sql_layer == 'mssql' || $this->sql_layer == 'mssqlnative')
+		{
+			if (!isset($table_data['PRIMARY_KEY']))
+			{
+				$table_data['COLUMNS']['mssqlindex'] = array('UINT', null, 'auto_increment');
+				$table_data['PRIMARY_KEY'] = 'mssqlindex';
+			}
+		}
+
 		// Iterate through the columns to create a table
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
 			// here lies an array, filled with information compiled on the column's data
 			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
 
-			if (isset($prepared_column['auto_increment']) && strlen($column_name) > 26) // "${column_name}_gen"
+			if (isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'] && strlen($column_name) > 26) // "${column_name}_gen"
 			{
 				trigger_error("Index name '${column_name}_gen' on table '$table_name' is too long. The maximum auto increment column length is 26 characters.", E_USER_ERROR);
 			}
@@ -501,12 +507,6 @@ class phpbb_db_tools
 				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
 			}
 
-			// create textimage DDL based off of the existance of certain column types
-			if (!$create_textimage)
-			{
-				$create_textimage = isset($prepared_column['textimage']) && $prepared_column['textimage'];
-			}
-
 			// create sequence DDL based off of the existance of auto incrementing columns
 			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
 			{
@@ -521,13 +521,9 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
-				$table_sql .= "\n);";
-				$statements[] = $table_sql;
-			break;
-
 			case 'mssql':
 			case 'mssqlnative':
-				$table_sql .= "\n) ON [PRIMARY]" . (($create_textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '');
+				$table_sql .= "\n);";
 				$statements[] = $table_sql;
 			break;
 		}
@@ -879,7 +875,7 @@ class phpbb_db_tools
 			}
 		}
 
-		// Add unqiue indexes?
+		// Add unique indexes?
 		if (!empty($schema_changes['add_unique_index']))
 		{
 			foreach ($schema_changes['add_unique_index'] as $table => $index_array)
@@ -1290,7 +1286,7 @@ class phpbb_db_tools
 	}
 
 	/**
-	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
+	* Check if a specified index exists in table. Does not return PRIMARY KEY indexes.
 	*
 	* @param string	$table_name		Table to check the index at
 	* @param string	$index_name		The index name to check
@@ -1819,22 +1815,49 @@ class phpbb_db_tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				// remove default cosntraints first
-				// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
-				$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-					SET @drop_default_name =
-						(SELECT so.name FROM sysobjects so
-						JOIN sysconstraints sc ON so.id = sc.constid
-						WHERE object_name(so.parent_obj) = '{$table_name}'
-							AND so.xtype = 'D'
-							AND sc.colid = (SELECT colid FROM syscolumns
-								WHERE id = object_id('{$table_name}')
-									AND name = '{$column_name}'))
-					IF @drop_default_name <> ''
-					BEGIN
-						SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-						EXEC(@cmd)
-					END";
+				$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				// Remove default constraints
+				if ($row['mssql_version'][0] == '8')	// SQL Server 2000
+				{
+					// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+					// Deprecated in SQL Server 2005
+					$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
+						SET @drop_default_name =
+							(SELECT so.name FROM sysobjects so
+							JOIN sysconstraints sc ON so.id = sc.constid
+							WHERE object_name(so.parent_obj) = '{$table_name}'
+								AND so.xtype = 'D'
+								AND sc.colid = (SELECT colid FROM syscolumns
+									WHERE id = object_id('{$table_name}')
+										AND name = '{$column_name}'))
+						IF @drop_default_name <> ''
+						BEGIN
+							SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
+							EXEC(@cmd)
+						END";
+				}
+				else
+				{
+					$sql = "SELECT dobj.name AS def_name
+					FROM sys.columns col 
+						LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
+					WHERE col.object_id = object_id('{$table_name}') 
+					AND col.name = '{$column_name}'
+					AND dobj.name IS NOT NULL";
+					$result = $this->db->sql_query($sql);
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
+
+					if ($row)
+					{
+						$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+					}
+				}
+
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
 
@@ -2038,7 +2061,7 @@ class phpbb_db_tools
 				$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
 				$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
 				$sql .= '[' . implode("],\n\t\t[", $column) . ']';
-				$sql .= ') ON [PRIMARY]';
+				$sql .= ')';
 
 				$statements[] = $sql;
 			break;
@@ -2136,7 +2159,7 @@ class phpbb_db_tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
+				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 		}
 
@@ -2189,7 +2212,7 @@ class phpbb_db_tools
 
 			case 'mssql':
 			case 'mssqlnative':
-				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
+				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 		}
 
@@ -2321,23 +2344,48 @@ class phpbb_db_tools
 
 				if (!empty($column_data['default']))
 				{
+					$sql = "SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR(25)) AS mssql_version";
+					$result = $this->db->sql_query($sql);
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
+
 					// Using TRANSACT-SQL for this statement because we do not want to have colliding data if statements are executed at a later stage
-					$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
-						SET @drop_default_name =
-							(SELECT so.name FROM sysobjects so
-							JOIN sysconstraints sc ON so.id = sc.constid
-							WHERE object_name(so.parent_obj) = '{$table_name}'
-								AND so.xtype = 'D'
-								AND sc.colid = (SELECT colid FROM syscolumns
-									WHERE id = object_id('{$table_name}')
-										AND name = '{$column_name}'))
-						IF @drop_default_name <> ''
-						BEGIN
-							SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
-							EXEC(@cmd)
-						END
-						SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
-						EXEC(@cmd)";
+					if ($row['mssql_version'][0] == '8')	// SQL Server 2000
+					{
+						$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
+							SET @drop_default_name =
+								(SELECT so.name FROM sysobjects so
+								JOIN sysconstraints sc ON so.id = sc.constid
+								WHERE object_name(so.parent_obj) = '{$table_name}'
+									AND so.xtype = 'D'
+									AND sc.colid = (SELECT colid FROM syscolumns
+										WHERE id = object_id('{$table_name}')
+											AND name = '{$column_name}'))
+							IF @drop_default_name <> ''
+							BEGIN
+								SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
+								EXEC(@cmd)
+							END
+							SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
+							EXEC(@cmd)";
+					}
+					else
+					{
+						$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
+							SET @drop_default_name =
+								(SELECT dobj.name FROM sys.columns col 
+									LEFT OUTER JOIN sys.objects dobj ON (dobj.object_id = col.default_object_id AND dobj.type = 'D')
+								WHERE col.object_id = object_id('{$table_name}') 
+								AND col.name = '{$column_name}'
+								AND dobj.name IS NOT NULL)
+							IF @drop_default_name <> ''
+							BEGIN
+								SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
+								EXEC(@cmd)
+							END
+							SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
+							EXEC(@cmd)";
+					}
 				}
 			break;
 

@@ -292,7 +292,7 @@ function mozWrap(txtarea, open, close)
 */
 function storeCaret(textEl)
 {
-	if (textEl.createTextRange)
+	if (textEl.createTextRange && document.selection)
 	{
 		textEl.caretPos = document.selection.createRange().duplicate();
 	}

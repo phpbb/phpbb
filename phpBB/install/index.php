@@ -641,8 +641,9 @@ class module
 			case 'password':
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
+				$autocomplete = (isset($options['autocomplete']) && $options['autocomplete'] == 'off') ? ' autocomplete="off"' : '';
 
-				$tpl = '<input id="' . $name . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $value . '" />';
+				$tpl = '<input id="' . $name . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '"' . $autocomplete . ' value="' . $value . '" />';
 			break;
 
 			case 'textarea':

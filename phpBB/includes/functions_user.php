@@ -329,11 +329,16 @@ function user_add($user_row, $cp_data = false)
 }
 
 /**
-* Remove User
-*/
+ * Remove User
+ *
+ * @param string	$mode		'retain' or 'remove'
+ * @param int		$user_id
+ * @param mixed		$post_username
+ * @return bool
+ */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user;
 	global $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT *
@@ -439,11 +444,6 @@ function user_delete($mode, $user_id, $post_username = false)
 					WHERE poster_id = $user_id";
 				$db->sql_query($sql);
 
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_edit_user = ' . ANONYMOUS . "
-					WHERE post_edit_user = $user_id";
-				$db->sql_query($sql);
-
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
 					WHERE topic_poster = $user_id";
@@ -500,6 +500,18 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+
+	// Change user_id to anonymous for posts edited by this user
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_edit_user = ' . ANONYMOUS . '
+		WHERE post_edit_user = ' . $user_id;
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for pms edited by this user
+	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+		SET message_edit_user = ' . ANONYMOUS . '
+		WHERE message_edit_user = ' . $user_id;
+	$db->sql_query($sql);
 
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '

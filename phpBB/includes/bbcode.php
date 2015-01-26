@@ -135,6 +135,11 @@ class bbcode
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
 
+			if (empty($user->theme['template_inherits_id']) && !empty($template->orig_tpl_inherits_id))
+			{
+				$user->theme['template_inherits_id'] = $template->orig_tpl_inherits_id;
+			}
+
 			if (!@file_exists($this->template_filename))
 			{
 				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
@@ -376,7 +381,7 @@ class bbcode
 						}
 
 						// Replace {L_*} lang strings
-						$bbcode_tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $bbcode_tpl);
+						$bbcode_tpl = preg_replace('/{L_([A-Z0-9_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $bbcode_tpl);
 
 						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
 						{
@@ -480,7 +485,7 @@ class bbcode
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);
 
-		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+		$tpl = preg_replace('/{L_([A-Z0-9_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
 
 		if (!empty($replacements[$tpl_name]))
 		{

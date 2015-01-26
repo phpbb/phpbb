@@ -423,6 +423,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$config = array();
 		}
 
+		/*
+		* Add required config entries to the config array to prevent
+		* set_config() sending an INSERT query for already existing entries,
+		* resulting in a SQL error.
+		* This is because set_config() first sends an UPDATE query, then checks
+		* sql_affectedrows() which can be 0 (e.g. on MySQL) when the new
+		* data is already there.
+		*/
+		$config['newest_user_colour'] = '';
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
@@ -577,6 +586,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		// Any output before the doc type means there was an error
 		$content = self::$client->getResponse()->getContent();
+		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 	}
 
@@ -655,12 +665,70 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('posting');
 
+		$crawler = $this->submit_message($posting_url, $posting_contains, $form_data);
+
+		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
+		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
+
+		return array(
+			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
+			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
+		);
+	}
+
+	/**
+	* Creates a private message
+	*
+	* Be sure to login before creating
+	*
+	* @param string $subject
+	* @param string $message
+	* @param array $to
+	* @param array $additional_form_data Any additional form data to be sent in the request
+	* @return int private_message_id
+	*/
+	public function create_private_message($subject, $message, $to, $additional_form_data = array())
+	{
+		$this->add_lang(array('ucp', 'posting'));
+
+		$posting_url = "ucp.php?i=pm&mode=compose&sid={$this->sid}";
+
+		$form_data = array_merge(array(
+			'subject'		=> $subject,
+			'message'		=> $message,
+			'post'			=> true,
+		), $additional_form_data);
+
+		foreach ($to as $user_id)
+		{
+			$form_data['address_list[u][' . $user_id . ']'] = 'to';
+		}
+
+		$crawler = self::submit_message($posting_url, 'POST_NEW_PM', $form_data);
+
+		$this->assertContains($this->lang('MESSAGE_STORED'), $crawler->filter('html')->text());
+		$url = $crawler->selectLink($this->lang('VIEW_PRIVATE_MESSAGE', '', ''))->link()->getUri();
+
+		return $this->get_parameter_from_link($url, 'p');
+	}
+
+	/**
+	* Helper for submitting a message (post or private message)
+	*
+	* @param string $posting_url
+	* @param string $posting_contains
+	* @param array $form_data
+	* @return \Symfony\Component\DomCrawler\Crawler the crawler object
+	*/
+	protected function submit_message($posting_url, $posting_contains, $form_data)
+	{
+
 		$crawler = self::request('GET', $posting_url);
 		$this->assertContains($this->lang($posting_contains), $crawler->filter('html')->text());
 
 		$hidden_fields = array(
 			$crawler->filter('[type="hidden"]')->each(function ($node, $i) {
-				return array('name' => $node->getAttribute('name'), 'value' => $node->getAttribute('value'));
+				return array('name' => $node->attr('name'), 'value' => $node->attr('value'));
 			}),
 		);
 
@@ -679,14 +747,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// I use a request because the form submission method does not allow you to send data that is not
 		// contained in one of the actual form fields that the browser sees (i.e. it ignores "hidden" inputs)
 		// Instead, I send it as a request with the submit button "post" set to true.
-		$crawler = self::request('POST', $posting_url, $form_data);
-		$this->assertContains($this->lang('POST_STORED'), $crawler->filter('html')->text());
-		$url = $crawler->selectLink($this->lang('VIEW_MESSAGE', '', ''))->link()->getUri();
-
-		return array(
-			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
-			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
-		);
+		return self::request('POST', $posting_url, $form_data);
 	}
 
 	/**

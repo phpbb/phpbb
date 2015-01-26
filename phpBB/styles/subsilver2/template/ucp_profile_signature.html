@@ -1,13 +1,22 @@
 <!-- INCLUDE ucp_header.html -->
 
+<script type="text/javascript">
+// <![CDATA[
+	var form_name = 'ucp';
+	var text_name = 'signature';
+// ]]>
+</script>
+
 <!-- DEFINE $S_SIGNATURE = 1 -->
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
 	<th colspan="2">{L_TITLE}</th>
 </tr>
+<!-- IF not S_SMILIES_ALLOWED -->
 <tr>
 	<td colspan="2" class="row1">{L_SIGNATURE_EXPLAIN}</td>
 </tr>
+<!-- ENDIF -->
 
 <!-- IF ERROR -->
 	<tr>
@@ -16,14 +25,32 @@
 <!-- ENDIF -->
 
 <tr>
-	<td colspan="2" class="row2">
-		<script type="text/javascript">
-		// <![CDATA[
-			var form_name = 'ucp';
-			var text_name = 'signature';
-		// ]]>
-		</script>
-		
+	<!-- IF S_SMILIES_ALLOWED -->
+	<td class="row1" width="22%" valign="top">
+		{L_SIGNATURE_EXPLAIN}
+		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
+			<tr>
+				<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
+			</tr>
+			<tr>
+				<td align="center">
+				<!-- BEGIN smiley -->
+					<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" /></a>
+				<!-- END smiley -->
+				</td>
+			</tr>
+			<!-- IF S_SHOW_SMILEY_LINK -->
+			<tr>
+				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a></td>
+			</tr>
+			<!-- ENDIF -->
+		</table>
+	</td>
+	<td class="row2">
+	<!-- ELSE -->
+	<td class="row2" colspan="2">
+	<!-- ENDIF -->
+
 		<table cellspacing="0" cellpadding="2" border="0" width="99%">
 		<!-- INCLUDE posting_buttons.html -->
 		<tr>
