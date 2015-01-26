@@ -210,16 +210,16 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		}
 	}
 
-	if ($size)
-	{
-		header("Content-Length: $size");
-	}
-
 	// Close the db connection before sending the file etc.
 	file_gc(false);
 
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
+		if ($size)
+		{
+			header("Content-Length: $size");
+		}
+
 		// We make sure those have to be enabled manually by defining a constant
 		// because of the potential disclosure of full attachment path
 		// in case support for features is absent in the webserver software.
