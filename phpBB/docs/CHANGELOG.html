@@ -96,6 +96,11 @@
 
 	<a name="v3012"></a><h3>1.i. Changes since 3.0.12</h3>
 
+<h4>Security</h4>
+<ul>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13531">PHPBB3-13531</a>] - Disallow trailing paths (e.g. using the PATH_INFO feature) to prevent path-relative CSS injection</li>
+<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13526">PHPBB3-13526</a>] - Correctly validate ucp_pm_options form key</li>
+</ul>
 <h4>Bug</h4>
 <ul>
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-6703">PHPBB3-6703</a>] - Problem with russian letter while converting from 2.0.x</li>
@@ -177,7 +182,6 @@
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13376">PHPBB3-13376</a>] - deregister_globals() does not work correctly when $_COOKIE['GLOBALS'] - is specified</li>
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13519">PHPBB3-13519</a>] - Correctly validate imagick path as path and not string</li>
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13523">PHPBB3-13523</a>] - PHP 5.2 Unit Tests no longer work due to deprecated PHPUnit PEAR channel</li>
-<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13526">PHPBB3-13526</a>] - Correctly validate ucp_pm_options form key</li>
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13527">PHPBB3-13527</a>] - Escape information received from version server</li>
 </ul>
 <h4>Improvement</h4>
@@ -200,7 +204,6 @@
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12247">PHPBB3-12247</a>] - include poster's username in email notifications of posts that get approved by moderators</li>
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12259">PHPBB3-12259</a>] - Too many redundant tests are run on Travis</li>
 <li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12468">PHPBB3-12468</a>] - Allow mbstring.http_input='' besides 'pass' for PHP 5.6 compatibility</li>
-<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13531">PHPBB3-13531</a>] - Disallow trailing paths (e.g. using the PATH_INFO feature)</li>
 </ul>
 <h4>Task</h4>
 <ul>
