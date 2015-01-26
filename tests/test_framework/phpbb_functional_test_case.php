@@ -890,7 +890,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function assert_response_status_code($status_code = 200)
 	{
-		self::assertEquals($status_code, self::$client->getResponse()->getStatus());
+		self::assertEquals($status_code, self::$client->getResponse()->getStatus(), 'HTTP status code does not match');
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)
