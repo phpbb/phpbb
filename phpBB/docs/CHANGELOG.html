@@ -106,6 +106,102 @@
 
 	<a name="v312"></a><h3>1.i. Changes since 3.1.2</h3>
 
+	<h4>Security</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13519">PHPBB3-13519</a>] - Correctly validate imagick path as path and not string</li>
+	</ul>
+	<h4>Bug</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-9100">PHPBB3-9100</a>] - Inline attachments are not being inserted at the cursor</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11613">PHPBB3-11613</a>] - Cookies do not work for netbios domain</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12089">PHPBB3-12089</a>] - Make HTTP status code error messages more informative</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12642">PHPBB3-12642</a>] - Custom profile field isn't displayed</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12698">PHPBB3-12698</a>] - Replace all instances of magic numbers with constants in javascript</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12866">PHPBB3-12866</a>] - Wrong profile field validation options</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13098">PHPBB3-13098</a>] - Repair Yahoo contact field</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13192">PHPBB3-13192</a>] - confirm_box() action contains app.php when enable_mod_rewrite is set</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13238">PHPBB3-13238</a>] - \phpbb\db\migration\data\v310\mysql_fulltext_drop tries to drop non existent indexes</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13272">PHPBB3-13272</a>] - Changed Files packages do not include vendor directory</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13282">PHPBB3-13282</a>] - PostgreSQL error when creating boolean/dropdown custom profile fields</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13302">PHPBB3-13302</a>] - ACP links to docs need to be updated to 3.1 URLs</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13307">PHPBB3-13307</a>] - develop/mysql_upgrader.php does not work anymore</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13319">PHPBB3-13319</a>] - Icons/smilies table improperly formed when no images present</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13346">PHPBB3-13346</a>] - Missing space in posting_editor.html</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13357">PHPBB3-13357</a>] - LOG_MOVED_TOPIC Language var missing</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13358">PHPBB3-13358</a>] - Add class for retrieving remote file data</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13362">PHPBB3-13362</a>] - The whole cache dir (excluding the .htaccess and index.html files) should be ignored by git</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13366">PHPBB3-13366</a>] - Dynamic config for &quot;plupload_last_gc&quot; is static</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13381">PHPBB3-13381</a>] - Code Sniffer complains about 3.1.2 migration</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13385">PHPBB3-13385</a>] - Add free result after running update query in $config-&gt;set_atomic()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13391">PHPBB3-13391</a>] - subsilver2 poll options must have a setting of 1 when editing a post</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13393">PHPBB3-13393</a>] - Invalid parameters passed to call_user_func_array in version_helper.php</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13396">PHPBB3-13396</a>] - Multibyte chars cause attachment upload to fail</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13400">PHPBB3-13400</a>] - Add a new message for high server loads during search</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13405">PHPBB3-13405</a>] - A typo in style_update_p1.php migration may prevent updating in some circumstances</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13406">PHPBB3-13406</a>] - ADD INDEX syntax may cause an error in earlier MySQL versions</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13420">PHPBB3-13420</a>] - Prune users bug - filter all with 0 posts</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13427">PHPBB3-13427</a>] - Add template events to MCP front before/after each list</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13431">PHPBB3-13431</a>] - Wrong margin-left for RTL sites in Internet Explorer mobile view</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13432">PHPBB3-13432</a>] - Migrator module tool does not add the needed module language file</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13441">PHPBB3-13441</a>] - functions_convert fails to set global moderators default group</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13442">PHPBB3-13442</a>] - UTF-8 symbols for database host</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13448">PHPBB3-13448</a>] - \phpbb\messenger-&gt;template can't find email templates in extensions</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13453">PHPBB3-13453</a>] - Sort params in Canonical URL</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13470">PHPBB3-13470</a>] - Mass email says &quot;user doesn't exist&quot; when all users is selected</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13486">PHPBB3-13486</a>] - Call to undefined method phpbb\db\driver\factory::sql_escpape() on database update</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13489">PHPBB3-13489</a>] - Allow the migrations to use the DI container</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13490">PHPBB3-13490</a>] - Unicode chars are broken in edit message after preview</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13492">PHPBB3-13492</a>] - Custom BBCode URL tokens do not support IDN</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13504">PHPBB3-13504</a>] - &quot;Array&quot; is displayed when searching, or when unanswered posts or active topics are selected</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13507">PHPBB3-13507</a>] - Large images in posts can cause horizontal scrollbars</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13511">PHPBB3-13511</a>] - The &quot;Unused Use&quot; Sniff is broken</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13530">PHPBB3-13530</a>] - Fix undefined variables in migrations and tests</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13534">PHPBB3-13534</a>] - Non-existent path in attachment settings causes travis failure</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13543">PHPBB3-13543</a>] - Slow tests fail on 3.1 and 3.2</li>
+	</ul>
+	<h4>Improvement</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11033">PHPBB3-11033</a>] - FULLTEXT_SPHINX_NO_CONFIG_DATA references unrequired field</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12567">PHPBB3-12567</a>] - [proSilver] - viewtopic_body.html: Change 'back2top' anchor in  to '#top'</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12926">PHPBB3-12926</a>] - Support for IDN (IRI)</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13266">PHPBB3-13266</a>] - Enabling twig dump function if DEBUG is defined</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13306">PHPBB3-13306</a>] - Add error level to the error collector</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13312">PHPBB3-13312</a>] - [event] - Add core event to the mass email form</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13368">PHPBB3-13368</a>] - Add the forum_data var to the core.viewforum_get_topic_ids_data event</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13370">PHPBB3-13370</a>] - Add ability to call class methods more easily in the convertor framework</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13389">PHPBB3-13389</a>] - Replace pattern with path in routing.yml</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13402">PHPBB3-13402</a>] - Code Sniffer, unused use, check the function doc blocks</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13409">PHPBB3-13409</a>] - Add event to modify search parameters before searching</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13419">PHPBB3-13419</a>] - Add template event at the end of the file</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13422">PHPBB3-13422</a>] - Add new events in save custom cookies and set custom ban type</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13428">PHPBB3-13428</a>] - Add core events to memberlist.php for teampage</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13430">PHPBB3-13430</a>] - Add event for modifying prune SQL</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13435">PHPBB3-13435</a>] - Add core event to modify submit_post() sql data</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13437">PHPBB3-13437</a>] - [Template] - viewtopic_body_post_author_before/after</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13439">PHPBB3-13439</a>] - [event] - Add event to run code at beginning of ACP users overview</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13440">PHPBB3-13440</a>] - [event] - Add event to process when a user fails a login attempt</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13449">PHPBB3-13449</a>] - Add viewforum.php core event after the topic data has been assigned to template </li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13466">PHPBB3-13466</a>] - Add bbcode_uid and bitfield to event core.message_parser_check_message</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13478">PHPBB3-13478</a>] - Add core event core.bbcode_cache_init_end</li>
+	</ul>
+	<h4>Sub-task</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13141">PHPBB3-13141</a>] - Add an event to allow applying additional permissions to MCP access besides f_read</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13146">PHPBB3-13146</a>] - Add an event to allow changing the result of calling get_forums_visibility_sql()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13147">PHPBB3-13147</a>] - Add an event to change get_global_visibility_sql()'s results</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13148">PHPBB3-13148</a>] - Add an event to creating a final way to modify edit logs output</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13154">PHPBB3-13154</a>] - Add an event to edit user list for notifications</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13158">PHPBB3-13158</a>] - Add an event to allow adding extra auth checks when the user is posting</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13159">PHPBB3-13159</a>] - Add an event to allow extra auth checks when reporting posts</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13160">PHPBB3-13160</a>] - Add an event to viewtopic before viewing permissions</li>
+	</ul>
+	<h4>Task</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12924">PHPBB3-12924</a>] - Meta tags should be self-closing</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13528">PHPBB3-13528</a>] - Boolean checkbox profile fields display &quot;1&quot; instead of selected value</li>
+	</ul>
+
+
 	<a name="v311"></a><h3>1.ii. Changes since 3.1.1</h3>
 
 	<h4>Security</h4>
