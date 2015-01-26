@@ -1013,6 +1013,8 @@ function database_update_info()
 		'3.0.12-RC3'	=> array(),
 		// No changes from 3.0.12 to 3.0.13-RC1
 		'3.0.12'		=> array(),
+		// No changes from 3.0.13-RC1 to 3.0.13
+		'3.0.13-RC1'		=> array(),
 
 		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.14-RC1 */
 	);
@@ -2259,6 +2261,10 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.12 to 3.0.13-RC1
 		case '3.0.12':
+		break;
+
+		// No changes from 3.0.13-RC1 to 3.0.13
+		case '3.0.13-RC1':
 		break;
 	}
 }
