@@ -36,19 +36,28 @@ class phpbb_security_trailing_path_test extends phpbb_test_case
 			array(true, '', '', '/phpBB/index.php/?foo/a'),
 			array(true, '', '', '/projects/php.bb/phpBB/index.php/?a=5'),
 			array(false, '', '', '/projects/php.bb/phpBB/index.php?/a=5'),
+			array(false, '', '/phpBB/index.php', '/phpBB/index.php', '/phpBB/index.php', 'Microsoft-IIS/8.5'),
+			array(true, '', '/phpBB/index.php', '/phpBB/index.php'),
+			array(true, '', '/phpBB/index.php/', '/phpBB/index.php/', '/phpBB/index.php', 'Microsoft-IIS/8.5'),
+			array(true, '', '/phpBB/index.php/', '/phpBB/index.php/'),
 		);
 	}
 
 	/**
 	 * @dataProvider data_has_trailing_path
 	 */
-	public function test_has_trailing_path($expected, $path_info, $orig_path_info, $request_uri)
+	public function test_has_trailing_path($expected, $path_info, $orig_path_info, $request_uri, $script_name = '', $web_server = '')
 	{
 		global $phpEx;
 
 		$_SERVER['PATH_INFO'] = $path_info;
 		$_SERVER['ORIG_PATH_INFO'] = $orig_path_info;
 		$_SERVER['REQUEST_URI'] = $request_uri;
+		if (!empty($web_server))
+		{
+			$_SERVER['SERVER_SOFTWARE'] = $web_server;
+			$_SERVER['SCRIPT_NAME'] = $script_name;
+		}
 
 		$this->assertSame($expected, phpbb_has_trailing_path($phpEx));
 	}
