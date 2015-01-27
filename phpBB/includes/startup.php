@@ -104,8 +104,15 @@ function deregister_globals()
  */
 function phpbb_has_trailing_path($phpEx)
 {
+	// Check if web server is IIS
+	$is_iis = strpos(strtolower($_SERVER['SERVER_SOFTWARE']), 'microsoft-iis') !== false;
+
 	// Check if path_info is being used
-	if (!empty($_SERVER['PATH_INFO']) || !empty($_SERVER['ORIG_PATH_INFO']))
+	if (!empty($_SERVER['PATH_INFO']) || !empty($_SERVER['ORIG_PATH_INFO']) && !$is_iis)
+	{
+		return true;
+	}
+	else if ($is_iis && !empty($_SERVER['ORIG_PATH_INFO']) && str_replace($_SERVER['SCRIPT_NAME'], '', $_SERVER['ORIG_PATH_INFO']) !== '')
 	{
 		return true;
 	}
