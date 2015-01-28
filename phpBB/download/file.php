@@ -509,11 +509,6 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		}
 	}
 
-	if ($size)
-	{
-		header("Content-Length: $size");
-	}
-
 	// Close the db connection before sending the file
 	$db->sql_close();
 
@@ -538,6 +533,12 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		}
 
 		flush();
+
+		// Send Content-Length after delivering file
+		if ($size)
+		{
+			header("Content-Length: $size");
+		}
 	}
 	file_gc();
 }
