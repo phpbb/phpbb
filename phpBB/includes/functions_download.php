@@ -238,6 +238,13 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 			exit;
 		}
 
+		// Send Content-Length only if set_modified_headers() does not send
+		// status 304 - Not Modified
+		if ($size)
+		{
+			header("Content-Length: $size");
+		}
+
 		// Try to deliver in chunks
 		@set_time_limit(0);
 
