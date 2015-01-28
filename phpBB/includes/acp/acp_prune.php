@@ -51,7 +51,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$all_forums = request_var('all_forums', 0);
@@ -153,7 +153,8 @@ class acp_prune
 
 					// Sync all pruned forums at once
 					sync('forum', 'forum_id', $prune_ids, true, true);
-					add_log('admin', 'LOG_PRUNE', $log_data);
+
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PRUNE', false, array($log_data));
 				}
 				$db->sql_freeresult($result);
 
@@ -228,7 +229,7 @@ class acp_prune
 	*/
 	function prune_users($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('memberlist');
@@ -268,7 +269,7 @@ class acp_prune
 						}
 					}
 
-					add_log('admin', $l_log, implode(', ', $usernames));
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $l_log, false, array(implode(', ', $usernames)));
 					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
 				}
 				else

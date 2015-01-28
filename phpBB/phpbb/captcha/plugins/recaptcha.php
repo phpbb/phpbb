@@ -75,7 +75,7 @@ class recaptcha extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user;
+		global $config, $db, $template, $user, $phpbb_log;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -101,7 +101,7 @@ class recaptcha extends captcha_abstract
 				}
 			}
 
-			add_log('admin', 'LOG_CONFIG_VISUAL');
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)

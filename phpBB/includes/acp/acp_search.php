@@ -50,7 +50,7 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -143,7 +143,7 @@ class acp_search
 			$extra_message = '';
 			if ($updated)
 			{
-				add_log('admin', 'LOG_CONFIG_SEARCH');
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 			}
 
 			if (isset($cfg_array['search_type']) && in_array($cfg_array['search_type'], $search_types, true) && ($cfg_array['search_type'] != $config['search_type']))
@@ -161,7 +161,7 @@ class acp_search
 
 							if (!$updated)
 							{
-								add_log('admin', 'LOG_CONFIG_SEARCH');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 							}
 							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
 						}
@@ -232,7 +232,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$action = request_var('action', '');
@@ -347,7 +347,7 @@ class acp_search
 					$this->state = array('');
 					$this->save_state();
 
-					add_log('admin', 'LOG_SEARCH_INDEX_REMOVED', $name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
 					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 
@@ -435,7 +435,7 @@ class acp_search
 					$this->state = array('');
 					$this->save_state();
 
-					add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($name));
 					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 			}

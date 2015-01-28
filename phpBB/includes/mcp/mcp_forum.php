@@ -339,7 +339,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 */
 function mcp_resync_topics($topic_ids)
 {
-	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path;
+	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path, $phpbb_log;
 
 	if (!sizeof($topic_ids))
 	{
@@ -364,7 +364,11 @@ function mcp_resync_topics($topic_ids)
 	// Log this action
 	while ($row = $db->sql_fetchrow($result))
 	{
-		add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_TOPIC_RESYNC', $row['topic_title']);
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_TOPIC_RESYNC', false, array(
+			'forum_id' => $row['forum_id'],
+			'topic_id' => $row['topic_id'],
+			$row['topic_title']
+		));
 	}
 	$db->sql_freeresult($result);
 
@@ -383,7 +387,7 @@ function mcp_resync_topics($topic_ids)
 */
 function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log;
 
 	if (!sizeof($topic_ids))
 	{
@@ -463,7 +467,12 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		$to_forum_id = $topic_data['forum_id'];
 
 		move_posts($post_id_list, $to_topic_id, false);
-		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $topic_data['topic_title']);
+
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MERGE', false, array(
+			'forum_id' => $to_forum_id,
+			'topic_id' => $to_topic_id,
+			$topic_data['topic_title']
+		));
 
 		// Message and return links
 		$success_msg = 'POSTS_MERGED_SUCCESS';

@@ -620,7 +620,7 @@ class mcp_queue
 	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config, $request, $phpbb_container;
-		global $phpEx, $phpbb_root_path;
+		global $phpEx, $phpbb_root_path, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
@@ -691,7 +691,11 @@ class mcp_queue
 
 			foreach ($approve_log as $log_data)
 			{
-				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_POST_' . strtoupper($action) . 'D', $log_data['post_subject']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_POST_' . strtoupper($action) . 'D', false, array(
+					'forum_id' => $log_data['forum_id'],
+					'topic_id' => $log_data['topic_id'],
+					$log_data['post_subject']
+				));
 			}
 
 			// Only send out the mails, when the posts are being approved
@@ -844,7 +848,7 @@ class mcp_queue
 	*/
 	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config;
+		global $db, $template, $user, $config, $phpbb_log;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container;
 
 		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
@@ -896,7 +900,11 @@ class mcp_queue
 
 			foreach ($approve_log as $log_data)
 			{
-				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_TOPIC_' . strtoupper($action) . 'D', $log_data['topic_title']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_TOPIC_' . strtoupper($action) . 'D', false, array(
+					'forum_id' => $log_data['forum_id'],
+					'topic_id' => $log_data['topic_id'],
+					$log_data['topic_title']
+				));
 			}
 
 			// Only send out the mails, when the posts are being approved
@@ -1016,7 +1024,7 @@ class mcp_queue
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config, $phpbb_container;
-		global $phpEx, $phpbb_root_path, $request;
+		global $phpEx, $phpbb_root_path, $request, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
@@ -1165,12 +1173,23 @@ class mcp_queue
 					if ($is_disapproving)
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED';
-						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason, $log_data['post_username']);
+						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $l_log_message, false, array(
+							'forum_id' => $log_data['forum_id'],
+							'topic_id' => $log_data['topic_id'],
+							$log_data['post_subject'],
+							$disapprove_reason,
+							$log_data['post_username']
+						));
 					}
 					else
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_DELETE_TOPIC' : 'LOG_DELETE_POST';
-						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $log_data['post_username']);
+						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $l_log_message, false, array(
+							'forum_id' => $log_data['forum_id'],
+							'topic_id' => $log_data['topic_id'],
+							$log_data['post_subject'],
+							$log_data['post_username']
+						));
 					}
 				}
 			}

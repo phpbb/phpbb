@@ -34,7 +34,7 @@ class acp_users
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 		global $phpbb_dispatcher, $request;
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_log;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -220,7 +220,7 @@ class acp_users
 							{
 								user_delete($delete_type, $user_id, $user_row['username']);
 
-								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DELETED', false, array($user_row['username']));
 								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
 							}
 							else
@@ -381,8 +381,10 @@ class acp_users
 
 								$messenger->send(NOTIFY_EMAIL);
 
-								add_log('admin', 'LOG_USER_REACTIVATE', $user_row['username']);
-								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE', false, array($user_row['username']));
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE_USER', false, array(
+									'reportee_id' => $user_id
+								));
 
 								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
@@ -443,8 +445,10 @@ class acp_users
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 
-							add_log('admin', $log, $user_row['username']);
-							add_log('user', $user_id, $log . '_USER');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($user_row['username']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log . '_USER', false, array(
+								'reportee_id' => $user_id
+							));
 
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -467,8 +471,10 @@ class acp_users
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
 
-							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
-							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG', false, array($user_row['username']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG_USER', false, array(
+								'reportee_id' => $user_id
+							));
 
 							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -486,8 +492,10 @@ class acp_users
 							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $phpbb_avatar_manager->clean_row($user_row, 'user'), USERS_TABLE, 'user_');
 
-							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
-							add_log('user', $user_id, 'LOG_USER_DEL_AVATAR_USER');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR', false, array($user_row['username']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR_USER', false, array(
+								'reportee_id' => $user_id
+							));
 
 							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						break;
@@ -499,7 +507,7 @@ class acp_users
 								// Delete posts, attachments, etc.
 								delete_posts('poster_id', $user_id);
 
-								add_log('admin', 'LOG_USER_DEL_POSTS', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_POSTS', false, array($user_row['username']));
 								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -521,7 +529,7 @@ class acp_users
 							{
 								delete_attachments('user', $user_id);
 
-								add_log('admin', 'LOG_USER_DEL_ATTACH', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_ATTACH', false, array($user_row['username']));
 								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -567,7 +575,7 @@ class acp_users
 
 									delete_pm($user_id, $msg_ids, PRIVMSGS_OUTBOX);
 
-									add_log('admin', 'LOG_USER_DEL_OUTBOX', $user_row['username']);
+									$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_OUTBOX', false, array($user_row['username']));
 
 									$lang = 'EMPTIED';
 								}
@@ -738,8 +746,11 @@ class acp_users
 								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
-							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
-							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS', false, array($user_row['username'], $forum_info['forum_name']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS_USER', false, array(
+								'reportee_id' => $user_id,
+								$forum_info['forum_name']
+							));
 
 							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -751,7 +762,7 @@ class acp_users
 							{
 								remove_newly_registered($user_id, $user_row);
 
-								add_log('admin', 'LOG_USER_REMOVED_NR', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REMOVED_NR', false, array($user_row['username']));
 								trigger_error($user->lang['USER_LIFTED_NR'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -906,7 +917,11 @@ class acp_users
 							$sql_ary['username'] = $update_username;
 							$sql_ary['username_clean'] = utf8_clean_string($update_username);
 
-							add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_NAME', false, array(
+								'reportee_id' => $user_id,
+								$user_row['username'],
+								$update_username
+							));
 						}
 
 						if ($update_email !== false)
@@ -916,7 +931,12 @@ class acp_users
 								'user_email_hash'	=> phpbb_email_hash($update_email),
 							);
 
-							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
+								'reportee_id' => $user_id,
+								$user_row['username'],
+								$user_row['user_email'],
+								$update_email
+							));
 						}
 
 						if ($update_password)
@@ -927,7 +947,11 @@ class acp_users
 							);
 
 							$user->reset_login_keys($user_id);
-							add_log('user', $user_id, 'LOG_USER_NEW_PASSWORD', $user_row['username']);
+
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+								'reportee_id' => $user_id,
+								$user_row['username']
+							));
 						}
 
 						if (sizeof($sql_ary))
@@ -946,7 +970,7 @@ class acp_users
 						// Let the users permissions being updated
 						$auth->acl_clear_prefetch($user_id);
 
-						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_USER_UPDATE', false, array($data['username']));
 
 						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
@@ -1145,7 +1169,7 @@ class acp_users
 							$where_sql";
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_CLEAR_USER', $user_row['username']);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($user_row['username']));
 					}
 				}
 
@@ -1156,9 +1180,16 @@ class acp_users
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
-					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
-					add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $user_row['username']);
-					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($user_row['username']));
+					$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+						'forum_id' => 0,
+						'topic_id' => 0,
+						$user_row['username']
+					));
+					$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+						'reportee_id' => $user_id,
+						$message
+					));
 
 					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
@@ -1259,11 +1290,11 @@ class acp_users
 
 							if ($log_warnings)
 							{
-								add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED', false, array($user_row['username'], $num_warnings));
 							}
 							else
 							{
-								add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED_ALL', false, array($user_row['username']));
 							}
 						}
 					}
@@ -2041,7 +2072,7 @@ class acp_users
 
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang['COMMA_SEPARATOR'], $log_attachments));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode($user->lang['COMMA_SEPARATOR'], $log_attachments)));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else

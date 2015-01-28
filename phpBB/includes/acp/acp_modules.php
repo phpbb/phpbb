@@ -37,7 +37,7 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $module, $request;
+		global $db, $user, $auth, $template, $module, $request, $phpbb_log;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
@@ -138,7 +138,7 @@ class acp_modules
 						AND module_id = $module_id";
 				$db->sql_query($sql);
 
-				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']));
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($this->lang_name($row['module_langname'])));
 				$this->remove_cache_file();
 
 			break;
@@ -167,7 +167,7 @@ class acp_modules
 
 				if ($move_module_name !== false)
 				{
-					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($this->lang_name($row['module_langname']), $move_module_name));
 					$this->remove_cache_file();
 				}
 
@@ -771,7 +771,7 @@ class acp_modules
 	*/
 	function update_module_data(&$module_data, $run_inline = false)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_log;
 
 		if (!isset($module_data['module_id']))
 		{
@@ -835,7 +835,7 @@ class acp_modules
 
 			if (!$run_inline)
 			{
-				add_log('admin', 'LOG_MODULE_ADD', $this->lang_name($module_data['module_langname']));
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_ADD', false, array($this->lang_name($module_data['module_langname'])));
 			}
 		}
 		else
@@ -869,7 +869,7 @@ class acp_modules
 
 			if (!$run_inline)
 			{
-				add_log('admin', 'LOG_MODULE_EDIT', $this->lang_name($module_data['module_langname']));
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_EDIT', false, array($this->lang_name($module_data['module_langname'])));
 			}
 		}
 
@@ -964,7 +964,7 @@ class acp_modules
 	*/
 	function delete_module($module_id)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_log;
 
 		$row = $this->get_module_row($module_id);
 
@@ -998,7 +998,7 @@ class acp_modules
 				AND left_id > {$row['right_id']}";
 		$db->sql_query($sql);
 
-		add_log('admin', 'LOG_MODULE_REMOVED', $this->lang_name($row['module_langname']));
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_REMOVED', false, array($this->lang_name($row['module_langname'])));
 
 		return array();
 

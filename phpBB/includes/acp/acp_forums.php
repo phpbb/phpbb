@@ -27,7 +27,7 @@ class acp_forums
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
-		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log;
 
 		$user->add_lang('acp/forums');
 		$this->tpl_name = 'acp_forums';
@@ -266,7 +266,7 @@ class acp_forums
 
 				if ($move_forum_name !== false)
 				{
-					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_' . strtoupper($action), false, array($row['forum_name'], $move_forum_name));
 					$cache->destroy('sql', FORUMS_TABLE);
 				}
 
@@ -377,7 +377,8 @@ class acp_forums
 
 				sync('forum', 'forum_id', $forum_id, false, true);
 
-				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_SYNC', false, array($row['forum_name']));
+
 				$cache->destroy('sql', FORUMS_TABLE);
 
 				$template->assign_var('L_FORUM_RESYNCED', sprintf($user->lang['FORUM_RESYNCED'], $row['forum_name']));
@@ -945,7 +946,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
+		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 		$errors = array();
 
@@ -1127,7 +1128,7 @@ class acp_forums
 
 			$forum_data['forum_id'] = $db->sql_nextid();
 
-			add_log('admin', 'LOG_FORUM_ADD', $forum_data['forum_name']);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_ADD', false, array($forum_data['forum_name']));
 		}
 		else
 		{
@@ -1344,7 +1345,7 @@ class acp_forums
 			// Add it back
 			$forum_data['forum_id'] = $forum_id;
 
-			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_EDIT', false, array($forum_data['forum_name']));
 		}
 
 		/**
@@ -1546,7 +1547,7 @@ class acp_forums
 	*/
 	function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
 	{
-		global $db, $user, $cache;
+		global $db, $user, $cache, $phpbb_log;
 
 		$forum_data = $this->get_forum_info($forum_id);
 
@@ -1743,39 +1744,39 @@ class acp_forums
 		switch ($log_action)
 		{
 			case 'MOVE_POSTS_MOVE_FORUMS':
-				add_log('admin', 'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS', $posts_to_name, $subforums_to_name, $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS', false, array($posts_to_name, $subforums_to_name, $forum_data['forum_name']));
 			break;
 
 			case 'MOVE_POSTS_FORUMS':
-				add_log('admin', 'LOG_FORUM_DEL_MOVE_POSTS_FORUMS', $posts_to_name, $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_MOVE_POSTS_FORUMS', false, array($posts_to_name, $forum_data['forum_name']));
 			break;
 
 			case 'POSTS_MOVE_FORUMS':
-				add_log('admin', 'LOG_FORUM_DEL_POSTS_MOVE_FORUMS', $subforums_to_name, $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_POSTS_MOVE_FORUMS', false, array($subforums_to_name, $forum_data['forum_name']));
 			break;
 
 			case '_MOVE_FORUMS':
-				add_log('admin', 'LOG_FORUM_DEL_MOVE_FORUMS', $subforums_to_name, $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_MOVE_FORUMS', false, array($subforums_to_name, $forum_data['forum_name']));
 			break;
 
 			case 'MOVE_POSTS_':
-				add_log('admin', 'LOG_FORUM_DEL_MOVE_POSTS', $posts_to_name, $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_MOVE_POSTS', false, array($posts_to_name, $forum_data['forum_name']));
 			break;
 
 			case 'POSTS_FORUMS':
-				add_log('admin', 'LOG_FORUM_DEL_POSTS_FORUMS', $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_POSTS_FORUMS', false, array($forum_data['forum_name']));
 			break;
 
 			case '_FORUMS':
-				add_log('admin', 'LOG_FORUM_DEL_FORUMS', $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_FORUMS', false, array($forum_data['forum_name']));
 			break;
 
 			case 'POSTS_':
-				add_log('admin', 'LOG_FORUM_DEL_POSTS', $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_POSTS', false, array($forum_data['forum_name']));
 			break;
 
 			default:
-				add_log('admin', 'LOG_FORUM_DEL_FORUM', $forum_data['forum_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_DEL_FORUM', false, array($forum_data['forum_name']));
 			break;
 		}
 

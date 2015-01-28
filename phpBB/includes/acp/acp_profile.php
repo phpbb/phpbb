@@ -35,7 +35,7 @@ class acp_profile
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_log;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -143,7 +143,7 @@ class acp_profile
 
 					$db->sql_transaction('commit');
 
-					add_log('admin', 'LOG_PROFILE_FIELD_REMOVED', $field_ident);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_REMOVED', false, array($field_ident));
 					trigger_error($user->lang['REMOVED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 				}
 				else
@@ -184,7 +184,7 @@ class acp_profile
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
-				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_ACTIVATE', false, array($field_ident));
 
 				if ($request->is_ajax())
 				{
@@ -220,7 +220,7 @@ class acp_profile
 					));
 				}
 
-				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_DEACTIVATE', false, array($field_ident));
 
 				trigger_error($user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
 
@@ -816,7 +816,7 @@ class acp_profile
 	*/
 	function save_profile_field(&$cp, $field_type, $action = 'create')
 	{
-		global $db, $config, $user, $phpbb_container;
+		global $db, $config, $user, $phpbb_container, $phpbb_log;
 
 		$field_id = request_var('field_id', 0);
 
@@ -1086,12 +1086,12 @@ class acp_profile
 
 		if ($action == 'edit')
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_EDIT', $cp->vars['field_ident'] . ':' . $cp->vars['lang_name']);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_EDIT', false, array($cp->vars['field_ident'] . ':' . $cp->vars['lang_name']));
 			trigger_error($user->lang['CHANGED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 		else
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 3) . ':' . $cp->vars['lang_name']);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_CREATE', false, array(substr($field_ident, 3) . ':' . $cp->vars['lang_name']));
 			trigger_error($user->lang['ADDED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 	}

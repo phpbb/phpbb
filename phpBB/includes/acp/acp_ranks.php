@@ -26,7 +26,7 @@ class acp_ranks
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
 
 		$user->add_lang('acp/posting');
 
@@ -89,14 +89,14 @@ class acp_ranks
 					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
 					$message = $user->lang['RANK_UPDATED'];
 
-					add_log('admin', 'LOG_RANK_UPDATED', $rank_title);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_UPDATED', false, array($rank_title));
 				}
 				else
 				{
 					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 					$message = $user->lang['RANK_ADDED'];
 
-					add_log('admin', 'LOG_RANK_ADDED', $rank_title);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_ADDED', false, array($rank_title));
 				}
 				$db->sql_query($sql);
 
@@ -133,7 +133,7 @@ class acp_ranks
 
 					$cache->destroy('_ranks');
 
-					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_REMOVED', false, array($rank_title));
 
 					if ($request->is_ajax())
 					{

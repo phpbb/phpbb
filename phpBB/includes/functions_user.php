@@ -314,7 +314,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 		{
 			global $phpbb_log;
 
-			// Because these actions only fill the log unneccessarily we skip the add_log() entry.
+			// Because these actions only fill the log unnecessarily, we disable it
 			$phpbb_log->disable('admin');
 
 			// Add user to "newly registered users" group and set to default group if admin specified so.
@@ -798,7 +798,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
-	global $db, $user, $auth, $cache;
+	global $db, $user, $auth, $cache, $phpbb_log;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1189,13 +1189,22 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
 
 		// Add to admin log, moderator log and user notes
-		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
-		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array($ban_reason, $ban_list_log));
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
+			'forum_id' => 0,
+			'topic_id' => 0,
+			$ban_reason,
+			$ban_list_log
+		));
 		if ($mode == 'user')
 		{
 			foreach ($banlist_ary as $user_id)
 			{
-				add_log('user', $user_id, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
+					'reportee_id' => $user_id,
+					$ban_reason,
+					$ban_list_log
+				));
 			}
 		}
 
@@ -1215,7 +1224,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $auth, $cache;
+	global $db, $user, $auth, $cache, $phpbb_log;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1273,13 +1282,20 @@ function user_unban($mode, $ban)
 		$db->sql_query($sql);
 
 		// Add to moderator log, admin log and user notes
-		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
-		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array($l_unban_list));
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array(
+			'forum_id' => 0,
+			'topic_id' => 0,
+			$l_unban_list
+		));
 		if ($mode == 'user')
 		{
 			foreach ($user_ids_ary as $user_id)
 			{
-				add_log('user', $user_id, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array(
+					'reportee_id' => $user_id,
+					$l_unban_list
+				));
 			}
 		}
 	}
@@ -2219,7 +2235,7 @@ function phpbb_avatar_explanation_string()
 */
 function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
-	global $phpbb_root_path, $config, $db, $user, $file_upload, $phpbb_container;
+	global $phpbb_root_path, $config, $db, $user, $file_upload, $phpbb_container, $phpbb_log;
 
 	$error = array();
 
@@ -2473,7 +2489,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		}
 
 		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
-		add_log('admin', $log, $name);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($name));
 
 		group_update_listings($group_id);
 	}
@@ -2526,7 +2542,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $cache, $auth, $user, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
+	global $db, $cache, $auth, $user, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container, $phpbb_log;
 
 	if (!$group_name)
 	{
@@ -2625,7 +2641,7 @@ function group_delete($group_id, $group_name = false)
 
 	phpbb_cache_moderators($db, $cache, $auth);
 
-	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_GROUP_DELETE', false, array($group_name));
 
 	// Return false - no error
 	return false;
@@ -2638,7 +2654,7 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_container;
+	global $db, $auth, $user, $phpbb_container, $phpbb_log;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2722,7 +2738,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$log = ($leader) ? 'LOG_MODS_ADDED' : (($pending) ? 'LOG_USERS_PENDING' : 'LOG_USERS_ADDED');
 
-	add_log('admin', $log, $group_name, implode(', ', $username_ary));
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
 
 	group_update_listings($group_id);
 
@@ -2754,7 +2770,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth, $config, $phpbb_dispatcher, $phpbb_container;
+	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_log;
 
 	if ($config['coppa_enable'])
 	{
@@ -2883,7 +2899,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if ($group_name)
 	{
-		add_log('admin', $log, $group_name, implode(', ', $username_ary));
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
 	}
 
 	group_update_listings($group_id);
@@ -2982,7 +2998,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_root_path, $phpEx, $config, $phpbb_container;
+	global $db, $auth, $user, $phpbb_root_path, $phpEx, $config, $phpbb_container, $phpbb_log;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -3117,7 +3133,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
 
-	add_log('admin', $log, $group_name, implode(', ', $username_ary));
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
 
 	group_update_listings($group_id);
 

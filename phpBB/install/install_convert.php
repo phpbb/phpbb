@@ -1604,9 +1604,7 @@ class install_convert extends module
 		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log
-		/* @var $phpbb_log \phpbb\log\log_interface */
-		$phpbb_log = $phpbb_container->get('log');
-		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INSTALL_CONVERTED', false, array($convert->convertor_data['forum_name'], $config['version']));
 
 		$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final&amp;language=$language";
 

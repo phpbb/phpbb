@@ -29,7 +29,7 @@ class acp_jabber
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $phpbb_log;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
@@ -111,7 +111,7 @@ class acp_jabber
 			set_config('jab_package_size', $jab_package_size);
 			set_config('jab_use_ssl', $jab_use_ssl);
 
-			add_log('admin', 'LOG_' . $log);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . $log);
 			trigger_error($message . adm_back_link($this->u_action));
 		}
 

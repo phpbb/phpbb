@@ -30,7 +30,7 @@ class ucp_groups
 	{
 		global $config, $phpbb_root_path, $phpEx, $phpbb_admin_path;
 		global $db, $user, $auth, $cache, $template;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('groups');
 
@@ -99,7 +99,10 @@ class ucp_groups
 							{
 								group_user_attributes('default', $group_id, $user->data['user_id']);
 
-								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_CHANGE', sprintf($user->lang['USER_GROUP_CHANGE'], $group_row[$user->data['group_id']]['group_name'], $group_row[$group_id]['group_name']));
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_CHANGE', false, array(
+									'reportee_id' => $user->data['user_id'],
+									sprintf($user->lang['USER_GROUP_CHANGE'], $group_row[$user->data['group_id']]['group_name'], $group_row[$group_id]['group_name'])
+								));
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($user->lang['CHANGED_DEFAULT_GROUP'] . $return_page);
@@ -146,7 +149,10 @@ class ucp_groups
 							{
 								group_user_del($group_id, $user->data['user_id']);
 
-								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_RESIGN', $group_row[$group_id]['group_name']);
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_RESIGN', false, array(
+									'reportee_id' => $user->data['user_id'],
+									$group_row[$group_id]['group_name']
+								));
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($user->lang[($row['user_pending']) ? 'GROUP_RESIGNED_PENDING' : 'GROUP_RESIGNED_MEMBERSHIP'] . $return_page);
@@ -202,7 +208,10 @@ class ucp_groups
 									group_user_add($group_id, $user->data['user_id'], false, false, false, 0, 1);
 								}
 
-								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), $group_row[$group_id]['group_name']);
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_JOIN' . (($group_row[$group_id]['group_type'] == GROUP_FREE) ? '' : '_PENDING'), false, array(
+									'reportee_id' => $user->data['user_id'],
+									$group_row[$group_id]['group_name']
+								));
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($user->lang[($group_row[$group_id]['group_type'] == GROUP_FREE) ? 'GROUP_JOINED' : 'GROUP_JOINED_PENDING'] . $return_page);
@@ -237,7 +246,10 @@ class ucp_groups
 							{
 								group_user_attributes('demote', $group_id, $user->data['user_id']);
 
-								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_DEMOTE', $group_row[$group_id]['group_name']);
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GROUP_DEMOTE', false, array(
+									'reportee_id' => $user->data['user_id'],
+									$group_row[$group_id]['group_name']
+								));
 
 								meta_refresh(3, $this->u_action);
 								trigger_error($user->lang['USER_GROUP_DEMOTED'] . $return_page);

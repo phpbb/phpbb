@@ -31,7 +31,7 @@ class acp_inactive
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_container;
+		global $config, $db, $user, $auth, $template, $phpbb_container, $phpbb_log;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -137,8 +137,10 @@ class acp_inactive
 						{
 							foreach ($inactive_users as $row)
 							{
-								add_log('admin', 'LOG_USER_ACTIVE', $row['username']);
-								add_log('user', $row['user_id'], 'LOG_USER_ACTIVE_USER');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($row['username']));
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
+									'reportee_id' => $row['user_id']
+								));
 							}
 
 							trigger_error(sprintf($user->lang['LOG_INACTIVE_ACTIVATE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
@@ -161,7 +163,7 @@ class acp_inactive
 
 							user_delete('retain', $mark, true);
 
-							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_' . strtoupper($action), false, array(implode(', ', $user_affected)));
 
 							trigger_error(sprintf($user->lang['LOG_INACTIVE_DELETE'], implode($user->lang['COMMA_SEPARATOR'], $user_affected) . ' ' . adm_back_link($this->u_action)));
 						}
@@ -233,7 +235,7 @@ class acp_inactive
 							WHERE ' . $db->sql_in_set('user_id', $user_ids);
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_INACTIVE_REMIND', implode(', ', $usernames));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INACTIVE_REMIND', false, array(implode(', ', $usernames)));
 
 						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}

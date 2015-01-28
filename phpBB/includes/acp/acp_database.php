@@ -27,7 +27,7 @@ class acp_database
 	function main($id, $mode)
 	{
 		global $cache, $db, $user, $auth, $template, $table_prefix;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
 
 		$this->db_tools = new \phpbb\db\tools\tools($db);
 
@@ -165,7 +165,7 @@ class acp_database
 
 						$extractor->write_end();
 
-						add_log('admin', 'LOG_DB_BACKUP');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_BACKUP');
 
 						if ($download == true)
 						{
@@ -242,7 +242,7 @@ class acp_database
 							if (confirm_box(true))
 							{
 								unlink($file_name);
-								add_log('admin', 'LOG_DB_DELETE');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_DELETE');
 								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 							}
 							else
@@ -395,7 +395,7 @@ class acp_database
 							// Purge the cache due to updated data
 							$cache->purge();
 
-							add_log('admin', 'LOG_DB_RESTORE');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_RESTORE');
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
 						}

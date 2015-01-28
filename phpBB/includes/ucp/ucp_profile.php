@@ -32,7 +32,7 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('posting');
 
@@ -116,18 +116,30 @@ class ucp_profile
 
 						if ($auth->acl_get('u_chgname') && $config['allow_namechange'] && $data['username'] != $user->data['username'])
 						{
-							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $data['username']);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_NAME', false, array(
+								'reportee_id' => $user->data['user_id'],
+								$user->data['username'],
+								$data['username']
+							));
 						}
 
 						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && !$passwords_manager->check($data['new_password'], $user->data['user_password']))
 						{
 							$user->reset_login_keys();
-							add_log('user', $user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $data['username']);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+								'reportee_id' => $user->data['user_id'],
+								$user->data['username']
+							));
 						}
 
 						if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'])
 						{
-							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $data['username'], $user->data['user_email'], $data['email']);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
+								'reportee_id' => $user->data['user_id'],
+								$user->data['username'],
+								$data['user_email'],
+								$data['email']
+							));
 						}
 
 						$message = 'PROFILE_UPDATED';

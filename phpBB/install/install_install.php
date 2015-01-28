@@ -1975,7 +1975,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -2016,7 +2016,7 @@ class install_install extends module
 		}
 
 		// And finally, add a note to the log
-		add_log('admin', 'LOG_INSTALL_INSTALLED', $config['version']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INSTALL_INSTALLED', false, array($config['version']));
 
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
