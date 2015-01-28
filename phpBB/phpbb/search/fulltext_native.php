@@ -300,7 +300,7 @@ class fulltext_native extends \phpbb\search\base
 		$this->search_query = $keywords;
 
 		$exact_words = array();
-		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
+		preg_match_all('#([^\\s+\\-|()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
 		$exact_words = $exact_words[1];
 
 		$common_ids = $words = array();
