@@ -105,7 +105,7 @@ function deregister_globals()
 function phpbb_has_trailing_path($phpEx)
 {
 	// Check if path_info is being used
-	if (!empty($_SERVER['PATH_INFO']) || !empty($_SERVER['ORIG_PATH_INFO']))
+	if (!empty($_SERVER['PATH_INFO']) || (!empty($_SERVER['ORIG_PATH_INFO']) && $_SERVER['SCRIPT_NAME'] != $_SERVER['ORIG_PATH_INFO']))
 	{
 		return true;
 	}
