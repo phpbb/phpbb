@@ -71,7 +71,7 @@ class extension extends \Twig_Extension
 	{
 		return array(
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
-			new \Twig_SimpleFilter('addslashes', 'addslashes'), // Deprecate addslashes in phpBB 3.1.4
+			new \Twig_SimpleFilter('addslashes', 'addslashes'), // Deprecated 3.2.0
 		);
 	}
 
