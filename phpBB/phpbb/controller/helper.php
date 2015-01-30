@@ -211,7 +211,7 @@ class helper
 			'MESSAGE_TITLE'	=> $this->user->lang($title),
 		));
 
-		return $this->render('message_body.html', $this->user->lang('INFORMATION'), $code);
+		return $this->render('message_body.html', $this->user->lang($title), $code);
 	}
 
 	/**
