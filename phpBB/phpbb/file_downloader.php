@@ -33,7 +33,7 @@ class file_downloader
 	 * @return mixed File data as string if file can be read and there is no
 	 *			timeout, false if there were errors or the connection timed out
 	 *
-	 * @throws \RuntimeException If data can't be retrieved and no error
+	 * @throws \phpbb\exception\runtime_exception If data can't be retrieved and no error
 	 *		message is returned
 	 */
 	public function get($host, $directory, $filename, $port = 80, $timeout = 6)
@@ -69,7 +69,7 @@ class file_downloader
 					}
 					else if (stripos($line, '404 not found') !== false)
 					{
-						throw new \RuntimeException(array('FILE_NOT_FOUND', $filename));
+						throw new \phpbb\exception\runtime_exception('FILE_NOT_FOUND', array($filename));
 					}
 				}
 
@@ -77,7 +77,7 @@ class file_downloader
 
 				if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
 				{
-					throw new \RuntimeException('FSOCK_TIMEOUT');
+					throw new \phpbb\exception\runtime_exception('FSOCK_TIMEOUT');
 				}
 			}
 			@fclose($socket);
