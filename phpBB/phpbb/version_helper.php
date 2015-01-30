@@ -257,9 +257,10 @@ class version_helper
 			try {
 				$info = $this->file_downloader->get($this->host, $this->path, $this->file);
 			}
-			catch (\RuntimeException $exception)
+			catch (\phpbb\exception\runtime_exception $exception)
 			{
-				throw new \RuntimeException($this->user->lang($exception->getMessage()));
+				$prepare_parameters = array_merge(array($exception->getMessage()), $exception->get_parameters());
+				throw new \RuntimeException(call_user_func_array(array($this->user, 'lang'), $prepare_parameters));
 			}
 			$error_string = $this->file_downloader->get_error_string();
 
