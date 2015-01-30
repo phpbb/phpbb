@@ -189,9 +189,24 @@ class helper
 	*/
 	public function error($message, $code = 500)
 	{
+		return $this->message($message, false, $code);
+	}
+
+	/**
+	 * Output a message
+	 *
+	 * In case of an error, please throw an exception instead
+	 *
+	 * @param string $message The message to display
+	 * @param string|false $title Title for the message
+	 * @param int $code The HTTP status code (e.g. 404, 500, 503, etc.)
+	 * @return Response A Response instance
+	 */
+	public function message($message, $title = false, $code = 200)
+	{
 		$this->template->assign_vars(array(
 			'MESSAGE_TEXT'	=> $message,
-			'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
+			'MESSAGE_TITLE'	=> ($title === false) ? $this->user->lang('INFORMATION') : $title,
 		));
 
 		return $this->render('message_body.html', $this->user->lang('INFORMATION'), $code);
