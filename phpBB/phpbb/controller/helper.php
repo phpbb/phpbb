@@ -189,7 +189,7 @@ class helper
 	*/
 	public function error($message, $code = 500)
 	{
-		return $this->message($message, false, $code);
+		return $this->message($message, array(), false, $code);
 	}
 
 	/**
@@ -197,15 +197,17 @@ class helper
 	 *
 	 * In case of an error, please throw an exception instead
 	 *
-	 * @param string $message The message to display
-	 * @param string|false $title Title for the message
+	 * @param string $message The message to display (must be a language variable)
+	 * @param array $parameters The parameters to use with the language var
+	 * @param string|bool $title Title for the message
 	 * @param int $code The HTTP status code (e.g. 404, 500, 503, etc.)
 	 * @return Response A Response instance
 	 */
-	public function message($message, $title = false, $code = 200)
+	public function message($message, array $parameters = array(), $title = false, $code = 200)
 	{
+		array_unshift($parameters, $message);
 		$this->template->assign_vars(array(
-			'MESSAGE_TEXT'	=> $message,
+			'MESSAGE_TEXT'	=> call_user_func_array(array($this->user, 'lang'), $parameters),
 			'MESSAGE_TITLE'	=> ($title === false) ? $this->user->lang('INFORMATION') : $title,
 		));
 
