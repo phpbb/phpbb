@@ -43,4 +43,49 @@ class phpbb_qa_test extends \phpbb_database_test_case
 
 		$this->assertTrue($this->qa->is_installed());
 	}
+
+	public function test_set_get_name()
+	{
+		$this->assertNull($this->qa->get_service_name());
+		$this->qa->set_name('foobar');
+		$this->assertSame('foobar', $this->qa->get_service_name());
+	}
+
+	public function data_acp_get_question_input()
+	{
+		return array(
+			array("foobar\ntest\nyes", array(
+				'question_text'	=> '',
+				'strict'	=> false,
+				'lang_iso'	=> '',
+				'answers'	=> array('foobar', 'test', 'yes')
+			)),
+			array("foobar\ntest\n \nyes", array(
+				'question_text'	=> '',
+				'strict'	=> false,
+				'lang_iso'	=> '',
+				'answers'	=> array(
+					0 => 'foobar',
+					1 => 'test',
+					3 => 'yes',
+				)
+			)),
+			array('', array(
+				'question_text'	=> '',
+				'strict'	=> false,
+				'lang_iso'	=> '',
+				'answers'	=> '',
+			)),
+		);
+	}
+
+	/**
+	 * @dataProvider data_acp_get_question_input
+	 */
+	public function test_acp_get_question_input($value, $expected)
+	{
+		$this->request->overwrite('answers', $value);
+
+		$this->assertEquals($expected, $this->qa->acp_get_question_input());
+	}
 }
