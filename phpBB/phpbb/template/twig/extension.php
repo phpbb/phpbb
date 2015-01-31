@@ -71,7 +71,8 @@ class extension extends \Twig_Extension
 	{
 		return array(
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
-			new \Twig_SimpleFilter('addslashes', 'addslashes'), // Deprecated 3.2.0
+			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
+			new \Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
 	}
 
