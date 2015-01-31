@@ -691,13 +691,11 @@ class qa
 			{
 				if ($question = $this->acp_get_question_data($question_id))
 				{
-					$answers = (isset($question_input['answers'][$lang])) ? $question_input['answers'][$lang] : implode("\n", $question['answers']);
-
 					$template->assign_vars(array(
 						'QUESTION_TEXT'		=> ($question_input['question_text']) ? $question_input['question_text'] : $question['question_text'],
 						'LANG_ISO'			=> ($question_input['lang_iso']) ? $question_input['lang_iso'] : $question['lang_iso'],
 						'STRICT'			=> (isset($_REQUEST['strict'])) ? $question_input['strict'] : $question['strict'],
-						'ANSWERS'			=> $answers,
+						'ANSWERS'			=> implode("\n", $question['answers']),
 					));
 				}
 				else
@@ -711,15 +709,13 @@ class qa
 					'QUESTION_TEXT'		=> $question_input['question_text'],
 					'LANG_ISO'			=> $question_input['lang_iso'],
 					'STRICT'			=> $question_input['strict'],
-					'ANSWERS'			=> $question_input['answers'],
+					'ANSWERS'			=> (is_array($question_input['answers'])) ? implode("\n", $question_input['answers']) : '',
 				));
 			}
 
 			if ($submit && check_form_key($form_key))
 			{
-				$data = $this->acp_get_question_input();
-
-				if (!$this->validate_input($data))
+				if (!$this->validate_input($question_input))
 				{
 					$template->assign_vars(array(
 						'S_ERROR'			=> true,
@@ -729,11 +725,11 @@ class qa
 				{
 					if ($question_id)
 					{
-						$this->acp_update_question($data, $question_id);
+						$this->acp_update_question($question_input, $question_id);
 					}
 					else
 					{
-						$this->acp_add_question($data);
+						$this->acp_add_question($question_input);
 					}
 
 					add_log('admin', 'LOG_CONFIG_VISUAL');
