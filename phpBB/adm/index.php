@@ -562,6 +562,42 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				}
 
 			break;
+
+			// Absolute file path
+			case 'wapath':
+			case 'apath':
+				if (!$cfg_array[$config_name])
+				{
+					break;
+				}
+
+				$cfg_array[$config_name] = trim($cfg_array[$config_name]);
+
+				// Make sure no NUL byte is present...
+				if (strpos($cfg_array[$config_name], "\0") !== false || strpos($cfg_array[$config_name], '%00') !== false)
+				{
+					$cfg_array[$config_name] = '';
+					break;
+				}
+
+				if (!file_exists($cfg_array[$config_name]))
+				{
+					$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $cfg_array[$config_name]);
+				}
+				else if (!is_dir($cfg_array[$config_name]))
+				{
+					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
+				}
+
+				// Check if the path is writable
+				if ($config_definition['validate'] === 'wapath')
+				{
+					if (file_exists($cfg_array[$config_name]) && !phpbb_is_writable($cfg_array[$config_name]))
+					{
+						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
+					}
+				}
+			break;
 		}
 	}
 
