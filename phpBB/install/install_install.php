@@ -1966,7 +1966,7 @@ class install_install extends module
 				'bot_ip'		=> (string) $bot_ary[1],
 			));
 
-			$result = $db->sql_query($sql);
+			$db->sql_query($sql);
 		}
 	}
 
