@@ -1649,6 +1649,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001, $sql_limit_offset = 0)
 {
 	global $config, $db, $user;
+	global $phpbb_dispatcher;
 
 	$user_id = ($user_id === false) ? (int) $user->data['user_id'] : (int) $user_id;
 
@@ -1691,6 +1692,24 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 				$sql_extra
 				$sql_sort",
 		);
+
+		/**
+		 * Change SQL query for fetching unread topics data
+		 *
+		 * @event core.get_unread_topics_modify_sql
+		 * @var array     sql_array    Fully assembled SQL query with keys SELECT, FROM, LEFT_JOIN, WHERE
+		 * @var int       last_mark    User's last_mark time
+		 * @var string    sql_extra    Extra WHERE SQL statement
+		 * @var string    sql_sort     ORDER BY SQL sorting statement
+		 * @since 3.1.4-RC1
+		 */
+		$vars = array(
+			'sql_array',
+			'last_mark',
+			'sql_extra',
+			'sql_sort',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.get_unread_topics_modify_sql', compact($vars)));
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $sql_limit, $sql_limit_offset);
