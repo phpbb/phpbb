@@ -154,6 +154,6 @@ class db_text
 		$sql = 'DELETE
 			FROM ' . $this->table . '
 			WHERE ' . $this->db->sql_in_set('config_name', $keys, false, true);
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 	}
 }
