@@ -545,7 +545,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					break;
 				}
 
-				$path = ($config_definition['validate'] === 'wpath' || $config_definition['validate'] === 'path') ? $phpbb_root_path . $cfg_array[$config_name] : $cfg_array[$config_name];
+				$path = in_array($config_definition['validate'], array('wpath', 'path', 'rpath', 'rwpath')) ? $phpbb_root_path . $cfg_array[$config_name] : $cfg_array[$config_name];
 
 				if (!file_exists($path))
 				{
