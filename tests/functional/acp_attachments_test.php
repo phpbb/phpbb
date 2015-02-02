@@ -21,8 +21,10 @@ class phpbb_functional_acp_attachments_test extends phpbb_functional_test_case
 		return array(
 			array('/usr/bin', 'Configuration updated successfully'),
 			array('/usr/bin/', 'Configuration updated successfully'),
+			array('C:\Windows\system32', 'The entered path “C:\Windows\system32” does not exist.'),
 			array('/usr/nope', 'The entered path “/usr/nope” does not exist.'),
 			array('mkdir /usr/test', 'The entered path “mkdir /usr/test” does not exist.'),
+			array('/usr/bin/which', 'The entered path “/usr/bin/which” is not a directory.'),
 		);
 	}
 
