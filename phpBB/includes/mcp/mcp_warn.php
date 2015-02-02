@@ -196,7 +196,7 @@ class mcp_warn
 		$post_id = $request->variable('p', 0);
 		$forum_id = $request->variable('f', 0);
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-		$warning = utf8_normalize_nfc($request->variable('warning', '', true));
+		$warning = $request->variable('warning', '', true);
 
 		$sql = 'SELECT u.*, p.*
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
@@ -376,7 +376,7 @@ class mcp_warn
 		$user_id = $request->variable('u', 0);
 		$username = $request->variable('username', '', true);
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-		$warning = utf8_normalize_nfc($request->variable('warning', '', true));
+		$warning = $request->variable('warning', '', true);
 
 		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 

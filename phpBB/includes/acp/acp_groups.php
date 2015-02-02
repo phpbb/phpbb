@@ -362,8 +362,8 @@ class acp_groups
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$group_name	= utf8_normalize_nfc($request->variable('group_name', '', true));
-					$group_desc = utf8_normalize_nfc($request->variable('group_desc', '', true));
+					$group_name	= $request->variable('group_name', '', true);
+					$group_desc = $request->variable('group_desc', '', true);
 					$group_type	= $request->variable('group_type', GROUP_FREE);
 
 					$allow_desc_bbcode	= $request->variable('desc_parse_bbcode', false);
@@ -618,7 +618,7 @@ class acp_groups
 				}
 				else if (!$group_id)
 				{
-					$group_name = utf8_normalize_nfc($request->variable('group_name', '', true));
+					$group_name = $request->variable('group_name', '', true);
 					$group_desc_data = array(
 						'text'			=> '',
 						'allow_bbcode'	=> true,

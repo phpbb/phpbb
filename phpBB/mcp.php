@@ -76,7 +76,7 @@ $topic_id = $request->variable('t', 0);
 $forum_id = $request->variable('f', 0);
 $report_id = $request->variable('r', 0);
 $user_id = $request->variable('u', 0);
-$username = utf8_normalize_nfc($request->variable('username', '', true));
+$username = $request->variable('username', '', true);
 
 if ($post_id)
 {

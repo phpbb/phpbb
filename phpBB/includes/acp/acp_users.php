@@ -40,7 +40,7 @@ class acp_users
 		$this->tpl_name = 'acp_users';
 
 		$error		= array();
-		$username	= utf8_normalize_nfc($request->variable('username', '', true));
+		$username	= $request->variable('username', '', true);
 		$user_id	= $request->variable('u', 0);
 		$action		= $request->variable('action', '');
 
@@ -304,8 +304,8 @@ class acp_users
 								break;
 							}
 
-							$ban_reason = utf8_normalize_nfc($request->variable('ban_reason', $user->lang[$reason], true));
-							$ban_give_reason = utf8_normalize_nfc($request->variable('ban_give_reason', '', true));
+							$ban_reason = $request->variable('ban_reason', $user->lang[$reason], true);
+							$ban_give_reason = $request->variable('ban_give_reason', '', true);
 
 							// Log not used at the moment, we simply utilize the ban function.
 							$result = user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
@@ -794,7 +794,7 @@ class acp_users
 
 					// Handle registration info updates
 					$data = array(
-						'username'			=> utf8_normalize_nfc($request->variable('user', $user_row['username'], true)),
+						'username'			=> $request->variable('user', $user_row['username'], true),
 						'user_founder'		=> $request->variable('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower($request->variable('user_email', $user_row['user_email'])),
 						'new_password'		=> $request->variable('new_password', '', true),
@@ -1131,7 +1131,7 @@ class acp_users
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= $request->variable('mark', array(0));
-				$message	= utf8_normalize_nfc($request->variable('message', '', true));
+				$message	= $request->variable('message', '', true);
 
 				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
@@ -1245,7 +1245,7 @@ class acp_users
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$confirm	= (isset($_POST['confirm'])) ? true : false;
 				$marked		= $request->variable('mark', array(0));
-				$message	= utf8_normalize_nfc($request->variable('message', '', true));
+				$message	= $request->variable('message', '', true);
 
 				// Sort keys
 				$sort_days	= $request->variable('st', 0);
@@ -1398,7 +1398,7 @@ class acp_users
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
 				$data = array(
-					'jabber'		=> utf8_normalize_nfc($request->variable('jabber', $user_row['user_jabber'], true)),
+					'jabber'		=> $request->variable('jabber', $user_row['user_jabber'], true),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
@@ -1531,7 +1531,7 @@ class acp_users
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$data = array(
-					'dateformat'		=> utf8_normalize_nfc($request->variable('dateformat', $user_row['user_dateformat'], true)),
+					'dateformat'		=> $request->variable('dateformat', $user_row['user_dateformat'], true),
 					'lang'				=> basename($request->variable('lang', $user_row['user_lang'])),
 					'tz'				=> $request->variable('tz', $user_row['user_timezone']),
 					'style'				=> $request->variable('style', $user_row['user_style']),

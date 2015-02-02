@@ -115,7 +115,7 @@ class ucp_register
 			{
 				// We do not include the password
 				$s_hidden_fields = array_merge($s_hidden_fields, array(
-					'username'			=> utf8_normalize_nfc($request->variable('username', '', true)),
+					'username'			=> $request->variable('username', '', true),
 					'email'				=> strtolower($request->variable('email', '')),
 					'lang'				=> $user->lang_name,
 					'tz'				=> $request->variable('tz', $config['board_timezone']),
@@ -192,7 +192,7 @@ class ucp_register
 		$timezone = $config['board_timezone'];
 
 		$data = array(
-			'username'			=> utf8_normalize_nfc($request->variable('username', '', true)),
+			'username'			=> $request->variable('username', '', true),
 			'new_password'		=> $request->variable('new_password', '', true),
 			'password_confirm'	=> $request->variable('password_confirm', '', true),
 			'email'				=> strtolower($request->variable('email', '')),

@@ -2090,7 +2090,7 @@ class install_install extends module
 			'dbname'		=> $request->variable('dbname', ''),
 			'table_prefix'	=> $request->variable('table_prefix', ''),
 			'default_lang'	=> basename($request->variable('default_lang', '')),
-			'admin_name'	=> utf8_normalize_nfc($request->variable('admin_name', '', true)),
+			'admin_name'	=> $request->variable('admin_name', '', true),
 			'admin_pass1'	=> $request->variable('admin_pass1', '', true),
 			'admin_pass2'	=> $request->variable('admin_pass2', '', true),
 			'board_email'	=> strtolower($request->variable('board_email', '')),

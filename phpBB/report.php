@@ -29,7 +29,7 @@ $forum_id		= $request->variable('f', 0);
 $post_id		= $request->variable('p', 0);
 $pm_id			= $request->variable('pm', 0);
 $reason_id		= $request->variable('reason_id', 0);
-$report_text	= utf8_normalize_nfc($request->variable('report_text', '', true));
+$report_text	= $request->variable('report_text', '', true);
 $user_notify	= ($user->data['is_registered']) ? $request->variable('notify', 0) : false;
 
 $submit = (isset($_POST['submit'])) ? true : false;

@@ -65,7 +65,7 @@ class qa
 
 		// read input
 		$this->confirm_id = $request->variable('qa_confirm_id', '');
-		$this->answer = utf8_normalize_nfc($request->variable('qa_answer', '', true));
+		$this->answer = $request->variable('qa_answer', '', true);
 
 		$this->type = (int) $type;
 		$this->question_lang = $user->lang_name;
@@ -546,7 +546,7 @@ class qa
 	{
 		global $db, $request;
 
-		$answer = ($this->question_strict) ? utf8_normalize_nfc($request->variable('qa_answer', '', true)) : utf8_clean_string(utf8_normalize_nfc($request->variable('qa_answer', '', true)));
+		$answer = ($this->question_strict) ? $request->variable('qa_answer', '', true) : utf8_clean_string($request->variable('qa_answer', '', true));
 
 		$sql = 'SELECT answer_text
 			FROM ' . $this->table_captcha_answers . '
@@ -830,7 +830,7 @@ class qa
 	{
 		global $request;
 
-		$answers = utf8_normalize_nfc($request->variable('answers', '', true));
+		$answers = $request->variable('answers', '', true);
 		$question = array(
 			'question_text'	=> $request->variable('question_text', '', true),
 			'strict'		=> $request->variable('strict', false),

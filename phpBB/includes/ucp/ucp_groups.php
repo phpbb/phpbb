@@ -510,8 +510,8 @@ class ucp_groups
 						// Did we submit?
 						if ($update)
 						{
-							$group_name	= utf8_normalize_nfc($request->variable('group_name', '', true));
-							$group_desc = utf8_normalize_nfc($request->variable('group_desc', '', true));
+							$group_name	= $request->variable('group_name', '', true);
+							$group_desc = $request->variable('group_desc', '', true);
 							$group_type	= $request->variable('group_type', GROUP_FREE);
 
 							$allow_desc_bbcode	= $request->variable('desc_parse_bbcode', false);
@@ -621,7 +621,7 @@ class ucp_groups
 						}
 						else if (!$group_id)
 						{
-							$group_name = utf8_normalize_nfc($request->variable('group_name', '', true));
+							$group_name = $request->variable('group_name', '', true);
 							$group_desc_data = array(
 								'text'			=> '',
 								'allow_bbcode'	=> true,
@@ -1018,7 +1018,7 @@ class ucp_groups
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
 
-						$names = utf8_normalize_nfc($request->variable('usernames', '', true));
+						$names = $request->variable('usernames', '', true);
 
 						if (!$group_id)
 						{

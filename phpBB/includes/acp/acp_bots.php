@@ -144,7 +144,7 @@ class acp_bots
 				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$bot_row = array(
-					'bot_name'		=> utf8_normalize_nfc($request->variable('bot_name', '', true)),
+					'bot_name'		=> $request->variable('bot_name', '', true),
 					'bot_agent'		=> $request->variable('bot_agent', ''),
 					'bot_ip'		=> $request->variable('bot_ip', ''),
 					'bot_active'	=> $request->variable('bot_active', true),

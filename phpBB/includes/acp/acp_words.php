@@ -89,8 +89,8 @@ class acp_words
 				}
 
 				$word_id		= $request->variable('id', 0);
-				$word			= utf8_normalize_nfc($request->variable('word', '', true));
-				$replacement	= utf8_normalize_nfc($request->variable('replacement', '', true));
+				$word			= $request->variable('word', '', true);
+				$replacement	= $request->variable('replacement', '', true);
 
 				if ($word === '' || $replacement === '')
 				{

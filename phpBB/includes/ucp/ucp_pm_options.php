@@ -79,7 +79,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
-			$folder_name = utf8_normalize_nfc($request->variable('foldername', '', true));
+			$folder_name = $request->variable('foldername', '', true);
 			$msg = '';
 
 			if ($folder_name)
@@ -135,7 +135,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
-			$new_folder_name = utf8_normalize_nfc($request->variable('new_folder_name', '', true));
+			$new_folder_name = $request->variable('new_folder_name', '', true);
 			$rename_folder_id= $request->variable('rename_folder_id', 0);
 
 			if (!$new_folder_name)
@@ -295,7 +295,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$rule_option	= $request->variable('rule_option', 0);
 			$cond_option	= $request->variable('cond_option', '');
 			$action_option	= explode('|', $request->variable('action_option', ''));
-			$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc($request->variable('rule_string', '', true)) : '';
+			$rule_string	= ($cond_option != 'none') ? $request->variable('rule_string', '', true) : '';
 			$rule_user_id	= ($cond_option != 'none') ? $request->variable('rule_user_id', 0) : 0;
 			$rule_group_id	= ($cond_option != 'none') ? $request->variable('rule_group_id', 0) : 0;
 
@@ -722,7 +722,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	switch ($condition)
 	{
 		case 'text':
-			$rule_string = utf8_normalize_nfc($request->variable('rule_string', '', true));
+			$rule_string = $request->variable('rule_string', '', true);
 
 			$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
@@ -736,7 +736,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 		case 'user':
 			$rule_user_id = $request->variable('rule_user_id', 0);
-			$rule_string = utf8_normalize_nfc($request->variable('rule_string', '', true));
+			$rule_string = $request->variable('rule_string', '', true);
 
 			if ($rule_string && !$rule_user_id)
 			{
@@ -779,7 +779,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 		case 'group':
 			$rule_group_id = $request->variable('rule_group_id', 0);
-			$rule_string = utf8_normalize_nfc($request->variable('rule_string', '', true));
+			$rule_string = $request->variable('rule_string', '', true);
 
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 					FROM ' . GROUPS_TABLE . ' g ';

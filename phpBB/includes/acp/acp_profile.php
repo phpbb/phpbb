@@ -347,7 +347,7 @@ class acp_profile
 						'field_is_contact'	=> 0,
 						'field_contact_desc'=> '',
 						'field_contact_url'	=> '',
-						'lang_name'			=> utf8_normalize_nfc($request->variable('field_ident', '', true)),
+						'lang_name'			=> $request->variable('field_ident', '', true),
 						'lang_explain'		=> '',
 						'lang_default_value'=> '')
 					);
@@ -416,7 +416,7 @@ class acp_profile
 				// step 2
 				foreach ($exclude[2] as $key)
 				{
-					$var = utf8_normalize_nfc($request->variable($key, $field_row[$key], true));
+					$var = $request->variable($key, $field_row[$key], true);
 
 					$field_data = $cp->vars;
 					$var = $profile_field->get_excluded_options($key, $action, $var, $field_data, 2);
@@ -462,7 +462,7 @@ class acp_profile
 
 				foreach ($exclude[3] as $key)
 				{
-					$cp->vars[$key] = utf8_normalize_nfc($request->variable($key, array(0 => ''), true));
+					$cp->vars[$key] = $request->variable($key, array(0 => ''), true);
 
 					if (!$cp->vars[$key] && $action == 'edit')
 					{
@@ -760,7 +760,7 @@ class acp_profile
 			$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 			foreach ($options as $field => $field_type)
 			{
-				$value = ($action == 'create') ? utf8_normalize_nfc($request->variable('l_' . $field, array(0 => ''), true)) : $cp->vars['l_' . $field];
+				$value = ($action == 'create') ? $request->variable('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
 				if ($field == 'lang_options')
 				{
 					$var = (!isset($cp->vars['l_lang_options'][$lang_id]) || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['l_lang_options'][$lang_id];

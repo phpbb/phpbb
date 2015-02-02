@@ -46,7 +46,7 @@ class ucp_profile
 			case 'reg_details':
 
 				$data = array(
-					'username'			=> utf8_normalize_nfc($request->variable('username', $user->data['username'], true)),
+					'username'			=> $request->variable('username', $user->data['username'], true),
 					'email'				=> strtolower($request->variable('email', $user->data['user_email'])),
 					'new_password'		=> $request->variable('new_password', '', true),
 					'cur_password'		=> $request->variable('cur_password', '', true),
@@ -302,7 +302,7 @@ class ucp_profile
 				$cp_data = $cp_error = array();
 
 				$data = array(
-					'jabber'		=> utf8_normalize_nfc($request->variable('jabber', $user->data['user_jabber'], true)),
+					'jabber'		=> $request->variable('jabber', $user->data['user_jabber'], true),
 				);
 
 				if ($config['allow_birthdays'])

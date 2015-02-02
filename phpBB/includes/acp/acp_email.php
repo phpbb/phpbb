@@ -42,8 +42,8 @@ class acp_email
 		$usernames	= $request->variable('usernames', '', true);
 		$usernames	= (!empty($usernames)) ? explode("\n", $usernames) : array();
 		$group_id	= $request->variable('g', 0);
-		$subject	= utf8_normalize_nfc($request->variable('subject', '', true));
-		$message	= utf8_normalize_nfc($request->variable('message', '', true));
+		$subject	= $request->variable('subject', '', true);
+		$message	= $request->variable('message', '', true);
 
 		// Do the job ...
 		if ($submit)

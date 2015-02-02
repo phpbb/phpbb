@@ -334,16 +334,16 @@ class acp_icons
 				$image_width	= (isset($_POST['width'])) ? $request->variable('width', array('' => 0)) : array();
 				$image_height	= (isset($_POST['height'])) ? $request->variable('height', array('' => 0)) : array();
 				$image_add		= (isset($_POST['add_img'])) ? $request->variable('add_img', array('' => 0)) : array();
-				$image_emotion	= utf8_normalize_nfc($request->variable('emotion', array('' => ''), true));
-				$image_code		= utf8_normalize_nfc($request->variable('code', array('' => ''), true));
+				$image_emotion	= $request->variable('emotion', array('' => ''), true);
+				$image_code		= $request->variable('code', array('' => ''), true);
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? $request->variable('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
 				if ($request->variable('add_additional_code', false, false, \phpbb\request\request_interface::POST))
 				{
 					$add_image			= $request->variable('add_image', '');
-					$add_code			= utf8_normalize_nfc($request->variable('add_code', '', true));
-					$add_emotion		= utf8_normalize_nfc($request->variable('add_emotion', '', true));
+					$add_code			= $request->variable('add_code', '', true);
+					$add_emotion		= $request->variable('add_emotion', '', true);
 
 					if ($add_image && $add_emotion && $add_code)
 					{

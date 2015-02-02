@@ -33,8 +33,8 @@ $topic_id		= $request->variable('t', 0);
 $view			= $request->variable('view', '');
 
 $submit			= $request->variable('submit', false);
-$keywords		= utf8_normalize_nfc($request->variable('keywords', '', true));
-$add_keywords	= utf8_normalize_nfc($request->variable('add_keywords', '', true));
+$keywords		= $request->variable('keywords', '', true);
+$add_keywords	= $request->variable('add_keywords', '', true);
 $author			= $request->variable('author', '', true);
 $author_id		= $request->variable('author_id', 0);
 $show_results	= ($topic_id) ? 'posts' : $request->variable('sr', 'posts');

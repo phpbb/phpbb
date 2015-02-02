@@ -124,7 +124,7 @@ class mcp_logs
 				}
 				else if ($deleteall)
 				{
-					$keywords = utf8_normalize_nfc($request->variable('keywords', '', true));
+					$keywords = $request->variable('keywords', '', true);
 
 					$conditions = array(
 						'forum_id'	=> array('IN' => $forum_list),
@@ -175,7 +175,7 @@ class mcp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc($request->variable('keywords', '', true));
+		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		// Grab log data

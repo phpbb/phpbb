@@ -117,7 +117,7 @@ class mcp_notes
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
 		$marked		= $request->variable('marknote', array(0));
-		$usernote	= utf8_normalize_nfc($request->variable('usernote', '', true));
+		$usernote	= $request->variable('usernote', '', true);
 
 		// Handle any actions
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -201,7 +201,7 @@ class mcp_notes
 		$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc($request->variable('keywords', '', true));
+		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$log_data = array();

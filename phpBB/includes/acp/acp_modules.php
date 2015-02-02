@@ -253,7 +253,7 @@ class acp_modules
 						'module_enabled'	=> 0,
 						'module_display'	=> 1,
 						'parent_id'			=> 0,
-						'module_langname'	=> utf8_normalize_nfc($request->variable('module_langname', '', true)),
+						'module_langname'	=> $request->variable('module_langname', '', true),
 						'module_mode'		=> '',
 						'module_auth'		=> '',
 					);
@@ -266,7 +266,7 @@ class acp_modules
 				$module_data['module_display'] = $request->variable('module_display', (int) $module_row['module_display']);
 				$module_data['parent_id'] = $request->variable('module_parent_id', (int) $module_row['parent_id']);
 				$module_data['module_class'] = $this->module_class;
-				$module_data['module_langname'] = utf8_normalize_nfc($request->variable('module_langname', (string) $module_row['module_langname'], true));
+				$module_data['module_langname'] = $request->variable('module_langname', (string) $module_row['module_langname'], true);
 				$module_data['module_mode'] = $request->variable('module_mode', (string) $module_row['module_mode']);
 
 				$submit = (isset($_POST['submit'])) ? true : false;

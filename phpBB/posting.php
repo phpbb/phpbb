@@ -676,9 +676,9 @@ $quote_status	= true;
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
-	$subject = utf8_normalize_nfc($request->variable('subject', '', true));
+	$subject = $request->variable('subject', '', true);
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
-	$message = utf8_normalize_nfc($request->variable('message', '', true));
+	$message = $request->variable('message', '', true);
 
 	if ($subject && $message)
 	{
@@ -810,11 +810,11 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 if ($submit || $preview || $refresh)
 {
 	$post_data['topic_cur_post_id']	= $request->variable('topic_cur_post_id', 0);
-	$post_data['post_subject']		= utf8_normalize_nfc($request->variable('subject', '', true));
-	$message_parser->message		= utf8_normalize_nfc($request->variable('message', '', true));
+	$post_data['post_subject']		= $request->variable('subject', '', true);
+	$message_parser->message		= $request->variable('message', '', true);
 
-	$post_data['username']			= utf8_normalize_nfc($request->variable('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc($request->variable('edit_reason', '', true)) : '';
+	$post_data['username']			= $request->variable('username', $post_data['username'], true);
+	$post_data['post_edit_reason']	= ($request->variable('edit_reason', false, false, \phpbb\request\request_interface::POST) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? $request->variable('edit_reason', '', true) : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= $request->variable('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -887,9 +887,9 @@ if ($submit || $preview || $refresh)
 	}
 	else
 	{
-		$post_data['poll_title']		= utf8_normalize_nfc($request->variable('poll_title', '', true));
+		$post_data['poll_title']		= $request->variable('poll_title', '', true);
 		$post_data['poll_length']		= $request->variable('poll_length', 0);
-		$post_data['poll_option_text']	= utf8_normalize_nfc($request->variable('poll_option_text', '', true));
+		$post_data['poll_option_text']	= $request->variable('poll_option_text', '', true);
 		$post_data['poll_max_options']	= $request->variable('poll_max_options', 1);
 		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
 	}
@@ -1074,9 +1074,9 @@ if ($submit || $preview || $refresh)
 	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 	{
 		$captcha_data = array(
-			'message'	=> utf8_normalize_nfc($request->variable('message', '', true)),
-			'subject'	=> utf8_normalize_nfc($request->variable('subject', '', true)),
-			'username'	=> utf8_normalize_nfc($request->variable('username', '', true)),
+			'message'	=> $request->variable('message', '', true),
+			'subject'	=> $request->variable('subject', '', true),
+			'username'	=> $request->variable('username', '', true),
 		);
 		$vc_response = $captcha->validate($captcha_data);
 		if ($vc_response)

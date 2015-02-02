@@ -480,8 +480,8 @@ class ucp_main
 
 				if ($submit && $edit)
 				{
-					$draft_subject = utf8_normalize_nfc($request->variable('subject', '', true));
-					$draft_message = utf8_normalize_nfc($request->variable('message', '', true));
+					$draft_subject = $request->variable('subject', '', true);
+					$draft_message = $request->variable('message', '', true);
 					if (check_form_key('ucp_draft'))
 					{
 						if ($draft_message && $draft_subject)

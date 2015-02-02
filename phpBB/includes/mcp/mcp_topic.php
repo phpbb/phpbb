@@ -45,7 +45,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	// Set up some vars
 	$icon_id		= $request->variable('icon', 0);
-	$subject		= utf8_normalize_nfc($request->variable('subject', '', true));
+	$subject		= $request->variable('subject', '', true);
 	$start			= $request->variable('start', 0);
 	$sort_days_old	= $request->variable('st_old', 0);
 	$forum_id		= $request->variable('f', 0);

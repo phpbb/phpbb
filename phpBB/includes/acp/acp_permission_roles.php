@@ -148,8 +148,8 @@ class acp_permission_roles
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$role_name = utf8_normalize_nfc($request->variable('role_name', '', true));
-					$role_description = utf8_normalize_nfc($request->variable('role_description', '', true));
+					$role_name = $request->variable('role_name', '', true);
+					$role_description = $request->variable('role_description', '', true);
 					$auth_settings = $request->variable('setting', array('' => 0));
 
 					if (!$role_name)
@@ -228,8 +228,8 @@ class acp_permission_roles
 				$options_from = $request->variable('options_from', 0);
 
 				$role_row = array(
-					'role_name'			=> utf8_normalize_nfc($request->variable('role_name', '', true)),
-					'role_description'	=> utf8_normalize_nfc($request->variable('role_description', '', true)),
+					'role_name'			=> $request->variable('role_name', '', true),
+					'role_description'	=> $request->variable('role_description', '', true),
 					'role_type'			=> $permission_type,
 				);
 

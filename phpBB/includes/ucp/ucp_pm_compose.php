@@ -620,9 +620,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
-		$subject = utf8_normalize_nfc($request->variable('subject', '', true));
+		$subject = $request->variable('subject', '', true);
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
-		$message = utf8_normalize_nfc($request->variable('message', '', true));
+		$message = $request->variable('message', '', true);
 
 		if ($subject && $message)
 		{
@@ -716,8 +716,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$error[] = $user->lang['FORM_INVALID'];
 		}
-		$subject = utf8_normalize_nfc($request->variable('subject', '', true));
-		$message_parser->message = utf8_normalize_nfc($request->variable('message', '', true));
+		$subject = $request->variable('subject', '', true);
+		$message_parser->message = $request->variable('message', '', true);
 
 		$icon_id			= $request->variable('icon', 0);
 

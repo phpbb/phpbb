@@ -50,7 +50,7 @@ class acp_ranks
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				$rank_title = utf8_normalize_nfc($request->variable('title', '', true));
+				$rank_title = $request->variable('title', '', true);
 				$special_rank = $request->variable('special_rank', 0);
 				$min_posts = ($special_rank) ? 0 : max(0, $request->variable('min_posts', 0));
 				$rank_image = $request->variable('rank_image', '');
