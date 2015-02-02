@@ -68,7 +68,7 @@ abstract class base
 	var $separator_stats = "\xE2\x80\x94"; // &mdash;
 
 	/** @var array Feed database rows */
-	var $feed_row;
+	protected $feed_row;
 
 	/**
 	* Constructor
@@ -232,7 +232,7 @@ abstract class base
 
 	function get_item()
 	{
-		if (!isset($this->feed_row))
+		if (!is_array($this->feed_row))
 		{
 			if (!$this->get_sql())
 			{
