@@ -264,3 +264,36 @@ function add_log()
 
 	return $phpbb_log->add($mode, $user_id, $user_ip, $log_operation, time(), $additional_data);
 }
+
+/**
+ * Sets a configuration option's value.
+ *
+ * Please note that this function does not update the is_dynamic value for
+ * an already existing config option.
+ *
+ * @param string $config_name   The configuration option's name
+ * @param string $config_value  New configuration value
+ * @param bool   $is_dynamic    Whether this variable should be cached (false) or
+ *                              if it changes too frequently (true) to be
+ *                              efficiently cached.
+ *
+ * @return null
+ *
+ * @deprecated 3.1.0 (To be removed: 3.3.0)
+ */
+function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\config\config $set_config = null)
+{
+	static $config = null;
+
+	if ($set_config !== null)
+	{
+		$config = $set_config;
+
+		if (empty($config_name))
+		{
+			return;
+		}
+	}
+
+	$config->set($config_name, $config_value, !$is_dynamic);
+}

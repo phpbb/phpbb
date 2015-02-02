@@ -133,7 +133,7 @@ class acp_search
 			// only change config if anything was actually changed
 			if ($submit && ($config[$config_name] != $config_value))
 			{
-				set_config($config_name, $config_value);
+				$config->set($config_name, $config_value);
 				$updated = true;
 			}
 		}
@@ -157,7 +157,7 @@ class acp_search
 					{
 						if (!method_exists($search, 'init') || !($error = $search->init()))
 						{
-							set_config('search_type', $cfg_array['search_type']);
+							$config->set('search_type', $cfg_array['search_type']);
 
 							if (!$updated)
 							{
@@ -578,6 +578,8 @@ class acp_search
 
 	function save_state($state = false)
 	{
+		global $config;
+
 		if ($state)
 		{
 			$this->state = $state;
@@ -585,7 +587,7 @@ class acp_search
 
 		ksort($this->state);
 
-		set_config('search_indexing_state', implode(',', $this->state), true);
+		$config->set('search_indexing_state', implode(',', $this->state), true);
 	}
 
 	/**

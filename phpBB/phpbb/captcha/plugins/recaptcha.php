@@ -97,7 +97,7 @@ class recaptcha extends captcha_abstract
 				$value = request_var($captcha_var, '');
 				if ($value)
 				{
-					set_config($captcha_var, $value);
+					$config->set($captcha_var, $value);
 				}
 			}
 

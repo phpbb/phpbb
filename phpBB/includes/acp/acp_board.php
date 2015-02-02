@@ -532,7 +532,7 @@ class acp_board
 
 			if ($submit)
 			{
-				set_config($config_name, $config_value);
+				$config->set($config_name, $config_value);
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
 				{
@@ -568,7 +568,7 @@ class acp_board
 					{
 						if (!isset($config[$field]))
 						{
-							set_config($field, '');
+							$config->set($field, '');
 						}
 
 						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
@@ -583,7 +583,7 @@ class acp_board
 						if ($submit)
 						{
 							$updated_auth_settings = true;
-							set_config($field, $config_value);
+							$config->set($field, $config_value);
 						}
 					}
 				}
@@ -600,11 +600,11 @@ class acp_board
 					{
 						foreach ($old_auth_config as $config_name => $config_value)
 						{
-							set_config($config_name, $config_value);
+							$config->set($config_name, $config_value);
 						}
 						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					set_config('auth_method', basename($cfg_array['auth_method']));
+					$config->set('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{

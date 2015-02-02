@@ -3040,7 +3040,7 @@ function tidy_warnings()
 		$db->sql_transaction('commit');
 	}
 
-	set_config('warnings_last_gc', time(), true);
+	$config->set('warnings_last_gc', time(), false);
 }
 
 /**
@@ -3048,7 +3048,7 @@ function tidy_warnings()
 */
 function tidy_database()
 {
-	global $db;
+	global $config, $db;
 
 	// Here we check permission consistency
 
@@ -3073,7 +3073,7 @@ function tidy_database()
 		WHERE ' . $db->sql_in_set('forum_id', $forum_ids, true);
 	$db->sql_query($sql);
 
-	set_config('database_last_gc', time(), true);
+	$config->set('database_last_gc', time(), false);
 }
 
 /**

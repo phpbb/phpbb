@@ -89,7 +89,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
 */
 function update_last_username()
 {
-	global $db;
+	global $config, $db;
 
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
@@ -102,9 +102,9 @@ function update_last_username()
 
 	if ($row)
 	{
-		set_config('newest_user_id', $row['user_id'], true);
-		set_config('newest_username', $row['username'], true);
-		set_config('newest_user_colour', $row['user_colour'], true);
+		$config->set('newest_user_id', $row['user_id'], false);
+		$config->set('newest_username', $row['username'], false);
+		$config->set('newest_user_colour', $row['user_colour'], false);
 	}
 }
 
@@ -138,7 +138,7 @@ function user_update_name($old_name, $new_name)
 
 	if ($config['newest_username'] == $old_name)
 	{
-		set_config('newest_username', $new_name, true);
+		$config->set('newest_username', $new_name, false);
 	}
 
 	/**
@@ -335,8 +335,8 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
 	if ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_FOUNDER)
 	{
-		set_config('newest_user_id', $user_id, true);
-		set_config('newest_username', $user_row['username'], true);
+		$config->set('newest_user_id', $user_id, false);
+		$config->set('newest_username', $user_row['username'], false);
 		set_config_count('num_users', 1, true);
 
 		$sql = 'SELECT group_colour
@@ -346,7 +346,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('newest_user_colour', $row['group_colour'], true);
+		$config->set('newest_user_colour', $row['group_colour'], false);
 	}
 
 	// Use default notifications settings if notifications_data is not set
@@ -3193,7 +3193,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $phpbb_container, $db, $phpbb_dispatcher;
+	global $config, $phpbb_container, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3263,8 +3263,8 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			if (isset($sql_ary[$avatar_option]))
 			{
 				$avatar_sql_ary[$avatar_option] = $sql_ary[$avatar_option];
-				}
 			}
+		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET ' . $db->sql_build_array('UPDATE', $avatar_sql_ary) . "
@@ -3305,11 +3305,9 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
-		global $config;
-
 		if (in_array($config['newest_user_id'], $user_id_ary))
 		{
-			set_config('newest_user_colour', $sql_ary['user_colour'], true);
+			$config->set('newest_user_colour', $sql_ary['user_colour'], false);
 		}
 	}
 

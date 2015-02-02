@@ -190,7 +190,7 @@ class acp_attachments
 
 					if ($submit)
 					{
-						set_config($config_name, $config_value);
+						$config->set($config_name, $config_value);
 					}
 				}
 

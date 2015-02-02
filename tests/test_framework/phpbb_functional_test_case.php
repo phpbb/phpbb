@@ -577,7 +577,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
-		set_config(null, null, null, $config);
+
 		set_config_count(null, null, null, $config);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$passwords_manager = $this->get_passwords_manager();

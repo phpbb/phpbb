@@ -1962,7 +1962,7 @@ class acp_forums
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('num_posts', (int) $row['stat'], true);
+		$config->set('num_posts', (int) $row['stat'], false);
 
 		$sql = 'SELECT COUNT(topic_id) AS stat
 			FROM ' . TOPICS_TABLE . '
@@ -1971,7 +1971,7 @@ class acp_forums
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('num_topics', (int) $row['stat'], true);
+		$config->set('num_topics', (int) $row['stat'], false);
 
 		$sql = 'SELECT COUNT(attach_id) as stat
 			FROM ' . ATTACHMENTS_TABLE;
@@ -1979,7 +1979,7 @@ class acp_forums
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('num_files', (int) $row['stat'], true);
+		$config->set('num_files', (int) $row['stat'], false);
 
 		$sql = 'SELECT SUM(filesize) as stat
 			FROM ' . ATTACHMENTS_TABLE;
@@ -1987,7 +1987,7 @@ class acp_forums
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('upload_dir_size', (float) $row['stat'], true);
+		$config->set('upload_dir_size', (float) $row['stat'], false);
 
 		return array();
 	}

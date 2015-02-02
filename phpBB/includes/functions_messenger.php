@@ -717,14 +717,14 @@ class queue
 		{
 			if (!$have_cache_file)
 			{
-				set_config('last_queue_run', time(), true);
+				$config->set('last_queue_run', time(), false);
 			}
 
 			$lock->release();
 			return;
 		}
 
-		set_config('last_queue_run', time(), true);
+		$config->set('last_queue_run', time(), false);
 
 		include($this->cache_file);
 

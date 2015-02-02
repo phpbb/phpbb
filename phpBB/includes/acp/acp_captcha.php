@@ -71,7 +71,7 @@ class acp_captcha
 			{
 				foreach ($config_vars as $config_var => $options)
 				{
-					set_config($config_var, request_var($config_var, $options['default']));
+					$config->set($config_var, request_var($config_var, $options['default']));
 				}
 
 				if ($selected !== $config['captcha_plugin'])
@@ -82,7 +82,7 @@ class acp_captcha
 						$old_captcha = $factory->get_instance($config['captcha_plugin']);
 						$old_captcha->uninstall();
 
-						set_config('captcha_plugin', $selected);
+						$config->set('captcha_plugin', $selected);
 						$new_captcha = $factory->get_instance($config['captcha_plugin']);
 						$new_captcha->install();
 
