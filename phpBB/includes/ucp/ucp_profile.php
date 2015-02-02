@@ -53,6 +53,17 @@ class ucp_profile
 					'password_confirm'	=> $request->variable('password_confirm', '', true),
 				);
 
+				/**
+				* Modify user registration data on editing account settings in UCP
+				*
+				* @event core.ucp_profile_reg_details_data
+				* @var	array	data		Array with current or updated user registration data
+				* @var	bool	submit		Flag indicating if submit button has been pressed
+				* @since 3.1.4-RC1
+				*/
+				$vars = array('data', 'submit');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_profile_reg_details_data', compact($vars)));
+
 				add_form_key('ucp_reg_details');
 
 				if ($submit)
@@ -211,6 +222,17 @@ class ucp_profile
 							$sql_ary['user_actkey'] = $user_actkey;
 							$sql_ary['user_newpasswd'] = '';
 						}
+
+						/**
+						* Modify user registration data before submitting it to the database
+						*
+						* @event core.ucp_profile_reg_details_sql_ary
+						* @var	array	data		Array with current or updated user registration data
+						* @var	array	sql_ary		Array with user registration data to submit to the database
+						* @since 3.1.4-RC1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_reg_details_sql_ary', compact($vars)));
 
 						if (sizeof($sql_ary))
 						{
