@@ -229,9 +229,9 @@ abstract class base
 
 	function get_item()
 	{
-		static $result;
+		static $feed_row;
 
-		if (!isset($result))
+		if (!isset($feed_row))
 		{
 			if (!$this->get_sql())
 			{
@@ -241,9 +241,11 @@ abstract class base
 			// Query database
 			$sql = $this->db->sql_build_query('SELECT', $this->sql);
 			$result = $this->db->sql_query_limit($sql, $this->num_items);
+			$feed_row = $this->db->sql_fetchrowset($result);
+			$this->db->sql_freeresult($result);
 		}
 
-		return $this->db->sql_fetchrow($result);
+		return array_shift($feed_row);
 	}
 
 	function user_viewprofile($row)
