@@ -703,7 +703,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 */
 function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
-	global $config, $db, $user, $auth;
+	global $config, $db, $user, $auth, $phpbb_dispatcher;
 
 	$deactivated = $activated = 0;
 	$sql_statements = array();
@@ -756,6 +756,21 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 	}
 	$db->sql_freeresult($result);
 
+	/**
+	* Check or modify activated/deactivated users data before submitting it to the database
+	*
+	* @event core.user_active_flip_before
+	* @var	string	mode			User type changing mode, can be: flip|activate|deactivate
+	* @var	int		reason			Reason for changing user type, can be: INACTIVE_REGISTER|INACTIVE_PROFILE|INACTIVE_MANUAL|INACTIVE_REMIND
+	* @var	int		activated		The number of users to be activated
+	* @var	int		deactivated		The number of users to be deactivated
+	* @var	array	user_id_ary		Array with user ids to change user type
+	* @var	array	sql_statements	Array with users data to submit to the database, keys: user ids, values: arrays with user data
+	* @since 3.1.4-RC1
+	*/
+	$vars = array('mode', 'reason', 'activated', 'deactivated', 'user_id_ary', 'sql_statements');
+	extract($phpbb_dispatcher->trigger_event('core.user_active_flip_before', compact($vars)));
+
 	if (sizeof($sql_statements))
 	{
 		foreach ($sql_statements as $user_id => $sql_ary)
@@ -768,6 +783,21 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 
 		$auth->acl_clear_prefetch(array_keys($sql_statements));
 	}
+
+	/**
+	* Perform additional actions after the users have been activated/deactivated
+	*
+	* @event core.user_active_flip_after
+	* @var	string	mode			User type changing mode, can be: flip|activate|deactivate
+	* @var	int		reason			Reason for changing user type, can be: INACTIVE_REGISTER|INACTIVE_PROFILE|INACTIVE_MANUAL|INACTIVE_REMIND
+	* @var	int		activated		The number of users to be activated
+	* @var	int		deactivated		The number of users to be deactivated
+	* @var	array	user_id_ary		Array with user ids to change user type
+	* @var	array	sql_statements	Array with users data to submit to the database, keys: user ids, values: arrays with user data
+	* @since 3.1.4-RC1
+	*/
+	$vars = array('mode', 'reason', 'activated', 'deactivated', 'user_id_ary', 'sql_statements');
+	extract($phpbb_dispatcher->trigger_event('core.user_active_flip_after', compact($vars)));
 
 	if ($deactivated)
 	{
