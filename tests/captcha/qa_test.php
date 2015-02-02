@@ -11,7 +11,7 @@
  *
  */
 
-class phpbb_qa_test extends \phpbb_database_test_case
+class phpbb_captcha_qa_test extends \phpbb_database_test_case
 {
 	protected $request;
 
