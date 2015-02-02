@@ -1377,6 +1377,19 @@ class acp_users
 				$data['bday_year']		= request_var('bday_year', $data['bday_year']);
 				$data['user_birthday']	= sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
 
+				/**
+				* Modify user data on editing profile in ACP
+				*
+				* @event core.acp_users_modify_profile
+				* @var	array	data		Array with user profile data
+				* @var	bool	submit		Flag indicating if submit button has been pressed
+				* @var	int		user_id		The user id
+				* @var	array	user_row	Array with the full user data
+				* @since 3.1.4-RC1
+				*/
+				$vars = array('data', 'submit', 'user_id', 'user_row');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_modify_profile', compact($vars)));
+
 				if ($submit)
 				{
 					$error = validate_data($data, array(
@@ -1407,6 +1420,19 @@ class acp_users
 							'user_jabber'	=> $data['jabber'],
 							'user_birthday'	=> $data['user_birthday'],
 						);
+
+						/**
+						* Modify profile data in ACP before submitting to the database
+						*
+						* @event core.acp_users_profile_modify_sql_ary
+						* @var	array	cp_data		Array with the user custom profile fields data
+						* @var	array	data		Array with user profile data
+						* @var	int		user_id		The user id
+						* @var	array	user_row	Array with the full user data
+						* @since 3.1.4-RC1
+						*/
+						$vars = array('cp_data', 'data', 'user_id', 'user_row');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
