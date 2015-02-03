@@ -167,6 +167,9 @@ services:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener
         arguments:
             - @router
+            - null
+            - null
+            - @request_stack
         tags:
             - { name: kernel.event_subscriber }
 
@@ -176,9 +179,6 @@ services:
         class: phpbb\symfony_request
         arguments:
             - @request
-            - null
-            - null
-            - @request_stack
 
     request_stack:
         class: Symfony\Component\HttpFoundation\RequestStack
