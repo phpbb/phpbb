@@ -385,6 +385,18 @@
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.markdown" />
 
+		<delete dir="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/Tests" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/README.md" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/Tests" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/README.md" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Tests" />
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/.gitignore" />
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/CHANGELOG.md" />
