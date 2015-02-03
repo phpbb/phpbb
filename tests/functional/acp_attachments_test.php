@@ -56,7 +56,7 @@ class phpbb_functional_acp_attachments_test extends phpbb_functional_test_case
 	}
 
 	/**
-	 * @dataProvider data_imagick_path_linux
+	 * @dataProvider data_imagick_path_windows
 	 */
 	public function test_imagick_path_windows($imagick_path, $expected)
 	{
