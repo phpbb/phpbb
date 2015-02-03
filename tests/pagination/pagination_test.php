@@ -166,6 +166,42 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
 	}
 
+	/**
+	 * @dataProvider generate_template_pagination_data
+	 */
+	public function test_generate_template_pagination_sub($base_url, $start_name, $num_items, $per_page, $start_item, $expect)
+	{
+		// Block needs to be assigned before pagination
+		$this->template->assign_block_vars('sub', array(
+			'FOO'		=> 'bar',
+		));
+
+		$this->pagination->generate_template_pagination($base_url, 'sub.pagination', $start_name, $num_items, $per_page, $start_item);
+		$this->template->set_filenames(array('test' => 'pagination_sub.html'));
+
+		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
+	}
+
+	/**
+	 * @dataProvider generate_template_pagination_data
+	 */
+	public function test_generate_template_pagination_double_nested($base_url, $start_name, $num_items, $per_page, $start_item, $expect)
+	{
+		// Block needs to be assigned before pagination
+		$this->template->assign_block_vars('sub', array(
+			'FOO'		=> 'bar',
+		));
+
+		$this->template->assign_block_vars('sub.level2', array(
+			'BAR'		=> 'foo',
+		));
+
+		$this->pagination->generate_template_pagination($base_url, 'sub.level2.pagination', $start_name, $num_items, $per_page, $start_item);
+		$this->template->set_filenames(array('test' => 'pagination_double_nested.html'));
+
+		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
+	}
+
 	public function on_page_data()
 	{
 		return array(
