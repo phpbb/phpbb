@@ -112,6 +112,7 @@ services:
         arguments:
             - @dispatcher
             - @controller.resolver
+            - @request_stack
 
     log:
         class: phpbb\log\log
@@ -175,6 +176,12 @@ services:
         class: phpbb\symfony_request
         arguments:
             - @request
+            - null
+            - null
+            - @request_stack
+
+    request_stack:
+        class: Symfony\Component\HttpFoundation\RequestStack
 
     template:
         class: phpbb\template\twig\twig
