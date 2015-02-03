@@ -83,13 +83,6 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 
 	public function template_data()
 	{
-		$url_base = explode('/', dirname(__FILE__));
-		foreach ($url_base as &$dir)
-		{
-			$dir = rawurlencode($dir);
-		}
-		$url_base = implode('/', $url_base);
-
 		return array(
 			/*
 			array(
@@ -107,11 +100,11 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			),
 			array(
 				array('TEST' => 3),
-				'<link href="' . $url_base . '/ext/include/css/styles/all/theme/test.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+				'<link href="tests/template/ext/include/css/styles/all/theme/test.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
 			),
 			array(
 				array('TEST' => 4),
-				'<link href="' . $url_base . '/ext/include/css/styles/all/theme/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+				'<link href="tests/template/ext/include/css/styles/all/theme/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
 			),
 		);
 	}
