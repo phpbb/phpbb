@@ -67,8 +67,8 @@ abstract class base
 	*/
 	var $separator_stats = "\xE2\x80\x94"; // &mdash;
 
-	/** @var array Feed database rows */
-	protected $feed_rows;
+	/** @var mixed Query result handle */
+	protected $result;
 
 	/**
 	* Constructor
@@ -232,7 +232,7 @@ abstract class base
 
 	function get_item()
 	{
-		if (!is_array($this->feed_rows))
+		if (!isset($this->result))
 		{
 			if (!$this->get_sql())
 			{
@@ -241,12 +241,10 @@ abstract class base
 
 			// Query database
 			$sql = $this->db->sql_build_query('SELECT', $this->sql);
-			$result = $this->db->sql_query_limit($sql, $this->num_items);
-			$this->feed_rows = $this->db->sql_fetchrowset($result);
-			$this->db->sql_freeresult($result);
+			$this->result = $this->db->sql_query_limit($sql, $this->num_items);
 		}
 
-		return array_shift($this->feed_rows);
+		return $this->db->sql_fetchrow($this->result);
 	}
 
 	function user_viewprofile($row)
