@@ -23,6 +23,12 @@
 			<value>0</value>
 			<value>0</value>
 		</row>
+		<row>
+			<value>4</value>
+			<value></value>
+			<value>0</value>
+			<value>5</value>
+		</row>
 	</table>
 	<table name="phpbb_user_group">
 		<column>user_id</column>
@@ -56,6 +62,21 @@
 		<row>
 			<value>3</value>
 			<value>3</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>4</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>3</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>2</value>
 			<value>0</value>
 		</row>
 	</table>

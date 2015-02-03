@@ -2162,33 +2162,18 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 	}
 
 	// Get maximum number of allowed recipients
-	$sql = 'SELECT MAX(g.group_' . $setting . ') as max_setting
+	$sql = 'SELECT MIN(g.group_' . $setting . ') as min_setting, MAX(g.group_' . $setting . ') as max_setting
 		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 		WHERE ug.user_id = ' . (int) $user_id . '
 			AND ug.user_pending = 0
 			AND ug.group_id = g.group_id';
 	$result = $db->sql_query($sql);
-	$max_setting = (int) $db->sql_fetchfield('max_setting');
+	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
+	$max_setting = (int) $row['max_setting'];
+	$min_setting = (int) $row['min_setting'];
 
-	if ($max_setting)
-	{
-		// If the user is limited by a group, check whether he is also set to
-		// unlimited in another group (value 0)
-		$sql = 'SELECT g.group_' . $setting . ' as max_setting
-			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-			WHERE ug.user_id = ' . (int) $user_id . '
-				AND ug.user_pending = 0
-				AND ug.group_id = g.group_id
-				AND g.group_max_recipients = 0';
-		$result = $db->sql_query($sql);
-		$is_unlimited = $db->sql_fetchfield('max_setting');
-		$db->sql_freeresult($result);
-
-		$max_setting = ($is_unlimited === false) ? $max_setting : 0;
-	}
-
-	return $max_setting;
+	return ($min_setting > 0) ? $max_setting : 0;
 }
 
 /**
