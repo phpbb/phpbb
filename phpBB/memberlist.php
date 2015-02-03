@@ -1189,7 +1189,7 @@ switch ($mode)
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
-		// We do not use request_var() here directly to save some calls (not all variables are set)
+		// We do not use $request->variable() here directly to save some calls (not all variables are set)
 		$check_params = array(
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),

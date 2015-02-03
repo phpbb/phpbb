@@ -428,7 +428,7 @@ class install_convert extends module
 		// Default URL of the old board
 		// @todo Are we going to use this for attempting to convert URL references in posts, or should we remove it?
 		//		-> We should convert old urls to the new relative urls format
-		// $src_url = request_var('src_url', 'Not in use at the moment');
+		// $src_url = $request->variable('src_url', 'Not in use at the moment');
 
 		// strip trailing slash from old forum path
 		$forum_path = (strlen($forum_path) && $forum_path[strlen($forum_path) - 1] == '/') ? substr($forum_path, 0, -1) : $forum_path;

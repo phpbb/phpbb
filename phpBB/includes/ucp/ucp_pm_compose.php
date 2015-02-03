@@ -473,7 +473,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	if ($action == 'delete')
 	{
 		// Folder id has been determined by the SQL Statement
-		// $folder_id = request_var('f', PRIVMSGS_NO_BOX);
+		// $folder_id = $request->variable('f', PRIVMSGS_NO_BOX);
 
 		// Do we need to confirm ?
 		if (confirm_box(true))
@@ -1379,7 +1379,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 }
 
 /**
-* Build the hidden field for the recipients. Needed, as the variable is not read via request_var.
+* Build the hidden field for the recipients. Needed, as the variable is not read via $request->variable().
 */
 function build_address_field($address_list)
 {

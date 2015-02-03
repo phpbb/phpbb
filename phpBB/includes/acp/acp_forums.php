@@ -512,7 +512,7 @@ class acp_forums
 				{
 					if (!isset($forum_data['forum_rules_uid']))
 					{
-						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
+						// Before we are able to display the preview and plane text, we need to parse our $request->variable()'d value...
 						$forum_data['forum_rules_uid'] = '';
 						$forum_data['forum_rules_bitfield'] = '';
 						$forum_data['forum_rules_options'] = 0;
@@ -532,7 +532,7 @@ class acp_forums
 				{
 					if (!isset($forum_data['forum_desc_uid']))
 					{
-						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
+						// Before we are able to display the preview and plane text, we need to parse our $request->variable()'d value...
 						$forum_data['forum_desc_uid'] = '';
 						$forum_data['forum_desc_bitfield'] = '';
 						$forum_data['forum_desc_options'] = 0;
