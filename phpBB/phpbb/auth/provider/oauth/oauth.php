@@ -616,10 +616,13 @@ class oauth extends \phpbb\auth\provider\base
 			return 'LOGIN_LINK_MISSING_DATA';
 		}
 
+		// Remove user specified in $link_data if possible
+		$user_id = isset($link_data['user_id']) ? $link_data['user_id'] : $this->user->data['user_id'];
+
 		// Remove the link
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_account_assoc . "
 			WHERE provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'
-				AND user_id = " . (int) $this->user->data['user_id'];
+				AND user_id = " . (int) $user_id;
 		$this->db->sql_query($sql);
 
 		// Clear all tokens belonging to the user on this servce
