@@ -620,7 +620,7 @@ class phpbb_feed_base
 
 	function get_item()
 	{
-		global $db, $cache;
+		global $db;
 
 		if (!isset($this->result))
 		{
