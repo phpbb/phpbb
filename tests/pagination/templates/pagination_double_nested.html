@@ -1,0 +1,19 @@
+pagination
+<!-- BEGIN sub -->
+<!-- BEGIN level2 -->
+:per_page:{sub.level2.PER_PAGE}
+:current_page:{sub.level2.CURRENT_PAGE}
+:base_url:{sub.level2.BASE_URL}
+<!-- BEGIN pagination -->
+<!-- IF sub.level2.pagination.S_IS_PREV -->:previous:{sub.level2.pagination.PAGE_NUMBER}:{sub.level2.pagination.PAGE_URL}
+<!-- ELSEIF sub.level2.pagination.S_IS_CURRENT -->:current:{sub.level2.pagination.PAGE_NUMBER}:{sub.level2.pagination.PAGE_URL}
+<!-- ELSEIF sub.level2.pagination.S_IS_ELLIPSIS -->:ellipsis:{sub.level2.pagination.PAGE_NUMBER}:{sub.level2.pagination.PAGE_URL}
+<!-- ELSEIF sub.level2.pagination.S_IS_NEXT -->:next:{sub.level2.pagination.PAGE_NUMBER}:{sub.level2.pagination.PAGE_URL}
+<!-- ELSE -->:else:{sub.level2.pagination.PAGE_NUMBER}:{sub.level2.pagination.PAGE_URL}
+<!-- ENDIF -->
+<!-- END pagination -->
+<!-- IF sub.level2.U_PREVIOUS_PAGE -->:u_prev:{sub.level2.U_PREVIOUS_PAGE}<!-- ENDIF -->
+
+<!-- IF sub.level2.U_NEXT_PAGE -->:u_next:{sub.level2.U_NEXT_PAGE}<!-- ENDIF -->
+<!-- END level2 -->
+<!-- END sub -->
