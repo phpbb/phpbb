@@ -166,6 +166,10 @@ interface provider_interface
 	/**
 	* Returns an array of data necessary to build the ucp_auth_link page
 	*
+	* @param int $user_id User ID for whom the data should be retrieved.
+	*						defaults to 0, which is not a valid ID. The method
+	*						should fall back to the current user's ID in this
+	*						case.
 	* @return	array|null	If this function is not implemented on an auth
 	*						provider then it returns null. If it is implemented
 	*						it will return an array of up to four elements of
@@ -181,7 +185,7 @@ interface provider_interface
 	*							'VARS'				=> array(...),
 	*						)
 	*/
-	public function get_auth_link_data();
+	public function get_auth_link_data($user_id = 0);
 
 	/**
 	* Unlinks an external account from a phpBB account.
