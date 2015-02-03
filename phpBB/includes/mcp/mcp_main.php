@@ -1516,8 +1516,8 @@ function mcp_fork_topic($topic_ids)
 		sync('topic', 'topic_id', $new_topic_id_list);
 		sync('forum', 'forum_id', $to_forum_id);
 
-		set_config_count('num_topics', sizeof($new_topic_id_list), true);
-		set_config_count('num_posts', $total_posts, true);
+		$config->increment('num_topics', sizeof($new_topic_id_list), false);
+		$config->increment('num_posts', $total_posts, false);
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{

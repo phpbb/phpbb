@@ -337,7 +337,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	{
 		$config->set('newest_user_id', $user_id, false);
 		$config->set('newest_username', $user_row['username'], false);
-		set_config_count('num_users', 1, true);
+		$config->increment('num_users', 1, false);
 
 		$sql = 'SELECT group_colour
 			FROM ' . GROUPS_TABLE . '
@@ -573,7 +573,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	if ($num_users_delta != 0)
 	{
-		set_config_count('num_users', $num_users_delta, true);
+		$config->increment('num_users', $num_users_delta, false);
 	}
 
 	// Now do the invariant tasks
@@ -803,12 +803,12 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 
 	if ($deactivated)
 	{
-		set_config_count('num_users', $deactivated * (-1), true);
+		$config->increment('num_users', $deactivated * (-1), false);
 	}
 
 	if ($activated)
 	{
-		set_config_count('num_users', $activated, true);
+		$config->increment('num_users', $activated, false);
 	}
 
 	// Update latest username
