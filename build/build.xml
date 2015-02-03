@@ -310,6 +310,18 @@
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
 
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/tests" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/docs" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/build" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.gitignore" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.travis.yml" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpdox.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpmd.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/README.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/UPGRADE.md" />
+
 		<delete dir="${dir}/vendor/psr/log/Psr/Log/Test" />
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
 		<delete file="${dir}/vendor/psr/log/README.md" />
@@ -362,6 +374,12 @@
 		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/README.md" />
 		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/phpunit.xml.dist" />
 
+		<delete dir="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/Tests" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/.gitignore" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/README.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/routing/Symfony/Component/Routing/Tests" />
 		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/.gitignore" />
 		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/CHANGELOG.md" />
@@ -402,6 +420,15 @@
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/CHANGELOG.md" />
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/README.md" />
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/phpunit.xml.dist" />
+
+		<delete file="${dir}/vendor/zendframework/zend-code/Zend/Code/README.md" />
+		<delete file="${dir}/vendor/zendframework/zend-code/Zend/Code/CONTRIBUTING.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/Zend/EventManager/README.md" />
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/Zend/EventManager/CONTRIBUTING.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/Zend/Stdlib/README.md" />
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/Zend/Stdlib/CONTRIBUTING.md" />
 	</target>
 
 	<target name="clean-diff-dir">

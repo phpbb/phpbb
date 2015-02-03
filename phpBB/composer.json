@@ -33,6 +33,7 @@
 		"symfony/dependency-injection": "2.7.*@dev",
 		"symfony/event-dispatcher": "2.7.*@dev",
 		"symfony/http-kernel": "2.7.*@dev",
+		"symfony/proxy-manager-bridge": "2.7.*@dev",
 		"symfony/routing": "2.7.*@dev",
 		"symfony/security-core": "2.7.*@dev",
 		"symfony/security-csrf": "2.7.*@dev",
