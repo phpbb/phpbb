@@ -33,14 +33,16 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 		      ->with('_foo_renderer')
 		      ->will($this->returnValue(array('class' => 'renderer_foo', 'renderer' => serialize($mock))));
 
-		$container = new phpbb_mock_container_builder;
-		$container->set('text_formatter.s9e.factory', $factory);
+		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
+		                ->disableOriginalConstructor()
+		                ->getMock();
+		$factory->expects($this->never())->method('regenerate');
 
 		$renderer = new \phpbb\textformatter\s9e\renderer(
 			$cache,
 			$this->get_cache_dir(),
 			'_foo_renderer',
-			$container
+			$factory
 		);
 	}
 
@@ -54,19 +56,18 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 		      ->with('_foo_renderer')
 		      ->will($this->returnValue(false));
 
-		$factory = $this->getMock('stdClass', array('regenerate'));
+		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
+		                ->disableOriginalConstructor()
+		                ->getMock();
 		$factory->expects($this->once())
 		        ->method('regenerate')
 		        ->will($this->returnValue(array($mock, false)));
-
-		$container = new phpbb_mock_container_builder;
-		$container->set('text_formatter.s9e.factory', $factory);
 
 		$renderer = new \phpbb\textformatter\s9e\renderer(
 			$cache,
 			$this->get_cache_dir(),
 			'_foo_renderer',
-			$container
+			$factory
 		);
 	}
 
