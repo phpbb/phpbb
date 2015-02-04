@@ -13,7 +13,6 @@
 
 namespace phpbb\textformatter\s9e;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use s9e\TextFormatter\Parser\BuiltInFilters;
 use s9e\TextFormatter\Parser\Logger;
 
