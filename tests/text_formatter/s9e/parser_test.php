@@ -24,11 +24,16 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		      ->with('_foo_parser')
 		      ->will($this->returnValue($mock));
 
+		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
+		                ->disableOriginalConstructor()
+		                ->getMock();
+		$factory->expects($this->never())->method('regenerate');
+
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			new phpbb_mock_container_builder
+			$factory
 		);
 	}
 
@@ -46,11 +51,16 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$cache = new phpbb_mock_cache;
 		$cache->put('_foo_parser', $mock);
 
+		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
+		                ->disableOriginalConstructor()
+		                ->getMock();
+		$factory->expects($this->never())->method('regenerate');
+
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			new phpbb_mock_container_builder
+			$factory
 		);
 
 		$this->assertSame('<t>test</t>', $parser->parse('test'));
@@ -67,19 +77,18 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		     ->with('test')
 		     ->will($this->returnValue('<t>test</t>'));
 
-		$factory = $this->getMock('stdClass', array('regenerate'));
+		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
+		                ->disableOriginalConstructor()
+		                ->getMock();
 		$factory->expects($this->once())
 		        ->method('regenerate')
 		        ->will($this->returnValue(array($mock, false)));
-
-		$container = new phpbb_mock_container_builder;
-		$container->set('text_formatter.s9e.factory', $factory);
 
 		$parser = new \phpbb\textformatter\s9e\parser(
 			new phpbb_mock_cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			$container
+			$factory
 		);
 
 		$this->assertSame('<t>test</t>', $parser->parse('test'));
@@ -104,11 +113,15 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$cache = new phpbb_mock_cache;
 		$cache->put('_foo_parser', $mock);
 
+		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
+		                ->disableOriginalConstructor()
+		                ->getMock();
+
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			new phpbb_mock_container_builder
+			$factory
 		);
 
 		call_user_func_array(array($parser, $adapter_method), (array) $adapter_arg);
