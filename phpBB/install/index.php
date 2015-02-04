@@ -149,9 +149,6 @@ $phpbb_dispatcher = $phpbb_container->get('dispatcher');
 /* @var $request \phpbb\request\request_interface */
 $request	= $phpbb_container->get('request');
 
-// make sure request_var uses this request instance
-request_var('', 0, false, false, $request); // "dependency injection" for a function
-
 // Try and load an appropriate language if required
 $language = basename($request->variable('language', ''));
 

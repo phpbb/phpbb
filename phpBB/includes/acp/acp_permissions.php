@@ -31,7 +31,7 @@ class acp_permissions
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
+		global $db, $user, $auth, $template, $cache, $phpbb_container, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -49,9 +49,9 @@ class acp_permissions
 		// Trace has other vars
 		if ($mode == 'trace')
 		{
-			$user_id = request_var('u', 0);
-			$forum_id = request_var('f', 0);
-			$permission = request_var('auth', '');
+			$user_id = $request->variable('u', 0);
+			$forum_id = $request->variable('f', 0);
+			$permission = $request->variable('auth', '');
 
 			$this->tpl_name = 'permission_trace';
 
@@ -80,20 +80,20 @@ class acp_permissions
 		}
 
 		// Set some vars
-		$action = request_var('action', array('' => 0));
+		$action = $request->variable('action', array('' => 0));
 		$action = key($action);
 		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
 
-		$all_forums = request_var('all_forums', 0);
-		$subforum_id = request_var('subforum_id', 0);
-		$forum_id = request_var('forum_id', array(0));
+		$all_forums = $request->variable('all_forums', 0);
+		$subforum_id = $request->variable('subforum_id', 0);
+		$forum_id = $request->variable('forum_id', array(0));
 
-		$username = request_var('username', array(''), true);
-		$usernames = request_var('usernames', '', true);
-		$user_id = request_var('user_id', array(0));
+		$username = $request->variable('username', array(''), true);
+		$usernames = $request->variable('usernames', '', true);
+		$user_id = $request->variable('user_id', array(0));
 
-		$group_id = request_var('group_id', array(0));
-		$select_all_groups = request_var('select_all_groups', 0);
+		$group_id = $request->variable('group_id', array(0));
+		$select_all_groups = $request->variable('select_all_groups', 0);
 
 		$form_name = 'acp_permissions';
 		add_form_key($form_name);
@@ -232,7 +232,7 @@ class acp_permissions
 		);
 
 		// Get permission type
-		$permission_type = request_var('type', $this->permission_dropdown[0]);
+		$permission_type = $request->variable('type', $this->permission_dropdown[0]);
 
 		if (!in_array($permission_type, $this->permission_dropdown))
 		{
@@ -674,7 +674,7 @@ class acp_permissions
 		global $db, $cache, $user, $auth;
 		global $request;
 
-		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
+		$psubmit = $request->variable('psubmit', array(0 => array(0 => 0)));
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
@@ -704,7 +704,7 @@ class acp_permissions
 		$assigned_role = (isset($roles[$ug_id][$forum_id])) ? (int) $roles[$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
-		$inherit = request_var('inherit', array(0 => array(0)));
+		$inherit = $request->variable('inherit', array(0 => array(0)));
 
 		$ug_id = array($ug_id);
 		$forum_id = array($forum_id);
@@ -963,7 +963,7 @@ class acp_permissions
 	*/
 	function permission_trace($user_id, $forum_id, $permission)
 	{
-		global $db, $template, $user, $auth;
+		global $db, $template, $user, $auth, $request;
 
 		if ($user_id != $user->data['user_id'])
 		{
@@ -991,7 +991,7 @@ class acp_permissions
 			$db->sql_freeresult($result);
 		}
 
-		$back = request_var('back', 0);
+		$back = $request->variable('back', 0);
 
 		$template->assign_vars(array(
 			'PERMISSION'			=> $this->permissions->get_permission_lang($permission),
@@ -1182,7 +1182,7 @@ class acp_permissions
 	*/
 	function copy_forum_permissions()
 	{
-		global $db, $auth, $cache, $template, $user;
+		global $db, $auth, $cache, $template, $user, $request;
 
 		$user->add_lang('acp/forums');
 
@@ -1190,8 +1190,8 @@ class acp_permissions
 
 		if ($submit)
 		{
-			$src = request_var('src_forum_id', 0);
-			$dest = request_var('dest_forum_ids', array(0));
+			$src = $request->variable('src_forum_id', 0);
+			$dest = $request->variable('dest_forum_ids', array(0));
 
 			if (confirm_box(true))
 			{

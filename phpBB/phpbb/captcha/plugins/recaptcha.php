@@ -37,12 +37,12 @@ class recaptcha extends captcha_abstract
 
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $request;
 
 		$user->add_lang('captcha_recaptcha');
 		parent::init($type);
-		$this->challenge = request_var('recaptcha_challenge_field', '');
-		$this->response = request_var('recaptcha_response_field', '');
+		$this->challenge = $request->variable('recaptcha_challenge_field', '');
+		$this->response = $request->variable('recaptcha_response_field', '');
 	}
 
 	public function is_available()
@@ -75,7 +75,7 @@ class recaptcha extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user, $phpbb_log;
+		global $config, $db, $template, $user, $phpbb_log, $request;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -87,14 +87,14 @@ class recaptcha extends captcha_abstract
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
-		$submit = request_var('submit', '');
+		$submit = $request->variable('submit', '');
 
 		if ($submit && check_form_key($form_key))
 		{
 			$captcha_vars = array_keys($captcha_vars);
 			foreach ($captcha_vars as $captcha_var)
 			{
-				$value = request_var($captcha_var, '');
+				$value = $request->variable($captcha_var, '');
 				if ($value)
 				{
 					$config->set($captcha_var, $value);
@@ -112,7 +112,7 @@ class recaptcha extends captcha_abstract
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
+				$var = (isset($_REQUEST[$captcha_var])) ? $request->variable($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
 				$template->assign_var($template_var, $var);
 			}
 

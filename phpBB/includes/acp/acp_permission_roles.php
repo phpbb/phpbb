@@ -41,8 +41,8 @@ class acp_permission_roles
 		$this->tpl_name = 'acp_permission_roles';
 
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$role_id = request_var('role_id', 0);
-		$action = request_var('action', '');
+		$role_id = $request->variable('role_id', 0);
+		$action = $request->variable('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 
 		$form_name = 'acp_permissions';
@@ -148,9 +148,9 @@ class acp_permission_roles
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$role_name = utf8_normalize_nfc(request_var('role_name', '', true));
-					$role_description = utf8_normalize_nfc(request_var('role_description', '', true));
-					$auth_settings = request_var('setting', array('' => 0));
+					$role_name = $request->variable('role_name', '', true);
+					$role_description = $request->variable('role_description', '', true);
+					$auth_settings = $request->variable('setting', array('' => 0));
 
 					if (!$role_name)
 					{
@@ -225,11 +225,11 @@ class acp_permission_roles
 		{
 			case 'add':
 
-				$options_from = request_var('options_from', 0);
+				$options_from = $request->variable('options_from', 0);
 
 				$role_row = array(
-					'role_name'			=> utf8_normalize_nfc(request_var('role_name', '', true)),
-					'role_description'	=> utf8_normalize_nfc(request_var('role_description', '', true)),
+					'role_name'			=> $request->variable('role_name', '', true),
+					'role_description'	=> $request->variable('role_description', '', true),
 					'role_type'			=> $permission_type,
 				);
 
@@ -414,7 +414,7 @@ class acp_permission_roles
 		$db->sql_freeresult($result);
 
 		// Display assigned items?
-		$display_item = request_var('display_item', 0);
+		$display_item = $request->variable('display_item', 0);
 
 		// Select existing roles
 		$sql = 'SELECT *

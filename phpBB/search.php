@@ -25,30 +25,30 @@ $auth->acl($user->data);
 $user->setup('search');
 
 // Define initial vars
-$mode			= request_var('mode', '');
-$search_id		= request_var('search_id', '');
-$start			= max(request_var('start', 0), 0);
-$post_id		= request_var('p', 0);
-$topic_id		= request_var('t', 0);
-$view			= request_var('view', '');
+$mode			= $request->variable('mode', '');
+$search_id		= $request->variable('search_id', '');
+$start			= max($request->variable('start', 0), 0);
+$post_id		= $request->variable('p', 0);
+$topic_id		= $request->variable('t', 0);
+$view			= $request->variable('view', '');
 
-$submit			= request_var('submit', false);
-$keywords		= utf8_normalize_nfc(request_var('keywords', '', true));
-$add_keywords	= utf8_normalize_nfc(request_var('add_keywords', '', true));
-$author			= request_var('author', '', true);
-$author_id		= request_var('author_id', 0);
-$show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
+$submit			= $request->variable('submit', false);
+$keywords		= $request->variable('keywords', '', true);
+$add_keywords	= $request->variable('add_keywords', '', true);
+$author			= $request->variable('author', '', true);
+$author_id		= $request->variable('author_id', 0);
+$show_results	= ($topic_id) ? 'posts' : $request->variable('sr', 'posts');
 $show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
-$search_terms	= request_var('terms', 'all');
-$search_fields	= request_var('sf', 'all');
-$search_child	= request_var('sc', true);
+$search_terms	= $request->variable('terms', 'all');
+$search_fields	= $request->variable('sf', 'all');
+$search_child	= $request->variable('sc', true);
 
-$sort_days		= request_var('st', 0);
-$sort_key		= request_var('sk', 't');
-$sort_dir		= request_var('sd', 'd');
+$sort_days		= $request->variable('st', 0);
+$sort_key		= $request->variable('sk', 't');
+$sort_dir		= $request->variable('sd', 'd');
 
-$return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
-$search_forum	= request_var('fid', array(0));
+$return_chars	= $request->variable('ch', ($topic_id) ? -1 : 300);
+$search_forum	= $request->variable('fid', array(0));
 
 // We put login boxes for the case if search_id is newposts, egosearch or unreadposts
 // because a guest should be able to log in even if guests search is not permitted
@@ -307,7 +307,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	if (!$keywords && sizeof($author_id_ary))
 	{
 		// if it is an author search we want to show topics by default
-		$show_results = ($topic_id) ? 'posts' : request_var('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
+		$show_results = ($topic_id) ? 'posts' : $request->variable('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
 		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 	}
 
@@ -346,7 +346,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$show_results = 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
-				$sort_days = request_var('st', 7);
+				$sort_days = $request->variable('st', 7);
 				$sort_by_sql['t'] = 't.topic_last_post_time';
 
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -366,7 +366,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			case 'unanswered':
 				$l_search_title = $user->lang['SEARCH_UNANSWERED'];
-				$show_results = request_var('sr', 'topics');
+				$show_results = $request->variable('sr', 'topics');
 				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
 				$sort_by_sql['s'] = ($show_results == 'posts') ? 'p.post_subject' : 't.topic_title';
@@ -435,7 +435,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			case 'newposts':
 				$l_search_title = $user->lang['SEARCH_NEW'];
 				// force sorting
-				$show_results = (request_var('sr', 'topics') == 'posts') ? 'posts' : 'topics';
+				$show_results = ($request->variable('sr', 'topics') == 'posts') ? 'posts' : 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';

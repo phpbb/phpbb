@@ -29,15 +29,15 @@ class ucp_attachments
 
 	function main($id, $mode)
 	{
-		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $phpbb_container;
+		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $phpbb_container, $request;
 
-		$start		= request_var('start', 0);
-		$sort_key	= request_var('sk', 'a');
-		$sort_dir	= request_var('sd', 'a');
+		$start		= $request->variable('start', 0);
+		$sort_key	= $request->variable('sk', 'a');
+		$sort_dir	= $request->variable('sd', 'a');
 
 		$delete		= (isset($_POST['delete'])) ? true : false;
 		$confirm	= (isset($_POST['confirm'])) ? true : false;
-		$delete_ids	= array_keys(request_var('attachment', array(0)));
+		$delete_ids	= array_keys($request->variable('attachment', array(0)));
 
 		if ($delete && sizeof($delete_ids))
 		{

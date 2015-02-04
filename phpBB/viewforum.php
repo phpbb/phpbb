@@ -25,17 +25,17 @@ $user->session_begin();
 $auth->acl($user->data);
 
 // Start initial var setup
-$forum_id	= request_var('f', 0);
-$mark_read	= request_var('mark', '');
-$start		= request_var('start', 0);
+$forum_id	= $request->variable('f', 0);
+$mark_read	= $request->variable('mark', '');
+$start		= $request->variable('start', 0);
 
 $default_sort_days	= (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0;
 $default_sort_key	= (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't';
 $default_sort_dir	= (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd';
 
-$sort_days	= request_var('st', $default_sort_days);
-$sort_key	= request_var('sk', $default_sort_key);
-$sort_dir	= request_var('sd', $default_sort_dir);
+$sort_days	= $request->variable('st', $default_sort_days);
+$sort_key	= $request->variable('sk', $default_sort_key);
+$sort_dir	= $request->variable('sd', $default_sort_dir);
 
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
@@ -186,10 +186,10 @@ if (!$auth->acl_get('f_read', $forum_id))
 // Handle marking posts
 if ($mark_read == 'topics')
 {
-	$token = request_var('hash', '');
+	$token = $request->variable('hash', '');
 	if (check_link_hash($token, 'global'))
 	{
-		markread('topics', array($forum_id), false, request_var('mark_time', 0));
+		markread('topics', array($forum_id), false, $request->variable('mark_time', 0));
 	}
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);

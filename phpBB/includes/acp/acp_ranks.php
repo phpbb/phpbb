@@ -31,10 +31,10 @@ class acp_ranks
 		$user->add_lang('acp/posting');
 
 		// Set up general vars
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 		$action = (isset($_POST['save'])) ? 'save' : $action;
-		$rank_id = request_var('id', 0);
+		$rank_id = $request->variable('id', 0);
 
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
@@ -50,10 +50,10 @@ class acp_ranks
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
-				$special_rank = request_var('special_rank', 0);
-				$min_posts = ($special_rank) ? 0 : max(0, request_var('min_posts', 0));
-				$rank_image = request_var('rank_image', '');
+				$rank_title = $request->variable('title', '', true);
+				$special_rank = $request->variable('special_rank', 0);
+				$min_posts = ($special_rank) ? 0 : max(0, $request->variable('min_posts', 0));
+				$rank_image = $request->variable('rank_image', '');
 
 				// The rank image has to be a jpg, gif or png
 				if ($rank_image != '' && !preg_match('#(\.gif|\.png|\.jpg|\.jpeg)$#i', $rank_image))

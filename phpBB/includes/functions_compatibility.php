@@ -324,3 +324,63 @@ function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\
 	}
 	$config->increment($config_name, $increment, !$is_dynamic);
 }
+
+/**
+ * Wrapper function of \phpbb\request\request::variable which exists for backwards compatability.
+ * See {@link \phpbb\request\request_interface::variable \phpbb\request\request_interface::variable} for
+ * documentation of this function's use.
+ *
+ * @deprecated 3.1.0 (To be removed: 3.3.0)
+ * @param	mixed			$var_name	The form variable's name from which data shall be retrieved.
+ * 										If the value is an array this may be an array of indizes which will give
+ * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+ * 										then specifying array("var", 1) as the name will return "a".
+ * 										If you pass an instance of {@link \phpbb\request\request_interface phpbb_request_interface}
+ * 										as this parameter it will overwrite the current request class instance. If you do
+ * 										not do so, it will create its own instance (but leave superglobals enabled).
+ * @param	mixed			$default	A default value that is returned if the variable was not set.
+ * 										This function will always return a value of the same type as the default.
+ * @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+ *										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+ * @param	bool			$cookie		This param is mapped to \phpbb\request\request_interface::COOKIE as the last param for
+ * 										\phpbb\request\request_interface::variable for backwards compatability reasons.
+ * @param	\phpbb\request\request_interface|null|false	If an instance of \phpbb\request\request_interface is given the instance is stored in
+ *										a static variable and used for all further calls where this parameters is null. Until
+ *										the function is called with an instance it automatically creates a new \phpbb\request\request
+ *										instance on every call. By passing false this per-call instantiation can be restored
+ *										after having passed in a \phpbb\request\request_interface instance.
+ *
+ * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+ * 					the same as that of $default. If the variable is not set $default is returned.
+ */
+function request_var($var_name, $default, $multibyte = false, $cookie = false, $request = null)
+{
+	// This is all just an ugly hack to add "Dependency Injection" to a function
+	// the only real code is the function call which maps this function to a method.
+	static $static_request = null;
+	if ($request instanceof \phpbb\request\request_interface)
+	{
+		$static_request = $request;
+		if (empty($var_name))
+		{
+			return;
+		}
+	}
+	else if ($request === false)
+	{
+		$static_request = null;
+		if (empty($var_name))
+		{
+			return;
+		}
+	}
+	$tmp_request = $static_request;
+	// no request class set, create a temporary one ourselves to keep backwards compatibility
+	if ($tmp_request === null)
+	{
+		// false param: enable super globals, so the created request class does not
+		// make super globals inaccessible everywhere outside this function.
+		$tmp_request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
+	}
+	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? \phpbb\request\request_interface::COOKIE : \phpbb\request\request_interface::REQUEST);
+}

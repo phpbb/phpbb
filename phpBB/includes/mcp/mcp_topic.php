@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_topic_view($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config, $request;
 	global $template, $db, $user, $auth, $cache, $phpbb_container, $phpbb_dispatcher;
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
@@ -33,7 +33,7 @@ function mcp_topic_view($id, $mode, $action)
 	$pagination = $phpbb_container->get('pagination');
 	$user->add_lang('viewtopic');
 
-	$topic_id = request_var('t', 0);
+	$topic_id = $request->variable('t', 0);
 	$topic_info = phpbb_get_topic_data(array($topic_id), false, true);
 
 	if (!sizeof($topic_info))
@@ -44,16 +44,16 @@ function mcp_topic_view($id, $mode, $action)
 	$topic_info = $topic_info[$topic_id];
 
 	// Set up some vars
-	$icon_id		= request_var('icon', 0);
-	$subject		= utf8_normalize_nfc(request_var('subject', '', true));
-	$start			= request_var('start', 0);
-	$sort_days_old	= request_var('st_old', 0);
-	$forum_id		= request_var('f', 0);
-	$to_topic_id	= request_var('to_topic_id', 0);
-	$to_forum_id	= request_var('to_forum_id', 0);
+	$icon_id		= $request->variable('icon', 0);
+	$subject		= $request->variable('subject', '', true);
+	$start			= $request->variable('start', 0);
+	$sort_days_old	= $request->variable('st_old', 0);
+	$forum_id		= $request->variable('f', 0);
+	$to_topic_id	= $request->variable('to_topic_id', 0);
+	$to_forum_id	= $request->variable('to_forum_id', 0);
 	$sort			= isset($_POST['sort']) ? true : false;
-	$submitted_id_list	= request_var('post_ids', array(0));
-	$checked_ids = $post_id_list = request_var('post_id_list', array(0));
+	$submitted_id_list	= $request->variable('post_ids', array(0));
+	$checked_ids = $post_id_list = $request->variable('post_id_list', array(0));
 
 	// Resync Topic?
 	if ($action == 'resync')
@@ -126,7 +126,7 @@ function mcp_topic_view($id, $mode, $action)
 		$total = $phpbb_content_visibility->get_count('topic_posts', $topic_info, $topic_info['forum_id']);
 	}
 
-	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));
+	$posts_per_page = max(0, $request->variable('posts_per_page', intval($config['posts_per_page'])));
 	if ($posts_per_page == 0)
 	{
 		$posts_per_page = $total;
@@ -388,11 +388,11 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request;
 
-	$post_id_list	= request_var('post_id_list', array(0));
-	$forum_id		= request_var('forum_id', 0);
-	$start			= request_var('start', 0);
+	$post_id_list	= $request->variable('post_id_list', array(0));
+	$forum_id		= $request->variable('forum_id', 0);
+	$start			= $request->variable('start', 0);
 
 	if (!sizeof($post_id_list))
 	{
@@ -446,7 +446,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('quickmod')));
+	$redirect = $request->variable('redirect', build_url(array('quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
@@ -459,7 +459,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		'redirect'		=> $redirect,
 		'subject'		=> $subject,
 		'to_forum_id'	=> $to_forum_id,
-		'icon'			=> request_var('icon', 0))
+		'icon'			=> $request->variable('icon', 0))
 	);
 	$success_msg = $return_link = '';
 
@@ -522,7 +522,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			trigger_error('NO_POST_SELECTED');
 		}
 
-		$icon_id = request_var('icon', 0);
+		$icon_id = $request->variable('icon', 0);
 
 		$sql_ary = array(
 			'forum_id'			=> $to_forum_id,
@@ -607,7 +607,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 		// Link back to both topics
 		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
-		$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
+		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 
 		meta_refresh(3, $redirect);
@@ -624,7 +624,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log, $request;
 
 	if (!$to_topic_id)
 	{
@@ -650,8 +650,8 @@ function merge_posts($topic_id, $to_topic_id)
 
 	$topic_data = $topic_data[$to_topic_id];
 
-	$post_id_list	= request_var('post_id_list', array(0));
-	$start			= request_var('start', 0);
+	$post_id_list	= $request->variable('post_id_list', array(0));
+	$start			= $request->variable('start', 0);
 
 	if (!sizeof($post_id_list))
 	{
@@ -664,7 +664,7 @@ function merge_posts($topic_id, $to_topic_id)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('quickmod')));
+	$redirect = $request->variable('redirect', build_url(array('quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
@@ -727,7 +727,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
-		$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
+		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
 
 		meta_refresh(3, $redirect);

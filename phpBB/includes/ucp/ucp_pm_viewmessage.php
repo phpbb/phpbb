@@ -32,7 +32,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$msg_id		= (int) $msg_id;
 	$folder_id	= (int) $folder_id;
 	$author_id	= (int) $message_row['author_id'];
-	$view		= request_var('view', '');
+	$view		= $request->variable('view', '');
 
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])

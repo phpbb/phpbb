@@ -25,7 +25,7 @@ class acp_disallow
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -49,7 +49,7 @@ class acp_disallow
 
 		if ($disallow)
 		{
-			$disallowed_user = str_replace('*', '%', utf8_normalize_nfc(request_var('disallowed_user', '', true)));
+			$disallowed_user = str_replace('*', '%', $request->variable('disallowed_user', '', true));
 
 			if (!$disallowed_user)
 			{
@@ -80,7 +80,7 @@ class acp_disallow
 		}
 		else if ($allow)
 		{
-			$disallowed_id = request_var('disallowed_id', 0);
+			$disallowed_id = $request->variable('disallowed_id', 0);
 
 			if (!$disallowed_id)
 			{

@@ -45,13 +45,13 @@ class acp_groups
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		// Check and set some common vars
-		$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
-		$group_id	= request_var('g', 0);
-		$mark_ary	= request_var('mark', array(0));
-		$name_ary	= request_var('usernames', '', true);
-		$leader		= request_var('leader', 0);
-		$default	= request_var('default', 0);
-		$start		= request_var('start', 0);
+		$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : $request->variable('action', ''));
+		$group_id	= $request->variable('g', 0);
+		$mark_ary	= $request->variable('mark', array(0));
+		$name_ary	= $request->variable('usernames', '', true);
+		$leader		= $request->variable('leader', 0);
+		$default	= $request->variable('default', 0);
+		$start		= $request->variable('start', 0);
 		$update		= (isset($_POST['update'])) ? true : false;
 
 		// Clear some vars
@@ -362,24 +362,24 @@ class acp_groups
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$group_name	= utf8_normalize_nfc(request_var('group_name', '', true));
-					$group_desc = utf8_normalize_nfc(request_var('group_desc', '', true));
-					$group_type	= request_var('group_type', GROUP_FREE);
+					$group_name	= $request->variable('group_name', '', true);
+					$group_desc = $request->variable('group_desc', '', true);
+					$group_type	= $request->variable('group_type', GROUP_FREE);
 
-					$allow_desc_bbcode	= request_var('desc_parse_bbcode', false);
-					$allow_desc_urls	= request_var('desc_parse_urls', false);
-					$allow_desc_smilies	= request_var('desc_parse_smilies', false);
+					$allow_desc_bbcode	= $request->variable('desc_parse_bbcode', false);
+					$allow_desc_urls	= $request->variable('desc_parse_urls', false);
+					$allow_desc_smilies	= $request->variable('desc_parse_smilies', false);
 
 					$submit_ary = array(
-						'colour'			=> request_var('group_colour', ''),
-						'rank'				=> request_var('group_rank', 0),
+						'colour'			=> $request->variable('group_colour', ''),
+						'rank'				=> $request->variable('group_rank', 0),
 						'receive_pm'		=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
 						'legend'			=> isset($_REQUEST['group_legend']) ? 1 : 0,
 						'teampage'			=> isset($_REQUEST['group_teampage']) ? 1 : 0,
-						'message_limit'		=> request_var('group_message_limit', 0),
-						'max_recipients'	=> request_var('group_max_recipients', 0),
+						'message_limit'		=> $request->variable('group_message_limit', 0),
+						'max_recipients'	=> $request->variable('group_max_recipients', 0),
 						'founder_manage'	=> 0,
-						'skip_auth'			=> request_var('group_skip_auth', 0),
+						'skip_auth'			=> $request->variable('group_skip_auth', 0),
 					);
 
 					if ($user->data['user_type'] == USER_FOUNDER)
@@ -548,7 +548,7 @@ class acp_groups
 
 						if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
 						{
-							$group_perm_from = request_var('group_perm_from', 0);
+							$group_perm_from = $request->variable('group_perm_from', 0);
 
 							// Copy permissions?
 							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transferred.
@@ -618,7 +618,7 @@ class acp_groups
 				}
 				else if (!$group_id)
 				{
-					$group_name = utf8_normalize_nfc(request_var('group_name', '', true));
+					$group_name = $request->variable('group_name', '', true);
 					$group_desc_data = array(
 						'text'			=> '',
 						'allow_bbcode'	=> true,
@@ -696,12 +696,12 @@ class acp_groups
 					$error = array_merge($error, $phpbb_avatar_manager->localize_errors($user, $avatar_error));
 				}
 
-				$back_link = request_var('back_link', '');
+				$back_link = $request->variable('back_link', '');
 
 				switch ($back_link)
 				{
 					case 'acp_users_groups':
-						$u_back = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=groups&amp;u=' . request_var('u', 0));
+						$u_back = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=groups&amp;u=' . $request->variable('u', 0));
 					break;
 
 					default:

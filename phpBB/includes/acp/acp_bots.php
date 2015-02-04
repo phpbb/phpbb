@@ -28,10 +28,10 @@ class acp_bots
 		global $config, $db, $user, $auth, $template, $cache, $request, $phpbb_log;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$mark	= request_var('mark', array(0));
-		$bot_id	= request_var('id', 0);
+		$mark	= $request->variable('mark', array(0));
+		$bot_id	= $request->variable('id', 0);
 
 		if (isset($_POST['add']))
 		{
@@ -144,12 +144,12 @@ class acp_bots
 				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$bot_row = array(
-					'bot_name'		=> utf8_normalize_nfc(request_var('bot_name', '', true)),
-					'bot_agent'		=> request_var('bot_agent', ''),
-					'bot_ip'		=> request_var('bot_ip', ''),
-					'bot_active'	=> request_var('bot_active', true),
-					'bot_lang'		=> request_var('bot_lang', $config['default_lang']),
-					'bot_style'		=> request_var('bot_style' , $config['default_style']),
+					'bot_name'		=> $request->variable('bot_name', '', true),
+					'bot_agent'		=> $request->variable('bot_agent', ''),
+					'bot_ip'		=> $request->variable('bot_ip', ''),
+					'bot_active'	=> $request->variable('bot_active', true),
+					'bot_lang'		=> $request->variable('bot_lang', $config['default_lang']),
+					'bot_style'		=> $request->variable('bot_style' , $config['default_style']),
 				);
 
 				if ($submit)

@@ -53,7 +53,7 @@ class acp_main
 			return;
 		}
 
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 
 		if ($action)
 		{

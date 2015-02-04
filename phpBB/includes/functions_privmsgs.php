@@ -938,10 +938,10 @@ function mark_folder_read($user_id, $folder_id)
 */
 function handle_mark_actions($user_id, $mark_action)
 {
-	global $db, $user, $phpbb_root_path, $phpEx;
+	global $db, $user, $phpbb_root_path, $phpEx, $request;
 
-	$msg_ids		= request_var('marked_msg_id', array(0));
-	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
+	$msg_ids		= $request->variable('marked_msg_id', array(0));
+	$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 	$confirm		= (isset($_POST['confirm'])) ? true : false;
 
 	if (!sizeof($msg_ids))
@@ -1611,7 +1611,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
+	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1911,7 +1911,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	}
 
 	// Delete draft if post was loaded...
-	$draft_id = request_var('draft_loaded', 0);
+	$draft_id = $request->variable('draft_loaded', 0);
 	if ($draft_id)
 	{
 		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "

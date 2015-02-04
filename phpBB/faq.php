@@ -24,7 +24,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup();
 
-$mode = request_var('mode', '');
+$mode = $request->variable('mode', '');
 
 // Load the appropriate faq file
 switch ($mode)

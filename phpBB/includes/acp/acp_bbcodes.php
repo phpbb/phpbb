@@ -31,8 +31,8 @@ class acp_bbcodes
 		$user->add_lang('acp/posting');
 
 		// Set up general vars
-		$action	= request_var('action', '');
-		$bbcode_id = request_var('bbcode', 0);
+		$action	= $request->variable('action', '');
+		$bbcode_id = $request->variable('bbcode', 0);
 
 		$this->tpl_name = 'acp_bbcodes';
 		$this->page_title = 'ACP_BBCODES';
@@ -83,11 +83,11 @@ class acp_bbcodes
 			// No break here
 
 			case 'create':
-				$display_on_posting = request_var('display_on_posting', 0);
+				$display_on_posting = $request->variable('display_on_posting', 0);
 
-				$bbcode_match = request_var('bbcode_match', '');
-				$bbcode_tpl = htmlspecialchars_decode(utf8_normalize_nfc(request_var('bbcode_tpl', '', true)));
-				$bbcode_helpline = utf8_normalize_nfc(request_var('bbcode_helpline', '', true));
+				$bbcode_match = $request->variable('bbcode_match', '');
+				$bbcode_tpl = htmlspecialchars_decode($request->variable('bbcode_tpl', '', true));
+				$bbcode_helpline = $request->variable('bbcode_helpline', '', true);
 			break;
 		}
 

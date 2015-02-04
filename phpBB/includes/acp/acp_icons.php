@@ -35,11 +35,11 @@ class acp_icons
 		$user->add_lang('acp/posting');
 
 		// Set up general vars
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 		$action = (isset($_POST['edit'])) ? 'edit' : $action;
 		$action = (isset($_POST['import'])) ? 'import' : $action;
-		$icon_id = request_var('id', 0);
+		$icon_id = $request->variable('id', 0);
 
 		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
 
@@ -326,24 +326,24 @@ class acp_icons
 			case 'modify':
 
 				// Get items to create/modify
-				$images = (isset($_POST['image'])) ? array_keys(request_var('image', array('' => 0))) : array();
+				$images = (isset($_POST['image'])) ? array_keys($request->variable('image', array('' => 0))) : array();
 
 				// Now really get the items
-				$image_id		= (isset($_POST['id'])) ? request_var('id', array('' => 0)) : array();
-				$image_order	= (isset($_POST['order'])) ? request_var('order', array('' => 0)) : array();
-				$image_width	= (isset($_POST['width'])) ? request_var('width', array('' => 0)) : array();
-				$image_height	= (isset($_POST['height'])) ? request_var('height', array('' => 0)) : array();
-				$image_add		= (isset($_POST['add_img'])) ? request_var('add_img', array('' => 0)) : array();
-				$image_emotion	= utf8_normalize_nfc(request_var('emotion', array('' => ''), true));
-				$image_code		= utf8_normalize_nfc(request_var('code', array('' => ''), true));
-				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
+				$image_id		= (isset($_POST['id'])) ? $request->variable('id', array('' => 0)) : array();
+				$image_order	= (isset($_POST['order'])) ? $request->variable('order', array('' => 0)) : array();
+				$image_width	= (isset($_POST['width'])) ? $request->variable('width', array('' => 0)) : array();
+				$image_height	= (isset($_POST['height'])) ? $request->variable('height', array('' => 0)) : array();
+				$image_add		= (isset($_POST['add_img'])) ? $request->variable('add_img', array('' => 0)) : array();
+				$image_emotion	= $request->variable('emotion', array('' => ''), true);
+				$image_code		= $request->variable('code', array('' => ''), true);
+				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? $request->variable('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
 				if ($request->variable('add_additional_code', false, false, \phpbb\request\request_interface::POST))
 				{
-					$add_image			= request_var('add_image', '');
-					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
-					$add_emotion		= utf8_normalize_nfc(request_var('add_emotion', '', true));
+					$add_image			= $request->variable('add_image', '');
+					$add_code			= $request->variable('add_code', '', true);
+					$add_emotion		= $request->variable('add_emotion', '', true);
 
 					if ($add_image && $add_emotion && $add_code)
 					{
@@ -352,15 +352,15 @@ class acp_icons
 
 						$image_code[$add_image] = $add_code;
 						$image_emotion[$add_image] = $add_emotion;
-						$image_width[$add_image] = request_var('add_width', 0);
-						$image_height[$add_image] = request_var('add_height', 0);
+						$image_width[$add_image] = $request->variable('add_width', 0);
+						$image_height[$add_image] = $request->variable('add_height', 0);
 
 						if ($request->variable('add_display_on_posting', false, false, \phpbb\request\request_interface::POST))
 						{
 							$image_display_on_posting[$add_image] = 1;
 						}
 
-						$image_order[$add_image] = request_var('add_order', 0);
+						$image_order[$add_image] = $request->variable('add_order', 0);
 					}
 				}
 
@@ -506,8 +506,8 @@ class acp_icons
 
 			case 'import':
 
-				$pak = request_var('pak', '');
-				$current = request_var('current', '');
+				$pak = $request->variable('pak', '');
+				$current = $request->variable('current', '');
 
 				if ($pak != '')
 				{
@@ -905,7 +905,7 @@ class acp_icons
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
-		$pagination_start = request_var('start', 0);
+		$pagination_start = $request->variable('start', 0);
 		$spacer = false;
 
 		$item_count = $this->item_count($table);

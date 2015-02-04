@@ -36,7 +36,7 @@ class ucp_groups
 
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
-		$mark_ary	= request_var('mark', array(0));
+		$mark_ary	= $request->variable('mark', array(0));
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
 		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
@@ -49,8 +49,8 @@ class ucp_groups
 
 				if ($submit || isset($_POST['change_default']))
 				{
-					$action = (isset($_POST['change_default'])) ? 'change_default' : request_var('action', '');
-					$group_id = ($action == 'change_default') ? request_var('default', 0) : request_var('selected', 0);
+					$action = (isset($_POST['change_default'])) ? 'change_default' : $request->variable('action', '');
+					$group_id = ($action == 'change_default') ? $request->variable('default', 0) : $request->variable('selected', 0);
 
 					if (!$group_id)
 					{
@@ -391,8 +391,8 @@ class ucp_groups
 			case 'manage':
 
 				$this->page_title = 'UCP_USERGROUPS_MANAGE';
-				$action		= (isset($_POST['addusers'])) ? 'addusers' : request_var('action', '');
-				$group_id	= request_var('g', 0);
+				$action		= (isset($_POST['addusers'])) ? 'addusers' : $request->variable('action', '');
+				$group_id	= $request->variable('g', 0);
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
@@ -510,20 +510,20 @@ class ucp_groups
 						// Did we submit?
 						if ($update)
 						{
-							$group_name	= utf8_normalize_nfc(request_var('group_name', '', true));
-							$group_desc = utf8_normalize_nfc(request_var('group_desc', '', true));
-							$group_type	= request_var('group_type', GROUP_FREE);
+							$group_name	= $request->variable('group_name', '', true);
+							$group_desc = $request->variable('group_desc', '', true);
+							$group_type	= $request->variable('group_type', GROUP_FREE);
 
-							$allow_desc_bbcode	= request_var('desc_parse_bbcode', false);
-							$allow_desc_urls	= request_var('desc_parse_urls', false);
-							$allow_desc_smilies	= request_var('desc_parse_smilies', false);
+							$allow_desc_bbcode	= $request->variable('desc_parse_bbcode', false);
+							$allow_desc_urls	= $request->variable('desc_parse_urls', false);
+							$allow_desc_smilies	= $request->variable('desc_parse_smilies', false);
 
 							$submit_ary = array(
-								'colour'		=> request_var('group_colour', ''),
-								'rank'			=> request_var('group_rank', 0),
+								'colour'		=> $request->variable('group_colour', ''),
+								'rank'			=> $request->variable('group_rank', 0),
 								'receive_pm'	=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
-								'message_limit'	=> request_var('group_message_limit', 0),
-								'max_recipients'=> request_var('group_max_recipients', 0),
+								'message_limit'	=> $request->variable('group_message_limit', 0),
+								'max_recipients'=> $request->variable('group_max_recipients', 0),
 								'legend'	=> $group_row['group_legend'],
 								'teampage'	=> $group_row['group_teampage'],
 							);
@@ -621,7 +621,7 @@ class ucp_groups
 						}
 						else if (!$group_id)
 						{
-							$group_name = utf8_normalize_nfc(request_var('group_name', '', true));
+							$group_name = $request->variable('group_name', '', true);
 							$group_desc_data = array(
 								'text'			=> '',
 								'allow_bbcode'	=> true,
@@ -750,7 +750,7 @@ class ucp_groups
 						}
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
-						$start = request_var('start', 0);
+						$start = $request->variable('start', 0);
 
 						// Grab the leaders - always, on every page...
 						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending
@@ -1018,7 +1018,7 @@ class ucp_groups
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
 
-						$names = utf8_normalize_nfc(request_var('usernames', '', true));
+						$names = $request->variable('usernames', '', true);
 
 						if (!$group_id)
 						{
@@ -1044,7 +1044,7 @@ class ucp_groups
 						$name_ary = array_unique(explode("\n", $names));
 						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
-						$default = request_var('default', 0);
+						$default = $request->variable('default', 0);
 
 						if (confirm_box(true))
 						{

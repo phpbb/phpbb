@@ -29,11 +29,11 @@ class ucp_activate
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $request;
 		global $db, $user, $auth, $template, $phpbb_container, $phpbb_log;
 
-		$user_id = request_var('u', 0);
-		$key = request_var('k', '');
+		$user_id = $request->variable('u', 0);
+		$key = $request->variable('k', '');
 
 		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "

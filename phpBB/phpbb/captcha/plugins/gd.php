@@ -53,7 +53,7 @@ class gd extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $db, $user, $auth, $template, $phpbb_log;
+		global $db, $user, $auth, $template, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
@@ -70,14 +70,14 @@ class gd extends captcha_abstract
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
-		$submit = request_var('submit', '');
+		$submit = $request->variable('submit', '');
 
 		if ($submit && check_form_key($form_key))
 		{
 			$captcha_vars = array_keys($this->captcha_vars);
 			foreach ($captcha_vars as $captcha_var)
 			{
-				$value = request_var($captcha_var, 0);
+				$value = $request->variable($captcha_var, 0);
 				if ($value >= 0)
 				{
 					$config->set($captcha_var, $value);
@@ -95,7 +95,7 @@ class gd extends captcha_abstract
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
+				$var = (isset($_REQUEST[$captcha_var])) ? $request->variable($captcha_var, 0) : $config[$captcha_var];
 				$template->assign_var($template_var, $var);
 			}
 
@@ -109,7 +109,7 @@ class gd extends captcha_abstract
 
 	function execute_demo()
 	{
-		global $config;
+		global $config, $request;
 
 		$config_old = $config;
 
@@ -121,7 +121,7 @@ class gd extends captcha_abstract
 
 		foreach ($this->captcha_vars as $captcha_var => $template_var)
 		{
-			$config->set($captcha_var, request_var($captcha_var, (int) $config[$captcha_var]));
+			$config->set($captcha_var, $request->variable($captcha_var, (int) $config[$captcha_var]));
 		}
 		parent::execute_demo();
 		$config = $config_old;

@@ -72,7 +72,7 @@ class type_date extends type_base
 			'lang_options'			=> $field_data['lang_options'],
 		);
 
-		$always_now = request_var('always_now', -1);
+		$always_now = $request->variable('always_now', -1);
 		if ($always_now == -1)
 		{
 			$s_checked = ($field_data['field_default_value'] == 'now') ? true : false;

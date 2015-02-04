@@ -41,14 +41,14 @@ class acp_language
 		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
 
 		$submit = (empty($action) && !isset($_POST['update']) && !isset($_POST['test_connection'])) ? false : true;
-		$action = (empty($action)) ? request_var('action', '') : $action;
+		$action = (empty($action)) ? $request->variable('action', '') : $action;
 
 		$form_name = 'acp_lang';
 		add_form_key('acp_lang');
 
-		$lang_id = request_var('id', 0);
+		$lang_id = $request->variable('id', 0);
 
-		$selected_lang_file = request_var('language_file', '|common.' . $phpEx);
+		$selected_lang_file = $request->variable('language_file', '|common.' . $phpEx);
 
 		list($this->language_directory, $this->language_file) = explode('|', $selected_lang_file);
 
@@ -81,9 +81,9 @@ class acp_language
 				$db->sql_freeresult($result);
 
 				$sql_ary	= array(
-					'lang_english_name'		=> request_var('lang_english_name', $row['lang_english_name']),
-					'lang_local_name'		=> utf8_normalize_nfc(request_var('lang_local_name', $row['lang_local_name'], true)),
-					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
+					'lang_english_name'		=> $request->variable('lang_english_name', $row['lang_english_name']),
+					'lang_local_name'		=> $request->variable('lang_local_name', $row['lang_local_name'], true),
+					'lang_author'			=> $request->variable('lang_author', $row['lang_author'], true),
 				);
 
 				$db->sql_query('UPDATE ' . LANG_TABLE . '
@@ -241,7 +241,7 @@ class acp_language
 			break;
 
 			case 'install':
-				$lang_iso = request_var('iso', '');
+				$lang_iso = $request->variable('iso', '');
 				$lang_iso = basename($lang_iso);
 
 				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/iso.txt"))

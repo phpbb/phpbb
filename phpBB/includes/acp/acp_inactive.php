@@ -31,22 +31,22 @@ class acp_inactive
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_container, $phpbb_log;
+		global $config, $db, $user, $auth, $template, $phpbb_container, $phpbb_log, $request;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		$user->add_lang('memberlist');
 
-		$action = request_var('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
-		$start	= request_var('start', 0);
+		$action = $request->variable('action', '');
+		$mark	= (isset($_REQUEST['mark'])) ? $request->variable('mark', array(0)) : array();
+		$start	= $request->variable('start', 0);
 		$submit = isset($_POST['submit']);
 
 		// Sort keys
-		$sort_days	= request_var('st', 0);
-		$sort_key	= request_var('sk', 'i');
-		$sort_dir	= request_var('sd', 'd');
+		$sort_days	= $request->variable('st', 0);
+		$sort_key	= $request->variable('sk', 'i');
+		$sort_dir	= $request->variable('sd', 'd');
 
 		$form_key = 'acp_inactive';
 		add_form_key($form_key);
@@ -57,7 +57,7 @@ class acp_inactive
 		// We build the sort key and per page settings here, because they may be needed later
 
 		// Number of entries to display
-		$per_page = request_var('users_per_page', (int) $config['topics_per_page']);
+		$per_page = $request->variable('users_per_page', (int) $config['topics_per_page']);
 
 		// Sorting
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);

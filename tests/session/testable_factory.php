@@ -81,7 +81,6 @@ class phpbb_session_testable_factory
 			$this->cookies,
 			$this->server_data
 		);
-		request_var(null, null, null, null, $request);
 
 		$config = $this->config = new \phpbb\config\config($this->get_config_data());
 

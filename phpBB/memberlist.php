@@ -20,7 +20,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-$mode = request_var('mode', '');
+$mode = $request->variable('mode', '');
 
 if ($mode === 'contactadmin')
 {
@@ -37,11 +37,11 @@ $user->setup(array('memberlist', 'groups'));
 $template->assign_var('S_IN_MEMBERLIST', true);
 
 // Grab data
-$action		= request_var('action', '');
-$user_id	= request_var('u', ANONYMOUS);
-$username	= request_var('un', '', true);
-$group_id	= request_var('g', 0);
-$topic_id	= request_var('t', 0);
+$action		= $request->variable('action', '');
+$user_id	= $request->variable('u', ANONYMOUS);
+$username	= $request->variable('un', '', true);
+$group_id	= $request->variable('g', 0);
+$topic_id	= $request->variable('t', 0);
 
 // Redirect when old mode is used
 if ($mode == 'leaders')
@@ -83,12 +83,12 @@ switch ($mode)
 	break;
 }
 
-$start	= request_var('start', 0);
+$start	= $request->variable('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
 $default_key = 'c';
-$sort_key = request_var('sk', $default_key);
-$sort_dir = request_var('sd', 'a');
+$sort_key = $request->variable('sk', $default_key);
+$sort_dir = $request->variable('sd', 'a');
 
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
@@ -411,7 +411,7 @@ switch ($mode)
 						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-						$message = utf8_normalize_nfc(request_var('message', '', true));
+						$message = $request->variable('message', '', true);
 
 						if (empty($message))
 						{
@@ -787,8 +787,8 @@ switch ($mode)
 			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		}
 
-		$user_id	= request_var('u', 0);
-		$topic_id	= request_var('t', 0);
+		$user_id	= $request->variable('u', 0);
+		$topic_id	= $request->variable('t', 0);
 
 		if ($user_id)
 		{
@@ -913,9 +913,9 @@ switch ($mode)
 		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
 
 
-		$form			= request_var('form', '');
-		$field			= request_var('field', '');
-		$select_single 	= request_var('select_single', false);
+		$form			= $request->variable('form', '');
+		$field			= $request->variable('field', '');
+		$select_single 	= $request->variable('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
@@ -925,20 +925,20 @@ switch ($mode)
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
 		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '', true);
-			$email		= strtolower(request_var('email', ''));
-			$jabber		= request_var('jabber', '');
-			$search_group_id	= request_var('search_group_id', 0);
+			$username	= $request->variable('username', '', true);
+			$email		= strtolower($request->variable('email', ''));
+			$jabber		= $request->variable('jabber', '');
+			$search_group_id	= $request->variable('search_group_id', 0);
 
 			// when using these, make sure that we actually have values defined in $find_key_match
-			$joined_select	= request_var('joined_select', 'lt');
-			$active_select	= request_var('active_select', 'lt');
-			$count_select	= request_var('count_select', 'eq');
+			$joined_select	= $request->variable('joined_select', 'lt');
+			$active_select	= $request->variable('active_select', 'lt');
+			$count_select	= $request->variable('count_select', 'eq');
 
-			$joined			= explode('-', request_var('joined', ''));
-			$active			= explode('-', request_var('active', ''));
-			$count			= (request_var('count', '') !== '') ? request_var('count', 0) : '';
-			$ipdomain		= request_var('ip', '');
+			$joined			= explode('-', $request->variable('joined', ''));
+			$active			= explode('-', $request->variable('active', ''));
+			$count			= ($request->variable('count', '') !== '') ? $request->variable('count', 0) : '';
+			$ipdomain		= $request->variable('ip', '');
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
@@ -1055,7 +1055,7 @@ switch ($mode)
 			}
 		}
 
-		$first_char = request_var('first_char', '');
+		$first_char = $request->variable('first_char', '');
 
 		if ($first_char == 'other')
 		{
@@ -1189,7 +1189,7 @@ switch ($mode)
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
-		// We do not use request_var() here directly to save some calls (not all variables are set)
+		// We do not use $request->variable() here directly to save some calls (not all variables are set)
 		$check_params = array(
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
@@ -1206,7 +1206,7 @@ switch ($mode)
 			'count_select'	=> array('count_select', 'eq'),
 			'joined'		=> array('joined', ''),
 			'active'		=> array('active', ''),
-			'count'			=> (request_var('count', '') !== '') ? array('count', 0) : array('count', ''),
+			'count'			=> ($request->variable('count', '') !== '') ? array('count', 0) : array('count', ''),
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
@@ -1219,7 +1219,7 @@ switch ($mode)
 				continue;
 			}
 
-			$param = call_user_func_array('request_var', $call);
+			$param = call_user_func_array(array($request, 'variable'), $call);
 			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : $param);
 			$params[] = $param;
 
@@ -1271,7 +1271,7 @@ switch ($mode)
 		// Some search user specific data
 		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$group_selected = request_var('search_group_id', 0);
+			$group_selected = $request->variable('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
 			$group_ids = array();
 

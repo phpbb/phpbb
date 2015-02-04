@@ -25,7 +25,7 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log;
+		global $db, $user, $auth, $template, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$user->add_lang('acp/board');
@@ -34,9 +34,9 @@ class acp_captcha
 		$factory = $phpbb_container->get('captcha.factory');
 		$captchas = $factory->get_captcha_types();
 
-		$selected = request_var('select_captcha', $config['captcha_plugin']);
+		$selected = $request->variable('select_captcha', $config['captcha_plugin']);
 		$selected = (isset($captchas['available'][$selected]) || isset($captchas['unavailable'][$selected])) ? $selected : $config['captcha_plugin'];
-		$configure = request_var('configure', false);
+		$configure = $request->variable('configure', false);
 
 		// Oh, they are just here for the view
 		if (isset($_GET['captcha_demo']))
@@ -65,13 +65,13 @@ class acp_captcha
 			$form_key = 'acp_captcha';
 			add_form_key($form_key);
 
-			$submit = request_var('main_submit', false);
+			$submit = $request->variable('main_submit', false);
 
 			if ($submit && check_form_key($form_key))
 			{
 				foreach ($config_vars as $config_var => $options)
 				{
-					$config->set($config_var, request_var($config_var, $options['default']));
+					$config->set($config_var, $request->variable($config_var, $options['default']));
 				}
 
 				if ($selected !== $config['captcha_plugin'])
@@ -118,7 +118,7 @@ class acp_captcha
 
 				foreach ($config_vars as $config_var => $options)
 				{
-					$template->assign_var($options['tpl'], (isset($_POST[$config_var])) ? request_var($config_var, $options['default']) : $config[$config_var]) ;
+					$template->assign_var($options['tpl'], (isset($_POST[$config_var])) ? $request->variable($config_var, $options['default']) : $config[$config_var]) ;
 				}
 
 				$template->assign_vars(array(

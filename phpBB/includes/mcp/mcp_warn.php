@@ -35,10 +35,10 @@ class mcp_warn
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
+		global $auth, $db, $user, $template, $request;
 		global $config, $phpbb_root_path, $phpEx;
 
-		$action = request_var('action', array('' => ''));
+		$action = $request->variable('action', array('' => ''));
 
 		if (is_array($action))
 		{
@@ -132,16 +132,16 @@ class mcp_warn
 	function mcp_warn_list_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config, $phpbb_container;
-		global $template, $db, $user, $auth;
+		global $template, $db, $user, $auth, $request;
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 		$user->add_lang('memberlist');
 
-		$start	= request_var('start', 0);
-		$st		= request_var('st', 0);
-		$sk		= request_var('sk', 'b');
-		$sd		= request_var('sd', 'd');
+		$start	= $request->variable('start', 0);
+		$st		= $request->variable('st', 0);
+		$sk		= $request->variable('sk', 'b');
+		$sd		= $request->variable('sd', 'd');
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_WARNINGS']);
@@ -190,13 +190,13 @@ class mcp_warn
 	*/
 	function mcp_warn_post_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config;
+		global $phpEx, $phpbb_root_path, $config, $request;
 		global $template, $db, $user, $auth, $phpbb_dispatcher;
 
-		$post_id = request_var('p', 0);
-		$forum_id = request_var('f', 0);
+		$post_id = $request->variable('p', 0);
+		$forum_id = $request->variable('f', 0);
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-		$warning = utf8_normalize_nfc(request_var('warning', '', true));
+		$warning = $request->variable('warning', '', true);
 
 		$sql = 'SELECT u.*, p.*
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
@@ -370,13 +370,13 @@ class mcp_warn
 	*/
 	function mcp_warn_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config, $module;
+		global $phpEx, $phpbb_root_path, $config, $module, $request;
 		global $template, $db, $user, $auth, $phpbb_dispatcher;
 
-		$user_id = request_var('u', 0);
-		$username = request_var('username', '', true);
+		$user_id = $request->variable('u', 0);
+		$username = $request->variable('username', '', true);
 		$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-		$warning = utf8_normalize_nfc(request_var('warning', '', true));
+		$warning = $request->variable('warning', '', true);
 
 		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 

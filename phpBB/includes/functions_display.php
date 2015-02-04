@@ -33,7 +33,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$sql_from = '';
 
 	// Mark forums read?
-	$mark_read = request_var('mark', '');
+	$mark_read = $request->variable('mark', '');
 
 	if ($mark_read == 'all')
 	{
@@ -61,9 +61,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
-		if (check_link_hash(request_var('hash', ''), 'global'))
+		if (check_link_hash($request->variable('hash', ''), 'global'))
 		{
-			markread('all', false, false, request_var('mark_time', 0));
+			markread('all', false, false, $request->variable('mark_time', 0));
 
 			if ($request->is_ajax())
 			{
@@ -334,10 +334,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	if ($mark_read == 'forums')
 	{
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
-		$token = request_var('hash', '');
+		$token = $request->variable('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids, false, request_var('mark_time', 0));
+			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
@@ -1267,8 +1267,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['unwatch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
@@ -1341,8 +1341,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['watch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{

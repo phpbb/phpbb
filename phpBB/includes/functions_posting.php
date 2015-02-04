@@ -24,13 +24,13 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $db, $user, $config, $template, $phpbb_dispatcher;
+	global $db, $user, $config, $template, $phpbb_dispatcher, $request;
 	global $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_path_helper;
 
 	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
 	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
-	$start = request_var('start', 0);
+	$start = $request->variable('start', 0);
 
 	if ($mode == 'window')
 	{
@@ -1520,7 +1520,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
+	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
 	/**
 	* Modify the data for post submitting
@@ -2207,7 +2207,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$db->sql_transaction('commit');
 
 	// Delete draft if post was loaded...
-	$draft_id = request_var('draft_loaded', 0);
+	$draft_id = $request->variable('draft_loaded', 0);
 	if ($draft_id)
 	{
 		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "

@@ -32,9 +32,9 @@ class acp_reasons
 		$user->add_lang(array('mcp', 'acp/posting'));
 
 		// Set up general vars
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$reason_id = request_var('id', 0);
+		$reason_id = $request->variable('id', 0);
 
 		$this->tpl_name = 'acp_reasons';
 		$this->page_title = 'ACP_REASONS';
@@ -50,8 +50,8 @@ class acp_reasons
 			case 'edit':
 
 				$reason_row = array(
-					'reason_title'			=> utf8_normalize_nfc(request_var('reason_title', '', true)),
-					'reason_description'	=> utf8_normalize_nfc(request_var('reason_description', '', true)),
+					'reason_title'			=> $request->variable('reason_title', '', true),
+					'reason_description'	=> $request->variable('reason_description', '', true),
 				);
 
 				if ($submit)

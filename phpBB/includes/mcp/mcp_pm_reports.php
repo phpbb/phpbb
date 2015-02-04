@@ -35,7 +35,7 @@ class mcp_pm_reports
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache;
+		global $auth, $db, $user, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -43,7 +43,7 @@ class mcp_pm_reports
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
-		$start = request_var('start', 0);
+		$start = $request->variable('start', 0);
 
 		$this->page_title = 'MCP_PM_REPORTS';
 
@@ -53,7 +53,7 @@ class mcp_pm_reports
 			case 'delete':
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-				$report_id_list = request_var('report_id_list', array(0));
+				$report_id_list = $request->variable('report_id_list', array(0));
 
 				if (!sizeof($report_id_list))
 				{
@@ -76,7 +76,7 @@ class mcp_pm_reports
 
 				$user->add_lang(array('posting', 'viewforum', 'viewtopic', 'ucp'));
 
-				$report_id = request_var('r', 0);
+				$report_id = $request->variable('r', 0);
 
 				$sql = 'SELECT r.pm_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
@@ -201,7 +201,7 @@ class mcp_pm_reports
 					'POST_SUBJECT'			=> ($pm_info['message_subject']) ? $pm_info['message_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($pm_info['message_time']),
 					'POST_IP'				=> $pm_info['author_ip'],
-					'POST_IPADDR'			=> ($auth->acl_getf_global('m_info') && request_var('lookup', '')) ? @gethostbyaddr($pm_info['author_ip']) : '',
+					'POST_IPADDR'			=> ($auth->acl_getf_global('m_info') && $request->variable('lookup', '')) ? @gethostbyaddr($pm_info['author_ip']) : '',
 					'POST_ID'				=> $pm_info['msg_id'],
 
 					'U_LOOKUP_IP'			=> ($auth->acl_getf_global('m_info')) ? $this->u_action . '&amp;r=' . $report_id . '&amp;pm=' . $pm_id . '&amp;lookup=' . $pm_info['author_ip'] . '#ip' : '',

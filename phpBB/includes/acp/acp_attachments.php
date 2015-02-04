@@ -43,7 +43,7 @@ class acp_attachments
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
-		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log;
+		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log, $request;
 
 		$this->id = $id;
 		$this->db = $db;
@@ -56,7 +56,7 @@ class acp_attachments
 
 		$error = $notify = array();
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 
 		$form_key = 'acp_attach';
 		add_form_key($form_key);
@@ -160,7 +160,7 @@ class acp_attachments
 				);
 
 				$this->new_config = $config;
-				$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : $this->new_config;
+				$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => '')) : $this->new_config;
 				$error = array();
 
 				// We validate the complete config if whished
@@ -184,7 +184,7 @@ class acp_attachments
 
 					if (in_array($config_name, array('attachment_quota', 'max_filesize', 'max_filesize_pm')))
 					{
-						$size_var = request_var($config_name, '');
+						$size_var = $request->variable($config_name, '');
 						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
 					}
 
@@ -334,8 +334,8 @@ class acp_attachments
 					if ($submit)
 					{
 						// Change Extensions ?
-						$extension_change_list	= request_var('extension_change_list', array(0));
-						$group_select_list		= request_var('group_select', array(0));
+						$extension_change_list	= $request->variable('extension_change_list', array(0));
+						$group_select_list		= $request->variable('group_select', array(0));
 
 						// Generate correct Change List
 						$extensions = array();
@@ -365,7 +365,7 @@ class acp_attachments
 						$db->sql_freeresult($result);
 
 						// Delete Extension?
-						$extension_id_list = request_var('extension_id_list', array(0));
+						$extension_id_list = $request->variable('extension_id_list', array(0));
 
 						if (sizeof($extension_id_list))
 						{
@@ -391,8 +391,8 @@ class acp_attachments
 					}
 
 					// Add Extension?
-					$add_extension			= strtolower(request_var('add_extension', ''));
-					$add_extension_group	= request_var('add_group_select', 0);
+					$add_extension			= strtolower($request->variable('add_extension', ''));
+					$add_extension_group	= $request->variable('add_group_select', 0);
 					$add					= (isset($_POST['add_extension_check'])) ? true : false;
 
 					if ($add_extension && $add)
@@ -476,8 +476,8 @@ class acp_attachments
 
 				if ($submit)
 				{
-					$action = request_var('action', '');
-					$group_id = request_var('g', 0);
+					$action = $request->variable('action', '');
+					$group_id = $request->variable('g', 0);
 
 					if ($action != 'add' && $action != 'edit')
 					{
@@ -508,7 +508,7 @@ class acp_attachments
 						$ext_row = array();
 					}
 
-					$group_name = utf8_normalize_nfc(request_var('group_name', '', true));
+					$group_name = $request->variable('group_name', '', true);
 					$new_group_name = ($action == 'add') ? $group_name : (($ext_row['group_name'] != $group_name) ? $group_name : '');
 
 					if (!$group_name)
@@ -538,12 +538,12 @@ class acp_attachments
 					if (!sizeof($error))
 					{
 						// Ok, build the update/insert array
-						$upload_icon	= request_var('upload_icon', 'no_image');
-						$size_select	= request_var('size_select', 'b');
-						$forum_select	= request_var('forum_select', false);
-						$allowed_forums	= request_var('allowed_forums', array(0));
+						$upload_icon	= $request->variable('upload_icon', 'no_image');
+						$size_select	= $request->variable('size_select', 'b');
+						$forum_select	= $request->variable('forum_select', false);
+						$allowed_forums	= $request->variable('allowed_forums', array(0));
 						$allow_in_pm	= (isset($_POST['allow_in_pm'])) ? true : false;
-						$max_filesize	= request_var('max_filesize', 0);
+						$max_filesize	= $request->variable('max_filesize', 0);
 						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 						$allow_group	= (isset($_POST['allow_group'])) ? true : false;
 
@@ -559,7 +559,7 @@ class acp_attachments
 
 						$group_ary = array(
 							'group_name'	=> $group_name,
-							'cat_id'		=> request_var('special_category', ATTACHMENT_CATEGORY_NONE),
+							'cat_id'		=> $request->variable('special_category', ATTACHMENT_CATEGORY_NONE),
 							'allow_group'	=> ($allow_group) ? 1 : 0,
 							'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
 							'max_filesize'	=> $max_filesize,
@@ -587,7 +587,7 @@ class acp_attachments
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), false, array($group_name));
 					}
 
-					$extension_list = request_var('extensions', array(0));
+					$extension_list = $request->variable('extensions', array(0));
 
 					if ($action == 'edit' && sizeof($extension_list))
 					{
@@ -622,7 +622,7 @@ class acp_attachments
 					ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 				);
 
-				$group_id = request_var('g', 0);
+				$group_id = $request->variable('g', 0);
 				$action = (isset($_POST['add'])) ? 'add' : $action;
 
 				switch ($action)
@@ -690,7 +690,7 @@ class acp_attachments
 						if ($action == 'add')
 						{
 							$ext_group_row = array(
-								'group_name'	=> utf8_normalize_nfc(request_var('group_name', '', true)),
+								'group_name'	=> $request->variable('group_name', '', true),
 								'cat_id'		=> 0,
 								'allow_group'	=> 1,
 								'allow_in_pm'	=> 1,
@@ -906,9 +906,9 @@ class acp_attachments
 
 				if ($submit)
 				{
-					$delete_files = (isset($_POST['delete'])) ? array_keys(request_var('delete', array('' => 0))) : array();
-					$add_files = (isset($_POST['add'])) ? array_keys(request_var('add', array('' => 0))) : array();
-					$post_ids = request_var('post_id', array('' => 0));
+					$delete_files = (isset($_POST['delete'])) ? array_keys($request->variable('delete', array('' => 0))) : array();
+					$add_files = (isset($_POST['add'])) ? array_keys($request->variable('add', array('' => 0))) : array();
+					$post_ids = $request->variable('post_id', array('' => 0));
 
 					if (sizeof($delete_files))
 					{
@@ -1074,7 +1074,7 @@ class acp_attachments
 
 				if ($submit)
 				{
-					$delete_files = (isset($_POST['delete'])) ? array_keys(request_var('delete', array('' => 0))) : array();
+					$delete_files = (isset($_POST['delete'])) ? array_keys($request->variable('delete', array('' => 0))) : array();
 
 					if (sizeof($delete_files))
 					{
@@ -1123,12 +1123,12 @@ class acp_attachments
 					'S_MANAGE'		=> true,
 				));
 
-				$start		= request_var('start', 0);
+				$start		= $request->variable('start', 0);
 
 				// Sort keys
-				$sort_days	= request_var('st', 0);
-				$sort_key	= request_var('sk', 't');
-				$sort_dir	= request_var('sd', 'd');
+				$sort_days	= $request->variable('st', 0);
+				$sort_key	= $request->variable('sk', 't');
+				$sort_dir	= $request->variable('sd', 'd');
 
 				// Sorting
 				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
@@ -1534,7 +1534,7 @@ class acp_attachments
 		if (isset($_REQUEST['securesubmit']))
 		{
 			// Grab the list of entries
-			$ips = request_var('ips', '');
+			$ips = $request->variable('ips', '');
 			$ip_list = array_unique(explode("\n", $ips));
 			$ip_list_log = implode(', ', $ip_list);
 
@@ -1687,7 +1687,7 @@ class acp_attachments
 		}
 		else if (isset($_POST['unsecuresubmit']))
 		{
-			$unip_sql = request_var('unip', array(0));
+			$unip_sql = $request->variable('unip', array(0));
 
 			if (sizeof($unip_sql))
 			{
