@@ -13,8 +13,6 @@
 
 namespace phpbb\textformatter\s9e;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
 * s9e\TextFormatter\Renderer adapter
 * @package phpBB3
