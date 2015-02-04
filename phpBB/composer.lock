@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e3a23e29090153926c7cc50915858aea",
+    "hash": "2038bc8bd0fea66b22774ca7bca11a79",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -815,12 +815,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/TwigBridge.git",
-                "reference": "8a64dbe369266e96869a9679514e92e91a9f5a47"
+                "reference": "bd5f5e3cde85eb2dfa074134bc9ac66b30ca6fc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/TwigBridge/zipball/8a64dbe369266e96869a9679514e92e91a9f5a47",
-                "reference": "8a64dbe369266e96869a9679514e92e91a9f5a47",
+                "url": "https://api.github.com/repos/symfony/TwigBridge/zipball/bd5f5e3cde85eb2dfa074134bc9ac66b30ca6fc7",
+                "reference": "bd5f5e3cde85eb2dfa074134bc9ac66b30ca6fc7",
                 "shasum": ""
             },
             "require": {
@@ -883,7 +883,7 @@
             ],
             "description": "Symfony Twig Bridge",
             "homepage": "http://symfony.com",
-            "time": "2015-01-25 18:37:18"
+            "time": "2015-02-02 16:43:28"
         },
         {
             "name": "symfony/yaml",
@@ -2551,7 +2551,7 @@
     },
     "prefer-stable": false,
     "platform": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.9"
     },
     "platform-dev": []
 }
