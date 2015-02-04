@@ -472,7 +472,7 @@ class phpbb_test_case_helpers
 			$cache,
 			$cache_key_parser,
 			$user,
-			$container
+			$factory
 		);
 
 		$container->set('text_formatter.parser', $parser);
@@ -483,7 +483,7 @@ class phpbb_test_case_helpers
 			$cache,
 			$cache_dir,
 			$cache_key_renderer,
-			$container
+			$factory
 		);
 
 		$root_path = ($container->hasParameter('core.root_path'))
