@@ -749,9 +749,10 @@ $page_data = array(
 );
 
 /**
-* Event to modify template variables before assigning
+* Event to modify template variables after they have been created but before
+* they have been passed to the template.
 *
-* @event core.viewtopic_assign_template_vars_before
+* @event core.viewtopic_assign_template_vars_after
 * @var	array	page_data			Viewtopic page-data that will be parsed 
 * 									via $template->assign_vars()
 * @var	int		forum_id			Forum ID
@@ -765,7 +766,7 @@ $vars = array(
 	'topic_data',
 	'topic_id',
 );
-extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_after', compact($vars)));
 
 $template->assign_vars($page_data);
 
