@@ -112,6 +112,7 @@ services:
         arguments:
             - @dispatcher
             - @controller.resolver
+            - @request_stack
 
     log:
         class: phpbb\log\log
@@ -166,6 +167,9 @@ services:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener
         arguments:
             - @router
+            - null
+            - null
+            - @request_stack
         tags:
             - { name: kernel.event_subscriber }
 
@@ -175,6 +179,9 @@ services:
         class: phpbb\symfony_request
         arguments:
             - @request
+
+    request_stack:
+        class: Symfony\Component\HttpFoundation\RequestStack
 
     template:
         class: phpbb\template\twig\twig
