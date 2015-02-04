@@ -49,13 +49,13 @@ class renderer extends \phpbb\textformatter\renderer
 	/**
 	* Constructor
 	*
-	* @param  phpbb\cache\driver\driver_interface $cache
-	* @param  string                              $cache_dir Path to the cache dir
-	* @param  string                              $key       Cache key
-	* @param  ContainerInterface                  $container
+	* @param  \phpbb\cache\driver\driver_interface $cache
+	* @param  string $cache_dir Path to the cache dir
+	* @param  string $key Cache key
+	* @param  factory $factory
 	* @return null
 	*/
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, ContainerInterface $container)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, factory $factory)
 	{
 		$renderer_data = $cache->get($key);
 
@@ -82,7 +82,7 @@ class renderer extends \phpbb\textformatter\renderer
 
 		if (!isset($renderer))
 		{
-			list(, $renderer) = $container->get('text_formatter.s9e.factory')->regenerate();
+			list(, $renderer) = $factory->regenerate();
 		}
 
 		$this->renderer = $renderer;

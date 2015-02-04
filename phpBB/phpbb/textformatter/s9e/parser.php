@@ -39,17 +39,17 @@ class parser extends \phpbb\textformatter\parser
 	* @param  phpbb\cache\driver_interface $cache
 	* @param  string $key Cache key
 	* @param  phpbb\user $user
-	* @param  ContainerInterface $container
+	* @param  factory $factory
 	* @return null
 	*/
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, $key, \phpbb\user $user, ContainerInterface $container)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, $key, \phpbb\user $user, factory $factory)
 	{
 		$this->user = $user;
 
 		$parser = $cache->get($key);
 		if (!$parser)
 		{
-			list($parser) = $container->get('text_formatter.s9e.factory')->regenerate();
+			list($parser) = $factory->regenerate();
 		}
 
 		$this->parser = $parser;

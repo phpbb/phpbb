@@ -41,7 +41,7 @@ services:
             - @cache.driver
             - %text_formatter.cache.parser.key%
             - @user
-            - @service_container
+            - @text_formatter.s9e.factory
 
     text_formatter.s9e.renderer:
         class: phpbb\textformatter\s9e\renderer
@@ -49,7 +49,7 @@ services:
             - @cache.driver
             - %text_formatter.cache.dir%
             - %text_formatter.cache.renderer.key%
-            - @service_container
+            - @text_formatter.s9e.factory
         calls:
             - [configure_smilies_path, [@config, @path_helper]]
             - [configure_user, [@user, @config, @auth]]
