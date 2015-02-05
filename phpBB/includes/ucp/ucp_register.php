@@ -30,7 +30,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE ||
@@ -259,6 +259,16 @@ class ucp_register
 					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
 				}
 			}
+			/**
+			* Add UCP registration data before they are submitted
+			*
+			* @event core.ucp_register_data
+			* @var	array	data		Array with current ucp registration data
+			* @var	array	error		Array with list of errors
+			* @since 3.1.3
+			*/
+			$vars = array('data', 'error');
+			extract($phpbb_dispatcher->trigger_event('core.ucp_register_data', compact($vars)));
 
 			if (!sizeof($error))
 			{
