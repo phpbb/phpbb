@@ -15,15 +15,14 @@ namespace phpbb\captcha\plugins;
 
 class recaptcha extends captcha_abstract
 {
-	var $recaptcha_server = 'http://www.google.com/recaptcha/api';
-	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api'; // class constants :(
+	var $recaptcha_server = 'http://www.google.com/recaptcha/api.js';
+	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api.js'; // class constants :(
 
 	// We are opening a socket to port 80 of this host and send
 	// the POST request asking for verification to the path specified here.
 	var $recaptcha_verify_server = 'www.google.com';
-	var $recaptcha_verify_path = '/recaptcha/api/verify';
+	var $recaptcha_verify_path = '/recaptcha/api/siteverify';
 
-	var $challenge;
 	var $response;
 
 	/**
@@ -41,8 +40,7 @@ class recaptcha extends captcha_abstract
 
 		$user->add_lang('captcha_recaptcha');
 		parent::init($type);
-		$this->challenge = request_var('recaptcha_challenge_field', '');
-		$this->response = request_var('recaptcha_response_field', '');
+		$this->response = request_var('g-recaptcha-response', '');
 	}
 
 	public function is_available()
@@ -75,7 +73,7 @@ class recaptcha extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user;
+		global $config, $template, $user;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -237,45 +235,6 @@ class recaptcha extends captcha_abstract
  */
 
 	/**
-	* Submits an HTTP POST to a reCAPTCHA server
-	* @param string $host
-	* @param string $path
-	* @param array $data
-	* @param int port
-	* @return array response
-	*/
-	function _recaptcha_http_post($host, $path, $data, $port = 80)
-	{
-		$req = $this->_recaptcha_qsencode ($data);
-
-		$http_request  = "POST $path HTTP/1.0\r\n";
-		$http_request .= "Host: $host\r\n";
-		$http_request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
-		$http_request .= "Content-Length: " . strlen($req) . "\r\n";
-		$http_request .= "User-Agent: reCAPTCHA/PHP/phpBB\r\n";
-		$http_request .= "\r\n";
-		$http_request .= $req;
-
-		$response = '';
-		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
-		{
-			trigger_error('RECAPTCHA_SOCKET_ERROR', E_USER_ERROR);
-		}
-
-		fwrite($fs, $http_request);
-
-		while (!feof($fs))
-		{
-			// One TCP-IP packet
-			$response .= fgets($fs, 1160);
-		}
-		fclose($fs);
-		$response = explode("\r\n\r\n", $response, 2);
-
-		return $response;
-	}
-
-	/**
 	* Calls an HTTP POST function to verify if the user's guess was correct
 	* @param array $extra_params an array of extra variables to post to the server
 	* @return ReCaptchaResponse
@@ -285,23 +244,23 @@ class recaptcha extends captcha_abstract
 		global $config, $user;
 
 		//discard spam submissions
-		if ($this->challenge == null || strlen($this->challenge) == 0 || $this->response == null || strlen($this->response) == 0)
+		if ($this->response == null || strlen($this->response) == 0)
 		{
 			return $user->lang['RECAPTCHA_INCORRECT'];
 		}
 
-		$response = $this->_recaptcha_http_post($this->recaptcha_verify_server, $this->recaptcha_verify_path,
-			array(
-				'privatekey'	=> $config['recaptcha_privkey'],
-				'remoteip'		=> $user->ip,
-				'challenge'		=> $this->challenge,
-				'response'		=> $this->response
-			) + $extra_params
-		);
+		$recaptcha_request = 'https://' . $this->recaptcha_verify_server . $this->recaptcha_verify_path;
+		$recaptcha_request .= '?' . $this->_recaptcha_qsencode(array(
+			'secret'		=> $config['recaptcha_privkey'],
+			'response'		=> $this->response,
+			'remoteip'		=> $user->ip,
+		));
 
-		$answers = explode("\n", $response[1]);
+		$response = file_get_contents($recaptcha_request);
 
-		if (trim($answers[0]) === 'true')
+		$return = json_decode($response, true);
+
+		if (isset($return['success']) && $return['success'] === true)
 		{
 			$this->solved = true;
 			return false;
