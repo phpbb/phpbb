@@ -38,7 +38,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->db_tools = new \phpbb\db\tools($this->db);
+		$this->db_tools = new \phpbb\db\tools\tools($this->db);
 
 		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 

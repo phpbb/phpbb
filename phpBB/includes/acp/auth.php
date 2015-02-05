@@ -267,6 +267,8 @@ class auth_admin extends \phpbb\auth\auth
 	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
 		global $template, $user, $db, $phpbb_root_path, $phpEx, $phpbb_container;
+
+		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		// Define names for template loops, might be able to be set
@@ -1108,6 +1110,7 @@ class auth_admin extends \phpbb\auth\auth
 	{
 		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
 
+		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		@reset($category_array);
@@ -1186,6 +1189,7 @@ class auth_admin extends \phpbb\auth\auth
 	{
 		global $user, $phpbb_container;
 
+		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		foreach ($key_sort_array as $forum_id)

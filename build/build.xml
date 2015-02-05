@@ -2,7 +2,7 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.1.4-dev" />
+	<property name="newversion" value="3.2.0-a1-dev" />
 	<property name="prevversion" value="3.1.3" />
 	<property name="olderversions" value="3.0.12, 3.0.13, 3.0.13-PL1, 3.1.0, 3.1.1, 3.1.2" />
 	<!-- no configuration should be needed beyond this point -->
@@ -182,9 +182,6 @@
 		<exec dir="build" escape="false"
 			command="diff -crNEBwd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
 				save/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
-		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
-				save/phpbb-${prevversion}_to_${newversion}_subsilver2.patch" />
 
 		<exec dir="build" escape="false"
 			command="git shortlog --summary --numbered release-${prevversion}...HEAD >
@@ -286,6 +283,8 @@
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
 		<delete dir="${dir}/install/data" />
+		<delete dir="${dir}/config/development" />
+		<delete dir="${dir}/config/test" />
 
 		<phingcall target="clean-vendor-dir">
 			<property name="dir" value="${dir}" />
@@ -310,6 +309,18 @@
 		<delete file="${dir}/vendor/lusitanian/oauth/.travis.yml" />
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
+
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/tests" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/docs" />
+		<delete dir="${dir}/vendor/ocramius/proxy-manager/build" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.gitignore" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/.travis.yml" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpdox.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpmd.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/README.md" />
+		<delete file="${dir}/vendor/ocramius/proxy-manager/UPGRADE.md" />
 
 		<delete dir="${dir}/vendor/psr/log/Psr/Log/Test" />
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
@@ -363,6 +374,12 @@
 		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/README.md" />
 		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/phpunit.xml.dist" />
 
+		<delete dir="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/Tests" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/.gitignore" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/README.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/Symfony/Bridge/ProxyManager/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/routing/Symfony/Component/Routing/Tests" />
 		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/.gitignore" />
 		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/CHANGELOG.md" />
@@ -385,6 +402,33 @@
 		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.markdown" />
+
+		<delete dir="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/Tests" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/README.md" />
+		<delete file="${dir}/vendor/symfony/security-core/Symfony/Bridge/Twig/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/Tests" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/README.md" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Bridge/Twig/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Tests" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/.gitignore" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/README.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/phpunit.xml.dist" />
+
+		<delete file="${dir}/vendor/zendframework/zend-code/Zend/Code/README.md" />
+		<delete file="${dir}/vendor/zendframework/zend-code/Zend/Code/CONTRIBUTING.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/Zend/EventManager/README.md" />
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/Zend/EventManager/CONTRIBUTING.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/Zend/Stdlib/README.md" />
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/Zend/Stdlib/CONTRIBUTING.md" />
 	</target>
 
 	<target name="clean-diff-dir">

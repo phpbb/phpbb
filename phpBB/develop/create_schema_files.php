@@ -49,7 +49,7 @@ $classes = $finder->core_path('phpbb/')
 	->get_classes();
 
 $db = new \phpbb\db\driver\sqlite();
-$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
 $schema_data = $schema_generator->get_schema();
 
 $fp = fopen($schema_path . 'schema.json', 'wb');

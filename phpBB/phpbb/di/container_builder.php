@@ -13,16 +13,26 @@
 
 namespace phpbb\di;
 
+use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\HttpKernel\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 class container_builder
 {
-	/** @var string phpBB Root Path */
+	/**
+	 * @var string phpBB Root Path
+	 */
 	protected $phpbb_root_path;
 
-	/** @var string php file extension  */
+	/**
+	 * @var string php file extension
+	 */
 	protected $php_ext;
 
 	/**
@@ -112,6 +122,11 @@ class container_builder
 	protected $config_php_file;
 
 	/**
+	 * @var string
+	 */
+	protected $cache_dir;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\config_php_file $config_php_file
@@ -133,23 +148,30 @@ class container_builder
 	public function get_container()
 	{
 		$container_filename = $this->get_container_filename();
-		if (!defined('DEBUG_CONTAINER') && $this->dump_container && file_exists($container_filename))
+		$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
+		if ($this->dump_container && $config_cache->isFresh())
 		{
 			require($container_filename);
 			$this->container = new \phpbb_cache_container();
 		}
 		else
 		{
-			if ($this->config_path === null)
-			{
-				$this->config_path = $this->phpbb_root_path . 'config';
-			}
-			$container_extensions = array(new \phpbb\di\extension\core($this->config_path));
+			$container_extensions = array(new \phpbb\di\extension\core($this->get_config_path()));
 
 			if ($this->use_extensions)
 			{
 				$installed_exts = $this->get_installed_extensions();
-				$container_extensions[] = new \phpbb\di\extension\ext($installed_exts);
+				foreach ($installed_exts as $ext_name => $path)
+				{
+					$extension_class = '\\' . str_replace('/', '\\', $ext_name) . '\\di\\extension';
+
+					if (!class_exists($extension_class))
+					{
+						$extension_class = '\phpbb\extension\di\extension_base';
+					}
+
+					$container_extensions[] = new $extension_class($ext_name, $path);
+				}
 			}
 
 			if ($this->inject_config)
@@ -171,6 +193,9 @@ class container_builder
 				}
 			}
 
+			$loader = new YamlFileLoader($this->container, new FileLocator(phpbb_realpath($this->get_config_path())));
+			$loader->load($this->container->getParameter('core.environment') . '/config.yml');
+
 			$this->inject_custom_parameters();
 
 			if ($this->compile_container)
@@ -178,9 +203,9 @@ class container_builder
 				$this->container->compile();
 			}
 
-			if ($this->dump_container && !defined('DEBUG_CONTAINER'))
+			if ($this->dump_container)
 			{
-				$this->dump_container($container_filename);
+				$this->dump_container($config_cache);
 			}
 		}
 
@@ -267,6 +292,16 @@ class container_builder
 	}
 
 	/**
+	 * Returns the path to the container configuration (default: root_path/config)
+	 *
+	 * @return string
+	 */
+	protected function get_config_path()
+	{
+		return $this->config_path ?: $this->phpbb_root_path . 'config';
+	}
+
+	/**
 	* Set custom parameters to inject into the container.
 	*
 	* @param array $custom_parameters
@@ -277,19 +312,41 @@ class container_builder
 	}
 
 	/**
+	 * Set the path to the cache directory.
+	 *
+	 * @param string $cache_dir Path to the cache directory
+	 */
+	public function set_cache_dir($cache_dir)
+	{
+		$this->cache_dir = $cache_dir;
+	}
+
+	/**
+	 * Returns the path to the cache directory (default: root_path/cache/environment).
+	 *
+	 * @return string Path to the cache directory.
+	 */
+	protected function get_cache_dir()
+	{
+		return $this->cache_dir ?: $this->phpbb_root_path . 'cache/' . $this->get_environment() . '/';
+	}
+
+	/**
 	* Dump the container to the disk.
 	*
-	* @param string $container_filename The name of the file.
+	* @param ConfigCache $cache The config cache
 	*/
-	protected function dump_container($container_filename)
+	protected function dump_container($cache)
 	{
 		$dumper = new PhpDumper($this->container);
+		$proxy_dumper = new ProxyDumper();
+		$dumper->setProxyDumper($proxy_dumper);
 		$cached_container_dump = $dumper->dump(array(
 			'class'         => 'phpbb_cache_container',
 			'base_class'    => 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
 		));
 
-		file_put_contents($container_filename, $cached_container_dump);
+		$cache->write($cached_container_dump, $this->container->getResources());
 	}
 
 	/**
@@ -362,34 +419,73 @@ class container_builder
 	*/
 	protected function create_container(array $extensions)
 	{
-		$container = new ContainerBuilder();
+		$container = new ContainerBuilder(new ParameterBag($this->get_core_parameters()));
+
+		$extensions_alias = array();
 
 		foreach ($extensions as $extension)
 		{
 			$container->registerExtension($extension);
-			$container->loadFromExtension($extension->getAlias());
+			$extensions_alias[] = $extension->getAlias();
+			//$container->loadFromExtension($extension->getAlias());
 		}
+
+		$container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions_alias));
 
 		return $container;
 	}
 
 	/**
-	* Inject the customs parameters into the container
-	*/
+	 * Inject the customs parameters into the container
+	 */
 	protected function inject_custom_parameters()
 	{
-		if ($this->custom_parameters === null)
+		if ($this->custom_parameters !== null)
 		{
-			$this->custom_parameters = array(
-				'core.root_path' => $this->phpbb_root_path,
-				'core.php_ext' => $this->php_ext,
-			);
+			foreach ($this->custom_parameters as $key => $value)
+			{
+				$this->container->setParameter($key, $value);
+			}
+		}
+	}
+
+	/**
+	 * Returns the core parameters.
+	 *
+	 * @return array An array of core parameters
+	 */
+	protected function get_core_parameters()
+	{
+		return array_merge(
+			array(
+				'core.root_path'     => $this->phpbb_root_path,
+				'core.php_ext'       => $this->php_ext,
+				'core.environment'   => $this->get_environment(),
+				'core.debug'         => DEBUG,
+			),
+			$this->get_env_parameters()
+		);
+	}
+
+	/**
+	 * Gets the environment parameters.
+	 *
+	 * Only the parameters starting with "PHPBB__" are considered.
+	 *
+	 * @return array An array of parameters
+	 */
+	protected function get_env_parameters()
+	{
+		$parameters = array();
+		foreach ($_SERVER as $key => $value)
+		{
+			if (0 === strpos($key, 'PHPBB__'))
+			{
+				$parameters[strtolower(str_replace('__', '.', substr($key, 9)))] = $value;
+			}
 		}
 
-		foreach ($this->custom_parameters as $key => $value)
-		{
-			$this->container->setParameter($key, $value);
-		}
+		return $parameters;
 	}
 
 	/**
@@ -400,6 +496,16 @@ class container_builder
 	protected function get_container_filename()
 	{
 		$filename = str_replace(array('/', '.'), array('slash', 'dot'), $this->phpbb_root_path);
-		return $this->phpbb_root_path . 'cache/container_' . $filename . '.' . $this->php_ext;
+		return $this->get_cache_dir() . 'container_' . $filename . '.' . $this->php_ext;
+	}
+
+	/**
+	 * Return the name of the current environment.
+	 *
+	 * @return string
+	 */
+	protected function get_environment()
+	{
+		return PHPBB_ENVIRONMENT;
 	}
 }

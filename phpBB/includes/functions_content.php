@@ -507,7 +507,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 /**
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
-* Expects $text to be the value directly from request_var() and in it's non-parsed form
+* Expects $text to be the value directly from $request->variable() and in it's non-parsed form
 *
 * @param string $text The text to be replaced with the parsed one
 * @param string $uid The BBCode uid for this parse
