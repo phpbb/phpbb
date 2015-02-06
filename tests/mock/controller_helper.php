@@ -13,7 +13,7 @@
 
 class phpbb_mock_controller_helper extends \phpbb\controller\helper
 {
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext, $phpbb_root_path_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext, $phpbb_root_path_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
@@ -23,8 +23,7 @@ class phpbb_mock_controller_helper extends \phpbb\controller\helper
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$provider->find_routing_files($manager->get_finder());
-		$this->route_collection = $provider->find($phpbb_root_path_ext)->get_routes();
+		$this->router = $router;
 	}
 
 	public function get_current_url()

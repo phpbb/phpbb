@@ -81,10 +81,8 @@ class phpbb_session_testable_factory
 			$this->cookies,
 			$this->server_data
 		);
-		request_var(null, null, null, null, $request);
 
 		$config = $this->config = new \phpbb\config\config($this->get_config_data());
-		set_config(null, null, null, $config);
 
 		$db = $dbal;
 
@@ -96,6 +94,7 @@ class phpbb_session_testable_factory
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()
 		);
+		$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
 		$provider_collection->add('auth.provider.db');
 		$phpbb_container->set(

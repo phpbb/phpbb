@@ -40,8 +40,6 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
-		set_config(false, false, false, $this->config);
-
 		$this->container->set('groupposition.legend', new \phpbb\groupposition\legend(
 			$this->db,
 			$this->user
