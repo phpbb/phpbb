@@ -558,7 +558,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				}
 
 				// Check if the path is writable
-				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath')
+				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath' || $config_definition['validate'] === 'absolute_path_writable')
 				{
 					if (file_exists($path) && !phpbb_is_writable($path))
 					{
