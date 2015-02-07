@@ -91,7 +91,7 @@ class file_downloader
 			}
 			else
 			{
-				throw new \RuntimeException('FSOCK_DISABLED');
+				throw new \phpbb\exception\runtime_exception('FSOCK_DISABLED');
 			}
 		}
 
