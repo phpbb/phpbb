@@ -39,6 +39,10 @@ class imagesize
 	/** @var int GIF chunk size */
 	const GIF_CHUNK_SIZE = 2;
 
+	/** @var int JPG max header size. Headers can be bigger, but we'll abort
+	 *			going throught he header after this */
+	const JPG_MAX_HEADER_SIZE = 24576;
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -59,10 +63,19 @@ class imagesize
 		{
 			case 'png':
 				return $this->get_png_size($file);
-			break;
+				break;
 
 			case 'gif':
 				return $this->get_gif_size($file);
+			break;
+
+			case 'jpeg':
+			case 'jpg':
+			case 'jpe':
+			case 'jif':
+			case 'jfif':
+			case 'jfi':
+				return $this->get_jpeg_size($file);
 			break;
 
 			default:
@@ -74,6 +87,7 @@ class imagesize
 	 * Get dimensions of PNG image
 	 *
 	 * @param string $filename Filename of image
+	 *
 	 * @return array|bool Array with image dimensions if successful, false if not
 	 */
 	protected function get_png_size($filename)
@@ -97,6 +111,7 @@ class imagesize
 	 * Get dimensions of GIF image
 	 *
 	 * @param string $filename Filename of image
+	 *
 	 * @return array|bool Array with image dimensions if successful, false if not
 	 */
 	protected function get_gif_size($filename)
@@ -112,6 +127,47 @@ class imagesize
 		}
 
 		$size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::GIF_CHUNK_SIZE * 2));
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of JPG image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_jpeg_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::JPG_MAX_HEADER_SIZE);
+
+		// Check if file is jpeg
+		if ($data[0] !== "\xFF" || $data[1] !== "\xD8")
+		{
+			return false;
+		}
+
+		$size = array();
+
+		// Look through file for SOF marker
+		for ($i = 4; $i < strlen($data); $i++)
+		{
+			if ($data[$i] === "\xFF" && in_array($data[$i+1], array("\xC0", "\xC1", "\xC2", "\xC3", "\xC4", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCC", "\xCD", "\xCE", "\xCF")))
+			{
+				// Extract size info from SOF marker
+				$size_data = unpack("H*", substr($data, $i + 2, 7));
+
+				$unpacked = array_pop($size_data);
+
+				$size = array(
+					'width'		=> hexdec(substr($unpacked, 10, 4)),
+					'height'	=> hexdec(substr($unpacked, 6, 4)),
+				);
+
+				break;
+			}
+		}
 
 		return sizeof($size) ? $size : false;
 	}

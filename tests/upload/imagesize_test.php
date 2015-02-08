@@ -26,7 +26,7 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 		$this->path = __DIR__ . '/fixture/';
 	}
 
-	public function data_get_png_size()
+	public function data_get_imagesize()
 	{
 		return array(
 			array('png', 'image/png', array('width' => 1, 'height' => 1)),
@@ -35,13 +35,17 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('gif', 'image/gif', array('width' => 1, 'height' => 1)),
 			array('jpg', 'image/gif', false),
 			array('gif', '', false),
+			array('jpg', 'image/jpg', array('width' => 1, 'height' => 1)),
+			array('jpg', 'image/jpeg', array('width' => 1, 'height' => 1)),
+			array('png', 'image/jpg', false),
+			array('jpg', '', false),
 		);
 	}
 
 	/**
-	 * @dataProvider data_get_png_size
+	 * @dataProvider data_get_imagesize
 	 */
-	public function test_get_png_size($file, $mime_type, $expected)
+	public function test_get_imagesize($file, $mime_type, $expected)
 	{
 		$this->assertEquals($expected, $this->imagesize->get_imagesize($this->path . $file, $mime_type));
 	}
