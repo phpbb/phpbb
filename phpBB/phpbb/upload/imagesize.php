@@ -48,6 +48,7 @@ class imagesize
 			case 'png':
 				return $this->get_png_size($file);
 			break;
+
 			default:
 				return false;
 		}
