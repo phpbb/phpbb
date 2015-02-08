@@ -48,6 +48,7 @@ class acp_contact
 			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		}
 
+		/* @var $config_text \phpbb\config\db_text */
 		$config_text = $phpbb_container->get('config_text');
 
 		$contact_admin_data			= $config_text->get_array(array(

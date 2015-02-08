@@ -21,6 +21,12 @@ if (php_sapi_name() != 'cli')
 }
 
 define('IN_PHPBB', true);
+
+if (!defined('PHPBB_ENVIRONMENT'))
+{
+	@define('PHPBB_ENVIRONMENT', 'production');
+}
+
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
@@ -58,6 +64,7 @@ $phpbb_container = $phpbb_container_builder->get_container();
 $phpbb_container->get('request')->enable_super_globals();
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
+/* @var $user \phpbb\user */
 $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
 $user->add_lang('cli');

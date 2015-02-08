@@ -37,7 +37,7 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $module, $request;
+		global $db, $user, $auth, $template, $module, $request, $phpbb_log;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
@@ -65,9 +65,9 @@ class acp_modules
 
 		$this->page_title = strtoupper($this->module_class);
 
-		$this->parent_id = request_var('parent_id', 0);
-		$module_id = request_var('m', 0);
-		$action = request_var('action', '');
+		$this->parent_id = $request->variable('parent_id', 0);
+		$module_id = $request->variable('m', 0);
+		$action = $request->variable('action', '');
 		$errors = array();
 
 		switch ($action)
@@ -138,7 +138,7 @@ class acp_modules
 						AND module_id = $module_id";
 				$db->sql_query($sql);
 
-				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']));
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($this->lang_name($row['module_langname'])));
 				$this->remove_cache_file();
 
 			break;
@@ -167,7 +167,7 @@ class acp_modules
 
 				if ($move_module_name !== false)
 				{
-					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_' . strtoupper($action), false, array($this->lang_name($row['module_langname']), $move_module_name));
 					$this->remove_cache_file();
 				}
 
@@ -182,7 +182,7 @@ class acp_modules
 			break;
 
 			case 'quickadd':
-				$quick_install = request_var('quick_install', '');
+				$quick_install = $request->variable('quick_install', '');
 
 				if (confirm_box(true))
 				{
@@ -253,7 +253,7 @@ class acp_modules
 						'module_enabled'	=> 0,
 						'module_display'	=> 1,
 						'parent_id'			=> 0,
-						'module_langname'	=> utf8_normalize_nfc(request_var('module_langname', '', true)),
+						'module_langname'	=> $request->variable('module_langname', '', true),
 						'module_mode'		=> '',
 						'module_auth'		=> '',
 					);
@@ -261,13 +261,13 @@ class acp_modules
 
 				$module_data = array();
 
-				$module_data['module_basename'] = request_var('module_basename', (string) $module_row['module_basename']);
-				$module_data['module_enabled'] = request_var('module_enabled', (int) $module_row['module_enabled']);
-				$module_data['module_display'] = request_var('module_display', (int) $module_row['module_display']);
-				$module_data['parent_id'] = request_var('module_parent_id', (int) $module_row['parent_id']);
+				$module_data['module_basename'] = $request->variable('module_basename', (string) $module_row['module_basename']);
+				$module_data['module_enabled'] = $request->variable('module_enabled', (int) $module_row['module_enabled']);
+				$module_data['module_display'] = $request->variable('module_display', (int) $module_row['module_display']);
+				$module_data['parent_id'] = $request->variable('module_parent_id', (int) $module_row['parent_id']);
 				$module_data['module_class'] = $this->module_class;
-				$module_data['module_langname'] = utf8_normalize_nfc(request_var('module_langname', (string) $module_row['module_langname'], true));
-				$module_data['module_mode'] = request_var('module_mode', (string) $module_row['module_mode']);
+				$module_data['module_langname'] = $request->variable('module_langname', (string) $module_row['module_langname'], true);
+				$module_data['module_mode'] = $request->variable('module_mode', (string) $module_row['module_mode']);
 
 				$submit = (isset($_POST['submit'])) ? true : false;
 
@@ -278,7 +278,7 @@ class acp_modules
 						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
-					$module_type = request_var('module_type', 'category');
+					$module_type = $request->variable('module_type', 'category');
 
 					if ($module_type == 'category')
 					{
@@ -771,7 +771,7 @@ class acp_modules
 	*/
 	function update_module_data(&$module_data, $run_inline = false)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_log;
 
 		if (!isset($module_data['module_id']))
 		{
@@ -835,7 +835,7 @@ class acp_modules
 
 			if (!$run_inline)
 			{
-				add_log('admin', 'LOG_MODULE_ADD', $this->lang_name($module_data['module_langname']));
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_ADD', false, array($this->lang_name($module_data['module_langname'])));
 			}
 		}
 		else
@@ -869,7 +869,7 @@ class acp_modules
 
 			if (!$run_inline)
 			{
-				add_log('admin', 'LOG_MODULE_EDIT', $this->lang_name($module_data['module_langname']));
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_EDIT', false, array($this->lang_name($module_data['module_langname'])));
 			}
 		}
 
@@ -964,7 +964,7 @@ class acp_modules
 	*/
 	function delete_module($module_id)
 	{
-		global $db, $user;
+		global $db, $user, $phpbb_log;
 
 		$row = $this->get_module_row($module_id);
 
@@ -998,7 +998,7 @@ class acp_modules
 				AND left_id > {$row['right_id']}";
 		$db->sql_query($sql);
 
-		add_log('admin', 'LOG_MODULE_REMOVED', $this->lang_name($row['module_langname']));
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_REMOVED', false, array($this->lang_name($row['module_langname'])));
 
 		return array();
 

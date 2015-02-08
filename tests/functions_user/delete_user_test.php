@@ -32,8 +32,6 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			'load_online_time'	=> 5,
 			'search_type'		=> '\phpbb\search\fulltext_mysql',
 		));
-		set_config(false, false, false, $config);
-		set_config_count(false, false, false, $config);
 		$cache = new phpbb_mock_null_cache();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();

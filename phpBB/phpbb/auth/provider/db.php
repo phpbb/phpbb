@@ -155,6 +155,7 @@ class db extends \phpbb\auth\provider\base
 		// Every auth module is able to define what to do by itself...
 		if ($show_captcha)
 		{
+			/* @var $captcha_factory \phpbb\captcha\factory */
 			$captcha_factory = $this->phpbb_container->get('captcha.factory');
 			$captcha = $captcha_factory->get_instance($this->config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);

@@ -32,6 +32,9 @@ class acp_styles
 	protected $styles_list_cols = 0;
 	protected $reserved_style_names = array('adm', 'admin', 'all');
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -260,6 +263,8 @@ class acp_styles
 	*/
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
+		global $user, $phpbb_log;
+
 		$default = $this->default_style;
 		$uninstalled = array();
 		$messages = array();
@@ -319,7 +324,7 @@ class acp_styles
 		// Log action
 		if (count($uninstalled))
 		{
-			add_log('admin', 'LOG_STYLE_DELETE', implode(', ', $uninstalled));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
 		}
 
 		// Clear cache
@@ -391,6 +396,8 @@ class acp_styles
 	*/
 	protected function action_details()
 	{
+		global $user, $phpbb_log;
+
 		$id = $this->request->variable('id', 0);
 		if (!$id)
 		{
@@ -522,7 +529,8 @@ class acp_styles
 						$this->cache->purge();
 					}
 				}
-				add_log('admin', 'LOG_STYLE_EDIT_DETAILS', $style['style_name']);
+
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
 			}
 
 			// Update default style
@@ -533,7 +541,7 @@ class acp_styles
 				{
 					trigger_error($this->user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
 				}
-				set_config('default_style', $id);
+				$this->config->set('default_style', $id);
 				$this->cache->purge();
 			}
 
@@ -1119,6 +1127,8 @@ class acp_styles
 	*/
 	protected function install_style($style)
 	{
+		global $user, $phpbb_log;
+
 		// Generate row
 		$sql_ary = array();
 		foreach ($style as $key => $value)
@@ -1140,7 +1150,7 @@ class acp_styles
 
 		$this->db->sql_transaction('commit');
 
-		add_log('admin', 'LOG_STYLE_ADD', $sql_ary['style_name']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($sql_ary['style_name']));
 
 		return $id;
 	}

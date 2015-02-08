@@ -33,11 +33,11 @@ if (!$config['feed_enable'])
 // Start session
 $user->session_begin();
 
-if (!empty($config['feed_http_auth']) && request_var('auth', '') == 'http')
+if (!empty($config['feed_http_auth']) && $request->variable('auth', '') == 'http')
 {
 	phpbb_http_login(array(
 		'auth_message'	=> 'Feed',
-		'viewonline'	=> request_var('viewonline', true),
+		'viewonline'	=> $request->variable('viewonline', true),
 	));
 }
 
@@ -45,9 +45,9 @@ $auth->acl($user->data);
 $user->setup('viewtopic');
 
 // Initial var setup
-$forum_id	= request_var('f', 0);
-$topic_id	= request_var('t', 0);
-$mode		= request_var('mode', '');
+$forum_id	= $request->variable('f', 0);
+$topic_id	= $request->variable('t', 0);
+$mode		= $request->variable('mode', '');
 
 // We do not use a template, therefore we simply define the global template variables here
 $global_vars = $item_vars = array();
@@ -65,10 +65,12 @@ if ($forum_id || $topic_id || $mode)
 }
 
 // This boards URL
+/* @var $phpbb_feed_helper \phpbb\feed\helper */
 $phpbb_feed_helper = $phpbb_container->get('feed.helper');
 $board_url = $phpbb_feed_helper->get_board_url();
 
 // Get correct feed object
+/* @var $phpbb_feed_factory \phpbb\feed\factory */
 $phpbb_feed_factory = $phpbb_container->get('feed.factory');
 $feed = $phpbb_feed_factory->get_feed($mode, $forum_id, $topic_id);
 
@@ -160,7 +162,7 @@ if ($config['gzip_compress'])
 }
 
 // IF debug extra is enabled and admin want to "explain" the page we need to set other headers...
-if (defined('DEBUG') && request_var('explain', 0) && $auth->acl_get('a_'))
+if (defined('DEBUG') && $request->variable('explain', 0) && $auth->acl_get('a_'))
 {
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
