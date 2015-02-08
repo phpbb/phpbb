@@ -43,6 +43,9 @@ class imagesize
 	 *			going throught he header after this */
 	const JPG_MAX_HEADER_SIZE = 24576;
 
+	/** @var int JPEG chunk size */
+	const JPG_CHUNK_SIZE = 2;
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -151,15 +154,16 @@ class imagesize
 		$size = array();
 
 		// Look through file for SOF marker
-		for ($i = 4; $i < strlen($data); $i++)
+		for ($i = 2 * self::JPG_CHUNK_SIZE; $i < strlen($data); $i = $i + self::JPG_CHUNK_SIZE)
 		{
 			if ($data[$i] === "\xFF" && in_array($data[$i+1], array("\xC0", "\xC1", "\xC2", "\xC3", "\xC4", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCC", "\xCD", "\xCE", "\xCF")))
 			{
 				// Extract size info from SOF marker
-				$size_data = unpack("H*", substr($data, $i + 2, 7));
+				$size_data = unpack("H*", substr($data, $i + self::JPG_CHUNK_SIZE, 7));
 
 				$unpacked = array_pop($size_data);
 
+				// Get width and height from unpacked size info
 				$size = array(
 					'width'		=> hexdec(substr($unpacked, 10, 4)),
 					'height'	=> hexdec(substr($unpacked, 6, 4)),
