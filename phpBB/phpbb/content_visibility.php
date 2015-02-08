@@ -143,12 +143,32 @@ class content_visibility
 	*/
 	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
+		$where_sql = '';
+		
+		/**
+		* Allow changing the result of calling get_visibility_sql
+		*
+		* @event core.phpbb_content_visibility_get_forums_visibility_before
+		* @var	string		where_sql						Extra visibility conditions. It must end with either an SQL "AND" or an "OR"
+		* @var	string		mode							Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_id						The forum ids which the post/topic is from
+		* @var	string		table_alias						Table alias to prefix in SQL queries
+		* @since 3.1.4-RC1
+		*/
+		$vars = array(
+			'where_sql',
+			'mode',
+			'forum_id',
+			'table_alias',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
+
 		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
-			return '1 = 1';
+			return $where_sql . '1 = 1';
 		}
 
-		return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+		return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 	}
 
 	/**
