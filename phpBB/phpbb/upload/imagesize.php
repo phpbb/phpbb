@@ -61,6 +61,10 @@ class imagesize
 				return $this->get_png_size($file);
 			break;
 
+			case 'gif':
+				return $this->get_gif_size($file);
+			break;
+
 			default:
 				return false;
 		}
@@ -74,16 +78,40 @@ class imagesize
 	 */
 	protected function get_png_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, 24);
+		// Retrieve image data including the header, the IHDR tag, and the
+		// following 2 chunks for the image width and height
+		$data = file_get_contents($filename, null, null, 0, self::PNG_IHDR_OFFSET + 3 * self::PNG_CHUNK_SIZE);
 
 		// Check if header fits expected format specified by RFC 2083
-		if (substr($data, 0, $this->png_ihdr_offset - $this->png_chunk_size) !== $this->png_header || substr($data, $this->png_ihdr_offset, $this->png_chunk_size) !== 'IHDR')
+		if (substr($data, 0, self::PNG_IHDR_OFFSET - self::PNG_CHUNK_SIZE) !== self::PNG_HEADER || substr($data, self::PNG_IHDR_OFFSET, self::PNG_CHUNK_SIZE) !== 'IHDR')
 		{
 			return false;
 		}
 
-		$size = unpack('Nwidth', substr($data, $this->png_ihdr_offset + $this->png_chunk_size, $this->png_chunk_size));
-		$size = array_merge($size, unpack('Nheight', substr($data, $this->png_ihdr_offset + 2 * $this->png_chunk_size, $this->png_chunk_size)));
+		$size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::PNG_CHUNK_SIZE, self::PNG_CHUNK_SIZE * 2));
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of GIF image
+	 *
+	 * @param string $filename Filename of image
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_gif_size($filename)
+	{
+		// Get data needed for reading image dimensions as outlined by GIF87a
+		// and GIF87a specifications
+		$data = file_get_contents($filename, null, null, 0, self::GIF_HEADER_SIZE + self::GIF_CHUNK_SIZE * 2);
+
+		$type = substr($data, 0, self::GIF_HEADER_SIZE);
+		if ($type !== self::GIF87A_HEADER && $type !== self::GIF89A_HEADER)
+		{
+			return false;
+		}
+
+		$size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::GIF_CHUNK_SIZE * 2));
 
 		return sizeof($size) ? $size : false;
 	}

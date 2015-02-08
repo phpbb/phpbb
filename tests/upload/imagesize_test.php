@@ -32,6 +32,9 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('png', 'image/png', array('width' => 1, 'height' => 1)),
 			array('gif', 'image/png', false),
 			array('png', '', false),
+			array('gif', 'image/gif', array('width' => 1, 'height' => 1)),
+			array('jpg', 'image/gif', false),
+			array('gif', '', false),
 		);
 	}
 
