@@ -14,18 +14,30 @@
 namespace phpbb\upload;
 
 /**
- * This class handles all server-side plupload functions
+ * This class handles the retrieval of image dimensions
  */
 class imagesize
 {
 	/** @var string PNG header */
-	protected $png_header = "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a";
+	const PNG_HEADER = "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a";
 
 	/** @var int PNG IHDR offset */
-	protected $png_ihdr_offset = 12;
+	const PNG_IHDR_OFFSET = 12;
 
 	/** @var int PNG chunk size */
-	protected $png_chunk_size = 4;
+	const PNG_CHUNK_SIZE = 4;
+
+	/** @var string GIF87a header */
+	const GIF87A_HEADER = "\x47\x49\x46\x38\x37\x61";
+
+	/** @var string GIF89a header */
+	const GIF89A_HEADER = "\x47\x49\x46\x38\x39\x61";
+
+	/** @var int GIF header size */
+	const GIF_HEADER_SIZE = 6;
+
+	/** @var int GIF chunk size */
+	const GIF_CHUNK_SIZE = 2;
 
 	/**
 	 * Get image dimensions of supplied image
