@@ -339,22 +339,23 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
-			$stats = @getimagesize(htmlspecialchars_decode($in));
+			$imagesize = new \phpbb\upload\imagesize();
+			$size_info = $imagesize->get_imagesize(htmlspecialchars_decode($in));
 
-			if ($stats === false)
+			if ($size_info === false)
 			{
 				$error = true;
 				$this->warn_msg[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 			}
 			else
 			{
-				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
+				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $size_info['height'])
 				{
 					$error = true;
 					$this->warn_msg[] = $user->lang('MAX_IMG_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
 				}
 
-				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
+				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $size_info['width'])
 				{
 					$error = true;
 					$this->warn_msg[] = $user->lang('MAX_IMG_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);

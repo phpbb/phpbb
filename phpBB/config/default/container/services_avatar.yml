@@ -17,6 +17,7 @@ services:
         class: phpbb\avatar\driver\gravatar
         arguments:
             - @config
+            - @upload_imagesize
             - %core.root_path%
             - %core.php_ext%
             - @path_helper
@@ -30,6 +31,7 @@ services:
         class: phpbb\avatar\driver\local
         arguments:
             - @config
+            - @upload_imagesize
             - %core.root_path%
             - %core.php_ext%
             - @path_helper
@@ -43,6 +45,7 @@ services:
         class: phpbb\avatar\driver\remote
         arguments:
             - @config
+            - @upload_imagesize
             - %core.root_path%
             - %core.php_ext%
             - @path_helper
