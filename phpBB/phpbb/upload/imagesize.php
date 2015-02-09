@@ -79,7 +79,14 @@ class imagesize
 	 */
 	public function get_imagesize($file, $type = '')
 	{
+		// Do not process file further if type is unknown
 		if (!preg_match('/\.([a-z0-9]+)$/i', $file, $match) && empty($type))
+		{
+			return false;
+		}
+
+		// Stop if file can't be accessed
+		if (!file_exists($file))
 		{
 			return false;
 		}
@@ -224,6 +231,7 @@ class imagesize
 		// 16-bit unsigned value
 		$version = unpack('n', substr($data, self::PSD_CHUNK_SIZE, 2));
 
+		// Check if supplied file is a PSD file
 		if (substr($data, 0, self::PSD_CHUNK_SIZE) !== self::PSD_SIGNATURE || $version[1] !== 1)
 		{
 			return false;

@@ -29,6 +29,7 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 	public function data_get_imagesize()
 	{
 		return array(
+			array('foobar', 'image/bmp', false),
 			array('png', 'image/png', array('width' => 1, 'height' => 1)),
 			array('gif', 'image/png', false),
 			array('png', '', false),
