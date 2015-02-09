@@ -169,15 +169,15 @@ class remote extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
+		if (!empty($image_data) && (!isset($types[$image_data['mime']]) || !in_array($extension, $types[$image_data['mime']])))
 		{
-			if (!isset($types[$image_data[2]]))
+			if (!isset($types[$image_data['mime']]))
 			{
 				$error[] = 'UNABLE_GET_IMAGE_SIZE';
 			}
 			else
 			{
-				$error[] = array('IMAGE_FILETYPE_MISMATCH', $types[$image_data[2]][0], $extension);
+				$error[] = array('IMAGE_FILETYPE_MISMATCH', $types[$image_data['mime']][0], $extension);
 			}
 
 			return false;
