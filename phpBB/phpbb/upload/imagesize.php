@@ -58,6 +58,18 @@ class imagesize
 	/** @var int PSD signature and dimensions size*/
 	const PSD_CHUNK_SIZE = 4;
 
+	/** @var int BMP header size needed for retrieving dimensions */
+	const BMP_HEADER_SIZE = 26;
+
+	/** @var string BMP signature */
+	const BMP_SIGNATURE = "\x42\x4D";
+
+	/** qvar int BMP dimensions offset */
+	const BMP_DIMENSIONS_OFFSET = 18;
+
+	/** @var int BMP dimension size in bytes */
+	const BMP_DIMENSION_SIZE = 4;
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -96,6 +108,10 @@ class imagesize
 			case 'psd':
 			case 'photoshop':
 				return $this->get_psd_size($file);
+			break;
+
+			case 'bmp':
+				return $this->get_bmp_size($file);
 			break;
 
 			default:
@@ -214,6 +230,28 @@ class imagesize
 		}
 
 		$size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::PSD_CHUNK_SIZE));
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of BMP image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_bmp_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::BMP_HEADER_SIZE);
+
+		// Check if supplied file is a BMP file
+		if (substr($data, 0, 2) !== self::BMP_SIGNATURE)
+		{
+			return false;
+		}
+
+		$size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::BMP_DIMENSION_SIZE));
 
 		return sizeof($size) ? $size : false;
 	}
