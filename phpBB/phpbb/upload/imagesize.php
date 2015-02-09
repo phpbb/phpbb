@@ -256,13 +256,13 @@ class imagesize
 		// Check if file is jpeg
 		if ($data[0] !== "\xFF" || $data[1] !== "\xD8")
 		{
-			return false;
+			return;
 		}
 
 		// Look through file for SOF marker
-		for ($i = 2 * self::SHORT_SIZE; $i < strlen($data); $i = $i + self::SHORT_SIZE)
+		for ($i = 2 * self::SHORT_SIZE; $i < strlen($data); $i++)
 		{
-			if ($data[$i] === "\xFF" && in_array($data[$i+1], array("\xC0", "\xC1", "\xC2", "\xC3", "\xC4", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCC", "\xCD", "\xCE", "\xCF")))
+			if ($data[$i] === "\xFF" && in_array($data[$i+1], array("\xC0", "\xC1", "\xC2", "\xC3", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCD", "\xCE", "\xCF")))
 			{
 				// Extract size info from SOF marker
 				$size_data = unpack("H*", substr($data, $i + self::SHORT_SIZE, 7));

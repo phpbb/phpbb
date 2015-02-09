@@ -11,6 +11,9 @@
  * the docs/CREDITS.txt file.
  *
  */
+
+require_once(__DIR__ . '/../../phpBB/includes/functions.php');
+
 class phpbb_upload_imagesize_test extends \phpbb_test_case
 {
 	/** @var \phpbb\upload\imagesize */
@@ -82,5 +85,15 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 	public function test_get_imagesize($file, $mime_type, $expected)
 	{
 		$this->assertEquals($expected, $this->imagesize->get_imagesize($this->path . $file, $mime_type));
+	}
+
+	public function test_get_imagesize_remote()
+	{
+		$this->assertSame(array(
+			'width'		=> 80,
+			'height'	=> 80,
+			'mime'		=> IMAGETYPE_JPEG,
+		),
+		$this->imagesize->get_imagesize('https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg'));
 	}
 }
