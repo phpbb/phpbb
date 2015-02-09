@@ -52,8 +52,10 @@ class null extends \phpbb\cache\driver\base
 	*/
 	function tidy()
 	{
+		global $config;
+
 		// This cache always has a tidy room.
-		set_config('cache_last_gc', time(), true);
+		$config->set('cache_last_gc', time(), false);
 	}
 
 	/**

@@ -188,7 +188,8 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function get_tables(&$db)
 {
-	$db_tools = new \phpbb\db\tools($db);
+	$factory = new \phpbb\db\tools\factory();
+	$db_tools = $factory->get($db);
 
 	return $db_tools->sql_list_tables();
 }
@@ -451,13 +452,17 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 	$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
 	$config_data .= "// @define('PHPBB_DISPLAY_LOAD_TIME', true);\n";
 
-	if ($debug)
+	if ($debug_test)
 	{
-		$config_data .= "@define('DEBUG', true);\n";
+		$config_data .= "@define('PHPBB_ENVIRONMENT', 'test');\n";
+	}
+	else if ($debug)
+	{
+		$config_data .= "@define('PHPBB_ENVIRONMENT', 'development');\n";
 	}
 	else
 	{
-		$config_data .= "// @define('DEBUG', true);\n";
+		$config_data .= "@define('PHPBB_ENVIRONMENT', 'production');\n";
 	}
 
 	if ($debug_container)
@@ -472,6 +477,7 @@ function phpbb_create_config_file_data($data, $dbms, $debug = false, $debug_cont
 	if ($debug_test)
 	{
 		$config_data .= "@define('DEBUG_TEST', true);\n";
+		$config_data .= "@define('DEBUG', true);\n"; // Mandatory for the functional tests, will be removed by PHPBB3-12623
 	}
 
 	return $config_data;

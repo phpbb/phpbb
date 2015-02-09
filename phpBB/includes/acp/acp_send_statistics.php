@@ -38,7 +38,7 @@ class acp_send_statistics
 		if (!isset($config['questionnaire_unique_id']))
 		{
 			$install_id = unique_id();
-			set_config('questionnaire_unique_id', $install_id);
+			$config->set('questionnaire_unique_id', $install_id);
 		}
 		else
 		{

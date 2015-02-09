@@ -42,6 +42,7 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 
 	if (check_link_hash($request->variable('hash', ''), 'mark_notification_read'))
 	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		$notification = $phpbb_notifications->load_notifications(array(

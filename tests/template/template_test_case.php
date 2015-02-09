@@ -78,7 +78,27 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		);
 
 		$this->template_path = $this->test_path . '/templates';
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context());
+
+		$container = new phpbb_mock_container_builder();
+		$cache_path = $phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader('');
+		$twig = new \phpbb\template\twig\environment(
+			$config,
+			$path_helper,
+			$container,
+			$cache_path,
+			null,
+			$loader,
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
+		);
+		$this->template = new phpbb\template\twig\twig($path_helper, $config, $user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 

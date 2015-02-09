@@ -70,8 +70,6 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 		// Config
 		$config = new \phpbb\config\config(array('num_topics' => 1,'num_posts' => 1,));
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
 
 		$cache = new \phpbb\cache\service(
 			new \phpbb\cache\driver\null(),

@@ -25,16 +25,20 @@
 		"phpbb/phpbb-core": "self.version"
 	},
 	"require": {
-		"php": ">=5.3.3",
+		"php": ">=5.3.9",
 		"lusitanian/oauth": "0.2.*",
-		"symfony/config": "2.3.*",
-		"symfony/console": "2.3.*",
-		"symfony/dependency-injection": "2.3.*",
-		"symfony/event-dispatcher": "2.3.*",
-		"symfony/http-kernel": "2.3.*",
-		"symfony/routing": "2.3.*",
-		"symfony/yaml": "2.3.*",
-		"twig/twig": "1.13.*"
+		"patchwork/utf8": "1.1.*",
+		"symfony/config": "2.7.*@dev",
+		"symfony/console": "2.7.*@dev",
+		"symfony/dependency-injection": "2.7.*@dev",
+		"symfony/event-dispatcher": "2.7.*@dev",
+		"symfony/http-kernel": "2.7.*@dev",
+		"symfony/routing": "2.7.*@dev",
+		"symfony/security-core": "2.7.*@dev",
+		"symfony/security-csrf": "2.7.*@dev",
+		"symfony/twig-bridge": "2.7.*@dev",
+		"symfony/yaml": "2.7.*@dev",
+		"twig/twig": "1.*"
 	},
 	"require-dev": {
 		"fabpot/goutte": "1.0.*",
@@ -43,13 +47,13 @@
 		"phing/phing": "2.4.*",
 		"sami/sami": "1.*",
 		"squizlabs/php_codesniffer": "1.*",
-		"symfony/browser-kit": "2.3.*",
-		"symfony/css-selector": "2.3.*",
-		"symfony/debug": "2.3.*",
-		"symfony/dom-crawler": "2.3.*",
-		"symfony/filesystem": "2.3.*",
-		"symfony/finder": "2.3.*",
-		"symfony/http-foundation": "2.3.*",
-		"symfony/process": "2.3.*"
+		"symfony/browser-kit": "2.7.*@dev",
+		"symfony/css-selector": "2.7.*@dev",
+		"symfony/debug": "2.7.*@dev",
+		"symfony/dom-crawler": "2.7.*@dev",
+		"symfony/filesystem": "2.7.*@dev",
+		"symfony/finder": "2.7.*@dev",
+		"symfony/http-foundation": "2.7.*@dev",
+		"symfony/process": "2.7.*@dev"
 	}
 }

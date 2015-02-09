@@ -30,10 +30,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
+	$parent_subforum_limit = false;
 	$sql_from = '';
 
 	// Mark forums read?
-	$mark_read = request_var('mark', '');
+	$mark_read = $request->variable('mark', '');
 
 	if ($mark_read == 'all')
 	{
@@ -61,9 +62,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
-		if (check_link_hash(request_var('hash', ''), 'global'))
+		if (check_link_hash($request->variable('hash', ''), 'global'))
 		{
-			markread('all', false, false, request_var('mark_time', 0));
+			markread('all', false, false, $request->variable('mark_time', 0));
 
 			if ($request->is_ajax())
 			{
@@ -153,6 +154,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
@@ -260,6 +262,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			// Direct child of current branch
 			$parent_id = $forum_id;
+			$parent_subforum_limit = $row['display_subforum_limit'];
 			$forum_rows[$forum_id] = $row;
 
 			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
@@ -271,7 +274,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
 		{
-			$subforums[$parent_id][$forum_id]['display'] = ($row['display_on_index']) ? true : false;
+			$subforums[$parent_id][$forum_id]['display'] = ($row['display_on_index'] && (!$parent_subforum_limit || $parent_id == $row['parent_id']));
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 			$subforums[$parent_id][$forum_id]['children'] = array();
@@ -333,10 +336,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	if ($mark_read == 'forums')
 	{
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
-		$token = request_var('hash', '');
+		$token = $request->variable('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids, false, request_var('mark_time', 0));
+			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
@@ -1134,6 +1137,7 @@ function display_user_activity(&$userdata)
 	$active_f_row = $active_t_row = array();
 	if (!empty($forum_ary))
 	{
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		// Obtain active forum
@@ -1265,8 +1269,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['unwatch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
@@ -1339,8 +1343,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['watch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{

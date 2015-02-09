@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compatibility.php';
 
 class phpbb_log_function_add_log_test extends phpbb_database_test_case
 {

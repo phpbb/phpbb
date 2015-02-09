@@ -26,17 +26,17 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $cache, $db, $user, $auth, $template, $table_prefix;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $cache, $db, $user, $template, $table_prefix, $request;
+		global $phpbb_root_path, $phpbb_container, $phpbb_log;
 
-		$this->db_tools = new \phpbb\db\tools($db);
+		$this->db_tools = $phpbb_container->get('dbal.tools');
 
 		$user->add_lang('acp/database');
 
 		$this->tpl_name = 'acp_database';
 		$this->page_title = 'ACP_DATABASE';
 
-		$action	= request_var('action', '');
+		$action	= $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
 		$template->assign_vars(array(
@@ -52,10 +52,10 @@ class acp_database
 				switch ($action)
 				{
 					case 'download':
-						$type	= request_var('type', '');
-						$table	= array_intersect($this->db_tools->sql_list_tables(), request_var('table', array('')));
-						$format	= request_var('method', '');
-						$where	= request_var('where', '');
+						$type	= $request->variable('type', '');
+						$table	= array_intersect($this->db_tools->sql_list_tables(), $request->variable('table', array('')));
+						$format	= $request->variable('method', '');
+						$where	= $request->variable('where', '');
 
 						if (!sizeof($table))
 						{
@@ -165,7 +165,7 @@ class acp_database
 
 						$extractor->write_end();
 
-						add_log('admin', 'LOG_DB_BACKUP');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_BACKUP');
 
 						if ($download == true)
 						{
@@ -221,9 +221,9 @@ class acp_database
 				switch ($action)
 				{
 					case 'submit':
-						$delete = request_var('delete', '');
-						$file = request_var('file', '');
-						$download = request_var('download', '');
+						$delete = $request->variable('delete', '');
+						$file = $request->variable('file', '');
+						$download = $request->variable('download', '');
 
 						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 						{
@@ -242,7 +242,7 @@ class acp_database
 							if (confirm_box(true))
 							{
 								unlink($file_name);
-								add_log('admin', 'LOG_DB_DELETE');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_DELETE');
 								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 							}
 							else
@@ -395,7 +395,7 @@ class acp_database
 							// Purge the cache due to updated data
 							$cache->purge();
 
-							add_log('admin', 'LOG_DB_RESTORE');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DB_RESTORE');
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
 						}
@@ -1868,7 +1868,8 @@ class oracle_extractor extends base_extractor
 {
 	function write_table($table_name)
 	{
-		global $db;
+		global $db, $request;
+
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "DROP TABLE $table_name\n/\n";
 		$sql_data .= "\nCREATE TABLE $table_name (\n";
@@ -1961,7 +1962,7 @@ class oracle_extractor extends base_extractor
 				AND C.SEQUENCE_NAME = A.REFERENCED_NAME";
 		$result = $db->sql_query($sql);
 
-		$type = request_var('type', '');
+		$type = $request->variable('type', '');
 
 		while ($row = $db->sql_fetchrow($result))
 		{
