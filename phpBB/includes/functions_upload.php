@@ -387,28 +387,26 @@ class filespec
 		{
 			$this->width = $this->height = 0;
 
-			if (($this->image_info = @getimagesize($this->destination_file)) !== false)
-			{
-				$this->width = $this->image_info[0];
-				$this->height = $this->image_info[1];
+			// Get imagesize class
+			$imagesize = new \phpbb\upload\imagesize();
 
-				if (!empty($this->image_info['mime']))
-				{
-					$this->mimetype = $this->image_info['mime'];
-				}
+			if (($this->image_info = $imagesize->get_imagesize($this->destination_file, $this->mimetype)) !== false)
+			{
+				$this->width = $this->image_info['width'];
+				$this->height = $this->image_info['height'];
 
 				// Check image type
 				$types = fileupload::image_types();
 
-				if (!isset($types[$this->image_info[2]]) || !in_array($this->extension, $types[$this->image_info[2]]))
+				if (!isset($types[$this->image_info['mime']]) || !in_array($this->extension, $types[$this->image_info['mime']]))
 				{
-					if (!isset($types[$this->image_info[2]]))
+					if (!isset($types[$this->image_info['mime']]))
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info[2], $this->mimetype);
+						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info['mime'], $this->mimetype);
 					}
 					else
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info[2]][0], $this->extension);
+						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info['mime']][0], $this->extension);
 					}
 				}
 
