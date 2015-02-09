@@ -18,14 +18,17 @@ namespace phpbb\upload;
  */
 class imagesize
 {
+	/** @var int 4-byte long size */
+	const LONG_SIZE = 4;
+
+	/** @var int 2-byte short size */
+	const SHORT_SIZE = 2;
+
 	/** @var string PNG header */
 	const PNG_HEADER = "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a";
 
 	/** @var int PNG IHDR offset */
 	const PNG_IHDR_OFFSET = 12;
-
-	/** @var int PNG chunk size */
-	const PNG_CHUNK_SIZE = 4;
 
 	/** @var string GIF87a header */
 	const GIF87A_HEADER = "\x47\x49\x46\x38\x37\x61";
@@ -36,15 +39,9 @@ class imagesize
 	/** @var int GIF header size */
 	const GIF_HEADER_SIZE = 6;
 
-	/** @var int GIF chunk size */
-	const GIF_CHUNK_SIZE = 2;
-
 	/** @var int JPG max header size. Headers can be bigger, but we'll abort
 	 *			going throught he header after this */
 	const JPG_MAX_HEADER_SIZE = 24576;
-
-	/** @var int JPEG chunk size */
-	const JPG_CHUNK_SIZE = 2;
 
 	/** @var string PSD signature */
 	const PSD_SIGNATURE = "8BPS";
@@ -54,9 +51,6 @@ class imagesize
 
 	/** @var int PSD dimensions info offset */
 	const PSD_DIMENSIONS_OFFSET = 14;
-
-	/** @var int PSD signature and dimensions size*/
-	const PSD_CHUNK_SIZE = 4;
 
 	/** @var int BMP header size needed for retrieving dimensions */
 	const BMP_HEADER_SIZE = 26;
@@ -155,15 +149,15 @@ class imagesize
 	{
 		// Retrieve image data including the header, the IHDR tag, and the
 		// following 2 chunks for the image width and height
-		$data = file_get_contents($filename, null, null, 0, self::PNG_IHDR_OFFSET + 3 * self::PNG_CHUNK_SIZE);
+		$data = file_get_contents($filename, null, null, 0, self::PNG_IHDR_OFFSET + 3 * self::LONG_SIZE);
 
 		// Check if header fits expected format specified by RFC 2083
-		if (substr($data, 0, self::PNG_IHDR_OFFSET - self::PNG_CHUNK_SIZE) !== self::PNG_HEADER || substr($data, self::PNG_IHDR_OFFSET, self::PNG_CHUNK_SIZE) !== 'IHDR')
+		if (substr($data, 0, self::PNG_IHDR_OFFSET - self::LONG_SIZE) !== self::PNG_HEADER || substr($data, self::PNG_IHDR_OFFSET, self::LONG_SIZE) !== 'IHDR')
 		{
 			return false;
 		}
 
-		$size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::PNG_CHUNK_SIZE, self::PNG_CHUNK_SIZE * 2));
+		$size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::LONG_SIZE, self::LONG_SIZE * 2));
 
 		return sizeof($size) ? $size : false;
 	}
@@ -179,7 +173,7 @@ class imagesize
 	{
 		// Get data needed for reading image dimensions as outlined by GIF87a
 		// and GIF87a specifications
-		$data = file_get_contents($filename, null, null, 0, self::GIF_HEADER_SIZE + self::GIF_CHUNK_SIZE * 2);
+		$data = file_get_contents($filename, null, null, 0, self::GIF_HEADER_SIZE + self::SHORT_SIZE * 2);
 
 		$type = substr($data, 0, self::GIF_HEADER_SIZE);
 		if ($type !== self::GIF87A_HEADER && $type !== self::GIF89A_HEADER)
@@ -187,7 +181,7 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::GIF_CHUNK_SIZE * 2));
+		$size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::SHORT_SIZE * 2));
 
 		return sizeof($size) ? $size : false;
 	}
@@ -212,12 +206,12 @@ class imagesize
 		$size = array();
 
 		// Look through file for SOF marker
-		for ($i = 2 * self::JPG_CHUNK_SIZE; $i < strlen($data); $i = $i + self::JPG_CHUNK_SIZE)
+		for ($i = 2 * self::SHORT_SIZE; $i < strlen($data); $i = $i + self::SHORT_SIZE)
 		{
 			if ($data[$i] === "\xFF" && in_array($data[$i+1], array("\xC0", "\xC1", "\xC2", "\xC3", "\xC4", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCC", "\xCD", "\xCE", "\xCF")))
 			{
 				// Extract size info from SOF marker
-				$size_data = unpack("H*", substr($data, $i + self::JPG_CHUNK_SIZE, 7));
+				$size_data = unpack("H*", substr($data, $i + self::SHORT_SIZE, 7));
 
 				$unpacked = array_pop($size_data);
 
@@ -247,15 +241,15 @@ class imagesize
 
 		// Offset for version info is length of header but version is only a
 		// 16-bit unsigned value
-		$version = unpack('n', substr($data, self::PSD_CHUNK_SIZE, 2));
+		$version = unpack('n', substr($data, self::LONG_SIZE, 2));
 
 		// Check if supplied file is a PSD file
-		if (substr($data, 0, self::PSD_CHUNK_SIZE) !== self::PSD_SIGNATURE || $version[1] !== 1)
+		if (substr($data, 0, self::LONG_SIZE) !== self::PSD_SIGNATURE || $version[1] !== 1)
 		{
 			return false;
 		}
 
-		$size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::PSD_CHUNK_SIZE));
+		$size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
 
 		return sizeof($size) ? $size : false;
 	}
