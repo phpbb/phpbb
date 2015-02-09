@@ -67,8 +67,21 @@ class imagesize
 	/** qvar int BMP dimensions offset */
 	const BMP_DIMENSIONS_OFFSET = 18;
 
-	/** @var int BMP dimension size in bytes */
-	const BMP_DIMENSION_SIZE = 4;
+	/** @var int TIF header size. The header might be larger but the dimensions
+	 *			should be in the first 512 bytes */
+	const TIF_HEADER_SIZE = 512;
+
+	/** @var int TIF tag for image height */
+	const TIF_TAG_IMAGE_HEIGHT = 257;
+
+	/** @var int TIF tag for image width */
+	const TIF_TAG_IMAGE_WIDTH = 256;
+
+	/** @var int TIF tag type for short */
+	const TIF_TAG_TYPE_SHORT = 3;
+
+	/** @var int TIF IFD entry size */
+	const TIF_IFD_ENTRY_SIZE = 12;
 
 	/**
 	 * Get image dimensions of supplied image
@@ -119,6 +132,11 @@ class imagesize
 
 			case 'bmp':
 				return $this->get_bmp_size($file);
+			break;
+
+			case 'tif':
+			case 'tiff':
+				return $this->get_tif_size($file);
 			break;
 
 			default:
@@ -259,7 +277,77 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::BMP_DIMENSION_SIZE));
+		$size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of TIF/TIFF image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_tif_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::TIF_HEADER_SIZE);
+
+		$signature = substr($data, 0, self::SHORT_SIZE);
+
+		if ($signature !== "II" && $signature !== "MM")
+		{
+			return false;
+		}
+
+		$size = array();
+
+		if ($signature === "II")
+		{
+			$type_long = 'V';
+			$type_short = 'v';
+		}
+		else
+		{
+			$type_long = 'N';
+			$type_short = 'n';
+		}
+
+		// Get offset of IFD
+		$offset = unpack($type_long . 'offset', substr($data, self::LONG_SIZE, self::LONG_SIZE));
+		$offset = array_pop($offset);
+
+		// Get size of IFD
+		$size_ifd = unpack($type_short, substr($data, $offset, self::SHORT_SIZE));
+		$size_ifd = array_pop($size_ifd);
+
+		// Skip 2 bytes that define the IFD size
+		$offset += self::SHORT_SIZE;
+
+		// Filter through IFD
+		for ($i = 0; $i < $size_ifd; $i++)
+		{
+			// Get IFD tag
+			$type = unpack($type_short, substr($data, $offset, self::SHORT_SIZE));
+
+			// Get field type of tag
+			$field_type = unpack($type_short . 'type', substr($data, $offset + self::SHORT_SIZE, self::SHORT_SIZE));
+
+			// Get IFD entry
+			$ifd_value = substr($data, $offset + 2 * self::LONG_SIZE, self::LONG_SIZE);
+
+			// Get actual dimensions from IFD
+			if ($type[1] === self::TIF_TAG_IMAGE_HEIGHT)
+			{
+				$size = array_merge($size, ($field_type['type'] === self::TIF_TAG_TYPE_SHORT) ? unpack($type_short . 'height', $ifd_value) : unpack($type_long . 'height', $ifd_value));
+			}
+			else if ($type[1] === self::TIF_TAG_IMAGE_WIDTH)
+			{
+				$size = array_merge($size, ($field_type['type'] === self::TIF_TAG_TYPE_SHORT) ? unpack($type_short .'width', $ifd_value) : unpack($type_long . 'width', $ifd_value));
+			}
+
+			$offset += self::TIF_IFD_ENTRY_SIZE;
+		}
 
 		return sizeof($size) ? $size : false;
 	}

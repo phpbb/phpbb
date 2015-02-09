@@ -47,6 +47,14 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('bmp', 'image/bmp', array('width' => 2, 'height' => 1)),
 			array('png', 'image/bmp', false),
 			array('bmp', '', false),
+			array('tif', 'image/tif', array('width' => 1, 'height' => 1)),
+			array('png', 'image/tif', false),
+			array('tif', '', false),
+			array('tif_compressed', 'image/tif', array('width' => 2, 'height' => 1)),
+			array('png', 'image/tiff', false),
+			array('tif_compressed', '', false),
+			array('tif_msb', 'image/tif', array('width' => 2, 'height' => 1)),
+			array('tif_msb', '', false),
 		);
 	}
 
