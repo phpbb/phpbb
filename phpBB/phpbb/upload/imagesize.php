@@ -123,12 +123,12 @@ class imagesize
 		{
 			case 'png':
 				$this->get_png_size($file);
-				$this->set_mime_type(IMAGETYPE_PNG);
+				$this->set_image_type(IMAGETYPE_PNG);
 			break;
 
 			case 'gif':
 				$this->get_gif_size($file);
-				$this->set_mime_type(IMAGETYPE_GIF);
+				$this->set_image_type(IMAGETYPE_GIF);
 			break;
 
 			case 'jpeg':
@@ -138,7 +138,7 @@ class imagesize
 			case 'jfif':
 			case 'jfi':
 				$this->get_jpeg_size($file);
-				$this->set_mime_type(IMAGETYPE_JPEG);
+				$this->set_image_type(IMAGETYPE_JPEG);
 			break;
 
 			case 'jp2':
@@ -148,18 +148,18 @@ class imagesize
 			case 'jpx':
 			case 'jpm':
 				$this->get_jp2_size($file);
-				$this->set_mime_type(IMAGETYPE_JPEG2000);
+				$this->set_image_type(IMAGETYPE_JPEG2000);
 			break;
 
 			case 'psd':
 			case 'photoshop':
 				$this->get_psd_size($file);
-				$this->set_mime_type(IMAGETYPE_PSD);
+				$this->set_image_type(IMAGETYPE_PSD);
 			break;
 
 			case 'bmp':
 				$this->get_bmp_size($file);
-				$this->set_mime_type(IMAGETYPE_BMP);
+				$this->set_image_type(IMAGETYPE_BMP);
 			break;
 
 			case 'tif':
@@ -172,13 +172,13 @@ class imagesize
 			case 'wbmp':
 			case 'vnd.wap.wbmp':
 				$this->get_wbmp_size($file);
-				$this->set_mime_type(IMAGETYPE_WBMP);
+				$this->set_image_type(IMAGETYPE_WBMP);
 			break;
 
 			case 'iff':
 			case 'x-iff':
 				$this->get_iff_size($file);
-				$this->set_mime_type(IMAGETYPE_IFF);
+				$this->set_image_type(IMAGETYPE_IFF);
 			break;
 
 			default:
@@ -193,9 +193,9 @@ class imagesize
 	 *
 	 * @param int $type Type of image
 	 */
-	protected function set_mime_type($type)
+	protected function set_image_type($type)
 	{
-		$this->size['mime'] = $type;
+		$this->size['type'] = $type;
 	}
 
 	/**
@@ -346,13 +346,13 @@ class imagesize
 		{
 			$type_long = 'V';
 			$type_short = 'v';
-			$this->set_mime_type(IMAGETYPE_TIFF_II);
+			$this->set_image_type(IMAGETYPE_TIFF_II);
 		}
 		else
 		{
 			$type_long = 'N';
 			$type_short = 'n';
-			$this->set_mime_type(IMAGETYPE_TIFF_MM);
+			$this->set_image_type(IMAGETYPE_TIFF_MM);
 		}
 
 		// Get offset of IFD

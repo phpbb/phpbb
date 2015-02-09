@@ -398,15 +398,15 @@ class filespec
 				// Check image type
 				$types = fileupload::image_types();
 
-				if (!isset($types[$this->image_info['mime']]) || !in_array($this->extension, $types[$this->image_info['mime']]))
+				if (!isset($types[$this->image_info['type']]) || !in_array($this->extension, $types[$this->image_info['type']]))
 				{
-					if (!isset($types[$this->image_info['mime']]))
+					if (!isset($types[$this->image_info['type']]))
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info['mime'], $this->mimetype);
+						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info['type'], $this->mimetype);
 					}
 					else
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info['mime']][0], $this->extension);
+						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info['type']][0], $this->extension);
 					}
 				}
 
