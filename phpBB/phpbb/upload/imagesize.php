@@ -77,6 +77,10 @@ class imagesize
 	/** @var int TIF IFD entry size */
 	const TIF_IFD_ENTRY_SIZE = 12;
 
+	/** @var int IFF header size. Grab more than what should be needed to make
+	 * sure we have the necessary data */
+	const IFF_HEADER_SIZE = 32;
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -137,6 +141,11 @@ class imagesize
 			case 'wbmp':
 			case 'vnd.wap.wbmp':
 				return $this->get_wbmp_size($file);
+			break;
+
+			case 'iff':
+			case 'x-iff':
+				return $this->get_iff_size($file);
 			break;
 
 			default:
@@ -370,6 +379,41 @@ class imagesize
 		}
 
 		$size = unpack('Cwidth/Cheight', substr($data, self::SHORT_SIZE, self::SHORT_SIZE));
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of IFF image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_iff_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::IFF_HEADER_SIZE);
+
+		$signature = substr($data, 0, self::LONG_SIZE );
+
+		// Check if image is IFF
+		if ($signature !== 'FORM' && $signature !== 'FOR4')
+		{
+			return false;
+		}
+
+		// Amiga version of IFF
+		if ($signature === 'FORM')
+		{
+			$btmhd_position = strpos($data, 'BMHD');
+			$size = unpack('nwidth/nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE, self::LONG_SIZE));
+		}
+		// Maya version
+		else
+		{
+			$btmhd_position = strpos($data, 'BHD');
+			$size = unpack('Nwidth/Nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE - 1, self::LONG_SIZE * 2));
+		}
 
 		return sizeof($size) ? $size : false;
 	}

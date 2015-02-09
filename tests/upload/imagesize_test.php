@@ -59,6 +59,13 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('wbmp', 'image/vnd.wap.wbmp', array('width' => 2, 'height' => 1)),
 			array('png', 'image/vnd.wap.wbmp', false),
 			array('wbmp', '', false),
+			array('iff', 'image/iff', array('width' => 2, 'height' => 1)),
+			array('iff', 'image/x-iff', array('width' => 2, 'height' => 1)),
+			array('iff_maya', 'iamge/iff', array('width' => 2, 'height' => 1)),
+			array('png', 'image/iff', false),
+			array('png', 'image/x-iff', false),
+			array('iff', '', false),
+			array('iff_maya', '', false),
 		);
 	}
 
