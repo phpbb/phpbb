@@ -133,6 +133,12 @@ class imagesize
 				return $this->get_tif_size($file);
 			break;
 
+			case 'wbm':
+			case 'wbmp':
+			case 'vnd.wap.wbmp':
+				return $this->get_wbmp_size($file);
+			break;
+
 			default:
 				return false;
 		}
@@ -342,6 +348,28 @@ class imagesize
 
 			$offset += self::TIF_IFD_ENTRY_SIZE;
 		}
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of WBMP image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_wbmp_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::LONG_SIZE);
+
+		// Check if image is WBMP
+		if (ord($data[0]) !== 0 || ord($data[1]) !== 0)
+		{
+			return false;
+		}
+
+		$size = unpack('Cwidth/Cheight', substr($data, self::SHORT_SIZE, self::SHORT_SIZE));
 
 		return sizeof($size) ? $size : false;
 	}

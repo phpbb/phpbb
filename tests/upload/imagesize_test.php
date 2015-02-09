@@ -55,6 +55,10 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('tif_compressed', '', false),
 			array('tif_msb', 'image/tif', array('width' => 2, 'height' => 1)),
 			array('tif_msb', '', false),
+			array('wbmp', 'image/wbmp', array('width' => 2, 'height' => 1)),
+			array('wbmp', 'image/vnd.wap.wbmp', array('width' => 2, 'height' => 1)),
+			array('png', 'image/vnd.wap.wbmp', false),
+			array('wbmp', '', false),
 		);
 	}
 
