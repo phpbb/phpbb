@@ -148,10 +148,10 @@ class content_visibility
 		/**
 		* Allow changing the result of calling get_visibility_sql
 		*
-		* @event core.phpbb_content_visibility_get_forums_visibility_before
+		* @event core.phpbb_content_get_visibility_sql_visibility_before
 		* @var	string		where_sql						Extra visibility conditions. It must end with either an SQL "AND" or an "OR"
 		* @var	string		mode							Either "topic" or "post" depending on the query this is being used in
-		* @var	array		forum_id						The forum ids which the post/topic is from
+		* @var	array		forum_id						The forum id in which the search is made.
 		* @var	string		table_alias						Table alias to prefix in SQL queries
 		* @since 3.1.4-RC1
 		*/
@@ -161,7 +161,7 @@ class content_visibility
 			'forum_id',
 			'table_alias',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_get_visibility_sql_visibility_before', compact($vars)));
 
 		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
