@@ -84,6 +84,9 @@ class imagesize
 	/** @var string JPEG 2000 signature */
 	const JPEG_2000_SIGNATURE = "\x00\x00\x00\x0C\x6A\x50\x20\x20\x0D\x0A\x87\x0A";
 
+	/** @var array Size info that is returned */
+	protected $size = array();
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -107,14 +110,19 @@ class imagesize
 
 		$extension = (isset($match[1])) ? $match[1] : preg_replace('/.+\/([a-z0-9-.]+)$/i', '$1', $type);
 
+		// Reset size info
+		$this->size = array();
+
 		switch ($extension)
 		{
 			case 'png':
-				return $this->get_png_size($file);
-				break;
+				$this->get_png_size($file);
+				$this->set_mime_type('png');
+			break;
 
 			case 'gif':
-				return $this->get_gif_size($file);
+				$this->get_gif_size($file);
+				$this->set_mime_type('gif');
 			break;
 
 			case 'jpeg':
@@ -123,7 +131,8 @@ class imagesize
 			case 'jif':
 			case 'jfif':
 			case 'jfi':
-				return $this->get_jpeg_size($file);
+				$this->get_jpeg_size($file);
+				$this->set_mime_type('jpeg');
 			break;
 
 			case 'jp2':
@@ -132,37 +141,55 @@ class imagesize
 			case 'jpg2':
 			case 'jpx':
 			case 'jpm':
-				return $this->get_jp2_size($file);
+				$this->get_jp2_size($file);
+				$this->set_mime_type('jp2');
 			break;
 
 			case 'psd':
 			case 'photoshop':
-				return $this->get_psd_size($file);
+				$this->get_psd_size($file);
+				$this->set_mime_type('psd');
 			break;
 
 			case 'bmp':
-				return $this->get_bmp_size($file);
+				$this->get_bmp_size($file);
+				$this->set_mime_type('bmp');
 			break;
 
 			case 'tif':
 			case 'tiff':
-				return $this->get_tif_size($file);
+				$this->get_tif_size($file);
+				$this->set_mime_type('tif');
 			break;
 
 			case 'wbm':
 			case 'wbmp':
 			case 'vnd.wap.wbmp':
-				return $this->get_wbmp_size($file);
+				$this->get_wbmp_size($file);
+				$this->set_mime_type('vnd.wap.wbmp');
 			break;
 
 			case 'iff':
 			case 'x-iff':
-				return $this->get_iff_size($file);
+				$this->get_iff_size($file);
+				$this->set_mime_type('iff');
 			break;
 
 			default:
 				return false;
 		}
+
+		return sizeof($this->size) > 1 ? $this->size : false;
+	}
+
+	/**
+	 * Set mime type based on supplied image
+	 *
+	 * @param string $type Type of image
+	 */
+	protected function set_mime_type($type)
+	{
+		$this->size['mime'] = 'image/' . $type;
 	}
 
 	/**
@@ -184,9 +211,7 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::LONG_SIZE, self::LONG_SIZE * 2));
-
-		return sizeof($size) ? $size : false;
+		$this->size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::LONG_SIZE, self::LONG_SIZE * 2));
 	}
 
 	/**
@@ -208,9 +233,7 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::SHORT_SIZE * 2));
-
-		return sizeof($size) ? $size : false;
+		$this->size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::SHORT_SIZE * 2));
 	}
 
 	/**
@@ -230,8 +253,6 @@ class imagesize
 			return false;
 		}
 
-		$size = array();
-
 		// Look through file for SOF marker
 		for ($i = 2 * self::SHORT_SIZE; $i < strlen($data); $i = $i + self::SHORT_SIZE)
 		{
@@ -243,7 +264,7 @@ class imagesize
 				$unpacked = array_pop($size_data);
 
 				// Get width and height from unpacked size info
-				$size = array(
+				$this->size = array(
 					'width'		=> hexdec(substr($unpacked, 10, 4)),
 					'height'	=> hexdec(substr($unpacked, 6, 4)),
 				);
@@ -251,8 +272,6 @@ class imagesize
 				break;
 			}
 		}
-
-		return sizeof($size) ? $size : false;
 	}
 
 	/**
@@ -276,9 +295,7 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
-
-		return sizeof($size) ? $size : false;
+		$this->size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
 	}
 
 	/**
@@ -298,9 +315,7 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
-
-		return sizeof($size) ? $size : false;
+		$this->size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
 	}
 
 	/**
@@ -320,8 +335,6 @@ class imagesize
 		{
 			return false;
 		}
-
-		$size = array();
 
 		if ($signature === "II")
 		{
@@ -360,17 +373,15 @@ class imagesize
 			// Get actual dimensions from IFD
 			if ($type[1] === self::TIF_TAG_IMAGE_HEIGHT)
 			{
-				$size = array_merge($size, ($field_type['type'] === self::TIF_TAG_TYPE_SHORT) ? unpack($type_short . 'height', $ifd_value) : unpack($type_long . 'height', $ifd_value));
+				$this->size = array_merge($this->size, ($field_type['type'] === self::TIF_TAG_TYPE_SHORT) ? unpack($type_short . 'height', $ifd_value) : unpack($type_long . 'height', $ifd_value));
 			}
 			else if ($type[1] === self::TIF_TAG_IMAGE_WIDTH)
 			{
-				$size = array_merge($size, ($field_type['type'] === self::TIF_TAG_TYPE_SHORT) ? unpack($type_short .'width', $ifd_value) : unpack($type_long . 'width', $ifd_value));
+				$this->size = array_merge($this->size, ($field_type['type'] === self::TIF_TAG_TYPE_SHORT) ? unpack($type_short .'width', $ifd_value) : unpack($type_long . 'width', $ifd_value));
 			}
 
 			$offset += self::TIF_IFD_ENTRY_SIZE;
 		}
-
-		return sizeof($size) ? $size : false;
 	}
 
 	/**
@@ -390,9 +401,7 @@ class imagesize
 			return false;
 		}
 
-		$size = unpack('Cwidth/Cheight', substr($data, self::SHORT_SIZE, self::SHORT_SIZE));
-
-		return sizeof($size) ? $size : false;
+		$this->size = unpack('Cwidth/Cheight', substr($data, self::SHORT_SIZE, self::SHORT_SIZE));
 	}
 
 	/**
@@ -418,16 +427,14 @@ class imagesize
 		if ($signature === 'FORM')
 		{
 			$btmhd_position = strpos($data, 'BMHD');
-			$size = unpack('nwidth/nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE, self::LONG_SIZE));
+			$this->size = unpack('nwidth/nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE, self::LONG_SIZE));
 		}
 		// Maya version
 		else
 		{
 			$btmhd_position = strpos($data, 'BHD');
-			$size = unpack('Nwidth/Nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE - 1, self::LONG_SIZE * 2));
+			$this->size = unpack('Nwidth/Nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE - 1, self::LONG_SIZE * 2));
 		}
-
-		return sizeof($size) ? $size : false;
 	}
 
 	/**
@@ -459,8 +466,6 @@ class imagesize
 		$data = substr($data, $siz_position + self::SHORT_SIZE);
 
 		// Acquire size info from data
-		$size = unpack('Nwidth/Nheight', substr($data, self::LONG_SIZE, self::LONG_SIZE * 2));
-
-		return sizeof($size) ? $size : false;
+		$this->size = unpack('Nwidth/Nheight', substr($data, self::LONG_SIZE, self::LONG_SIZE * 2));
 	}
 }
