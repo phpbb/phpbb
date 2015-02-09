@@ -29,7 +29,7 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param \phpbb_path_helper $path_helper phpBB path helper
+	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
