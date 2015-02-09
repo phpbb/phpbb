@@ -66,6 +66,13 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('png', 'image/x-iff', false),
 			array('iff', '', false),
 			array('iff_maya', '', false),
+			array('jp2', 'image/jp2', array('width' => 2, 'height' => 1)),
+			array('jp2', 'image/jpx', array('width' => 2, 'height' => 1)),
+			array('jp2', 'image/jpm', array('width' => 2, 'height' => 1)),
+			array('jpg', 'image/jp2', false),
+			array('jpx', 'image/jpx', array('width' => 2, 'height' => 1)),
+			array('jp2', '', false),
+			array('jpx', '', false),
 		);
 	}
 

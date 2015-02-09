@@ -81,6 +81,9 @@ class imagesize
 	 * sure we have the necessary data */
 	const IFF_HEADER_SIZE = 32;
 
+	/** @var string JPEG 2000 signature */
+	const JPEG_2000_SIGNATURE = "\x00\x00\x00\x0C\x6A\x50\x20\x20\x0D\x0A\x87\x0A";
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -121,6 +124,15 @@ class imagesize
 			case 'jfif':
 			case 'jfi':
 				return $this->get_jpeg_size($file);
+			break;
+
+			case 'jp2':
+			case 'j2k':
+			case 'jpf':
+			case 'jpg2':
+			case 'jpx':
+			case 'jpm':
+				return $this->get_jp2_size($file);
 			break;
 
 			case 'psd':
@@ -414,6 +426,40 @@ class imagesize
 			$btmhd_position = strpos($data, 'BHD');
 			$size = unpack('Nwidth/Nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE - 1, self::LONG_SIZE * 2));
 		}
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of JPEG 2000 image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_jp2_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::JPG_MAX_HEADER_SIZE);
+
+		// Check if file is jpeg 2000
+		if (substr($data, 0, strlen(self::JPEG_2000_SIGNATURE)) !== self::JPEG_2000_SIGNATURE)
+		{
+			return false;
+		}
+
+		// Get SOC position before starting to search for SIZ
+		$soc_position = strpos($data, "\xFF\x4F");
+
+		// Make sure we do not get SIZ before SOC
+		$data = substr($data, $soc_position);
+
+		$siz_position = strpos($data, "\xFF\x51");
+
+		// Remove SIZ and everything before
+		$data = substr($data, $siz_position + self::SHORT_SIZE);
+
+		// Acquire size info from data
+		$size = unpack('Nwidth/Nheight', substr($data, self::LONG_SIZE, self::LONG_SIZE * 2));
 
 		return sizeof($size) ? $size : false;
 	}
