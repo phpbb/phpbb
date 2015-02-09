@@ -136,7 +136,8 @@ class fulltext_sphinx
 		$this->auth = $auth;
 
 		// Initialize \phpbb\db\tools\tools object
-		$this->db_tools = new \phpbb\db\tools\tools($this->db);
+		global $phpbb_container; // TODO inject into object
+		$this->db_tools = $phpbb_container->get('dbal.tools');
 
 		if(!$this->config['fulltext_sphinx_id'])
 		{

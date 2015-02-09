@@ -67,7 +67,10 @@ $classes = $finder->core_path('phpbb/')
 	->directory('/db/migration/data')
 	->get_classes();
 
-$schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, $db, new \phpbb\db\tools\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+$factory = new \phpbb\db\tools\factory();
+$db_tools = $factory->get($db, true);
+
+$schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 $schema_data = $schema_generator->get_schema();
 $dbms_type_map = \phpbb\db\tools\tools::get_dbms_type_map();
 

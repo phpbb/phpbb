@@ -1926,7 +1926,9 @@ function phpbb_check_username_collisions()
 function phpbb_convert_timezone($timezone)
 {
 	global $config, $db, $phpbb_root_path, $phpEx, $table_prefix;
-	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, new \phpbb\db\tools\tools($db), $phpbb_root_path, $phpEx, $table_prefix);
+
+	$factory = new \phpbb\db\tools\factory();
+	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, $factory->get($db), $phpbb_root_path, $phpEx, $table_prefix);
 	return $timezone_migration->convert_phpbb30_timezone($timezone, 0);
 }
 

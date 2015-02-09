@@ -26,10 +26,10 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $cache, $db, $user, $auth, $template, $table_prefix, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
+		global $cache, $db, $user, $template, $table_prefix, $request;
+		global $phpbb_root_path, $phpbb_container, $phpbb_log;
 
-		$this->db_tools = new \phpbb\db\tools\tools($db);
+		$this->db_tools = $phpbb_container->get('dbal.tools');
 
 		$user->add_lang('acp/database');
 
