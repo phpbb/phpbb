@@ -102,8 +102,14 @@ class imagesize
 			return false;
 		}
 
+		$is_url = preg_match('#^' . get_preg_expression('url') . '$#iu', $file);
+
 		// Stop if file can't be accessed
-		if (!file_exists($file))
+		if (!file_exists($file) && !$is_url)
+		{
+			return false;
+		}
+		else if ($is_url && ($headers = get_headers($file)) !== false && strpos($headers[0], '404') !== false)
 		{
 			return false;
 		}
