@@ -39,6 +39,10 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 			array('jpg', 'image/jpeg', array('width' => 1, 'height' => 1)),
 			array('png', 'image/jpg', false),
 			array('jpg', '', false),
+			array('psd', 'image/psd', array('width' => 2, 'height' => 1)),
+			array('psd', 'image/photoshop', array('width' => 2, 'height' => 1)),
+			array('jpg', 'image/psd', false),
+			array('psd', '', false),
 		);
 	}
 

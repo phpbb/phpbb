@@ -46,6 +46,18 @@ class imagesize
 	/** @var int JPEG chunk size */
 	const JPG_CHUNK_SIZE = 2;
 
+	/** @var string PSD signature */
+	const PSD_SIGNATURE = "8BPS";
+
+	/** @var int PSD header size */
+	const PSD_HEADER_SIZE = 22;
+
+	/** @var int PSD dimensions info offset */
+	const PSD_DIMENSIONS_OFFSET = 14;
+
+	/** @var int PSD signature and dimensions size*/
+	const PSD_CHUNK_SIZE = 4;
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -79,6 +91,11 @@ class imagesize
 			case 'jfif':
 			case 'jfi':
 				return $this->get_jpeg_size($file);
+			break;
+
+			case 'psd':
+			case 'photoshop':
+				return $this->get_psd_size($file);
 			break;
 
 			default:
@@ -172,6 +189,31 @@ class imagesize
 				break;
 			}
 		}
+
+		return sizeof($size) ? $size : false;
+	}
+
+	/**
+	 * Get dimensions of PSD image
+	 *
+	 * @param string $filename Filename of image
+	 *
+	 * @return array|bool Array with image dimensions if successful, false if not
+	 */
+	protected function get_psd_size($filename)
+	{
+		$data = file_get_contents($filename, null, null, 0, self::PSD_HEADER_SIZE);
+
+		// Offset for version info is length of header but version is only a
+		// 16-bit unsigned value
+		$version = unpack('n', substr($data, self::PSD_CHUNK_SIZE, 2));
+
+		if (substr($data, 0, self::PSD_CHUNK_SIZE) !== self::PSD_SIGNATURE || $version[1] !== 1)
+		{
+			return false;
+		}
+
+		$size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::PSD_CHUNK_SIZE));
 
 		return sizeof($size) ? $size : false;
 	}
