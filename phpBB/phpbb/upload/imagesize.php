@@ -214,7 +214,7 @@ class imagesize
 		// Check if header fits expected format specified by RFC 2083
 		if (substr($data, 0, self::PNG_IHDR_OFFSET - self::LONG_SIZE) !== self::PNG_HEADER || substr($data, self::PNG_IHDR_OFFSET, self::LONG_SIZE) !== 'IHDR')
 		{
-			return false;
+			return;
 		}
 
 		$this->size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::LONG_SIZE, self::LONG_SIZE * 2));
@@ -236,7 +236,7 @@ class imagesize
 		$type = substr($data, 0, self::GIF_HEADER_SIZE);
 		if ($type !== self::GIF87A_HEADER && $type !== self::GIF89A_HEADER)
 		{
-			return false;
+			return;
 		}
 
 		$this->size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::SHORT_SIZE * 2));
@@ -298,7 +298,7 @@ class imagesize
 		// Check if supplied file is a PSD file
 		if (substr($data, 0, self::LONG_SIZE) !== self::PSD_SIGNATURE || $version[1] !== 1)
 		{
-			return false;
+			return;
 		}
 
 		$this->size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
@@ -318,7 +318,7 @@ class imagesize
 		// Check if supplied file is a BMP file
 		if (substr($data, 0, 2) !== self::BMP_SIGNATURE)
 		{
-			return false;
+			return;
 		}
 
 		$this->size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
@@ -406,7 +406,7 @@ class imagesize
 		// Check if image is WBMP
 		if (ord($data[0]) !== 0 || ord($data[1]) !== 0)
 		{
-			return false;
+			return;
 		}
 
 		$this->size = unpack('Cwidth/Cheight', substr($data, self::SHORT_SIZE, self::SHORT_SIZE));
@@ -428,7 +428,7 @@ class imagesize
 		// Check if image is IFF
 		if ($signature !== 'FORM' && $signature !== 'FOR4')
 		{
-			return false;
+			return;
 		}
 
 		// Amiga version of IFF
@@ -459,7 +459,7 @@ class imagesize
 		// Check if file is jpeg 2000
 		if (substr($data, 0, strlen(self::JPEG_2000_SIGNATURE)) !== self::JPEG_2000_SIGNATURE)
 		{
-			return false;
+			return;
 		}
 
 		// Get SOC position before starting to search for SIZ
