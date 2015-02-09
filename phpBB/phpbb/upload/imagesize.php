@@ -123,12 +123,12 @@ class imagesize
 		{
 			case 'png':
 				$this->get_png_size($file);
-				$this->set_mime_type('png');
+				$this->set_mime_type(IMAGETYPE_PNG);
 			break;
 
 			case 'gif':
 				$this->get_gif_size($file);
-				$this->set_mime_type('gif');
+				$this->set_mime_type(IMAGETYPE_GIF);
 			break;
 
 			case 'jpeg':
@@ -138,7 +138,7 @@ class imagesize
 			case 'jfif':
 			case 'jfi':
 				$this->get_jpeg_size($file);
-				$this->set_mime_type('jpeg');
+				$this->set_mime_type(IMAGETYPE_JPEG);
 			break;
 
 			case 'jp2':
@@ -148,37 +148,37 @@ class imagesize
 			case 'jpx':
 			case 'jpm':
 				$this->get_jp2_size($file);
-				$this->set_mime_type('jp2');
+				$this->set_mime_type(IMAGETYPE_JPEG2000);
 			break;
 
 			case 'psd':
 			case 'photoshop':
 				$this->get_psd_size($file);
-				$this->set_mime_type('psd');
+				$this->set_mime_type(IMAGETYPE_PSD);
 			break;
 
 			case 'bmp':
 				$this->get_bmp_size($file);
-				$this->set_mime_type('bmp');
+				$this->set_mime_type(IMAGETYPE_BMP);
 			break;
 
 			case 'tif':
 			case 'tiff':
+				// get_tif_size() sets mime type
 				$this->get_tif_size($file);
-				$this->set_mime_type('tif');
 			break;
 
 			case 'wbm':
 			case 'wbmp':
 			case 'vnd.wap.wbmp':
 				$this->get_wbmp_size($file);
-				$this->set_mime_type('vnd.wap.wbmp');
+				$this->set_mime_type(IMAGETYPE_WBMP);
 			break;
 
 			case 'iff':
 			case 'x-iff':
 				$this->get_iff_size($file);
-				$this->set_mime_type('iff');
+				$this->set_mime_type(IMAGETYPE_IFF);
 			break;
 
 			default:
@@ -191,11 +191,11 @@ class imagesize
 	/**
 	 * Set mime type based on supplied image
 	 *
-	 * @param string $type Type of image
+	 * @param int $type Type of image
 	 */
 	protected function set_mime_type($type)
 	{
-		$this->size['mime'] = 'image/' . $type;
+		$this->size['mime'] = $type;
 	}
 
 	/**
@@ -339,18 +339,20 @@ class imagesize
 
 		if ($signature !== "II" && $signature !== "MM")
 		{
-			return false;
+			return;
 		}
 
 		if ($signature === "II")
 		{
 			$type_long = 'V';
 			$type_short = 'v';
+			$this->set_mime_type(IMAGETYPE_TIFF_II);
 		}
 		else
 		{
 			$type_long = 'N';
 			$type_short = 'n';
+			$this->set_mime_type(IMAGETYPE_TIFF_MM);
 		}
 
 		// Get offset of IFD
