@@ -144,7 +144,7 @@ class content_visibility
 	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
 		$where_sql = '';
-		
+
 		$get_visibility_sql_overwrite = false;
 		/**
 		* Allow changing the result of calling get_visibility_sql
