@@ -87,6 +87,9 @@ class imagesize
 	/** @var array Size info that is returned */
 	protected $size = array();
 
+	/** @var string Data retrieved from remote */
+	protected $data = '';
+
 	/**
 	 * Get image dimensions of supplied image
 	 *
@@ -96,84 +99,116 @@ class imagesize
 	 */
 	public function get_imagesize($file, $type = '')
 	{
-		// Do not process file further if type is unknown
+		// Reset values
+		$this->reset_values();
+
+		// Treat image type as unknown if extension or mime type is unknown
 		if (!preg_match('/\.([a-z0-9]+)$/i', $file, $match) && empty($type))
 		{
-			return false;
+			$this->get_imagesize_unknown_type($file);
 		}
-
-		$extension = (isset($match[1])) ? $match[1] : preg_replace('/.+\/([a-z0-9-.]+)$/i', '$1', $type);
-
-		// Reset size info
-		$this->size = array();
-
-		switch ($extension)
+		else
 		{
-			case 'png':
-				$this->get_png_size($file);
-				$this->set_image_type(IMAGETYPE_PNG);
-			break;
+			$extension = (isset($match[1])) ? $match[1] : preg_replace('/.+\/([a-z0-9-.]+)$/i', '$1', $type);
 
-			case 'gif':
-				$this->get_gif_size($file);
-				$this->set_image_type(IMAGETYPE_GIF);
-			break;
+			// Reset size info
+			$this->size = array();
 
-			case 'jpeg':
-			case 'jpg':
-			case 'jpe':
-			case 'jif':
-			case 'jfif':
-			case 'jfi':
-				$this->get_jpeg_size($file);
-				$this->set_image_type(IMAGETYPE_JPEG);
-			break;
+			switch ($extension)
+			{
+				case 'png':
+					$this->get_png_size($file);
+				break;
 
-			case 'jp2':
-			case 'j2k':
-			case 'jpf':
-			case 'jpg2':
-			case 'jpx':
-			case 'jpm':
-				$this->get_jp2_size($file);
-				$this->set_image_type(IMAGETYPE_JPEG2000);
-			break;
+				case 'gif':
+					$this->get_gif_size($file);
+				break;
 
-			case 'psd':
-			case 'photoshop':
-				$this->get_psd_size($file);
-				$this->set_image_type(IMAGETYPE_PSD);
-			break;
+				case 'jpeg':
+				case 'jpg':
+				case 'jpe':
+				case 'jif':
+				case 'jfif':
+				case 'jfi':
+					$this->get_jpeg_size($file);
+				break;
 
-			case 'bmp':
-				$this->get_bmp_size($file);
-				$this->set_image_type(IMAGETYPE_BMP);
-			break;
+				case 'jp2':
+				case 'j2k':
+				case 'jpf':
+				case 'jpg2':
+				case 'jpx':
+				case 'jpm':
+					$this->get_jp2_size($file);
+				break;
 
-			case 'tif':
-			case 'tiff':
-				// get_tif_size() sets mime type
-				$this->get_tif_size($file);
-			break;
+				case 'psd':
+				case 'photoshop':
+					$this->get_psd_size($file);
+				break;
 
-			case 'wbm':
-			case 'wbmp':
-			case 'vnd.wap.wbmp':
-				$this->get_wbmp_size($file);
-				$this->set_image_type(IMAGETYPE_WBMP);
-			break;
+				case 'bmp':
+					$this->get_bmp_size($file);
+				break;
 
-			case 'iff':
-			case 'x-iff':
-				$this->get_iff_size($file);
-				$this->set_image_type(IMAGETYPE_IFF);
-			break;
+				case 'tif':
+				case 'tiff':
+					// get_tif_size() sets mime type
+					$this->get_tif_size($file);
+				break;
 
-			default:
-				return false;
+				case 'wbm':
+				case 'wbmp':
+				case 'vnd.wap.wbmp':
+					$this->get_wbmp_size($file);
+				break;
+
+				case 'iff':
+				case 'x-iff':
+					$this->get_iff_size($file);
+				break;
+
+				default:
+					return false;
+			}
 		}
 
 		return sizeof($this->size) > 1 ? $this->size : false;
+	}
+
+	/**
+	 * Get dimensions of image if type is unknown
+	 *
+	 * @param string $filename Path to file
+	 */
+	protected function get_imagesize_unknown_type($filename)
+	{
+		// Grab the maximum amount of bytes we might need
+		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE, false);
+
+		if ($data !== false)
+		{
+			$class_methods = preg_grep('/get_([a-z0-9]+)_size/i', get_class_methods($this));
+
+			foreach ($class_methods as $method)
+			{
+				call_user_func_array(array($this, $method), array($filename));
+
+				if (sizeof($this->size) > 1)
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Reset values to default
+	 */
+	protected function reset_values()
+	{
+		$this->size = array();
+		$this->data = '';
 	}
 
 	/**
@@ -192,14 +227,26 @@ class imagesize
 	 * @param string $filename Path to image
 	 * @param int $offset Offset at which reading of the image should start
 	 * @param int $length Maximum length that should be read
+	 * @param bool $force_length True if the length needs to be the specified
+	 *			length, false if not. Default: true
 	 *
 	 * @return bool|string Image data or false if result was empty
 	 */
-	protected function get_image($filename, $offset, $length)
+	protected function get_image($filename, $offset, $length, $force_length = true)
 	{
-		$data = @file_get_contents($filename, null, null, $offset, $length);
+		if (empty($this->data))
+		{
+			$this->data = @file_get_contents($filename, null, null, $offset, $length);
+		}
 
-		return empty($data) ? false : $data;
+		// Force length to expected one. Return false if data length
+		// is smaller than expected length
+		if ($force_length === true)
+		{
+			return (strlen($this->data) < $length) ? false : substr($this->data, $offset, $length) ;
+		}
+
+		return empty($this->data) ? false : $this->data;
 	}
 
 	/**
@@ -222,6 +269,8 @@ class imagesize
 		}
 
 		$this->size = unpack('Nwidth/Nheight', substr($data, self::PNG_IHDR_OFFSET + self::LONG_SIZE, self::LONG_SIZE * 2));
+
+		$this->set_image_type(IMAGETYPE_PNG);
 	}
 
 	/**
@@ -244,6 +293,8 @@ class imagesize
 		}
 
 		$this->size = unpack('vwidth/vheight', substr($data, self::GIF_HEADER_SIZE, self::SHORT_SIZE * 2));
+
+		$this->set_image_type(IMAGETYPE_GIF);
 	}
 
 	/**
@@ -255,7 +306,8 @@ class imagesize
 	 */
 	protected function get_jpeg_size($filename)
 	{
-		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE);
+		// Do not force the data length
+		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE, false);
 
 		// Check if file is jpeg
 		if ($data[0] !== "\xFF" || $data[1] !== "\xD8")
@@ -280,6 +332,8 @@ class imagesize
 				break;
 			}
 		}
+
+		$this->set_image_type(IMAGETYPE_JPEG);
 	}
 
 	/**
@@ -293,6 +347,11 @@ class imagesize
 	{
 		$data = $this->get_image($filename, 0, self::PSD_HEADER_SIZE);
 
+		if ($data === false)
+		{
+			return;
+		}
+
 		// Offset for version info is length of header but version is only a
 		// 16-bit unsigned value
 		$version = unpack('n', substr($data, self::LONG_SIZE, 2));
@@ -304,6 +363,8 @@ class imagesize
 		}
 
 		$this->size = unpack('Nheight/Nwidth', substr($data, self::PSD_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
+
+		$this->set_image_type(IMAGETYPE_PSD);
 	}
 
 	/**
@@ -324,6 +385,8 @@ class imagesize
 		}
 
 		$this->size = unpack('lwidth/lheight', substr($data, self::BMP_DIMENSIONS_OFFSET, 2 * self::LONG_SIZE));
+
+		$this->set_image_type(IMAGETYPE_BMP);
 	}
 
 	/**
@@ -335,7 +398,8 @@ class imagesize
 	 */
 	protected function get_tif_size($filename)
 	{
-		$data = $this->get_image($filename, 0, self::TIF_HEADER_SIZE);
+		// Do not force length of header
+		$data = $this->get_image($filename, 0, self::TIF_HEADER_SIZE, false);
 
 		$signature = substr($data, 0, self::SHORT_SIZE);
 
@@ -404,12 +468,14 @@ class imagesize
 		$data = $this->get_image($filename, 0, self::LONG_SIZE);
 
 		// Check if image is WBMP
-		if (ord($data[0]) !== 0 || ord($data[1]) !== 0)
+		if (ord($data[0]) !== 0 || ord($data[1]) !== 0 || $data === substr(self::JPEG_2000_SIGNATURE, 0, 4))
 		{
 			return;
 		}
 
 		$this->size = unpack('Cwidth/Cheight', substr($data, self::SHORT_SIZE, self::SHORT_SIZE));
+
+		$this->set_image_type(IMAGETYPE_WBMP);
 	}
 
 	/**
@@ -443,6 +509,8 @@ class imagesize
 			$btmhd_position = strpos($data, 'BHD');
 			$this->size = unpack('Nwidth/Nheight', substr($data, $btmhd_position + 2 * self::LONG_SIZE - 1, self::LONG_SIZE * 2));
 		}
+
+		$this->set_image_type(IMAGETYPE_IFF);
 	}
 
 	/**
@@ -454,7 +522,7 @@ class imagesize
 	 */
 	protected function get_jp2_size($filename)
 	{
-		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE, false);
 
 		// Check if file is jpeg 2000
 		if (substr($data, 0, strlen(self::JPEG_2000_SIGNATURE)) !== self::JPEG_2000_SIGNATURE)
@@ -475,5 +543,7 @@ class imagesize
 
 		// Acquire size info from data
 		$this->size = unpack('Nwidth/Nheight', substr($data, self::LONG_SIZE, self::LONG_SIZE * 2));
+
+		$this->set_image_type(IMAGETYPE_JPEG2000);
 	}
 }
