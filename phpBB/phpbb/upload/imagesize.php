@@ -104,16 +104,6 @@ class imagesize
 
 		$is_url = preg_match('#^' . get_preg_expression('url') . '$#iu', $file);
 
-		// Stop if file can't be accessed
-		if (!file_exists($file) && !$is_url)
-		{
-			return false;
-		}
-		else if ($is_url && ($headers = get_headers($file)) !== false && strpos($headers[0], '404') !== false)
-		{
-			return false;
-		}
-
 		$extension = (isset($match[1])) ? $match[1] : preg_replace('/.+\/([a-z0-9-.]+)$/i', '$1', $type);
 
 		// Reset size info
@@ -199,6 +189,22 @@ class imagesize
 	}
 
 	/**
+	 * Get image from specified path/source
+	 *
+	 * @param string $filename Path to image
+	 * @param int $offset Offset at which reading of the image should start
+	 * @param int $length Maximum length that should be read
+	 *
+	 * @return bool|string Image data or false if result was empty
+	 */
+	protected function get_image($filename, $offset, $length)
+	{
+		$data = @file_get_contents($filename, null, null, $offset, $length);
+
+		return empty($data) ? false : $data;
+	}
+
+	/**
 	 * Get dimensions of PNG image
 	 *
 	 * @param string $filename Filename of image
@@ -209,7 +215,7 @@ class imagesize
 	{
 		// Retrieve image data including the header, the IHDR tag, and the
 		// following 2 chunks for the image width and height
-		$data = file_get_contents($filename, null, null, 0, self::PNG_IHDR_OFFSET + 3 * self::LONG_SIZE);
+		$data = $this->get_image($filename, 0, self::PNG_IHDR_OFFSET + 3 * self::LONG_SIZE);
 
 		// Check if header fits expected format specified by RFC 2083
 		if (substr($data, 0, self::PNG_IHDR_OFFSET - self::LONG_SIZE) !== self::PNG_HEADER || substr($data, self::PNG_IHDR_OFFSET, self::LONG_SIZE) !== 'IHDR')
@@ -231,7 +237,7 @@ class imagesize
 	{
 		// Get data needed for reading image dimensions as outlined by GIF87a
 		// and GIF87a specifications
-		$data = file_get_contents($filename, null, null, 0, self::GIF_HEADER_SIZE + self::SHORT_SIZE * 2);
+		$data = $this->get_image($filename, 0, self::GIF_HEADER_SIZE + self::SHORT_SIZE * 2);
 
 		$type = substr($data, 0, self::GIF_HEADER_SIZE);
 		if ($type !== self::GIF87A_HEADER && $type !== self::GIF89A_HEADER)
@@ -251,7 +257,7 @@ class imagesize
 	 */
 	protected function get_jpeg_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::JPG_MAX_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE);
 
 		// Check if file is jpeg
 		if ($data[0] !== "\xFF" || $data[1] !== "\xD8")
@@ -287,7 +293,7 @@ class imagesize
 	 */
 	protected function get_psd_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::PSD_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::PSD_HEADER_SIZE);
 
 		// Offset for version info is length of header but version is only a
 		// 16-bit unsigned value
@@ -311,7 +317,7 @@ class imagesize
 	 */
 	protected function get_bmp_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::BMP_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::BMP_HEADER_SIZE);
 
 		// Check if supplied file is a BMP file
 		if (substr($data, 0, 2) !== self::BMP_SIGNATURE)
@@ -331,7 +337,7 @@ class imagesize
 	 */
 	protected function get_tif_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::TIF_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::TIF_HEADER_SIZE);
 
 		$signature = substr($data, 0, self::SHORT_SIZE);
 
@@ -397,7 +403,7 @@ class imagesize
 	 */
 	protected function get_wbmp_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::LONG_SIZE);
+		$data = $this->get_image($filename, 0, self::LONG_SIZE);
 
 		// Check if image is WBMP
 		if (ord($data[0]) !== 0 || ord($data[1]) !== 0)
@@ -417,7 +423,7 @@ class imagesize
 	 */
 	protected function get_iff_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::IFF_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::IFF_HEADER_SIZE);
 
 		$signature = substr($data, 0, self::LONG_SIZE );
 
@@ -450,7 +456,7 @@ class imagesize
 	 */
 	protected function get_jp2_size($filename)
 	{
-		$data = file_get_contents($filename, null, null, 0, self::JPG_MAX_HEADER_SIZE);
+		$data = $this->get_image($filename, 0, self::JPG_MAX_HEADER_SIZE);
 
 		// Check if file is jpeg 2000
 		if (substr($data, 0, strlen(self::JPEG_2000_SIGNATURE)) !== self::JPEG_2000_SIGNATURE)
