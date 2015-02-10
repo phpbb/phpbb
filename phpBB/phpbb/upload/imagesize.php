@@ -102,8 +102,6 @@ class imagesize
 			return false;
 		}
 
-		$is_url = preg_match('#^' . get_preg_expression('url') . '$#iu', $file);
-
 		$extension = (isset($match[1])) ? $match[1] : preg_replace('/.+\/([a-z0-9-.]+)$/i', '$1', $type);
 
 		// Reset size info
@@ -236,7 +234,7 @@ class imagesize
 	protected function get_gif_size($filename)
 	{
 		// Get data needed for reading image dimensions as outlined by GIF87a
-		// and GIF87a specifications
+		// and GIF89a specifications
 		$data = $this->get_image($filename, 0, self::GIF_HEADER_SIZE + self::SHORT_SIZE * 2);
 
 		$type = substr($data, 0, self::GIF_HEADER_SIZE);
