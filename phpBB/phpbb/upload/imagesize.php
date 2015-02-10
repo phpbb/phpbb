@@ -265,9 +265,7 @@ class imagesize
 			if ($data[$i] === "\xFF" && in_array($data[$i+1], array("\xC0", "\xC1", "\xC2", "\xC3", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCD", "\xCE", "\xCF")))
 			{
 				// Extract size info from SOF marker
-				$size_data = unpack("H*", substr($data, $i + self::SHORT_SIZE, 7));
-
-				$unpacked = array_pop($size_data);
+				list(, $unpacked) = unpack("H*", substr($data, $i + self::SHORT_SIZE, 7));
 
 				// Get width and height from unpacked size info
 				$this->size = array(
@@ -356,12 +354,10 @@ class imagesize
 		}
 
 		// Get offset of IFD
-		$offset = unpack($type_long . 'offset', substr($data, self::LONG_SIZE, self::LONG_SIZE));
-		$offset = array_pop($offset);
+		list(, $offset) = unpack($type_long, substr($data, self::LONG_SIZE, self::LONG_SIZE));
 
 		// Get size of IFD
-		$size_ifd = unpack($type_short, substr($data, $offset, self::SHORT_SIZE));
-		$size_ifd = array_pop($size_ifd);
+		list(, $size_ifd) = unpack($type_short, substr($data, $offset, self::SHORT_SIZE));
 
 		// Skip 2 bytes that define the IFD size
 		$offset += self::SHORT_SIZE;
