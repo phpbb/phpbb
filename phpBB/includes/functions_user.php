@@ -44,13 +44,13 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
 
 	$which_ary = ($user_id_ary) ? 'user_id_ary' : 'username_ary';
 
-	if ($$which_ary && !is_array($$which_ary))
+	if (${$which_ary} && !is_array(${$which_ary}))
 	{
-		$$which_ary = array($$which_ary);
+		${$which_ary} = array(${$which_ary});
 	}
 
-	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : array_map('utf8_clean_string', $$which_ary);
-	unset($$which_ary);
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', ${$which_ary}) : array_map('utf8_clean_string', ${$which_ary});
+	unset(${$which_ary});
 
 	$user_id_ary = $username_ary = array();
 
