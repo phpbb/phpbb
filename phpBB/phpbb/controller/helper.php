@@ -145,6 +145,12 @@ class helper
 
 		$base_url = $context->getBaseUrl();
 
+		// Regarding PHPBB3-13493 - if we request url ending on / there is no $page_name
+		if ($page_name && strpos($base_url, $page_name) === false)
+		{
+			$base_url .= '/' . $page_name;
+		}
+
 		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
 
