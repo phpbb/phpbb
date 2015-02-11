@@ -150,7 +150,7 @@ class content_visibility
 		/**
 		* Allow changing the result of calling get_visibility_sql
 		*
-		* @event core.phpbb_content_get_visibility_sql_visibility_before
+		* @event core.phpbb_content_visibility_get_visibility_sql_before
 		* @var	string		where_sql						Extra visibility conditions. It must end with either an SQL "AND" or an "OR"
 		* @var	string		mode							Either "topic" or "post" depending on the query this is being used in
 		* @var	array		forum_id						The forum id in which the search is made.
@@ -167,7 +167,7 @@ class content_visibility
 			'table_alias',
 			'get_visibility_sql_overwrite',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_get_visibility_sql_visibility_before', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_visibility_sql_before', compact($vars)));
 
 		if ($get_visibility_sql_overwrite !== false)
 		{
