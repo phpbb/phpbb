@@ -433,7 +433,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			* @var	int		min_time			Integer with the minimum post time that the user is searching for
 			* @var	int		visibility_const	Integer with one of the possible ITEM_* constant values
 			* @var	string	where_sql			Extra information included in the WHERE clause. It must end with "WHERE" or "AND" or "OR"
-			* @since 3.1.3-RC1
+			* @since 3.1.4-RC1
 			*/
 			$vars = array(
 				'sql',
