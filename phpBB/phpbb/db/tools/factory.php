@@ -29,6 +29,10 @@ class factory
 		{
 			return new \phpbb\db\tools\mssql($db_driver, $return_statements);
 		}
+		else if ($db_driver instanceof \phpbb\db\driver\postgres)
+		{
+			return new \phpbb\db\tools\postgres($db_driver, $return_statements);
+		}
 		else if ($db_driver instanceof \phpbb\db\driver\driver_interface)
 		{
 			return new \phpbb\db\tools\tools($db_driver, $return_statements);

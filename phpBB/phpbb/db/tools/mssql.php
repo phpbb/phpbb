@@ -1,35 +1,35 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\db\tools;
 
 /**
-* Database Tools for handling cross-db actions such as altering columns, etc.
-* Currently not supported is returning SQL for creating tables.
-*/
+ * Database Tools for handling cross-db actions such as altering columns, etc.
+ * Currently not supported is returning SQL for creating tables.
+ */
 class mssql extends tools
 {
 	/**
-	* Is the used MS SQL Server a SQL Server 2000?
-	* @var bool
-	*/
+	 * Is the used MS SQL Server a SQL Server 2000?
+	 * @var bool
+	 */
 	protected $is_sql_server_2000;
 
 	/**
-	* Get the column types for every database we support
-	*
-	* @return array
-	*/
+	 * Get the column types for mssql based databases
+	 *
+	 * @return array
+	 */
 	public static function get_dbms_type_map()
 	{
 		return array(
