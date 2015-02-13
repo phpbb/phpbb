@@ -280,7 +280,7 @@ class factory implements \phpbb\textformatter\cache
 
 		// Load the magic links plugins. We do that after BBCodes so that they use the same tags
 		$configurator->plugins->load('Autoemail');
-		$configurator->plugins->load('Autolink');
+		$configurator->plugins->load('Autolink', array('matchWww' => true));
 
 		// Register some vars with a default value. Those should be set at runtime by whatever calls
 		// the parser

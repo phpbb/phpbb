@@ -193,6 +193,14 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				"[code]\tline1\n  line2[/code]",
 				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><code>&nbsp; &nbsp;line1<br>' . "\n" . '&nbsp; line2</code></div>'
 			),
+			array(
+				'... http://example.org ...',
+				'... <a href="http://example.org" class="postlink">http://example.org</a> ...'
+			),
+			array(
+				'... www.example.org ...',
+				'... <a href="http://www.example.org" class="postlink">www.example.org</a> ...'
+			),
 		);
 	}
 }
