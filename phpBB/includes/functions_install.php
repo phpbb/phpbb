@@ -182,19 +182,6 @@ function dbms_select($default = '', $only_20x_options = false)
 }
 
 /**
-* Get tables of a database
-*
-* @deprecated
-*/
-function get_tables(&$db)
-{
-	$factory = new \phpbb\db\tools\factory();
-	$db_tools = $factory->get($db);
-
-	return $db_tools->sql_list_tables();
-}
-
-/**
 * Used to test whether we are able to connect to the database the user has specified
 * and identify any problems (eg there are already tables with the names we want to use
 * @param	array	$dbms should be of the format of an element of the array returned by {@link get_available_dbms get_available_dbms()}
@@ -277,7 +264,9 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 			$temp_prefix = strtolower($table_prefix);
 			$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
 
-			$tables = get_tables($db);
+			$db_tools_factory = new \phpbb\db\tools\factory();
+			$db_tools = $db_tools_factory->get($db);
+			$tables = $db_tools->sql_list_tables();
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
 

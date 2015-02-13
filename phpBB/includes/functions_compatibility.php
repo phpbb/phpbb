@@ -384,3 +384,16 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 	}
 	return $tmp_request->variable($var_name, $default, $multibyte, ($cookie) ? \phpbb\request\request_interface::COOKIE : \phpbb\request\request_interface::REQUEST);
 }
+
+/**
+ * Get tables of a database
+ *
+ * @deprecated 3.1.0 (To be removed: 3.3.0)
+ */
+function get_tables(&$db)
+{
+	$db_tools_factory = new \phpbb\db\tools\factory();
+	$db_tools = $db_tools_factory->get($db);
+
+	return $db_tools->sql_list_tables();
+}
