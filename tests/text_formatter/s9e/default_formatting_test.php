@@ -184,13 +184,11 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'[code]unparsed code [quote="username"]quoted[/quote][/code]',
 				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><code>unparsed code [quote="username"]quoted[/quote]</code></div>'
 			),
-/*
 			array(
 				// Textual bbcode nesting into textual bbcode
 				'[b]bold [i]bold + italic[/b] italic[/i]',
 				'<span style="font-weight: bold">bold <span style="font-style: italic">bold + italic</span></span><span style="font-style: italic"> italic</span>'
 			),
-*/
 			array(
 				"[code]\tline1\n  line2[/code]",
 				'<div class="codebox"><p>CODE: <a href="#" onclick="selectCode(this); return false;">Select all</a></p><code>&nbsp; &nbsp;line1<br>' . "\n" . '&nbsp; line2</code></div>'
