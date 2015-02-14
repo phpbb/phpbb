@@ -12,7 +12,7 @@
 */
 
 /**
-* Minimum Requirement: PHP 5.3.3
+* Minimum Requirement: PHP 5.3.9
 */
 
 if (!defined('IN_PHPBB'))
@@ -28,6 +28,11 @@ $phpbb_class_loader->register();
 
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
+
+if (!defined('PHPBB_ENVIRONMENT'))
+{
+	@define('PHPBB_ENVIRONMENT', 'production');
+}
 
 if (!defined('PHPBB_INSTALLED'))
 {
@@ -94,8 +99,18 @@ $phpbb_class_loader_ext->register();
 phpbb_load_extensions_autoloaders($phpbb_root_path);
 
 // Set up container
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container = $phpbb_container_builder->get_container();
+try
+{
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->get_container();
+}
+catch (InvalidArgumentException $e)
+{
+	trigger_error(
+		'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
+		E_USER_ERROR
+	);
+}
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -105,6 +120,8 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+/* @var $phpbb_hook_finder \phpbb\hook\finder */
 $phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
 foreach ($phpbb_hook_finder->find() as $hook)

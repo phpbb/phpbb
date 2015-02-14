@@ -1475,7 +1475,7 @@ class parse_message extends bbcode_firstpass
 		$error = array();
 
 		$num_attachments = sizeof($this->attachment_data);
-		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
+		$this->filename_data['filecomment'] = $request->variable('filecomment', '', true);
 		$upload = $request->file($form_name);
 		$upload_file = (!empty($upload) && $upload['name'] !== 'none' && trim($upload['name']));
 
@@ -1483,7 +1483,7 @@ class parse_message extends bbcode_firstpass
 		$delete_file	= (isset($_POST['delete_file'])) ? true : false;
 
 		// First of all adjust comments if changed
-		$actual_comment_list = utf8_normalize_nfc(request_var('comment_list', array(''), true));
+		$actual_comment_list = $request->variable('comment_list', array(''), true);
 
 		foreach ($actual_comment_list as $comment_key => $comment)
 		{
@@ -1569,7 +1569,7 @@ class parse_message extends bbcode_firstpass
 			{
 				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
-				$index = array_keys(request_var('delete_file', array(0 => 0)));
+				$index = array_keys($request->variable('delete_file', array(0 => 0)));
 				$index = (!empty($index)) ? $index[0] : false;
 
 				if ($index !== false && !empty($this->attachment_data[$index]))
@@ -1695,7 +1695,7 @@ class parse_message extends bbcode_firstpass
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
 		global $request;
 
-		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
+		$this->filename_data['filecomment'] = $request->variable('filecomment', '', true);
 		$attachment_data = $request->variable('attachment_data', array(0 => array('' => '')), true, \phpbb\request\request_interface::POST);
 		$this->attachment_data = array();
 

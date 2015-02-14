@@ -14,6 +14,7 @@
 namespace
 {
 	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+	require_once dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
 	class phpbb_di_container_test extends \phpbb_test_case
 	{
@@ -57,6 +58,9 @@ namespace
 
 			// Checks use_extensions
 			$this->assertTrue($container->hasParameter('enabled'));
+			$this->assertTrue($container->hasParameter('enabled_2'));
+			$this->assertTrue($container->hasParameter('enabled_3'));
+			$this->assertTrue($container->hasParameter('enabled_4'));
 			$this->assertFalse($container->hasParameter('disabled'));
 			$this->assertFalse($container->hasParameter('available'));
 
@@ -142,7 +146,6 @@ namespace
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			$this->assertTrue($container->hasParameter('my_parameter'));
-			$this->assertFalse($container->hasParameter('core.root_path'));
 		}
 	}
 }
@@ -199,6 +202,9 @@ namespace phpbb\db\driver
 		{
 			return array(
 				array('ext_name' => 'vendor/enabled'),
+				array('ext_name' => 'vendor/enabled-2'),
+				array('ext_name' => 'vendor/enabled-3'),
+				array('ext_name' => 'vendor/enabled_4'),
 			);
 		}
 	}

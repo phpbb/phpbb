@@ -71,6 +71,7 @@ class extension extends \Twig_Extension
 	{
 		return array(
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
+			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
 			new \Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
 	}
@@ -177,7 +178,7 @@ class extension extends \Twig_Extension
 			return $context_vars['L_' . $key];
 		}
 
-		// LA_ is transformed into lang(\'$1\')|addslashes, so we should not
+		// LA_ is transformed into lang(\'$1\')|escape('js'), so we should not
 		// need to check for it
 
 		return call_user_func_array(array($this->user, 'lang'), $args);

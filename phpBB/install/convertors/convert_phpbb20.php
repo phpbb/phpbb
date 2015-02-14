@@ -233,11 +233,11 @@ if (!$get_info)
 		$user_id = (int) $src_db->sql_fetchfield('max_user_id');
 		$src_db->sql_freeresult($result);
 
-		set_config('increment_user_id', ($user_id + 1), true);
+		$config->set('increment_user_id', ($user_id + 1), false);
 	}
 	else
 	{
-		set_config('increment_user_id', 0, true);
+		$config->set('increment_user_id', 0, false);
 	}
 
 	// Overwrite maximum avatar width/height

@@ -188,8 +188,8 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
-		set_config('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
-		set_config('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
+		$this->config->set('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
+		$this->config->set('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
 
 		return false;
 	}
@@ -745,7 +745,7 @@ class fulltext_mysql extends \phpbb\search\base
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**

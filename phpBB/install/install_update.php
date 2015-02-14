@@ -84,6 +84,7 @@ class install_update extends module
 		$phpbb_container = $phpbb_container_builder->get_container();
 
 		// Writes into global $cache
+		/* @var $cache \phpbb\cache\service */
 		$cache = $phpbb_container->get('cache');
 
 		$this->tpl_name = 'install_update';
@@ -114,8 +115,6 @@ class install_update extends module
 
 		// We need to fill the config to let internal functions correctly work
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
 
 		// Force template recompile
 		$config['load_tplcompile'] = 1;
@@ -161,6 +160,7 @@ class install_update extends module
 		));
 
 		// Get current and latest version
+		/* @var $version_helper \phpbb\version_helper */
 		$version_helper = $phpbb_container->get('version_helper');
 		try
 		{
@@ -234,7 +234,7 @@ class install_update extends module
 		// Fill DB version
 		if (empty($config['dbms_version']))
 		{
-			set_config('dbms_version', $db->sql_server_info(true));
+			$config->set('dbms_version', $db->sql_server_info(true));
 		}
 
 		if ($this->test_update === false)
@@ -351,7 +351,7 @@ class install_update extends module
 				$this->page_title = 'STAGE_FILE_CHECK';
 
 				// Now make sure our update list is correct if the admin refreshes
-				$action = request_var('action', '');
+				$action = $request->variable('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
 				$update_list = ($request->variable('check_again', false, false, \phpbb\request\request_interface::POST)) ? false : $cache->get('_update_list');
@@ -519,6 +519,8 @@ class install_update extends module
 				if ($all_up_to_date)
 				{
 					global $phpbb_container;
+
+					/* @var $phpbb_log \phpbb\log\log_interface */
 					$phpbb_log = $phpbb_container->get('log');
 
 					// Add database update to log
@@ -539,8 +541,8 @@ class install_update extends module
 
 				$s_hidden_fields = '';
 				$params = array();
-				$conflicts = request_var('conflict', array('' => 0));
-				$modified = request_var('modified', array('' => 0));
+				$conflicts = $request->variable('conflict', array('' => 0));
+				$modified = $request->variable('modified', array('' => 0));
 
 				foreach ($conflicts as $filename => $merge_option)
 				{
@@ -558,7 +560,7 @@ class install_update extends module
 					$params[] = 'modified[' . urlencode($filename) . ']=' . urlencode($merge_option);
 				}
 
-				$no_update = request_var('no_update', array(0 => ''));
+				$no_update = $request->variable('no_update', array(0 => ''));
 
 				foreach ($no_update as $index => $filename)
 				{
@@ -793,7 +795,7 @@ class install_update extends module
 				{
 					$this->include_file('includes/functions_compress.' . $phpEx);
 
-					$use_method = request_var('use_method', '');
+					$use_method = $request->variable('use_method', '');
 					$methods = array('.tar');
 
 					$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
@@ -864,9 +866,9 @@ class install_update extends module
 					$this->include_file('includes/functions_transfer.' . $phpEx);
 
 					// Choose FTP, if not available use fsock...
-					$method = basename(request_var('method', ''));
+					$method = basename($request->variable('method', ''));
 					$submit = (isset($_POST['submit'])) ? true : false;
-					$test_ftp_connection = request_var('test_connection', '');
+					$test_ftp_connection = $request->variable('test_connection', '');
 
 					if (!$method || !class_exists($method))
 					{
@@ -883,12 +885,12 @@ class install_update extends module
 					if ($test_ftp_connection || $submit)
 					{
 						$transfer = new $method(
-							request_var('host', ''),
-							request_var('username', ''),
+							$request->variable('host', ''),
+							$request->variable('username', ''),
 							htmlspecialchars_decode($request->untrimmed_variable('password', '')),
-							request_var('root_path', ''),
-							request_var('port', ''),
-							request_var('timeout', '')
+							$request->variable('root_path', ''),
+							$request->variable('port', ''),
+							$request->variable('timeout', '')
 						);
 						$test_connection = $transfer->open_session();
 
@@ -976,12 +978,12 @@ class install_update extends module
 				else
 				{
 					$transfer = new $method(
-						request_var('host', ''),
-						request_var('username', ''),
+						$request->variable('host', ''),
+						$request->variable('username', ''),
 						htmlspecialchars_decode($request->untrimmed_variable('password', '')),
-						request_var('root_path', ''),
-						request_var('port', ''),
-						request_var('timeout', '')
+						$request->variable('root_path', ''),
+						$request->variable('port', ''),
+						$request->variable('timeout', '')
 					);
 					$transfer->open_session();
 				}
@@ -1105,15 +1107,15 @@ class install_update extends module
 	*/
 	function show_diff(&$update_list)
 	{
-		global $phpbb_root_path, $template, $user, $phpbb_adm_relative_path;
+		global $phpbb_root_path, $template, $user, $request, $phpbb_adm_relative_path;
 
 		$this->tpl_name = 'install_update_diff';
 
 		$this->page_title = 'VIEWING_FILE_DIFF';
 
-		$status = request_var('status', '');
-		$file = request_var('file', '');
-		$diff_mode = request_var('diff_mode', 'inline');
+		$status = $request->variable('status', '');
+		$file = $request->variable('file', '');
+		$diff_mode = $request->variable('diff_mode', 'inline');
 
 		// First of all make sure the file is within our file update list with the correct status
 		$found_entry = array();
@@ -1142,7 +1144,7 @@ class install_update extends module
 		switch ($status)
 		{
 			case 'conflict':
-				$option = request_var('op', 0);
+				$option = $request->variable('op', 0);
 
 				switch ($option)
 				{
@@ -1193,7 +1195,7 @@ class install_update extends module
 			break;
 
 			case 'modified':
-				$option = request_var('op', 0);
+				$option = $request->variable('op', 0);
 
 				switch ($option)
 				{
@@ -1689,7 +1691,7 @@ class install_update extends module
 					// Get custom installed styles...
 					$sql = 'SELECT style_name, style_path
 						FROM ' . STYLES_TABLE . "
-						WHERE LOWER(style_name) NOT IN ('subsilver2', 'prosilver')";
+						WHERE LOWER(style_name) NOT IN ('prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();
