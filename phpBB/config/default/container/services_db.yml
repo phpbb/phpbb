@@ -14,10 +14,10 @@ services:
         class: phpbb\db\tools\factory
 
     dbal.tools:
-        class: phpbb\db\tools\tools
+        class: phpbb\db\tools\tools_interface
         factory: ["@dbal.tools.factory", get]
         arguments:
-            - @dbal.conn
+            - @dbal.conn.driver
 
 # ----- Migrator -----
     migrator:
