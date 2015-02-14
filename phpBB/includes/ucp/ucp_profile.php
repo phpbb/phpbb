@@ -560,6 +560,8 @@ class ucp_profile
 				$display_gallery = request_var('display_gallery', '0');
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
+				$subcategory = basename(request_var('subcategory', ''));
+				$page = basename(request_var('page', ''));
 
 				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
@@ -609,7 +611,7 @@ class ucp_profile
 
 				if ($config['allow_avatar'] && $display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
 				{
-					avatar_gallery($category, $avatar_select, 4);
+					avatar_gallery($category, $subcategory, $page, $avatar_select, 4, 40);
 				}
 				else if ($config['allow_avatar'])
 				{
