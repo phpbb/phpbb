@@ -485,6 +485,8 @@ class ucp_groups
 
 						$avatar_select = basename(request_var('avatar_select', ''));
 						$category = basename(request_var('category', ''));
+						$subcategory = basename(request_var('subcategory', ''));
+						$page = basename(request_var('page', ''));
 
 						$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
@@ -694,7 +696,7 @@ class ucp_groups
 
 						if ($config['allow_avatar'] && $config['allow_avatar_local'] && $display_gallery)
 						{
-							avatar_gallery($category, $avatar_select, 4);
+							avatar_gallery($category, $subcategory, $page, $avatar_select, 4, 40);
 						}
 
 						$avatars_enabled = ($config['allow_avatar'] && (($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) || ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;

@@ -2138,7 +2138,7 @@ function get_avatar_filename($avatar_entry)
 /**
 * Avatar Gallery
 */
-function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
+function avatar_gallery($category, $subcategory = '#NONE#', $page = 0, $avatar_select, $items_per_column, $avatars_per_page, $block_var = 'avatar_row')
 {
 	global $user, $cache, $template;
 	global $config, $phpbb_root_path;
@@ -2160,12 +2160,12 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		{
 			return array($user->lang['NO_AVATAR_CATEGORY'] => array());
 		}
-
+		// Category
 		while (($file = readdir($dp)) !== false)
 		{
 			if ($file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $file) && is_dir("$path/$file"))
 			{
-				$avatar_row_count = $avatar_col_count = 0;
+				$avatar_page_count = $avatar_row_count = $avatar_col_count = 0;
 
 				if ($dp2 = @opendir("$path/$file"))
 				{
@@ -2173,7 +2173,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 					{
 						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
 						{
-							$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
+							$avatar_list[$file]['#NONE#'][$avatar_page_count][$avatar_row_count][$avatar_col_count] = array(
 								'file'		=> rawurlencode($file) . '/' . rawurlencode($sub_file),
 								'filename'	=> rawurlencode($sub_file),
 								'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
@@ -2181,8 +2181,46 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 							$avatar_col_count++;
 							if ($avatar_col_count == $items_per_column)
 							{
-								$avatar_row_count++;
-								$avatar_col_count = 0;
+								if (($avatar_col_count * ($avatar_row_count+1)) == $avatars_per_page)
+								{
+									$avatar_page_count++;
+									$avatar_row_count = $avatar_col_count = 0;
+								}else{
+									$avatar_row_count++;
+									$avatar_col_count = 0;
+								}
+							}
+						}
+						$sub_avatar_page_count = $sub_avatar_row_count = $sub_avatar_col_count = 0;
+						// Subcategory
+						if ($sub_file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $sub_file) && is_dir("$path/$file/$sub_file"))
+						{
+							if ($dp3 = @opendir("$path/$file/$sub_file"))
+							{
+								while (($sub_sub_file = readdir($dp3)) !== false)
+								{
+									if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_sub_file))
+									{
+										$avatar_list[$file][$sub_file][$sub_avatar_page_count][$sub_avatar_row_count][$sub_avatar_col_count] = array(
+											'file'		=> rawurlencode($file) . '/' . rawurlencode($sub_file) . '/' . rawurlencode($sub_sub_file),
+											'filename'	=> rawurlencode($sub_sub_file),
+											'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_sub_file))),
+										);
+										$sub_avatar_col_count++;
+										if ($sub_avatar_col_count == $items_per_column)
+										{
+											if (($sub_avatar_col_count * ($sub_avatar_row_count+1)) == $avatars_per_page)
+											{
+												$sub_avatar_page_count++;
+												$sub_avatar_row_count = $avatar_col_count = 0;
+											}else{
+												$sub_avatar_row_count++;
+												$sub_avatar_col_count = 0;
+											}
+										}
+									}
+								}
+								closedir($dp3);
 							}
 						}
 					}
@@ -2200,6 +2238,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 	@ksort($avatar_list);
 
+	// Generate Categories
 	$category = (!$category) ? key($avatar_list) : $category;
 	$avatar_categories = array_keys($avatar_list);
 
@@ -2208,15 +2247,41 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 	{
 		$s_category_options .= '<option value="' . $cat . '"' . (($cat == $category) ? ' selected="selected"' : '') . '>' . $cat . '</option>';
 	}
-
+	
+	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
+	
+	// Generate Subcategories
+	$avatar_subcategories = array_keys($avatar_list);
+	
+	$s_subcategory_options = '';
+	foreach ($avatar_subcategories as $subcat)
+	{
+		$s_subcategory_options .= '<option value="' . $subcat . '"' . (($subcat == $subcategory) ? ' selected="selected"' : '') . '>' . $subcat . '</option>';
+	}
+	$subcategory = (!$subcategory) ? key($avatar_list) : $subcategory;
+	$avatar_list = (isset($avatar_list[$subcategory])) ? $avatar_list[$subcategory] : array();
+	
+	// Generate Pages
+	$avatar_pages = array_keys($avatar_list);
+	
+	$s_page_options = '';
+	foreach ($avatar_pages as $avatar_page)
+	{
+		$s_page_options .= '<option value="' . $avatar_page . '"' . (($avatar_page == $page) ? ' selected="selected"' : '') . '>' . $avatar_page . '</option>';
+	}
+	$page = (!$page) ? key($avatar_list) : $page;
+	
 	$template->assign_vars(array(
 		'S_AVATARS_ENABLED'		=> true,
 		'S_IN_AVATAR_GALLERY'	=> true,
-		'S_CAT_OPTIONS'			=> $s_category_options)
+		'S_CAT_OPTIONS'			=> $s_category_options,
+		'S_SUBCAT_OPTIONS'			=> $s_subcategory_options,
+		'S_PAGE_OPTIONS'			=> $s_page_options)
 	);
-
-	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
-
+	
+	$avatar_list = (isset($avatar_list[$page])) ? $avatar_list[$page] : array();
+	
+	// Generate avatar rows and columns
 	foreach ($avatar_list as $avatar_row_ary)
 	{
 		$template->assign_block_vars($block_var, array());
