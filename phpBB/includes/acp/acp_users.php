@@ -1742,10 +1742,13 @@ class acp_users
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
+				$subcategory = basename(request_var('subcategory', ''));
+				$page = basename(request_var('page', ''));
+
 
 				if ($config['allow_avatar_local'] && $display_gallery)
 				{
-					avatar_gallery($category, $avatar_select, 4);
+					avatar_gallery($category, $subcategory, $page, $avatar_select, 4, 40);
 				}
 
 				$template->assign_vars(array(
