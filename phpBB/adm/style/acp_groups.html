@@ -124,8 +124,12 @@
 		</dl>
 		<!-- IF S_DISPLAY_GALLERY -->
 			<dl>
-				<dt><label>{L_AVATAR_GALLERY}:</label></dt>
-				<dd><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></dd>
+				<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
+				<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;</dd>
+				<dt><label for="subcategory">{L_AVATAR_SUBCATEGORY}:</label></dt>
+				<dd><select name="subcategory" id="subcategory">{S_SUBCAT_OPTIONS}</select>&nbsp;</dd>
+				<dt><label for="subcategory">{L_AVATAR_PAGE}:</label></dt>
+				<dd><select name="page" id="page">{S_PAGE_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
 			</dl>
 		<!-- ENDIF -->
 	<!-- ELSE -->
