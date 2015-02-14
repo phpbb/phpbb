@@ -14,19 +14,19 @@
 			<!-- BEGIN avatar_local_row -->
 			<tr> 
 				<!-- BEGIN avatar_local_col -->
-					<td class="row1" align="center"><img src="{avatar_local_col.avatar_local_col.AVATAR_IMAGE}" alt="{avatar_local_col.avatar_local_col.AVATAR_NAME}" title="{avatar_local_col.avatar_local_col.AVATAR_NAME}" /></td>
+					<td class="row1" align="center" id="av-{avatar_local_row.S_ROW_COUNT}-{avatar_local_row.avatar_local_col.S_ROW_COUNT}"><img src="{avatar_local_row.avatar_local_col.AVATAR_IMAGE}" alt="{avatar_local_row.avatar_local_col.AVATAR_NAME}" title="{avatar_local_row.avatar_local_col.AVATAR_NAME}" /></td>
 				<!-- END avatar_local_col -->
 			</tr>
 			<tr>
 				<!-- BEGIN avatar_local_option -->
-					<td class="row2" align="center"><input type="radio" class="radio" name="avatar_local_file" value="{avatar_local_col.avatar_local_option.S_OPTIONS_AVATAR}" /></td>
+					<td class="row2" align="center"><input type="radio" class="radio" name="avatar_local_file" id="av-{avatar_local_row.S_ROW_COUNT}-{avatar_local_row.avatar_local_col.S_ROW_COUNT}" value="{avatar_local_row.avatar_local_option.S_OPTIONS_AVATAR}" /></td>
 				<!-- END avatar_local_option -->
 			</tr>
 			<!-- BEGINELSE -->
 			<tr>
 				<td class="row1" colspan="2">{L_NO_AVATAR_CATEGORY}</td>
 			</tr>
-			<!-- END avatar_local_col -->
+			<!-- END avatar_local_row -->
 			</table>
 		</td>
 	</tr>
