@@ -2209,13 +2209,13 @@ function avatar_gallery($category, $subcategory = '#NONE#', $page = 0, $avatar_s
 										$sub_avatar_col_count++;
 										if ($sub_avatar_col_count == $items_per_column)
 										{
-											if (($avatar_col_count * ($avatar_row_count+1)) == $avatars_per_page)
+											if (($sub_avatar_col_count * ($sub_avatar_row_count+1)) == $avatars_per_page)
 											{
-												$avatar_page_count++;
-												$avatar_row_count = $avatar_col_count = 0;
+												$sub_avatar_page_count++;
+												$sub_avatar_row_count = $avatar_col_count = 0;
 											}else{
-												$avatar_row_count++;
-												$avatar_col_count = 0;
+												$sub_avatar_row_count++;
+												$sub_avatar_col_count = 0;
 											}
 										}
 									}
