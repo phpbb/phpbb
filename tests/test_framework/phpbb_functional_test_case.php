@@ -422,14 +422,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 		}
 
-		if (!empty($meta_refresh))
-		{
-			$this->assertContainsLang('EXTENSIONS_ADMIN', $crawler->filter('.main > h1')->text());
-		}
-		else
-		{
-			$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
-		}
+		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
 		$this->logout();
 	}
