@@ -2173,11 +2173,6 @@ function avatar_gallery($category, $subcategory = '#NONE#', $page = 0, $avatar_s
 					{
 						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
 						{
-							if (($avatar_col_count * $avatar_row_count) == $avatars_per_page)
-							{
-								$avatar_page_count++;
-								$avatar_row_count = $avatar_col_count = 0;
-							}
 							$avatar_list[$file]['#NONE#'][$avatar_page_count][$avatar_row_count][$avatar_col_count] = array(
 								'file'		=> rawurlencode($file) . '/' . rawurlencode($sub_file),
 								'filename'	=> rawurlencode($sub_file),
@@ -2186,8 +2181,14 @@ function avatar_gallery($category, $subcategory = '#NONE#', $page = 0, $avatar_s
 							$avatar_col_count++;
 							if ($avatar_col_count == $items_per_column)
 							{
-								$avatar_row_count++;
-								$avatar_col_count = 0;
+								if (($avatar_col_count * ($avatar_row_count+1)) == $avatars_per_page)
+								{
+									$avatar_page_count++;
+									$avatar_row_count = $avatar_col_count = 0;
+								}else{
+									$avatar_row_count++;
+									$avatar_col_count = 0;
+								}
 							}
 						}
 						$sub_avatar_page_count = $sub_avatar_row_count = $sub_avatar_col_count = 0;
@@ -2200,11 +2201,6 @@ function avatar_gallery($category, $subcategory = '#NONE#', $page = 0, $avatar_s
 								{
 									if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_sub_file))
 									{
-										if (($sub_avatar_col_count * $sub_avatar_row_count) == $avatars_per_page)
-										{
-											$sub_avatar_page_count++;
-											$sub_avatar_row_count = $sub_avatar_col_count = 0;
-										}
 										$avatar_list[$file][$sub_file][$sub_avatar_page_count][$sub_avatar_row_count][$sub_avatar_col_count] = array(
 											'file'		=> rawurlencode($file) . '/' . rawurlencode($sub_file) . '/' . rawurlencode($sub_sub_file),
 											'filename'	=> rawurlencode($sub_sub_file),
@@ -2213,8 +2209,14 @@ function avatar_gallery($category, $subcategory = '#NONE#', $page = 0, $avatar_s
 										$sub_avatar_col_count++;
 										if ($sub_avatar_col_count == $items_per_column)
 										{
-											$sub_avatar_row_count++;
-											$sub_avatar_col_count = 0;
+											if (($avatar_col_count * ($avatar_row_count+1)) == $avatars_per_page)
+											{
+												$avatar_page_count++;
+												$avatar_row_count = $avatar_col_count = 0;
+											}else{
+												$avatar_row_count++;
+												$avatar_col_count = 0;
+											}
 										}
 									}
 								}
