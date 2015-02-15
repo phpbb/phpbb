@@ -61,7 +61,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 		                ->getMock();
 		$factory->expects($this->once())
 		        ->method('regenerate')
-		        ->will($this->returnValue(array($mock, false)));
+		        ->will($this->returnValue(array('parser' => $mock)));
 
 		$renderer = new \phpbb\textformatter\s9e\renderer(
 			$cache,

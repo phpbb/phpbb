@@ -48,7 +48,7 @@ class parser extends \phpbb\textformatter\parser
 		$parser = $cache->get($key);
 		if (!$parser)
 		{
-			list($parser) = $factory->regenerate();
+			extract($factory->regenerate());
 		}
 
 		$this->parser = $parser;

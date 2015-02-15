@@ -84,7 +84,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 	public function test_regenerate()
 	{
-		list($parser, $renderer) = $this->get_factory()->regenerate();
+		extract($this->get_factory()->regenerate());
 
 		$this->assertInstanceOf('s9e\\TextFormatter\\Parser', $parser);
 		$this->assertInstanceOf('s9e\\TextFormatter\\Renderer', $renderer);
@@ -113,7 +113,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		touch($old_file);
 
 		// Create a current renderer
-		list($parser, $renderer) = $factory->regenerate();
+		extract($factory->regenerate());
 		$new_file = $this->get_cache_dir() . get_class($renderer) . '.php';
 
 		// Tidy the cache
