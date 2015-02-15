@@ -117,7 +117,7 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
-					/* @var $db_tools \phpbb\db\tools */
+					/* @var $db_tools \phpbb\db\tools\tools_interface */
 					$db_tools = $phpbb_container->get('dbal.tools');
 					$db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_' . $field_ident);
 
@@ -886,8 +886,7 @@ class acp_profile
 		if ($action == 'create')
 		{
 			$field_ident = 'pf_' . $field_ident;
-
-			/* @var $db_tools \phpbb\db\tools */
+			/* @var $db_tools \phpbb\db\tools\tools_interface */
 			$db_tools = $phpbb_container->get('dbal.tools');
 			$db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));
 		}

@@ -192,36 +192,6 @@ class tools implements tools_interface
 				'VCHAR_CI'	=> 'VARCHAR(255)',
 				'VARBINARY'	=> 'BLOB',
 			),
-
-			'postgres'	=> array(
-				'INT:'		=> 'INT4',
-				'BINT'		=> 'INT8',
-				'UINT'		=> 'INT4', // unsigned
-				'UINT:'		=> 'INT4', // unsigned
-				'USINT'		=> 'INT2', // unsigned
-				'BOOL'		=> 'INT2', // unsigned
-				'TINT:'		=> 'INT2',
-				'VCHAR'		=> 'varchar(255)',
-				'VCHAR:'	=> 'varchar(%d)',
-				'CHAR:'		=> 'char(%d)',
-				'XSTEXT'	=> 'varchar(1000)',
-				'STEXT'		=> 'varchar(3000)',
-				'TEXT'		=> 'varchar(8000)',
-				'MTEXT'		=> 'TEXT',
-				'XSTEXT_UNI'=> 'varchar(100)',
-				'STEXT_UNI'	=> 'varchar(255)',
-				'TEXT_UNI'	=> 'varchar(4000)',
-				'MTEXT_UNI'	=> 'TEXT',
-				'TIMESTAMP'	=> 'INT4', // unsigned
-				'DECIMAL'	=> 'decimal(5,2)',
-				'DECIMAL:'	=> 'decimal(%d,2)',
-				'PDECIMAL'	=> 'decimal(6,3)',
-				'PDECIMAL:'	=> 'decimal(%d,3)',
-				'VCHAR_UNI'	=> 'varchar(255)',
-				'VCHAR_UNI:'=> 'varchar(%d)',
-				'VCHAR_CI'	=> 'varchar_ci',
-				'VARBINARY'	=> 'bytea',
-			),
 		);
 	}
 
@@ -313,11 +283,6 @@ class tools implements tools_interface
 					FROM sqlite_master
 					WHERE type = "table"
 						AND name <> "sqlite_sequence"';
-			break;
-
-			case 'postgres':
-				$sql = 'SELECT relname
-					FROM pg_stat_user_tables';
 			break;
 
 			case 'oracle':
@@ -428,7 +393,6 @@ class tools implements tools_interface
 				{
 					case 'mysql_40':
 					case 'mysql_41':
-					case 'postgres':
 					case 'sqlite':
 					case 'sqlite3':
 						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
@@ -453,17 +417,6 @@ class tools implements tools_interface
 			case 'mysql_40':
 			case 'sqlite':
 			case 'sqlite3':
-				$table_sql .= "\n);";
-				$statements[] = $table_sql;
-			break;
-
-			case 'postgres':
-				// do we need to add a sequence for auto incrementing columns?
-				if ($create_sequence)
-				{
-					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
-				}
-
 				$table_sql .= "\n);";
 				$statements[] = $table_sql;
 			break;
@@ -920,16 +873,6 @@ class tools implements tools_interface
 				$sql = "SHOW COLUMNS FROM $table_name";
 			break;
 
-			// PostgreSQL has a way of doing this in a much simpler way but would
-			// not allow us to support all versions of PostgreSQL
-			case 'postgres':
-				$sql = "SELECT a.attname
-					FROM pg_class c, pg_attribute a
-					WHERE c.relname = '{$table_name}'
-						AND a.attnum > 0
-						AND a.attrelid = c.oid";
-			break;
-
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
@@ -1003,17 +946,6 @@ class tools implements tools_interface
 	{
 		switch ($this->sql_layer)
 		{
-			case 'postgres':
-				$sql = "SELECT ic.relname as index_name
-					FROM pg_class bc, pg_class ic, pg_index i
-					WHERE (bc.oid = i.indrelid)
-						AND (ic.oid = i.indexrelid)
-						AND (bc.relname = '" . $table_name . "')
-						AND (i.indisunique != 't')
-						AND (i.indisprimary != 't')";
-				$col = 'index_name';
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
@@ -1049,7 +981,6 @@ class tools implements tools_interface
 			switch ($this->sql_layer)
 			{
 				case 'oracle':
-				case 'postgres':
 				case 'sqlite':
 				case 'sqlite3':
 					$row[$col] = substr($row[$col], strlen($table_name) + 1);
@@ -1074,16 +1005,6 @@ class tools implements tools_interface
 	{
 		switch ($this->sql_layer)
 		{
-			case 'postgres':
-				$sql = "SELECT ic.relname as index_name, i.indisunique
-					FROM pg_class bc, pg_class ic, pg_index i
-					WHERE (bc.oid = i.indrelid)
-						AND (ic.oid = i.indexrelid)
-						AND (bc.relname = '" . $table_name . "')
-						AND (i.indisprimary != 't')";
-				$col = 'index_name';
-			break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
@@ -1120,11 +1041,6 @@ class tools implements tools_interface
 				continue;
 			}
 
-			if ($this->sql_layer == 'postgres' && $row['indisunique'] != 't')
-			{
-				continue;
-			}
-
 			// These DBMS prefix index name with the table name
 			switch ($this->sql_layer)
 			{
@@ -1140,7 +1056,6 @@ class tools implements tools_interface
 					}
 				break;
 
-				case 'postgres':
 				case 'sqlite':
 				case 'sqlite3':
 					$row[$col] = substr($row[$col], strlen($table_name) + 1);
@@ -1268,51 +1183,6 @@ class tools implements tools_interface
 
 			break;
 
-			case 'postgres':
-				$return_array['column_type'] = $column_type;
-
-				$sql .= " {$column_type} ";
-
-				$return_array['auto_increment'] = false;
-				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
-				{
-					$default_val = "nextval('{$table_name}_seq')";
-					$return_array['auto_increment'] = true;
-				}
-				else if (!is_null($column_data[1]))
-				{
-					$default_val = "'" . $column_data[1] . "'";
-					$return_array['null'] = 'NOT NULL';
-					$sql .= 'NOT NULL ';
-				}
-				else
-				{
-					// Integers need to have 0 instead of empty string as default
-					if (strpos($column_type, 'INT') === 0)
-					{
-						$default_val = '0';
-					}
-					else
-					{
-						$default_val = "'" . $column_data[1] . "'";
-					}
-					$return_array['null'] = 'NULL';
-					$sql .= 'NULL ';
-				}
-
-				$return_array['default'] = $default_val;
-
-				$sql .= "DEFAULT {$default_val}";
-
-				// Unsigned? Then add a CHECK contraint
-				if (in_array($orig_column_type, $this->unsigned_types))
-				{
-					$return_array['constraint'] = "CHECK ({$column_name} >= 0)";
-					$sql .= " CHECK ({$column_name} >= 0)";
-				}
-
-			break;
-
 			case 'sqlite':
 			case 'sqlite3':
 				$return_array['primary_key_set'] = false;
@@ -1426,33 +1296,6 @@ class tools implements tools_interface
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			break;
 
-			case 'postgres':
-				// Does not support AFTER, only through temporary table
-				if (version_compare($this->db->sql_server_info(true), '8.0', '>='))
-				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
-				}
-				else
-				{
-					// old versions cannot add columns with default and null information
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type'] . ' ' . $column_data['constraint'];
-
-					if (isset($column_data['null']))
-					{
-						if ($column_data['null'] == 'NOT NULL')
-						{
-							$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET NOT NULL';
-						}
-					}
-
-					if (isset($column_data['default']))
-					{
-						$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
-					}
-				}
-
-			break;
-
 			case 'sqlite':
 				if ($inline && $this->return_statements)
 				{
@@ -1535,10 +1378,6 @@ class tools implements tools_interface
 				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
 			break;
 
-			case 'postgres':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN "' . $column_name . '"';
-			break;
-
 			case 'sqlite':
 			case 'sqlite3':
 
@@ -1616,7 +1455,6 @@ class tools implements tools_interface
 			break;
 
 			case 'oracle':
-			case 'postgres':
 			case 'sqlite':
 			case 'sqlite3':
 				$statements[] = 'DROP INDEX ' . $table_name . '_' . $index_name;
@@ -1658,22 +1496,6 @@ class tools implements tools_interface
 				}
 				$this->db->sql_freeresult($result);
 			break;
-
-			case 'postgres':
-				// PGSQL does not "tightly" bind sequences and tables, we must guess...
-				$sql = "SELECT relname
-					FROM pg_class
-					WHERE relkind = 'S'
-						AND relname = '{$table_name}_seq'";
-				$result = $this->db->sql_query($sql);
-
-				// We don't even care about storing the results. We already know the answer if we get rows back.
-				if ($this->db->sql_fetchrow($result))
-				{
-					$statements[] =  "DROP SEQUENCE {$table_name}_seq;\n";
-				}
-				$this->db->sql_freeresult($result);
-			break;
 		}
 
 		return $this->_sql_run_sql($statements);
@@ -1688,7 +1510,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'postgres':
 			case 'mysql_40':
 			case 'mysql_41':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
@@ -1764,7 +1585,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'postgres':
 			case 'oracle':
 			case 'sqlite':
 			case 'sqlite3':
@@ -1797,7 +1617,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'postgres':
 			case 'oracle':
 			case 'sqlite':
 			case 'sqlite3':
@@ -1848,17 +1667,6 @@ class tools implements tools_interface
 
 		switch ($this->sql_layer)
 		{
-			case 'postgres':
-				$sql = "SELECT ic.relname as index_name
-					FROM pg_class bc, pg_class ic, pg_index i
-					WHERE (bc.oid = i.indrelid)
-						AND (ic.oid = i.indexrelid)
-						AND (bc.relname = '" . $table_name . "')
-						AND (i.indisunique != 't')
-						AND (i.indisprimary != 't')";
-				$col = 'index_name';
-				break;
-
 			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
@@ -1893,7 +1701,6 @@ class tools implements tools_interface
 			switch ($this->sql_layer)
 			{
 				case 'oracle':
-				case 'postgres':
 				case 'sqlite':
 				case 'sqlite3':
 					$row[$col] = substr($row[$col], strlen($table_name) + 1);
@@ -2001,69 +1808,6 @@ class tools implements tools_interface
 				$this->return_statements = $old_return_statements;
 			break;
 
-			case 'postgres':
-				$sql = 'ALTER TABLE ' . $table_name . ' ';
-
-				$sql_array = array();
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type'];
-
-				if (isset($column_data['null']))
-				{
-					if ($column_data['null'] == 'NOT NULL')
-					{
-						$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
-					}
-					else if ($column_data['null'] == 'NULL')
-					{
-						$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
-					}
-				}
-
-				if (isset($column_data['default']))
-				{
-					$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
-				}
-
-				// we don't want to double up on constraints if we change different number data types
-				if (isset($column_data['constraint']))
-				{
-					$constraint_sql = "SELECT consrc as constraint_data
-								FROM pg_constraint, pg_class bc
-								WHERE conrelid = bc.oid
-									AND bc.relname = '{$table_name}'
-									AND NOT EXISTS (
-										SELECT *
-											FROM pg_constraint as c, pg_inherits as i
-											WHERE i.inhrelid = pg_constraint.conrelid
-												AND c.conname = pg_constraint.conname
-												AND c.consrc = pg_constraint.consrc
-												AND c.conrelid = i.inhparent
-									)";
-
-					$constraint_exists = false;
-
-					$result = $this->db->sql_query($constraint_sql);
-					while ($row = $this->db->sql_fetchrow($result))
-					{
-						if (trim($row['constraint_data']) == trim($column_data['constraint']))
-						{
-							$constraint_exists = true;
-							break;
-						}
-					}
-					$this->db->sql_freeresult($result);
-
-					if (!$constraint_exists)
-					{
-						$sql_array[] = 'ADD ' . $column_data['constraint'];
-					}
-				}
-
-				$sql .= implode(', ', $sql_array);
-
-				$statements[] = $sql;
-			break;
-
 			case 'sqlite':
 			case 'sqlite3':
 
@@ -2145,7 +1889,6 @@ class tools implements tools_interface
 		{
 			case 'mysql_40':
 			case 'mysql_41':
-			case 'postgres':
 			case 'sqlite':
 			case 'sqlite3':
 				// Not supported
