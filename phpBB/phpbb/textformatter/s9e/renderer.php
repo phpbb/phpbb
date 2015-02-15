@@ -80,7 +80,7 @@ class renderer extends \phpbb\textformatter\renderer
 
 		if (!isset($renderer))
 		{
-			list(, $renderer) = $factory->regenerate();
+			extract($factory->regenerate());
 		}
 
 		$this->renderer = $renderer;

@@ -294,7 +294,7 @@ class factory implements \phpbb\textformatter\cache
 	/**
 	* Regenerate and cache a new parser and renderer
 	*
-	* @return array Array with two elements: an instance of the parser, an instance of the renderer
+	* @return array Associative array with at least two elements: "parser" and "renderer"
 	*/
 	public function regenerate()
 	{
@@ -315,7 +315,7 @@ class factory implements \phpbb\textformatter\cache
 		);
 		$this->cache->put($this->cache_key_renderer, $renderer_data);
 
-		return array($parser, $renderer);
+		return array('parser' => $parser, 'renderer' => $renderer);
 	}
 
 	/**

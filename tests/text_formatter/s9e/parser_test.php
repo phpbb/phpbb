@@ -82,7 +82,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		                ->getMock();
 		$factory->expects($this->once())
 		        ->method('regenerate')
-		        ->will($this->returnValue(array($mock, false)));
+		        ->will($this->returnValue(array('parser' => $mock)));
 
 		$parser = new \phpbb\textformatter\s9e\parser(
 			new phpbb_mock_cache,
