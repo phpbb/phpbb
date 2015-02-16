@@ -396,6 +396,7 @@ $sql_array = array(
 * @event core.viewforum_get_topic_data
 * @var	array	forum_data			Array with forum data
 * @var	array	sql_array			The SQL array to get the data of all topics
+* @var	array	forum_id			The forum_id whose topics are being listed
 * @var	array	topics_count		The total number of topics for display
 * @var	array	sort_days			The oldest topic displayable in elapsed days
 * @var	array	sort_key			The sorting by. It is one of the first character of (in low case):
@@ -403,11 +404,12 @@ $sql_array = array(
 * @var	array	sort_dir			Either "a" for ascending or "d" for descending
 * @since 3.1.0-a1
 * @change 3.1.0-RC4 Added forum_data var
-* @change 3.1.4-RC1 Added topics_count, sort_days, sort_key and sort_dir vars
+* @change 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
 */
 $vars = array(
 	'forum_data',
 	'sql_array',
+	'forum_id',
 	'topics_count',
 	'sort_days',
 	'sort_key',
