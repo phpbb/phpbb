@@ -34,8 +34,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			return $this->sql_error('');
 		}
 
-		// Mysqli extension supports persistent connection since PHP 5.3.0
-		$this->persistency = (version_compare(PHP_VERSION, '5.3.0', '>=')) ? $persistency : false;
+		$this->persistency = $persistency;
 		$this->user = $sqluser;
 
 		// If persistent connection, set dbhost to localhost when empty and prepend it with 'p:' prefix
