@@ -74,7 +74,14 @@ class factory implements \phpbb\textformatter\cache
 		'img'   => '[IMG src={IMAGEURL;useContent}]',
 		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext}]{TEXT}[/LIST]',
 		'li'    => '[* $tagName=LI]{TEXT}[/*]',
-		'quote' => '[QUOTE author={TEXT1;optional}]{TEXT2}[/QUOTE]',
+		'quote' =>
+			"[QUOTE
+				author={TEXT1;optional}
+				url={URL;optional}
+				author={PARSE=/^\\[url=(?'url'.*?)](?'author'.*)\\[\\/url]$/i}
+				author={PARSE=/^\\[url](?'author'(?'url'.*?))\\[\\/url]$/i}
+				author={PARSE=/(?'url'https?:\\/\\/[^[\\]]+)/i}
+			]{TEXT2}[/QUOTE]",
 		'size'  => '[SIZE={FONTSIZE}]{TEXT}[/SIZE]',
 		'u'     => '[U]{TEXT}[/U]',
 		'url'   => '[URL={URL;useContent}]{TEXT}[/URL]',
@@ -424,6 +431,15 @@ class factory implements \phpbb\textformatter\cache
 
 		$templates['li'] = $fragments['listitem'] . '<xsl:apply-templates/>' . $fragments['listitem_close'];
 
+		$fragments['quote_username_open'] = str_replace(
+			'{USERNAME}',
+			'<xsl:choose>
+				<xsl:when test="@url">' . str_replace('{DESCRIPTION}', '{USERNAME}', $fragments['url']) . '</xsl:when>
+				<xsl:otherwise>{USERNAME}</xsl:otherwise>
+			</xsl:choose>',
+			$fragments['quote_username_open']
+		);
+
 		$templates['quote'] =
 			'<xsl:choose>
 				<xsl:when test="@author">
@@ -438,7 +454,7 @@ class factory implements \phpbb\textformatter\cache
 		// is post-processed by parse_attachments()
 		$templates['attachment'] = $fragments['inline_attachment_open'] . '<xsl:comment> ia<xsl:value-of select="@index"/> </xsl:comment><xsl:value-of select="@filename"/><xsl:comment> ia<xsl:value-of select="@index"/> </xsl:comment>' . $fragments['inline_attachment_close'];
 
-		// Finally save fragments whose names look like the name of a BBCode, e.g. "flash"
+		// Add fragments as templates
 		foreach ($fragments as $fragment_name => $fragment)
 		{
 			if (preg_match('#^\\w+$#', $fragment_name))
@@ -446,6 +462,9 @@ class factory implements \phpbb\textformatter\cache
 				$templates[$fragment_name] = $fragment;
 			}
 		}
+
+		// Keep only templates that are named after an existing BBCode
+		$templates = array_intersect_key($templates, $this->default_definitions);
 
 		return $templates;
 	}
