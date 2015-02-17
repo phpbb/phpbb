@@ -528,6 +528,12 @@ abstract class driver implements driver_interface
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
+		// PHPBB3-12945 We keep it for backward compatibility
+		if ($negate)
+		{
+			return $this->sql_not_in_set($field, $array, $allow_empty_set);
+		}
+
 		if (!sizeof($array))
 		{
 			if (!$allow_empty_set)
@@ -537,16 +543,7 @@ abstract class driver implements driver_interface
 			}
 			else
 			{
-				// NOT IN () actually means everything so use a tautology
-				if ($negate)
-				{
-					return '1=1';
-				}
-				// IN () actually means nothing so use a contradiction
-				else
-				{
-					return '1=0';
-				}
+				return '1=0';
 			}
 		}
 
@@ -560,11 +557,47 @@ abstract class driver implements driver_interface
 			@reset($array);
 			$var = current($array);
 
-			return $field . ($negate ? ' <> ' : ' = ') . $this->_sql_validate_value($var);
+			return $field . ' = ' . $this->_sql_validate_value($var);
 		}
 		else
 		{
-			return $field . ($negate ? ' NOT IN ' : ' IN ') . '(' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
+			return $field . ' IN (' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
+		}
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	function sql_not_in_set($field, $array, $allow_empty_set = false)
+	{
+		if (!sizeof($array))
+		{
+			if (!$allow_empty_set)
+			{
+				// Print the backtrace to help identifying the location of the problematic code
+				$this->sql_error('No values specified for SQL NOT IN comparison');
+			}
+			else
+			{
+				return '1=1';
+			}
+		}
+
+		if (!is_array($array))
+		{
+			$array = array($array);
+		}
+
+		if (sizeof($array) == 1)
+		{
+			@reset($array);
+			$var = current($array);
+
+			return $field . ' <> ' . $this->_sql_validate_value($var);
+		}
+		else
+		{
+			return $field . ' NOT IN (' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
 		}
 	}
 

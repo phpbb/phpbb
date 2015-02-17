@@ -445,9 +445,23 @@ interface driver_interface
 	* @param	string	$field			Name of the sql column that shall be compared
 	* @param	array	$array			Array of values that are (not) allowed
 	* @param	bool	$negate			true for NOT IN (), false for IN ()
+	*								NOTE: This parameter is deprecated and will be removed in the future.
+	*								Use sql_not_in_set() instead
 	* @param	bool	$allow_empty_set	If true, allow $array to be empty,
 	*								this function will return 1=1 or 1=0 then.
 	* @return string	A SQL statement like: "IN (1, 2, 3, 4)" or "= 1"
 	*/
 	public function sql_in_set($field, $array, $negate = false, $allow_empty_set = false);
+
+	/**
+	* Build NOT IN sql comparison string, uses <> or = on single element
+	* arrays to improve comparison speed
+	*
+	* @param	string	$field			Name of the sql column that shall be compared
+	* @param	array	$array			Array of values that are not allowed
+	* @param	bool	$allow_empty_set	If true, allow $array to be empty,
+	*								this function will return 1=1 or 1=0 then.
+	* @return string	A SQL statement like: "NOT IN (1, 2, 3, 4)" or "<> 1"
+	*/
+	public function sql_not_in_set($field, $array, $allow_empty_set = false);
 }
