@@ -201,6 +201,18 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'... www.example.org ...',
 				'... <a href="http://www.example.org" class="postlink">www.example.org</a> ...'
 			),
+			array(
+				'[quote="[url=http://example.org]xxx[/url]"]...[/quote]',
+				'<blockquote><div><cite><a href="http://example.org" class="postlink">xxx</a> wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				'[quote="[url]http://example.org[/url]"]...[/quote]',
+				'<blockquote><div><cite><a href="http://example.org" class="postlink">http://example.org</a> wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				'[quote="http://example.org"]...[/quote]',
+				'<blockquote><div><cite><a href="http://example.org" class="postlink">http://example.org</a> wrote:</cite>...</div></blockquote>'
+			),
 		);
 	}
 }
