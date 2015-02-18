@@ -1151,6 +1151,7 @@ ucp_profile_profile_info_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_profile_info.html
+    + styles/subsilver2/template/ucp_profile_profile_info.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - before jabber field.
 
@@ -1158,6 +1159,7 @@ ucp_profile_profile_info_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_profile_info.html
+    + styles/subsilver2/template/ucp_profile_profile_info.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after custom profile fields.
 
@@ -1165,6 +1167,7 @@ ucp_profile_register_details_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_reg_details.html
+    + styles/subsilver2/template/ucp_profile_reg_details.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - before first field.
 
@@ -1172,6 +1175,7 @@ ucp_profile_register_details_after
 ===
 * Locations:
     + styles/prosilver/template/ucp_profile_reg_details.html
+    + styles/subsilver2/template/ucp_profile_reg_details.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after confirm password field.
 
