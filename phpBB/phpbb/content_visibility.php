@@ -206,7 +206,7 @@ class content_visibility
 			if (!sizeof($forum_ids))
 			{
 				// The user can see all posts/topics in all specified forums
-				return $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+				return $where_sql . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
 			}
 			else
 			{
@@ -217,8 +217,8 @@ class content_visibility
 		else
 		{
 			// The user is just a normal user
-			return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true);
+			return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
+				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . ')';
 		}
 
 		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
