@@ -416,6 +416,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$form = $crawler->selectButton('Enable')->form();
 		$crawler = self::submit($form);
 		$this->add_lang('acp/extensions');
+
+		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+		// Wait for extension to be fully enabled
+		while (sizeof($meta_refresh))
+		{
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			$url = $match[1];
+			$crawler = self::request('POST', $url);
+			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+		}
+
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
 		$this->logout();
