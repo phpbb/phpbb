@@ -143,12 +143,43 @@ class content_visibility
 	*/
 	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
-		if ($this->auth->acl_get('m_approve', $forum_id))
+		$where_sql = '';
+
+		$get_visibility_sql_overwrite = false;
+
+		/**
+		* Allow changing the result of calling get_visibility_sql
+		*
+		* @event core.phpbb_content_visibility_get_visibility_sql_before
+		* @var	string		where_sql						Extra visibility conditions. It must end with either an SQL "AND" or an "OR"
+		* @var	string		mode							Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_id						The forum id in which the search is made.
+		* @var	string		table_alias						Table alias to prefix in SQL queries
+		* @var	mixed		get_visibility_sql_overwrite	If a string, forces the function to return get_forums_visibility_sql_overwrite after executing the event
+		* 													If false, get_visibility_sql continues normally
+		* 													It must be either boolean or string
+		* @since 3.1.4-RC1
+		*/
+		$vars = array(
+			'where_sql',
+			'mode',
+			'forum_id',
+			'table_alias',
+			'get_visibility_sql_overwrite',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_visibility_sql_before', compact($vars)));
+
+		if ($get_visibility_sql_overwrite !== false)
 		{
-			return '1 = 1';
+			return $get_visibility_sql_overwrite;
 		}
 
-		return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+		if ($this->auth->acl_get('m_approve', $forum_id))
+		{
+			return $where_sql . '1 = 1';
+		}
+
+		return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 	}
 
 	/**
