@@ -519,6 +519,17 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids) . '
 			AND forum_id = ' . $forum_id;
 	$db->sql_query($sql);
+	
+	$affected_rows = $db->sql_affectedrows();
+	
+	if ($affected_rows)
+	{		
+		$sql = 'UPDATE ' . FORUMS_TABLE . '
+			SET forum_topics = forum_topics - ' . (int) $affected_rows . ',
+				forum_topics_real = forum_topics_real - ' . (int) $affected_rows . '
+			WHERE forum_id = ' . (int) $forum_id;
+		$db->sql_query($sql);
+	}
 
 	if ($auto_sync)
 	{
