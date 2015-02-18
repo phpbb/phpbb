@@ -147,20 +147,12 @@ function mcp_topic_view($id, $mode, $action)
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = $post_id_list = array();
-	$bbcode_bitfield = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
 		$post_id_list[] = $row['post_id'];
-		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
-
-	if ($bbcode_bitfield !== '')
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-	}
 
 	$topic_tracking_info = array();
 
