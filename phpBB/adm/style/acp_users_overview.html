@@ -1,4 +1,4 @@
-<form id="user_overview" method="post" action="{U_ACTION}">
+<form id="user_overview" method="post" action="{U_ACTION}" autocomplete="off">
 
 <fieldset>
 	<legend>{L_ACP_USER_OVERVIEW}</legend>
@@ -56,15 +56,15 @@
 </dl>
 <dl>
 	<dt><label for="user_email">{L_EMAIL}{L_COLON}</label></dt>
-	<dd><input class="text medium" type="email" id="user_email" name="user_email" value="{USER_EMAIL}" autocomplete="off" /></dd>
+	<dd><input class="text medium" type="email" id="user_email" name="user_email" value="{USER_EMAIL}" /></dd>
 </dl>
 <dl>
 	<dt><label for="new_password">{L_NEW_PASSWORD}{L_COLON}</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
-	<dd><input type="password" id="new_password" name="new_password" value="" autocomplete="off" /></dd>
+	<dd><input type="password" id="new_password" name="new_password" value="" /></dd>
 </dl>
 <dl>
 	<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}{L_COLON}</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
-	<dd><input type="password" id="password_confirm" name="password_confirm" value="" autocomplete="off" /></dd>
+	<dd><input type="password" id="password_confirm" name="password_confirm" value="" /></dd>
 </dl>
 <!-- EVENT acp_users_overview_options_append -->
 
