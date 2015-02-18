@@ -53,15 +53,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Grab icons
 	$icons = $cache->obtain_icons();
 
-	$bbcode = false;
-
-	// Instantiate BBCode if need be
-	if ($message_row['bbcode_bitfield'])
-	{
-		include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($message_row['bbcode_bitfield']);
-	}
-
 	// Load the custom profile fields
 	if ($config['load_cpf_pm'])
 	{
