@@ -12,6 +12,7 @@
 
 	<fieldset>
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- EVENT ucp_profile_register_details_before -->
 	<dl>
 		<dt><label <!-- IF S_CHANGE_USERNAME -->for="username"<!-- ENDIF -->>{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
 		<dd><!-- IF S_CHANGE_USERNAME --><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" title="{L_USERNAME}" /><!-- ELSE --><strong>{USERNAME}</strong><!-- ENDIF --></dd>
@@ -30,6 +31,7 @@
 			<dd><input type="password" name="password_confirm" id="password_confirm" maxlength="255" value="{PASSWORD_CONFIRM}" class="inputbox" title="{L_CONFIRM_PASSWORD}" /></dd>
 		</dl>
 	<!-- ENDIF -->
+	<!-- EVENT ucp_profile_register_details_after -->	
 	</fieldset>
 	</div>
 </div>

@@ -14,6 +14,7 @@
 		<td class="row3" colspan="2" align="center"><span class="gensmall error">{ERROR}</span></td>
 	</tr>
 <!-- ENDIF -->
+<!-- EVENT ucp_profile_register_details_before -->
 <tr>
 	<td class="row1" width="35%"><b class="genmed">{L_USERNAME}{L_COLON} </b><br /><span class="gensmall">{L_USERNAME_EXPLAIN}</span></td>
 	<td class="row2"><!-- IF S_CHANGE_USERNAME --><input type="text" class="post" name="username" size="30" value="{USERNAME}" /><!-- ELSE --><b class="gen">{USERNAME}</b><!-- ENDIF --></td>
@@ -32,6 +33,7 @@
 		<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="255" value="{PASSWORD_CONFIRM}" /></td>
 	</tr>
 <!-- ENDIF -->
+<!-- EVENT ucp_profile_register_details_after -->
 <tr>
 	<th colspan="2">{L_CONFIRM_CHANGES}</th>
 </tr>

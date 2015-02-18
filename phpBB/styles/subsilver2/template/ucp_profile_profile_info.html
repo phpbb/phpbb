@@ -12,6 +12,7 @@
 <tr>
 	<td class="row1" colspan="2"><span class="gensmall">{L_PROFILE_INFO_NOTICE}</span></td>
 </tr>
+<!-- EVENT ucp_profile_profile_info_before -->
 <!-- IF S_JABBER_ENABLED -->
 <tr>
 	<td class="row1" width="35%"><b class="genmed">{L_UCP_JABBER}{L_COLON} </b></td>
@@ -34,6 +35,7 @@
 		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall error">{profile_fields.ERROR}</span><!-- ENDIF --></td>
 	</tr>
 <!-- END profile_fields -->
+<!-- EVENT ucp_profile_profile_info_after -->
 <tr>
 	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
 </tr>
