@@ -252,7 +252,7 @@ class content_visibility
 		* @event core.phpbb_content_visibility_get_global_visibility_before
 		* @var	array		where_sqls							The action the user tried to execute
 		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
-		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
+		* @var	array		exclude_forum_ids							Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
 		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
 		* @var	string		visibility_sql_overwrite	Forces the function to return an implosion of where_sqls (joined by "OR")
@@ -261,7 +261,7 @@ class content_visibility
 		$vars = array(
 			'where_sqls',
 			'mode',
-			'forum_ids',
+			'exclude_forum_ids',
 			'table_alias',
 			'approve_forums',
 			'visibility_sql_overwrite',
