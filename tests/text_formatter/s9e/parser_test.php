@@ -139,10 +139,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 				'disablePlugin',   'BBCodes'
 			),
 			array(
-				'disable_censor', null,
-				'disablePlugin',  'Censor'
-			),
-			array(
 				'disable_magic_url', null,
 				'disablePlugin',     array('Autoemail', 'Autolink')
 			),
@@ -157,10 +153,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			array(
 				'enable_bbcodes', null,
 				'enablePlugin',   'BBCodes'
-			),
-			array(
-				'enable_censor', null,
-				'enablePlugin',  'Censor'
 			),
 			array(
 				'enable_magic_url', null,
