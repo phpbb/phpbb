@@ -21,31 +21,36 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
+function render_footer()
+{
+?>
+								</p>
+							</div>
+						</div>
+						<span class="corners-bottom"><span></span></span>
+					</div>
+				</div>
+			</div>
+
+			<div id="page-footer">
+				<div class="copyright">
+					Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+
+<?php
+}
+
 function phpbb_end_update($cache, $config)
 {
 	$cache->purge();
 
 	$config->increment('assets_version', 1);
 
-?>
-								</p>
-							</div>
-						</div>
-					<span class="corners-bottom"><span></span></span>
-				</div>
-			</div>
-		</div>
-
-		<div id="page-footer">
-			<div class="copyright">
-				Powered by <a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited
-			</div>
-		</div>
-	</div>
-</body>
-</html>
-
-<?php
+	render_footer();
 
 	garbage_collection();
 	exit_handler();
@@ -106,33 +111,12 @@ $config = $phpbb_container->get('config');
 set_config(null, null, null, $config);
 set_config_count(null, null, null, $config);
 
-if (!isset($config['version_update_from']))
-{
-	$config->set('version_update_from', $config['version']);
-}
-
-$orig_version = $config['version_update_from'];
-
 $user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
 
-// Add own hook handler, if present. :o
-if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+function render_header()
 {
-	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
-
-	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
-	foreach ($phpbb_hook_finder->find() as $hook)
-	{
-		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
-	}
-}
-else
-{
-	$phpbb_hook = false;
-}
-
-header('Content-type: text/html; charset=UTF-8');
+	global $user, $phpbb_admin_path;
+	
 ?>
 <!DOCTYPE html>
 <html dir="<?php echo $user->lang['DIRECTION']; ?>" lang="<?php echo $user->lang['USER_LANG']; ?>">
@@ -156,6 +140,72 @@ header('Content-type: text/html; charset=UTF-8');
 						<div id="content">
 							<div id="main" class="install-body">
 
+<?php
+}
+
+// Check folder permissions
+$folder_permission_error = false;
+$directories = array('files/', 'store/');
+$folder_permission_error_list = array();
+foreach ($directories as $dir)
+{
+	$writable = false;
+
+	$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
+	if ($fp === false)
+	{
+		$folder_permission_error_list[] = $dir;
+	}
+	@fclose($fp);
+
+	@unlink($phpbb_root_path . $dir . 'test_lock');
+}
+
+// Check if there is a folder permission problem
+if (sizeof($folder_permission_error_list) > 0)
+{
+	$folder_permission_error = sprintf(
+		( ( sizeof($folder_permission_error_list) > 1 ) ? $user->lang['MAKE_FOLDERS_WRITABLE'] : $user->lang['MAKE_FOLDER_WRITABLE'] ),
+		implode(', ', $folder_permission_error_list)
+	);
+
+	header('Content-type: text/html; charset=UTF-8');
+    render_header();
+?>
+								<div class="errorbox"><?php echo $folder_permission_error; ?></div>
+
+<?php
+    render_footer();
+    exit;
+}
+
+if (!isset($config['version_update_from']))
+{
+	$config->set('version_update_from', $config['version']);
+}
+
+$orig_version = $config['version_update_from'];
+
+// Add own hook handler, if present. :o
+if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
+	foreach ($phpbb_hook_finder->find() as $hook)
+	{
+		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	}
+}
+else
+{
+	$phpbb_hook = false;
+}
+
+header('Content-type: text/html; charset=UTF-8');
+render_header();
+?>
 								<h1><?php echo $user->lang['UPDATING_TO_LATEST_STABLE']; ?></h1>
 
 								<br />
