@@ -226,9 +226,9 @@ class mcp_main
 			break;
 
 			default:
-				if($quickmod)
+				if ($quickmod)
 				{
-					switch($action)
+					switch ($action)
 					{
 						case 'lock':
 						case 'unlock':
