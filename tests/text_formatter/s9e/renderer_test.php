@@ -93,12 +93,12 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		return array(
 			array(
-				'<r><CENSOR with="banana">apple</CENSOR></r>',
+				'<t>apple</t>',
 				'banana',
 				array('set_viewcensors' => true)
 			),
 			array(
-				'<r><CENSOR with="banana">apple</CENSOR></r>',
+				'<t>apple</t>',
 				'apple',
 				array('set_viewcensors' => false)
 			),
@@ -146,11 +146,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		return array(
 			array(
-				'<r><CENSOR with="banana">apple</CENSOR></r>',
+				'<t>apple</t>',
 				'banana'
 			),
 			array(
-				'<r><CENSOR with="banana">apple</CENSOR></r>',
+				'<t>apple</t>',
 				'banana',
 				function ($phpbb_container)
 				{
@@ -161,7 +161,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				}
 			),
 			array(
-				'<r><CENSOR with="banana">apple</CENSOR></r>',
+				'<t>apple</t>',
 				'banana',
 				function ($phpbb_container)
 				{
@@ -175,7 +175,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				}
 			),
 			array(
-				'<r><CENSOR with="banana">apple</CENSOR></r>',
+				'<t>apple</t>',
 				'apple',
 				function ($phpbb_container, $test)
 				{

@@ -264,25 +264,15 @@ class factory implements \phpbb\textformatter\cache
 		}
 
 		// Load the censored words
-		foreach ($this->dal->get_words() as $row)
+		$censor = $this->dal->get_words();
+		if (!empty($censor))
 		{
-			$configurator->Censor->add($row['word'],  $row['replacement']);
-		}
-
-		if (isset($configurator->Censor))
-		{
-			// Replace the template with a template that applies only when $S_VIEWCENSORS is set
-			$tag = $configurator->Censor->getTag();
-			$tag->template =
-				'<xsl:choose>
-					<xsl:when test="not($S_VIEWCENSORS)">
-						<xsl:value-of select="."/>
-					</xsl:when>
-					<xsl:when test="@with">
-						<xsl:value-of select="@with"/>
-					</xsl:when>
-					<xsl:otherwise>****</xsl:otherwise>
-				</xsl:choose>';
+			// Use a namespaced tag to avoid collisions
+			$configurator->plugins->load('Censor', array('tagName' => 'censor:tag'));
+			foreach ($censor as $row)
+			{
+				$configurator->Censor->add($row['word'],  $row['replacement']);
+			}
 		}
 
 		// Load the magic links plugins. We do that after BBCodes so that they use the same tags
@@ -307,6 +297,14 @@ class factory implements \phpbb\textformatter\cache
 	{
 		$configurator = $this->get_configurator();
 
+		// Get the censor helper and remove the Censor plugin if applicable
+		if (isset($configurator->Censor))
+		{
+			$censor = $configurator->Censor->getHelper();
+			unset($configurator->Censor);
+			unset($configurator->tags['censor:tag']);
+		}
+
 		// Create $parser and $renderer
 		extract($configurator->finalize());
 
@@ -320,6 +318,10 @@ class factory implements \phpbb\textformatter\cache
 			'class'    => get_class($renderer),
 			'renderer' => serialize($renderer)
 		);
+		if (isset($censor))
+		{
+			$renderer_data['censor'] = $censor;
+		}
 		$this->cache->put($this->cache_key_renderer, $renderer_data);
 
 		return array('parser' => $parser, 'renderer' => $renderer);

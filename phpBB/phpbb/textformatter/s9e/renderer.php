@@ -20,6 +20,11 @@ namespace phpbb\textformatter\s9e;
 class renderer extends \phpbb\textformatter\renderer
 {
 	/**
+	* @var s9e\TextFormatter\Plugins\Censor\Helper
+	*/
+	protected $censor;
+
+	/**
 	* @var s9e\TextFormatter\Renderer
 	*/
 	protected $renderer;
@@ -56,7 +61,6 @@ class renderer extends \phpbb\textformatter\renderer
 	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, factory $factory)
 	{
 		$renderer_data = $cache->get($key);
-
 		if ($renderer_data)
 		{
 			$class = $renderer_data['class'];
@@ -76,11 +80,21 @@ class renderer extends \phpbb\textformatter\renderer
 			{
 				$renderer = unserialize($renderer_data['renderer']);
 			}
+
+			if (isset($renderer_data['censor']))
+			{
+				$censor = $renderer_data['censor'];
+			}
 		}
 
 		if (!isset($renderer))
 		{
 			extract($factory->regenerate());
+		}
+
+		if (isset($censor))
+		{
+			$this->censor = $censor;
 		}
 
 		$this->renderer = $renderer;
@@ -145,6 +159,11 @@ class renderer extends \phpbb\textformatter\renderer
 	public function render($text)
 	{
 		$html = $this->renderer->render($text);
+
+		if (isset($this->censor) && $this->viewcensors)
+		{
+			$html = $this->censor->censorHtml($html, true);
+		}
 
 		/**
 		* @see bbcode::bbcode_second_pass_code()
