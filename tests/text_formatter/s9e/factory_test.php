@@ -89,15 +89,11 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$this->assertInstanceOf('s9e\\TextFormatter\\Parser', $parser);
 		$this->assertInstanceOf('s9e\\TextFormatter\\Renderer', $renderer);
 
+		$renderer_data = $this->cache->get('_foo_renderer');
 		$this->assertEquals($parser, $this->cache->get('_foo_parser'), 'The parser was not cached');
-		$this->assertEquals(
-			array(
-				'class'    => get_class($renderer),
-				'renderer' => serialize($renderer)
-			),
-			$this->cache->get('_foo_renderer'),
-			'The renderer was not cached'
-		);
+		$this->assertEquals(get_class($renderer), $renderer_data['class']);
+		$this->assertEquals(serialize($renderer), $renderer_data['renderer']);
+		$this->assertInstanceOf('s9e\\TextFormatter\\Plugins\\Censor\\Helper', $renderer_data['censor']);
 
 		$file = $this->get_cache_dir() . get_class($renderer) . '.php';
 		$this->assertFileExists($file);
