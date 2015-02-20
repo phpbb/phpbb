@@ -658,7 +658,6 @@ Colours and backgrounds for buttons.css
 .icon-register				{ background-image: url("./images/icon_register.gif"); }
 .icon-search, .responsive-search a	{ background-image: url("./images/icon_search.gif"); }
 .icon-search-active			{ background-image: url("./images/subforum_read.gif"); }
-.icon-search-advanced		{ background-image: url("./images/icon_search_adv.gif"); }
 .icon-search-new			{ background-image: url("./images/subforum_unread.gif"); }
 .icon-search-self			{ background-image: url("./images/icon_topic_latest.gif"); }
 .icon-search-unanswered		{ background-image: url("./images/icon_post_target.gif"); }
