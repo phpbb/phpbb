@@ -393,9 +393,10 @@ class ucp_profile
 						* @event core.ucp_profile_info_modify_sql_ary
 						* @var	array	cp_data		Array with the user custom profile fields data
 						* @var	array	data		Array with user profile data
+						* @var  array	sql_ary		user options data we update 
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data');
+						$vars = array('cp_data', 'data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
