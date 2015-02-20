@@ -90,6 +90,32 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	// we include the language file here
 	$user->add_lang('viewtopic');
 
+	/**
+	* Modify the default vars before composing a PM
+	*
+	* @event core.ucp_pm_compose_alter_vars
+	* @var	int		msg_id					topic_id in the page request
+	* @var	int		to_user_id				The id of whom the message is to
+	* @var	int		to_group_id				The id of the group whom the message is to
+	* @var	bool	submit					Whether the user is sending the PM or not
+	* @var	bool	preview					Whether the user is previewing the PM or not
+	* @var	string	action					One of: post, reply, quote, forward, quotepost, edit, delete, smilies
+	* @var	bool	delete					Whether the user is deleting the PM
+	* @var	int		reply_to_all			Value of reply_to_all request variable.
+	* @since 3.1.4-RC1
+	*/
+	$vars = array(
+		'msg_id',
+		'to_user_id',
+		'to_group_id',
+		'submit',
+		'preview',
+		'action',
+		'delete',
+		'reply_to_all',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_alter_vars', compact($vars)));
+
 	// Output PM_TO box if message composing
 	if ($action != 'edit')
 	{
