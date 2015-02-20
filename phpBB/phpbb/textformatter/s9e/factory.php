@@ -162,6 +162,9 @@ class factory implements \phpbb\textformatter\cache
 		// Convert newlines to br elements by default
 		$configurator->rootRules->enableAutoLineBreaks();
 
+		// Don't automatically ignore text in places where text is not allowed
+		$configurator->rulesGenerator->remove('IgnoreTextIfDisallowed');
+
 		// Set the rendering engine and configure it to save to the cache dir
 		$configurator->rendering->engine = 'PHP';
 		$configurator->rendering->engine->cacheDir = $this->cache_dir;
