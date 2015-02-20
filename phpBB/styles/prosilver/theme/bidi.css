@@ -332,7 +332,12 @@ li.breadcrumbs span:first-child > a {
 .rtl a.feed-icon-forum {
 	float: left;
 }
-
+/* Notification mark read link */
+.rtl .dropdown-extended a.mark_read {
+	border-radius: 0 3px 3px 0;
+	right:auto;
+	left: 0;
+}
 /**
 * content.css
 */
