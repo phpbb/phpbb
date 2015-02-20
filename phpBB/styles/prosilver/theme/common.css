@@ -408,6 +408,7 @@ ul.linklist.bulletin > li.no-bulletin:before {
 .header-avatar img {
 	margin-bottom: 2px;
 	max-height: 20px;
+	max-width: 20px;
 	vertical-align: middle;
 	width: auto;
 }
