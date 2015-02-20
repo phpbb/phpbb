@@ -896,6 +896,20 @@ quickreply_editor_message_before
 * Since: 3.1.0-a4
 * Purpose: Add content before the quick reply textbox
 
+search_results_header_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the header of the search results
+
+search_results_header_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the header of the search results.
+
 search_results_post_after
 ===
 * Locations:
@@ -923,6 +937,13 @@ search_results_postprofile_before
     + styles/prosilver/template/search_results.html
 * Since: 3.1.0-b3
 * Purpose: Add content directly before the post author in search results (posts view mode)
+
+search_results_searchbox_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.4-RC1
+* Purpose: Add content right after the searchbox of the search results.
 
 search_results_topic_after
 ===
