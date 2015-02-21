@@ -11,6 +11,8 @@
  *
  */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+
 class phpbb_captcha_qa_test extends \phpbb_database_test_case
 {
 	protected $request;
@@ -32,7 +34,8 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 		parent::setUp();
 
 		$this->request = new \phpbb_mock_request();
-		$this->qa = new \phpbb\captcha\plugins\qa($this->request, 'phpbb_captcha_questions', 'phpbb_captcha_answers', 'phpbb_qa_confirm');
+		request_var(false, false, false, false, $this->request);
+		$this->qa = new \phpbb\captcha\plugins\qa('phpbb_captcha_questions', 'phpbb_captcha_answers', 'phpbb_qa_confirm');
 	}
 
 	public function test_is_installed()
