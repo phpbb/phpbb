@@ -93,11 +93,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	/**
 	* Modify the default vars before composing a PM
 	*
-	* @event core.ucp_pm_compose_alter_vars
+	* @event core.ucp_pm_compose_modify_data
 	* @var	int		msg_id					topic_id in the page request
 	* @var	int		to_user_id				The id of whom the message is to
-	* @var	int		to_group_id				The id of the group whom the message is to
-	* @var	bool	submit					Whether the user is sending the PM or not
+	* @var	int		to_group_id				The id of the group the message is to
+	* @var	bool	submit					Whether the form has been submitted
 	* @var	bool	preview					Whether the user is previewing the PM or not
 	* @var	string	action					One of: post, reply, quote, forward, quotepost, edit, delete, smilies
 	* @var	bool	delete					Whether the user is deleting the PM
@@ -114,7 +114,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'delete',
 		'reply_to_all',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_alter_vars', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_data', compact($vars)));
 
 	// Output PM_TO box if message composing
 	if ($action != 'edit')
