@@ -1,5 +1,5 @@
 parameters:
-    text_formatter.cache.dir: %core.root_path%cache/
+    text_formatter.cache.dir: %core.root_path%cache/%core.environment%/
     text_formatter.cache.parser.key: _text_formatter_parser
     text_formatter.cache.renderer.key: _text_formatter_renderer
 
