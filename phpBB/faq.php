@@ -27,5 +27,5 @@ $user->setup();
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
 
-// TODO send "Moved permanently" header
+send_status_line(301, 'Moved Permanently');
 redirect($controller_helper->route('phpbb_help_controller', array('mode' => $request->variable('mode', 'faq'))));
