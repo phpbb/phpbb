@@ -14,6 +14,7 @@
 namespace phpbb\routing;
 
 use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
 use Symfony\Component\Routing\Generator\Dumper\PhpGeneratorDumper;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -147,9 +148,13 @@ class router implements RouterInterface
 		{
 			$this->route_collection = new RouteCollection;
 			foreach ($this->routing_files as $file_path)
+			{try
 			{
 				$loader = new YamlFileLoader(new FileLocator(phpbb_realpath($base_path)));
 				$this->route_collection->addCollection($loader->load($file_path));
+			}catch (\Exception $e) {
+				var_dump($e);
+			}
 			}
 		}
 

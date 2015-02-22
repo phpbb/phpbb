@@ -1,4 +1,18 @@
 services:
+    phpbb.feed.controller:
+        class: phpbb\feed\controller\feed
+        arguments:
+            - @template.twig.environment
+            - @symfony_request
+            - @controller.helper
+            - @config
+            - @dbal.conn
+            - @service_container
+            - @feed.helper
+            - @user
+            - @auth
+            - %core.php_ext%
+
     feed.helper:
         class: phpbb\feed\helper
         arguments:
@@ -6,13 +20,6 @@ services:
             - @user
             - %core.root_path%
             - %core.php_ext%
-
-    feed.factory:
-        class: phpbb\feed\factory
-        arguments:
-            - @service_container
-            - @config
-            - @dbal.conn
 
     feed.forum:
         class: phpbb\feed\forum
