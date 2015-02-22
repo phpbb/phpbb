@@ -4351,7 +4351,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
-		'U_FEED'				=> generate_board_url() . "/feed.$phpEx",
+		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,

@@ -465,7 +465,7 @@ class container_builder
 				'core.root_path'     => $this->phpbb_root_path,
 				'core.php_ext'       => $this->php_ext,
 				'core.environment'   => $this->get_environment(),
-				'core.debug'         => DEBUG,
+				'core.debug'         => defined('DEBUG') ? DEBUG : false,
 			),
 			$this->get_env_parameters()
 		);

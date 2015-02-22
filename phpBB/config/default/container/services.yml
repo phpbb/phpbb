@@ -84,12 +84,9 @@ services:
             - @template
             - @user
             - @config
-            - @router
             - @symfony_request
             - @request
-            - @filesystem
-            - %core.root_path%
-            - %core.php_ext%
+            - @routing.helper
 
     controller.resolver:
         class: phpbb\controller\resolver

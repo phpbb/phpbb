@@ -48,7 +48,7 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 
 	public function test_feed()
 	{
-		$crawler = self::request('GET', 'feed.php', array(), false);
+		$crawler = self::request('GET', 'app.php/feed', array(), false);
 		self::assert_response_xml();
 		$this->assertGreaterThan(0, $crawler->filter('entry')->count());
 	}

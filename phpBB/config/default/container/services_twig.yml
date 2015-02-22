@@ -40,9 +40,9 @@ services:
             - { name: twig.extension }
 
     template.twig.extensions.routing:
-        class: Symfony\Bridge\Twig\Extension\RoutingExtension
+        class: phpbb\template\twig\extension\routing
         arguments:
-            - @router
+            - @routing.helper
         tags:
             - { name: twig.extension }
 
