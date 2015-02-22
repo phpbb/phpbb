@@ -163,6 +163,9 @@ $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['user_id'] != ANONYMOUS && !isset($prev_id[$row['user_id']]))
@@ -287,11 +290,6 @@ while ($row = $db->sql_fetchrow($result))
 			$location_url = append_sid("{$phpbb_root_path}search.$phpEx");
 		break;
 
-		case 'faq':
-			$location = $user->lang['VIEWING_FAQ'];
-			$location_url = append_sid("{$phpbb_root_path}faq.$phpEx");
-		break;
-
 		case 'viewonline':
 			$location = $user->lang['VIEWING_ONLINE'];
 			$location_url = append_sid("{$phpbb_root_path}viewonline.$phpEx");
@@ -357,6 +355,13 @@ while ($row = $db->sql_fetchrow($result))
 		default:
 			$location = $user->lang['INDEX'];
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+
+			if ($row['session_page'] === 'app.' . $phpEx . '/help/faq' ||
+				$row['session_page'] === 'app.' . $phpEx . '/help/bbcode')
+			{
+				$location = $user->lang['VIEWING_FAQ'];
+				$location_url = $controller_helper->route('phpbb_help_controller', array('mode' => 'faq'));
+			}
 		break;
 	}
 
