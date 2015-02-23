@@ -168,12 +168,13 @@ class renderer extends \phpbb\textformatter\renderer
 	*/
 	public function render($text)
 	{
-		$html = $this->renderer->render($text);
-
 		if (isset($this->censor) && $this->viewcensors)
 		{
-			$html = $this->censor->censorHtml($html, true);
+			// NOTE: censorHtml() is XML-safe
+			$text = $this->censor->censorHtml($text, true);
 		}
+
+		$html = $this->renderer->render($text);
 
 		/**
 		* @see bbcode::bbcode_second_pass_code()
