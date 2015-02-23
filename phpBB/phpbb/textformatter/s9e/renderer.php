@@ -122,6 +122,16 @@ class renderer extends \phpbb\textformatter\renderer
 	}
 
 	/**
+	* Return the instance of s9e\TextFormatter\Renderer used by this object
+	*
+	* @return s9e\TextFormatter\Renderer
+	*/
+	public function get_renderer()
+	{
+		return $this->renderer;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_viewcensors()

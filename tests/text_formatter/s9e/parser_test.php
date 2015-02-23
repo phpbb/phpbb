@@ -7,6 +7,7 @@
 *
 */
 require_once __DIR__ . '/../../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
 require_once __DIR__ . '/../../mock/user.php';
 require_once __DIR__ . '/../../mock/cache.php';
 
@@ -163,5 +164,12 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 				'enablePlugin',   'Emoticons'
 			)
 		);
+	}
+
+	public function test_get_parser()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$parser = $container->get('text_formatter.parser');
+		$this->assertInstanceOf('s9e\\TextFormatter\\Parser', $parser->get_parser());
 	}
 }
