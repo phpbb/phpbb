@@ -274,7 +274,8 @@ class factory implements \phpbb\textformatter\cache
 			$configurator->plugins->load('Censor', array('tagName' => 'censor:tag'));
 			foreach ($censor as $row)
 			{
-				$configurator->Censor->add($row['word'],  $row['replacement']);
+				// NOTE: words are stored as HTML, we need to decode them to plain text
+				$configurator->Censor->add(htmlspecialchars_decode($row['word']),  htmlspecialchars_decode($row['replacement']));
 			}
 		}
 
