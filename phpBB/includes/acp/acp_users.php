@@ -44,6 +44,10 @@ class acp_users
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
+		$referer		= request_var('referer', '');
+		$referer_tag	= "referer=$referer";
+		$referer_url	= append_sid("{$phpbb_admin_path}index.$phpEx", "i=$referer");
+
 		$submit		= (isset($_POST['update']) && !isset($_POST['cancel'])) ? true : false;
 
 		$form_name = 'acp_users';
@@ -146,9 +150,9 @@ class acp_users
 		}
 
 		$template->assign_vars(array(
-			'U_BACK'			=> $this->u_action,
+			'U_BACK'			=> ( (empty($referer)) ? $this->u_action : $referer_url ),
 			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
-			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
+			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . ( (empty($referer)) ? '' : '&amp;' . $referer_tag ),
 			'S_FORM_OPTIONS'	=> $s_form_options,
 			'MANAGED_USERNAME'	=> $user_row['username'])
 		);
@@ -221,19 +225,30 @@ class acp_users
 								user_delete($delete_type, $user_id, $user_row['username']);
 
 								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
-								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['USER_DELETED'] . adm_back_link(
+										(empty($referer)) ? $this->u_action : $referer_url
+									)
+								);
 							}
 							else
 							{
-								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								$delete_confirm_hidden_fields = array(
 									'u'				=> $user_id,
 									'i'				=> $id,
 									'mode'			=> $mode,
 									'action'		=> $action,
 									'update'		=> true,
 									'delete'		=> 1,
-									'delete_type'	=> $delete_type))
+									'delete_type'	=> $delete_type
 								);
+
+								// Checks if the redirection page is specified
+								if (!empty($referer))
+								{
+									$delete_confirm_hidden_fields['referer'] = $referer;
+								}
+
+								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($delete_confirm_hidden_fields));
 							}
 						}
 						else
