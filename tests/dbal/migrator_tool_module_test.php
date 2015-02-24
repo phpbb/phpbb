@@ -27,7 +27,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 
 		parent::setup();
 
-		// Force add_log function to not be used
+		// Disable the logs
 		$skip_add_log = true;
 
 		$db = $this->db = $this->new_dbal();

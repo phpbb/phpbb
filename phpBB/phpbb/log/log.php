@@ -27,7 +27,7 @@ class log implements \phpbb\log\log_interface
 
 	/**
 	* An array with the disabled log types. Logs of such types will not be
-	* added when add_log() is called.
+	* added when add() is called.
 	* @var array
 	*/
 	protected $disabled_types;
@@ -223,14 +223,14 @@ class log implements \phpbb\log\log_interface
 			return false;
 		}
 
-		if ($log_time == false)
+		if ($log_time === false)
 		{
 			$log_time = time();
 		}
 
 		$sql_ary = array(
-			'user_id'		=> $user_id,
-			'log_ip'		=> $log_ip,
+			'user_id'		=> $user_id ? (int) $user_id : ANONYMOUS,
+			'log_ip'		=> empty($log_ip) ? '' : $log_ip,
 			'log_time'		=> $log_time,
 			'log_operation'	=> $log_operation,
 		);

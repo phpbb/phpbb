@@ -31,7 +31,7 @@ class acp_language
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $template;
+		global $config, $db, $user, $template, $phpbb_log;
 		global $phpbb_root_path, $phpEx, $request;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -41,14 +41,14 @@ class acp_language
 		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
 
 		$submit = (empty($action) && !isset($_POST['update']) && !isset($_POST['test_connection'])) ? false : true;
-		$action = (empty($action)) ? request_var('action', '') : $action;
+		$action = (empty($action)) ? $request->variable('action', '') : $action;
 
 		$form_name = 'acp_lang';
 		add_form_key('acp_lang');
 
-		$lang_id = request_var('id', 0);
+		$lang_id = $request->variable('id', 0);
 
-		$selected_lang_file = request_var('language_file', '|common.' . $phpEx);
+		$selected_lang_file = $request->variable('language_file', '|common.' . $phpEx);
 
 		list($this->language_directory, $this->language_file) = explode('|', $selected_lang_file);
 
@@ -81,16 +81,16 @@ class acp_language
 				$db->sql_freeresult($result);
 
 				$sql_ary	= array(
-					'lang_english_name'		=> request_var('lang_english_name', $row['lang_english_name']),
-					'lang_local_name'		=> utf8_normalize_nfc(request_var('lang_local_name', $row['lang_local_name'], true)),
-					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
+					'lang_english_name'		=> $request->variable('lang_english_name', $row['lang_english_name']),
+					'lang_local_name'		=> $request->variable('lang_local_name', $row['lang_local_name'], true),
+					'lang_author'			=> $request->variable('lang_author', $row['lang_author'], true),
 				);
 
 				$db->sql_query('UPDATE ' . LANG_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE lang_id = ' . $lang_id);
 
-				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_UPDATED', false, array($sql_ary['lang_english_name']));
 
 				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 			break;
@@ -224,7 +224,7 @@ class acp_language
 					$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
 					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_DELETED', false, array($row['lang_english_name']));
 
 					trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
 				}
@@ -241,7 +241,7 @@ class acp_language
 			break;
 
 			case 'install':
-				$lang_iso = request_var('iso', '');
+				$lang_iso = $request->variable('iso', '');
 				$lang_iso = basename($lang_iso);
 
 				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/iso.txt"))
@@ -329,7 +329,7 @@ class acp_language
 				}
 				$db->sql_freeresult($result);
 
-				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_INSTALLED', false, array($lang_pack['name']));
 
 				$message = sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']);
 				$message .= ($notify_cpf_update) ? '<br /><br />' . $user->lang['LANGUAGE_PACK_CPF_UPDATE'] : '';

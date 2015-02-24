@@ -34,7 +34,10 @@ class ucp_notifications
 		$form_time = $request->variable('form_time', 0);
 		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		switch ($mode)

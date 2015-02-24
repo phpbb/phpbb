@@ -286,7 +286,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				array(),
-				"Value'\n1 O'Clock\nValue\'\n1 O\'Clock",
+				"Value'\n1 O'Clock\nValue\\x27\n1\\x20O\\x27Clock",
 				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
 			),
 			array(
