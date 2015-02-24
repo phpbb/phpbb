@@ -72,45 +72,45 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_dump_board_state()
 	{
-		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/forums', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_new', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_active', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 
 		$this->login();
 
-		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/forums', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_new', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_active', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 
@@ -162,7 +162,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		));
 		$crawler = self::submit($form);
 
-		// 'Feeds #exclude' will not be displayed on feed.php?mode=forums
+		// 'Feeds #exclude' will not be displayed on app.php/feed/forums
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #exclude',
@@ -1316,9 +1316,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		{
 			foreach ($feeds as $feed_data)
 			{
-				if ($mode === 'f' || $mode === 't')
+				if ($mode === 'f')
 				{
-					$params = "?{$mode}={$feed_data['id']}";
+					$params = "/forum/{$feed_data['id']}";
+					$this->assert_feed($params, $feed_data);
+				}
+				else if ($mode === 't')
+				{
+					$params = "/topic/{$feed_data['id']}";
 					$this->assert_feed($params, $feed_data);
 				}
 				else
@@ -1345,7 +1350,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 							$this->fail('Unsupported feed mode: ' . $mode);
 					}
 
-					$params = "?mode={$mode}";
+					$params = "/{$mode}";
 					$this->assert_feed($params, $feed_data);
 				}
 			}
@@ -1354,7 +1359,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	protected function assert_feed($params, $data)
 	{
-		$crawler = self::request('GET', 'feed.php' . $params, array(), false);
+		$crawler = self::request('GET', 'app.php/feed' . $params, array(), false);
 
 		if (empty($data['invalid']))
 		{
