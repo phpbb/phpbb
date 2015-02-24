@@ -390,7 +390,9 @@ class filespec
 			// Get imagesize class
 			$imagesize = new \phpbb\upload\imagesize();
 
-			if (($this->image_info = $imagesize->get_imagesize($this->destination_file, $this->mimetype)) !== false)
+			$this->image_info = $imagesize->get_imagesize($this->destination_file, $this->mimetype);
+
+			if ($this->image_info !== false)
 			{
 				$this->width = $this->image_info['width'];
 				$this->height = $this->image_info['height'];
