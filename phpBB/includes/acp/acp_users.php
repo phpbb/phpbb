@@ -44,9 +44,10 @@ class acp_users
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
-		$referer		= request_var('referer', '');
-		$referer_tag	= "referer=$referer";
-		$referer_url	= append_sid("{$phpbb_admin_path}index.$phpEx", "i=$referer");
+		// Get referer to redirect user to the appropriate page after delete action
+		$redirect		= request_var('redirect', '');
+		$redirect_tag	= "redirect=$redirect";
+		$redirect_url	= append_sid("{$phpbb_admin_path}index.$phpEx", "i=$redirect");
 
 		$submit		= (isset($_POST['update']) && !isset($_POST['cancel'])) ? true : false;
 
@@ -150,9 +151,9 @@ class acp_users
 		}
 
 		$template->assign_vars(array(
-			'U_BACK'			=> ( (empty($referer)) ? $this->u_action : $referer_url ),
+			'U_BACK'			=> ( (empty($redirect)) ? $this->u_action : $redirect_url ),
 			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
-			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . ( (empty($referer)) ? '' : '&amp;' . $referer_tag ),
+			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . ( (empty($redirect)) ? '' : '&amp;' . $redirect_tag ),
 			'S_FORM_OPTIONS'	=> $s_form_options,
 			'MANAGED_USERNAME'	=> $user_row['username'])
 		);
@@ -226,7 +227,7 @@ class acp_users
 
 								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
 								trigger_error($user->lang['USER_DELETED'] . adm_back_link(
-										(empty($referer)) ? $this->u_action : $referer_url
+										(empty($redirect)) ? $this->u_action : $redirect_url
 									)
 								);
 							}
@@ -243,9 +244,9 @@ class acp_users
 								);
 
 								// Checks if the redirection page is specified
-								if (!empty($referer))
+								if (!empty($redirect))
 								{
-									$delete_confirm_hidden_fields['referer'] = $referer;
+									$delete_confirm_hidden_fields['redirect'] = $redirect;
 								}
 
 								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($delete_confirm_hidden_fields));
