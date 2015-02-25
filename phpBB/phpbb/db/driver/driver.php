@@ -792,11 +792,11 @@ abstract class driver implements driver_interface
 
 		return $sql;
 	}
-	
-	
+
+
 	protected function _process_boolean_tree_first($operations_ary)
 	{
-		if ($operations_ary[0] !== 'AND' && 
+		if ($operations_ary[0] !== 'AND' &&
 			$operations_ary[0] !== 'OR')
 		{
 			$operations_ary = array('AND', $operations_ary);
@@ -807,71 +807,71 @@ abstract class driver implements driver_interface
 	protected function _process_boolean_tree($operations_ary)
 	{
 		$operation = array_shift($operations_ary);
-		
+
 		foreach ($operations_ary AS &$condition)
 		{
 			switch ($condition[0])
 			{
 				case 'AND':
 				case 'OR':
-					
+
 					$condition = ' ( ' . $this->_process_boolean_tree($condition) . ') ';
-					
+
 				break;
 				case 'NOT':
-					
+
 					$condition = ' NOT ' . $this->_process_boolean_tree($condition);
-					
+
 				break;
-				
+
 				default:
-					
+
 					switch (sizeof($condition))
 					{
 						case 3:
-						
+
 							// Typical 3 element clause with {left hand} {operator} {right hand}
 							switch ($condition[1])
-							{	
+							{
 								case 'IN':
 								case 'NOT_IN':
-								
+
 									// As this is used with an IN, assume it is a set of elements for sql_in_set()
 									$condition = $this->sql_in_set($condition[0], $condition[2], $condition[1] === 'NOT_IN', true);
-									
+
 								break;
-								
+
 								default:
-								
+
 									$condition = implode(' ', $condition);
-									
+
 								break;
 							}
-							
+
 						break;
-						
+
 						case 5:
-						
+
 							// Subquery with {left hand} {operator} {compare kind} {SELECT Kind } {Sub Query}
-						
+
 							$condition = $condition[0] . ' ' . $condition[1] . ' ' . $condition[2] . ' ( ';
 							$condition .= $this->sql_build_query($condition[3], $condition[4]);
 							$condition .= ' )';
-							
+
 						break;
-						
+
 						default:
 							// This is an unpredicted clause setup. Just join all elements.
 							$condition = implode(' ', $condition);
-								
+
 						break;
 					}
-					
+
 				break;
 			}
-			
+
 		}
-		
+
 		if($operation === 'NOT')
 		{
 			$operations_ary =  implode("", $operations_ary);
@@ -880,10 +880,10 @@ abstract class driver implements driver_interface
 		{
 			$operations_ary = implode(" \n	$operation ", $operations_ary);
 		}
-		
+
 		return $operations_ary;
 	}
-	
+
 
 	/**
 	* {@inheritDoc}
