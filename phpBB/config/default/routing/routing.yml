@@ -11,3 +11,7 @@
 phpbb_feed_routing:
     resource: "feed.yml"
     prefix: /feed
+
+phpbb_feed_index:
+    path: /feed
+    defaults: { _controller: phpbb.feed.controller:overall }
