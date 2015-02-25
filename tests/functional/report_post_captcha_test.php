@@ -18,12 +18,13 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 {
 	public function test_guest_report_post()
 	{
-		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$crawler = self::request('GET', 'app.php/post/1/report', array(), false);
+		$this->assert_response_html(403);
 		$this->add_lang('mcp');
 		$this->assertContains($this->lang('USER_CANNOT_REPORT'), $crawler->filter('html')->text());
 
 		$this->set_reporting_guest(1);
-		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$crawler = self::request('GET', 'app.php/post/1/report');
 		$this->assertContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
 		$this->set_reporting_guest(-1);
 	}
@@ -31,7 +32,7 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 	public function test_user_report_post()
 	{
 		$this->login();
-		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$crawler = self::request('GET', 'app.php/post/1/report');
 		$this->assertNotContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
 
 		$this->add_lang('mcp');

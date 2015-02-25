@@ -1097,33 +1097,14 @@ function display_custom_bbcodes()
 
 /**
 * Display reasons
+*
+* @deprecated 3.2.0-dev
 */
 function display_reasons($reason_id = 0)
 {
-	global $db, $user, $template;
+	global $phpbb_container;
 
-	$sql = 'SELECT *
-		FROM ' . REPORTS_REASONS_TABLE . '
-		ORDER BY reason_order ASC';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-		if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
-		{
-			$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
-			$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
-		}
-
-		$template->assign_block_vars('reason', array(
-			'ID'			=> $row['reason_id'],
-			'TITLE'			=> $row['reason_title'],
-			'DESCRIPTION'	=> $row['reason_description'],
-			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false)
-		);
-	}
-	$db->sql_freeresult($result);
+	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 }
 
 /**

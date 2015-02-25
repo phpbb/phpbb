@@ -224,6 +224,20 @@ class helper
 	}
 
 	/**
+	 * Assigns automatic refresh time meta tag in template
+	 *
+	 * @param	int		$time	time in seconds, when redirection should occur
+	 * @param	string	$url	the URL where the user should be redirected
+	 * @return	null
+	 */
+	public function assign_meta_refresh_var($time, $url)
+	{
+		$this->template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />',
+		));
+	}
+
+	/**
 	* Return the current url
 	*
 	* @return string

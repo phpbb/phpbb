@@ -1402,11 +1402,6 @@ class mcp_queue
 		}
 		else
 		{
-			if (!function_exists('display_reasons'))
-			{
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-			}
-
 			$show_notify = false;
 
 			foreach ($post_info as $post_data)
@@ -1426,7 +1421,7 @@ class mcp_queue
 			$confirm_template = 'mcp_approve.html';
 			if ($is_disapproving)
 			{
-				display_reasons($reason_id);
+				$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 			}
 			else
 			{
