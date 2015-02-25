@@ -130,7 +130,7 @@ class session
 		$script_path .= (substr($script_path, -1, 1) == '/') ? '' : '/';
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
-		$forum_id = request_var('f', 0);
+		$forum_id = $request->variable('f', 0);
 		$forum_id = ($forum_id > 0 && $forum_id < 16777215) ? $forum_id : 0;
 
 		$page_array += array(
