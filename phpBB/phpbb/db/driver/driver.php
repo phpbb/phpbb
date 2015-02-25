@@ -774,7 +774,18 @@ abstract class driver implements driver_interface
 
 				if (!empty($array['WHERE']))
 				{
-					$sql .= ' WHERE ' . $this->_sql_custom_build('WHERE', $array['WHERE']);
+					$sql .= ' WHERE ';
+
+					if (is_array($array['WHERE']))
+					{
+						$sql_where = $this->_process_boolean_tree_first($array['WHERE']);
+					}
+					else
+					{
+						$sql_where = $array['WHERE'];
+					}
+
+					$sql .= $this->_sql_custom_build('WHERE', $sql_where);
 				}
 
 				if (!empty($array['GROUP_BY']))
