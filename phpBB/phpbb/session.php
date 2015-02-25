@@ -131,6 +131,7 @@ class session
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
 		$forum_id = $request->variable('f', 0);
+		// maximum forum id value is maximum value of mediumint unsigned column
 		$forum_id = ($forum_id > 0 && $forum_id < 16777215) ? $forum_id : 0;
 
 		$page_array += array(
