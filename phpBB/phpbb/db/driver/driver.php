@@ -819,7 +819,7 @@ abstract class driver implements driver_interface
 	{
 		$operation = array_shift($operations_ary);
 
-		foreach ($operations_ary AS &$condition)
+		foreach ($operations_ary as &$condition)
 		{
 			switch ($condition[0])
 			{
