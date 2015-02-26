@@ -423,28 +423,6 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 					AND t.topic_id = p.topic_id
 					AND t.topic_visibility <> p.post_visibility';
 
-			/**
-			* This event allows you to control the SQL query to retrieve the list of unapproved and deleted posts
-			*
-			* @event core.mcp_sorting_unapproved_deleted_posts_query_before
-			* @var	string	sql					The current SQL search string
-			* @var	int		forum_id			The forum id of the posts the user is trying to access
-			* @var	int		topic_id			The topic id of the posts the user is trying to access
-			* @var	int		min_time			Integer with the minimum post time that the user is searching for
-			* @var	int		visibility_const	Integer with one of the possible ITEM_* constant values
-			* @var	string	where_sql			Extra information included in the WHERE clause. It must end with "WHERE" or "AND" or "OR"
-			* @since 3.1.4-RC1
-			*/
-			$vars = array(
-				'sql',
-				'forum_id',
-				'topic_id',
-				'min_time',
-				'visibility_const',
-				'where_sql',
-			);
-			extract($phpbb_dispatcher->trigger_event('core.mcp_sorting_unapproved_deleted_posts_query_before', compact($vars)));
-
 			if ($min_time)
 			{
 				$sql .= ' AND post_time >= ' . $min_time;
