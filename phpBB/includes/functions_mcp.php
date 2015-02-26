@@ -369,7 +369,7 @@ function phpbb_get_pm_data($pm_ids)
 */
 function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
-	global $db, $user, $auth, $template, $request;
+	global $db, $user, $auth, $template, $request, $phpbb_dispatcher;
 
 	$sort_days = $request->variable('st', 0);
 	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
