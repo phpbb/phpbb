@@ -1301,6 +1301,13 @@ viewtopic_print_head_append
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
 
+viewtopic_body_pagination_top_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the pagination at top
+
 viewtopic_body_avatar_after
 ===
 * Locations:
