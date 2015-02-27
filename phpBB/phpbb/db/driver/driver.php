@@ -868,7 +868,7 @@ abstract class driver implements driver_interface
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $phpbb_path_helper, $user;
+		global $cache, $starttime, $phpbb_root_path, $phpbb_path_helper;
 		global $request;
 
 		if (is_object($request) && !$request->variable('explain', false))

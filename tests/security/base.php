@@ -20,7 +20,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 	*/
 	protected function setUp()
 	{
-		global $user, $phpbb_root_path, $phpEx, $request, $symfony_request, $phpbb_filesystem;
+		global $user, $phpbb_root_path, $request, $symfony_request, $phpbb_filesystem;
 
 		// Put this into a global function being run by every test to init a proper user session
 		$this->server['HTTP_HOST']				= 'localhost';

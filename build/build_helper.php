@@ -216,13 +216,12 @@ class build_package
 				$next_line = array_shift($special_diff_contents);
 				if (strpos($next_line, '*** ') === 0)
 				{
-	//			*** phpbb208/admin/admin_board.php	Sat Jul 10 20:16:26 2004
+					// *** phpbb208/admin/admin_board.php	Sat Jul 10 20:16:26 2004
 					$next_line = explode("\t", $next_line);
 					$next_line = trim($next_line[0]);
 					$next_line = str_replace('*** ' . $package_name . '/', '', $next_line);
 
 					$is_reached = false;
-					$prev_line = '';
 
 					while (!$is_reached)
 					{

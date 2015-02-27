@@ -38,8 +38,6 @@ class ucp_groups
 
 		$mark_ary	= $request->variable('mark', array(0));
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
-		$error = $data = array();
 
 		switch ($mode)
 		{
@@ -459,10 +457,7 @@ class ucp_groups
 							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
-						$file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
 						$user->add_lang(array('acp/groups', 'acp/common'));
-
-						$data = $submit_ary = array();
 
 						$update	= (isset($_POST['update'])) ? true : false;
 
@@ -532,7 +527,6 @@ class ucp_groups
 							{
 								// Handle avatar
 								$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
-								$config_name = preg_replace('#^avatar\.driver.#', '', $driver_name);
 
 								if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 								{
@@ -621,7 +615,6 @@ class ucp_groups
 						}
 						else if (!$group_id)
 						{
-							$group_name = $request->variable('group_name', '', true);
 							$group_desc_data = array(
 								'text'			=> '',
 								'allow_bbcode'	=> true,

@@ -58,8 +58,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 			'File ACM put and get'
 		);
 
-		$command_tester = $this->get_command_tester();
-		$exit_status = $command_tester->execute(array('command' => $this->command_name));
+		$this->get_command_tester()->execute(array('command' => $this->command_name));
 
 		$this->assertSame(false, $this->cache->get('test_key'));
 		$this->assertSame(2, $this->config['assets_version']);

@@ -62,7 +62,7 @@ class phpbb_cache_null_driver_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $first_result);
 
 		$sql = 'DELETE FROM phpbb_config';
-		$result = $db->sql_query($sql);
+		$db->sql_query($sql);
 
 		// As null cache driver does not actually cache,
 		// this should return no results

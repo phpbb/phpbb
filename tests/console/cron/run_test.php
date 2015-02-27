@@ -35,7 +35,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function setUp()
 	{
-		global $db, $config, $phpbb_root_path, $phpEx;
+		global $db, $config, $phpbb_root_path;
 
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));

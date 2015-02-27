@@ -188,7 +188,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			$basename = (isset($data['module_basename'])) ? $data['module_basename'] : '';
 			$module = $this->get_module_info($class, $basename);
 
-			$result = '';
 			foreach ($module['modes'] as $mode => $module_info)
 			{
 				if (!isset($data['modes']) || in_array($mode, $data['modes']))

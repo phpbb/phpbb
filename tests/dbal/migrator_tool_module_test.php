@@ -34,7 +34,6 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\null(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
 		$user = $this->user = new \phpbb\user('\phpbb\user');
 
-		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);

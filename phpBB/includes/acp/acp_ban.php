@@ -192,7 +192,6 @@ class acp_ban
 			case 'user':
 
 				$field = 'username';
-				$l_ban_cell = $user->lang['USERNAME'];
 
 				$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
 					FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u
@@ -205,7 +204,6 @@ class acp_ban
 			case 'ip':
 
 				$field = 'ban_ip';
-				$l_ban_cell = $user->lang['IP_HOSTNAME'];
 
 				$sql = 'SELECT *
 					FROM ' . BANLIST_TABLE . '
@@ -218,7 +216,6 @@ class acp_ban
 			case 'email':
 
 				$field = 'ban_email';
-				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
 
 				$sql = 'SELECT *
 					FROM ' . BANLIST_TABLE . '

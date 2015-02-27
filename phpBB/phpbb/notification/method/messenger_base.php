@@ -57,7 +57,6 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 		}
 		$messenger = new \messenger();
-		$board_url = generate_board_url();
 
 		// Time to go through the queue and send emails
 		foreach ($this->queue as $notification)

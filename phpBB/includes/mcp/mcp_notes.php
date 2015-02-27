@@ -35,8 +35,8 @@ class mcp_notes
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $request;
-		global $config, $phpbb_root_path, $phpEx;
+		global $user, $template, $request;
+		global $phpbb_root_path, $phpEx;
 
 		$action = $request->variable('action', array('' => ''));
 
@@ -74,7 +74,7 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config, $phpbb_log, $request;
+		global $config, $phpbb_log, $request;
 		global $template, $db, $user, $auth, $phpbb_container;
 
 		$user_id = $request->variable('u', 0);

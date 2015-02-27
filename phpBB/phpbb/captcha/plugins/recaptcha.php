@@ -37,7 +37,7 @@ class recaptcha extends captcha_abstract
 
 	function init($type)
 	{
-		global $config, $db, $user, $request;
+		global $user, $request;
 
 		$user->add_lang('captcha_recaptcha');
 		parent::init($type);
@@ -75,7 +75,7 @@ class recaptcha extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user, $phpbb_log, $request;
+		global $config, $template, $user, $phpbb_log, $request;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',

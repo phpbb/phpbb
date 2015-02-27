@@ -31,13 +31,12 @@ class ucp_profile
 
 	function main($id, $mode)
 	{
-		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 		$user->add_lang('posting');
 
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 
@@ -113,6 +112,18 @@ class ucp_profile
 					{
 						$error[] = 'FORM_INVALID';
 					}
+
+					/**
+					* Validate user data on editing profile in UCP
+					*
+					* @event core.ucp_profile_info_validate_data
+					* @var	array	data			Array with user profile data
+					* @var	bool	submit			Flag indicating if submit button has been pressed
+					* @var array	error			Array of any generated errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('data', 'submit', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_validate_data', compact($vars)));
 
 					if (!sizeof($error))
 					{
@@ -393,9 +404,10 @@ class ucp_profile
 						* @event core.ucp_profile_info_modify_sql_ary
 						* @var	array	cp_data		Array with the user custom profile fields data
 						* @var	array	data		Array with user profile data
+						* @var  array	sql_ary		user options data we update
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data');
+						$vars = array('cp_data', 'data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -430,7 +442,6 @@ class ucp_profile
 						$selected = ($i == $data['bday_month']) ? ' selected="selected"' : '';
 						$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
 					}
-					$s_birthday_year_options = '';
 
 					$now = getdate();
 					$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';

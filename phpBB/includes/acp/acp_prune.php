@@ -25,7 +25,7 @@ class acp_prune
 
 	function main($id, $mode)
 	{
-		global $user, $phpEx, $phpbb_admin_path, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_root_path;
 
 		$user->add_lang('acp/prune');
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -51,8 +51,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $phpbb_log, $request;
 
 		$all_forums = $request->variable('all_forums', 0);
 		$forum_id = $request->variable('f', array(0));
@@ -229,8 +228,8 @@ class acp_prune
 	*/
 	function prune_users($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $phpbb_log, $request;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('memberlist');
 
@@ -434,7 +433,6 @@ class acp_prune
 			}
 
 			$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
-			$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
 
 			$where_sql = '';
 			$where_sql .= ($username) ? ' AND username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($username))) : '';
@@ -508,7 +506,7 @@ class acp_prune
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
 					AND ug.user_pending = 0 ' .
-					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
+					((!empty($user_ids)) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
 					AND u.user_id = ug.user_id';
 			$result = $db->sql_query($sql);
 
@@ -534,7 +532,7 @@ class acp_prune
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE u.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER .
-					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
+					((!empty($user_ids)) ? ' AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
 					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE)) . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id

@@ -464,15 +464,17 @@ class manager
 	* All enabled and disabled extensions are considered configured. A purged
 	* extension that is no longer in the database is not configured.
 	*
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_configured()
+	public function all_configured($phpbb_relative = true)
 	{
 		$configured = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			$data['ext_path'] = $this->phpbb_root_path . $data['ext_path'];
+			$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			$configured[$name] = $data;
 		}
 		return $configured;
@@ -480,18 +482,19 @@ class manager
 
 	/**
 	* Retrieves all enabled extensions.
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
 	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_enabled()
+	public function all_enabled($phpbb_relative = true)
 	{
 		$enabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
 			if ($data['ext_active'])
 			{
-				$enabled[$name] = $this->phpbb_root_path . $data['ext_path'];
+				$enabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
 		}
 		return $enabled;
@@ -500,17 +503,19 @@ class manager
 	/**
 	* Retrieves all disabled extensions.
 	*
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_disabled()
+	public function all_disabled($phpbb_relative = true)
 	{
 		$disabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
 			if (!$data['ext_active'])
 			{
-				$disabled[$name] = $this->phpbb_root_path . $data['ext_path'];
+				$disabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
 		}
 		return $disabled;

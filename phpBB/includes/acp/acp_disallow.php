@@ -25,8 +25,8 @@ class acp_disallow
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $cache, $request;
+		global $phpbb_root_path, $phpEx, $phpbb_log;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 

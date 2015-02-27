@@ -22,8 +22,6 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 	public function test_failing_connect()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$config = $this->get_database_config();
 
 		$db = new $config['dbms']();

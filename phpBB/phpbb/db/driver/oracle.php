@@ -85,7 +85,6 @@ class oracle extends \phpbb\db\driver\driver
 		* without a query.
 		*/
 
-		$use_cache = false;
 /*
 		global $cache;
 

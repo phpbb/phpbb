@@ -344,9 +344,6 @@ class fulltext_native extends \phpbb\search\base
 		$this->must_not_contain_ids = array();
 		$this->must_exclude_one_ids = array();
 
-		$mode = '';
-		$ignore_no_id = true;
-
 		foreach ($query as $word)
 		{
 			if (empty($word))
@@ -551,7 +548,6 @@ class fulltext_native extends \phpbb\search\base
 		$id_ary = array();
 
 		$sql_where = array();
-		$group_by = false;
 		$m_num = 0;
 		$w_num = 0;
 
@@ -1142,7 +1138,6 @@ class fulltext_native extends \phpbb\search\base
 		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
 
 		$min = $this->word_length['min'];
-		$max = $this->word_length['max'];
 
 		$isset_min = $min - 1;
 
@@ -1551,7 +1546,7 @@ class fulltext_native extends \phpbb\search\base
 	protected function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
 		static $conv = array(), $conv_loaded = array();
-		$words = $allow = array();
+		$allow = array();
 
 		// Convert the text to UTF-8
 		$encoding = strtolower($encoding);

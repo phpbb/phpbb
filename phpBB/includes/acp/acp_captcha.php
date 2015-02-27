@@ -25,8 +25,7 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
+		global $user, $template, $config, $request, $phpbb_log, $phpbb_container;
 
 		$user->add_lang('acp/board');
 
@@ -137,7 +136,7 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $db, $user, $config, $phpbb_container;
+		global $phpbb_container;
 
 		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
 		$captcha->init(CONFIRM_REG);

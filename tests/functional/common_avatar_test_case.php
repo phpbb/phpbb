@@ -17,7 +17,6 @@
 abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional_test_case
 {
 	private $path;
-	private $form_content;
 
 	abstract function get_url();
 

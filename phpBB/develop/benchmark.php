@@ -143,7 +143,7 @@ function filldb($newposts)
 		if ((rand(0,30) < 1) || ($forum_topic_count[$forum] == 0))
 		{
 			// create a new topic 1 in 30 times (or when there are none);
-			$topic = make_topic($userid, "Testing topic $i", $forum);
+			make_topic($userid, "Testing topic $i", $forum);
 			$forum_topic_count[$forum]++;
 		} 
 		else 
@@ -152,16 +152,14 @@ function filldb($newposts)
 			$topic = get_smallest_topic($forum);
 			create_posting($userid, $topic, $forum, "reply");
 		}
-		
+
 		if (($i % 1000) == 0)
 		{
 			echo "status: $i <br>";
 			flush();
 		}
-	 
 	}
 }
-
 
 function get_smallest_topic($forum_id)
 {

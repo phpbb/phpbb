@@ -35,8 +35,30 @@ switch ($mode)
 	break;
 
 	default:
-		$l_title = $user->lang['FAQ_EXPLAIN'];
-		$user->add_lang('faq', false, true);
+		$page_title = $user->lang['FAQ_EXPLAIN'];
+		$ext_name = $lang_file = '';
+
+		/**
+		 * You can use this event display a custom help page
+		 *
+		 * @event core.faq_mode_validation
+		 * @var	string	page_title		Title of the page
+		 * @var	string	mode			FAQ that is going to be displayed
+		 * @var	string	lang_file		Language file containing the help data
+		 * @var	string	ext_name		Vendor and extension name where the help
+		 *								language file can be loaded from
+		 * @since 3.1.4-RC1
+		 */
+		$vars = array(
+			'page_title',
+			'mode',
+			'lang_file',
+			'ext_name',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.faq_mode_validation', compact($vars)));
+
+		$l_title = $page_title;
+		$user->add_lang(($lang_file) ? $lang_file : 'faq', false, true, $ext_name);
 	break;
 }
 

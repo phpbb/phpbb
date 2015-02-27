@@ -36,7 +36,7 @@ class mcp_logs
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $request;
-		global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_log;
+		global $config, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('acp/common');
 

@@ -29,7 +29,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 	{
 		// Permissions tab
 		// XXX hardcoded id
-		$crawler = self::request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
+		self::request('GET', 'adm/index.php?i=16&sid=' . $this->sid);
 		// these language strings are html
 		$this->assertContains($this->lang('ACP_PERMISSIONS_EXPLAIN'), $this->get_content());
 	}

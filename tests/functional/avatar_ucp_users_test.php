@@ -66,7 +66,7 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 
 		$crawler = self::request('GET', $this->get_url() . '&sid=' . $this->sid);
 		$avatar_link = $crawler->filter('img')->attr('src');
-		$crawler = self::request('GET', $avatar_link . '&sid=' . $this->sid, array(), false);
+		self::request('GET', $avatar_link . '&sid=' . $this->sid, array(), false);
 		$content = self::$client->getResponse()->getContent();
 		self::assertEquals(false, stripos(trim($content), 'debug'), 'Output contains debug message');
 	}

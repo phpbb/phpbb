@@ -902,7 +902,6 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 		{
 			// Add valid timezones that are currently selected but not returned
 			// by DateTimeZone::listIdentifiers
-			$validate_timezone = new DateTimeZone($selected_timezone);
 			$timezones[] = $selected_timezone;
 		}
 		catch (\Exception $e)
@@ -1393,7 +1392,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 */
 function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
 {
-	global $config, $user;
+	global $user;
 
 	$last_read = array();
 
@@ -1698,7 +1697,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $auth, $request, $phpbb_container;
+	global $db, $tracking_topics, $user, $config, $request, $phpbb_container;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1755,9 +1754,6 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	}
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
-		// Get information from cookie
-		$row = false;
-
 		if (!isset($tracking_topics['tf'][$forum_id]))
 		{
 			// We do not need to mark read, this happened before. Therefore setting this to true
@@ -2157,9 +2153,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx, $phpbb_dispatcher;
-
-	$failover_flag = false;
+	global $user, $phpbb_path_helper, $phpbb_dispatcher;
 
 	if (empty($user->lang))
 	{
@@ -2673,8 +2667,8 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
-	global $request, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
+	global $user, $template, $auth, $phpEx, $request, $config;
+	global $phpbb_container, $phpbb_dispatcher, $phpbb_log, $phpbb_root_path;
 
 	$err = '';
 
@@ -3176,7 +3170,7 @@ function get_preg_expression($mode)
 		case 'email':
 			// Regex written by James Watts and Francisco Jose Martin Moreno
 			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
-			return '([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
+			return '((?:[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+)@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
 		break;
 
 		case 'bbcode_htm':
@@ -3659,7 +3653,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user, $request;
-	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
+	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
 
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
@@ -3981,7 +3975,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 */
 function obtain_users_online($item_id = 0, $item = 'forum')
 {
-	global $db, $config, $user;
+	global $db, $config;
 
 	$reading_sql = '';
 	if ($item_id !== 0)
@@ -4045,9 +4039,10 @@ function obtain_users_online($item_id = 0, $item = 'forum')
 */
 function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum')
 {
-	global $config, $db, $user, $auth;
+	global $config, $db, $user, $auth, $phpbb_dispatcher;
 
-	$user_online_link = $online_userlist = '';
+	$online_userlist = '';
+
 	// Need caps version of $item for language-strings
 	$item_caps = strtoupper($item);
 
@@ -4057,9 +4052,28 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $online_users['online_users']) . '
 				ORDER BY username_clean ASC';
-		$result = $db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		/**
+		* Modify SQL query to obtain online users data
+		*
+		* @event core.obtain_users_online_string_sql
+		* @var	array	online_users	Array with online users data
+		*								from obtain_users_online()
+		* @var	int		item_id			Restrict online users to item id
+		* @var	string	item			Restrict online users to a certain
+		*								session item, e.g. forum for
+		*								session_forum_id
+		* @var	string	sql				SQL query to obtain users online data
+		* @since 3.1.4-RC1
+		*/
+		$vars = array('online_users', 'item_id', 'item', 'sql');
+		extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_sql', compact($vars)));
+
+		$result = $db->sql_query($sql);
+		$rowset = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		foreach ($rowset as $row)
 		{
 			// User is logged in and therefore not a guest
 			if ($row['user_id'] != ANONYMOUS)
@@ -4071,13 +4085,12 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 
 				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
 				{
-					$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
-					$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
+					$user_online_link[$row['user_id']] = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
 				}
 			}
 		}
-		$db->sql_freeresult($result);
 	}
+	$online_userlist = implode(', ', $user_online_link);
 
 	if (!$online_userlist)
 	{
@@ -4109,6 +4122,33 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	{
 		$l_online_users = $user->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
 	}
+
+	/**
+	* Modify online userlist data
+	*
+	* @event core.obtain_users_online_string_modify
+	* @var	array	online_users		Array with online users data
+	*									from obtain_users_online()
+	* @var	int		item_id				Restrict online users to item id
+	* @var	string	item				Restrict online users to a certain
+	*									session item, e.g. forum for
+	*									session_forum_id
+	* @var	array	rowset				Array with online users data
+	* @var	array	user_online_link	Array with online users items (usernames)
+	* @var	string	online_userlist		String containing users online list
+	* @var	string	l_online_users		String with total online users count info
+	* @since 3.1.4-RC1
+	*/
+	$vars = array(
+		'online_users',
+		'item_id',
+		'item',
+		'rowset',
+		'user_online_link',
+		'online_userlist',
+		'l_online_users',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_modify', compact($vars)));
 
 	return array(
 		'online_userlist'	=> $online_userlist,
@@ -4562,9 +4602,7 @@ function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config
 */
 function phpbb_get_avatar($row, $alt, $ignore_config = false)
 {
-	global $user, $config, $cache, $phpbb_root_path, $phpEx;
-	global $request;
-	global $phpbb_container;
+	global $user, $config, $phpbb_container;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -4614,7 +4652,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false)
 function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
+	global $phpbb_dispatcher, $phpbb_container, $phpbb_admin_path, $request;
 
 	if (defined('HEADER_INC'))
 	{
@@ -5076,7 +5114,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 */
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
+	global $db, $config, $template, $user, $auth, $cache, $phpEx;
 	global $request, $phpbb_dispatcher, $phpbb_admin_path;
 
 	// A listener can set this variable to `true` when it overrides this function
@@ -5215,7 +5253,7 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook, $config;
+	global $phpbb_hook;
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{

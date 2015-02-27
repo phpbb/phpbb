@@ -189,7 +189,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected function get_db()
 	{
-		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
 		if (!($this->db instanceof \phpbb\db\driver\driver_interface))
 		{

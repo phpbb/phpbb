@@ -132,7 +132,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		$this->load_ids(array(
 			'forums' => array(
@@ -149,7 +149,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		// 'Feeds #news' will be used for feed.php?mode=news
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
@@ -160,7 +160,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		// 'Feeds #exclude' will not be displayed on feed.php?mode=forums
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
@@ -171,7 +171,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 	}
 
 	public function test_setup_config_after_forums()
@@ -752,7 +752,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		// Test creating a reply
 		$this->login('disapprove_user');
-		$post2 = $this->create_post($this->data['forums']['Feeds #1.1'], $post['topic_id'], 'Re: Feeds #1.1 - Topic #2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$this->create_post($this->data['forums']['Feeds #1.1'], $post['topic_id'], 'Re: Feeds #1.1 - Topic #2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Feeds #1.1 - Topic #2']}&sid={$this->sid}");
 		$this->assertNotContains('Re: Feeds #1.1 - Topic #2', $crawler->filter('html')->text());

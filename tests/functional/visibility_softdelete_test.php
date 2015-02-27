@@ -31,7 +31,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
@@ -41,7 +41,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 	}
 
 	public function test_create_post()
@@ -534,7 +534,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$crawler = $this->get_quickmod_page($this->data['topics']['Soft Delete Topic #2'], 'MOVE_TOPIC');
 		$form = $crawler->selectButton('Yes')->form();
 		$form['to_forum_id']->select($this->data['forums']['Soft Delete #1']);
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,

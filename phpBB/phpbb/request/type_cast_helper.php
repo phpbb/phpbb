@@ -172,7 +172,6 @@ class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 			}
 
 			list($default_key, $default_value) = each($default);
-			$value_type = gettype($default_value);
 			$key_type = gettype($default_key);
 
 			$_var = $var;

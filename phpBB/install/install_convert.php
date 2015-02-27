@@ -239,7 +239,7 @@ class install_convert extends module
 				$sql = 'SELECT config_value
 					FROM ' . CONFIG_TABLE . '
 					WHERE config_name = \'search_type\'';
-				$result = $db->sql_query($sql);
+				$db->sql_query($sql);
 
 				if ($db->sql_fetchfield('config_value') != 'fulltext_mysql')
 				{
@@ -297,7 +297,7 @@ class install_convert extends module
 	*/
 	function list_convertors($sub)
 	{
-		global $lang, $language, $template, $phpbb_root_path, $phpEx;
+		global $lang, $language, $template, $phpEx;
 
 		$this->page_title = $lang['SUB_INTRO'];
 
@@ -317,7 +317,6 @@ class install_convert extends module
 		));
 
 		$convertors = $sort = array();
-		$get_info = true;
 
 		$handle = @opendir('./convertors/');
 
@@ -372,7 +371,7 @@ class install_convert extends module
 	*/
 	function get_convert_settings($sub)
 	{
-		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache, $phpbb_config_php_file;
+		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $phpbb_config_php_file;
 
 		extract($phpbb_config_php_file->get_all());
 
@@ -396,7 +395,6 @@ class install_convert extends module
 		{
 			$this->p_master->error($lang['NO_CONVERT_SPECIFIED'], __LINE__, __FILE__);
 		}
-		$get_info = true;
 
 		// check security implications of direct inclusion
 		$convertor_tag = basename($convertor_tag);
@@ -441,17 +439,15 @@ class install_convert extends module
 				$error[] = sprintf($lang['COULD_NOT_FIND_PATH'], $forum_path);
 			}
 
-			$connect_test = false;
 			$available_dbms = get_available_dbms(false, true, true);
 
 			if (!isset($available_dbms[$src_dbms]) || !$available_dbms[$src_dbms]['AVAILABLE'])
 			{
 				$error[] = $lang['INST_ERR_NO_DB'];
-				$connect_test = false;
 			}
 			else
 			{
-				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, true, ($src_dbms == $dbms) ? false : true, false);
+				connect_check_db(true, $error, $available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, true, ($src_dbms == $dbms) ? false : true, false);
 			}
 
 			// The forum prefix of the old and the new forum can only be the same if two different databases are used.
@@ -619,7 +615,7 @@ class install_convert extends module
 	*/
 	function convert_data($sub)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
+		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
 		global $request, $phpbb_config_php_file;
 
@@ -745,8 +741,6 @@ class install_convert extends module
 			break;
 		}
 
-		$get_info = false;
-
 		// check security implications of direct inclusion
 		if (!file_exists('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx))
 		{
@@ -758,7 +752,6 @@ class install_convert extends module
 			include('./convertors/functions_' . $convert->convertor_tag . '.' . $phpEx);
 		}
 
-		$get_info = true;
 		include('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx);
 
 		// Map some variables...
@@ -767,7 +760,6 @@ class install_convert extends module
 		$convert->config_schema = $config_schema;
 
 		// Now include the real data
-		$get_info = false;
 		include('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx);
 
 		$convert->convertor_data = $convertor_data;
@@ -831,7 +823,6 @@ class install_convert extends module
 		}
 
 		$current_table = $request->variable('current_table', 0);
-		$old_current_table = min(-1, $current_table - 1);
 		$skip_rows = $request->variable('skip_rows', 0);
 
 		if (!$current_table && !$skip_rows)
@@ -1234,8 +1225,6 @@ class install_convert extends module
 
 			while ($counting === -1 || ($counting >= $convert->batch_size && still_on_time()))
 			{
-				$old_current_table = $current_table;
-
 				$rows = '';
 				$waiting_rows = array();
 
@@ -1396,8 +1385,6 @@ class install_convert extends module
 
 						$db->sql_return_on_error(false);
 					}
-
-					$waiting_rows = array();
 				}
 
 				if (!empty($schema['autoincrement']))
@@ -1481,8 +1468,7 @@ class install_convert extends module
 	*/
 	function sync_forums($sync_batch)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx, $config, $cache;
-		global $convert;
+		global $template, $user, $db, $convert;
 
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'	=> true,
@@ -1590,7 +1576,7 @@ class install_convert extends module
 	function finish_conversion()
 	{
 		global $db, $phpbb_root_path, $phpEx, $convert, $config, $language, $user, $template;
-		global $cache, $auth, $phpbb_container, $phpbb_log;
+		global $cache, $auth, $phpbb_log;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1621,8 +1607,7 @@ class install_convert extends module
 	*/
 	function final_jump($final_jump)
 	{
-		global $template, $user, $src_db, $same_db, $db, $phpbb_root_path, $phpEx, $config, $cache;
-		global $convert;
+		global $template, $user, $db;
 
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'	=> true,
@@ -1660,7 +1645,7 @@ class install_convert extends module
 	*/
 	function jump($jump, $last_statement)
 	{
-		global $template, $user, $src_db, $same_db, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $template, $user, $src_db, $same_db, $db, $config, $cache;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1964,8 +1949,7 @@ class install_convert extends module
 	*/
 	function process_row(&$schema, &$sql_data, &$insert_values)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
-		global $convert, $convert_row;
+		global $db, $convert;
 
 		$sql_flag = false;
 

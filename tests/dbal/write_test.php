@@ -44,7 +44,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 
 		$sql = 'INSERT INTO phpbb_config ' . $db->sql_build_array('INSERT', $sql_ary);
-		$result = $db->sql_query($sql);
+		$db->sql_query($sql);
 
 		$sql = "SELECT *
 			FROM phpbb_config
@@ -62,7 +62,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 
 		$sql = "DELETE FROM phpbb_config
 			WHERE config_name = 'config1'";
-		$result = $db->sql_query($sql);
+		$db->sql_query($sql);
 
 		$sql = 'SELECT *
 			FROM phpbb_config';
@@ -96,7 +96,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 			),
 		);
 
-		$result = $db->sql_multi_insert('phpbb_config', $batch_ary);
+		$db->sql_multi_insert('phpbb_config', $batch_ary);
 
 		$sql = 'SELECT *
 			FROM phpbb_config
@@ -161,7 +161,7 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 
 		$sql = 'UPDATE phpbb_config
 			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . $where;
-		$result = $db->sql_query($sql);
+		$db->sql_query($sql);
 
 		$sql = 'SELECT *
 			FROM phpbb_config

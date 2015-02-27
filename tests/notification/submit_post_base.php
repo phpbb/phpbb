@@ -93,7 +93,6 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		);
 
 		// Request
-		$type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
 		$request = $this->getMock('\phpbb\request\request');
 
 		// Container

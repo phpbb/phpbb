@@ -18,7 +18,6 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 {
 	public function test_forgot_password_enabled()
 	{
-		global $config;
 		$this->add_lang('ucp');
 		$crawler = self::request('GET', 'ucp.php?mode=sendpassword');
 		$this->assertEquals($this->lang('SEND_PASSWORD'), $crawler->filter('h2')->text());
@@ -36,7 +35,7 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 
 		$values["config[allow_password_reset]"] = 0;
 		$form->setValues($values);
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		$this->logout();
 
@@ -56,6 +55,6 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Submit')->form(array(
 			'config[allow_password_reset]'	=> 1,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 	}
 }

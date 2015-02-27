@@ -64,7 +64,7 @@ class phpbb_tests_tree_nestedset_forum_regenerate_test extends phpbb_tests_tree_
 	*/
 	public function test_regenerate_left_right_ids($breaking_query, $reset_ids)
 	{
-		$result = $this->db->sql_query($breaking_query);
+		$this->db->sql_query($breaking_query);
 
 		$this->assertEquals(23, $this->set->regenerate_left_right_ids(1, 0, $reset_ids));
 

@@ -31,7 +31,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		// Set flood interval to 0
 		$this->set_flood_interval(0);
@@ -80,7 +80,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		$this->login('disapprove_testuser');
 
 		// Test creating a reply
-		$post2 = $this->create_post($this->data['forums']['Disapprove Test #1'], $post['topic_id'], 'Re: Disapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$this->create_post($this->data['forums']['Disapprove Test #1'], $post['topic_id'], 'Re: Disapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}&sid={$this->sid}");
 		$this->assertNotContains('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
@@ -96,7 +96,7 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		), 'after replying');
 
 		// Test creating topic #2
-		$post = $this->create_topic($this->data['forums']['Disapprove Test #1'], 'Disapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$this->create_topic($this->data['forums']['Disapprove Test #1'], 'Disapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Disapprove Test #1']}&sid={$this->sid}");
 
 		$this->assertNotContains('Disapprove Test Topic #2', $crawler->filter('html')->text());

@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 function mcp_post_details($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config, $request;
-	global $template, $db, $user, $auth, $cache;
+	global $template, $db, $user, $auth;
 
 	$user->add_lang('posting');
 
@@ -110,9 +110,8 @@ function mcp_post_details($id, $mode, $action)
 
 	// Set some vars
 	$users_ary = $usernames_ary = array();
-	$attachments = $extensions = array();
+	$attachments = array();
 	$post_id = $post_info['post_id'];
-	$topic_tracking_info = array();
 
 	// Get topic tracking info
 	if ($config['load_db_lastread'])
@@ -134,8 +133,6 @@ function mcp_post_details($id, $mode, $action)
 
 	if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 	{
-		$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id = ' . $post_id . '

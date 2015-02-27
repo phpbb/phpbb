@@ -332,7 +332,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 */
 function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 {
-	global $auth, $user, $template, $topic_type;
+	global $auth, $user, $template;
 
 	$toggle = false;
 
@@ -406,7 +406,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 {
-	global $auth, $user, $config, $db, $cache;
+	global $auth, $user, $config, $cache;
 	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	$filedata = array(
@@ -984,7 +984,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	foreach ($draft_rows as $draft)
 	{
 		$link_topic = $link_forum = $link_pm = false;
-		$insert_url = $view_url = $title = '';
+		$view_url = $title = '';
 
 		if (isset($topic_rows[$draft['topic_id']])
 			&& (
@@ -1037,7 +1037,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $bbcode, $cache;
+	global $user, $auth, $db, $template;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
@@ -1096,13 +1096,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
-	$bbcode_bitfield = '';
 	$rowset = array();
 	$has_attachments = false;
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[$row['post_id']] = $row;
-		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 		if ($row['post_attachment'])
 		{
@@ -1111,19 +1109,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	}
 	$db->sql_freeresult($result);
 
-	// Instantiate BBCode class
-	if (!isset($bbcode) && $bbcode_bitfield !== '')
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-	}
-
 	// Grab extensions
-	$extensions = $attachments = array();
+	$attachments = array();
 	if ($has_attachments && $auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
 	{
-		$extensions = $cache->obtain_attach_extensions($forum_id);
-
 		// Get attachments...
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -1259,7 +1248,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $softdelete_reason = '')
 {
-	global $db, $user, $auth, $phpbb_container;
+	global $db, $user, $phpbb_container;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
@@ -1348,7 +1337,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 			if ($is_soft)
 			{
-				$topic_row = array();
 				$phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason);
 			}
 			else
@@ -1520,7 +1508,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
+	global $db, $auth, $user, $config, $request;
+	global $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 	/**
 	* Modify the data for post submitting
@@ -1733,7 +1722,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		break;
 	}
-	$topic_row = array();
 
 	// And the topic ladies and gentlemen
 	switch ($post_mode)

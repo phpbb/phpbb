@@ -91,7 +91,6 @@ class bookmark extends \phpbb\notification\type\post
 		}
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
-		$update_notifications = array();
 		$sql = 'SELECT n.*
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '

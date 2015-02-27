@@ -785,7 +785,6 @@ class fileupload
 
 		$url['path'] = implode('', $url['path']);
 		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
-		$filename = $url['path'];
 		$filesize = 0;
 
 		$remote_max_filesize = $this->max_filesize;
