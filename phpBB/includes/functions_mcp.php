@@ -631,7 +631,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 		$total = (int) $db->sql_fetchfield('total');
 		$db->sql_freeresult($result);
 	}
-	else if ( $total < -1)
+	else if ($total < -1)
 	{
 		$total = -1;
 	}
