@@ -27,5 +27,9 @@ $user->setup();
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
 
-send_status_line(301, 'Moved Permanently');
-redirect($controller_helper->route('phpbb_help_controller', array('mode' => $request->variable('mode', 'faq'))));
+$response = new \Symfony\Component\HttpFoundation\RedirectResponse(
+	$controller_helper->route('phpbb_help_controller', array(
+		'mode' => $request->variable('mode', 'faq'),
+	), 301)
+);
+$response->send();

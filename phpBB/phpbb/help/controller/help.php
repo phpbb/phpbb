@@ -97,7 +97,7 @@ class help
 
 				if ($ext_name === '' || $lang_file === '')
 				{
-					throw new http_exception(501, 'FEATURE_NOT_AVAILABLE');
+					throw new http_exception(404, 'Not Found');
 				}
 
 				$this->user->add_lang($lang_file, false, true, $ext_name);
