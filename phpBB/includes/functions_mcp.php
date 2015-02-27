@@ -553,6 +553,9 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			break;
 	}
 
+	// Default total to -1 to allow editing by the event
+	$total = -1;
+
 	/**
 	* This event allows you to control the SQL query used to get the total number
 	* of reports the user can access.
