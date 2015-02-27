@@ -618,7 +618,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db, $config, $phpbb_container;
+	global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -672,6 +672,18 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	$table_ary = array(BOOKMARKS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
 
+	/**
+	 * Perform additional actions before topic(s) deletion
+	 *
+	 * @event core.delete_topics_before
+	 * @var	array	topic_ids	Array of topic ids to delete
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+			'topic_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_topics_before', compact($vars)));
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
@@ -679,6 +691,18 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
+
+	/**
+	 * Perform additional actions after topic(s) deletion
+	 *
+	 * @event core.delete_topics_after
+	 * @var	array	topic_ids	Array of topic ids that were deleted
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+			'topic_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_topics_after', compact($vars)));
 
 	$moved_topic_ids = array();
 
