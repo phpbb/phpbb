@@ -121,6 +121,8 @@ class session
 		$script_path .= (substr($script_path, -1, 1) == '/') ? '' : '/';
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
+		$forum_id = (isset($_REQUEST['f']) && $_REQUEST['f'] > 0 && $_REQUEST['f'] < 16777215) ? (int) $_REQUEST['f'] : 0;
+
 		$page_array += array(
 			'page_name'			=> $page_name,
 			'page_dir'			=> $page_dir,
@@ -130,7 +132,7 @@ class session
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page,
-			'forum'				=> (isset($_REQUEST['f']) && $_REQUEST['f'] > 0) ? (int) $_REQUEST['f'] : 0,
+			'forum'				=> $forum_id,
 		);
 
 		return $page_array;
