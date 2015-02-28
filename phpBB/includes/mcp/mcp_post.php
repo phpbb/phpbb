@@ -24,8 +24,11 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth, $cache;
+	global $phpEx, $phpbb_root_path, $config, $request;
+	global $template, $db, $user, $auth, $cache, $phpbb_container;
+
+	/** @var \phpbb\pagination $pagination */
+	$pagination = $phpbb_container->get('pagination');
 
 	$user->add_lang('posting');
 
@@ -314,7 +317,8 @@ function mcp_post_details($id, $mode, $action)
 	// Get IP
 	if ($auth->acl_get('m_info', $post_info['forum_id']))
 	{
-		$rdns_ip_num = request_var('rdns', '');
+		$rdns_ip_num = $request->variable('rdns', '');
+		$start_users = $request->variable('start_users', 0);
 
 		if ($rdns_ip_num != 'all')
 		{
@@ -323,16 +327,26 @@ function mcp_post_details($id, $mode, $action)
 			);
 		}
 
+		$num_users = false;
+		if ($start_users)
+		{
+			$num_users = phpbb_get_num_posters_for_ip($db, $post_info['poster_ip']);
+			$pagination->validate_start($start_users, $config['posts_per_page'], $num_users);
+		}
+
 		// Get other users who've posted under this IP
 		$sql = 'SELECT poster_id, COUNT(poster_id) as postings
 			FROM ' . POSTS_TABLE . "
 			WHERE poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
 			GROUP BY poster_id
-			ORDER BY postings DESC";
-		$result = $db->sql_query($sql);
+			ORDER BY postings DESC, poster_id ASC";
+		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start_users);
 
+		$users = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$users++;
+
 			// Fill the user select list with users who have posted under this IP
 			if ($row['poster_id'] != $post_info['poster_id'])
 			{
@@ -340,6 +354,23 @@ function mcp_post_details($id, $mode, $action)
 			}
 		}
 		$db->sql_freeresult($result);
+
+		if ($users == $config['posts_per_page'] || $start_users)
+		{
+			if ($num_users === false)
+			{
+				$num_users = phpbb_get_num_posters_for_ip($db, $post_info['poster_ip']);
+			}
+
+			$pagination->generate_template_pagination(
+				$url . '&amp;i=main&amp;mode=post_details',
+				'pagination',
+				'start_users',
+				$num_users,
+				$config['posts_per_page'],
+				$start_users
+			);
+		}
 
 		if (sizeof($users_ary))
 		{
@@ -413,6 +444,24 @@ function mcp_post_details($id, $mode, $action)
 		$template->assign_var('S_USER_SELECT', $user_select);
 	}
 
+}
+
+/**
+ * Get the number of posters for a given ip
+ *
+ * @param \phpbb\db\driver\driver_interface $db
+ * @param string $ip
+ */
+function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $ip)
+{
+	$sql = 'SELECT COUNT(poster_id) as num_users
+		FROM ' . POSTS_TABLE . "
+		WHERE poster_ip = '" . $db->sql_escape($ip) . "'";
+	$result = $db->sql_query($sql);
+	$num_users = (int) $db->sql_fetchfield('num_users');
+	$db->sql_freeresult($result);
+
+	return $num_users;
 }
 
 /**
