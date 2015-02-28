@@ -331,7 +331,7 @@ function mcp_post_details($id, $mode, $action)
 		if ($start_users)
 		{
 			$num_users = phpbb_get_num_posters_for_ip($db, $post_info['poster_ip']);
-			$pagination->validate_start($start_users, $config['posts_per_page'], $num_users);
+			$start_users = $pagination->validate_start($start_users, $config['posts_per_page'], $num_users);
 		}
 
 		// Get other users who've posted under this IP
@@ -411,7 +411,7 @@ function mcp_post_details($id, $mode, $action)
 		if ($start_ips)
 		{
 			$num_ips = phpbb_get_num_ips_for_poster($db, $post_info['poster_id']);
-			$pagination->validate_start($start_ips, $config['posts_per_page'], $num_ips);
+			$start_ips = $pagination->validate_start($start_ips, $config['posts_per_page'], $num_ips);
 		}
 
 		$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
@@ -477,14 +477,23 @@ function mcp_post_details($id, $mode, $action)
  * Get the number of posters for a given ip
  *
  * @param \phpbb\db\driver\driver_interface $db
- * @param string $ip
+ * @param string $poster_ip
  * @return int
  */
-function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $ip)
+function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $poster_ip)
 {
-	$sql = 'SELECT COUNT(poster_id) as num_users
-		FROM ' . POSTS_TABLE . "
-		WHERE poster_ip = '" . $db->sql_escape($ip) . "'";
+	if ($db->get_sql_layer() == 'sqlite' || $db->get_sql_layer() == 'sqlite3')
+	{
+		$sql = 'SELECT COUNT(poster_id) as num_users
+								FROM (SELECT DISTINCT poster_id';
+	}
+	else
+	{
+		$sql = 'SELECT COUNT(DISTINCT poster_id) as num_users';
+	}
+
+	$sql .= ' FROM ' . POSTS_TABLE . "
+		WHERE poster_ip = '" . $db->sql_escape($poster_ip) . "'";
 	$result = $db->sql_query($sql);
 	$num_users = (int) $db->sql_fetchfield('num_users');
 	$db->sql_freeresult($result);
@@ -496,13 +505,22 @@ function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $ip
  * Get the number of ips for a given poster
  *
  * @param \phpbb\db\driver\driver_interface $db
- * @param int $id
+ * @param int $poster_id
  * @return int
  */
 function phpbb_get_num_ips_for_poster(\phpbb\db\driver\driver_interface $db, $poster_id)
 {
-	$sql = 'SELECT COUNT(poster_ip) as num_ips
-		FROM ' . POSTS_TABLE . '
+	if ($db->get_sql_layer() == 'sqlite' || $db->get_sql_layer() == 'sqlite3')
+	{
+		$sql = 'SELECT COUNT(poster_ip) as num_ips
+								FROM (SELECT DISTINCT poster_ip';
+	}
+	else
+	{
+		$sql = 'SELECT COUNT(DISTINCT poster_ip) as num_ips';
+	}
+
+	$sql .= ' FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . (int) $poster_id;
 	$result = $db->sql_query($sql);
 	$num_ips = (int) $db->sql_fetchfield('num_ips');
