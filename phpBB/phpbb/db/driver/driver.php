@@ -831,7 +831,7 @@ abstract class driver implements driver_interface
 				break;
 				case 'NOT':
 
-					$condition = ' NOT ' . $this->_process_boolean_tree($condition);
+					$condition = ' NOT (' . $this->_process_boolean_tree($condition) . ') ';
 
 				break;
 
