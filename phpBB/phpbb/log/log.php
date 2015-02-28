@@ -521,15 +521,30 @@ class log implements \phpbb\log\log_interface
 			$sql_keywords = $this->generate_sql_keyword($keywords);
 		}
 
-		if ($count_logs)
-		{
-			$sql = 'SELECT COUNT(l.log_id) AS total_entries
-				FROM ' . $this->log_table . ' l, ' . USERS_TABLE . ' u
-				WHERE l.log_type = ' . (int) $log_type . '
-					AND l.user_id = u.user_id
+		$get_logs_sql_ary = array(
+			'SELECT' => 'l.*, u.username, u.username_clean, u.user_colour',
+			'FROM' => $this->log_table . ' l, ' . USERS_TABLE . ' u',
+			'WHERE' => 'l.user_id = u.user_id
 					AND l.log_time >= ' . (int) $log_time . "
 					$sql_keywords
-					$sql_additional";
+					$sql_additional",
+
+			'ORDER_BY' => $sort_by,
+		);
+
+		if($log_type){
+			$get_logs_sql_ary['WHERE'] = 'l.log_type = ' . (int) $log_type . '
+					AND ' . $get_logs_sql_ary['WHERE'];
+		}
+
+		if ($count_logs)
+		{
+			$count_logs_sql_ary = $get_logs_sql_ary;
+
+			$count_logs_sql_ary['SELECT'] = 'COUNT(l.log_id) AS total_entries';
+			unset($count_logs_sql_ary['ORDER_BY']);
+
+			$sql = $this->db->sql_build_array('SELECT', $count_logs_sql_ary);
 			$result = $this->db->sql_query($sql);
 			$this->entry_count = (int) $this->db->sql_fetchfield('total_entries');
 			$this->db->sql_freeresult($result);
@@ -548,14 +563,7 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
-		$sql = 'SELECT l.*, u.username, u.username_clean, u.user_colour
-			FROM ' . $this->log_table . ' l, ' . USERS_TABLE . ' u
-			WHERE l.log_type = ' . (int) $log_type . '
-				AND u.user_id = l.user_id
-				' . (($log_time) ? 'AND l.log_time >= ' . (int) $log_time : '') . "
-				$sql_keywords
-				$sql_additional
-			ORDER BY $sort_by";
+		$sql = $this->db->sql_build_array('SELECT', $get_logs_sql_ary);
 		$result = $this->db->sql_query_limit($sql, $limit, $this->last_page_offset);
 
 		$i = 0;
