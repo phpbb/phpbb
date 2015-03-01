@@ -523,7 +523,10 @@ class log implements \phpbb\log\log_interface
 
 		$get_logs_sql_ary = array(
 			'SELECT' => 'l.*, u.username, u.username_clean, u.user_colour',
-			'FROM' => $this->log_table . ' l, ' . USERS_TABLE . ' u',
+			'FROM' => array(
+						$this->log_table => 'l',
+						USERS_TABLE => 'u',
+					),
 			'WHERE' => 'l.user_id = u.user_id
 					AND l.log_time >= ' . (int) $log_time . "
 					$sql_keywords
