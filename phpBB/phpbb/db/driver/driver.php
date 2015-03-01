@@ -807,6 +807,8 @@ abstract class driver implements driver_interface
 
 	protected function _process_boolean_tree_first($operations_ary)
 	{
+		// In cases where an array exists but there is no head condition,
+		// it should be because there's only 1 WHERE clause. This seems the best way to deal with it.
 		if ($operations_ary[0] !== 'AND' &&
 			$operations_ary[0] !== 'OR')
 		{
