@@ -582,7 +582,7 @@ class log implements \phpbb\log\log_interface
 			'sql_additional',
 		);
 		extract($this->dispatcher->trigger_event('core.get_logs_main_query_before', compact($vars)));
-			
+
 		if ($count_logs)
 		{
 			$count_logs_sql_ary = $get_logs_sql_ary;
