@@ -44,10 +44,10 @@ function mcp_front_view($id, $mode, $action)
 			$sql_ary = array(
 				'SELECT' => 'COUNT(post_id) AS total',
 				'FROM' => array(
-						POSTS_TABLE => '',
+						POSTS_TABLE => 'p',
 					),
-				'WHERE' => $db->sql_in_set('forum_id', $forum_list) . '
-					AND ' . $db->sql_in_set('post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE))
+				'WHERE' => $db->sql_in_set('p.forum_id', $forum_list) . '
+					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE))
 			);
 
 			/**
