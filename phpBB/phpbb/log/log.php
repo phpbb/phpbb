@@ -537,6 +537,49 @@ class log implements \phpbb\log\log_interface
 					AND ' . $get_logs_sql_ary['WHERE'];
 		}
 
+		/**
+		* Modify the query to obtain the logs data
+		*
+		* @event core.get_logs_main_query_before
+		* @var	array	get_logs_sql_ary	The array in the format of the query builder with the query
+		*									to get the log count and the log list
+		* @var	string	mode				Mode of the entries we display
+		* @var	bool	count_logs			Do we count all matching entries?
+		* @var	int		limit				Limit the number of entries
+		* @var	int		offset				Offset when fetching the entries
+		* @var	mixed	forum_id			Limit entries to the forum_id,
+		*									can also be an array of forum_ids
+		* @var	int		topic_id			Limit entries to the topic_id
+		* @var	int		user_id				Limit entries to the user_id
+		* @var	int		log_time			Limit maximum age of log entries
+		* @var	string	sort_by				SQL order option
+		* @var	string	keywords			Will only return entries that have the
+		*									keywords in log_operation or log_data
+		* @var	string	profile_url			URL to the users profile
+		* @var	int		log_type			Limit logs to a certain type. If log_type
+		*									is false, no entries will be returned.
+		* @var	string	sql_additional		Additional conditions for the entries,
+		*									e.g.: 'AND l.forum_id = 1'
+		* @since 3.1.0-a1
+		*/
+		$vars = array(
+			'get_logs_sql_ary',
+			'mode',
+			'count_logs',
+			'limit',
+			'offset',
+			'forum_id',
+			'topic_id',
+			'user_id',
+			'log_time',
+			'sort_by',
+			'keywords',
+			'profile_url',
+			'log_type',
+			'sql_additional',
+		);
+		extract($this->dispatcher->trigger_event('core.get_logs_main_query_before', compact($vars)));
+			
 		if ($count_logs)
 		{
 			$count_logs_sql_ary = $get_logs_sql_ary;
@@ -544,7 +587,7 @@ class log implements \phpbb\log\log_interface
 			$count_logs_sql_ary['SELECT'] = 'COUNT(l.log_id) AS total_entries';
 			unset($count_logs_sql_ary['ORDER_BY']);
 
-			$sql = $this->db->sql_build_array('SELECT', $count_logs_sql_ary);
+			$sql = $this->db->sql_build_query('SELECT', $count_logs_sql_ary);
 			$result = $this->db->sql_query($sql);
 			$this->entry_count = (int) $this->db->sql_fetchfield('total_entries');
 			$this->db->sql_freeresult($result);
@@ -563,7 +606,7 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
-		$sql = $this->db->sql_build_array('SELECT', $get_logs_sql_ary);
+		$sql = $this->db->sql_build_query('SELECT', $get_logs_sql_ary);
 		$result = $this->db->sql_query_limit($sql, $limit, $this->last_page_offset);
 
 		$i = 0;
