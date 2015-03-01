@@ -527,8 +527,8 @@ class log implements \phpbb\log\log_interface
 						$this->log_table => 'l',
 						USERS_TABLE => 'u',
 					),
-			'WHERE' => 'l.user_id = u.user_id
-					AND l.log_time >= ' . (int) $log_time . "
+			'WHERE' => 'l.log_type = ' . (int) $log_type . "
+					AND l.user_id = u.user_id
 					$sql_keywords
 					$sql_additional",
 
@@ -536,7 +536,7 @@ class log implements \phpbb\log\log_interface
 		);
 
 		if($log_type){
-			$get_logs_sql_ary['WHERE'] = 'l.log_type = ' . (int) $log_type . '
+			$get_logs_sql_ary['WHERE'] = 'l.log_time >= ' . (int) $log_time . '
 					AND ' . $get_logs_sql_ary['WHERE'];
 		}
 
