@@ -535,7 +535,7 @@ class log implements \phpbb\log\log_interface
 			'ORDER_BY' => $sort_by,
 		);
 
-		if($log_type){
+		if($log_time){
 			$get_logs_sql_ary['WHERE'] = 'l.log_time >= ' . (int) $log_time . '
 					AND ' . $get_logs_sql_ary['WHERE'];
 		}
