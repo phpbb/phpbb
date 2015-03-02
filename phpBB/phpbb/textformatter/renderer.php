@@ -26,8 +26,8 @@ abstract class renderer
 	/**
 	* Automatically set the smilies path based on config
 	*
-	* @param  phpbb\config\config $config
-	* @param  phpbb\path_helper   $path_helper
+	* @param  \phpbb\config\config $config
+	* @param  \phpbb\path_helper   $path_helper
 	* @return null
 	*/
 	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
@@ -45,9 +45,9 @@ abstract class renderer
 	*
 	* Should set the locale as well as the viewcensor/viewflash/viewimg/viewsmilies options.
 	*
-	* @param  phpbb\user          $user
-	* @param  phpbb\config\config $config
-	* @param  phpbb\auth\auth     $auth
+	* @param  \phpbb\user          $user
+	* @param  \phpbb\config\config $config
+	* @param  \phpbb\auth\auth     $auth
 	* @return null
 	*/
 	public function configure_user(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)

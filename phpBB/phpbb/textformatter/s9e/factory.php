@@ -22,7 +22,7 @@ use s9e\TextFormatter\Configurator\Items\AttributeFilters\Regexp as RegexpFilter
 class factory implements \phpbb\textformatter\cache
 {
 	/**
-	* @var phpbb_cache_driver_interface $cache
+	* @var \phpbb\cache\driver_interface $cache
 	*/
 	protected $cache;
 
@@ -102,8 +102,8 @@ class factory implements \phpbb\textformatter\cache
 	/**
 	* Constructor
 	*
-	* @param  phpbb\textformatter\data_access $dal
-	* @param  phpbb\cache\driver\driver_interface $cache
+	* @param  \phpbb\textformatter\data_access $dal
+	* @param  \phpbb\cache\driver\driver_interface $cache
 	* @param  string $cache_dir          Path to the cache dir
 	* @param  string $cache_key_parser   Cache key used for the parser
 	* @param  string $cache_key_renderer Cache key used for the renderer

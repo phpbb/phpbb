@@ -34,9 +34,9 @@ class parser implements \phpbb\textformatter\parser
 	/**
 	* Constructor
 	*
-	* @param  phpbb\cache\driver_interface $cache
+	* @param  \phpbb\cache\driver_interface $cache
 	* @param  string $key Cache key
-	* @param  phpbb\user $user
+	* @param  \phpbb\user $user
 	* @param  factory $factory
 	* @return null
 	*/
