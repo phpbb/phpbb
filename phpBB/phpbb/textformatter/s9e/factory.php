@@ -57,7 +57,7 @@ class factory implements \phpbb\textformatter\cache
 	/**
 	* @var \phpbb\textformatter\data_access
 	*/
-	protected $dal;
+	protected $data_access;
 
 	/**
 	* @var array Default BBCode definitions
@@ -102,21 +102,21 @@ class factory implements \phpbb\textformatter\cache
 	/**
 	* Constructor
 	*
-	* @param  \phpbb\textformatter\data_access $dal
+	* @param  \phpbb\textformatter\data_access $data_access
 	* @param  \phpbb\cache\driver\driver_interface $cache
 	* @param  string $cache_dir          Path to the cache dir
 	* @param  string $cache_key_parser   Cache key used for the parser
 	* @param  string $cache_key_renderer Cache key used for the renderer
 	* @return null
 	*/
-	public function __construct(\phpbb\textformatter\data_access $dal, \phpbb\cache\driver\driver_interface $cache, $cache_dir, $cache_key_parser, $cache_key_renderer)
+	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, $cache_dir, $cache_key_parser, $cache_key_renderer)
 	{
 		$this->cache = $cache;
 		$this->cache_dir = $cache_dir;
 		$this->cache_key_parser = $cache_key_parser;
 		$this->cache_key_renderer = $cache_key_renderer;
 
-		$this->dal = $dal;
+		$this->data_access = $data_access;
 	}
 
 	/**
@@ -222,7 +222,7 @@ class factory implements \phpbb\textformatter\cache
 		}
 
 		// Load custom BBCodes
-		foreach ($this->dal->get_bbcodes() as $row)
+		foreach ($this->data_access->get_bbcodes() as $row)
 		{
 			// Insert the board's URL before {LOCAL_URL} tokens
 			$tpl = preg_replace_callback(
@@ -247,7 +247,7 @@ class factory implements \phpbb\textformatter\cache
 		}
 
 		// Load smilies
-		foreach ($this->dal->get_smilies() as $row)
+		foreach ($this->data_access->get_smilies() as $row)
 		{
 			$configurator->Emoticons->add(
 				$row['code'],
@@ -266,7 +266,7 @@ class factory implements \phpbb\textformatter\cache
 		}
 
 		// Load the censored words
-		$censor = $this->dal->get_censored_words();
+		$censor = $this->data_access->get_censored_words();
 		if (!empty($censor))
 		{
 			// Use a namespaced tag to avoid collisions
@@ -339,7 +339,7 @@ class factory implements \phpbb\textformatter\cache
 	{
 		// For each BBCode, build an associative array matching style_ids to their template
 		$templates = array();
-		foreach ($this->dal->get_styles_templates() as $style_id => $data)
+		foreach ($this->data_access->get_styles_templates() as $style_id => $data)
 		{
 			foreach ($this->extract_templates($data['template']) as $bbcode_name => $template)
 			{
