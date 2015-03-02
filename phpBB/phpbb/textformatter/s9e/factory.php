@@ -18,7 +18,6 @@ use s9e\TextFormatter\Configurator\Items\AttributeFilters\Regexp as RegexpFilter
 
 /**
 * Creates s9e\TextFormatter objects
-* @package phpBB3
 */
 class factory implements \phpbb\textformatter\cache
 {

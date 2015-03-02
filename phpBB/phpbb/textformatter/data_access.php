@@ -14,14 +14,10 @@
 namespace phpbb\textformatter;
 
 /**
-* text_formatter.data_access service
-*
 * Data access layer that fetchs BBCodes, smilies and censored words from the database.
 * To be extended to include insert/update/delete operations.
 *
 * Also used to get templates.
-*
-* @package phpBB3
 */
 class data_access
 {

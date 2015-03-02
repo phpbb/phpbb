@@ -14,14 +14,8 @@
 namespace phpbb\textformatter;
 
 /**
-* text_formatter.cache service
-*
 * Currently only used to signal that something that could effect the rendering has changed.
 * BBCodes, smilies, censored words, templates, etc...
-*
-* @todo functionality should be moved to data_access
-*
-* @package phpBB3
 */
 interface cache
 {

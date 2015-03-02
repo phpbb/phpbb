@@ -18,7 +18,6 @@ use s9e\TextFormatter\Parser\Logger;
 
 /**
 * s9e\TextFormatter\Parser adapter
-* @package phpBB3
 */
 class parser extends \phpbb\textformatter\parser
 {

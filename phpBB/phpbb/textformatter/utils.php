@@ -14,11 +14,7 @@
 namespace phpbb\textformatter;
 
 /**
-* text_formatter.utils service
-*
 * Used to manipulate a parsed text
-*
-* @package phpBB3
 */
 abstract class utils
 {

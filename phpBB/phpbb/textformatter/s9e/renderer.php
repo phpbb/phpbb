@@ -15,7 +15,6 @@ namespace phpbb\textformatter\s9e;
 
 /**
 * s9e\TextFormatter\Renderer adapter
-* @package phpBB3
 */
 class renderer extends \phpbb\textformatter\renderer
 {

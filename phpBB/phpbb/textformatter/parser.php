@@ -13,10 +13,6 @@
 
 namespace phpbb\textformatter;
 
-/**
-* text_formatter.parser service
-* @package phpBB3
-*/
 abstract class parser
 {
 	/**

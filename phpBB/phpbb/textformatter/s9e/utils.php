@@ -15,7 +15,6 @@ namespace phpbb\textformatter\s9e;
 
 /**
 * Text manipulation utilities
-* @package phpBB3
 */
 class utils extends \phpbb\textformatter\utils
 {
