@@ -306,7 +306,7 @@ class ldap extends \phpbb\auth\provider\base
 		return array(
 			'TEMPLATE_FILE'	=> 'auth_provider_ldap.html',
 			'TEMPLATE_VARS'	=> array(
-				'AUTH_LDAP_DN'			=> $new_config['ldap_base_dn'],
+				'AUTH_LDAP_BASE_DN'		=> $new_config['ldap_base_dn'],
 				'AUTH_LDAP_EMAIL'		=> $new_config['ldap_email'],
 				'AUTH_LDAP_PASSORD'		=> $new_config['ldap_password'],
 				'AUTH_LDAP_PORT'		=> $new_config['ldap_port'],

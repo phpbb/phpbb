@@ -11,6 +11,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 class phpbb_test_case_helpers
 {
 	protected $expectedTriggerError = false;
@@ -297,5 +299,213 @@ class phpbb_test_case_helpers
 				unlink($path . $file);
 			}
 		}
+	}
+
+	/**
+	* Set working instances of the text_formatter.* services
+	*
+	* If no container is passed, the global $phpbb_container will be used and/or
+	* created if applicable
+	*
+	* @param  ContainerInterface $container   Service container
+	* @param  string             $fixture     Path to the XML fixture
+	* @param  string             $styles_path Path to the styles dir
+	* @return ContainerInterface
+	*/
+	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
+	{
+		static $first_run;
+		global $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$cache_dir = __DIR__ . '/../tmp/';
+
+		// Remove old cache files on first run
+		if (!isset($first_run))
+		{
+			$first_run = 1;
+
+			array_map('unlink', array_merge(
+				glob($cache_dir . 'data_s9e_*'),
+				glob($cache_dir . 's9e_*')
+			));
+		}
+
+		if (!isset($container))
+		{
+			if (!isset($phpbb_container))
+			{
+				$phpbb_container = new phpbb_mock_container_builder;
+			}
+
+			$container = $phpbb_container;
+		}
+
+		if (!isset($fixture))
+		{
+			$fixture = __DIR__ . '/../text_formatter/s9e/fixtures/default_formatting.xml';
+		}
+
+		if (!isset($styles_path))
+		{
+			$styles_path = $phpbb_root_path . 'styles/';
+		}
+
+		$dataset = new DOMDocument;
+		$dataset->load($fixture);
+
+		$tables = array(
+			'phpbb_bbcodes' => array(),
+			'phpbb_smilies' => array(),
+			'phpbb_styles'  => array(),
+			'phpbb_words'   => array()
+		);
+		foreach ($dataset->getElementsByTagName('table') as $table)
+		{
+			$name = $table->getAttribute('name');
+			$columns = array();
+
+			foreach ($table->getElementsByTagName('column') as $column)
+			{
+				$columns[] = $column->textContent;
+			}
+
+			foreach ($table->getElementsByTagName('row') as $row)
+			{
+				$values = array();
+
+				foreach ($row->getElementsByTagName('value') as $value)
+				{
+					$values[] = $value->textContent;
+				}
+
+				$tables[$name][] = array_combine($columns, $values);
+			}
+		}
+
+		// Set up a default style if there's none set
+		if (empty($tables['phpbb_styles']))
+		{
+			$tables['phpbb_styles'][] = array(
+				'style_id' => 1,
+				'style_path' => 'prosilver',
+				'bbcode_bitfield' => 'kNg='
+			);
+		}
+
+		// Mock the DAL, make it return data from the fixture
+		$mb = $this->test_case->getMockBuilder('phpbb\\textformatter\\data_access');
+		$mb->setMethods(array('get_bbcodes', 'get_smilies', 'get_styles', 'get_words'));
+		$mb->setConstructorArgs(array(
+			$this->test_case->getMock('phpbb\\db\\driver\\driver'),
+			'phpbb_bbcodes',
+			'phpbb_smilies',
+			'phpbb_styles',
+			'phpbb_words',
+			$styles_path
+		));
+
+		$dal = $mb->getMock();
+		$container->set('text_formatter.data_access', $dal);
+
+		$dal->expects($this->test_case->any())
+		    ->method('get_bbcodes')
+		    ->will($this->test_case->returnValue($tables['phpbb_bbcodes']));
+		$dal->expects($this->test_case->any())
+		    ->method('get_smilies')
+		    ->will($this->test_case->returnValue($tables['phpbb_smilies']));
+		$dal->expects($this->test_case->any())
+		    ->method('get_styles')
+		    ->will($this->test_case->returnValue($tables['phpbb_styles']));
+		$dal->expects($this->test_case->any())
+		    ->method('get_words')
+		    ->will($this->test_case->returnValue($tables['phpbb_words']));
+
+		// Cache the parser and renderer with a key based on this method's arguments
+		$cache = new \phpbb\cache\driver\file($cache_dir);
+		$prefix = '_s9e_' . md5(serialize(func_get_args()));
+		$cache_key_parser = $prefix . '_parser';
+		$cache_key_renderer = $prefix . '_renderer';
+
+		// Create a path_helper
+		if (!$container->has('path_helper'))
+		{
+			$container->set(
+				'path_helper',
+				new \phpbb\path_helper(
+					new \phpbb\symfony_request(
+						new phpbb_mock_request()
+					),
+					new \phpbb\filesystem(),
+					$this->test_case->getMock('\phpbb\request\request'),
+					$phpbb_root_path,
+					$phpEx
+				)
+			);
+		}
+
+		// Create and register the text_formatter.s9e.factory service
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$container->set('text_formatter.s9e.factory', $factory);
+
+		// Create a user if none was provided, and add the common lang strings
+		if ($container->has('user'))
+		{
+			$user = $container->get('user');
+		}
+		else
+		{
+			$user = new \phpbb\user('\phpbb\datetime');
+			$user->optionset('viewcensors', true);
+			$user->optionset('viewflash', true);
+			$user->optionset('viewimg', true);
+			$user->optionset('viewsmilies', true);
+		}
+		$user->add_lang('common');
+
+		if (!isset($user->style))
+		{
+			$user->style = array('style_id' => 1);
+		}
+
+		// Create and register the text_formatter.s9e.parser service and its alias
+		$parser = new \phpbb\textformatter\s9e\parser(
+			$cache,
+			$cache_key_parser,
+			$user,
+			$factory
+		);
+
+		$container->set('text_formatter.parser', $parser);
+		$container->set('text_formatter.s9e.parser', $parser);
+
+		// Create and register the text_formatter.s9e.renderer service and its alias
+		$renderer = new \phpbb\textformatter\s9e\renderer(
+			$cache,
+			$cache_dir,
+			$cache_key_renderer,
+			$factory
+		);
+
+		$root_path = ($container->hasParameter('core.root_path'))
+		           ? $container->getParameter('core.root_path')
+		           : './';
+		$config = ($container->has('config'))
+		        ? $container->get('config')
+		        : new \phpbb\config\config(array('smilies_path' => 'images/smilies', 'allow_nocensors' => false));
+		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
+
+		// Calls configured in services.yml
+		$renderer->configure_smilies_path($config, $container->get('path_helper'));
+		$renderer->configure_user($user, $config, $auth);
+
+		$container->set('text_formatter.renderer', $renderer);
+		$container->set('text_formatter.s9e.renderer', $renderer);
+
+		// Create and register the text_formatter.s9e.utils service and its alias
+		$utils = new \phpbb\textformatter\s9e\utils;
+		$container->set('text_formatter.utils', $utils);
+		$container->set('text_formatter.s9e.utils', $utils);
+
+		return $container;
 	}
 }

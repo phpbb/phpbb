@@ -376,6 +376,28 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		get_moderators($forum_moderators, $forum_ids_moderator);
 	}
 
+	/**
+	* Event to perform additional actions before the forum list is being generated
+	*
+	* @event core.display_forums_before
+	* @var	array	active_forum_ary	Array with forum data to display active topics
+	* @var	bool	display_moderators	Flag indicating if we display forum moderators
+	* @var	array	forum_moderators	Array with forum moderators list
+	* @var	array	forum_rows			Data array of all forums we display
+	* @var	bool	return_moderators	Flag indicating if moderators list should be returned
+	* @var	array	root_data			Array with the root forum data
+	* @since 3.1.4-RC1
+	*/
+	$vars = array(
+		'active_forum_ary',
+		'display_moderators',
+		'forum_moderators',
+		'forum_rows',
+		'return_moderators',
+		'root_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_before', compact($vars)));
+
 	// Used to tell whatever we have to create a dummy category or not.
 	$last_catless = true;
 	foreach ($forum_rows as $row)
