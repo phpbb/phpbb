@@ -266,7 +266,7 @@ class factory implements \phpbb\textformatter\cache
 		}
 
 		// Load the censored words
-		$censor = $this->dal->get_words();
+		$censor = $this->dal->get_censored_words();
 		if (!empty($censor))
 		{
 			// Use a namespaced tag to avoid collisions

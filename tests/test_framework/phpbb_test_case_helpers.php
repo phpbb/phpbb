@@ -394,7 +394,7 @@ class phpbb_test_case_helpers
 
 		// Mock the DAL, make it return data from the fixture
 		$mb = $this->test_case->getMockBuilder('phpbb\\textformatter\\data_access');
-		$mb->setMethods(array('get_bbcodes', 'get_smilies', 'get_styles', 'get_words'));
+		$mb->setMethods(array('get_bbcodes', 'get_censored_words', 'get_smilies', 'get_styles'));
 		$mb->setConstructorArgs(array(
 			$this->test_case->getMock('phpbb\\db\\driver\\driver'),
 			'phpbb_bbcodes',
@@ -417,7 +417,7 @@ class phpbb_test_case_helpers
 		    ->method('get_styles')
 		    ->will($this->test_case->returnValue($tables['phpbb_styles']));
 		$dal->expects($this->test_case->any())
-		    ->method('get_words')
+		    ->method('get_censored_words')
 		    ->will($this->test_case->returnValue($tables['phpbb_words']));
 
 		// Cache the parser and renderer with a key based on this method's arguments

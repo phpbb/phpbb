@@ -217,7 +217,7 @@ class data_access
 	*
 	* @return array
 	*/
-	public function get_words()
+	public function get_censored_words()
 	{
 		$sql = 'SELECT word, replacement FROM ' . $this->words_table;
 		$result = $this->db->sql_query($sql);
