@@ -18,7 +18,7 @@ abstract class renderer
 	/**
 	* Render given text
 	*
-	* @param  string $text Text, as parsed by the text_formatter.parser service
+	* @param  string $text Text, as parsed by something that implements \phpbb\textformatter\parser
 	* @return string
 	*/
 	abstract public function render($text);
