@@ -26,8 +26,6 @@ abstract class renderer
 	/**
 	* Automatically set the smilies path based on config
 	*
-	* Called by the service container
-	*
 	* @param  phpbb\config\config $config
 	* @param  phpbb\path_helper   $path_helper
 	* @return null
@@ -46,7 +44,6 @@ abstract class renderer
 	* Configure this renderer as per the user's settings
 	*
 	* Should set the locale as well as the viewcensor/viewflash/viewimg/viewsmilies options.
-	* Called by the service container
 	*
 	* @param  phpbb\user          $user
 	* @param  phpbb\config\config $config
