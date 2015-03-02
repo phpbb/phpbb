@@ -13,7 +13,7 @@
 
 namespace phpbb\textformatter;
 
-abstract class parser
+interface parser
 {
 	/**
 	* Parse given text
@@ -21,7 +21,7 @@ abstract class parser
 	* @param  string $text
 	* @return string
 	*/
-	abstract public function parse($text);
+	public function parse($text);
 
 	/**
 	* Disable a specific BBCode
@@ -29,27 +29,27 @@ abstract class parser
 	* @param  string $name BBCode name
 	* @return null
 	*/
-	abstract public function disable_bbcode($name);
+	public function disable_bbcode($name);
 
 	/**
 	* Disable BBCodes in general
 	*/
-	abstract public function disable_bbcodes();
+	public function disable_bbcodes();
 
 	/**
 	* Disable the censor
 	*/
-	abstract public function disable_censor();
+	public function disable_censor();
 
 	/**
 	* Disable magic URLs
 	*/
-	abstract public function disable_magic_url();
+	public function disable_magic_url();
 
 	/**
 	* Disable smilies
 	*/
-	abstract public function disable_smilies();
+	public function disable_smilies();
 
 	/**
 	* Enable a specific BBCode
@@ -57,34 +57,34 @@ abstract class parser
 	* @param  string $name BBCode name
 	* @return null
 	*/
-	abstract public function enable_bbcode($name);
+	public function enable_bbcode($name);
 
 	/**
 	* Enable BBCodes in general
 	*/
-	abstract public function enable_bbcodes();
+	public function enable_bbcodes();
 
 	/**
 	* Enable the censor
 	*/
-	abstract public function enable_censor();
+	public function enable_censor();
 
 	/**
 	* Enable magic URLs
 	*/
-	abstract public function enable_magic_url();
+	public function enable_magic_url();
 
 	/**
 	* Enable smilies
 	*/
-	abstract public function enable_smilies();
+	public function enable_smilies();
 
 	/**
 	* Get the list of errors that were generated during last parsing
 	*
 	* @return array
 	*/
-	abstract public function get_errors();
+	public function get_errors();
 
 	/**
 	* Set a variable to be used by the parser
@@ -99,7 +99,7 @@ abstract class parser
 	* @param  mixed  $value
 	* @return null
 	*/
-	abstract public function set_var($name, $value);
+	public function set_var($name, $value);
 
 	/**
 	* Set multiple variables to be used by the parser
@@ -107,11 +107,5 @@ abstract class parser
 	* @param  array Associative array of [name => value]
 	* @return null
 	*/
-	public function set_vars(array $vars)
-	{
-		foreach ($vars as $name => $value)
-		{
-			$this->set_var($name, $value);
-		}
-	}
+	public function set_vars(array $vars);
 }

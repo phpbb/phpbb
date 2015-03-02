@@ -19,7 +19,7 @@ use s9e\TextFormatter\Parser\Logger;
 /**
 * s9e\TextFormatter\Parser adapter
 */
-class parser extends \phpbb\textformatter\parser
+class parser implements \phpbb\textformatter\parser
 {
 	/**
 	* @var s9e\TextFormatter\Parser
@@ -216,6 +216,17 @@ class parser extends \phpbb\textformatter\parser
 		else
 		{
 			$this->parser->registeredVars[$name] = $value;
+		}
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_vars(array $vars)
+	{
+		foreach ($vars as $name => $value)
+		{
+			$this->set_var($name, $value);
 		}
 	}
 
