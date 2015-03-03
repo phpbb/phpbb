@@ -18,6 +18,8 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\feed\base;
+use phpbb\feed\exception\feed_unavailable_exception;
+use phpbb\feed\exception\unauthorized_exception;
 use phpbb\feed\helper as feed_helper;
 use phpbb\controller\helper as controller_helper;
 use phpbb\symfony_request;
@@ -255,6 +257,31 @@ class feed
 	 * @return Response
 	 */
 	protected function send_feed(base $feed)
+	{
+		try
+		{
+			return $this->send_feed_do($feed);
+		}
+		catch (feed_unavailable_exception $e)
+		{
+			throw new http_exception(Response::HTTP_NOT_FOUND, $e->getMessage(), $e->get_parameters(), $e);
+		}
+		catch (unauthorized_exception $e)
+		{
+			throw new http_exception(Response::HTTP_FORBIDDEN, $e->getMessage(), $e->get_parameters(), $e);
+		}
+	}
+
+	/**
+	 * Really send the feed
+	 *
+	 * @param base $feed
+	 *
+	 * @return Response
+	 *
+	 * @throw exception\feed_exception
+	 */
+	protected function send_feed_do(base $feed)
 	{
 		$feed_updated_time = 0;
 		$item_vars = array();

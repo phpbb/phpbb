@@ -13,6 +13,10 @@
 
 namespace phpbb\feed;
 
+use phpbb\feed\exception\no_feed_exception;
+use phpbb\feed\exception\no_forum_exception;
+use phpbb\feed\exception\unauthorized_forum_exception;
+
 /**
 * Forum feed
 *
@@ -49,25 +53,25 @@ class forum extends \phpbb\feed\post_base
 
 		if (empty($this->forum_data))
 		{
-			trigger_error('NO_FORUM');
+			throw new no_forum_exception($this->forum_id);
 		}
 
 		// Forum needs to be postable
 		if ($this->forum_data['forum_type'] != FORUM_POST)
 		{
-			trigger_error('NO_FEED');
+			throw new no_feed_exception();
 		}
 
 		// Make sure forum is not excluded from feed
 		if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $this->forum_data['forum_options']))
 		{
-			trigger_error('NO_FEED');
+			throw new no_feed_exception();
 		}
 
 		// Make sure we can read this forum
 		if (!$this->auth->acl_get('f_read', $this->forum_id))
 		{
-			trigger_error('SORRY_AUTH_READ');
+			throw new unauthorized_forum_exception($this->forum_id);
 		}
 
 		// Make sure forum is not passworded or user is authed
@@ -77,7 +81,7 @@ class forum extends \phpbb\feed\post_base
 
 			if (isset($forum_ids_passworded[$this->forum_id]))
 			{
-				trigger_error('SORRY_AUTH_READ');
+				throw new unauthorized_forum_exception($this->forum_id);
 			}
 
 			unset($forum_ids_passworded);
