@@ -28,8 +28,6 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			'<?php class renderer_foo { public function setParameter() {} }'
 		);
 
-		$mock = $this->getMockForAbstractClass('s9e\\TextFormatter\\Renderer');
-
 		$cache = $this->getMock('phpbb_mock_cache');
 		$cache->expects($this->once())
 		      ->method('get')
