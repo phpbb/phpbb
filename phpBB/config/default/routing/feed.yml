@@ -21,10 +21,14 @@ phpbb_feed_topics_new:
 phpbb_feed_forum:
     path: /forum/{forum_id}
     defaults: { _controller: phpbb.feed.controller:forum }
+    requirements:
+        forum_id: \d+
 
 phpbb_feed_topic:
     path: /topic/{topic_id}
     defaults: { _controller: phpbb.feed.controller:topic }
+    requirements:
+        topic_id: \d+
 
 phpbb_feed_overall:
     path: /{mode}
