@@ -354,20 +354,18 @@ class factory implements \phpbb\textformatter\cache
 		}
 
 		// Replace custom tokens and normalize templates
-		foreach ($templates as $bbcode_name => &$style_templates)
+		foreach ($templates as $bbcode_name => $style_templates)
 		{
-			foreach ($style_templates as &$template)
+			foreach ($style_templates as $i => $template)
 			{
 				if (isset($this->custom_tokens[$bbcode_name]))
 				{
 					$template = strtr($template, $this->custom_tokens[$bbcode_name]);
 				}
 
-				$template = $configurator->templateNormalizer->normalizeTemplate($template);
+				$templates[$bbcode_name][$i] = $configurator->templateNormalizer->normalizeTemplate($template);
 			}
-			unset($template);
 		}
-		unset($style_templates);
 
 		$bbcodes = array();
 		foreach ($this->default_definitions as $bbcode_name => $usage)
