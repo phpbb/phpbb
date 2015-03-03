@@ -8,6 +8,7 @@
 	cursor: pointer;
 	display: inline-block;
 	height: 18px;
+	line-height: 18px;
 	font-size: 13px;
 	white-space: nowrap;
 	border: 1px solid transparent;
