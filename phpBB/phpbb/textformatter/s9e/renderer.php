@@ -19,12 +19,12 @@ namespace phpbb\textformatter\s9e;
 class renderer extends \phpbb\textformatter\renderer
 {
 	/**
-	* @var s9e\TextFormatter\Plugins\Censor\Helper
+	* @var \s9e\TextFormatter\Plugins\Censor\Helper
 	*/
 	protected $censor;
 
 	/**
-	* @var s9e\TextFormatter\Renderer
+	* @var \s9e\TextFormatter\Renderer
 	*/
 	protected $renderer;
 

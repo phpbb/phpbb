@@ -22,12 +22,12 @@ use s9e\TextFormatter\Parser\Logger;
 class parser implements \phpbb\textformatter\parser
 {
 	/**
-	* @var s9e\TextFormatter\Parser
+	* @var \s9e\TextFormatter\Parser
 	*/
 	protected $parser;
 
 	/**
-	* @var phpbb\user User object, used for translating errors
+	* @var \phpbb\user User object, used for translating errors
 	*/
 	protected $user;
 
