@@ -13,8 +13,6 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
-require_once __DIR__ . '/../mock/user.php';
-require_once __DIR__ . '/../mock/cache.php';
 
 class phpbb_text_processing_generate_text_for_edit_test extends phpbb_test_case
 {

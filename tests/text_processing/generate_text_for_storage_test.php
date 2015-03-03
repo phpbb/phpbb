@@ -14,7 +14,6 @@
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
 require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
-require_once __DIR__ . '/../mock/container_builder.php';
 
 class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_case
 {
