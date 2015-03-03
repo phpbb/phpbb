@@ -88,7 +88,8 @@ class renderer extends \phpbb\textformatter\renderer
 
 		if (!isset($renderer))
 		{
-			extract($factory->regenerate());
+			$objects  = $factory->regenerate();
+			$renderer = $objects['renderer'];
 		}
 
 		if (isset($censor))

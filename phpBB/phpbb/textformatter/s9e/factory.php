@@ -308,8 +308,9 @@ class factory implements \phpbb\textformatter\cache
 			unset($configurator->tags['censor:tag']);
 		}
 
-		// Create $parser and $renderer
-		extract($configurator->finalize());
+		$objects  = $configurator->finalize();
+		$parser   = $objects['parser'];
+		$renderer = $objects['renderer'];
 
 		// Cache the parser as-is
 		$this->cache->put($this->cache_key_parser, $parser);
