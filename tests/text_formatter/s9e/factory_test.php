@@ -78,9 +78,6 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		// This custom BBCode should be set
 		$this->assertTrue(isset($configurator->BBCodes['CUSTOM']));
 
-		// This unsafe custom BBCode will trigger an exception and should be ignored
-		$this->assertFalse(isset($configurator->BBCodes['UNSAFE']));
-
 		$this->assertTrue(isset($configurator->Emoticons[':D']));
 	}
 
@@ -174,6 +171,21 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 		$original = '[spoiler=N:O:P:E]text[/spoiler]';
 		$expected = $original;
+		$this->assertSame($expected, $renderer->render($parser->parse($original)));
+	}
+
+	/**
+	* @testdox Accepts unsafe custom BBCodes
+	*/
+	public function test_unsafe_bbcode()
+	{
+		$fixture = __DIR__ . '/fixtures/unsafe_bbcode.xml';
+		$container = $this->get_test_case_helpers()->set_s9e_services(null, $fixture);
+		$parser = $container->get('text_formatter.parser');
+		$renderer = $container->get('text_formatter.renderer');
+
+		$original = '[xss=javascript:alert(1)]text[/xss]';
+		$expected = '<a href="javascript:alert(1)">text</a>';
 		$this->assertSame($expected, $renderer->render($parser->parse($original)));
 	}
 }

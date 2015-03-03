@@ -15,6 +15,7 @@ namespace phpbb\textformatter\s9e;
 
 use s9e\TextFormatter\Configurator;
 use s9e\TextFormatter\Configurator\Items\AttributeFilters\Regexp as RegexpFilter;
+use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 
 /**
 * Creates s9e\TextFormatter objects
@@ -236,7 +237,7 @@ class factory implements \phpbb\textformatter\cache
 
 			try
 			{
-				$configurator->BBCodes->addCustom($row['bbcode_match'], $tpl);
+				$configurator->BBCodes->addCustom($row['bbcode_match'], new UnsafeTemplate($tpl));
 			}
 			catch (\Exception $e)
 			{
