@@ -266,6 +266,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					'id' => $this->data['forums']['Feeds #exclude'],
 					'contents_lang' => array('NO_FEED'),
 					'invalid' => true,
+					'response_code' => 404,
 				),
 			),
 			't' => array(
@@ -273,6 +274,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					'id' => $this->data['topics']['Feeds #exclude - Topic #1'],
 					'contents_lang' => array('NO_FEED'),
 					'invalid' => true,
+					'response_code' => 404,
 				),
 			),
 			'overall' => array(
@@ -710,8 +712,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			't' => array(
 				array(
 					'id' => $this->data['topics']['Feeds #1 - Topic #2'],
-					'contents_lang' => array('SORRY_AUTH_READ'),
+					'contents_lang' => array('SORRY_AUTH_READ_TOPIC'),
 					'invalid' => true,
+					'response_code' => 403,
 				),
 			),
 			'overall' => array(
@@ -958,8 +961,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			't' => array(
 				array(
 					'id' => $this->data['topics']['Feeds #1.1 - Topic #3'],
-					'contents_lang' => array('SORRY_AUTH_READ'),
+					'contents_lang' => array('SORRY_AUTH_READ_TOPIC'),
 					'invalid' => true,
+					'response_code' => 403,
 				),
 			),
 			'overall' => array(
@@ -1419,7 +1423,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		}
 		else
 		{
-			self::assert_response_html();
+			self::assert_response_html($data['response_code'] ?: 202);
 
 			if (!empty($data['contents_lang']))
 			{
