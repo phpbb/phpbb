@@ -34,7 +34,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 		$cache->expects($this->once())
 		      ->method('get')
 		      ->with('_foo_renderer')
-		      ->will($this->returnValue(array('class' => 'renderer_foo', 'renderer' => serialize($mock))));
+		      ->will($this->returnValue(array('class' => 'renderer_foo')));
 
 		$factory = $this->getMockBuilder('phpbb\\textformatter\\s9e\\factory')
 		                ->disableOriginalConstructor()

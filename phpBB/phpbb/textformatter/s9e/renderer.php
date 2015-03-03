@@ -77,7 +77,7 @@ class renderer extends \phpbb\textformatter\renderer
 
 			if (class_exists($class, false))
 			{
-				$renderer = unserialize($renderer_data['renderer']);
+				$renderer = new $class;
 			}
 
 			if (isset($renderer_data['censor']))

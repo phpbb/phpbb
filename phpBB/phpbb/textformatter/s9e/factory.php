@@ -314,13 +314,8 @@ class factory implements \phpbb\textformatter\cache
 		// Cache the parser as-is
 		$this->cache->put($this->cache_key_parser, $parser);
 
-		// We need to cache the name of the renderer's generated class so that we can load the class
-		// before the renderer is unserialized. That's why we save them together, with the renderer
-		// in serialized form
-		$renderer_data = array(
-			'class'    => get_class($renderer),
-			'renderer' => serialize($renderer)
-		);
+		// We need to cache the name of the renderer's generated class
+		$renderer_data = array('class' => get_class($renderer));
 		if (isset($censor))
 		{
 			$renderer_data['censor'] = $censor;
