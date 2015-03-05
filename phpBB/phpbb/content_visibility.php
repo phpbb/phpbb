@@ -143,12 +143,43 @@ class content_visibility
 	*/
 	public function get_visibility_sql($mode, $forum_id, $table_alias = '')
 	{
-		if ($this->auth->acl_get('m_approve', $forum_id))
+		$where_sql = '';
+
+		$get_visibility_sql_overwrite = false;
+
+		/**
+		* Allow changing the result of calling get_visibility_sql
+		*
+		* @event core.phpbb_content_visibility_get_visibility_sql_before
+		* @var	string		where_sql						Extra elements to insert in the WHERE clause. It must end with either "AND" or "OR"
+		* @var	string		mode							Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_id						The forum id which is used for permission checks
+		* @var	string		table_alias						Table alias to prefix in SQL queries
+		* @var	mixed		get_visibility_sql_overwrite	If false, get_forums_visibility_sql continues normally
+		* 													Otherwise, forces the function to return get_visibility_sql_overwrite after executing the event
+		*
+		* @since 3.1.4-RC1
+		*/
+		$vars = array(
+			'where_sql',
+			'mode',
+			'forum_id',
+			'table_alias',
+			'get_visibility_sql_overwrite',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_visibility_sql_before', compact($vars)));
+
+		if ($get_visibility_sql_overwrite !== false)
 		{
-			return '1 = 1';
+			return $get_visibility_sql_overwrite;
 		}
 
-		return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+		if ($this->auth->acl_get('m_approve', $forum_id))
+		{
+			return $where_sql . '1 = 1';
+		}
+
+		return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 	}
 
 	/**
@@ -206,7 +237,7 @@ class content_visibility
 			if (!sizeof($forum_ids))
 			{
 				// The user can see all posts/topics in all specified forums
-				return $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
+				return $where_sql . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
 			}
 			else
 			{
@@ -217,8 +248,8 @@ class content_visibility
 		else
 		{
 			// The user is just a normal user
-			return $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true);
+			return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
+				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . ')';
 		}
 
 		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
