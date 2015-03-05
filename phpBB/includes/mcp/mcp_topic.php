@@ -261,6 +261,8 @@ function mcp_topic_view($id, $mode, $action)
 		* @var	int		current_row_number	Number of the post on this page
 		* @var	array	post_row			Template block array of the current post
 		* @var	array	row					Array with original post and user data
+		* @var	array	topic_info			Array with topic data
+		* @var	int		total				Total posts count
 		* @since 3.1.4-RC1
 		*/
 		$vars = array(
@@ -272,6 +274,8 @@ function mcp_topic_view($id, $mode, $action)
 			'current_row_number',
 			'post_row',
 			'row',
+			'topic_info',
+			'total',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.mcp_topic_review_modify_row', compact($vars)));
 
