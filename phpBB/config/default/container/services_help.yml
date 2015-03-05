@@ -1,0 +1,10 @@
+services:
+    phpbb.help.controller:
+        class: phpbb\help\controller\help
+        arguments:
+            - @controller.helper
+            - @dispatcher
+            - @template
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
