@@ -94,7 +94,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	* Modify the default vars before composing a PM
 	*
 	* @event core.ucp_pm_compose_modify_data
-	* @var	int		msg_id					topic_id in the page request
+	* @var	int		msg_id					post_id in the page request
 	* @var	int		to_user_id				The id of whom the message is to
 	* @var	int		to_group_id				The id of the group the message is to
 	* @var	bool	submit					Whether the form has been submitted
