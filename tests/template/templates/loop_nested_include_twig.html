@@ -1,0 +1,4 @@
+{% for test_loop_inner in test_loop %}
+	[{{ test_loop_inner.foo }}
+	|{% INCLUDE 'loop_nested_include1_twig.html' %}]
+{% endfor %}

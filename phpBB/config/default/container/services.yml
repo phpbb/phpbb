@@ -8,6 +8,7 @@ imports:
     - { resource: services_db.yml }
     - { resource: services_event.yml }
     - { resource: services_feed.yml }
+    - { resource: services_help.yml }
     - { resource: services_mimetype_guesser.yml }
     - { resource: services_notification.yml }
     - { resource: services_password.yml }

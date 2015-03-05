@@ -41,7 +41,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 	public function test_router_find_files()
 	{
 		$router = new \phpbb\routing\router($this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
-		$router->find_routing_files($this->extension_manager->all_enabled());
+		$router->find_routing_files($this->extension_manager->all_enabled(false));
 		$routes = $router->find(__DIR__)->get_routes();
 
 		// This will need to be updated if any new routes are defined
