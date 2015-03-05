@@ -491,21 +491,27 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				'inner_value',
 			),
-			// Disable: needs Twig 1.14.2
-			/*array(
+			array(
 				'loop_expressions.html',
+				array(),
 				array('loop' => array(array(),array(),array(),array(),array(),array()),),
 				array(),
-				array(),
-				'yesnonoyesnonoyesnoyesnonoyes',
+				'yesnononoyesnoyesnonoyesnono',
 			),
 			array(
 				'loop_expressions_twig.html',
+				array(),
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
+			),
+			array(
+				'loop_expressions_twig2.html',
 				array('loop' => array(array(),array(),array(),array(),array(),array()),),
 				array(),
 				array(),
-				'yesnonoyesnonoyesnoyesnonoyes',
-			),*/
+				'yesnononoyesnoyesnonoyesnono',
+			),
 		);
 	}
 
