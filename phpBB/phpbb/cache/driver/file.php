@@ -285,6 +285,7 @@ class file extends \phpbb\cache\driver\base
 		if ($var_name[0] == '_')
 		{
 			global $phpEx;
+			$var_name = $this->clean_varname($var_name);
 			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
 		else
@@ -340,6 +341,7 @@ class file extends \phpbb\cache\driver\base
 	{
 		global $phpEx;
 
+		$filename = $this->clean_varname($filename);
 		$file = "{$this->cache_dir}$filename.$phpEx";
 
 		$type = substr($filename, 0, strpos($filename, '_'));
@@ -522,6 +524,7 @@ class file extends \phpbb\cache\driver\base
 	{
 		global $phpEx;
 
+		$filename = $this->clean_varname($filename);
 		$file = "{$this->cache_dir}$filename.$phpEx";
 
 		$lock = new \phpbb\lock\flock($file);
@@ -589,5 +592,16 @@ class file extends \phpbb\cache\driver\base
 		$lock->release();
 
 		return $return_value;
+	}
+
+	/**
+	* Replace slashes in the file name
+	*
+	* @param string $varname name of a cache variable
+	* @return string $varname name that is safe to use as a filename
+	*/
+	protected function clean_varname($varname)
+	{
+		return str_replace('/', '-', $varname);
 	}
 }
