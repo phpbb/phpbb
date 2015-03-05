@@ -611,6 +611,14 @@ overall_header_body_before
 * Since: 3.1.0-b2
 * Purpose: Add content to the header body
 
+overall_header_navbar_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the navigation bar
+
 overall_header_breadcrumb_append
 ===
 * Locations:
