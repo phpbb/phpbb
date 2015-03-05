@@ -146,6 +146,7 @@ class content_visibility
 		$where_sql = '';
 
 		$get_visibility_sql_overwrite = false;
+
 		/**
 		* Allow changing the result of calling get_visibility_sql
 		*
