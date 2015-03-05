@@ -89,6 +89,25 @@ class mcp_reports
 
 					'ORDER_BY'	=> 'report_closed ASC',
 				);
+
+				/**
+				* Allow changing the query to obtain the user-submitted report.
+				*
+				* @event core.mcp_reports_report_details_query_before
+				* @var	array	sql_ary			The array in the format of the query builder with the query
+				* @var	mixed	forum_id		The forum_id, the number in the f GET parameter
+				* @var	int		post_id			The post_id of the report being viewed (if 0, it is meaningless)
+				* @var	int		report_id		The report_id of the report being viewed
+				* @since 3.1.4-RC1
+				*/
+				$vars = array(
+					'sql_ary',
+					'forum_id',
+					'post_id',
+					'report_id',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_reports_report_details_query_before', compact($vars)));
+
 				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query_limit($sql, 1);
 				$report = $db->sql_fetchrow($result);
