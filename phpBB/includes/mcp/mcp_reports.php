@@ -73,14 +73,23 @@ class mcp_reports
 
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
+				$sql_ary = array(
+					'SELECT'	=> 'r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, r.reported_post_uid, r.reported_post_bitfield, r.reported_post_enable_magic_url, r.reported_post_enable_smilies, r.reported_post_enable_bbcode, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour',
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, r.reported_post_uid, r.reported_post_bitfield, r.reported_post_enable_magic_url, r.reported_post_enable_smilies, r.reported_post_enable_bbcode, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
-					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
-					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
+					'FROM'		=> array(
+						REPORTS_TABLE			=> 'r',
+						REPORTS_REASONS_TABLE	=> 'rr',
+						USERS_TABLE				=> 'u',
+					),
+
+					'WHERE'		=> '' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id
-						AND r.pm_id = 0
-					ORDER BY report_closed ASC';
+						AND r.pm_id = 0',
+
+					'ORDER_BY'	=> 'report_closed ASC',
+				);
+				$sql = $db->sql_build_query('SELECT', $sql_ary);
 				$result = $db->sql_query_limit($sql, 1);
 				$report = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
