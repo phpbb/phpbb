@@ -129,7 +129,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*/
 	public function configure_user(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)
 	{
-		$censor =  $user->optionget('viewcensors') || !$config['allow_nocensors'] || !$auth->acl_get('u_chgcensors');
+		$censor = $user->optionget('viewcensors') || !$config['allow_nocensors'] || !$auth->acl_get('u_chgcensors');
 
 		$this->set_viewcensors($censor);
 		$this->set_viewflash($user->optionget('viewflash'));
