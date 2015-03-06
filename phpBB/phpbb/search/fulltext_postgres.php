@@ -419,13 +419,13 @@ class fulltext_postgres extends \phpbb\search\base
 		if ($type == 'posts')
 		{
 			$sql_select_type = 'SELECT';
-			$sql_select .= 'p.post_id';
+			$sql_select = 'p.post_id';
 			$field = 'post_id';
 		}
 		else
 		{
 			$sql_select_type = 'SELECT_DISTINCT';
-			$sql_select .= 't.topic_id';
+			$sql_select = 't.topic_id';
 			$field = 'topic_id';
 		}
 
