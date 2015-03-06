@@ -23,7 +23,7 @@ use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 class factory implements \phpbb\textformatter\cache_interface
 {
 	/**
-	* @var \phpbb\cache\driver_interface $cache
+	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $cache;
 
@@ -103,12 +103,11 @@ class factory implements \phpbb\textformatter\cache_interface
 	/**
 	* Constructor
 	*
-	* @param  \phpbb\textformatter\data_access $data_access
-	* @param  \phpbb\cache\driver\driver_interface $cache
-	* @param  string $cache_dir          Path to the cache dir
-	* @param  string $cache_key_parser   Cache key used for the parser
-	* @param  string $cache_key_renderer Cache key used for the renderer
-	* @return null
+	* @param \phpbb\textformatter\data_access $data_access
+	* @param \phpbb\cache\driver\driver_interface $cache
+	* @param string $cache_dir          Path to the cache dir
+	* @param string $cache_key_parser   Cache key used for the parser
+	* @param string $cache_key_renderer Cache key used for the renderer
 	*/
 	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, $cache_dir, $cache_key_parser, $cache_key_renderer)
 	{

@@ -104,7 +104,7 @@ interface parser_interface
 	/**
 	* Set multiple variables to be used by the parser
 	*
-	* @param  array Associative array of [name => value]
+	* @param  array $vars Associative array of [name => value]
 	* @return null
 	*/
 	public function set_vars(array $vars);

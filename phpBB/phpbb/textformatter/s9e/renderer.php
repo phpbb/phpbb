@@ -51,11 +51,10 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* Constructor
 	*
-	* @param  \phpbb\cache\driver\driver_interface $cache
-	* @param  string $cache_dir Path to the cache dir
-	* @param  string $key Cache key
-	* @param  factory $factory
-	* @return null
+	* @param \phpbb\cache\driver\driver_interface $cache
+	* @param string $cache_dir Path to the cache dir
+	* @param string $key Cache key
+	* @param factory $factory
 	*/
 	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, factory $factory)
 	{
@@ -153,7 +152,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* Return the instance of s9e\TextFormatter\Renderer used by this object
 	*
-	* @return s9e\TextFormatter\Renderer
+	* @return \s9e\TextFormatter\Renderer
 	*/
 	public function get_renderer()
 	{

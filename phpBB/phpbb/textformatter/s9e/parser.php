@@ -34,11 +34,10 @@ class parser implements \phpbb\textformatter\parser_interface
 	/**
 	* Constructor
 	*
-	* @param  \phpbb\cache\driver_interface $cache
-	* @param  string $key Cache key
-	* @param  \phpbb\user $user
-	* @param  factory $factory
-	* @return null
+	* @param \phpbb\cache\driver_interface $cache
+	* @param string $key Cache key
+	* @param \phpbb\user $user
+	* @param factory $factory
 	*/
 	public function __construct(\phpbb\cache\driver\driver_interface $cache, $key, \phpbb\user $user, factory $factory)
 	{
@@ -194,7 +193,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	/**
 	* Return the instance of s9e\TextFormatter\Parser used by this object
 	*
-	* @return s9e\TextFormatter\Parser
+	* @return \s9e\TextFormatter\Parser
 	*/
 	public function get_parser()
 	{
