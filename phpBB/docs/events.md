@@ -177,6 +177,27 @@ acp_ranks_list_header_before
 * Purpose: Add content after the last header-column (but before the action column)
 in the ranks list in the ACP
 
+acp_users_profile_before
+===
+* Locations:
+    + adm/style/acp_users_profile.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the profile details when editing a user in the ACP
+
+acp_users_profile_after
+===
+* Locations:
+    + adm/style/acp_users_profile.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the profile details but before the custom profile fields when editing a user in the ACP
+
+acp_users_profile_custom_after
+===
+* Locations:
+    + adm/style/acp_users_profile.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the the custom profile fields when editing a user in the ACP
+
 acp_simple_footer_after
 ===
 * Location: adm/style/simple_footer.html
