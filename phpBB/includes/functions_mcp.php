@@ -423,28 +423,6 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 					AND t.topic_id = p.topic_id
 					AND t.topic_visibility <> p.post_visibility';
 
-			/**
-			* This event allows you to control the SQL query to retrieve the list of unapproved and deleted posts
-			*
-			* @event core.mcp_sorting_unapproved_deleted_posts_query_before
-			* @var	string	sql					The current SQL search string
-			* @var	int		forum_id			The forum id of the posts the user is trying to access
-			* @var	int		topic_id			The topic id of the posts the user is trying to access
-			* @var	int		min_time			Integer with the minimum post time that the user is searching for
-			* @var	int		visibility_const	Integer with one of the possible ITEM_* constant values
-			* @var	string	where_sql			Extra information included in the WHERE clause. It must end with "WHERE" or "AND" or "OR"
-			* @since 3.1.4-RC1
-			*/
-			$vars = array(
-				'sql',
-				'forum_id',
-				'topic_id',
-				'min_time',
-				'visibility_const',
-				'where_sql',
-			);
-			extract($phpbb_dispatcher->trigger_event('core.mcp_sorting_unapproved_deleted_posts_query_before', compact($vars)));
-
 			if ($min_time)
 			{
 				$sql .= ' AND post_time >= ' . $min_time;
@@ -575,6 +553,56 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			break;
 	}
 
+	// Default total to -1 to allow editing by the event
+	$total = -1;
+
+	/**
+	* This event allows you to control the SQL query used to get the total number
+	* of reports the user can access.
+	*
+	* This total is used for the pagination and for displaying the total number
+	* of reports to the user
+	*
+	*
+	* @event core.mcp_sorting_query_before
+	* @var	string	sql					The current SQL search string
+	* @var	string	mode				An id related to the module(s) the user is viewing
+	* @var	string	type				Which kind of information is this being used for displaying. Posts, topics, etc...
+	* @var	int		forum_id			The forum id of the posts the user is trying to access, if not 0
+	* @var	int		topic_id			The topic id of the posts the user is trying to access, if not 0
+	* @var	int		sort_days			The max age of the oldest report to be shown, in days
+	* @var	string	sort_key			The way the user has decided to sort the data.
+	*									The valid values must be in the keys of the sort_by_* variables
+	* @var	string	sort_dir			Either 'd' for "DESC" or 'a' for 'ASC' in the SQL query
+	* @var	int		limit_days			The possible max ages of the oldest report for the user to choose, in days.
+	* @var	array	sort_by_sql			SQL text (values) for the possible names of the ways of sorting data (keys).
+	* @var	array	sort_by_text		Language text (values) for the possible names of the ways of sorting data (keys).
+	* @var	int		min_time			Integer with the minimum post time that the user is searching for
+	* @var	int		limit_time_sql		Time limiting options used in the SQL query.
+	* @var	int		total				The total number of reports that exist. Only set if you want to override the result
+	* @var	string	where_sql			Extra information included in the WHERE clause. It must end with "WHERE" or "AND" or "OR".
+	*									Set to "WHERE" and set total above -1 to override the total value
+	* @since 3.1.4-RC1
+	*/
+	$vars = array(
+		'sql',
+		'mode',
+		'type',
+		'forum_id',
+		'topic_id',
+		'sort_days',
+		'sort_key',
+		'sort_dir',
+		'limit_days',
+		'sort_by_sql',
+		'sort_by_text',
+		'min_time',
+		'limit_time_sql',
+		'total',
+		'where_sql',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.mcp_sorting_query_before', compact($vars)));
+
 	if (!isset($sort_by_sql[$sort_key]))
 	{
 		$sort_key = $default_key;
@@ -606,7 +634,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 		$total = (int) $db->sql_fetchfield('total');
 		$db->sql_freeresult($result);
 	}
-	else
+	else if ($total < -1)
 	{
 		$total = -1;
 	}
