@@ -486,7 +486,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$sql_select = 'SQL_CALC_FOUND_ROWS ' . $sql_select;
 		}
 
-		$sql_where_options = ($sql_sort_join) ? $sql_sort_join : ' 1=1 ';
+		$sql_where_options = ($sql_sort_join) ? ' AND ' . $sql_sort_join : '';
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
@@ -691,7 +691,7 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $this->db->sql_build_query('SELECT', $sql_ary);
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
