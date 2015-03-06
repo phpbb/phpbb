@@ -486,9 +486,6 @@ class phpbb_test_case_helpers
 			$factory
 		);
 
-		$root_path = ($container->hasParameter('core.root_path'))
-		           ? $container->getParameter('core.root_path')
-		           : './';
 		$config = ($container->has('config'))
 		        ? $container->get('config')
 		        : new \phpbb\config\config(array('smilies_path' => 'images/smilies', 'allow_nocensors' => false));
