@@ -409,7 +409,7 @@ class fulltext_mysql extends \phpbb\search\base
 		switch ($sql_sort[0])
 		{
 			case 'u':
-				$sql_ary['FROM'][USERS_TABLE] = 'u'
+				$sql_ary['FROM'][USERS_TABLE] = 'u';
 				$sql_sort_join = ($type == 'posts') ? 'u.user_id = p.poster_id' : 'u.user_id = t.topic_poster';
 			break;
 
@@ -457,7 +457,7 @@ class fulltext_mysql extends \phpbb\search\base
 		if ($type == 'posts')
 		{
 			$sql_select_type = 'SELECT';
-			$sql_select .= 'p.post_id'
+			$sql_select .= 'p.post_id';
 			$field = 'post_id';
 		}
 		else
@@ -486,7 +486,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$sql_select = 'SQL_CALC_FOUND_ROWS ' . $sql_select;
 		}
 
-		$sql_where_options = ($sql_sort_join) ? $sql_sort_join : '';
+		$sql_where_options = ($sql_sort_join) ? $sql_sort_join : ' 1=1 ';
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
@@ -616,7 +616,7 @@ class fulltext_mysql extends \phpbb\search\base
 		switch ($sql_ary['ORDER_BY'][0])
 		{
 			case 'u':
-				$sql_ary['FROM'][USERS_TABLE] = 'u'
+				$sql_ary['FROM'][USERS_TABLE] = 'u';
 				$sql_sort_join = ($type == 'posts') ? 'u.user_id = p.poster_id' : 'u.user_id = t.topic_poster';
 			break;
 
@@ -685,7 +685,7 @@ class fulltext_mysql extends \phpbb\search\base
 					$sql_fora
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
-					$sql_time"
+					$sql_time";
 			$sql_ary['GROUP_BY'] = 't.topic_id';
 			$field = 'topic_id';
 		}
