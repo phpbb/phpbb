@@ -16,7 +16,7 @@ namespace phpbb\textformatter;
 /**
 * Used to manipulate a parsed text
 */
-abstract class utils
+interface utils_interface
 {
 	/**
 	* Replace BBCodes and other formatting elements with whitespace
@@ -26,7 +26,7 @@ abstract class utils
 	* @param  string $text
 	* @return string
 	*/
-	abstract public function clean_formatting($text);
+	public function clean_formatting($text);
 
 	/**
 	* Remove given BBCode at given nesting depth
@@ -36,7 +36,7 @@ abstract class utils
 	* @param  integer $depth       Minimum nesting depth (number of parents of the same name)
 	* @return string
 	*/
-	abstract public function remove_bbcode($text, $bbcode_name, $depth = 0);
+	public function remove_bbcode($text, $bbcode_name, $depth = 0);
 
 	/**
 	* Remove BBCodes and other formatting from a parsed text
@@ -46,7 +46,7 @@ abstract class utils
 	* @param  string $text
 	* @return string
 	*/
-	abstract public function remove_formatting($text);
+	public function remove_formatting($text);
 
 	/**
 	* Return a parsed text to its original form
@@ -54,5 +54,5 @@ abstract class utils
 	* @param  string $text
 	* @return string
 	*/
-	abstract public function unparse($text);
+	public function unparse($text);
 }

@@ -16,7 +16,7 @@ namespace phpbb\textformatter\s9e;
 /**
 * Text manipulation utilities
 */
-class utils extends \phpbb\textformatter\utils
+class utils implements \phpbb\textformatter\utils_interface
 {
 	/**
 	* {@inheritdoc}
