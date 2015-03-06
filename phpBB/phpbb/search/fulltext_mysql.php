@@ -606,7 +606,41 @@ class fulltext_mysql extends \phpbb\search\base
 			return $result_count;
 		}
 
+		$sql_ary = array();
+
 		$id_ary = array();
+
+		$sql_firstpost = $sql_sort_table = $sql_sort_join = '';
+		// Build sql strings for sorting
+		$sql_ary['ORDER_BY'] = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
+		switch ($sql_ary['ORDER_BY'][0])
+		{
+			case 'u':
+				$sql_ary['FROM'][USERS_TABLE] = 'u'
+				$sql_sort_join = ($type == 'posts') ? 'u.user_id = p.poster_id' : 'u.user_id = t.topic_poster';
+			break;
+
+			case 't':
+				$sql_ary['FROM'][TOPICS_TABLE] = 't';
+				$sql_sort_join	= 't.topic_id = p.topic_id';
+			break;
+
+			case 'f':
+				$sql_ary['FROM'][FORUMS_TABLE] = 'f';
+				$sql_sort_join	= 'f.forum_id = p.forum_id';
+			break;
+		}
+
+		$sql_ary['FROM'][POSTS_TABLE] = 'p';
+
+		if ($type != 'posts' || $firstpost_only)
+		{
+			$sql_ary['FROM'][TOPICS_TABLE] = 't';
+			$sql_firstpost = 'p.post_id = t.topic_first_post_id';
+		}
+
+		// If the cache was completely empty count the results
+		$sql_ary['SELECT'] = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
 
 		// Create some display specific sql strings
 		if ($author_name)
@@ -618,70 +652,46 @@ class fulltext_mysql extends \phpbb\search\base
 		{
 			$sql_author = $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
+
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
-		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
-
-		// Build sql strings for sorting
-		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
-		$sql_sort_table = $sql_sort_join = '';
-		switch ($sql_sort[0])
-		{
-			case 'u':
-				$sql_sort_table	= USERS_TABLE . ' u, ';
-				$sql_sort_join	= ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
-			break;
-
-			case 't':
-				$sql_sort_table	= ($type == 'posts' && !$firstpost_only) ? TOPICS_TABLE . ' t, ' : '';
-				$sql_sort_join	= ($type == 'posts' && !$firstpost_only) ? ' AND t.topic_id = p.topic_id ' : '';
-			break;
-
-			case 'f':
-				$sql_sort_table	= FORUMS_TABLE . ' f, ';
-				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
-			break;
-		}
+		$sql_sort_join = ($sql_sort_join) ? ' AND ' . $sql_sort_join : '';
+		$sql_firstpost = ($sql_firstpost) ? ' AND ' . $sql_firstpost : '';
 
 		$m_approve_fid_sql = ' AND ' . $post_visibility;
 
-		// If the cache was completely empty count the results
-		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
 
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
-			$sql = "SELECT {$calc_results}p.post_id
-				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
-				WHERE $sql_author
+			$sql_ary['SELECT'] .= 'p.post_id';
+			$sql_ary['WHERE'] = "$sql_author
 					$sql_topic_id
 					$sql_firstpost
 					$m_approve_fid_sql
 					$sql_fora
 					$sql_sort_join
-					$sql_time
-				ORDER BY $sql_sort";
+					$sql_time";
 			$field = 'post_id';
 		}
 		else
 		{
-			$sql = "SELECT {$calc_results}t.topic_id
-				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-				WHERE $sql_author
+			$sql_ary['SELECT'] .= 't.topic_id';
+			$sql_ary['WHERE'] = "$sql_author
 					$sql_topic_id
 					$sql_firstpost
 					$m_approve_fid_sql
 					$sql_fora
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
-					$sql_time
-				GROUP BY t.topic_id
-				ORDER BY $sql_sort";
+					$sql_time"
+			$sql_ary['GROUP_BY'] = 't.topic_id';
 			$field = 'topic_id';
 		}
 
 		// Only read one block of posts from the db and then cache it
+		$result = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
