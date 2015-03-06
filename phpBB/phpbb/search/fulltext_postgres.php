@@ -358,19 +358,21 @@ class fulltext_postgres extends \phpbb\search\base
 			return $result_count;
 		}
 
+		$sql_ary = array();
+
 		$id_ary = array();
 
 		$join_topic = ($type == 'posts') ? false : true;
 
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
-		$sql_sort_table = $sql_sort_join = '';
+		$sql_sort_join = '';
 
 		switch ($sql_sort[0])
 		{
 			case 'u':
-				$sql_sort_table	= USERS_TABLE . ' u, ';
-				$sql_sort_join	= ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
+				$sql_ary['FROM'][USERS_TABLE] = 'u'
+				$sql_sort_join = ($type == 'posts') ? 'u.user_id = p.poster_id' : 'u.user_id = t.topic_poster';
 			break;
 
 			case 't':
@@ -378,8 +380,8 @@ class fulltext_postgres extends \phpbb\search\base
 			break;
 
 			case 'f':
-				$sql_sort_table	= FORUMS_TABLE . ' f, ';
-				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
+				$sql_ary['FROM'][FORUMS_TABLE] = 'f';
+				$sql_sort_join = 'f.forum_id = p.forum_id';
 			break;
 		}
 
@@ -387,31 +389,45 @@ class fulltext_postgres extends \phpbb\search\base
 		switch ($fields)
 		{
 			case 'titleonly':
-				$sql_match = 'p.post_subject';
-				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
+				$sql_match = array('p.post_subject');
+				$sql_match_where = 'p.post_id = t.topic_first_post_id';
 				$join_topic = true;
 			break;
 
 			case 'msgonly':
-				$sql_match = 'p.post_text';
+				$sql_match = array('p.post_text');
 				$sql_match_where = '';
 			break;
 
 			case 'firstpost':
-				$sql_match = 'p.post_subject, p.post_text';
-				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
+				$sql_match = array('p.post_subject', 'p.post_text');
+				$sql_match_where = 'p.post_id = t.topic_first_post_id';
 				$join_topic = true;
 			break;
 
 			default:
-				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match = array('p.post_subject', 'p.post_text');
 				$sql_match_where = '';
 			break;
 		}
 
-		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
-		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
-		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
+		if ($join_topic)
+		{
+			$sql_ary['FROM'][TOPICS_TABLE] = 't';
+		}
+
+		if ($type == 'posts')
+		{
+			$sql_select_type = 'SELECT';
+			$sql_select .= 'p.post_id'
+			$field = 'post_id';
+		}
+		else
+		{
+			$sql_select_type = 'SELECT_DISTINCT';
+			$sql_select .= 't.topic_id';
+			$field = 'topic_id';
+		}
 
 		if (sizeof($author_ary) && $author_name)
 		{
@@ -427,27 +443,31 @@ class fulltext_postgres extends \phpbb\search\base
 			$sql_author = '';
 		}
 
-		$sql_where_options = $sql_sort_join;
+		$sql_where_options = ($sql_sort_join) ? $sql_sort_join : '';
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= ' AND ' . $post_visibility;
-		$sql_where_options .= $sql_author;
+		$sql_where_options .= ($sql_author) ? ' AND ' . $sql_author: '';
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
-		$sql_where_options .= $sql_match_where;
+		$sql_where_options .= ($sql_match_where) ? ' AND ' . $sql_match_where : '';
 
-		$sql_match = str_replace(',', " || ' ' ||", $sql_match);
+		$sql_match = implode(" || ' ' || ", $sql_match);
 		$tmp_sql_match = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 
 		$this->db->sql_transaction('begin');
 
-		$sql_from = "FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p";
-		$sql_where = "WHERE (" . $tmp_sql_match . ")
-			$sql_where_options";
-		$sql = "SELECT $sql_select
-			$sql_from
-			$sql_where
-			ORDER BY $sql_sort";
+		$sql_ary['FROM'][POSTS_TABLE] = 'p';
+
+		$sql_ary['SELECT'] = $sql_select;
+
+		$sql_ary['WHERE'] = "(to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "'))
+		";
+		$sql_ary['WHERE'] .= $sql_where_options;
+
+		$sql_ary['ORDER_BY'] = $sql_sort;
+
+		$sql = $this->db->sql_build_query($sql_select_type, $sql_ary);
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
@@ -461,9 +481,10 @@ class fulltext_postgres extends \phpbb\search\base
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$sql_count = "SELECT COUNT(*) as result_count
-				$sql_from
-				$sql_where";
+			$sql_count_ary = $sql_array;
+			$sql_count_ary['SELECT'] = 'SELECT COUNT(*) as result_count';
+
+			$sql = $this->db->sql_build_query('SELECT', $sql_count_ary);
 			$result = $this->db->sql_query($sql_count);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
