@@ -209,7 +209,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		* @see bbcode::bbcode_second_pass_code()
 		*/
 		$html = preg_replace_callback(
-			'#(<code>)(.*?)(</code>)#is',
+			'#(<code[^>]*>)(.*?)(</code>)#is',
 			function ($captures)
 			{
 				$code = $captures[2];
