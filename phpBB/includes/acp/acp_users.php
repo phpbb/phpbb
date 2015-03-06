@@ -1380,15 +1380,13 @@ class acp_users
 				/**
 				* Modify user data on editing profile in ACP
 				*
-				* @event core.acp_users_modify_profile
+				* @event core.acp_users_modify_profile_info
 				* @var	array	data		Array with user profile data
 				* @var	bool	submit		Flag indicating if submit button has been pressed
-				* @var	int		user_id		The user id
-				* @var	array	user_row	Array with the full user data
 				* @since 3.1.4-RC1
 				*/
-				$vars = array('data', 'submit', 'user_id', 'user_row');
-				extract($phpbb_dispatcher->trigger_event('core.acp_users_modify_profile', compact($vars)));
+				$vars = array('data', 'submit');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_modify_profile_info', compact($vars)));
 
 				if ($submit)
 				{
@@ -1413,6 +1411,17 @@ class acp_users
 					{
 						$error[] = 'FORM_INVALID';
 					}
+					/**
+					* Validate user data on editing profile in ACP
+					*
+					* @event core.acp_users_validate_profile_info
+					* @var	array 	data 	Array with user profile data
+					* @var	bool	submit	Flag indicating if submit button has been pressed
+					* @var array	error	Array of any generated errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('data', 'submit', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.acp_users_validate_profile_info', compact($vars)));
 
 					if (!sizeof($error))
 					{
@@ -1424,15 +1433,14 @@ class acp_users
 						/**
 						* Modify profile data in ACP before submitting to the database
 						*
-						* @event core.acp_users_profile_modify_sql_ary
+						* @event core.acp_users_profile_info_sql_ary
 						* @var	array	cp_data		Array with the user custom profile fields data
 						* @var	array	data		Array with user profile data
-						* @var	int		user_id		The user id
-						* @var	array	user_row	Array with the full user data
+						* @var  array	sql_ary		user options data we update
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data', 'user_id', 'user_row');
-						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
+						$vars = array('cp_data', 'data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_info_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
