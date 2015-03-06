@@ -53,6 +53,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 			array('UNAUTHORISED_BBCODE', '[img]', 'You cannot use certain BBCodes: [img].'),
 			array('UNAUTHORISED_BBCODE', '[quote]', 'You cannot use certain BBCodes: [quote].'),
 			array('UNAUTHORISED_BBCODE', '[url]', 'You cannot use certain BBCodes: [url].'),
+			array('UNABLE_GET_IMAGE_SIZE', 'It was not possible to determine the dimensions of the image.'),
 		);
 
 		$user = $this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock();
@@ -67,7 +68,6 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 			'TOO_FEW_POLL_OPTIONS' => 'You must enter at least two poll options.',
 			'TOO_MANY_POLL_OPTIONS' => 'You have tried to enter too many poll options.',
 			'TOO_MANY_USER_OPTIONS' => 'You cannot specify more options per user than existing poll options.',
-			'UNABLE_GET_IMAGE_SIZE' => 'It was not possible to determine the dimensions of the image.'
 		);
 
 		$phpbb_container = new phpbb_mock_container_builder;
