@@ -481,10 +481,10 @@ class fulltext_postgres extends \phpbb\search\base
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$sql_count_ary = $sql_array;
+			$sql_count_ary = $sql_ary;
 			$sql_count_ary['SELECT'] = 'SELECT COUNT(*) as result_count';
 
-			$sql = $this->db->sql_build_query('SELECT', $sql_count_ary);
+			$sql_count = $this->db->sql_build_query('SELECT', $sql_count_ary);
 			$result = $this->db->sql_query($sql_count);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
