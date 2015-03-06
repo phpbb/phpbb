@@ -184,7 +184,7 @@ class parser implements \phpbb\textformatter\parser_interface
 			}
 			else if ($msg === 'UNABLE_GET_IMAGE_SIZE')
 			{
-				$errors[] = $this->user->lang[$msg];
+				$errors[] = $this->user->lang($msg);
 			}
 		}
 
