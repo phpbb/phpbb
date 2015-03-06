@@ -661,31 +661,25 @@ class fulltext_mysql extends \phpbb\search\base
 
 		$m_approve_fid_sql = ' AND ' . $post_visibility;
 
+		$sql_ary['WHERE'] = "$sql_author
+				$sql_topic_id
+				$sql_firstpost
+				$m_approve_fid_sql
+				$sql_fora
+				$sql_sort_join
+				$sql_time";
 
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
 			$sql_ary['SELECT'] .= 'p.post_id';
-			$sql_ary['WHERE'] = "$sql_author
-					$sql_topic_id
-					$sql_firstpost
-					$m_approve_fid_sql
-					$sql_fora
-					$sql_sort_join
-					$sql_time";
 			$field = 'post_id';
 		}
 		else
 		{
 			$sql_ary['SELECT'] .= 't.topic_id';
-			$sql_ary['WHERE'] = "$sql_author
-					$sql_topic_id
-					$sql_firstpost
-					$m_approve_fid_sql
-					$sql_fora
-					AND t.topic_id = p.topic_id
-					$sql_sort_join
-					$sql_time";
+			$sql_ary['WHERE'] .= '
+				AND t.topic_id = p.topic_id';
 			$sql_ary['GROUP_BY'] = 't.topic_id';
 			$field = 'topic_id';
 		}

@@ -443,7 +443,7 @@ class fulltext_postgres extends \phpbb\search\base
 			$sql_author = '';
 		}
 
-		$sql_where_options = ($sql_sort_join) ? $sql_sort_join : ' 1=1 ';
+		$sql_where_options = ($sql_sort_join) ? ' AND ' . $sql_sort_join : '';
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
