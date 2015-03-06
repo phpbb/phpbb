@@ -1441,9 +1441,10 @@ class acp_users
 						* @var	array	data		Array with user profile data
 						* @var	int		user_id		The user id
 						* @var	array	user_row	Array with the full user data
+						* @var	array	sql_ary		Array with sql data
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data', 'user_id', 'user_row');
+						$vars = array('cp_data', 'data', 'user_id', 'user_row', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
