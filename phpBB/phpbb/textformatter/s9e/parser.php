@@ -19,7 +19,7 @@ use s9e\TextFormatter\Parser\Logger;
 /**
 * s9e\TextFormatter\Parser adapter
 */
-class parser implements \phpbb\textformatter\parser
+class parser implements \phpbb\textformatter\parser_interface
 {
 	/**
 	* @var \s9e\TextFormatter\Parser

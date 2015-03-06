@@ -17,7 +17,7 @@ namespace phpbb\textformatter;
 * Currently only used to signal that something that could effect the rendering has changed.
 * BBCodes, smilies, censored words, templates, etc...
 */
-interface cache
+interface cache_interface
 {
 	/**
 	* Invalidate and/or regenerate this text formatter's cache(s)

@@ -13,7 +13,7 @@
 
 namespace phpbb\textformatter;
 
-interface parser
+interface parser_interface
 {
 	/**
 	* Parse given text

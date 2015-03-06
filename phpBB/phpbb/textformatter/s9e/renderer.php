@@ -16,7 +16,7 @@ namespace phpbb\textformatter\s9e;
 /**
 * s9e\TextFormatter\Renderer adapter
 */
-class renderer extends \phpbb\textformatter\renderer
+class renderer implements \phpbb\textformatter\renderer_interface
 {
 	/**
 	* @var \s9e\TextFormatter\Plugins\Censor\Helper
@@ -101,11 +101,40 @@ class renderer extends \phpbb\textformatter\renderer
 	}
 
 	/**
-	* {@inheritdoc}
+	* Automatically set the smilies path based on config
+	*
+	* @param  \phpbb\config\config $config
+	* @param  \phpbb\path_helper   $path_helper
+	* @return null
+	*/
+	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
+	{
+		/**
+		* @see smiley_text()
+		*/
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $path_helper->get_web_root_path();
+
+		$this->set_smilies_path($root_path . $config['smilies_path']);
+	}
+
+	/**
+	* Configure this renderer as per the user's settings
+	*
+	* Should set the locale as well as the viewcensor/viewflash/viewimg/viewsmilies options.
+	*
+	* @param  \phpbb\user          $user
+	* @param  \phpbb\config\config $config
+	* @param  \phpbb\auth\auth     $auth
+	* @return null
 	*/
 	public function configure_user(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)
 	{
-		parent::configure_user($user, $config, $auth);
+		$censor =  $user->optionget('viewcensors') || !$config['allow_nocensors'] || !$auth->acl_get('u_chgcensors');
+
+		$this->set_viewcensors($censor);
+		$this->set_viewflash($user->optionget('viewflash'));
+		$this->set_viewimg($user->optionget('viewimg'));
+		$this->set_viewsmilies($user->optionget('viewsmilies'));
 
 		// Set the stylesheet parameters
 		foreach (array_keys($this->renderer->getParameters()) as $param_name)

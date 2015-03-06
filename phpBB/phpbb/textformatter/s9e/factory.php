@@ -20,7 +20,7 @@ use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 /**
 * Creates s9e\TextFormatter objects
 */
-class factory implements \phpbb\textformatter\cache
+class factory implements \phpbb\textformatter\cache_interface
 {
 	/**
 	* @var \phpbb\cache\driver_interface $cache

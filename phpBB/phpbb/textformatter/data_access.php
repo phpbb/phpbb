@@ -27,7 +27,7 @@ class data_access
 	protected $bbcodes_table;
 
 	/**
-	* @var \phpbb_db_driver
+	* @var \phpbb_db_driver_interface
 	*/
 	protected $db;
 
