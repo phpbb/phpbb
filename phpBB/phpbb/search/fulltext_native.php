@@ -824,7 +824,7 @@ class fulltext_native extends \phpbb\search\base
 		}
 
 		// if using mysql and the total result count is not calculated yet, get it from the db
-		if(!$total_results && $is_mysql)
+		if (!$total_results && $is_mysql)
 		{
 			// Also count rows for the query as if there was not LIMIT. Add SQL_CALC_FOUND_ROWS to SQL
 			$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
