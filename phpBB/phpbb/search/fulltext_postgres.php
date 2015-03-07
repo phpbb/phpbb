@@ -483,6 +483,7 @@ class fulltext_postgres extends \phpbb\search\base
 		{
 			$sql_count_ary = $sql_ary;
 			$sql_count_ary['SELECT'] = 'COUNT(*) as result_count';
+			$sql_count_ary['GROUP_BY'] = 'p.post_time';
 
 			$sql_count = $this->db->sql_build_query('SELECT', $sql_count_ary);
 			$result = $this->db->sql_query($sql_count);
