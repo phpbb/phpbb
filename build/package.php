@@ -470,22 +470,14 @@ chdir($package->get('dest_dir') . '/install');
 // $package->run_command('rm -v database_update.php');
 $package->run_command('rm -v install_update.php');
 
-chdir($package->get('dest_dir'));
-$package->run_command('mv -v styles/subsilver2 ../subsilver2');
-$package->run_command('cp -p docs/COPYING ../subsilver2/license.txt');
-
 chdir($package->locations['package_dir']);
 foreach ($compress_programs as $extension => $compress_command)
 {
 	$package->begin_status('Packaging phpBB for ' . $extension);
 	$package->run_command('rm -v ./release_files/' . $package->get('release_filename') . ".{$extension}");
-	$package->run_command('rm -v ./release_files/subsilver2_' . $package->get('new_version_number') . ".{$extension}");
 
 	// Build Package
 	$package->run_command("$compress_command ./release_files/" . $package->get('release_filename') . '.' . $extension . ' ' . $package->get('package_name'));
-
-	// Build subSilver2 Package
-	$package->run_command("$compress_command ./release_files/subsilver2_" . $package->get('new_version_number') . '.' . $extension . ' subsilver2');
 }
 
 // Microsoft Web PI packaging

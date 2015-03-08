@@ -507,7 +507,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 /**
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
-* Expects $text to be the value directly from request_var() and in it's non-parsed form
+* Expects $text to be the value directly from $request->variable() and in it's non-parsed form
 *
 * @param string $text The text to be replaced with the parsed one
 * @param string $uid The BBCode uid for this parse
@@ -1117,38 +1117,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
 
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Windows Media Streams
-				case ATTACHMENT_CATEGORY_WM:
-
-					// Giving the filename directly because within the wm object all variables are in local context making it impossible
-					// to validate against a valid session (all params can differ)
-					// $download_link = $filename;
-
-					$block_array += array(
-						'U_FORUM'		=> generate_board_url(),
-						'ATTACH_ID'		=> $attachment['attach_id'],
-						'S_WM_FILE'		=> true,
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Real Media Streams
-				case ATTACHMENT_CATEGORY_RM:
-				case ATTACHMENT_CATEGORY_QUICKTIME:
-
-					$block_array += array(
-						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
-						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
-						'U_FORUM'			=> generate_board_url(),
-						'ATTACH_ID'			=> $attachment['attach_id'],
-					);
-
-					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
 

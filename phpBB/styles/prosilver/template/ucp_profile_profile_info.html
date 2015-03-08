@@ -10,6 +10,7 @@
 
 	<fieldset>
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- EVENT ucp_profile_profile_info_before -->
 	<!-- IF S_BIRTHDAYS_ENABLED -->
 		<dl>
 			<dt><label for="bday_day">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
@@ -34,6 +35,7 @@
 			<dd>{profile_fields.FIELD}</dd>
 		</dl>
 	<!-- END profile_fields -->
+	<!-- EVENT ucp_profile_profile_info_after -->
 	</fieldset>
 
 	</div>

@@ -25,18 +25,19 @@ $user->session_begin();
 $auth->acl($user->data);
 
 // Start initial var setup
-$forum_id	= request_var('f', 0);
-$mark_read	= request_var('mark', '');
-$start		= request_var('start', 0);
+$forum_id	= $request->variable('f', 0);
+$mark_read	= $request->variable('mark', '');
+$start		= $request->variable('start', 0);
 
 $default_sort_days	= (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0;
 $default_sort_key	= (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't';
 $default_sort_dir	= (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd';
 
-$sort_days	= request_var('st', $default_sort_days);
-$sort_key	= request_var('sk', $default_sort_key);
-$sort_dir	= request_var('sd', $default_sort_dir);
+$sort_days	= $request->variable('st', $default_sort_days);
+$sort_key	= $request->variable('sk', $default_sort_key);
+$sort_dir	= $request->variable('sd', $default_sort_dir);
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
 // Check if the user has actually sent a forum ID with his/her request
@@ -146,6 +147,7 @@ else
 	}
 }
 
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // Dump out the page header and load viewforum template
@@ -184,10 +186,10 @@ if (!$auth->acl_get('f_read', $forum_id))
 // Handle marking posts
 if ($mark_read == 'topics')
 {
-	$token = request_var('hash', '');
+	$token = $request->variable('hash', '');
 	if (check_link_hash($token, 'global'))
 	{
-		markread('topics', array($forum_id), false, request_var('mark_time', 0));
+		markread('topics', array($forum_id), false, $request->variable('mark_time', 0));
 	}
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
@@ -218,6 +220,7 @@ if ($forum_data['forum_topics_per_page'])
 // Do the forum Prune thang - cron type job ...
 if (!$config['use_system_cron'])
 {
+	/* @var $cron \phpbb\cron\manager */
 	$cron = $phpbb_container->get('cron.manager');
 
 	$task = $cron->find_task('cron.task.core.prune_forum');
@@ -391,15 +394,29 @@ $sql_array = array(
 /**
 * Event to modify the SQL query before the topic data is retrieved
 *
+* It may also be used to override the above assigned template vars
+*
 * @event core.viewforum_get_topic_data
 * @var	array	forum_data			Array with forum data
 * @var	array	sql_array			The SQL array to get the data of all topics
+* @var	array	forum_id			The forum_id whose topics are being listed
+* @var	array	topics_count		The total number of topics for display
+* @var	array	sort_days			The oldest topic displayable in elapsed days
+* @var	array	sort_key			The sorting by. It is one of the first character of (in low case):
+*									Author, Post time, Replies, Subject, Views
+* @var	array	sort_dir			Either "a" for ascending or "d" for descending
 * @since 3.1.0-a1
 * @change 3.1.0-RC4 Added forum_data var
+* @change 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
 */
 $vars = array(
 	'forum_data',
 	'sql_array',
+	'forum_id',
+	'topics_count',
+	'sort_days',
+	'sort_key',
+	'sort_dir',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewforum_get_topic_data', compact($vars)));
 

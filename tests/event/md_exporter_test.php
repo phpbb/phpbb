@@ -41,7 +41,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 		$styles = array(
 			'adm/style/' => 'adm',
 			'styles/prosilver/template/' => 'styles',
-			'styles/subsilver2/template/' => 'styles',
 		);
 		foreach ($styles as $path => $filter)
 		{

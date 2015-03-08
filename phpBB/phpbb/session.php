@@ -130,6 +130,10 @@ class session
 		$script_path .= (substr($script_path, -1, 1) == '/') ? '' : '/';
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
+		$forum_id = $request->variable('f', 0);
+		// maximum forum id value is maximum value of mediumint unsigned column
+		$forum_id = ($forum_id > 0 && $forum_id < 16777215) ? $forum_id : 0;
+
 		$page_array += array(
 			'page_name'			=> $page_name,
 			'page_dir'			=> $page_dir,
@@ -139,7 +143,7 @@ class session
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page,
-			'forum'				=> request_var('f', 0),
+			'forum'				=> $forum_id,
 		);
 
 		return $page_array;
@@ -215,7 +219,7 @@ class session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $user, $phpbb_log;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -253,23 +257,23 @@ class session
 
 		if ($request->is_set($config['cookie_name'] . '_sid', \phpbb\request\request_interface::COOKIE) || $request->is_set($config['cookie_name'] . '_u', \phpbb\request\request_interface::COOKIE))
 		{
-			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
-			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
-			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '', false, true);
+			$this->cookie_data['u'] = $request->variable($config['cookie_name'] . '_u', 0, false, \phpbb\request\request_interface::COOKIE);
+			$this->cookie_data['k'] = $request->variable($config['cookie_name'] . '_k', '', false, \phpbb\request\request_interface::COOKIE);
+			$this->session_id 		= $request->variable($config['cookie_name'] . '_sid', '', false, \phpbb\request\request_interface::COOKIE);
 
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
 
 			if (empty($this->session_id))
 			{
-				$this->session_id = $_SID = request_var('sid', '');
+				$this->session_id = $_SID = $request->variable('sid', '');
 				$SID = '?sid=' . $this->session_id;
 				$this->cookie_data = array('u' => 0, 'k' => '');
 			}
 		}
 		else
 		{
-			$this->session_id = $_SID = request_var('sid', '');
+			$this->session_id = $_SID = $request->variable('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
 
@@ -345,8 +349,8 @@ class session
 			}
 			else
 			{
-				set_config('limit_load', '0');
-				set_config('limit_search_load', '0');
+				$config->set('limit_load', '0');
+				$config->set('limit_search_load', '0');
 			}
 		}
 
@@ -409,6 +413,7 @@ class session
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
+					/* @var $provider_collection \phpbb\auth\provider_collection */
 					$provider_collection = $phpbb_container->get('auth.provider_collection');
 					$provider = $provider_collection->get_provider();
 
@@ -489,11 +494,18 @@ class session
 					{
 						if ($referer_valid)
 						{
-							add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
+							$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_IP_BROWSER_FORWARDED_CHECK', false, array(
+								$u_ip,
+								$s_ip,
+								$u_browser,
+								$s_browser,
+								htmlspecialchars($u_forwarded_for),
+								htmlspecialchars($s_forwarded_for)
+							));
 						}
 						else
 						{
-							add_log('critical', 'LOG_REFERER_INVALID', $this->referer);
+							$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_REFERER_INVALID', false, array($this->referer));
 						}
 					}
 				}
@@ -578,6 +590,7 @@ class session
 			}
 		}
 
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
 		$this->data = $provider->autologin();
@@ -910,6 +923,7 @@ class session
 		$db->sql_query($sql);
 
 		// Allow connecting logout with external auth method logout
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
 		$provider->logout($this->data, $new_session);
@@ -1026,7 +1040,7 @@ class session
 		{
 			// Less than 10 users, update gc timer ... else we want gc
 			// called again to delete other sessions
-			set_config('session_last_gc', $this->time_now, true);
+			$config->set('session_last_gc', $this->time_now, false);
 
 			if ($config['max_autologin_time'])
 			{
@@ -1036,6 +1050,7 @@ class session
 			}
 
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
+			/* @var $captcha_factory \phpbb\captcha\factory */
 			$captcha_factory = $phpbb_container->get('captcha.factory');
 			$captcha_factory->garbage_collect($config['captcha_plugin']);
 

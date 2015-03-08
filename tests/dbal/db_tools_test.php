@@ -17,7 +17,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
-	/** @var \phpbb\db\tools */
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $tools;
 	protected $table_exists;
 	protected $table_data;
@@ -32,7 +32,8 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->tools = new \phpbb\db\tools($this->db);
+		$factory = new \phpbb\db\tools\factory();
+		$this->tools = $factory->get($this->db);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(
@@ -340,7 +341,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_perform_schema_changes_drop_tables()
 	{
-		$db_tools = $this->getMock('\phpbb\db\tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
 			'sql_table_exists',
 			'sql_table_drop',
 		), array(&$this->db));
@@ -366,7 +367,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_perform_schema_changes_drop_columns()
 	{
-		$db_tools = $this->getMock('\phpbb\db\tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
 			'sql_column_exists',
 			'sql_column_remove',
 		), array(&$this->db));

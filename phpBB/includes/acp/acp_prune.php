@@ -51,11 +51,11 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		$all_forums = request_var('all_forums', 0);
-		$forum_id = request_var('f', array(0));
+		$all_forums = $request->variable('all_forums', 0);
+		$forum_id = $request->variable('f', array(0));
 		$submit = (isset($_POST['submit'])) ? true : false;
 
 		if ($all_forums)
@@ -77,14 +77,14 @@ class acp_prune
 		{
 			if (confirm_box(true))
 			{
-				$prune_posted = request_var('prune_days', 0);
-				$prune_viewed = request_var('prune_vieweddays', 0);
+				$prune_posted = $request->variable('prune_days', 0);
+				$prune_viewed = $request->variable('prune_vieweddays', 0);
 				$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
 
 				$prune_flags = 0;
-				$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;
-				$prune_flags += (request_var('prune_announce', 0)) ? 4 : 0;
-				$prune_flags += (request_var('prune_sticky', 0)) ? 8 : 0;
+				$prune_flags += ($request->variable('prune_old_polls', 0)) ? 2 : 0;
+				$prune_flags += ($request->variable('prune_announce', 0)) ? 4 : 0;
+				$prune_flags += ($request->variable('prune_sticky', 0)) ? 8 : 0;
 
 				// Convert days to seconds for timestamp functions...
 				$prunedate_posted = time() - ($prune_posted * 86400);
@@ -153,7 +153,8 @@ class acp_prune
 
 					// Sync all pruned forums at once
 					sync('forum', 'forum_id', $prune_ids, true, true);
-					add_log('admin', 'LOG_PRUNE', $log_data);
+
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PRUNE', false, array($log_data));
 				}
 				$db->sql_freeresult($result);
 
@@ -168,11 +169,11 @@ class acp_prune
 					'all_forums'	=> $all_forums,
 					'f'				=> $forum_id,
 
-					'prune_days'		=> request_var('prune_days', 0),
-					'prune_vieweddays'	=> request_var('prune_vieweddays', 0),
-					'prune_old_polls'	=> request_var('prune_old_polls', 0),
-					'prune_announce'	=> request_var('prune_announce', 0),
-					'prune_sticky'		=> request_var('prune_sticky', 0),
+					'prune_days'		=> $request->variable('prune_days', 0),
+					'prune_vieweddays'	=> $request->variable('prune_vieweddays', 0),
+					'prune_old_polls'	=> $request->variable('prune_old_polls', 0),
+					'prune_announce'	=> $request->variable('prune_announce', 0),
+					'prune_sticky'		=> $request->variable('prune_sticky', 0),
 				)));
 			}
 		}
@@ -228,7 +229,7 @@ class acp_prune
 	*/
 	function prune_users($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('memberlist');
@@ -237,8 +238,8 @@ class acp_prune
 
 		if ($prune)
 		{
-			$action = request_var('action', 'deactivate');
-			$deleteposts = request_var('deleteposts', 0);
+			$action = $request->variable('action', 'deactivate');
+			$deleteposts = $request->variable('deleteposts', 0);
 
 			if (confirm_box(true))
 			{
@@ -268,7 +269,7 @@ class acp_prune
 						}
 					}
 
-					add_log('admin', $l_log, implode(', ', $usernames));
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $l_log, false, array(implode(', ', $usernames)));
 					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
 				}
 				else
@@ -310,8 +311,8 @@ class acp_prune
 					'mode'			=> $mode,
 					'prune'			=> 1,
 
-					'deleteposts'	=> request_var('deleteposts', 0),
-					'action'		=> request_var('action', ''),
+					'deleteposts'	=> $request->variable('deleteposts', 0),
+					'action'		=> $request->variable('action', ''),
 				)), 'confirm_body_prune.html');
 			}
 		}
@@ -368,9 +369,9 @@ class acp_prune
 	{
 		global $user, $db, $request;
 
-		$users_by_name = request_var('users', '', true);
-		$users_by_id = request_var('user_ids', array(0));
-		$group_id = request_var('group_id', 0);
+		$users_by_name = $request->variable('users', '', true);
+		$users_by_id = $request->variable('user_ids', array(0));
+		$group_id = $request->variable('group_id', 0);
 		$posts_on_queue = (trim($request->variable('posts_on_queue', '')) === '') ? false : $request->variable('posts_on_queue', 0);
 
 		if ($users_by_name)
@@ -387,15 +388,15 @@ class acp_prune
 		}
 		else
 		{
-			$username = request_var('username', '', true);
-			$email = request_var('email', '');
+			$username = $request->variable('username', '', true);
+			$email = $request->variable('email', '');
 
-			$active_select = request_var('active_select', 'lt');
-			$count_select = request_var('count_select', 'eq');
-			$queue_select = request_var('queue_select', 'gt');
-			$joined_before = request_var('joined_before', '');
-			$joined_after = request_var('joined_after', '');
-			$active = request_var('active', '');
+			$active_select = $request->variable('active_select', 'lt');
+			$count_select = $request->variable('count_select', 'eq');
+			$queue_select = $request->variable('queue_select', 'gt');
+			$joined_before = $request->variable('joined_before', '');
+			$joined_after = $request->variable('joined_after', '');
+			$active = $request->variable('active', '');
 
 			$count = ($request->variable('count', '') === '') ? false : $request->variable('count', 0);
 
@@ -507,7 +508,7 @@ class acp_prune
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
 					AND ug.user_pending = 0 ' .
-					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
+					((!empty($user_ids)) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
 					AND u.user_id = ug.user_id';
 			$result = $db->sql_query($sql);
 
@@ -533,7 +534,7 @@ class acp_prune
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE u.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER .
-					((!empty($user_ids)) ? 'AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
+					((!empty($user_ids)) ? ' AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
 					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE)) . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
