@@ -480,7 +480,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		$grouped_templates = array();
 		foreach ($style_templates as $style_id => $style_template)
 		{
-			$grouped_templates[$style_template][] = $style_id;
+			$grouped_templates[$style_template][] = '$STYLE_ID=' . $style_id;
 		}
 
 		if (count($grouped_templates) === 1)
@@ -499,9 +499,9 @@ class factory implements \phpbb\textformatter\cache_interface
 
 		// Build an xsl:choose switch
 		$template = '<xsl:choose>';
-		foreach ($grouped_templates as $style_template => $style_ids)
+		foreach ($grouped_templates as $style_template => $exprs)
 		{
-			$template .= '<xsl:when test="$STYLE_ID=' . implode(' or $STYLE_ID=', $style_ids) . '">' . $style_template . '</xsl:when>';
+			$template .= '<xsl:when test="' . implode(' or ', $exprs) . '">' . $style_template . '</xsl:when>';
 		}
 		$template .= '<xsl:otherwise>' . $default_template . '</xsl:otherwise></xsl:choose>';
 
