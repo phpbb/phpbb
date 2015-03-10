@@ -811,6 +811,13 @@ overall_header_page_body_before
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-header, but before the page-body
 
+overall_header_searchbox_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the search box in the header
+
 overall_header_stylesheets_after
 ===
 * Locations:
