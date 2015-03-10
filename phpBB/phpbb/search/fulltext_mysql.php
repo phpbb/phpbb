@@ -455,6 +455,55 @@ class fulltext_mysql extends \phpbb\search\base
 			break;
 		}
 
+		$search_query = $this->search_query;
+
+		/**
+		* Allow changing the query used to search for posts using fulltext_mysql
+		*
+		* @event core.search_mysql_keywords_main_query_before
+		* @var	string	search_query		The parsed keywords used for this search
+		* @var	int		result_count		The previous result count for the format of the query.
+		*									Set to 0 to force a re-count
+		* @var	bool	join_topic			Weather or not TOPICS_TABLE should be CROSS JOIN'ED
+		* @var	array	author_ary			Array of user_id containing the users to filter the results to
+		* @var	string	author_name			An extra username to search on (!empty(author_ary) must be true, to be relevant)
+		* @var	array	ex_fid_ary			Which forums not to search on
+		* @var	int		topic_id			Limit the search to this topic_id only
+		* @var	string	sql_sort_table		Extra tables to include in the SQL query.
+		*									Used in conjunction with sql_sort_join
+		* @var	string	sql_sort_join		SQL conditions to join all the tables used together.
+		*									Used in conjunction with sql_sort_table
+		* @var	int		sort_days			Time, in days, of the oldest possible post to list
+		* @var	string	sql_match			Which columns to do the search on.
+		* @var	string	sql_match_where		Extra conditions to use to properly filter the matching process
+		* @var	string	sort_by_sql			The possible predefined sort types
+		* @var	string	sort_key			The sort type used from the possible sort types
+		* @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
+		* @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
+		* @var	int		start				How many posts to skip in the search results (used for pagination)
+		* @since 3.1.4-RC1
+		*/
+		$vars = array(
+			'search_query',
+			'result_count',
+			'join_topic',
+			'author_ary',
+			'author_name',
+			'ex_fid_ary',
+			'topic_id',
+			'sql_sort_table',
+			'sql_sort_join',
+			'sort_days',
+			'sql_match',
+			'sql_match_where',
+			'sort_by_sql',
+			'sort_key',
+			'sort_dir',
+			'sql_sort',
+			'start',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_keywords_main_query_before', compact($vars)));
+
 		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
 		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
