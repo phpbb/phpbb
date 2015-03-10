@@ -115,16 +115,16 @@ class ucp_profile
 					}
 
 					/**
-					* Validate user data on editing profile in UCP
+					* Validate user data on editing registration data in UCP
 					*
-					* @event core.ucp_profile_info_validate_data
+					* @event core.ucp_profile_reg_details_validate
 					* @var	array	data			Array with user profile data
 					* @var	bool	submit			Flag indicating if submit button has been pressed
 					* @var array	error			Array of any generated errors
 					* @since 3.1.4-RC1
 					*/
 					$vars = array('data', 'submit', 'error');
-					extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_validate_data', compact($vars)));
+					extract($phpbb_dispatcher->trigger_event('core.ucp_profile_reg_details_validate', compact($vars)));
 
 					if (!sizeof($error))
 					{
@@ -377,6 +377,18 @@ class ucp_profile
 					{
 						$error[] = 'FORM_INVALID';
 					}
+
+					/**
+					* Validate user data on editing profile in UCP
+					*
+					* @event core.ucp_profile_validate_profile_info
+					* @var	array	data			Array with user profile data
+					* @var	bool	submit			Flag indicating if submit button has been pressed
+					* @var array	error			Array of any generated errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('data', 'submit', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.ucp_profile_validate_profile_info', compact($vars)));
 
 					if (!sizeof($error))
 					{
