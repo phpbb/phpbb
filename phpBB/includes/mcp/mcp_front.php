@@ -164,7 +164,7 @@ function mcp_front_view($id, $mode, $action)
 			* @event core.mcp_front_reports_count_query_before
 			* @var	int		sql				The query string used to get the number of reports that exist
 			* @var	array	forum_list		List of forums that contain the posts
-			* @since 3.1.0-RC3
+			* @since 3.1.4-RC1
 			*/
 			$vars = array('sql', 'forum_list');
 			extract($phpbb_dispatcher->trigger_event('core.mcp_front_reports_count_query_before', compact($vars)));
