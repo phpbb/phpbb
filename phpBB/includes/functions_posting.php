@@ -407,14 +407,14 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_filesystem;
 
 	$filedata = array(
 		'error'	=> array()
 	);
 
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload();
+	$upload = new fileupload($phpbb_filesystem);
 
 	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
 	{
@@ -668,7 +668,7 @@ function get_supported_image_types($type = false)
 */
 function create_thumbnail($source, $destination, $mimetype)
 {
-	global $config;
+	global $config, $phpbb_filesystem;
 
 	$min_filesize = (int) $config['img_min_thumb_filesize'];
 	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
@@ -820,7 +820,14 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+	try
+	{
+		$this->filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+	}
+	catch (\phpbb\filesystem\exception\filesystem_exception $e)
+	{
+		// Do nothing
+	}
 
 	return true;
 }

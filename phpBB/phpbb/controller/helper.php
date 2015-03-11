@@ -53,7 +53,7 @@ class helper
 	protected $request;
 
 	/**
-	* @var \phpbb\filesystem The filesystem object
+	* @var \phpbb\filesystem\filesystem_interface The filesystem object
 	*/
 	protected $filesystem;
 
@@ -78,11 +78,11 @@ class helper
 	* @param \phpbb\routing\router $router phpBB router
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\filesystem $filesystem The filesystem object
+	* @param \phpbb\filesystem\filesystem_interface $filesystem The filesystem object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;

@@ -2316,7 +2316,10 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+
+	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
+	$filesystem = $phpbb_filesystem;
 
 	if (substr($trg, -1) == '/')
 	{
@@ -2349,7 +2352,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 		}
 	}
 
-	if (!phpbb_is_writable($path))
+	if (!$filesystem->is_writable($path))
 	{
 		@chmod($path, 0777);
 	}
@@ -2370,7 +2373,10 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+
+	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
+	$filesystem = $phpbb_filesystem;
 
 	$dirlist = $filelist = $bad_dirs = array();
 	$src = path($src, $source_relative_path);
@@ -2384,7 +2390,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		@chmod($trg_path, 0777);
 	}
 
-	if (!phpbb_is_writable($trg_path))
+	if (!$filesystem->is_writable($trg_path))
 	{
 		$bad_dirs[] = path($config['script_path']) . $trg;
 	}
@@ -2451,7 +2457,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 				@chmod($trg_path . $dir, 0777);
 			}
 
-			if (!phpbb_is_writable($trg_path . $dir))
+			if (!$filesystem->is_writable($trg_path . $dir))
 			{
 				$bad_dirs[] = $trg . $dir;
 				$bad_dirs[] = $trg_path . $dir;

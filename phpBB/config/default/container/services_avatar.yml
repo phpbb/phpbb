@@ -58,6 +58,7 @@ services:
             - @config
             - %core.root_path%
             - %core.php_ext%
+            - @filesystem
             - @path_helper
             - @mimetype.guesser
             - @cache.driver

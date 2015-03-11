@@ -36,13 +36,16 @@ class acp_attachments
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var  \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
 	public $id;
 	public $u_action;
 	protected $new_config;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
+		global $db, $user, $auth, $template, $cache, $phpbb_container, $phpbb_filesystem;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log, $request;
 
 		$this->id = $id;
@@ -51,6 +54,7 @@ class acp_attachments
 		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_container = $phpbb_container;
+		$this->filesystem = $phpbb_filesystem;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -1501,7 +1505,15 @@ class acp_attachments
 			if (!file_exists($phpbb_root_path . $upload_dir))
 			{
 				@mkdir($phpbb_root_path . $upload_dir, 0777);
-				phpbb_chmod($phpbb_root_path . $upload_dir, CHMOD_READ | CHMOD_WRITE);
+
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $upload_dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -1517,7 +1529,7 @@ class acp_attachments
 			return;
 		}
 
-		if (!phpbb_is_writable($phpbb_root_path . $upload_dir))
+		if (!$this->filesystem->is_writable($phpbb_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;

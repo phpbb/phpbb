@@ -69,7 +69,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->symfony_request = new \phpbb\symfony_request(
 			$this->request
 		);
-		$this->filesystem = new \phpbb\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			$this->symfony_request,
 			$this->filesystem,
@@ -84,7 +84,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader('');
+		$loader = new \phpbb\template\twig\loader($this->filesystem, '');
 		$twig = new \phpbb\template\twig\environment(
 			$this->config,
 			$this->phpbb_path_helper,
@@ -113,7 +113,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$this->router = new phpbb_mock_router($this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$this->router = new phpbb_mock_router($this->filesystem, $this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
 		$this->router->find_routing_files($this->extension_manager->all_enabled(false));
 		$this->router->find(dirname(__FILE__) . '/');
 		// Set correct current phpBB root path

@@ -51,12 +51,12 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $this->phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader('');
+		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
 		$phpbb_path_helper =new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->getMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			$this->phpEx
@@ -98,7 +98,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->user,
 			'phpbb_ext',
 			$this->phpbb_root_path,

@@ -96,6 +96,9 @@ class install_convert extends module
 	/** @var string */
 	protected $php_ext;
 
+	/** @var  \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
 	/**
 	* Variables used while converting, they are accessible from the global variable $convert
 	*/
@@ -116,6 +119,7 @@ class install_convert extends module
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 
 		if (!$this->check_phpbb_installed())
 		{
@@ -859,7 +863,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !phpbb_is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !$this->filesystem->is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{

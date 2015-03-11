@@ -34,11 +34,11 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
-		$filesystem = new \phpbb\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem();
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$router = new phpbb_mock_router($manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$router = new phpbb_mock_router($filesystem, $manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
 		$router->find_routing_files($manager->all_enabled(false));
 		$router->find(dirname(__FILE__) . '/');
 

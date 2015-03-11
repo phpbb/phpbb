@@ -103,7 +103,7 @@ services:
             - @cache.driver
 
     filesystem:
-        class: phpbb\filesystem
+        class: phpbb\filesystem\filesystem
 
     file_downloader:
         class: phpbb\file_downloader
@@ -159,6 +159,7 @@ services:
     router:
         class: phpbb\routing\router
         arguments:
+            - @filesystem
             - @ext.manager
             - %core.root_path%
             - %core.php_ext%
