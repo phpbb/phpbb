@@ -260,6 +260,7 @@ fieldset.submit-buttons input {
 .inputbox {
 	border: 1px solid transparent;
 	padding: 2px;
+	resize: vertical;
 }
 
 .inputbox:hover, .inputbox:focus {
