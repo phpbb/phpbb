@@ -628,6 +628,55 @@ class fulltext_mysql extends \phpbb\search\base
 
 		$m_approve_fid_sql = ' AND ' . $post_visibility;
 
+		/**
+		* Allow changing the query used to search for posts by author in fulltext_mysql
+		*
+		* @event core.search_mysql_author_query_before
+		* @var	int		result_count		The previous result count for the format of the query.
+		*									Set to 0 to force a re-count
+		* @var	string	sql_sort_table		CROSS JOIN'ed table to allow doing the sort chosen
+		* @var	string	sql_sort_join		Condition to define how to join the CROSS JOIN'ed table specifyed in sql_sort_table
+		* @var	array	author_ary			Array of user_id containing the users to filter the results to
+		* @var	string	author_name			An extra username to search on
+		* @var	string	sql_author			SQL WHERE condition for the post author ids
+		* @var	int		topic_id			Limit the search to this topic_id only
+		* @var	string	sql_topic_id		SQL of topic_id
+		* @var	string	sort_by_sql			The possible predefined sort types
+		* @var	string	sort_key			The sort type used from the possible sort types
+		* @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
+		* @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
+		* @var	string	sort_days			Time, in days, that the oldest post showing can have
+		* @var	string	sql_time			The SQL to search on the time specifyed by sort_days
+		* @var	bool	firstpost_only		Wether or not to search only on the first post of the topics
+		* @var	array	ex_fid_ary			Forum ids that must not be searched on
+		* @var	array	sql_fora			SQL query for ex_fid_ary
+		* @var	string	m_approve_fid_sql	WHERE clause condition on post_visibility restrictions
+		* @var	int		start				How many posts to skip in the search results (used for pagination)
+		* @since 3.1.4-RC1
+		*/
+		$vars = array(
+			'result_count',
+			'sql_sort_table',
+			'sql_sort_join',
+			'author_ary',
+			'author_name',
+			'sql_author',
+			'topic_id',
+			'sql_topic_id',
+			'sort_by_sql',
+			'sort_key',
+			'sort_dir',
+			'sql_sort',
+			'sort_days',
+			'sql_time',
+			'firstpost_only',
+			'ex_fid_ary',
+			'sql_fora',
+			'm_approve_fid_sql',
+			'start',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_author_query_before', compact($vars)));
+
 		// If the cache was completely empty count the results
 		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
 
