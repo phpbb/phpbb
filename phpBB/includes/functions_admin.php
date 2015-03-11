@@ -920,7 +920,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $phpbb_dispatcher, $user);
 
 	if ($error)
 	{

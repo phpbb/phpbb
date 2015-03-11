@@ -43,6 +43,12 @@ class fulltext_mysql extends \phpbb\search\base
 	protected $db;
 
 	/**
+	 * PhpBB event dispatcher object
+	 * @var \phpbb\event\dispatcher_interface
+	 */
+	protected $phpbb_dispatcher;
+
+	/**
 	 * User object
 	 * @var \phpbb\user
 	 */
@@ -78,12 +84,14 @@ class fulltext_mysql extends \phpbb\search\base
 	 * @param \phpbb\auth\auth $auth Auth object
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface Database object
+	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 * @param \phpbb\user $user User object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $phpbb_dispatcher, $user)
 	{
 		$this->config = $config;
 		$this->db = $db;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_mysql_min_word_len'], 'max' => $this->config['fulltext_mysql_max_word_len']);

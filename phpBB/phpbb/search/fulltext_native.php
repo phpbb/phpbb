@@ -87,6 +87,12 @@ class fulltext_native extends \phpbb\search\base
 	protected $db;
 
 	/**
+	 * PhpBB event dispatcher object
+	 * @var \phpbb\event\dispatcher_interface
+	 */
+	protected $phpbb_dispatcher;
+
+	/**
 	 * User object
 	 * @var \phpbb\user
 	 */
@@ -96,13 +102,15 @@ class fulltext_native extends \phpbb\search\base
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
+	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $phpbb_dispatcher, $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->db = $db;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_native_min_chars'], 'max' => $this->config['fulltext_native_max_chars']);

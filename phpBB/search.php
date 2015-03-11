@@ -274,7 +274,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $phpbb_dispatcher, $user);
 
 	if ($error)
 	{
