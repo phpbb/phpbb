@@ -21,4 +21,41 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/boolean_processor.xml');
 	}
 
+	public function test_triple_and_with_is_null()
+	{
+		$db = $this->new_dbal();
+
+		$db->sql_return_on_error(true);
+
+		$sql_ary = array(
+			'SELECT'	=> 'u.username',
+			'FROM'		=> array(
+				'phpbb_users'		=> 'u',
+				'phpbb_user_group'	=> 'ug',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(
+						'phpbb_banlist'	=> 'b',
+					),
+					'ON'	=> 'u.user_id = b.ban_userid',
+				),
+			),
+			'WHERE'		=> array('AND',
+				array('ug.group_id', '=', 1),
+				array('u.user_id', '=', 'ug.user_id'),
+				array('b.ban_id', 'IS', NULL),
+			),
+			'ORDER_BY'	=> 'u.username',
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
+		$result = $db->sql_query($sql);
+
+		$db->sql_return_on_error(false);
+
+		$this->assertEquals(array(
+			array('username' => 'helper'),
+			array('username' => 'mass email'),
+			), $db->sql_fetchrowset($result));
+	}
 }
