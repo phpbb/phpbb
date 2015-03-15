@@ -21,6 +21,31 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/boolean_processor.xml');
 	}
 
+	public function test_single_like()
+	{
+		$db = $this->new_dbal();
+
+		$db->sql_return_on_error(true);
+
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id',
+			'FROM'		=> array(
+				'phpbb_users'		=> 'u',
+			),
+			'WHERE'		=> array('u.username_clean', 'LIKE', 'gr' . $db->get_any_char()),
+			'ORDER_BY'	=> 'u.user_id',
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
+		$result = $db->sql_query($sql);
+
+		$db->sql_return_on_error(false);
+
+		$this->assertEquals(array(
+			array('user_id' => '4'),
+			array('user_id' => '5'),
+			), $db->sql_fetchrowset($result));
+	}
+
 	public function test_single_not_in()
 	{
 		$db = $this->new_dbal();
