@@ -854,6 +854,18 @@ abstract class driver implements driver_interface
 
 								break;
 
+								case 'LIKE':
+
+									$condition = $condition[0] . ' ' . $this->sql_like_expression($condition[2]) . ' ';
+
+								break;
+
+								case 'NOT_LIKE':
+
+									$condition = $condition[0] . ' ' . $this->sql_not_like_expression($condition[2]) . ' ';
+
+								break;
+
 								default:
 
 									$condition = implode(' ', $condition);
