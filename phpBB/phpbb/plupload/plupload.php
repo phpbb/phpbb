@@ -326,7 +326,7 @@ class plupload
 
 		$tmp_file = $this->temporary_filepath($upload['tmp_name']);
 
-		if (!move_uploaded_file($upload['tmp_name'], $tmp_file))
+		if (!phpbb_is_writable($this->temporary_directory) || !move_uploaded_file($upload['tmp_name'], $tmp_file))
 		{
 			$this->emit_error(103, 'PLUPLOAD_ERR_MOVE_UPLOADED');
 		}
