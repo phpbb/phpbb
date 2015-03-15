@@ -21,6 +21,37 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/boolean_processor.xml');
 	}
 
+	public function test_triple_and_with_in()
+	{
+		$db = $this->new_dbal();
+
+		$db->sql_return_on_error(true);
+
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id',
+			'FROM'		=> array(
+				'phpbb_users'		=> 'u',
+				'phpbb_user_group'	=> 'ug',
+			),
+			'WHERE'		=> array('AND',
+				array('ug.user_id', 'IN', array(1, 2, 3, 4)),
+				array('ug.group_id', '=', 1),
+				array('u.user_id', '=', 'ug.user_id'),
+			),
+			'ORDER_BY'	=> 'u.user_id',
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_ary);
+		$result = $db->sql_query($sql);
+
+		$db->sql_return_on_error(false);
+
+		$this->assertEquals(array(
+			array('user_id' => '1'),
+			array('user_id' => '2'),
+			array('user_id' => '3'),
+			), $db->sql_fetchrowset($result),
+	}
+
 	public function test_double_and_with_not_of_or()
 	{
 		$db = $this->new_dbal();
