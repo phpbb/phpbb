@@ -153,7 +153,7 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 					),
 					array('AND',
 						array('ug.group_id', '=', 1),
-						array('b.ban_id', 'IS NOT', NULL),
+						array('b.ban_id', 'IS_NOT', NULL),
 					),
 				),
 				array('u.user_id', '=', 'ug.user_id'),

@@ -866,6 +866,24 @@ abstract class driver implements driver_interface
 
 								break;
 
+								case 'IS_NOT':
+
+									$condition[1] = 'IS NOT';
+
+								// no break
+								case 'IS':
+
+									// If the value is NULL, the string of it is the empty string ('') which is not the intended result.
+									// this should solve that
+									if ($condition[2] === null)
+									{
+										$condition[2] = 'NULL';
+									}
+
+									$condition = implode(' ', $condition);
+
+								break;
+
 								default:
 
 									$condition = implode(' ', $condition);
