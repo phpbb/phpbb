@@ -53,7 +53,7 @@ class acp_styles
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \phpbb\textformatter\cache */
+	/** @var \phpbb\textformatter\cache_interface */
 	protected $text_formatter_cache;
 
 	/** @var string */
