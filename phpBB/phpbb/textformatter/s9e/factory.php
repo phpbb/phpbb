@@ -471,21 +471,26 @@ class factory implements \phpbb\textformatter\cache_interface
 	/**
 	* Merge the templates from any number of styles into one BBCode template
 	*
+	* When multiple templates are available for the same BBCode (because of multiple styles) we
+	* merge them into a single template that uses an xsl:choose construct that determines which
+	* style to use at rendering time.
+	*
 	* @param  array  $style_templates Associative array matching style_ids to their template
 	* @return string
 	*/
 	protected function merge_templates(array $style_templates)
 	{
+		// Return the template as-is if there's only one style or all styles share the same template
+		if (count(array_unique($style_templates)) === 1)
+		{
+			return end($style_templates);
+		}
+
 		// Group identical templates together
 		$grouped_templates = array();
 		foreach ($style_templates as $style_id => $style_template)
 		{
 			$grouped_templates[$style_template][] = '$STYLE_ID=' . $style_id;
-		}
-
-		if (count($grouped_templates) === 1)
-		{
-			return $style_template;
 		}
 
 		// Sort templates by frequency descending
