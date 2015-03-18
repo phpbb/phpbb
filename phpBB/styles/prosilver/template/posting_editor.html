@@ -36,6 +36,7 @@
 	<!-- INCLUDE posting_buttons.html -->
 
 	<div id="smiley-box">
+		<!-- EVENT posting_editor_smilies_before -->	
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
@@ -45,7 +46,7 @@
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 750, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
-
+		<!-- EVENT posting_editor_smilies_after -->
 		<!-- IF BBCODE_STATUS -->
 		<div class="bbcode-status">
 			<!-- IF .smiley --><hr /><!-- ENDIF -->
@@ -58,6 +59,7 @@
 			{SMILIES_STATUS}
 		</div>
 		<!-- ENDIF -->
+		<!-- EVENT posting_editor_bbcode_status_after -->
 		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
 			<!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->
 			<!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
