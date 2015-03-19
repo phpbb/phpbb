@@ -29,9 +29,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	public function get_factory()
 	{
 		global $phpbb_root_path;
-
 		$this->cache = new phpbb_mock_cache;
-
 		$dal = new \phpbb\textformatter\data_access(
 			$this->new_dbal(),
 			'phpbb_bbcodes',
@@ -40,7 +38,6 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			'phpbb_words',
 			$phpbb_root_path . 'styles/'
 		);
-
 		$factory = new \phpbb\textformatter\s9e\factory(
 			$dal,
 			$this->cache,
@@ -122,7 +119,6 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	public function test_local_url()
 	{
 		global $config, $user, $request;
-
 		$config = array(
 			'force_server_vars' => true,
 			'server_protocol' => 'http://',
