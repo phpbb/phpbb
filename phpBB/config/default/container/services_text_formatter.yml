@@ -31,6 +31,7 @@ services:
         arguments:
             - @text_formatter.data_access
             - @cache.driver
+            - @dispatcher
             - %text_formatter.cache.dir%
             - %text_formatter.cache.parser.key%
             - %text_formatter.cache.renderer.key%

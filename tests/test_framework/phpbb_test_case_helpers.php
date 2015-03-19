@@ -315,7 +315,7 @@ class phpbb_test_case_helpers
 	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
-		global $phpbb_container, $phpbb_root_path, $phpEx;
+		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$cache_dir = __DIR__ . '/../tmp/';
 
@@ -443,8 +443,22 @@ class phpbb_test_case_helpers
 			);
 		}
 
+		// Create an event dispatcher
+		if ($container->has('dispatcher'))
+		{
+			$dispatcher = $container->get('dispatcher');
+		}
+		else if (isset($phpbb_dispatcher))
+		{
+			$dispatcher = $phpbb_dispatcher;
+		}
+		else
+		{
+			$dispatcher = new phpbb_mock_event_dispatcher;
+		}
+
 		// Create and register the text_formatter.s9e.factory service
-		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $cache_dir, $cache_key_parser, $cache_key_renderer);
 		$container->set('text_formatter.s9e.factory', $factory);
 
 		// Create a user if none was provided, and add the common lang strings

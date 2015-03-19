@@ -101,22 +101,28 @@ class factory implements \phpbb\textformatter\cache_interface
 	);
 
 	/**
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $dispatcher;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\textformatter\data_access $data_access
 	* @param \phpbb\cache\driver\driver_interface $cache
+	* @param \phpbb\event\dispatcher_interface $dispatcher
 	* @param string $cache_dir          Path to the cache dir
 	* @param string $cache_key_parser   Cache key used for the parser
 	* @param string $cache_key_renderer Cache key used for the renderer
 	*/
-	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, $cache_dir, $cache_key_parser, $cache_key_renderer)
+	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, $cache_dir, $cache_key_parser, $cache_key_renderer)
 	{
 		$this->cache = $cache;
 		$this->cache_dir = $cache_dir;
 		$this->cache_key_parser = $cache_key_parser;
 		$this->cache_key_renderer = $cache_key_renderer;
-
 		$this->data_access = $data_access;
+		$this->dispatcher = $dispatcher;
 	}
 
 	/**
@@ -157,6 +163,16 @@ class factory implements \phpbb\textformatter\cache_interface
 	{
 		// Create a new Configurator
 		$configurator = new Configurator;
+
+		/**
+		* Modify the s9e\TextFormatter configurator before the default settings are set
+		*
+		* @event core.text_formatter_s9e_configure_before
+		* @var \s9e\TextFormatter\Configurator configurator Configurator instance
+		* @since 3.2.0-a1
+		*/
+		$vars = array('configurator');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_before', compact($vars)));
 
 		// Convert newlines to br elements by default
 		$configurator->rootRules->enableAutoLineBreaks();
@@ -287,6 +303,16 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->registeredVars['max_font_size'] = 0;
 		$configurator->registeredVars['max_img_height'] = 0;
 		$configurator->registeredVars['max_img_width'] = 0;
+
+		/**
+		* Modify the s9e\TextFormatter configurator after the default settings are set
+		*
+		* @event core.text_formatter_s9e_configure_after
+		* @var \s9e\TextFormatter\Configurator configurator Configurator instance
+		* @since 3.2.0-a1
+		*/
+		$vars = array('configurator');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_after', compact($vars)));
 
 		return $configurator;
 	}
