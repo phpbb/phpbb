@@ -73,7 +73,7 @@ class kernel_request_subscriber implements EventSubscriberInterface
 		$router_listener->onKernelRequest($event);
 	}
 
-	public static function getSubscribedEvents()
+	static public function getSubscribedEvents()
 	{
 		return array(
 			KernelEvents::REQUEST		=> 'on_kernel_request',
