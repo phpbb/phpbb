@@ -180,6 +180,10 @@ class factory implements \phpbb\textformatter\cache_interface
 		// Don't automatically ignore text in places where text is not allowed
 		$configurator->rulesGenerator->remove('IgnoreTextIfDisallowed');
 
+		// Don't remove comments and instead convert them to xsl:comment elements
+		$configurator->templateNormalizer->remove('RemoveComments');
+		$configurator->templateNormalizer->add('TransposeComments');
+
 		// Set the rendering engine and configure it to save to the cache dir
 		$configurator->rendering->engine = 'PHP';
 		$configurator->rendering->engine->cacheDir = $this->cache_dir;

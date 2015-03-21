@@ -179,6 +179,21 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	}
 
 	/**
+	* @testdox Preserves comments in custom BBCodes
+	*/
+	public function test_preserve_comments()
+	{
+		$fixture = __DIR__ . '/fixtures/preserve_comments.xml';
+		$container = $this->get_test_case_helpers()->set_s9e_services(null, $fixture);
+		$parser = $container->get('text_formatter.parser');
+		$renderer = $container->get('text_formatter.renderer');
+
+		$original = '[X]';
+		$expected = '<!-- comment -->';
+		$this->assertSame($expected, $renderer->render($parser->parse($original)));
+	}
+
+	/**
 	* @testdox Accepts unsafe custom BBCodes
 	*/
 	public function test_unsafe_bbcode()

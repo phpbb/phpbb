@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>X</value>
+			<value></value>
+			<value>1</value>
+			<value>[X][/X]</value>
+			<value><![CDATA[<!-- comment -->]]></value>
+			<value><![CDATA[!\[x\]\[/x\]!i]]></value>
+			<value><![CDATA[[x:$uid][/x:$uid]]]></value>
+			<value><![CDATA[[x:$uid][/x:$uid]]]></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
