@@ -26,7 +26,7 @@ class utils implements \phpbb\textformatter\utils_interface
 		// Insert a space before <s> and <e> then remove formatting
 		$text = preg_replace('#<[es]>#', ' $0', $text);
 
-		return \s9e\TextFormatter\Unparser::removeFormatting($text);
+		return \s9e\TextFormatter\Utils::removeFormatting($text);
 	}
 
 	/**
@@ -34,18 +34,7 @@ class utils implements \phpbb\textformatter\utils_interface
 	*/
 	public function remove_bbcode($text, $bbcode_name, $depth = 0)
 	{
-		$dom = new \DOMDocument;
-		$dom->loadXML($text);
-
-		$xpath = new \DOMXPath($dom);
-		$nodes = $xpath->query(str_repeat('//' . strtoupper($bbcode_name), 1 + $depth));
-
-		foreach ($nodes as $node)
-		{
-			$node->parentNode->removeChild($node);
-		}
-
-		return $dom->saveXML($dom->documentElement);
+		return \s9e\TextFormatter\Utils::removeTag($text, strtoupper($bbcode_name), $depth);
 	}
 
 	/**
@@ -53,7 +42,7 @@ class utils implements \phpbb\textformatter\utils_interface
 	*/
 	public function remove_formatting($text)
 	{
-		return \s9e\TextFormatter\Unparser::removeFormatting($text);
+		return \s9e\TextFormatter\Utils::removeFormatting($text);
 	}
 
 	/**

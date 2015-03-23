@@ -109,52 +109,41 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 	public function test_remove_bbcode($original, $name, $depth, $expected)
 	{
 		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$parser    = $container->get('text_formatter.parser');
 		$utils     = $container->get('text_formatter.utils');
 
-		$this->assertSame($expected, $utils->remove_bbcode($original, $name, $depth));
+		$parsed = $parser->parse($original);
+		$actual = $utils->unparse($utils->remove_bbcode($parsed, $name, $depth));
+
+		$this->assertSame($expected, $actual);
 	}
 
 	public function get_remove_bbcode_tests()
 	{
 		return array(
 			array(
-				'<t>Plain text</t>',
+				'Plain text',
 				'b',
 				1,
-				'<t>Plain text</t>'
+				'Plain text'
 			),
 			array(
-				'<r><QUOTE author="u0"><s>[quote="u0"]</s><QUOTE author="u1"><s>[quote="u1"]</s><QUOTE author="u2"><s>[quote="u2"]</s>q2<e>[/quote]</e></QUOTE>
-q1<e>[/quote]</e></QUOTE>
-q0<e>[/quote]</e></QUOTE>
-<B><s>[b]</s>bold<e>[/b]</e></B></r>',
+				'[quote="u0"][quote="u1"][quote="u2"]q2[/quote]q1[/quote]q0[/quote][b]bold[/b]',
 				'quote',
 				0,
-				'<r>
-<B><s>[b]</s>bold<e>[/b]</e></B></r>'
+				'[b]bold[/b]',
 			),
 			array(
-				'<r><QUOTE author="u0"><s>[quote="u0"]</s><QUOTE author="u1"><s>[quote="u1"]</s><QUOTE author="u2"><s>[quote="u2"]</s>q2<e>[/quote]</e></QUOTE>
-q1<e>[/quote]</e></QUOTE>
-q0<e>[/quote]</e></QUOTE>
-<B><s>[b]</s>bold<e>[/b]</e></B></r>',
+				'[quote="u0"][quote="u1"][quote="u2"]q2[/quote]q1[/quote]q0[/quote][b]bold[/b]',
 				'quote',
 				1,
-				'<r><QUOTE author="u0"><s>[quote="u0"]</s>
-q0<e>[/quote]</e></QUOTE>
-<B><s>[b]</s>bold<e>[/b]</e></B></r>'
+				'[quote="u0"]q0[/quote][b]bold[/b]',
 			),
 			array(
-				'<r><QUOTE author="u0"><s>[quote="u0"]</s><QUOTE author="u1"><s>[quote="u1"]</s><QUOTE author="u2"><s>[quote="u2"]</s>q2<e>[/quote]</e></QUOTE>
-q1<e>[/quote]</e></QUOTE>
-q0<e>[/quote]</e></QUOTE>
-<B><s>[b]</s>bold<e>[/b]</e></B></r>',
+				'[quote="u0"][quote="u1"][quote="u2"]q2[/quote]q1[/quote]q0[/quote][b]bold[/b]',
 				'quote',
 				2,
-				'<r><QUOTE author="u0"><s>[quote="u0"]</s><QUOTE author="u1"><s>[quote="u1"]</s>
-q1<e>[/quote]</e></QUOTE>
-q0<e>[/quote]</e></QUOTE>
-<B><s>[b]</s>bold<e>[/b]</e></B></r>'
+				'[quote="u0"][quote="u1"]q1[/quote]q0[/quote][b]bold[/b]',
 			),
 		);
 	}
