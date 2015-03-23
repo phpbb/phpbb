@@ -62,7 +62,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		if ($renderer_data)
 		{
 			$class = $renderer_data['class'];
-
 			if (!class_exists($class, false))
 			{
 				// Try to load the renderer class from its cache file
@@ -73,12 +72,10 @@ class renderer implements \phpbb\textformatter\renderer_interface
 					include($cache_file);
 				}
 			}
-
 			if (class_exists($class, false))
 			{
 				$renderer = new $class;
 			}
-
 			if (isset($renderer_data['censor']))
 			{
 				$censor = $renderer_data['censor'];
