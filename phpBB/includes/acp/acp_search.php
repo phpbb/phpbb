@@ -449,7 +449,6 @@ class acp_search
 
 		$search = null;
 		$error = false;
-		$search_options = '';
 		foreach ($search_types as $type)
 		{
 			if ($this->init_search($type, $search, $error) || !method_exists($search, 'index_created'))
