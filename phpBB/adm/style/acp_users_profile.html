@@ -2,6 +2,7 @@
 
 	<fieldset>
 		<legend>{L_USER_PROFILE}</legend>
+	<!-- EVENT acp_users_profile_before -->
 	<dl>
 		<dt><label for="jabber">{L_UCP_JABBER}{L_COLON}</label></dt>
 		<dd><input type="email" id="jabber" name="jabber" value="{JABBER}" /></dd>
@@ -10,6 +11,7 @@
 		<dt><label for="birthday">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
 		<dd>{L_DAY}{L_COLON} <select id="birthday" name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> {L_MONTH}{L_COLON} <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> {L_YEAR}{L_COLON} <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></dd>
 	</dl>
+	<!-- EVENT acp_users_profile_after -->
 	</fieldset>
 
 	<!-- IF .profile_fields -->
@@ -26,7 +28,7 @@
 		<!-- END profile_fields -->
 		</fieldset>
 	<!-- ENDIF -->
-
+	<!-- EVENT acp_users_profile_custom_after -->
 	<fieldset class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 		{S_FORM_TOKEN}

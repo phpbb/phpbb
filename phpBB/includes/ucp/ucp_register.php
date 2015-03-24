@@ -30,7 +30,7 @@ class ucp_register
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE ||
@@ -197,6 +197,19 @@ class ucp_register
 			'lang'				=> basename(request_var('lang', $user->lang_name)),
 			'tz'				=> request_var('tz', $timezone),
 		);
+		/**
+		* Add UCP register data before they are assigned to the template or submitted
+		*
+		* To assign data to the template, use $template->assign_vars()
+		*
+		* @event core.ucp_register_data_before
+		* @var	bool	submit		Do we display the form only
+		*							or did the user press submit
+		* @var	array	data		Array with current ucp registration data
+		* @since 3.1.4-RC1
+		*/
+		$vars = array('submit', 'data');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_register_data_before', compact($vars)));
 
 		// Check and initialize some variables if needed
 		if ($submit)
@@ -257,6 +270,19 @@ class ucp_register
 					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
 				}
 			}
+			/**
+			* Check UCP registration data after they are submitted
+			*
+			* @event core.ucp_register_data_after
+			* @var	bool	submit		Do we display the form only
+			*							or did the user press submit
+			* @var	array 	data		Array with current ucp registration data
+			* @var	array	cp_data		Array with custom profile fields data
+			* @var	array 	error		Array with list of errors
+			* @since 3.1.4-RC1
+			*/
+			$vars = array('submit', 'data', 'cp_data', 'error');
+			extract($phpbb_dispatcher->trigger_event('core.ucp_register_data_after', compact($vars)));
 
 			if (!sizeof($error))
 			{
@@ -319,6 +345,20 @@ class ucp_register
 				{
 					$user_row['user_new'] = 1;
 				}
+				/**
+				* Add into $user_row before user_add
+				*
+				* user_add allows adding more data into the users table
+				*
+				* @event core.ucp_register_user_row_after
+				* @var	bool	submit		Do we display the form only
+				*							or did the user press submit
+				* @var	array	cp_data		Array with custom profile fields data
+				* @var	array	user_row	Array with current ucp registration data
+				* @since 3.1.4-RC1
+				*/
+				$vars = array('submit', 'cp_data', 'user_row');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_register_user_row_after', compact($vars)));
 
 				// Register user...
 				$user_id = user_add($user_row, $cp_data);

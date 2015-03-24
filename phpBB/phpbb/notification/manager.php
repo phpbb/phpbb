@@ -38,7 +38,7 @@ class manager
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var \phpbb\event\dispatcher_interface */
 	protected $phpbb_dispatcher;
 
 	/** @var \phpbb\db\driver\driver_interface */
@@ -73,7 +73,7 @@ class manager
 	* @param ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\config\config $config
-	* @param \phpbb\event\dispatcher $phpbb_dispatcher
+	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
@@ -85,7 +85,7 @@ class manager
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
