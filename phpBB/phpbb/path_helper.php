@@ -229,7 +229,7 @@ class path_helper
 
 		// Prepend ../ to the phpbb_root_path as many times as / exists in path_info
 		$this->web_root_path = $this->filesystem->clean_path(
-			'./' . str_repeat('../', $corrections) . $this->phpbb_root_path
+			'./' . str_repeat('../', $corrections >= 0 ? $corrections : 0) . $this->phpbb_root_path
 		);
 		return $this->web_root_path;
 	}
@@ -257,7 +257,7 @@ class path_helper
 				$relative_referer_path = substr($relative_referer_path, 0, $has_params);
 			}
 			$corrections = substr_count($relative_referer_path, '/');
-			return $this->phpbb_root_path . str_repeat('../', $corrections - 1);
+			return $this->phpbb_root_path . str_repeat('../', $corrections - 1 > 0 ? $corrections - 1 : 0);
 		}
 
 		// If not, it's a bit more complicated. We go to the parent directory
