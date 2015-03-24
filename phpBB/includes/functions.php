@@ -2793,19 +2793,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// Special cases... determine
 		switch ($result['status'])
 		{
-			case LOGIN_ERROR_ATTEMPTS:
-
-				$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-				$captcha->init(CONFIRM_LOGIN);
-				// $captcha->reset();
-
-				$template->assign_vars(array(
-					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
-				));
-
-				$err = $user->lang[$result['error_msg']];
-			break;
-
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
 					$user->lang[$result['error_msg']],
@@ -2815,6 +2802,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'</a>'
 				);
 			break;
+
+			case LOGIN_ERROR_ATTEMPTS:
+
+				$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+				$captcha->init(CONFIRM_LOGIN);
+				// $captcha->reset();
+
+				$template->assign_vars(array(
+					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
+				));
+			// no break;
 
 			// Username, password, etc...
 			default:
