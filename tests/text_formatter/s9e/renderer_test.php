@@ -354,11 +354,4 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			);
 		}
 	}
-
-	public function test_get_renderer()
-	{
-		$container = $this->get_test_case_helpers()->set_s9e_services();
-		$renderer = $container->get('text_formatter.renderer');
-		$this->assertInstanceOf('s9e\\TextFormatter\\Renderer', $renderer->get_renderer());
-	}
 }
