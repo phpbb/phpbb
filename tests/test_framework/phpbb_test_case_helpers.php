@@ -425,6 +425,7 @@ class phpbb_test_case_helpers
 		$prefix = '_s9e_' . md5(serialize(func_get_args()));
 		$cache_key_parser = $prefix . '_parser';
 		$cache_key_renderer = $prefix . '_renderer';
+		$container->set('cache.driver', $cache);
 
 		// Create a path_helper
 		if (!$container->has('path_helper'))
@@ -473,6 +474,7 @@ class phpbb_test_case_helpers
 			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);
 			$user->optionset('viewsmilies', true);
+			$container->set('user', $user);
 		}
 		$user->add_lang('common');
 
@@ -486,7 +488,8 @@ class phpbb_test_case_helpers
 			$cache,
 			$cache_key_parser,
 			$user,
-			$factory
+			$factory,
+			$dispatcher
 		);
 
 		$container->set('text_formatter.parser', $parser);

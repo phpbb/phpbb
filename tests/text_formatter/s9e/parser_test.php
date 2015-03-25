@@ -36,7 +36,8 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			$cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			$factory
+			$factory,
+			new phpbb_mock_event_dispatcher
 		);
 	}
 
@@ -63,7 +64,8 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			$cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			$factory
+			$factory,
+			new phpbb_mock_event_dispatcher
 		);
 
 		$this->assertSame('<t>test</t>', $parser->parse('test'));
@@ -91,7 +93,8 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			new phpbb_mock_cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			$factory
+			$factory,
+			new phpbb_mock_event_dispatcher
 		);
 
 		$this->assertSame('<t>test</t>', $parser->parse('test'));
@@ -124,7 +127,8 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			$cache,
 			'_foo_parser',
 			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
-			$factory
+			$factory,
+			new phpbb_mock_event_dispatcher
 		);
 
 		call_user_func_array(array($parser, $adapter_method), (array) $adapter_arg);
@@ -166,5 +170,40 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 				'enablePlugin',   'Emoticons'
 			)
 		);
+	}
+
+	/**
+	* @testdox The constructor triggers a core.text_formatter_s9e_parser_setup event
+	*/
+	public function test_setup_event()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher
+			->expects($this->once())
+			->method('trigger_event')
+			->with(
+				'core.text_formatter_s9e_parser_setup',
+				$this->callback(array($this, 'setup_event_callback'))
+			)
+			->will($this->returnArgument(1));
+
+		new \phpbb\textformatter\s9e\parser(
+			$container->get('cache.driver'),
+			'_foo_parser',
+			$container->get('user'),
+			$container->get('text_formatter.s9e.factory'),
+			$dispatcher
+		);
+	}
+
+	public function setup_event_callback($vars)
+	{
+		return isset($vars['parser'])
+			&& $vars['parser'] instanceof \s9e\TextFormatter\Parser
+			&& isset($vars['self'])
+			&& $vars['self'] instanceof \phpbb\textformatter\s9e\parser
+			&& isset($vars['user'])
+			&& $vars['user'] instanceof \phpbb\user;
 	}
 }

@@ -22,6 +22,11 @@ use s9e\TextFormatter\Parser\Logger;
 class parser implements \phpbb\textformatter\parser_interface
 {
 	/**
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $dispatcher;
+
+	/**
 	* @var \s9e\TextFormatter\Parser
 	*/
 	protected $parser;
@@ -38,19 +43,39 @@ class parser implements \phpbb\textformatter\parser_interface
 	* @param string $key Cache key
 	* @param \phpbb\user $user
 	* @param factory $factory
+	* @param \phpbb\event\dispatcher_interface $dispatcher
 	*/
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, $key, \phpbb\user $user, factory $factory)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, $key, \phpbb\user $user, factory $factory, \phpbb\event\dispatcher_interface $dispatcher)
 	{
-		$this->user = $user;
-
 		$parser = $cache->get($key);
 		if (!$parser)
 		{
 			$objects = $factory->regenerate();
 			$parser  = $objects['parser'];
 		}
+		$self = $this;
 
+		/**
+		* Configure the parser service
+		*
+		* Can be used to:
+		*  - toggle features according to the user's preferences,
+		*  - toggle BBCodes according to the user's permissions,
+		*  - register variables or custom parsers in the s9e\TextFormatter
+		*  - configure the s9e\TextFormatter parser
+		*
+		* @event core.text_formatter_s9e_parser_setup
+		* @var \s9e\TextFormatter\Parser parser s9e\TextFormatter parser instance
+		* @var \phpbb\textformatter\s9e\parser self This parser service
+		* @var \phpbb\user user Current user
+		* @since 3.2.0-a1
+		*/
+		$vars = array('parser', 'self', 'user');
+		extract($dispatcher->trigger_event('core.text_formatter_s9e_parser_setup', compact($vars)));
+
+		$this->dispatcher = $dispatcher;
 		$this->parser = $parser;
+		$this->user = $user;
 	}
 
 	/**
