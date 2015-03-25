@@ -43,6 +43,7 @@ services:
             - %text_formatter.cache.parser.key%
             - @user
             - @text_formatter.s9e.factory
+            - @dispatcher
 
     text_formatter.s9e.renderer:
         class: phpbb\textformatter\s9e\renderer
