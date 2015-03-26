@@ -33,7 +33,7 @@ class avatars extends \phpbb\db\migration\migration
 		$effectively_installed = $this->db->sql_query($sql);
 		$this->db->sql_return_on_error();
 
-		// Return avatar type of guest user to previous state
+		// Restore avatar type of guest user to previous state
 		$sql = 'UPDATE ' . $this->table_prefix . "users
 			SET user_avatar_type = '{$backup_type}'
 			WHERE user_id = " . ANONYMOUS;
