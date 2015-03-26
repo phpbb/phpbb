@@ -83,7 +83,33 @@ class parser implements \phpbb\textformatter\parser_interface
 	*/
 	public function parse($text)
 	{
-		return $this->parser->parse($text);
+		$self = $this;
+
+		/**
+		* Modify a text before it is parsed
+		*
+		* @event core.text_formatter_s9e_parse_before
+		* @var \phpbb\textformatter\s9e\parser self This parser service
+		* @var string text The original text
+		* @since 3.2.0-a1
+		*/
+		$vars = array('self', 'text');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_parse_before', compact($vars)));
+
+		$xml = $this->parser->parse($text);
+
+		/**
+		* Modify a parsed text in its XML form
+		*
+		* @event core.text_formatter_s9e_parse_after
+		* @var \phpbb\textformatter\s9e\parser self This parser service
+		* @var string xml The parsed text, in XML
+		* @since 3.2.0-a1
+		*/
+		$vars = array('self', 'xml');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_parse_after', compact($vars)));
+
+		return $xml;
 	}
 
 	/**

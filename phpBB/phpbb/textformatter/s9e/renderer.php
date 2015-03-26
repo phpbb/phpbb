@@ -256,7 +256,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		* Modify a rendered text
 		*
 		* @event core.text_formatter_s9e_render_after
-		* @var string html The renderer text's HTML
+		* @var string html The rendered text's HTML
 		* @var \phpbb\textformatter\s9e\renderer self This renderer service
 		* @since 3.2.0-a1
 		*/

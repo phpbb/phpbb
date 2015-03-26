@@ -206,4 +206,58 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			&& isset($vars['user'])
 			&& $vars['user'] instanceof \phpbb\user;
 	}
+
+	/**
+	* @testdox parse() triggers a core.text_formatter_s9e_parse_before and core.text_formatter_s9e_parse_after events
+	*/
+	public function test_parse_event()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher
+			->expects($this->any())
+			->method('trigger_event')
+			->will($this->returnArgument(1));
+		$dispatcher
+			->expects($this->at(1))
+			->method('trigger_event')
+			->with(
+				'core.text_formatter_s9e_parse_before',
+				$this->callback(array($this, 'parse_before_event_callback'))
+			)
+			->will($this->returnArgument(1));
+		$dispatcher
+			->expects($this->at(2))
+			->method('trigger_event')
+			->with(
+				'core.text_formatter_s9e_parse_after',
+				$this->callback(array($this, 'parse_after_event_callback'))
+			)
+			->will($this->returnArgument(1));
+
+		$parser = new \phpbb\textformatter\s9e\parser(
+			$container->get('cache.driver'),
+			'_foo_parser',
+			$container->get('user'),
+			$container->get('text_formatter.s9e.factory'),
+			$dispatcher
+		);
+		$parser->parse('...');
+	}
+
+	public function parse_before_event_callback($vars)
+	{
+		return isset($vars['self'])
+			&& $vars['self'] instanceof \phpbb\textformatter\s9e\parser
+			&& isset($vars['text'])
+			&& $vars['text'] === '...';
+	}
+
+	public function parse_after_event_callback($vars)
+	{
+		return isset($vars['self'])
+			&& $vars['self'] instanceof \phpbb\textformatter\s9e\parser
+			&& isset($vars['xml'])
+			&& $vars['xml'] === '<t>...</t>';
+	}
 }
