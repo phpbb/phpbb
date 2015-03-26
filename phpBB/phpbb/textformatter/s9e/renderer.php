@@ -92,6 +92,13 @@ class renderer implements \phpbb\textformatter\renderer_interface
 			$objects  = $factory->regenerate();
 			$renderer = $objects['renderer'];
 		}
+
+		if (isset($censor))
+		{
+			$this->censor = $censor;
+		}
+		$this->dispatcher = $dispatcher;
+		$this->renderer = $renderer;
 		$self = $this;
 
 		/**
@@ -104,13 +111,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		*/
 		$vars = array('renderer', 'self');
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_renderer_setup', compact($vars)));
-
-		if (isset($censor))
-		{
-			$this->censor = $censor;
-		}
-		$this->dispatcher = $dispatcher;
-		$this->renderer = $renderer;
 	}
 
 	/**

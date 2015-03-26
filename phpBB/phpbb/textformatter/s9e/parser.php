@@ -53,6 +53,10 @@ class parser implements \phpbb\textformatter\parser_interface
 			$objects = $factory->regenerate();
 			$parser  = $objects['parser'];
 		}
+
+		$this->dispatcher = $dispatcher;
+		$this->parser = $parser;
+		$this->user = $user;
 		$self = $this;
 
 		/**
@@ -72,10 +76,6 @@ class parser implements \phpbb\textformatter\parser_interface
 		*/
 		$vars = array('parser', 'self', 'user');
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_parser_setup', compact($vars)));
-
-		$this->dispatcher = $dispatcher;
-		$this->parser = $parser;
-		$this->user = $user;
 	}
 
 	/**
