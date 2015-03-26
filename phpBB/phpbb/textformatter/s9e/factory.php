@@ -14,7 +14,7 @@
 namespace phpbb\textformatter\s9e;
 
 use s9e\TextFormatter\Configurator;
-use s9e\TextFormatter\Configurator\Items\AttributeFilters\Regexp as RegexpFilter;
+use s9e\TextFormatter\Configurator\Items\AttributeFilters\RegexpFilter;
 use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 
 /**
