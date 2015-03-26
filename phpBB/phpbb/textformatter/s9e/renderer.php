@@ -24,6 +24,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	protected $censor;
 
 	/**
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $dispatcher;
+
+	/**
 	* @var \s9e\TextFormatter\Renderer
 	*/
 	protected $renderer;
@@ -55,8 +60,9 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	* @param string $cache_dir Path to the cache dir
 	* @param string $key Cache key
 	* @param factory $factory
+	* @param \phpbb\event\dispatcher_interface $dispatcher
 	*/
-	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, factory $factory)
+	public function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_dir, $key, factory $factory, \phpbb\event\dispatcher_interface $dispatcher)
 	{
 		$renderer_data = $cache->get($key);
 		if ($renderer_data)
@@ -81,18 +87,29 @@ class renderer implements \phpbb\textformatter\renderer_interface
 				$censor = $renderer_data['censor'];
 			}
 		}
-
 		if (!isset($renderer))
 		{
 			$objects  = $factory->regenerate();
 			$renderer = $objects['renderer'];
 		}
+		$self = $this;
+
+		/**
+		* Configure the renderer service
+		*
+		* @event core.text_formatter_s9e_renderer_setup
+		* @var \s9e\TextFormatter\Renderer renderer s9e\TextFormatter renderer instance
+		* @var \phpbb\textformatter\s9e\renderer self This renderer service
+		* @since 3.2.0-a1
+		*/
+		$vars = array('renderer', 'self');
+		extract($dispatcher->trigger_event('core.text_formatter_s9e_renderer_setup', compact($vars)));
 
 		if (isset($censor))
 		{
 			$this->censor = $censor;
 		}
-
+		$this->dispatcher = $dispatcher;
 		$this->renderer = $renderer;
 	}
 

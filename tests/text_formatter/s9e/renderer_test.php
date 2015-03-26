@@ -43,7 +43,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			$cache,
 			$this->get_cache_dir(),
 			'_foo_renderer',
-			$factory
+			$factory,
+			new phpbb_mock_event_dispatcher
 		);
 	}
 
@@ -68,7 +69,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			$cache,
 			$this->get_cache_dir(),
 			'_foo_renderer',
-			$factory
+			$factory,
+			new phpbb_mock_event_dispatcher
 		);
 	}
 
@@ -353,5 +355,38 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				$renderer->render('<r><B><s>[b]</s>bold<e>[/b]</e></B></r>')
 			);
 		}
+	}
+
+	/**
+	* @testdox The constructor triggers a core.text_formatter_s9e_renderer_setup event
+	*/
+	public function test_setup_event()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher
+			->expects($this->once())
+			->method('trigger_event')
+			->with(
+				'core.text_formatter_s9e_renderer_setup',
+				$this->callback(array($this, 'setup_event_callback'))
+			)
+			->will($this->returnArgument(1));
+
+		new \phpbb\textformatter\s9e\renderer(
+			$container->get('cache.driver'),
+			$container->getParameter('cache.dir'),
+			'_foo_renderer',
+			$container->get('text_formatter.s9e.factory'),
+			$dispatcher
+		);
+	}
+
+	public function setup_event_callback($vars)
+	{
+		return isset($vars['renderer'])
+			&& $vars['renderer'] instanceof \s9e\TextFormatter\Renderer
+			&& isset($vars['self'])
+			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer;
 	}
 }

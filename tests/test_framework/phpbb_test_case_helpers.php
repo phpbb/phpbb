@@ -426,6 +426,7 @@ class phpbb_test_case_helpers
 		$cache_key_parser = $prefix . '_parser';
 		$cache_key_renderer = $prefix . '_renderer';
 		$container->set('cache.driver', $cache);
+		$container->setParameter('cache.dir', $cache_dir);
 
 		// Create a path_helper
 		if (!$container->has('path_helper'))
@@ -500,7 +501,8 @@ class phpbb_test_case_helpers
 			$cache,
 			$cache_dir,
 			$cache_key_renderer,
-			$factory
+			$factory,
+			$dispatcher
 		);
 
 		$config = ($container->has('config'))

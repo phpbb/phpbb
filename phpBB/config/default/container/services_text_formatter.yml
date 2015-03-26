@@ -52,6 +52,7 @@ services:
             - %text_formatter.cache.dir%
             - %text_formatter.cache.renderer.key%
             - @text_formatter.s9e.factory
+            - @dispatcher
         calls:
             - [configure_smilies_path, [@config, @path_helper]]
             - [configure_user, [@user, @config, @auth]]
