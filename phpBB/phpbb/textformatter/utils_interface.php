@@ -23,36 +23,26 @@ interface utils_interface
 	*
 	* NOTE: preserves smilies as text
 	*
-	* @param  string $text
-	* @return string
+	* @param  string $text Parsed text
+	* @return string       Plain text
 	*/
 	public function clean_formatting($text);
 
 	/**
-	* Remove given BBCode at given nesting depth
+	* Remove given BBCode and its content, at given nesting depth
 	*
 	* @param  string  $text        Parsed text
 	* @param  string  $bbcode_name BBCode's name
 	* @param  integer $depth       Minimum nesting depth (number of parents of the same name)
-	* @return string
+	* @return string               Parsed text
 	*/
 	public function remove_bbcode($text, $bbcode_name, $depth = 0);
 
 	/**
-	* Remove BBCodes and other formatting from a parsed text
-	*
-	* NOTE: preserves smilies as text
-	*
-	* @param  string $text
-	* @return string
-	*/
-	public function remove_formatting($text);
-
-	/**
 	* Return a parsed text to its original form
 	*
-	* @param  string $text
-	* @return string
+	* @param  string $text Parsed text
+	* @return string       Original plain text
 	*/
 	public function unparse($text);
 }

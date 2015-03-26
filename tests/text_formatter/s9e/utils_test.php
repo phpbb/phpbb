@@ -46,35 +46,6 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider get_remove_formatting_tests
-	*/
-	public function test_remove_formatting($original, $expected)
-	{
-		$container = $this->get_test_case_helpers()->set_s9e_services();
-		$utils     = $container->get('text_formatter.utils');
-
-		$this->assertSame($expected, $utils->remove_formatting($original));
-	}
-
-	public function get_remove_formatting_tests()
-	{
-		return array(
-			array(
-				'<t>Plain text</t>',
-				'Plain text'
-			),
-			array(
-				"<t>Multi<br/>\nline</t>",
-				"Multi\nline"
-			),
-			array(
-				'<r><B><s>[b]</s>bold<e>[/b]</e></B></r>',
-				'bold'
-			)
-		);
-	}
-
-	/**
 	* @dataProvider get_clean_formatting_tests
 	*/
 	public function test_clean_formatting($original, $expected)

@@ -19,37 +19,42 @@ namespace phpbb\textformatter\s9e;
 class utils implements \phpbb\textformatter\utils_interface
 {
 	/**
-	* {@inheritdoc}
+	* Replace BBCodes and other formatting elements with whitespace
+	*
+	* NOTE: preserves smilies as text
+	*
+	* @param  string $xml Parsed text
+	* @return string      Plain text
 	*/
-	public function clean_formatting($text)
+	public function clean_formatting($xml)
 	{
 		// Insert a space before <s> and <e> then remove formatting
-		$text = preg_replace('#<[es]>#', ' $0', $text);
+		$xml = preg_replace('#<[es]>#', ' $0', $xml);
 
-		return \s9e\TextFormatter\Utils::removeFormatting($text);
+		return \s9e\TextFormatter\Utils::removeFormatting($xml);
 	}
 
 	/**
-	* {@inheritdoc}
+	* Remove given BBCode and its content, at given nesting depth
+	*
+	* @param  string  $xml         Parsed text
+	* @param  string  $bbcode_name BBCode's name
+	* @param  integer $depth       Minimum nesting depth (number of parents of the same name)
+	* @return string               Parsed text
 	*/
-	public function remove_bbcode($text, $bbcode_name, $depth = 0)
+	public function remove_bbcode($xml, $bbcode_name, $depth = 0)
 	{
-		return \s9e\TextFormatter\Utils::removeTag($text, strtoupper($bbcode_name), $depth);
+		return \s9e\TextFormatter\Utils::removeTag($xml, strtoupper($bbcode_name), $depth);
 	}
 
 	/**
-	* {@inheritdoc}
+	* Return a parsed text to its original form
+	*
+	* @param  string $xml Parsed text
+	* @return string      Original plain text
 	*/
-	public function remove_formatting($text)
+	public function unparse($xml)
 	{
-		return \s9e\TextFormatter\Utils::removeFormatting($text);
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function unparse($text)
-	{
-		return \s9e\TextFormatter\Unparser::unparse($text);
+		return \s9e\TextFormatter\Unparser::unparse($xml);
 	}
 }
