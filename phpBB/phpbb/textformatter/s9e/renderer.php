@@ -198,15 +198,28 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function render($text)
+	public function render($xml)
 	{
+		$self = $this;
+
+		/**
+		* Modify a parsed text before it is rendered
+		*
+		* @event core.text_formatter_s9e_render_before
+		* @var \phpbb\textformatter\s9e\renderer self This renderer service
+		* @var string xml The parsed text, in its XML form
+		* @since 3.2.0-a1
+		*/
+		$vars = array('self', 'xml');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_before', compact($vars)));
+
 		if (isset($this->censor) && $this->viewcensors)
 		{
 			// NOTE: censorHtml() is XML-safe
-			$text = $this->censor->censorHtml($text, true);
+			$xml = $this->censor->censorHtml($xml, true);
 		}
 
-		$html = $this->renderer->render($text);
+		$html = $this->renderer->render($xml);
 
 		/**
 		* @see bbcode::bbcode_second_pass_code()
@@ -238,6 +251,17 @@ class renderer implements \phpbb\textformatter\renderer_interface
 			},
 			$html
 		);
+
+		/**
+		* Modify a rendered text
+		*
+		* @event core.text_formatter_s9e_render_after
+		* @var string html The renderer text's HTML
+		* @var \phpbb\textformatter\s9e\renderer self This renderer service
+		* @since 3.2.0-a1
+		*/
+		$vars = array('html', 'self');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
 
 		return $html;
 	}

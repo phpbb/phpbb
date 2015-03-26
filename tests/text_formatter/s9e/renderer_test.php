@@ -389,4 +389,58 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			&& isset($vars['self'])
 			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer;
 	}
+
+	/**
+	* @testdox render() triggers a core.text_formatter_s9e_render_before and core.text_formatter_s9e_render_after events
+	*/
+	public function test_render_event()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher
+			->expects($this->any())
+			->method('trigger_event')
+			->will($this->returnArgument(1));
+		$dispatcher
+			->expects($this->at(1))
+			->method('trigger_event')
+			->with(
+				'core.text_formatter_s9e_render_before',
+				$this->callback(array($this, 'render_before_event_callback'))
+			)
+			->will($this->returnArgument(1));
+		$dispatcher
+			->expects($this->at(2))
+			->method('trigger_event')
+			->with(
+				'core.text_formatter_s9e_render_after',
+				$this->callback(array($this, 'render_after_event_callback'))
+			)
+			->will($this->returnArgument(1));
+
+		$renderer = new \phpbb\textformatter\s9e\renderer(
+			$container->get('cache.driver'),
+			$container->getParameter('cache.dir'),
+			'_foo_renderer',
+			$container->get('text_formatter.s9e.factory'),
+			$dispatcher
+		);
+		$renderer->render('<t>...</t>');
+	}
+
+	public function render_before_event_callback($vars)
+	{
+		return isset($vars['self'])
+			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer
+			&& isset($vars['xml'])
+			&& $vars['xml'] === '<t>...</t>';
+	}
+
+	public function render_after_event_callback($vars)
+	{
+		return isset($vars['html'])
+			&& $vars['html'] === '...'
+			&& isset($vars['self'])
+			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer;
+	}
 }
