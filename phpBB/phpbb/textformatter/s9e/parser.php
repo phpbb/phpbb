@@ -242,6 +242,16 @@ class parser implements \phpbb\textformatter\parser_interface
 	}
 
 	/**
+	* Return the instance of s9e\TextFormatter\Parser used by this object
+	*
+	* @return \s9e\TextFormatter\Parser
+	*/
+	public function get_parser()
+	{
+		return $this->parser;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function set_var($name, $value)

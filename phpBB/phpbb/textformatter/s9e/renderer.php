@@ -164,6 +164,16 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	}
 
 	/**
+	* Return the instance of s9e\TextFormatter\Renderer used by this object
+	*
+	* @return \s9e\TextFormatter\Renderer
+	*/
+	public function get_renderer()
+	{
+		return $this->renderer;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_viewcensors()

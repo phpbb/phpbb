@@ -260,4 +260,11 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			&& isset($vars['xml'])
 			&& $vars['xml'] === '<t>...</t>';
 	}
+
+	public function test_get_parser()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$parser = $container->get('text_formatter.parser');
+		$this->assertInstanceOf('s9e\\TextFormatter\\Parser', $parser->get_parser());
+	}
 }
