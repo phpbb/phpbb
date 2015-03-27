@@ -200,9 +200,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 	public function setup_event_callback($vars)
 	{
 		return isset($vars['parser'])
-			&& $vars['parser'] instanceof \s9e\TextFormatter\Parser
-			&& isset($vars['self'])
-			&& $vars['self'] instanceof \phpbb\textformatter\s9e\parser
+			&& $vars['parser'] instanceof \phpbb\textformatter\s9e\parser
 			&& isset($vars['user'])
 			&& $vars['user'] instanceof \phpbb\user;
 	}
@@ -247,16 +245,16 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 
 	public function parse_before_event_callback($vars)
 	{
-		return isset($vars['self'])
-			&& $vars['self'] instanceof \phpbb\textformatter\s9e\parser
+		return isset($vars['parser'])
+			&& $vars['parser'] instanceof \phpbb\textformatter\s9e\parser
 			&& isset($vars['text'])
 			&& $vars['text'] === '...';
 	}
 
 	public function parse_after_event_callback($vars)
 	{
-		return isset($vars['self'])
-			&& $vars['self'] instanceof \phpbb\textformatter\s9e\parser
+		return isset($vars['parser'])
+			&& $vars['parser'] instanceof \phpbb\textformatter\s9e\parser
 			&& isset($vars['xml'])
 			&& $vars['xml'] === '<t>...</t>';
 	}

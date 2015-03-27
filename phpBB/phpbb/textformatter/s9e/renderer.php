@@ -99,17 +99,16 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		}
 		$this->dispatcher = $dispatcher;
 		$this->renderer = $renderer;
-		$self = $this;
+		$renderer = $this;
 
 		/**
 		* Configure the renderer service
 		*
 		* @event core.text_formatter_s9e_renderer_setup
-		* @var \s9e\TextFormatter\Renderer renderer s9e\TextFormatter renderer instance
-		* @var \phpbb\textformatter\s9e\renderer self This renderer service
+		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @since 3.2.0-a1
 		*/
-		$vars = array('renderer', 'self');
+		$vars = array('renderer');
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_renderer_setup', compact($vars)));
 	}
 
@@ -210,17 +209,17 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*/
 	public function render($xml)
 	{
-		$self = $this;
+		$renderer = $this;
 
 		/**
 		* Modify a parsed text before it is rendered
 		*
 		* @event core.text_formatter_s9e_render_before
-		* @var \phpbb\textformatter\s9e\renderer self This renderer service
+		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @var string xml The parsed text, in its XML form
 		* @since 3.2.0-a1
 		*/
-		$vars = array('self', 'xml');
+		$vars = array('renderer', 'xml');
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_before', compact($vars)));
 
 		if (isset($this->censor) && $this->viewcensors)
@@ -267,10 +266,10 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		*
 		* @event core.text_formatter_s9e_render_after
 		* @var string html The rendered text's HTML
-		* @var \phpbb\textformatter\s9e\renderer self This renderer service
+		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @since 3.2.0-a1
 		*/
-		$vars = array('html', 'self');
+		$vars = array('html', 'renderer');
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
 
 		return $html;

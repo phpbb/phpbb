@@ -385,9 +385,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	public function setup_event_callback($vars)
 	{
 		return isset($vars['renderer'])
-			&& $vars['renderer'] instanceof \s9e\TextFormatter\Renderer
-			&& isset($vars['self'])
-			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer;
+			&& $vars['renderer'] instanceof \phpbb\textformatter\s9e\renderer;
 	}
 
 	/**
@@ -430,8 +428,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 
 	public function render_before_event_callback($vars)
 	{
-		return isset($vars['self'])
-			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer
+		return isset($vars['renderer'])
+			&& $vars['renderer'] instanceof \phpbb\textformatter\s9e\renderer
 			&& isset($vars['xml'])
 			&& $vars['xml'] === '<t>...</t>';
 	}
@@ -440,8 +438,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		return isset($vars['html'])
 			&& $vars['html'] === '...'
-			&& isset($vars['self'])
-			&& $vars['self'] instanceof \phpbb\textformatter\s9e\renderer;
+			&& isset($vars['renderer'])
+			&& $vars['renderer'] instanceof \phpbb\textformatter\s9e\renderer;
 	}
 
 	public function test_get_renderer()

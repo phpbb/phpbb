@@ -57,7 +57,7 @@ class parser implements \phpbb\textformatter\parser_interface
 		$this->dispatcher = $dispatcher;
 		$this->parser = $parser;
 		$this->user = $user;
-		$self = $this;
+		$parser = $this;
 
 		/**
 		* Configure the parser service
@@ -69,12 +69,11 @@ class parser implements \phpbb\textformatter\parser_interface
 		*  - configure the s9e\TextFormatter parser
 		*
 		* @event core.text_formatter_s9e_parser_setup
-		* @var \s9e\TextFormatter\Parser parser s9e\TextFormatter parser instance
-		* @var \phpbb\textformatter\s9e\parser self This parser service
+		* @var \phpbb\textformatter\s9e\parser parser This parser service
 		* @var \phpbb\user user Current user
 		* @since 3.2.0-a1
 		*/
-		$vars = array('parser', 'self', 'user');
+		$vars = array('parser', 'user');
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_parser_setup', compact($vars)));
 	}
 
@@ -83,17 +82,17 @@ class parser implements \phpbb\textformatter\parser_interface
 	*/
 	public function parse($text)
 	{
-		$self = $this;
+		$parser = $this;
 
 		/**
 		* Modify a text before it is parsed
 		*
 		* @event core.text_formatter_s9e_parse_before
-		* @var \phpbb\textformatter\s9e\parser self This parser service
+		* @var \phpbb\textformatter\s9e\parser parser This parser service
 		* @var string text The original text
 		* @since 3.2.0-a1
 		*/
-		$vars = array('self', 'text');
+		$vars = array('parser', 'text');
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_parse_before', compact($vars)));
 
 		$xml = $this->parser->parse($text);
@@ -102,11 +101,11 @@ class parser implements \phpbb\textformatter\parser_interface
 		* Modify a parsed text in its XML form
 		*
 		* @event core.text_formatter_s9e_parse_after
-		* @var \phpbb\textformatter\s9e\parser self This parser service
+		* @var \phpbb\textformatter\s9e\parser parser This parser service
 		* @var string xml The parsed text, in XML
 		* @since 3.2.0-a1
 		*/
-		$vars = array('self', 'xml');
+		$vars = array('parser', 'xml');
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_parse_after', compact($vars)));
 
 		return $xml;
