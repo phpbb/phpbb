@@ -229,12 +229,37 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		}
 
 		$html = $this->renderer->render($xml);
+		if (stripos($html, '<code') !== false)
+		{
+			$html = $this->replace_tabs_in_code($html);
+		}
 
 		/**
-		* @see bbcode::bbcode_second_pass_code()
+		* Modify a rendered text
+		*
+		* @event core.text_formatter_s9e_render_after
+		* @var string html The rendered text's HTML
+		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
+		* @since 3.2.0-a1
 		*/
-		$html = preg_replace_callback(
-			'#(<code[^>]*>)(.*?)(</code>)#is',
+		$vars = array('html', 'renderer');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
+
+		return $html;
+	}
+
+	/**
+	* Replace tabs in code elements
+	*
+	* @see bbcode::bbcode_second_pass_code()
+	*
+	* @param  string $html Original HTML
+	* @return string       Modified HTML
+	*/
+	protected function replace_tabs_in_code($html)
+	{
+		return preg_replace_callback(
+			'((<code[^>]*>)(.*?)(</code>))is',
 			function ($captures)
 			{
 				$code = $captures[2];
@@ -260,19 +285,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 			},
 			$html
 		);
-
-		/**
-		* Modify a rendered text
-		*
-		* @event core.text_formatter_s9e_render_after
-		* @var string html The rendered text's HTML
-		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
-		* @since 3.2.0-a1
-		*/
-		$vars = array('html', 'renderer');
-		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
-
-		return $html;
 	}
 
 	/**
