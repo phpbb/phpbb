@@ -158,8 +158,13 @@ class renderer implements \phpbb\textformatter\renderer_interface
 			}
 		}
 
-		// Set the style id
-		$this->renderer->setParameter('STYLE_ID', $user->style['style_id']);
+		// Set this user's style id and other parameters
+		$this->renderer->setParameters(array(
+			'S_IS_BOT'          => $user->data['is_bot'],
+			'S_REGISTERED_USER' => $user->data['is_registered'],
+			'S_USER_LOGGED_IN'  => ($user->data['user_id'] != ANONYMOUS),
+			'STYLE_ID'          => $user->style['style_id'],
+		));
 	}
 
 	/**
