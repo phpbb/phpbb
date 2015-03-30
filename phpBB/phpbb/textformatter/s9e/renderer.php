@@ -151,7 +151,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		// Set the stylesheet parameters
 		foreach (array_keys($this->renderer->getParameters()) as $param_name)
 		{
-			if (substr($param_name, 0, 2) === 'L_')
+			if (strpos($param_name, 'L_') === 0)
 			{
 				// L_FOO is set to $user->lang('FOO')
 				$this->renderer->setParameter($param_name, $user->lang(substr($param_name, 2)));
