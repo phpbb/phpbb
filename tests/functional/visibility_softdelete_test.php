@@ -178,11 +178,37 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
 		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+	}
 
-		$this->logout();
-		// Delete second post as moderator without m_delete permission
+	public function test_softdelete_post_no_m_delete()
+	{
 		$this->login('no m_delete moderator');
+		$this->load_ids(array(
+			'forums' => array(
+				'Soft Delete #1',
+				'Soft Delete #2',
+			),
+			'topics' => array(
+				'Soft Delete Topic #1',
+			),
+			'posts' => array(
+				'Soft Delete Topic #1',
+				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3',
+			),
+		));
 
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 2,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Re: Soft Delete Topic #1-#2'],
+		), 'before softdelete without m_delete');
+
+		$this->add_lang('posting');
 		$crawler = self::request('GET', "posting.php?mode=delete&f={$this->data['forums']['Soft Delete #1']}&p={$this->data['posts']['Re: Soft Delete Topic #1-#2']}&sid={$this->sid}");
 		$this->assertNotContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
@@ -198,12 +224,10 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
-		), 'after softdelete');
+		), 'after softdelete without m_delete');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
 		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
-
-		$this->logout();
 	}
 
 	public function test_move_softdeleted_post()
