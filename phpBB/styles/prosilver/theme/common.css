@@ -53,9 +53,7 @@ html {
 }
 
 body {
-	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
 	font-size: 10px;
 	line-height: normal;
 	margin: 0;
@@ -113,7 +111,6 @@ img {
 }
 
 hr {
-	/* Also see tweaks.css */
 	border: 0 solid transparent;
 	border-top-width: 1px;
 	height: 1px;
@@ -713,8 +710,7 @@ table.info tbody th {
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts
-   Also see tweaks.css */
+/* column[1-2] styles are containers for two column layouts */
 .column1 {
 	float: left;
 	clear: left;
