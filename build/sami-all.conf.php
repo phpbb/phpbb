@@ -18,13 +18,13 @@ $config['versions'] = Sami\Version\GitVersionCollection::create(__DIR__ . '/../'
 	This would be nice, but currently causes various problems that need
 	debugging.
 	->addFromTags('release-3.0.*')
-	->add('develop-olympus', '3.0-next (olympus)')
+	->add('3.0.x', '3.0-next (olympus)')
 	->addFromTags('release-3.1.*')
-	->add('develop-ascraeus', '3.1-next (ascraeus)')
-	->add('develop')
+	->add('3.1.x', '3.1-next (ascraeus)')
+	->add('master')
 	*/
-	->add('develop-olympus')
-	->add('develop-ascraeus')
+	->add('3.0.x')
+	->add('3.1.x')
 ;
 
 return new Sami\Sami($iterator, $config);
