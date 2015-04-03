@@ -53,9 +53,7 @@ html {
 }
 
 body {
-	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
 	font-size: 10px;
 	line-height: normal;
 	margin: 0;
