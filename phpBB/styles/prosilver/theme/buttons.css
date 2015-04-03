@@ -1,9 +1,6 @@
 /* Button Styles
 ---------------------------------------- */
 
-/* Rollover buttons
-   Based on: http://wellstyled.com/css-nopreload-rollovers.html
-----------------------------------------*/
 .button {
 	cursor: pointer;
 	display: inline-block;
