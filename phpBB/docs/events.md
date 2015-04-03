@@ -840,6 +840,14 @@ overall_header_head_append
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag
 
+overall_header_navbar_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the navigation bar
+
 overall_header_navigation_append
 ===
 * Locations:
