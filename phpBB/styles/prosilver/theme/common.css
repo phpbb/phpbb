@@ -111,7 +111,6 @@ img {
 }
 
 hr {
-	/* Also see tweaks.css */
 	border: 0 solid transparent;
 	border-top-width: 1px;
 	height: 1px;
@@ -711,8 +710,7 @@ table.info tbody th {
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts
-   Also see tweaks.css */
+/* column[1-2] styles are containers for two column layouts */
 .column1 {
 	float: left;
 	clear: left;

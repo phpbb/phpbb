@@ -182,8 +182,7 @@
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts
-   Also see tweaks.css */
+/* column[1-2] styles are containers for two column layouts */
 .rtl .column1 {
 	float: right;
 	clear: right;
@@ -979,10 +978,6 @@ li.breadcrumbs span:first-child > a {
 	padding-right: 17px;
 	padding-left: 0;
 }
-
-/**
-* tweaks.css
-*/
 
 
 /* Form button styles
