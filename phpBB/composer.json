@@ -28,6 +28,7 @@
 		"php": ">=5.3.9",
 		"lusitanian/oauth": "0.2.*",
 		"patchwork/utf8": "1.1.*",
+		"s9e/text-formatter": "dev-release/php5.3",
 		"symfony/config": "2.7.*@dev",
 		"symfony/console": "2.7.*@dev",
 		"symfony/dependency-injection": "2.7.*@dev",

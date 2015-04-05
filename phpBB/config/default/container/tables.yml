@@ -1,6 +1,7 @@
 parameters:
     tables.auth_provider_oauth_token_storage: %core.table_prefix%oauth_tokens
     tables.auth_provider_oauth_account_assoc: %core.table_prefix%oauth_accounts
+    tables.bbcodes: %core.table_prefix%bbcodes
     tables.captcha_qa_questions: %core.table_prefix%captcha_questions
     tables.captcha_qa_answers: %core.table_prefix%captcha_answers
     tables.captcha_qa_confirm: %core.table_prefix%qa_confirm
@@ -18,6 +19,9 @@ parameters:
     tables.profile_fields_options_language: %core.table_prefix%profile_fields_lang
     tables.profile_fields_language: %core.table_prefix%profile_lang
     tables.posts: %core.table_prefix%posts
+    tables.smilies: %core.table_prefix%smilies
+    tables.styles: %core.table_prefix%styles
     tables.topics: %core.table_prefix%topics
     tables.user_notifications: %core.table_prefix%user_notifications
     tables.users: %core.table_prefix%users
+    tables.words: %core.table_prefix%words

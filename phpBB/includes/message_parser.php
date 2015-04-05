@@ -1116,7 +1116,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
-		global $config, $db, $user, $phpbb_dispatcher;
+		global $config, $db, $user, $phpbb_dispatcher, $phpbb_container;
 
 		$this->mode = $mode;
 
@@ -1144,12 +1144,6 @@ class parse_message extends bbcode_firstpass
 		{
 			$this->decode_message();
 		}
-
-		// Do some general 'cleanup' first before processing message,
-		// e.g. remove excessive newlines(?), smilies(?)
-		$match = array('#(script|about|applet|activex|chrome):#i');
-		$replace = array("\\1&#058;");
-		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Store message length...
 		$message_length = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
@@ -1223,47 +1217,29 @@ class parse_message extends bbcode_firstpass
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
-		// Prepare BBcode (just prepares some tags for better parsing)
-		if ($allow_bbcode && strpos($this->message, '[') !== false)
-		{
-			$this->bbcode_init();
-			$disallow = array('img', 'flash', 'quote', 'url');
-			foreach ($disallow as $bool)
-			{
-				if (!${'allow_' . $bool . '_bbcode'})
-				{
-					$this->bbcodes[$bool]['disabled'] = true;
-				}
-			}
+		// Get the parser
+		$parser = $phpbb_container->get('text_formatter.parser');
 
-			$this->prepare_bbcodes();
-		}
+		// Set the parser's options
+		($allow_bbcode)       ? $parser->enable_bbcodes()       : $parser->disable_bbcodes();
+		($allow_magic_url)    ? $parser->enable_magic_url()     : $parser->disable_magic_url();
+		($allow_smilies)      ? $parser->enable_smilies()       : $parser->disable_smilies();
+		($allow_img_bbcode)   ? $parser->enable_bbcode('img')   : $parser->disable_bbcode('img');
+		($allow_flash_bbcode) ? $parser->enable_bbcode('flash') : $parser->disable_bbcode('flash');
+		($allow_quote_bbcode) ? $parser->enable_bbcode('quote') : $parser->disable_bbcode('quote');
+		($allow_url_bbcode)   ? $parser->enable_bbcode('url')   : $parser->disable_bbcode('url');
 
-		// Parse smilies
-		if ($allow_smilies)
-		{
-			$this->smilies($config['max_' . $mode . '_smilies']);
-		}
+		// Set some config values
+		$parser->set_vars(array(
+			'max_font_size'  => $config['max_' . $this->mode . '_font_size'],
+			'max_img_height' => $config['max_' . $this->mode . '_img_height'],
+			'max_img_width'  => $config['max_' . $this->mode . '_img_width'],
+			'max_smilies'    => $config['max_' . $this->mode . '_smilies'],
+			'max_urls'       => $config['max_' . $this->mode . '_urls']
+		));
 
-		$num_urls = 0;
-
-		// Parse BBCode
-		if ($allow_bbcode && strpos($this->message, '[') !== false)
-		{
-			$this->parse_bbcode();
-			$num_urls += $this->parsed_items['url'];
-		}
-
-		// Parse URL's
-		if ($allow_magic_url)
-		{
-			$this->magic_url(generate_board_url());
-
-			if ($config['max_' . $mode . '_urls'])
-			{
-				$num_urls += preg_match_all('#\<!-- ([lmwe]) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
-			}
-		}
+		// Parse this message
+		$this->message = $parser->parse(htmlspecialchars_decode($this->message, ENT_QUOTES));
 
 		// Check for out-of-bounds characters that are currently
 		// not supported by utf8_bin in MySQL
@@ -1282,10 +1258,12 @@ class parse_message extends bbcode_firstpass
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
-		// Check number of links
-		if ($config['max_' . $mode . '_urls'] && $num_urls > $config['max_' . $mode . '_urls'])
+		// Check for errors
+		$errors = $parser->get_errors();
+		if ($errors)
 		{
-			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_URLS'], $config['max_' . $mode . '_urls']);
+			$this->warn_msg = array_merge($this->warn_msg, $errors);
+
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1305,7 +1283,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
-		global $phpbb_dispatcher;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
@@ -1314,26 +1292,25 @@ class parse_message extends bbcode_firstpass
 			$return_message = &$this->message;
 		}
 
-		if ($this->message_status == 'plain')
+		// NOTE: message_status is unreliable for detecting unparsed text because some callers
+		//       change $this->message without resetting $this->message_status to 'plain' so we
+		//       inspect the message instead
+		//if ($this->message_status == 'plain')
+		if (!preg_match('/^<[rt][ >]/', $this->message))
 		{
 			// Force updating message - of course.
 			$this->parse($allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, $this->allow_url_bbcode, true);
 		}
 
-		// Replace naughty words such as farty pants
-		$this->message = censor_text($this->message);
-
-		// Parse BBcode
-		if ($allow_bbcode)
+		// There's a bug when previewing a topic with no poll, because the empty title of the poll
+		// gets parsed but $this->message still ends up empty. This fixes it, until a proper fix is
+		// devised
+		if ($this->message === '')
 		{
-			$this->bbcode_cache_init();
-
-			// We are giving those parameters to be able to use the bbcode class on its own
-			$this->bbcode_second_pass($this->message, $this->bbcode_uid);
+			$this->message = $phpbb_container->get('text_formatter.parser')->parse($this->message);
 		}
 
-		$this->message = bbcode_nl2br($this->message);
-		$this->message = smiley_text($this->message, !$allow_smilies);
+		$this->message = $phpbb_container->get('text_formatter.renderer')->render($this->message);
 
 		$text = $this->message;
 		$uid = $this->bbcode_uid;
@@ -1797,24 +1774,22 @@ class parse_message extends bbcode_firstpass
 
 		$poll_max_options = $poll['poll_max_options'];
 
-		// Parse Poll Option text ;)
+		// Parse Poll Option text
 		$tmp_message = $this->message;
-		$this->message = $poll['poll_option_text'];
-		$bbcode_bitfield = $this->bbcode_bitfield;
-
-		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
-
-		$bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
-		$this->message = $tmp_message;
-
-		// Parse Poll Title
-		$tmp_message = $this->message;
-		$this->message = $poll['poll_title'];
-		$this->bbcode_bitfield = $bbcode_bitfield;
 
 		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
 		$poll['poll_options_size'] = sizeof($poll['poll_options']);
 
+		foreach ($poll['poll_options'] as &$poll_option)
+		{
+			$this->message = $poll_option;
+			$poll_option = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
+		}
+		unset($poll_option);
+		$poll['poll_option_text'] = implode("\n", $poll['poll_options']);
+
+		// Parse Poll Title
+		$this->message = $poll['poll_title'];
 		if (!$poll['poll_title'] && $poll['poll_options_size'])
 		{
 			$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
@@ -1832,10 +1807,6 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
-		$this->message = $tmp_message;
-		unset($tmp_message);
-
 		if (sizeof($poll['poll_options']) == 1)
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_POLL_OPTIONS'];
@@ -1850,6 +1821,8 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
+
+		$this->message = $tmp_message;
 	}
 
 	/**

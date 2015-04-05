@@ -1,0 +1,3 @@
+http://ar.wikipedia.org/wiki/الصفحة_الرئيسية
+[url]http://ar.wikipedia.org/wiki/الصفحة_الرئيسية[/url]
+[url=http://ar.wikipedia.org/wiki/الصفحة_الرئيسية]link[/url]

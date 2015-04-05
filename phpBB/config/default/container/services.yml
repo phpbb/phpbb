@@ -13,6 +13,7 @@ imports:
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
     - { resource: services_profilefield.yml }
+    - { resource: services_text_formatter.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
 

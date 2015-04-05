@@ -389,46 +389,68 @@ function phpbb_clean_search_string($search_string)
 /**
 * Decode text whereby text is coming from the db and expected to be pre-parsed content
 * We are placing this outside of the message parser because we are often in need of it...
+*
+* NOTE: special chars are kept encoded
+*
+* @param string &$message Original message, passed by reference
+* @param string $bbcode_uid BBCode UID
+* @return null
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $config;
+	global $phpbb_container;
 
-	if ($bbcode_uid)
+	if (preg_match('#^<[rt][ >]#', $message))
 	{
-		$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
-		$replace = array("\n", '', '', '', '');
+		$message = htmlspecialchars($phpbb_container->get('text_formatter.utils')->unparse($message), ENT_COMPAT);
 	}
 	else
 	{
-		$match = array('<br />');
-		$replace = array("\n");
+		if ($bbcode_uid)
+		{
+			$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
+			$replace = array("\n", '', '', '', '');
+		}
+		else
+		{
+			$match = array('<br />');
+			$replace = array("\n");
+		}
+
+		$message = str_replace($match, $replace, $message);
+
+		$match = get_preg_expression('bbcode_htm');
+		$replace = array('\1', '\1', '\2', '\1', '', '');
+
+		$message = preg_replace($match, $replace, $message);
 	}
-
-	$message = str_replace($match, $replace, $message);
-
-	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\1', '\2', '\1', '', '');
-
-	$message = preg_replace($match, $replace, $message);
 }
 
 /**
-* Strips all bbcode from a text and returns the plain content
+* Strips all bbcode from a text in place
 */
 function strip_bbcode(&$text, $uid = '')
 {
-	if (!$uid)
+	global $phpbb_container;
+
+	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$uid = '[0-9a-z]{5,}';
+		$text = $phpbb_container->get('text_formatter.utils')->clean_formatting($text);
 	}
+	else
+	{
+		if (!$uid)
+		{
+			$uid = '[0-9a-z]{5,}';
+		}
 
-	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=(?:&quot;.*&quot;|[^\]]*))?(?::[a-z])?(\:$uid)\]#", ' ', $text);
+		$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=(?:&quot;.*&quot;|[^\]]*))?(?::[a-z])?(\:$uid)\]#", ' ', $text);
 
-	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\1', '\2', '\1', '', '');
+		$match = get_preg_expression('bbcode_htm');
+		$replace = array('\1', '\1', '\2', '\1', '', '');
 
-	$text = preg_replace($match, $replace, $text);
+		$text = preg_replace($match, $replace, $text);
+	}
 }
 
 /**
@@ -438,7 +460,7 @@ function strip_bbcode(&$text, $uid = '')
 function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {
 	static $bbcode;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $phpbb_container;
 
 	if ($text === '')
 	{
@@ -459,34 +481,56 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
-	if ($censor_text)
+	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$text = censor_text($text);
-	}
+		$renderer = $phpbb_container->get('text_formatter.renderer');
 
-	// Parse bbcode if bbcode uid stored and bbcode enabled
-	if ($uid && ($flags & OPTION_FLAG_BBCODE))
+		// Temporarily switch off viewcensors if applicable
+		$old_censor = $renderer->get_viewcensors();
+		if ($old_censor !== $censor_text)
+		{
+			$renderer->set_viewcensors($censor_text);
+		}
+
+		$text = $renderer->render($text);
+
+		// Restore the previous value
+		if ($old_censor !== $censor_text)
+		{
+			$renderer->set_viewcensors($old_censor);
+		}
+	}
+	else
 	{
-		if (!class_exists('bbcode'))
+		if ($censor_text)
 		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			$text = censor_text($text);
 		}
 
-		if (empty($bbcode))
+		// Parse bbcode if bbcode uid stored and bbcode enabled
+		if ($uid && ($flags & OPTION_FLAG_BBCODE))
 		{
-			$bbcode = new bbcode($bitfield);
-		}
-		else
-		{
-			$bbcode->bbcode($bitfield);
+			if (!class_exists('bbcode'))
+			{
+				global $phpbb_root_path, $phpEx;
+				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			}
+
+			if (empty($bbcode))
+			{
+				$bbcode = new bbcode($bitfield);
+			}
+			else
+			{
+				$bbcode->bbcode($bitfield);
+			}
+
+			$bbcode->bbcode_second_pass($text, $uid);
 		}
 
-		$bbcode->bbcode_second_pass($text, $uid);
+		$text = bbcode_nl2br($text);
+		$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 	}
-
-	$text = bbcode_nl2br($text);
-	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
 	/**
 	* Use this event to modify the text after it is parsed
@@ -549,11 +593,6 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
-
-	if ($text === '')
-	{
-		return;
-	}
 
 	if (!class_exists('parse_message'))
 	{
