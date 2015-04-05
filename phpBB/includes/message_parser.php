@@ -21,6 +21,19 @@ if (!defined('IN_PHPBB'))
 
 if (!class_exists('bbcode'))
 {
+	// The following lines are for extensions which include message_parser.php
+	// while $phpbb_root_path and $phpEx are out of the script scope
+	// which may lead to the 'Undefined variable' and 'failed to open stream' errors
+	if (!isset($phpbb_root_path))
+	{
+		global $phpbb_root_path;
+	}
+
+	if (!isset($phpEx))
+	{
+		global $phpEx;
+	}
+
 	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 }
 
