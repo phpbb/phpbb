@@ -367,7 +367,6 @@ class parser implements \phpbb\textformatter\parser_interface
 	{
 		// Validate the URL
 		$url = BuiltInFilters::filterUrl($url, $url_config, $logger);
-
 		if ($url === false)
 		{
 			return false;
@@ -375,26 +374,23 @@ class parser implements \phpbb\textformatter\parser_interface
 
 		if ($max_height || $max_width)
 		{
-			$stats = @getimagesize($url);
-
-			if ($stats === false)
+			$imagesize = new \phpbb\upload\imagesize();
+			$size_info = $imagesize->get_imagesize($url);
+			if ($size_info === false)
 			{
 				$logger->err('UNABLE_GET_IMAGE_SIZE');
-
 				return false;
 			}
 
-			if ($max_height && $max_height < $stats[1])
+			if ($max_height && $max_height < $size_info['height'])
 			{
 				$logger->err('MAX_IMG_HEIGHT_EXCEEDED', array('max_height' => $max_height));
-
 				return false;
 			}
 
-			if ($max_width && $max_width < $stats[0])
+			if ($max_width && $max_width < $size_info['width'])
 			{
 				$logger->err('MAX_IMG_WIDTH_EXCEEDED', array('max_width' => $max_width));
-
 				return false;
 			}
 		}
