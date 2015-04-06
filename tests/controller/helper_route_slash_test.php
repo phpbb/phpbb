@@ -28,7 +28,7 @@ class phpbb_controller_helper_route_slash_test extends phpbb_controller_common_h
 
 	protected function get_base_uri()
 	{
-		return '/phpBB3';
+		return '/phpBB3/';
 	}
 
 	protected function get_script_name()
