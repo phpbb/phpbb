@@ -200,6 +200,15 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 			$config_ary,
 			$error
 		);
+
+		if ($expected === true)
+		{
+			$this->assertEmpty($error);
+		}
+		else
+		{
+			$this->assertEquals(array($expected), $error);
+		}
 	}
 
 	public function data_validate_path_windows()
