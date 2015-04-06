@@ -833,6 +833,13 @@ overall_header_stylesheets_after
 * Purpose: Add asset calls after stylesheets within the `</head>` tag.
 Note that INCLUDECSS will not work with this event.
 
+posting_editor_bbcode_status_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after bbcode status
+
 posting_editor_buttons_after
 ===
 * Locations:
@@ -874,6 +881,20 @@ posting_editor_options_prepend
     + styles/prosilver/template/posting_editor.html
 * Since: 3.1.0-a1
 * Purpose: Add posting options on the posting screen
+
+posting_editor_smilies_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after smilies
+
+posting_editor_smilies_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the smilies
 
 posting_editor_subject_after
 ===
