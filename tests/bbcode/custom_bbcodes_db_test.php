@@ -42,6 +42,7 @@ class phpbb_custom_bbcodes_db_test extends phpbb_database_test_case
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
+		$cache = new phpbb_mock_cache();
 		$db = $this->new_dbal();
 		$filesystem = new \phpbb\filesystem();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
@@ -55,14 +56,6 @@ class phpbb_custom_bbcodes_db_test extends phpbb_database_test_case
 
 		$phpbb_root_path = $filesystem->clean_path(dirname(__FILE__) . '/../../phpBB/');
 		$phpEx = substr(strrchr(__FILE__, '.'), 1);
-
-		$cache = new \phpbb\cache\service(
-			new phpbb\cache\driver\null(),
-			$config,
-			$db,
-			$phpbb_root_path,
-			$phpEx
-		);
 
 		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request($request),
