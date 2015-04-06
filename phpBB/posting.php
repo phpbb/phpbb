@@ -331,14 +331,17 @@ switch ($mode)
 		{
 			$is_authed = true;
 		}
-	break;
+
+	// no break;
 
 	case 'soft_delete':
-		if ($user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+		if (!$is_authed && $user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 		{
+			// Fall back to soft_delete if we have no permissions to delete posts but to soft delete them
 			$is_authed = true;
+			$mode = 'soft_delete';
 		}
-		else
+		else if (!$is_authed)
 		{
 			// Display the same error message for softdelete we use for delete
 			$mode = 'delete';
