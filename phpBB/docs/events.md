@@ -903,6 +903,13 @@ posting_pm_header_find_username_before
 * Since: 3.1.0-RC4
 * Purpose: Add content before the find username link on composing pm
 
+posting_poll_body_options_after
+===
+* Locations:
+    + styles/prosilver/template/posting_poll_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the poll options on creating a poll
+
 quickreply_editor_panel_after
 ===
 * Locations:
