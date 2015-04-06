@@ -51,6 +51,11 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		return '/app.php';
 	}
 
+	protected function get_base_uri()
+	{
+		return $this->get_uri();
+	}
+
 	protected function get_script_name()
 	{
 		return 'app.php';
@@ -66,7 +71,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->request = new phpbb_mock_request();
 		$this->request->overwrite('SCRIPT_NAME', $this->get_uri(), \phpbb\request\request_interface::SERVER);
 		$this->request->overwrite('SCRIPT_FILENAME', $this->get_script_name(), \phpbb\request\request_interface::SERVER);
-		$this->request->overwrite('REQUEST_URI', $this->get_uri(), \phpbb\request\request_interface::SERVER);
+		$this->request->overwrite('REQUEST_URI', $this->get_base_uri(), \phpbb\request\request_interface::SERVER);
 		$this->request->overwrite('SERVER_NAME', 'localhost', \phpbb\request\request_interface::SERVER);
 		$this->request->overwrite('SERVER_PORT', '80', \phpbb\request\request_interface::SERVER);
 
