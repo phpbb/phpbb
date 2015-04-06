@@ -984,6 +984,20 @@ posting_pm_header_find_username_before
 * Since: 3.1.0-RC4
 * Purpose: Add content before the find username link on composing pm
 
+posting_pm_layout_include_pm_header_after
+===
+* Locations:
+    + styles/prosilver/template/posting_pm_layout.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the include of posting_pm_header.html
+
+posting_pm_layout_include_pm_header_before
+===
+* Locations:
+    + styles/prosilver/template/posting_pm_layout.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the include of posting_pm_header.html
+
 posting_poll_body_options_after
 ===
 * Locations:
